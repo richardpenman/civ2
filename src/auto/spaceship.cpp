@@ -2028,7 +2028,7 @@ int __cdecl spaceship_add_part(iptr civ,iptr group)
         if (((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) != 0) &&
            ((civ2 == civ || (result = civ_spaceship_exists(civ2), result == 0)))) {
           for (civ3 = 1; civ3 < 8; civ3++) {
-            civs[civ2].last_treaty_turn[civ3] = 0;
+            civs[civ2].last_contact_turn[civ3] = 0;
           }
         }
       }

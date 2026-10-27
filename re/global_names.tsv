@@ -536,7 +536,7 @@ addr	name	confidence	evidence
 0064b0e8	diplo_ai_declare_war	medium	Set by diplo_eval_ai_stance/meet when the AI decides to break treaty; diplo_ai_meet_player then sets treaty war 0x2000 and shows the declaration popup.
 0064b0f4	diplo_captured_city_count	medium	Count of cities founded by the AI civ now owned by the other civ, computed in diplo_eval_ai_stance; >4 or <2 thresholds gate war/peace.
 0064b0f8	diplo_ai_aggressive	medium	AI hostile-intent flag in diplo_eval_ai_stance (tribute demand, threats); diplo_ai_meet_player demands tribute when set and DAT_0064b118 > 50.
-0064b108	diplo_last_treaty_turn	high	Cached civs[].last_treaty_turn for the pair; meet blocks/halves payments within 8/16 turns of it and sets it to game.turn.
+0064b108	diplo_last_contact_turn	high	Cached directed civs[].last_contact_turn for the pair (LASTCONTACT in the editor); diplomacy uses it as a contact/cooldown reference, including future turn values.
 0064b11c	diplo_target_is_leader	medium	Set when the other civ is power rank 7 with >4 cities after turn 200 (and has no nukes); makes the AI gang up (aggressive, attitude 75).
 0064b140	diplo_peace_inclination	medium	Score summed in diplo_eval_ai_stance (+1 per hostile stronger neighbour, minus reputation/leader aggression); above hostility it cancels tribute/aggression.
 0064b998	scenario_event_count	high	Number of 0x1c4-byte event records at DAT_0064b98c, relinked by FUN_0048308f and sent with net msg 0x25.

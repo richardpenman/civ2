@@ -4105,7 +4105,7 @@ i32 __cdecl unit_resolve_attack(iptr unit,iptr dir,int execute)
       }
     }
     attack_power = attack_power << 1;
-    civs[civ2].last_treaty_turn[civ] = game.turn;
+    civs[civ2].last_contact_turn[civ] = game.turn;
   }
   unit3 = diplo_force_war(civ,civ2);
   if (civ != 0) {

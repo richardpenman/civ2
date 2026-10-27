@@ -4363,7 +4363,7 @@ struct tax_rate_icon_sprites_block {
     iptr diplo_strongest_enemy;  /* 0064b0fc */
     iptr diplo_weakest_enemy_civ;  /* 0064b100 */
     iptr diplo_war_target_civ;  /* 0064b104 */
-    int diplo_last_treaty_turn;  /* 0064b108 */
+    int diplo_last_contact_turn;  /* 0064b108 */
     int diplo_offer_tech_2nd;  /* 0064b10c */
     int diplo_attitude_civ;  /* 0064b110 */
     int diplo_cur_attitude;  /* 0064b114 */

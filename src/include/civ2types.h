@@ -66,7 +66,7 @@ typedef struct City {
     i8 size;                /* 0x09 */
     i8 founder;             /* 0x0a civilization that founded it */
     u8 turns_captured;      /* 0x0b */
-    u8 known_to;            /* 0x0c bit per civilization */
+    u8 known_to;            /* 0x0c persistent discovery mask, not current tile visibility */
     u8 revealed_size[8];    /* 0x0d size as last seen by each civilization */
     u8 field_15;
     u32 specialists;        /* 0x16 two bits per specialist */
@@ -74,7 +74,7 @@ typedef struct City {
     i16 shield_box;         /* 0x1c */
     i16 base_trade;         /* 0x1e */
     char name[16];          /* 0x20 */
-    u32 worked_tiles;       /* 0x30 bit per city square */
+    u32 worked_tiles;       /* 0x30 worked-square bits 0..20; specialist count in bits 26..31 */
     u8 improvements[5];     /* 0x34 bit per city improvement */
     i8 building;            /* 0x39 production: >= 0 unit type, < 0 improvement */
     u8 trade_routes;        /* 0x3a number of routes */
@@ -486,7 +486,7 @@ typedef struct Civ {
     u8 continent_policy[64];        /* 0x392 AI posture per landmass (0..5) */
     union { i16 field_3d2; i16 best_shield_surplus; };                  /* 0x3d2 zeroed each turn (civ_process_cities_turn), compared in city_choose_production */
     i16 government_score[7];        /* 0x3d4 AI preference for each government, accumulated over cities */
-    i16 last_treaty_turn[8];        /* 0x3e2 turn of the last treaty event with each civ, -1 never */
+    i16 last_contact_turn[8];       /* 0x3e2 directed contact/cooldown turn; -1 unset, may be advanced into the future */
     u8 leader_portrait;             /* 0x3f2 tribe index, +21 if the leader is female */
     u8 throne_room[10];             /* 0x3f3 throne-room piece levels; [8] is a bitmask */
     u8 pad_3fd;                     /* 0x3fd */
@@ -699,7 +699,7 @@ typedef struct NetGameInfo {
     i16 map_width;                  /* 0x11a */
     i16 map_height;                 /* 0x11c */
     i16 simultaneous;               /* 0x11e */
-    i16 field_120;                  /* 0x120 below 3: the player count is not shown */
+    i16 session_phase;              /* 0x120 announced net_session_phase; below 3 hides the player count */
     u8 pad_122[2];
 } NetGameInfo;
 #ifdef __cplusplus

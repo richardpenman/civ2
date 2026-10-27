@@ -10722,7 +10722,7 @@ after_target_search: ;
         if (('b' < (char)unit_types[unit_type].attack) &&
            (*(char *)&civs[civ].units_active[unit_type] == 1)) {
           for (civ3 = 1; civ3 < 8; civ3++) {
-            civs[civ3].last_treaty_turn[civ] = 0xffff;
+            civs[civ3].last_contact_turn[civ] = 0xffff;
           }
         }
         city_set_production(city,99);

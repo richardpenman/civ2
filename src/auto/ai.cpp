@@ -2027,8 +2027,8 @@ i32 __cdecl ai_nuke_pick_target(iptr unit)
                 diplo_set_treaty_flags(civ,(int)cities[city2].owner,0x10000);
               }
               else {
-                civs[cities[city2].owner].last_treaty_turn[civ] =
-                     civs[cities[city2].owner].last_treaty_turn[civ] - 2;
+                civs[cities[city2].owner].last_contact_turn[civ] =
+                     civs[cities[city2].owner].last_contact_turn[civ] - 2;
               }
             }
             return dir ^ 4;

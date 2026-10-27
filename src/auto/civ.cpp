@@ -4390,7 +4390,7 @@ int __cdecl civ_create(iptr civ)
         *(i8 *)&civs[civ].wonders_by_group[leader2] = 0;
       }
       for (leader = 0; leader < 8; leader++) {
-        civs[leader].last_treaty_turn[civ] = 0xffff;
+        civs[leader].last_contact_turn[civ] = 0xffff;
       }
       clear_mask = ~(1 << ((byte)civ & 0x1f));
       for (leader2 = 0; leader2 < 100; leader2++) {
@@ -6991,15 +6991,15 @@ void __cdecl civ_turn_update_diplomacy(uptr civ)
               *treaty_ptr = *treaty_ptr & 0xffffffd9;
               treaty_ptr = (uint *)(civ * 0x594 + (iptr)((u8 *)&civs + 32) + civ2 * 4);
               *treaty_ptr = *treaty_ptr | 0x80840;
-              value = (int)civs[civ2].last_treaty_turn[civ];
+              value = (int)civs[civ2].last_contact_turn[civ];
               if (value <= game.turn - 8) {
                 value = game.turn - 8;
               }
-              civs[civ2].last_treaty_turn[civ] = (short)value;
+              civs[civ2].last_contact_turn[civ] = (short)value;
             }
             else {
               civ_adjust_attitude(civ,civ2,100);
-              civs[civ2].last_treaty_turn[civ] = 0xffff;
+              civs[civ2].last_contact_turn[civ] = 0xffff;
               treaty_ptr = (uint *)(civ * 0x594 + (iptr)((u8 *)&civs + 32) + civ2 * 4);
               *treaty_ptr = *treaty_ptr & 0xffffffdf;
             }
@@ -7376,7 +7376,7 @@ i32 __cdecl civ_civil_war(iptr civ)
                  *(i8 *)&civs[civ].advances[advance];
           }
           for (civ3 = 1; civ3 < 8; civ3++) {
-            civs[civ3].last_treaty_turn[civ2] = game.turn - 8;
+            civs[civ3].last_contact_turn[civ2] = game.turn - 8;
           }
           *(i32 *)&civs[civ2].treaties[civ] = 0x2001;
           *(i32 *)&civs[civ].treaties[civ2] = 0x82801;

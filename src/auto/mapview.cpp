@@ -565,11 +565,11 @@ int __thiscall mapview_scroll_if_near_edge(MapView *self,int x,int y)
   need_scroll = 0;
   view_left = self->origin_x_uptr;
   view_top = self->origin_y_uptr;
-  if ((((game.rules & 0x8000) == 0) && (x <= (int)(self->field_2f8 * 2))) &&
-     ((int)((int)map.width + self->field_2f8 * -2) <= (int)view_left)) {
+  if ((((game.rules & 0x8000) == 0) && (x <= (int)(self->half_view_width * 2))) &&
+     ((int)((int)map.width + self->half_view_width * -2) <= (int)view_left)) {
     x += map.width;
   }
-  view_cols = self->field_300;
+  view_cols = self->tile_columns;
   view_bottom = self->end_y_u;
   if (self->margin_x_u == 0) {
     if ((game.rules & 0x8000) != 0) {
@@ -1368,7 +1368,7 @@ void __thiscall mapview_init_state(MapView *self,u32 view_index)
       *(short *)&self->center_x_u = (short)self->center_x_u + 1;
     }
   }
-  self->field_35c = 0xfffffc19;
+  self->cached_zoom = 0xfffffc19;
   return;
 }
 
@@ -1393,19 +1393,19 @@ void __thiscall mapview_update_layout(MapView *self)
   self->half_tile_width_u = (int)self->tile_width_u / 2;
   self->half_tile_height_u = (int)self->tile_height_u / 2;
   self->quarter_tile_width_u = (int)(self->tile_width_u + ((int)self->tile_width_u >> 0x1f & 3U)) >> 2;
-  self->field_31c = (int)(self->tile_height_u + ((int)self->tile_height_u >> 0x1f & 3U)) >> 2;
+  self->quarter_tile_height = (int)(self->tile_height_u + ((int)self->tile_height_u >> 0x1f & 3U)) >> 2;
   self->field_320 = self->tile_width_u;
   self->unit_sprite_height_u = self->tile_height_u + self->half_tile_height_u;
-  self->field_2f8 = (int)((self->layout_width_u - 1) + self->tile_width_u) / (int)self->tile_width_u;
+  self->half_view_width = (int)((self->layout_width_u - 1) + self->tile_width_u) / (int)self->tile_width_u;
   self->field_2fc = (int)((self->layout_height_u - 1) + self->tile_height_u) / (int)self->tile_height_u;
-  self->field_300 = (int)(self->half_tile_width_u * 3 - 1 + self->layout_width_u) / (int)self->tile_width_u;
+  self->tile_columns = (int)(self->half_tile_width_u * 3 - 1 + self->layout_width_u) / (int)self->tile_width_u;
   self->field_304 = (int)(self->half_tile_height_u * 3 - 1 + self->layout_height_u) / (int)self->tile_height_u;
   self->margin_x_u = 0;
   self->margin_y_u = 0;
-  if ((int)map.width / 2 < (int)self->field_2f8) {
-    self->field_2f8 = (int)map.width / 2;
-    self->margin_x_u = (int)(self->layout_width_u - self->tile_width_u * self->field_2f8) >> 1;
-    self->field_300 = self->field_2f8 + 1;
+  if ((int)map.width / 2 < (int)self->half_view_width) {
+    self->half_view_width = (int)map.width / 2;
+    self->margin_x_u = (int)(self->layout_width_u - self->tile_width_u * self->half_view_width) >> 1;
+    self->tile_columns = self->half_view_width + 1;
   }
   if ((int)map.height < (int)self->field_2fc) {
     self->field_2fc = (int)map.height / 2;
@@ -1415,11 +1415,11 @@ void __thiscall mapview_update_layout(MapView *self)
   wrapped_x = map_wrap_x((int)(short)self->center_x_u);
   *(short *)&self->center_x_u = (short)wrapped_x;
   self->origin_y_uptr = (int)*(short *)((int)&self->center_x_u + 2) - self->field_2fc;
-  wrapped = map_wrap_x((int)(short)self->center_x_u - self->field_2f8);
+  wrapped = map_wrap_x((int)(short)self->center_x_u - self->half_view_width);
   self->origin_x_uptr = wrapped;
-  if (((game.rules & 0x8000) != 0) && (map.width + 1 < (int)(self->field_2f8 * 2 + self->origin_x_uptr))
+  if (((game.rules & 0x8000) != 0) && (map.width + 1 < (int)(self->half_view_width * 2 + self->origin_x_uptr))
      ) {
-    self->origin_x_uptr = map.width + 1 + self->field_2f8 * -2;
+    self->origin_x_uptr = map.width + 1 + self->half_view_width * -2;
   }
   if (map.height + 1 < (int)(self->field_2fc * 2 + self->origin_y_uptr)) {
     self->origin_y_uptr = map.height + 1 + self->field_2fc * -2;
@@ -1440,13 +1440,13 @@ void __thiscall mapview_update_layout(MapView *self)
   if ((self->origin_y_uptr & 1) != 0) {
     self->origin_x_uptr++;
   }
-  wrapped = map_wrap_x(self->field_300 * 2 - 2 + self->origin_x_uptr);
+  wrapped = map_wrap_x(self->tile_columns * 2 - 2 + self->origin_x_uptr);
   self->end_x_uptr = wrapped;
   self->end_y_u = self->field_304 * 2 - 2 + self->origin_y_uptr;
-  if ((int)(short)self->zoom_u != self->field_35c) {
+  if ((int)(short)self->zoom_u != self->cached_zoom) {
     surface_create(&self->map_surface,self->tile_width_u,self->tile_height_u);
     surface_create(&self->overlay_surface,self->tile_width_u,self->tile_height_u);
-    self->field_35c = (int)(short)self->zoom_u;
+    self->cached_zoom = (int)(short)self->zoom_u;
     mapview_apply_zoom(self);
     sprite_draw
               ((Sprite *)((i8 *)&tile_pick_mask_sprite_block.tile_pick_mask_sprite),(iptr)pick_mask_rect,(iptr)&self->map_surface_head,0,0);
@@ -1455,14 +1455,14 @@ void __thiscall mapview_update_layout(MapView *self)
     gfx_reset_zoom_scale();
   }
   font_size = (int)(self->tile_height_u * 3) / 5;
-  if (self->field_348 != font_size) {
+  if (self->tile_font_size != font_size) {
     font_set(&self->tile_font,0,font_size);
-    self->field_348 = font_size;
+    self->tile_font_size = font_size;
   }
   font_size = (int)(self->tile_height_u + ((int)self->tile_height_u >> 0x1f & 3U)) >> 2;
-  if (self->field_34c != font_size) {
+  if (self->tile_small_font_size != font_size) {
     font_set(&self->tile_small_font,1,font_size);
-    self->field_34c = font_size;
+    self->tile_small_font_size = font_size;
   }
   return;
 }
@@ -2231,7 +2231,7 @@ mapview_tile_in_view(MapView *self,i32 tile_x,i32 tile_y)
   i32 in_view;
   
   in_view = map_tile_in_box(tile_x,tile_y,self->origin_x_uptr,self->origin_y_uptr,
-                             self->field_2f8 + self->field_300,self->field_2fc + self->field_304 + 1
+                             self->half_view_width + self->tile_columns,self->field_2fc + self->field_304 + 1
                             );
   return in_view;
 }
@@ -2410,10 +2410,10 @@ void __thiscall mapview_draw_all_tiles(MapView *self,i32 civ)
     origin_y = self->origin_y_uptr;
     origin_x = self->origin_x_uptr;
     if ((row & 1) == 0) {
-      row_width = self->field_300;
+      row_width = self->tile_columns;
     }
     else {
-      row_width = self->field_2f8;
+      row_width = self->half_view_width;
     }
     for (col = 0; col < row_width; col++) {
       x = map_wrap_x(col * 2 + origin_x + (row & 1));

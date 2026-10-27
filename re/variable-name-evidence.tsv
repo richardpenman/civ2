@@ -1,0 +1,10 @@
+kind	owner	offset_or_address	previous_name	name	confidence	evidence
+field	MapView	0x2f8	field_2f8	half_view_width	high	00479fbe subtracts this map-x half span from center_x and clamps it to map.width/2; 0047c9d4 also uses it as the odd-row tile count.
+field	MapView	0x300	field_300	tile_columns	high	00479fbe computes the extended column count and wrapped end_x; 0047c9d4 uses it for even-row draw loops.
+field	MapView	0x31c	field_31c	quarter_tile_height	high	00479fbe stores tile_height/4 with signed truncation; paired with quarter_tile_width at +318.
+field	MapView	0x348	field_348	tile_font_size	high	00479fbe compares this cache with 3*tile_height/5, calls font_set(tile_font,0,size), then stores the requested size.
+field	MapView	0x34c	field_34c	tile_small_font_size	high	00479fbe compares this cache with tile_height/4, calls font_set(tile_small_font,1,size), then stores the requested size.
+field	MapView	0x35c	field_35c	cached_zoom	high	00479ede invalidates with -999; 00479fbe compares zoom, allocates both mask surfaces, then caches zoom.
+field	NetGameInfo	0x120	field_120	session_phase	high	0046b14d case 2 copies low WORD of net_session_phase into announcement game+120; 00424ae9 hides player count while below 3.
+field	Civ	0x3e2	last_treaty_turn	last_contact_turn	high	00556f54 edits this signed WORD[8] through LASTCONTACT; 0045ac71 and 00560d95 use contact/cooldown intervals, including intentional future values.
+global	tax_rate_icon_sprites_block	0x0064b108	diplo_last_treaty_turn	diplo_last_contact_turn	high	0045705e caches the directed Civ contact word for the current pair; 0045ac71 compares the elapsed contact interval.

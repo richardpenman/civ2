@@ -16920,9 +16920,9 @@ void __cdecl cheat_edit_king(void)
           name2 = civ_leader_name(civ2);
           text_set_string_arg(1,name2);
           text_set_number_arg(0,(int)game.turn);
-          choice = dlg_input_number_game((const char *)&str_lastcontact,(int)civs[civ].last_treaty_turn[civ2],(iptr)number_input);
+          choice = dlg_input_number_game((const char *)&str_lastcontact,(int)civs[civ].last_contact_turn[civ2],(iptr)number_input);
           if (choice == 0) {
-            civs[civ].last_treaty_turn[civ2] = (*(i16 *)((char *)&number_input + 0));
+            civs[civ].last_contact_turn[civ2] = (*(i16 *)((char *)&number_input + 0));
           }
         }
       }
@@ -16950,7 +16950,7 @@ void __cdecl cheat_edit_king(void)
       else if (choice == 6) {
         for (other_civ = 0; other_civ < 8; other_civ++) {
           for (civ2 = 0; civ2 < 8; civ2++) {
-            civs[civ2].last_treaty_turn[other_civ] = game.turn;
+            civs[civ2].last_contact_turn[other_civ] = game.turn;
           }
         }
       }

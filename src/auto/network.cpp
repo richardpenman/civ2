@@ -997,7 +997,7 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
         }
         civ_bits = (int)civ_bits >> 1;
       }
-      if ((found_game->field_120 < 3) || (civ_count == 0)) {
+      if ((found_game->session_phase < 3) || (civ_count == 0)) {
         str_append_label((iptr)text,0x353);
       }
       else {
@@ -3012,7 +3012,7 @@ net_send_message(int msg_type,i32 dest,iptr arg1,iptr arg2,iptr arg3,iptr arg4,
     return (int)sent;
   case 2:
     net_msg_server_info_init((NetServerInfoMsg *)server_info_msg);
-    server_info_msg->game.field_120 = (i16)net_session_block.net_session_phase;
+    server_info_msg->game.session_phase = (i16)net_session_block.net_session_phase;
     sent = net_session_send_to_all(&net_session_block,(NetMsg *)server_info_msg);
     return (int)sent;
   default:
@@ -5053,7 +5053,7 @@ void __thiscall net_process_messages(NetSession *self,int max_msgs,int wait_mode
             city = popup_game_with_sprite((const char *)&str_pretext,(iptr)&war_icon_sprite_block.war_icon_sprite,0);
             if (city == 1) {
               diplo_set_treaty_flags(a.unit,a.civ3,0x2000);
-              civs[a.civ3].last_treaty_turn[a.unit] = game.turn;
+              civs[a.civ3].last_contact_turn[a.unit] = game.turn;
             }
           }
           else {
@@ -5062,7 +5062,7 @@ void __thiscall net_process_messages(NetSession *self,int max_msgs,int wait_mode
                                                       0xffff7c80)),0);
             if (city == 1) {
               diplo_clear_treaty_flags(a.unit,a.civ3,8);
-              civs[a.civ3].last_treaty_turn[a.unit] = game.turn;
+              civs[a.civ3].last_contact_turn[a.unit] = game.turn;
             }
           }
           break;
@@ -10563,8 +10563,8 @@ void __cdecl net_popup_queue_show_next(void)
       popup_game((const char *)&str_allyattacking);
       break;
     case 0x3d:
-      civs[human_civ[0]].last_treaty_turn[entry[4]] = game.turn;
-      civs[entry[4]].last_treaty_turn[human_civ[0]] = game.turn;
+      civs[human_civ[0]].last_contact_turn[entry[4]] = game.turn;
+      civs[entry[4]].last_contact_turn[human_civ[0]] = game.turn;
       if ((int)parley_wnd_block.other_civ == -1) {
         parley_wnd_block.other_civ = -2;
         text_clear();

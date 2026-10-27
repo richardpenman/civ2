@@ -2300,25 +2300,26 @@ typedef struct MapView : FrameWindow {
     union { i32 origin_y; u32 origin_y_u; uptr origin_y_uptr; };
     union { i32 end_x; uptr end_x_uptr; };
     union { i32 end_y; u32 end_y_u; };
-    u32 field_2f8;
+    u32 half_view_width;  /* 0x2f8 map-x half span; also odd-row tile count */
     u32 field_2fc;
-    u32 field_300;
+    u32 tile_columns;  /* 0x300 even-row tile count; end_x = origin_x + 2*count - 2 (wrapped) */
     u32 field_304;
     union { i32 tile_width; u32 tile_width_u; };
     union { i32 tile_height; u32 tile_height_u; };
     union { i32 half_tile_width; u32 half_tile_width_u; };
     union { i32 half_tile_height; u32 half_tile_height_u; };
     union { i32 quarter_tile_width; u32 quarter_tile_width_u; };
-    u32 field_31c;
+    u32 quarter_tile_height;  /* 0x31c tile_height / 4, signed truncation */
     u32 field_320;
     union { i32 unit_sprite_height; u32 unit_sprite_height_u; };
     union { i32 layout_width; u32 layout_width_u; };
     union { i32 layout_height; u32 layout_height_u; };
     union { i32 margin_x; u32 margin_x_u; };
     union { i32 margin_y; u32 margin_y_u; };
-    union { u8 tile_number_font[0x20]; struct { GameFont tile_font; GameFont tile_small_font; uptr field_348; uptr field_34c; }; struct { u32 tile_font_head; u8 gap_33c_2[4]; uptr tile_small_font_head; }; };
+    /* 0x348/0x34c cache the requested sizes of tile_font/tile_small_font. */
+    union { u8 tile_number_font[0x20]; struct { GameFont tile_font; GameFont tile_small_font; uptr tile_font_size; uptr tile_small_font_size; }; struct { u32 tile_font_head; u8 gap_33c_2[4]; uptr tile_small_font_head; }; };
     union { i32 cursor_id; uptr cursor_id_uptr; };
-    uptr field_35c;
+    uptr cached_zoom;  /* 0x35c zoom used to allocate the two tile-mask surfaces */
     union { DibSurface map_surface; uptr map_surface_head; u8 view_surface[1]; };
     union { DibSurface overlay_surface; uptr overlay_surface_head; };
 } MapView;
