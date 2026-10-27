@@ -469,14 +469,16 @@ CRT_NATIVE_SIGS = {
 }
 
 
-# Stack slots the original reads before writing (bugs in the 1997 code).  What
-# it reads is whatever earlier calls left on the stack, which no compiler
-# reproduces; these presets give the value the original was seen to read
-# (hook/stackprobe.c, CIV2_STACKPROBE), so native runs match the recordings
-# whichever compiler built them.  Found with valgrind (tools/native-run.sh).
+# Captured compatibility presets for locals some original paths read before
+# assignment. Keep the current values: they match recorded scenarios, not every
+# possible original stack history. CIV2_STACKPROBE samples at function entry;
+# those bytes may be overwritten before a consumer reads them. The observations
+# below are retained historical notes, not universal constants or fresh runs.
+# See docs/stack-compatibility.md for the policy, current C++ names and evidence.
+# This generator is retired; edit the C++ source directly.
 FRAME_PRESETS = {
     # A unit that does not move skips filling "which civs see the move" and
-    # then reads the entry for the human player: non-zero in the original.
+    # then reads the entry for the human player: non-zero in the samples.
     'unit_move_dir': 'aiStack_a0[1] = aiStack_a0[2] = aiStack_a0[3] = aiStack_a0[4] = '
                     'aiStack_a0[5] = aiStack_a0[6] = aiStack_a0[7] = 1;',
     # City advice counts tiles with an improvement (bit 0x10) into a counter
@@ -486,12 +488,12 @@ FRAME_PRESETS = {
     # The AI's review of a neighbour starts its attitude change from the
     # count of border intruders, set only when there are some: otherwise it
     # adds to what the stack held, a stale pointer in the original
-    # (0x6715d7a0 in the WWII scenario under Wine; the attitude clamps, so
-    # what matters is that it is large and positive).
+    # (0x6715d7a0 in the WWII scenario under Wine; the attitude clamped
+    # with that large positive value in the recording).
     'diplo_ai_review_relations': 'local_34 = 0x6715d7a0;',
     # The AI's choice of orders reads five locals some paths leave unset;
-    # the original, always called from the same place, holds the same
-    # values there on every call (2367 calls probed over 15 turns).
+    # the sampled calls from one call site held the same values
+    # at entry (2367 calls probed over 15 turns). Other contexts are unproven.
     'ai_unit_choose_orders': 'local_9c = 0x108; local_11c = 0x64a8c19c; local_70 = 0x3bd; '
                              'local_38 = 0; local_16c = 4;',
     # The pathfinder compares the tile owner it looked up last with the

@@ -6537,7 +6537,7 @@ i32 __cdecl unit_move_dir(iptr unit,uptr dir,i32 move_flags)
   iptr x5;
   i32 unused_c;
   uint shift_down;
-  civ_sees[1] = civ_sees[2] = civ_sees[3] = civ_sees[4] = civ_sees[5] = civ_sees[6] = civ_sees[7] = 1;  /* stale stack the original reads (FRAME_PRESETS) */
+  civ_sees[1] = civ_sees[2] = civ_sees[3] = civ_sees[4] = civ_sees[5] = civ_sees[6] = civ_sees[7] = 1;  /* Captured compatibility preset; see docs/stack-compatibility.md. */
   
   attack_done = 0;
   map_locked = false;

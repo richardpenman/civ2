@@ -1,0 +1,203 @@
+{
+  "format_version": 1,
+  "kind": "historical independent Windows evidence excerpts",
+  "original_executable_sha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c",
+  "archive_commit": "c40a86ccf18868284da0f739c5cb9ad7e42b9e11",
+  "source_hash_basis": "SHA-256 of archived Git blob bytes (LF). Embedded historical report_sha256 values hash the original Windows CRLF working copies.",
+  "scope": "Extracted from retained independent reconstruction reports; not rerun for this OpenCiv2 patch. No original executable or game assets included. The full source reports and harness are not included; source hashes identify the archived inputs.",
+  "city_counter": {
+    "source": {
+      "path": "analysis/windows/startup-integration/playable-loop/original-writer-verification.json",
+      "sha256": "0ac5c4aa7d7710c432ecd33d63f1f1fe8ff1e6edfc076e3ad2c893651ee96e0b"
+    },
+    "excerpt": {
+      "original_sha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c",
+      "city_entries": [
+        58,
+        35
+      ],
+      "observed_slot_writes": 1107,
+      "retained_final_writes": 32,
+      "writer": "005ae3bf PUSH EBP",
+      "next_instruction": "005ae3c0",
+      "read": "0043d788",
+      "city": 35,
+      "relation": "incoming == saved EBP == slot+28h",
+      "detached": true,
+      "source_initializer_recovered": false,
+      "completed_turn": false
+    },
+    "limits": "Bounded writer observation; no completed turn and no recovered initializer."
+  },
+  "diplomacy_writer": {
+    "source": {
+      "path": "analysis/windows/startup-integration/playable-loop/stack-compatibility/audit.json",
+      "sha256": "400daa6350f5f8a7260cf233a677f91064157e7324fbd81acb8504aa2b42e50a"
+    },
+    "original_report": {
+      "path": "analysis/windows/startup-integration/playable-loop/stack-compatibility/observer-parent-original.json",
+      "sha256": "c9284f7de2c37ee04d7c886e08a33a8c2df2aba8ed362d3848a802faa3754229",
+      "hash_basis": "Git blob bytes (LF); excerpt report_sha256 hashes the CRLF working copy"
+    },
+    "original_entry": "0x00560d95",
+    "offset_from_original_ebp": -48,
+    "excerpt": {
+      "name": "observer-parent",
+      "report_sha256": "4ed35cd942df711de143049c004d176345ad24a1de4094f63a1d48d2238c3930",
+      "captures": [
+        {
+          "args": [
+            7,
+            6,
+            6254224,
+            6254224
+          ],
+          "frame": "0x1af31c",
+          "incoming_hex": [
+            "0x453e93"
+          ],
+          "tracked_same_addresses": true,
+          "last_observed_writes": [
+            {
+              "after": "0x4035df",
+              "value": 4538003,
+              "ebp": "0x1af304",
+              "esp": "0x1af2ec",
+              "registers": [
+                6254224,
+                6254224,
+                3,
+                2,
+                3,
+                19
+              ],
+              "preceding": "00e907a21200e9698e0700e9a6af1900"
+            }
+          ],
+          "last_write_matches_incoming": [
+            true
+          ]
+        }
+      ],
+      "watch_error": null,
+      "observed_writes": 7,
+      "normal_save": true,
+      "matches_unobserved_save": true
+    },
+    "limits": "Controlled Windows run, not Wine. One matched writer/entry and control save do not establish a constant for all callers."
+  },
+  "diplomacy_effect": {
+    "source": {
+      "path": "analysis/windows/startup-integration/playable-loop/industrial-observer-effect.json",
+      "sha256": "ff3d89e86943a17a2de0af5141dfc96974c5dd09fe2178dfae67f7993f13855d"
+    },
+    "excerpt": {
+      "original_pressure_range": [
+        90,
+        109
+      ],
+      "source_pressure_range": [
+        -10,
+        9
+      ],
+      "attack_threshold": 50,
+      "original_attitude_delta": 2268998,
+      "scope": "Observed original00561fc9 observer publication saturates attitude7->6 to100; authorized source initial-zero score yields delta-3/clamps0. At00542599 the age0/attitude/draw0..19-minus10 pressure passes only in original. Treaty and game RNG match. Native selects direction6/score60, source holds8/score0; all four watches reproduce their unobserved saves exactly. Selected unit9/105 attack/casualty and reload-ID shifts are effects of the documented correction; other differences remain unclassified.",
+      "source_attitude_delta": -3
+    },
+    "limits": "The source/authorized terminology belongs to the independent corrected reconstruction, not this project. This patch does not implement its correction."
+  },
+  "ai_transport": {
+    "source": {
+      "path": "analysis/windows/startup-integration/playable-loop/stack-compatibility/audit.json",
+      "sha256": "400daa6350f5f8a7260cf233a677f91064157e7324fbd81acb8504aa2b42e50a"
+    },
+    "original_report": {
+      "path": "analysis/windows/startup-integration/playable-loop/stack-compatibility/transport-original.json",
+      "sha256": "d75e8fdfac6b27daafd6a712ca3a00140c3556a837a2f71f61e74a5728a16193",
+      "hash_basis": "Git blob bytes (LF); excerpt report_sha256 hashes the CRLF working copy"
+    },
+    "original_entry": "0x00538a29",
+    "offsets_from_original_ebp_in_capture_order": [
+      -360,
+      -280
+    ],
+    "excerpt": {
+      "name": "transport",
+      "report_sha256": "86bad4a93086c4d81ae1b61b0bc3379cb49102262da2b133375cfd5ba3a8e01f",
+      "captures": [
+        {
+          "args": [
+            6254224,
+            6254224,
+            2867200,
+            7
+          ],
+          "frame": "0x1af334",
+          "incoming_hex": [
+            "0x13fde70",
+            "0x13fde70"
+          ],
+          "tracked_same_addresses": false,
+          "last_observed_writes": [],
+          "last_write_matches_incoming": []
+        },
+        {
+          "args": [
+            6254224,
+            6254224,
+            2867200,
+            7
+          ],
+          "frame": "0x1af334",
+          "incoming_hex": [
+            "0x13fde70",
+            "0x13fde70"
+          ],
+          "tracked_same_addresses": true,
+          "last_observed_writes": [
+            {
+              "after": "0x751c39d1",
+              "value": 20962928,
+              "ebp": "0x1af200",
+              "esp": "0x1af1cc",
+              "registers": [
+                521,
+                2004441152,
+                0,
+                2,
+                2004441152,
+                1765916
+              ],
+              "preceding": "8bceff7010ff700cff7008ff7004ff30"
+            },
+            {
+              "after": "0x5bcc66",
+              "value": 3003187275,
+              "ebp": "0x1af238",
+              "esp": "0x1af21c",
+              "registers": [
+                6254224,
+                6254224,
+                2867200,
+                1766008,
+                1766076,
+                3003187275
+              ],
+              "preceding": "008b4510508b450c508b45088b400450"
+            }
+          ],
+          "last_write_matches_incoming": [
+            true,
+            false
+          ]
+        }
+      ],
+      "watch_error": "Bounded writer budget exceeded",
+      "observed_writes": 20001,
+      "normal_save": true,
+      "matches_unobserved_save": true
+    },
+    "limits": "Entry values differ from the presets. Writer budget exhausted; quota writer does not match incoming value. This is not complete provenance or consumer proof."
+  }
+}

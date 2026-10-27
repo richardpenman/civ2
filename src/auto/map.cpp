@@ -3673,7 +3673,7 @@ iptr __cdecl map_path_next_dir(int x,int y,int max_cost)
   int best_dist;
   iptr dir;
   int best_cost;
-  civ = 0;  /* stale stack the original reads (FRAME_PRESETS) */
+  civ = 0;  /* Captured compatibility preset; see docs/stack-compatibility.md. */
   
   debug_mode = path_debug_pending;
   map_views_block.path_grid_center_x = map_views_block.path_goal_x;

@@ -58,3 +58,15 @@ make port            # build/OpenCiv2 in the container
 make ref SCRIPT=harness/scripts/turns.txt    # record the original on a scenario
 make native-suite    # replay every scenario on a native build and compare (EXE=OpenCiv2, OpenCiv2.exe under Wine)
 ```
+
+## Stack preset evidence
+
+The [stack compatibility policy](stack-compatibility.md) keeps the current
+presets while distinguishing entry samples from original consumer behavior.
+`python3 tools/stackprobe_report.py LOG [LOG ...]` summarizes `CIV2_STACKPROBE`
+logs without modifying them. Its standalone format and CLI tests need only
+Python's standard library:
+
+```sh
+python3 -m unittest discover -s tests -p 'test_stackprobe_report.py' -v
+```

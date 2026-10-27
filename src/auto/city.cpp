@@ -2345,7 +2345,7 @@ void __cdecl city_calc_commodity_demand(uptr city)
   uint center_dy;
   uint extra_supply;
   int wine_base;
-  road_tiles = 0;  /* stale stack the original reads (FRAME_PRESETS) */
+  road_tiles = 0;  /* Captured compatibility preset; see docs/stack-compatibility.md. */
   
   if ((((cities[city].flags & 0x20000) != 0) || (game.reveal_map != '\0')) ||
      (((int)game.turn + city & 0xf) == 0)) {

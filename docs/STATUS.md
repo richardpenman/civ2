@@ -56,12 +56,17 @@ BeginPaint clips to the update region (conquest-spy: the blinking unit under
 the spy dialog).  `harness/diff_suite.sh` plays a 30-turn autoplay and two
 random-click scripts on both builds: identical (3 392 `rand()` calls).
 
-Reads of locals the 1997 code never initialises are the main source of
-differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
-what the original's stack holds there, and the function sets those locals
-to those values first (marked "stale stack the original reads").  What made it so: matching Wine's exact message semantics
-(window positioning, painting and exposure, activation and focus, key
-state, posted messages before input) -- `harness/msgdiff.sh` and
+Some paths read locals before assignment in the original. The reconstructed
+functions use explicit captured compatibility presets, identified in comments,
+to preserve the current replay behavior. `CIV2_STACKPROBE` samples the original
+stack at function entry; these samples alone do not establish what a later
+consumer reads or a constant valid for every caller. The
+[stack compatibility policy](stack-compatibility.md) inventories the unchanged
+presets and records their evidence and limits.
+
+Matching Wine's exact message semantics also matters: window positioning,
+painting and exposure, activation and focus, key state, and posted messages
+before input. `harness/msgdiff.sh` and
 `harness/clockdiff.py` compare a native run with the Wine reference
 message by message and clock event by clock event.
 

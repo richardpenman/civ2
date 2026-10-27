@@ -2623,7 +2623,7 @@ i32 __cdecl ai_unit_choose_orders(void)
   int attack_value;
   uint tasks_mask;
   int ocean_count;
-  defender_count = 0x108; needed_defenders = 0x64a8c19c; cand_score = 0x3bd; best_score = 0; goal_match = 4;  /* stale stack the original reads (FRAME_PRESETS) */
+  defender_count = 0x108; needed_defenders = 0x64a8c19c; cand_score = 0x3bd; best_score = 0; goal_match = 4;  /* Captured compatibility preset; see docs/stack-compatibility.md. */
   
   near_landmass = -1;
   own_landmass = -1;

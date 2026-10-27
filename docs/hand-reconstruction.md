@@ -34,6 +34,9 @@ compares each function's machine code with a reference build.
   past its first element), declare them as one struct or array.  The
   AddressSanitizer build finds such places:
   `tools/build_native.py --target linux32asan`, then run the replays with it.
+* **Captured stack presets** stay unchanged during cleanup. Follow the
+  [compatibility policy](stack-compatibility.md): an entry sample is not proof
+  of a value read before assignment or a universal original constant.
 * **Register arguments** (`in_EAX`, `in_ECX`, `in_AL`) are usually leftover
   register contents, not arguments: see src/game/regargs.cpp.
 * **Unwind funclets / EBP-relative code** (`unaff_EBP`): MSVC emits small

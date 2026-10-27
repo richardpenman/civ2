@@ -6250,7 +6250,7 @@ void __cdecl diplo_ai_review_relations(iptr civ,uptr civ2)
   int rank_adjust;
   int hostile_count;
   int war_score;
-  attitude_delta = 0x6715d7a0;  /* stale stack the original reads (FRAME_PRESETS) */
+  attitude_delta = 0x6715d7a0;  /* Captured compatibility preset; see docs/stack-compatibility.md. */
   
   diplo_count_border_intruders(civ,civ2);
   city = setup_picwnd_block.border_intruder_city;
