@@ -58,3 +58,20 @@ make port            # build/OpenCiv2 in the container
 make ref SCRIPT=harness/scripts/turns.txt    # record the original on a scenario
 make native-suite    # replay every scenario on a native build and compare (EXE=OpenCiv2, OpenCiv2.exe under Wine)
 ```
+
+The replay checker requires a nonempty, matching set of PNG screenshots (including
+dimensions and pixels) and nonempty `rand.log` traces on both sides. A seed-only
+trace is valid; missing or empty logs are not evidence of matching random calls.
+Both `native_suite.sh` and `diff_suite.sh` fail a scenario if its runner or BMP
+conversion fails, then continue with the remaining scenarios and return failure
+for the suite. A failed run is not subsequently reported as `PASS` or `SAME`.
+
+Checker regression tests use synthetic images and a stub game runner. They need
+Python 3, Pillow and a POSIX `sh` for the suite tests, but no game assets, native
+build or Wine. Without `sh`, only the suite tests are skipped.
+
+```sh
+python3 tests/test_replay_harness.py -v
+# Or in the development container:
+tools/dk python3 tests/test_replay_harness.py -v
+```
