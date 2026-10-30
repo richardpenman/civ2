@@ -6325,6 +6325,10 @@ CouncilWindow *CouncilWindow::construct()
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 6);
   speech_line_y = 0xb0;
   council_active_2 = 0;
+  /* B29: the first advisor button clears the speech by this index, which the
+     original never sets (every mode: ours would read another stale value;
+     docs/BUGS.md) */
+  speech_advisor_index = 0;
   council_state.wnd = this;
   return this;
 }

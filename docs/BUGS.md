@@ -28,8 +28,11 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 20 bugs. Fixed by the flag: B2, B3, B4, B6 and B9 to B20. Fixed in every
-mode: B1 (our build reads the original's usual value) and B8 (a memory error). Not fixed: B5
+Status of the list: 33 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
+B23 to B25, B28, B32 and B33. Fixed in every mode: B1 (our build reads the original's usual
+value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
+reads its stack and our build would read another value, so classic mode could not match it
+anyway. Not fixed: B5
 (dead code, no effect) and B7 (network popups; see there). Memory errors already fixed in
 every mode, and stale reads of locals that are not bugs, are listed separately. Reports traced
 to code that has no bug are under "Checked, not bugs in MGE". Hot-seat games are not network
@@ -98,6 +101,20 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** no growth at 127 (the food box stays full). **State.**
 - **Saves:** none (sizes stay in range).
 - **Status: fixed** (`bugfix_state()`). The cheat menu's Set City Size still accepts any number.
+
+### B25. A human unit under autoplay meets a lone diplomat and does what its stack says
+- **Where:** `src/auto/unit.cpp`, `unit_move_dir` (0059062c), its part `unit_move_dir_expel`
+  (line 7630): a human player's unit moving onto a lone diplomat of a civilization it has a
+  cease-fire or peace with, near that civilization's city, asks "Expel?" (`answer`); under
+  autoplay (`autoplay.active`, the debug cheat) the question is not asked and `answer`, a local
+  of `unit_move_dir` (line 7960) never set before, is read as it is: 2 stops the move, 0
+  expels, anything else attacks.
+- **What goes wrong:** under autoplay the unit stops, expels or attacks (breaking the treaty)
+  by stale stack.
+- **Source:** found by Peter Johnson's reconstruction (BF-105).
+- **Fix:** not asked, `answer` is 0: expelled, as an AI unit does. **State.**
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`). No replay uses autoplay.
 
 ## AI
 
@@ -226,6 +243,38 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 - **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x64a8c19c`.
 
+### B21. A city's wonder score doubled by its other locals when it builds something else
+- **Where:** `src/auto/city.cpp`, `city_choose_production` (00498e8b), its part
+  `city_choose_production_try_wonder` (line 6399): the score of a wonder the city does not
+  build is doubled when the civilization (`civ5`) has its bit in `wonder_builders[-0x27 -
+  building]`, the 28-byte mask of the civilizations building each wonder. For a city building
+  a unit or an improvement (`building` > -0x27) that index is -100 to -1: below the array. The
+  original reads its other locals there (EBP-0xcc minus 1 to 100); our build would read past
+  its array.
+- **What goes wrong:** an AI city building a unit or an improvement scores a wonder twice as
+  high (and one more) when a stale byte has the civilization's bit.
+- **Source:** found by Peter Johnson's reconstruction (BF-006, BF-007, BF-025, BF-202).
+- **Fix:** no rivals for a city that does not build a wonder: the mask is read only for a
+  wonder (`city_choose_production_rivals`). **State** (AI).
+- **Saves:** none.
+- **Status: fixed in every mode.** No replay reaches the read: over the 41 replays no AI city
+  scored a wonder there (counted with a temporary probe), so the fix changes none of them.
+
+### B24. A ship with no port to gather at makes its own city a ferry port
+- **Where:** `src/auto/ai.cpp`, `ai_unit_choose_orders` (00538a29), its part
+  `ai_orders_transport_port` (line 4318): `needs_units` (local_dc) is set by the loop over the
+  candidate port cities; a transport that finds none, in its own city, reads it as the stack
+  left it. The original's stack held 0x21f238 there (a stack address) on every call
+  (`CIV2_STACKPROBE=538a29:dc:4`, the Civil War scenario, 54 calls).
+- **What goes wrong:** the value is never 0, so such a ship always marks its city a ferry port
+  (`CITYF_AI_FERRY_PORT`) and posts AI goals there for settlers, defenders, attackers and
+  diplomats, whether the city's landmass needs units or not.
+- **Source:** found by Peter Johnson's reconstruction (BF-090).
+- **Fix:** `needs_units` starts at 0: the landmass's own test (`ai_continent_defense_quota`,
+  the policy) decides. **State** (AI). No replay reaches this path (counted over the 41 replays).
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x21f238`.
+
 ## Diplomacy and multiplayer
 
 ### B6. A stale parley cancel ends the next granted audience at once
@@ -305,6 +354,48 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** done in every mode, since the behaviour is the original's: `events_reset_keep_block`
   (line 7438) keeps the pool's block, as the Windows heap does. No flag needed.
 - **Saves:** none.
+
+### B23. A MOVEUNIT event for a named unit type moves nothing
+- **Where:** `src/auto/game.cpp`, `ScenarioEvents::action_move_unit` (004fb29f), line 8295:
+  the units to move are those with `event->move_unit_type != unit` false, where `unit` is the
+  slot number in the unit list, not the unit's type (`units[unit].type`). `unit=ANYUNIT` (-2)
+  works.
+- **What goes wrong:** a MOVEUNIT with a unit name sends only a unit whose slot number happens
+  to equal the type number, usually none. The Civil War scenario's two turn-1 events that send
+  the Confederate Blockade Runners on their way do nothing.
+- **Source:** found by Peter Johnson's reconstruction (BF-015).
+- **Fix:** compare with the unit's type. **State.**
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`). Test: `harness/extras/x-b23-moveunit.txt` (the Civil
+  War scenario, fixed and classic: fixed, a Blockade Runner sails on the AI's turn).
+
+### B32. Renaming in a rules editor to a shorter name shifts every later name
+- **Where:** the rules editors' OK: `tech_editor_save_items` (00415307, `src/auto/civ.cpp`
+  line 74), the improvements' (`src/auto/city.cpp` line 7744), units' (`src/auto/unit.cpp`
+  line 8299), terrain's (`src/auto/map.cpp` line 4611) and the governments' and commodities'
+  (`src/auto/editor.cpp` lines 280 to 294) copy each name into its string pool entry at the
+  editor's width (20, 25, 15, 15, 15 and 10), padding with NULs. A pool entry can be longer
+  (a scenario's RULES.TXT).
+- **What goes wrong:** a shorter name leaves the end of the longer old name after the NULs;
+  the pool (`label_string`, 00428b0c) counts it as an entry, so every later name in the pool
+  is read one entry on, and the next renames are written there.
+- **Source:** found by Peter Johnson's reconstruction (BF-047).
+- **Fix:** the rest of the old name is cleared too (`editor_copy_pool_name`,
+  `src/include/auto_common.h`). **State** (the rules).
+- **Saves:** none (the rules editors' RULES.TXT gets the names as shown).
+- **Status: fixed** (`bugfix_state()`). Not reached with the game's own rules: none of their
+  names is longer than its editor's width.
+
+### B33. The events parser's debug output names a stale civilization
+- **Where:** `src/auto/game.cpp`, `ScenarioEvents::parse_trigger_received_tech` and
+  `parse_trigger_city_taken` (lines 9153 and 9226): with `@DEBUG` in EVENTS.TXT the "king id"
+  of a receiver or attacker is printed from `ps->parsed_civ`, which these triggers do not set:
+  another line's civilization, or nothing set at all.
+- **What goes wrong:** a wrong number in the scenario author's debug output (stdout).
+- **Source:** found by Peter Johnson's reconstruction (BF-235).
+- **Fix:** print the civilization just read. **UI only.**
+- **Saves:** none.
+- **Status: fixed** (`bugfix_ui()`).
 
 ## User interface
 
@@ -442,6 +533,97 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 - **Status: fixed** (`bugfix_ui()`).
 
+### B22. Hot-seat: an AI unit's move is shown, paused for and announced by stale values
+- **Where:** `src/auto/unit.cpp`, `unit_move_dir` (0059062c) and `unit_paradrop` (004ca39e)
+  read `civ_sees[human_civ]` and `civ_animates[human_civ]` (whether this player sees the move
+  and sees it animated): in `unit_move_dir_landing_alert` (line 7145), the two ways of moving
+  the stack (lines 7186, 7225), the pause after an enemy's move (line 8203), and the
+  paradrop's announcement and animation (lines 3410, 3554). During an AI civilization's turn
+  in a hot-seat game human_civ's low byte is -1 (B11): the original reads the local before
+  each array, in `unit_move_dir` the hut flag (local_a4, 0 until the unit has moved) and
+  `civ_sees[7]`. After Reveal Map's Barbarians (human_civ 0) it reads entry 0, which it never
+  sets.
+- **What goes wrong:** an AI move in a hot-seat game is paused for when the unit entered a hut,
+  animated when player 7 saw it, and an AI landing is counted (`continent_military`, which
+  the AI's choices read) and announced to nobody only when those locals say so.
+- **Source:** found by Peter Johnson's reconstruction (BF-074, BF-237, BF-238).
+- **Fix:** with no player here (human_civ -1 or 0) nobody here sees the move
+  (`unit_move_dir_local_view`). **State** (the landing count).
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`) in `unit_move_dir`; classic mode reads what the
+  original reads: `has_hut`, `civ_sees` and `civ_animates` are one array in the original's
+  order (`views`), and entry 0 is 0. In `unit_paradrop` the original reads locals not set at
+  that point (the approach direction, `civ_sees[7]` only set for a human player 7), so the fix
+  is in every mode (`unit_paradrop_local_view`). No replay reaches these reads with human_civ
+  -1 or 0 (counted over the 41 replays).
+
+### B26. Cancelling the custom tribe's portrait picks a portrait by stale stack
+- **Where:** `src/auto/graphics.cpp`, `PortraitDialog::run` (004965ff), line 2105:
+  `civs[civ].leader_portrait = (u8)result`; only OK sets `result` (`portrait_dlg_on_button`),
+  and the dialog is a local of `portrait_dlg_show` (`src/game/unwind.cpp`).
+- **What goes wrong:** choosing a portrait for a custom tribe in a new game, then Cancel (or
+  closing the dialog), gives the leader a portrait chosen by a stale byte; it is saved.
+- **Source:** found by Peter Johnson's reconstruction (BF-034).
+- **Fix:** `result` starts at the current portrait: Cancel keeps it. **State** (saved).
+- **Saves:** none.
+- **Status: fixed in every mode.** No replay cancels the dialog.
+
+### B27. Disband with no active unit can offer to disband a random city
+- **Where:** `src/auto/unit.cpp`, `unit_cmd_disband` (0058c295), line 5927: in moving-units
+  mode with no active unit, `x2`/`y2` are not set, and in cheat mode the code looks for a city
+  at that square to offer "Disband city?".
+- **What goes wrong:** with cheat mode on and no unit active, Disband can name a city at a stale
+  square, and Yes deletes it.
+- **Source:** found by Peter Johnson's reconstruction (BF-163).
+- **Fix:** no active unit, nothing to disband: return. **State** (after a Yes).
+- **Saves:** none.
+- **Status: fixed in every mode.**
+
+### B28. A save whose end could not be written is reported saved
+- **Where:** `src/auto/game.cpp`, `save_write_game` (004741be), line 3130: the file is closed
+  at the end (`ScopedFile`) and the result of the close, which writes what is still buffered,
+  is not looked at.
+- **What goes wrong:** on a full disk the save is cut short and the game says it was saved.
+- **Source:** found by Peter Johnson's reconstruction (BF-070).
+- **Fix:** the file is closed before returning, and a failed close is a failed save
+  (SAVEERROR, as the other write errors). **UI only** (the message; the file is the same).
+- **Saves:** none.
+- **Status: fixed** (`bugfix_ui()`).
+
+### B29. The High Council's first advisor button may not clear the speech area
+- **Where:** `src/auto/reports.cpp`, `CouncilWindow::draw_speech` (line 6853) reads
+  `speech_advisor_index`, which `CouncilWindow::construct` (line 6328) and `init` do not set,
+  on the first button (`draw_speech(-1)`); the window is a local of `council_show`.
+- **What goes wrong:** the area is cleared and repainted only when the stale value is 0 to 2.
+- **Source:** found by Peter Johnson's reconstruction (BF-067).
+- **Fix:** start it at 0. **UI only.**
+- **Saves:** none.
+- **Status: fixed in every mode.**
+
+### B30. Famine redraws a stale square
+- **Where:** `src/auto/city.cpp`, `city_process_food` (004ebbde), line 10161: after a famine
+  that disbands a settler or cancels a food route, the area redrawn is at `x2`/`y2`, set only
+  when the city shrinks. In the same function the message's name, "FAMINE0" copied into a
+  6-byte local and a 1-byte digit after it (the original's two locals filled by one copy), is
+  now one 8-byte array.
+- **What goes wrong:** the redraw covers a stale area instead of the city (a display matter:
+  the settler's removal redraws its own square).
+- **Source:** found by Peter Johnson's reconstruction (BF-010). `-Wmaybe-uninitialized` had listed it as harmless.
+- **Fix:** the city's square. **UI only.**
+- **Saves:** none.
+- **Status: fixed in every mode** (with the message name's array: a memory error in our build).
+
+### B31. Shield waste drawn at a stale position on a full production bar
+- **Where:** `src/auto/city.cpp`, the city window's shield bar (`draw_resource_map`, 005025d5),
+  line 13043: `mid_x`, where the waste icons start, is set only when the waste's part of the
+  bar is not 0 wide after the support and surplus parts are measured.
+- **What goes wrong:** with very large production and some waste, the waste icons are drawn at
+  a stale x.
+- **Source:** found by Peter Johnson's reconstruction (BF-031).
+- **Fix:** the same centring when that part is 0 wide. **UI only.**
+- **Saves:** none.
+- **Status: fixed in every mode.**
+
 ## Memory errors of the original (fixed in every mode)
 
 These do not change the game when the original "gets away with them", so OpenCiv2 fixes them
@@ -468,14 +650,17 @@ stack held (probed with `CIV2_STACKPROBE`; tools/gen_c.py FRAME_PRESETS), in eve
   at 0 (the original's stack: 0 in 3892 of 4300 calls, -1 in 158). The neighbour test then
   compares with the previous tile's owner when the path has no owner (`pathfind.owner_civ` <
   0, distance estimates only). A start of 0 never matches; it is the natural value. Not a bug.
-- `ai_unit_choose_orders` (00538a29, `src/auto/ai.cpp`): besides `goal_match` (B13) and
-  `needed_defenders` (B19), `defender_count` (0x108; written before every read), `cand_score`
-  (0x3bd) and `best_score` (0) are set by the paths that read them.
+- `ai_unit_choose_orders` (00538a29, `src/auto/ai.cpp`): besides `goal_match` (B13),
+  `needed_defenders` (B19) and `needs_units` (B24), `defender_count` (0x108; written before every
+  read), `cand_score` (0x3bd) and `best_score` (0) are set by the paths that read them.
+  `target_policy` (local_2c, 0x21f2dc: `CIV2_STACKPROBE=538a29:2c:4`, every call in the Civil
+  War scenario) is read when a ship found no port city: only whether it is 4 matters (the
+  goals' priority), and the stale value is not (BF-009 in Peter Johnson's reconstruction).
 
 The native build compiled with `-O2 -Wuninitialized -Wmaybe-uninitialized` (98 warnings) was
 triaged: 2 real stale reads (B17, B18), 15 in the exception-handling scaffolding, 10 harmless
-(a value nobody uses, e.g. return values every caller ignores; a redraw of a stale area after a
-settler is disbanded for food, `city_process_food`), 71 false positives (the read guarded by
+(a value nobody uses, e.g. return values every caller ignores; the famine redraw, B30, was
+among them), 71 false positives (the read guarded by
 the condition that writes it).
 
 ## Checked, not bugs in MGE

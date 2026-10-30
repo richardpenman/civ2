@@ -67,6 +67,19 @@ typedef struct mmtime_tag mmtime_tag;
 EXTERN_C int plat_fix_bugs;
 static inline int bugfix_ui(void) { return plat_fix_bugs; }
 static inline int bugfix_state(void) { return plat_fix_bugs && game.multiplayer < 3; }
+/* B32: a rules editor's new name written over a name in the string pool, at
+ * the editor's width (_strncpy pads it with NULs).  A pool entry can be longer
+ * than that width (a scenario's RULES.TXT); a shorter new name then leaves the
+ * end of the old one after the NULs, which label_string counts as an entry of
+ * its own: every later name moves up by one.  Fixed: the rest of the old name
+ * is cleared too. */
+static inline void editor_copy_pool_name(char *dest, const char *src, size_t width)
+{
+  size_t old_len = bugfix_state() ? _strlen(dest) : 0;
+  _strncpy(dest, src, width);
+  if (old_len > width)
+    memset(dest + width, 0, old_len - width);
+}
 /* The interface additions (docs/EXTRAS.md): extra_ui(X_...), marked X<n>. */
 #include "extras.h"
 /* The sounds played and videos looked for, logged in a replay for the

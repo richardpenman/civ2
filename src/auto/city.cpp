@@ -6302,6 +6302,19 @@ static int city_choose_production_wonder_bias(ChooseProdState *s,iptr city,iptr 
   return 1;
 }
 
+/* Part of city_choose_production (00498e8b): the civs (a bit each) building
+   the wonder the city builds, from wonder_builders.  B21: for a unit or an
+   improvement the original reads that byte all the same, from its other
+   locals below the array; none of them is a wonder's builders (every mode:
+   ours would read past the array; docs/BUGS.md). */
+static uint city_choose_production_rivals(ChooseProdState *s,iptr city)
+{
+  if (cities[city].building > -0x27) {
+    return 0;
+  }
+  return (uint)*(byte *)&s->wonder_builders[-0x27 - cities[city].building];
+}
+
 /* Part of city_choose_production (00498e8b): a wonder: its score and whether
    it is the best so far. */
 static void city_choose_production_try_wonder(ChooseProdState *s,iptr city,iptr wonder)
@@ -6385,7 +6398,7 @@ static void city_choose_production_try_wonder(ChooseProdState *s,iptr city,iptr 
         score = (s->rivals_ahead + 1) * score + s->rivals_ahead;
       }
       else if ((1 << (s->civ5 & 0x1f) &
-               (uint)*(byte *)&s->wonder_builders[-0x27 - cities[city].building]) != 0) {
+               (uint)city_choose_production_rivals(s,city)) != 0) {
         score = score * 2 + 1;
       }
       raw_score = score;
@@ -7728,7 +7741,7 @@ void __cdecl impr_editor_store_rules(void)
     _Count = 0x19;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[improvement];
     _Dest = label_string(improvements[improvement].name);
-    _strncpy(_Dest,_Source,_Count);
+    editor_copy_pool_name(_Dest,_Source,_Count);  /* B32 (docs/BUGS.md) */
     improvements[improvement].cost = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[0];
     improvements[improvement].upkeep = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[1];
     improvements[improvement].preq = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[2];
@@ -10127,8 +10140,9 @@ i32 __cdecl city_process_food(uptr city)
   iptr unit;
   int y2;
   int x2;
-  i8 msg_key[6];
-  i8 msg_suffix;
+  /* "FAMINE0": the digit (msg_key[6]) picks the message; one array, as the
+     original's two locals that the copy fills together */
+  i8 msg_key[8];
   int route;
   
   civ2 = cities[city].owner;
@@ -10144,14 +10158,19 @@ i32 __cdecl city_process_food(uptr city)
       }
     }
     crt_strcpy(msg_key,str_famine0);
+    /* B30: the famine's square, redrawn at the end; the original sets it only
+       when the city shrinks (every mode: ours would redraw another stale square;
+       docs/BUGS.md) */
+    x2 = (int)cities[city].x;
+    y2 = (int)cities[city].y;
     if (unit2 < 0) {
-      msg_suffix = 0x31;
+      msg_key[6] = 0x31;
     }
     else {
       text_set_label_arg(1,unit_types[units[unit2].type].name);
     }
     if (-1 < city_calc.food_route_partner) {
-      msg_suffix = 0x32;
+      msg_key[6] = 0x32;
       text_set_string_arg(1,(const char *)&cities[city_calc.food_route_partner].name);
     }
     if (autoplay.active == 0) {
@@ -13021,9 +13040,10 @@ void CityWindow::draw_resource_shields(int panel_left,int panel_top2,uint big_zo
   bar_x = panel_left + bar_x;
   lux_x = left_width + bar_x;
   right_x = mid_width + lux_x;
-  if (mid_width != 0) {
-    mid_x = ((mid_width >> 1) + lux_x) - ((city_calc.shield_waste - 1) * spacing + icon_w >> 1);
-  }
+  /* B31: also when the waste's part of the bar came out 0 wide: the original
+     then draws the waste at an x it never set (every mode: ours would use
+     another stale value; docs/BUGS.md) */
+  mid_x = ((mid_width >> 1) + lux_x) - ((city_calc.shield_waste - 1) * spacing + icon_w >> 1);
   scaled = scale(0xe);
   scaled2 = scale(2);
   resource_bar_height = scaled + scaled2;

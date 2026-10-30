@@ -277,21 +277,21 @@ void __cdecl tribe_editor_apply_tables(void)
     max_len = 0xf;
     src = ((i8 *)&editor_lists.govt_names) + leader * 0xf;
     dest = label_string(government_names[leader]);
-    _strncpy(dest,src,max_len);
+    editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
     max_len = 0xf;
     src = ((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x15) * 5;
     dest = label_string(government_titles[leader].male);
-    _strncpy(dest,src,max_len);
+    editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
     max_len = 0xf;
     src = ((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x2a) * 5;
     dest = label_string(government_titles[leader].female);
-    _strncpy(dest,src,max_len);
+    editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
   }
   for (leader = 0; leader < 0x10; leader++) {
     max_len = 10;
     src = ((i8 *)&editor_lists.commodity_names) + leader * 10;
     dest = label_string(commodity_names[leader]);
-    _strncpy(dest,src,max_len);
+    editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
   }
   return;
 }

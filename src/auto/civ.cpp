@@ -71,7 +71,7 @@ void __cdecl tech_editor_save_items(void)
     _Count = 0x14;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[advance];
     _Dest = label_string(advances[advance].name);
-    _strncpy(_Dest,_Source,_Count);
+    editor_copy_pool_name(_Dest,_Source,_Count);  /* B32 (docs/BUGS.md) */
     advances[advance].preq[0] = (i8)editor_text_dlg_wnd_block.editor_item_recs[advance].values[0];
     advances[advance].preq[1] = (i8)editor_text_dlg_wnd_block.editor_item_recs[advance].values[1];
     advances[advance].epoch = (i8)editor_text_dlg_wnd_block.editor_item_recs[advance].values[2];

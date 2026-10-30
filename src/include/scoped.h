@@ -51,6 +51,8 @@ public:
     SCOPED_INLINE explicit ScopedFile(FILE *f) : f_(f) {}
     SCOPED_INLINE ~ScopedFile() { if (f_ != (FILE *)0x0) _fclose(f_); }
     SCOPED_INLINE operator FILE *() const { return f_; }
+    /* closes it now: 0, or EOF if what was still buffered could not be written */
+    SCOPED_INLINE int close() { int rc = f_ != (FILE *)0x0 ? _fclose(f_) : 0; f_ = (FILE *)0x0; return rc; }
     SCOPED_INLINE explicit operator iptr() const { return (iptr)f_; }   /* (iptr)file */
     ScopedFile(const ScopedFile &) = delete;
     ScopedFile &operator=(const ScopedFile &) = delete;

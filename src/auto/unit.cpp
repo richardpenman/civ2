@@ -3338,6 +3338,19 @@ void __cdecl unit_airlift_perform(iptr unit,iptr city2,iptr city,int risk_rolls,
   return;
 }
 
+/* Part of unit_paradrop (004ca39e): whether this player sees the drop (view:
+   civ_sees) or sees it animated (civ_animates): view[human_civ].  B22: with
+   no player here (-1 during a hot-seat AI turn, 0 after Reveal Map's
+   Barbarians) nobody here sees it; the original reads locals it has not set
+   there (every mode: ours would read others; docs/BUGS.md). */
+static int unit_paradrop_local_view(const int *view)
+{
+  if ((*(i8 *)&human_civ) <= 0) {
+    return 0;
+  }
+  return view[(*(i8 *)&human_civ)];
+}
+
 /* Part of unit_paradrop (004ca39e): which human players see the drop
    (civ_sees) and see it animated (civ_animates). */
 static void unit_paradrop_viewers(int x,int y,uptr civ,uptr civ4,uptr city2,int *civ_sees,
@@ -3394,7 +3407,7 @@ static void unit_paradrop_announce(iptr unit,int x,int y,uptr civ,byte civ3,int 
   text_set_label_arg(1,unit_types[units[unit].type].name);
   city = city_find_nearest(x,y,-1,0xffffffff,-1);
   text_set_string_arg(2,(const char *)&cities[city].name);
-  if (((civ_sees[(*(i8 *)&human_civ)] != 0) &&
+  if (((unit_paradrop_local_view(civ_sees) != 0) &&
       (mapviews_ensure_visible(x,y,civ),
       (1 << (civ3 & 0x1f) & (uint)game.human_players) == 0)) && (autoplay.active == 0)) {
     dlg_game_txt_with_unit((const char *)&str_paradrop,unit);
@@ -3538,7 +3551,7 @@ void __cdecl unit_paradrop(iptr unit,int x,int y)
             ((int)units[unit].owner == ((*(i8 *)&human_civ) & 0xffU))))) {
           map_redraw_tile_all_views((int)x3,(int)y3);
         }
-        if (civ_animates[(*(i8 *)&human_civ)] != 0) {
+        if (unit_paradrop_local_view(civ_animates) != 0) {
           map_animate_unit_move(unit,from_x,from_y,anim_dir,0xffffffff,0xffffffff);
         }
         unit_stack_clear_visibility(unit);
@@ -5910,6 +5923,11 @@ void __cdecl unit_cmd_disband(void)
   
   if (moving_units_mode == 1) {
     unit = (iptr)game.active_unit;
+    if (unit < 0) {
+      /* B27: no active unit: the original goes on with a square it never set
+         (every mode: ours would read another one; docs/BUGS.md) */
+      return;
+    }
   }
   else {
     x2 = (int)map_cursor.x[0];
@@ -7032,6 +7050,21 @@ static int unit_move_dir_ai_holds_back(iptr unit,uptr dir,uptr civ,uptr civ2,ipt
   return 0;
 }
 
+/* Part of unit_move_dir (0059062c): whether this player sees the move (view:
+   civ_sees) or sees it animated (civ_animates): view[human_civ].  During a
+   hot-seat AI turn human_civ is -1 (B11): the original then reads the local
+   before the array, which unit_move_dir keeps there (views).  B22: with no
+   player here (-1, or 0 after Reveal Map's Barbarians) nobody here sees the
+   move; the original pauses, animates, and counts and announces a landing
+   by what those locals hold (docs/BUGS.md). */
+static int unit_move_dir_local_view(const int *view)
+{
+  if (bugfix_state() && ((*(i8 *)&human_civ) <= 0)) {
+    return 0;
+  }
+  return view[(*(i8 *)&human_civ)];
+}
+
 /* Part of unit_move_dir (0059062c): which civs see the move (civ_sees) and which of
    them see it animated (civ_animates). */
 static void unit_move_dir_viewers(iptr unit,uptr civ,iptr x2,int y2,uptr city,uint step_cost,
@@ -7109,7 +7142,7 @@ static void unit_move_dir_landing_alert(iptr unit,uptr civ,uptr civ2,iptr x2,int
   short *continent_count;
   iptr unit3;
   int city3;
-  if (((((((civ_sees[(*(i8 *)&human_civ)] != 0) &&
+  if (((((((unit_move_dir_local_view(civ_sees) != 0) &&
           (mapviews_ensure_visible(x3,y3,civ), src_is_ocean != 0)) && (dst_is_ocean == 0)) &&
         (((*(i8 *)&human_civ) != civ && (civ != 0)))) &&
        (unit_types[units[unit].type].domain == DOMAIN_LAND)) &&
@@ -7150,8 +7183,8 @@ static int unit_move_dir_relocate(iptr unit,uptr civ2,iptr x2,int y2,int x3,int 
     }
     XD_FlushSendBuffer(5000);
   }
-  if (civ_animates[(*(i8 *)&human_civ)] == 0) {
-    if (civ_sees[(*(i8 *)&human_civ)] != 0) {
+  if (unit_move_dir_local_view(civ_animates) == 0) {
+    if (unit_move_dir_local_view(civ_sees) != 0) {
       map_redraw_tile_all_views(x3,y3);
     }
   }
@@ -7189,8 +7222,8 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
   net_send_message(NM_REALTIME_STACKER,0,civ,civ2,unit,dst_is_ocean,x2,y2,0,0);
   flag = true;
   XD_FlushSendBuffer(5000);
-  if (civ_animates[(*(i8 *)&human_civ)] == 0) {
-    if (civ_sees[(*(i8 *)&human_civ)] != 0) {
+  if (unit_move_dir_local_view(civ_animates) == 0) {
+    if (unit_move_dir_local_view(civ_sees) != 0) {
       map_redraw_tile_all_views(x3,y3);
     }
   }
@@ -7627,6 +7660,9 @@ static int unit_move_dir_expel(iptr &unit,iptr orig_unit,uptr dir,uptr civ,uptr 
         if (autoplay.active == 0) {
           answer = dlg_game_txt_with_unit((const char *)&str_expel,unit2);
         }
+        else if (bugfix_state()) {
+          answer = 0;  /* B25: not asked under autoplay: expelled, as for the AI (docs/BUGS.md) */
+        }
       }
       else {
         answer = 0;
@@ -7927,9 +7963,13 @@ i32 __cdecl unit_move_dir(iptr unit,uptr dir,i32 move_flags)
   int answer;
   int y3;
   int x3;
-  int has_hut;
-  int civ_sees[8];
-  int civ_animates[8];
+  /* has_hut, civ_sees[8], civ_animates[8] in a row, as in the original's
+     frame: with no player here (human_civ -1) civ_sees[-1] is has_hut and
+     civ_animates[-1] is civ_sees[7] (unit_move_dir_local_view) */
+  int views[17];
+  int &has_hut = views[0];
+  int *civ_sees = views + 1;
+  int *civ_animates = views + 9;
   uptr terrain2;
   uint src_is_ocean;
   int attack_done;
@@ -7941,9 +7981,12 @@ i32 __cdecl unit_move_dir(iptr unit,uptr dir,i32 move_flags)
   uint step_cost;
   uint prev_moves_used;
   i32 unused_c;
+  /* the Barbarians' entries (human_civ 0 after Reveal Map), which the
+     original leaves as its stack held them (B22) */
+  civ_sees[0] = civ_animates[0] = 0;
   if (bugfix_ui()) {
     /* B14: a unit that does not move pauses as if the player saw it (docs/BUGS.md) */
-    memset(civ_sees,0,sizeof civ_sees);
+    memset(civ_sees,0,8 * sizeof civ_sees[0]);
   }
   else {
     /* stale stack the original reads (FRAME_PRESETS; CIV2_STACKPROBE=59062c:a0:20
@@ -8157,7 +8200,7 @@ finish_move:
   }
   unit_reveal_surroundings(unit,1);
   ((CityWindow *)((i8 *)&city_wnd.window))->on_unit_change(unit,x3,y3);
-  if (((((*(i8 *)&human_civ) != civ) && (civ_sees[(*(i8 *)&human_civ)] != 0)) &&
+  if (((((*(i8 *)&human_civ) != civ) && (unit_move_dir_local_view(civ_sees) != 0)) &&
       (((*((char *)&game.game_options + 1)) & (OPT_NO_PAUSE_ENEMY >> 8)) == 0)) &&
      (shift_state = GetAsyncKeyState(0x10), (char)((ushort)shift_state >> 8) == '\0')) {
     if ((((*((char *)&game.game_options + 1)) & (OPT_SHOW_ENEMY_MOVES >> 8)) == 0) || (unit_move.unanimated_state != '\0')) {
@@ -8253,7 +8296,7 @@ void __cdecl unit_editor_store_rules(void)
     _Count = 0xf;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[unit_type];
     _Dest = label_string(unit_types[unit_type].name);
-    _strncpy(_Dest,_Source,_Count);
+    editor_copy_pool_name(_Dest,_Source,_Count);  /* B32 (docs/BUGS.md) */
     unit_types[unit_type].prerequisite = (i8)editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[0];
     unit_types[unit_type].obsolete_by = (i8)editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[1];
     unit_types[unit_type].role = (i8)editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[2];

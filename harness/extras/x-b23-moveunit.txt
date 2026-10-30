@@ -1,0 +1,93 @@
+# A named MOVEUNIT event (docs/BUGS.md B23): the Civil War scenario's
+# events.txt sends the Confederate Blockade Runners at (46,100) and (80,66)
+# elsewhere on turn 1.  Fixed: they get the goto, and on the AI's turn one
+# is seen sailing (shot 23, the whole map revealed; the rand() trace
+# differs from the AI's moves on); classic: the event compares the unit
+# type with each unit's slot number and sends none.  The scenario as
+# harness/scripts/civilwar.txt, then the first turn ended.
+# test: CIV2_TEST_FIXES=1
+# test classic:
+wait 8000
+key Down Down Down      # Begin Scenario
+wait 500
+file SCENARIO\CIVILWAR\civilwar.SCN
+key Return
+wait 20000
+shot 00-start
+key Return
+wait 8000
+shot 01
+key Return
+wait 8000
+shot 02
+key Return
+wait 8000
+shot 03
+key Return
+wait 8000
+shot 04
+key ctrl+n
+wait 30000
+shot 05-turn
+key Return
+wait 8000
+shot 06
+key Return
+wait 8000
+shot 07
+key ctrl+n
+wait 30000
+shot 08-turn
+key Return
+wait 8000
+shot 09
+key ctrl+n
+wait 30000
+shot 10-turn
+key Return
+wait 8000
+shot 11
+key Return
+wait 8000
+shot 12
+key Return
+wait 8000
+shot 13
+key Return
+wait 8000
+shot 14
+key Return
+wait 8000
+shot 15
+key Return
+wait 8000
+shot 16
+key Return
+wait 8000
+shot 17
+call cheat_reveal_map 55560f    # the whole map
+wait 2000
+key Return
+wait 12000
+shot 18-revealed
+call map_set_cursor_pos 410d98 46 100   # the first Blockade Runner
+wait 12000
+shot 19-runner1
+call map_set_cursor_pos 410d98 80 66    # the second
+wait 12000
+shot 20-runner2
+key Return                  # end of turn
+wait 30000
+shot 21
+key Return
+wait 8000
+shot 22
+key Return
+wait 8000
+shot 23
+key Return
+wait 8000
+shot 24
+key Return
+wait 8000
+shot 25

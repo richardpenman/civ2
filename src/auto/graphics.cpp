@@ -2083,6 +2083,9 @@ void PortraitDialog::create_buttons()
 void PortraitDialog::run()
 
 {
+  /* B26: Cancel keeps the portrait; the original stores its stack's stale value
+     (every mode: ours would store another one; docs/BUGS.md) */
+  result = civs[civ].leader_portrait;
   ((Control *)cancel_button_bytes)->show_and_redraw();
   ((Control *)ok_button_bytes)->show_and_redraw();
   show();

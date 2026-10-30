@@ -4608,7 +4608,7 @@ void __cdecl terrain_editor_store_rules(void)
     _Count = 0xf;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[terrain2];
     _Dest = label_string(terrain_types[terrain2].name);
-    _strncpy(_Dest,_Source,_Count);
+    editor_copy_pool_name(_Dest,_Source,_Count);  /* B32 (docs/BUGS.md) */
     terrain_types[terrain2].move_cost = (i8)editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[0];
     terrain_types[terrain2].defense = (i8)editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[1];
     for (i = 0; i < 3; i++) {
