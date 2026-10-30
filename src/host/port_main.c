@@ -69,6 +69,16 @@ u32 HOST(usable_size)(Host *h, u32 w, u32 hh)
     PUT32(hh, (u32)b);
     return r;
 }
+u32 HOST(open_maximized_window)(Host *h, u32 w, u32 hh, u32 scale)
+{
+    int32_t a = 0, b = 0;
+    u32 r;
+    (void)h;
+    r = (u32)host_open_maximized_window(&a, &b, (int)scale);
+    PUT32(w, (u32)a);
+    PUT32(hh, (u32)b);
+    return r;
+}
 u32 HOST(open_native_window)(Host *h, u32 w, u32 hh, u32 mode, u32 scale)
 {
     int32_t a = 0, b = 0;

@@ -78,6 +78,9 @@ static int make_texture(int w, int h)
 int host_open_window(int w, int h, int scale)
 {
     SDL_Rect r;
+    int full = scale < 0 || (getenv("CIV2_FULLSCREEN") && *getenv("CIV2_FULLSCREEN"));
+    if (scale < 0)
+        scale = -scale;
     screen_w = w;
     screen_h = h;
     if (scale < 1 && SDL_GetDisplayUsableBounds(0, &r) == 0)
@@ -86,9 +89,44 @@ int host_open_window(int w, int h, int scale)
     else
         window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   w * (scale < 1 ? 1 : scale), h * (scale < 1 ? 1 : scale),
-                                  SDL_WINDOW_RESIZABLE | (getenv("CIV2_FULLSCREEN") && *getenv("CIV2_FULLSCREEN") ?
-                                                          SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+                                  SDL_WINDOW_RESIZABLE | (full ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
     return window && create_renderer() && make_texture(w, h);
+}
+
+/* Once the window manager is done (maximizing): the desktop in its pixels
+   (macOS: its size is in points) over scale (host_desktop_scale).  Returns
+   the scale, 0: none. */
+static int size_desktop(int32_t *w, int32_t *h, int scale)
+{
+    int cw = 0, ch = 0;
+    if (!create_renderer())
+        return 0;
+    if (SDL_GetRendererOutputSize(renderer, &cw, &ch) || cw < 640 || ch < 480) {
+        cw = 1024;
+        ch = 768;
+    }
+    scale = host_desktop_scale(cw, ch, scale);
+    *w = screen_w = cw / scale;
+    *h = screen_h = ch / scale;
+    return make_texture(screen_w, screen_h) ? scale : 0;
+}
+
+int host_open_maximized_window(int32_t *w, int32_t *h, int scale)
+{
+    int i, cw = 0, ch = 0, lw = -1, lh = -1, same = 0;
+    window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
+                              SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
+    if (!window)
+        return 0;
+    for (i = 0; i < 200 && same < 20; i++) {       /* the size: steady a while */
+        SDL_PumpEvents();
+        SDL_GetWindowSize(window, &cw, &ch);
+        same = cw == lw && ch == lh ? same + 1 : 0;
+        lw = cw;
+        lh = ch;
+        SDL_Delay(10);
+    }
+    return size_desktop(w, h, scale);
 }
 
 #if defined(_WIN32) || defined(__APPLE__)
@@ -151,17 +189,7 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
         lh = ch;
         SDL_Delay(10);
     }
-    if (!create_renderer())
-        return 0;
-    /* in pixels (macOS: the window's size is in points) */
-    if (SDL_GetRendererOutputSize(renderer, &cw, &ch) || cw < 640 || ch < 480) {
-        cw = 1024;
-        ch = 768;
-    }
-    scale = host_desktop_scale(cw, ch, scale);
-    *w = screen_w = cw / scale;
-    *h = screen_h = ch / scale;
-    return make_texture(screen_w, screen_h) ? scale : 0;
+    return size_desktop(w, h, scale);
 }
 #else
 int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)

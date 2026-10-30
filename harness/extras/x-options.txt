@@ -58,7 +58,7 @@ key Down
 key Return
 wait 3000
 shot xo-g-other
-key Tab                     # past the screen scale
+key Tab Tab                 # past the screen scale and full screen
 type 150                    # gamma
 key Return
 wait 3000

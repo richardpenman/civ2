@@ -251,6 +251,7 @@ static const struct { const char *key, *english; } texts[] = {
     {"option.GoldLimit", "Gold"},
     {"option.MapTilesLimit", "Custom map squares"},
     {"option.Scale", "Screen scale (from restart)"},
+    {"option.FullScreen", "Full screen (1: yes, from restart)"},
     {"option.Gamma", "Gamma (%, 100: none)"},
     {"option.Brightness", "Brightness (-100 to 100)"},
     {"option.Contrast", "Contrast (-100 to 100)"},
@@ -2005,25 +2006,30 @@ static void options_limits(void)
 
 static void options_other(void)
 {
-    static const char *const keys[5] = {"Scale", "Gamma", "Brightness", "Contrast", "SuppressList"};
-    char shown[5][256];
-    int value[5], changed_field[5], i;
-    /* Scale: the pixels per desktop pixel in force (src/platform/main.c);
-       read at start, 0 by the display's size */
+    static const char *const keys[6] = {"Scale", "FullScreen", "Gamma", "Brightness", "Contrast", "SuppressList"};
+    char shown[6][256];
+    int value[6], changed_field[6], i;
+    /* Scale and FullScreen: what is in force (src/platform/main.c), read at
+       start; Scale 0: by the size */
     snprintf(shown[0], 256, "%d", plat_scale);
-    snprintf(shown[1], 256, "%d", extras_setting("Gamma", 100));
-    snprintf(shown[2], 256, "%d", extras_setting("Brightness", 0));
-    snprintf(shown[3], 256, "%d", extras_setting("Contrast", 0));
-    suppress_list_get(shown[4], 256);
-    if (!options_fields(extras_text("options.other"), extras_text("options.other_note"), keys, 5, shown, 1,
+    snprintf(shown[1], 256, "%d", plat_fullscreen);
+    snprintf(shown[2], 256, "%d", extras_setting("Gamma", 100));
+    snprintf(shown[3], 256, "%d", extras_setting("Brightness", 0));
+    snprintf(shown[4], 256, "%d", extras_setting("Contrast", 0));
+    suppress_list_get(shown[5], 256);
+    if (!options_fields(extras_text("options.other"), extras_text("options.other_note"), keys, 6, shown, 1,
                         value, changed_field))
         return;
-    for (i = 0; i < 4; i++)
+    if (changed_field[0])
+        setting_write(keys[0], value[0] < 0 || value[0] > 8 ? 0 : value[0]);
+    if (changed_field[1])
+        setting_write(keys[1], value[1] != 0);
+    for (i = 2; i < 5; i++)
         if (changed_field[i])
-            setting_write(keys[i], i == 0 && (value[i] < 0 || value[i] > 8) ? 0 : value[i]);
-    if (changed_field[4]) {
-        WritePrivateProfileStringA("OpenCiv2", "SuppressList", shown[4], "CIV.INI");
-        snprintf(suppress_changed, sizeof suppress_changed, "%s", shown[4]);
+            setting_write(keys[i], value[i]);
+    if (changed_field[5]) {
+        WritePrivateProfileStringA("OpenCiv2", "SuppressList", shown[5], "CIV.INI");
+        snprintf(suppress_changed, sizeof suppress_changed, "%s", shown[5]);
         suppress_was_changed = 1;
     }
 }

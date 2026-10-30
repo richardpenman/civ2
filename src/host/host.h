@@ -39,8 +39,12 @@ int HOST_API(host_base_path)(char *buf, int size);
 
 /* The window: w x h desktop pixels, scaled; present() shows 32-bit
  * 0xAARRGGBB pixels, rows stride bytes apart.  scale 0: a window without
- * a frame over the display's usable area (the desktop drawn to fill it). */
+ * a frame over the display's usable area (the desktop drawn to fill it);
+ * negative: full screen, -scale pixels per desktop pixel. */
 int HOST_API(host_open_window)(int w, int h, int scale);
+/* A window with its frame, maximized; the desktop is its size in pixels
+ * over scale (*w x *h; 0: host_desktop_scale).  Returns the scale, 0: none. */
+int HOST_API(host_open_maximized_window)(int32_t *w, int32_t *h, int scale);
 /* Whole pixels per desktop pixel for a w x h pixel display (the platform
  * layer's too, src/platform/main.c): scale, or (0) as many as leave a
  * 1024x768 desktop; never a desktop smaller than 640x480. */

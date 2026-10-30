@@ -70,6 +70,7 @@ enum {
 
 EXTRAS_C int plat_extras;                       /* src/platform/main.c */
 EXTRAS_C int plat_scale;                        /* src/platform/main.c: pixels per desktop pixel */
+EXTRAS_C int plat_fullscreen;                   /* src/platform/main.c: full screen, not a window */
 EXTRAS_C uint64_t extras_enabled;     /* src/game/extras.cpp: bit per item */
 static inline int extra_ui(int item) { return plat_extras && (int)((extras_enabled >> item) & 1); }
 EXTRAS_C uint64_t extras_rules;       /* src/game/extras.cpp: bit per rule change */
