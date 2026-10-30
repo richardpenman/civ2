@@ -57,7 +57,8 @@ make native          # build/civ2-linux32: gcc -m32, the same code, easier to de
 make port            # build/OpenCiv2 in the container
 make ref SCRIPT=harness/scripts/turns.txt    # record the original on a scenario
 make native-suite    # replay every scenario on a native build and compare (EXE=OpenCiv2, OpenCiv2.exe under Wine)
-make test            # the unit tests: recorded cases of the game's functions, in seconds (no game files needed)
+make test            # the unit tests: recorded cases of the game's functions, in seconds (no game files needed),
+                     # then the source probes (tests/*_test.cpp: memory-error fixes, g++ -m32)
 make test-extras     # the additions' tests: harness/extras replayed and compared with our recorded output
 make unit-record     # record those cases again from the replays (needs the game and run/ref-*)
 ```

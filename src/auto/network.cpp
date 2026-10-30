@@ -2,11 +2,396 @@
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
 
-/* Receive boundaries (independent reconstruction BF-177/179/180/183/223/246/280).
+/* Receive boundaries (independent reconstruction BF-177/179/180/183/223/246/280,
+ * then BF-130..133/137/167/169/171/178/196/203/205..211/222/227/228/233/240..278).
  * Memory safety applies in classic and network games too (docs/BUGS.md).
  * The captured size, not the packet's advertised size, bounds every read.
- * This first tranche checks the envelope, discovery and chat; other message
- * bodies still need their own bounds checks. */
+ * Each message type needs the bytes its handler reads (net_message_min_size,
+ * from the senders: net_send_message, net_msg_build_packet and the raw
+ * packets), and the peer's civ, unit, city and table indices that index our
+ * arrays must lie inside them. Nothing the original sends is refused. */
+
+/* The fewest bytes a message of this type has: what its handler reads. */
+static uint net_message_min_size(int type)
+{
+  switch(type) {
+  case NM_DATAGRAM:
+    return sizeof(NetNamedMsg);
+  case NM_PLAYER_LIST:
+    return sizeof(NetPlayerListMsg);
+  case NM_SERVER_PATH:
+    return 0x21c;
+  case NM_SERVER_ANSWER:
+    return sizeof(NetServerAnswerMsg);
+  case NM_PLAYER_INFO:
+    return sizeof(NetPlayerInfoMsg);
+  case NM_PLAYER_LIST_NODE:
+    return sizeof(NetPlayerNodeMsg);
+  case NM_START_WHOSE_TURN:
+    return sizeof(NetWhoseTurnMsg);
+  /* the rule tables: the arguments, then the table */
+  case NM_COSMIC:
+    return sizeof(NetMsg) + 0x29;
+  case NM_CIVILIZE:
+    return sizeof(NetMsg) + 0x640;
+  case NM_IMPROVE:
+    return sizeof(NetMsg) + 0x218;
+  case NM_ENDWONDER:
+  case NM_GOVT:
+    return sizeof(NetMsg) + 0x1c;
+  case NM_UNITS:
+    return sizeof(NetMsg) + 0x4d8;
+  case NM_TERRAIN:
+    return sizeof(NetMsg) + 0x318;
+  case NM_GOVT_TITLE:
+    return sizeof(NetMsg) + 0x38;
+  case NM_LEADERS:
+    return sizeof(NetMsg) + 0x3f0;
+  case NM_KINGS:
+    return sizeof(NetMsg) + 0x7524;
+  case NM_CARAVAN:
+    return sizeof(NetMsg) + 0x40;
+  case NM_ORDERS:
+    return sizeof(NetMsg) + 0x68;
+  case NM_DIFFICULTY:
+    return sizeof(NetMsg) + 0x18;
+  case NM_ATTITUDES:
+    return sizeof(NetMsg) + 0x24;
+  /* a city or unit record after the arguments */
+  case NM_CITY_DELETED:
+    return sizeof(NetMsg) + 0x58;
+  case NM_SLIDE_PIECE:
+    return sizeof(NetMsg) + 0x20;
+  /* the arguments (net_msg_get_args) or a header past them */
+  case NM_FULL_GAMESTATE: case NM_DIFF_GAMESTATE: case NM_JOIN_GAMESTATE: case NM_MAP_STRUCT:
+  case NM_DIFFERENCE_ENGINE: case NM_ALPHA_DIFFERENCE_ENGINE: case NM_MAP_PACKETS:
+  case NM_EVENTSLOADED: case NM_GAME_GOING: case NM_LOCK_DATA: case NM_QUIT_REQUEST:
+  case NM_LOCK_NATION: case NM_UNLOCK_NATION: case NM_MULTIOPTIONS_CHANGE: case NM_KILL_OR_QUIT:
+  case NM_DELETE_UNIT: case NM_UNIT_DELETED: case NM_DELETE_CITY: case NM_CREATE_CITY:
+  case NM_CITY_CREATED: case NM_CREATE_UNIT: case NM_UNIT_CREATED: case NM_PICK_UP_UNIT:
+  case NM_PUT_DOWN_UNIT: case NM_MOVE_TO_BOTTOM: case NM_RELOCATE_UNIT: case NM_ACQUIRE_WONDER:
+  case NM_WONDER_ACQUIRED: case NM_STACK_SHIP: case NM_SHIP_STACKED: case NM_STACK_UNIT:
+  case NM_DELETE_SAFELY: case NM_DELETE_VISIBLY: case NM_LOCK_MAP: case NM_UNLOCK_MAP:
+  case NM_LOCK_MAP_ACK: case NM_UNLOCK_MAP_ACK: case NM_LOCK_MAP_SYNC: case NM_NEWTURNTIMER_REPLY:
+  case NM_PMCHANGE_REPLY: case NM_REALTIME_STACKER: case NM_NEW_CIV: case NM_KILL_CIV:
+  case NM_NEW_CIV_ACK: case NM_KILL_CIV_ACK: case NM_BRIBED_UNIT: case NM_DEATH_STACK:
+  case NM_POPUP: case NM_END_SEQUENCE: case NM_TIMER_CHANGE: case NM_POSSIBLY_CENTER:
+  case NM_DRAW_SQUARE: case NM_DRAW_TWO: case NM_DRAW_AREA: case NM_DRAW_MAP_REGION:
+  case NM_CANESCAPE_REPLY: case NM_SOUND_PLAY: case NM_DESERT_REPLY: case NM_KABOOM:
+  case NM_SHOW_NUKE: case NM_ASK_ALLY: case NM_REPORTS_UPDATE: case NM_PARLEYREQUEST_REPLY:
+  case NM_CITYWIN_CHECK_UNIT: case NM_CITYWIN_CHECK_CITY: case NM_CITYWIN_DELETED:
+  case NM_PRODUCTION_COMPLETE: case NM_HUMAN_MOVE_COMPLETE: case NM_FEATURE_SET:
+  case NM_TERRAIN_SET: case NM_SEEN_SET: case NM_SITE_SET: case NM_OWNER_SET: case NM_REGION_SET:
+  case NM_CITY_USING_SET: case NM_FEAT_LOC_SET: case NM_SET_ATTITUDE: case NM_DO_AIPARLEY:
+  case NM_SET_SLIDE_SOUND: case NM_SET_CIV: case NM_PICK_GOVT: case NM_POLITICAL_VIOLATIONS:
+  case NM_POLITICAL_ATTITUDE: case NM_TURN_FINISHED: case NM_PRETEXT: case NM_REVEAL_CITY_INFO:
+  case NM_HIDE_CITY_INFO: case NM_REVEAL_CITY_ORIGIN: case NM_HIDE_CITY_ORIGIN:
+    return sizeof(NetMsg);
+  /* a parley offer: its header and first item (net_parley_offer_valid) */
+  case NM_PARLEY_TRANSACTION:
+  case NM_PARLEY_EXECUTE:
+    return sizeof(ParleyOfferMsg);
+  default:
+    /* the header only (header_init) */
+    return 16;
+  }
+}
+
+/* A parley offer's item: inside the bytes left, and its ids too (the kinds
+   the sender lists, ParleyWindow::pack_offer_items). */
+static int net_parley_item_valid(const u8 *item_ptr,uint avail)
+{
+  ParleyOfferItem item;
+  uint per_id;
+
+  if (avail < sizeof item) {
+    return 0;
+  }
+  memcpy(&item,item_ptr,sizeof item);
+  if ((uint)item.size < sizeof item || avail < (uint)item.size) {
+    return 0;
+  }
+  per_id = 0;
+  if ((item.type == 8) || (item.type == 10) || (item.type == 0xc)) {
+    per_id = 4;
+  }
+  else if (item.type == 0x11) {
+    per_id = 8;
+  }
+  if ((per_id != 0) && ((item.size - sizeof item) / per_id < (uint)item.value)) {
+    return 0;
+  }
+  return 1;
+}
+
+/* BF-178: a parley offer (0x82, sent on as 0x86): the first item after the
+   0x20-byte header, and for an exchange (mode 0xe) the second item
+   item.size bytes further (ParleyWindow::send_offer, build_description,
+   parley_execute_transaction). */
+static int net_parley_offer_valid(const void *data,uint size)
+{
+  const ParleyOfferMsg *offer;
+  uint first;
+
+  offer = (const ParleyOfferMsg *)data;
+  if (!net_parley_item_valid((const u8 *)data + 0x20,size - 0x20)) {
+    return 0;
+  }
+  if (offer->mode == 0xe) {
+    first = (uint)offer->item.size;
+    if (!net_parley_item_valid((const u8 *)data + 0x20 + first,size - 0x20 - first)) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+/* BF-130..133, BF-241, BF-275: a popup for us (0x6a, net_send_text_args):
+   the payload is all the rest (extra_len), its strings and numbers fit
+   text_args, and the argument a popup kind draws with (net_popup_show:
+   entry[4] is args[3], entry[5] args[4]) indexes inside its table. */
+static int net_popup_args_valid(const NetMsg *msg,uint size)
+{
+  const char *text;
+  const char *end;
+  const char *nul;
+  int i;
+  int kind;
+  int arg_a;
+  int arg_b;
+
+  if ((uint)msg->args[6] != size - sizeof(NetMsg) ||
+      (uint)msg->args[1] > 24 || (uint)msg->args[2] > 6) {   /* text_args: 24 strings, 6 numbers */
+    return 0;
+  }
+  text = (const char *)msg + sizeof(NetMsg);
+  end = text + msg->args[6];
+  for (i = 0; i < msg->args[1]; i++) {
+    nul = (const char *)memchr(text,0,(uint)(end - text) < 0x104 ? (uint)(end - text) : 0x104);
+    if (nul == 0) {
+      return 0;
+    }
+    text = nul + 1;
+  }
+  if ((uint)(end - text) < (uint)msg->args[2] * 4) {
+    return 0;
+  }
+  kind = msg->args[0];
+  arg_a = msg->args[3];
+  arg_b = msg->args[4];
+  switch(kind) {
+  case 0xb: case 0xe: case 0x17: case 0x3d: case 0x57: case 0x5a:   /* a civ */
+    return (uint)arg_a < 8;
+  case 0x23: case 0x24:                                             /* a civ and a unit */
+    return (uint)arg_a < 8 && (uint)arg_b < 0x800;
+  case 0x1b: case 0x1c: case 0x1d: case 0x1e:                       /* a civ and a city */
+    return (uint)arg_a < 8 && (uint)arg_b < 0x100;
+  case 2: case 0xf: case 0x10: case 0x15: case 0x1f: case 0x20: case 0x22: case 0x25:
+  case 0x2d: case 0x2e: case 0x2f: case 0x30: case 0x33: case 0x34: case 0x4e: case 0x51:
+  case 0x52: case 0x5f: case 0x60: case 0x61:                       /* a unit */
+    return (uint)arg_a < 0x800;
+  case 0x11: case 0x26: case 0x27: case 0x28: case 0x37: case 0x3e: /* a unit sprite (0x3e: ransom) */
+    return (uint)arg_a < 0x3f;
+  case 0x12: case 0x13: case 0x14: case 0x19: case 0x1a: case 0x31: case 0x32:
+  case 0x4a: case 0x4b: case 0x4c:                                  /* an improvement or wonder */
+    return (uint)arg_a < 0x43;
+  case 0x59:                                                        /* an improvement and a civ */
+    return (uint)arg_a < 0x43 && (uint)arg_b < 8;
+  case 0x47:                                                        /* a wonder, else an improvement */
+    return arg_a < 0 ? (uint)arg_b < 0x43 : arg_a < 0x1c;
+  case 0x4d:                                                        /* an advance and a wonder */
+    return (uint)arg_a < 100 && (uint)arg_b < 0x43;
+  case 99:                                                          /* an advance */
+    return (uint)arg_a < 100;
+  case 0x2b: case 0x2c:                                             /* a government */
+    return (uint)arg_a < 7;
+  case 0x18: case 0x46:                                             /* a city */
+    return (uint)arg_a < 0x100;
+  }
+  return 1;
+}
+
+/* BF-213, BF-216, BF-218, BF-221: a rule table from the host: the advance,
+   category and epoch and terrain indices in it inside their tables (an
+   advance -2..99: -1 nil, -2 no; a terrain -2..10). The name ordinals are
+   not checked here. */
+static int net_rule_table_valid(int type,const u8 *table)
+{
+  int i;
+
+  switch(type) {
+  case NM_CIVILIZE:
+    for (i = 0; i < 100; i++) {
+      const u8 *advance = table + i * 0x10;
+      if ((i8)advance[0xe] < -2 || 99 < (i8)advance[0xe] ||
+          (i8)advance[0xf] < -2 || 99 < (i8)advance[0xf] ||
+          4 < advance[0xc] || 3 < advance[0xd]) {
+        return 0;
+      }
+    }
+    break;
+  case NM_IMPROVE:
+    for (i = 0; i < 0x43; i++) {
+      if ((i8)table[i * 8 + 6] < -2 || 99 < (i8)table[i * 8 + 6]) {
+        return 0;
+      }
+    }
+    break;
+  case NM_ENDWONDER:
+    for (i = 0; i < 0x1c; i++) {
+      if ((i8)table[i] < -2 || 99 < (i8)table[i]) {
+        return 0;
+      }
+    }
+    break;
+  case NM_UNITS:
+    for (i = 0; i < 0x3e; i++) {
+      if ((i8)table[i * 0x14 + 8] < -2 || 99 < (i8)table[i * 0x14 + 8] ||
+          (i8)table[i * 0x14 + 0x13] < -2 || 99 < (i8)table[i * 0x14 + 0x13]) {
+        return 0;
+      }
+    }
+    break;
+  case NM_TERRAIN:
+    for (i = 0; i < 0xb; i++) {   /* the base terrains carry the changes */
+      if ((i8)table[i * 0x18 + 0xd] < -2 || 10 < (i8)table[i * 0x18 + 0xd] ||
+          (i8)table[i * 0x18 + 0xe] < -2 || 10 < (i8)table[i * 0x18 + 0xe] ||
+          (i8)table[i * 0x18 + 0xf] < -2 || 10 < (i8)table[i * 0x18 + 0xf]) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
+/* A message's body: its strings terminated, its records inside it and the
+   indices its handler uses inside their arrays (civs 0..7, units 0..2047,
+   cities 0..255). */
+static int net_message_body_valid(const void *data,uint size,int type)
+{
+  const NetMsg *msg;
+  const u8 *body;
+  uint left;
+  uint pos;
+  int count;
+  i32 record[3];
+
+  msg = (const NetMsg *)data;
+  body = (const u8 *)data + sizeof(NetMsg);
+  left = size - sizeof(NetMsg);
+  switch(type) {
+  case NM_SERVER_PATH:   /* BF-222: name[260] at 0x12, subdir[262] at 0x116 */
+    return memchr((const u8 *)data + 0x12,0,0x104) != 0 && memchr((const u8 *)data + 0x116,0,0x106) != 0;
+  case NM_SERVER_ANSWER: {   /* BF-247: what recv_server_info copies */
+    const NetGameInfo *info = &((const NetServerAnswerMsg *)data)->game;
+    return memchr(info->host_address,0,sizeof info->host_address) != 0 &&
+           memchr(info->version,0,32) != 0 &&   /* into the 32-byte server_version */
+           memchr(info->game_name,0,sizeof info->game_name) != 0 &&
+           memchr(info->host_name,0,sizeof info->host_name) != 0;
+  }
+  case NM_PLAYER_LIST_NODE:   /* BF-248: the name add_player copies */
+    return memchr(((const NetPlayerNodeMsg *)data)->slot.name,0,0x20) != 0;
+  case NM_PLAYER_INFO: {   /* BF-171, BF-249: net_host_register_player_civ */
+    const NetPlayerInfoMsg *info = (const NetPlayerInfoMsg *)data;
+    if ((uint)info->civ >= 8 || (uint)info->leader_index >= 0x15 || (uint)info->gender >= 2 ||
+        (uint)info->city_style >= 4 ||
+        !memchr(info->leader_name,0,sizeof info->leader_name) ||
+        !memchr(info->tribe_name,0,sizeof info->tribe_name) ||
+        !memchr(info->adjective,0,sizeof info->adjective)) {
+      return 0;
+    }
+    for (pos = 0; pos < 7; pos++) {
+      if (!memchr(info->govt_titles[pos],0,sizeof info->govt_titles[pos])) {
+        return 0;
+      }
+    }
+    return 1;
+  }
+  case NM_START_WHOSE_TURN:   /* BF-203, BF-278 */
+    return (uint)((const NetWhoseTurnMsg *)data)->civ < 8;
+  case NM_CIVILIZE: case NM_IMPROVE: case NM_ENDWONDER: case NM_UNITS: case NM_TERRAIN:
+    return net_rule_table_valid(type,body);
+  case NM_DIFFERENCE_ENGINE:
+  case NM_ALPHA_DIFFERENCE_ENGINE:   /* BF-277: the records (recv_state_diff) */
+    pos = 0;
+    for (count = msg->args[0]; 0 < count; count--) {
+      if (left - pos < sizeof record) {
+        return 0;
+      }
+      memcpy(record,body + pos,sizeof record);
+      pos += sizeof record;
+      if (left - pos < (uint)record[2]) {
+        return 0;
+      }
+      pos += (uint)record[2];
+    }
+    return 1;
+  case NM_MAP_PACKETS:   /* BF-243: the records (net_apply_tile_updates) */
+    if (left < 4) {
+      return 0;
+    }
+    memcpy(&count,body,4);
+    pos = 4;
+    for (; 0 < count; count--) {
+      if (left - pos < 4) {
+        return 0;
+      }
+      memcpy(record,body + pos,4);
+      if ((uint)record[0] >= 8 || (left - pos) / 4 < (uint)net_batch.record_sizes[record[0]]) {
+        return 0;
+      }
+      pos += net_batch.record_sizes[record[0]] * 4;
+    }
+    return 1;
+  case NM_POPUP:
+    return net_popup_args_valid(msg,size);
+  case NM_PARLEY_TRANSACTION:
+  case NM_PARLEY_EXECUTE:
+    return net_parley_offer_valid(data,size);
+  case NM_EVENTSLOADED:   /* BF-240: 110 events fill the 50000-byte pool */
+    return (uint)msg->args[0] < 2 && (uint)msg->args[1] <= 50000 / 0x1c4;
+  case NM_QUIT_REQUEST: case NM_KILL_OR_QUIT: case NM_NEW_CIV: case NM_LOCK_MAP: case NM_UNLOCK_MAP:
+  case NM_LOCK_MAP_ACK: case NM_UNLOCK_MAP_ACK: case NM_LOCK_MAP_SYNC: case NM_PRODUCTION_COMPLETE:
+  case NM_HUMAN_MOVE_COMPLETE: case NM_TURN_FINISHED:
+    return (uint)msg->args[0] < 8;
+  case NM_KILL_CIV:   /* the conqueror may be -1 */
+    return (uint)msg->args[0] < 8 && -1 <= msg->args[1] && msg->args[1] < 8;
+  case NM_SET_ATTITUDE: case NM_DO_AIPARLEY: case NM_POLITICAL_VIOLATIONS:
+  case NM_POLITICAL_ATTITUDE: case NM_PRETEXT:
+    return (uint)msg->args[0] < 8 && (uint)msg->args[1] < 8;
+  case NM_CREATE_CITY:   /* x, y, owner */
+    return (uint)msg->args[2] < 8;
+  case NM_CREATE_UNIT:   /* type, owner, x, y */
+    return (uint)msg->args[0] < 0x3e && (uint)msg->args[1] < 8;
+  case NM_DELETE_CITY:   /* city_delete ignores negatives */
+    return msg->args[0] < 0x100;
+  case NM_CITY_DELETED:   /* BF-233: the city record copied into cities[] */
+    return (uint)msg->args[0] < 0x100;
+  case NM_CITY_CREATED:   /* -1, or the city record and the city count */
+    if (msg->args[0] == -1) {
+      return 1;
+    }
+    return left >= 0x58 && (uint)msg->args[0] < 0x100 && (uint)msg->args[1] <= 0x100;
+  case NM_UNIT_CREATED:   /* -1, or the unit and the unit count */
+    return -1 <= msg->args[0] && msg->args[0] < 0x800 && (msg->args[0] == -1 || (uint)msg->args[1] <= 0x800);
+  case NM_DELETE_UNIT: case NM_STACK_UNIT:   /* unit_delete, unit_lift_off_map: -1 is none */
+    return -1 <= msg->args[0] && msg->args[0] < 0x800;
+  case NM_PICK_UP_UNIT: case NM_PUT_DOWN_UNIT: case NM_MOVE_TO_BOTTOM: case NM_RELOCATE_UNIT:
+  case NM_STACK_SHIP: case NM_DELETE_SAFELY: case NM_DELETE_VISIBLY:
+    return (uint)msg->args[0] < 0x800;
+  case NM_ACQUIRE_WONDER:   /* civ, city, wonder, cost, improvement */
+    return (uint)msg->args[0] < 8 && (uint)msg->args[1] < 0x100 && (uint)msg->args[2] < 0x1c &&
+           (uint)msg->args[4] < 0x43;
+  case NM_REALTIME_STACKER:   /* civ, the seeing civ (-1: none; only a bit of it is used), unit */
+    return (uint)msg->args[0] < 8 && (uint)msg->args[2] < 0x800;
+  case NM_BRIBED_UNIT:   /* unit, new owner */
+    return (uint)msg->args[0] < 0x800 && (uint)msg->args[1] < 8;
+  case NM_DEATH_STACK:   /* the unit lost and its killer */
+    return (uint)msg->args[0] < 0x800 && (uint)msg->args[1] < 0x800;
+  }
+  return 1;
+}
+
 static int net_received_message_valid(const void *data,uint size)
 {
   u32 header[4];
@@ -18,10 +403,11 @@ static int net_received_message_valid(const void *data,uint size)
       header[1] >= sizeof net.nm_recv_counts_by_type / sizeof net.nm_recv_counts_by_type[0]) {
     return 0;
   }
+  if (size < net_message_min_size((int)header[1]) ||
+      !net_message_body_valid(data,size,(int)header[1])) {
+    return 0;
+  }
   if (header[1] == NM_DATAGRAM) {
-    if (size < sizeof(NetNamedMsg)) {
-      return 0;
-    }
     const NetNamedMsg *named = (const NetNamedMsg *)data;
     if ((uint)named->inner_type >= sizeof net.nm_recv_counts_by_type / sizeof net.nm_recv_counts_by_type[0] ||
         !memchr(named->address,0,sizeof named->address) ||
@@ -320,10 +706,18 @@ static NetJoinScenario net_join_load_scenario(Dialog &scen_dlg,GamePalette &scen
   char *tribe_label;
   i8 scen_file[260];
   char subdir_path[260];
+  bool paths_fit;
   
-  crt_strcpy(subdir_path,((i8 *)&net_map_lock_slots_block.scenario_dir_path));
-  crt_strcat(subdir_path,((i8 *)&net.loaded_file_subdir));
-  if (__chdir(subdir_path) < 0) {
+  /* (BF-222) the host's folder and file names, after our directory, must fit
+     the 260-byte paths (subdir_path, scen_file); a longer one is a folder we
+     cannot have */
+  paths_fit = _strlen(((i8 *)&net_map_lock_slots_block.scenario_dir_path)) + _strlen(((i8 *)&net.loaded_file_subdir)) +
+              _strlen(((i8 *)&net.loaded_file_name)) + 6 < 260;
+  if (paths_fit) {
+    crt_strcpy(subdir_path,((i8 *)&net_map_lock_slots_block.scenario_dir_path));
+    crt_strcat(subdir_path,((i8 *)&net.loaded_file_subdir));
+  }
+  if (!paths_fit || (__chdir(subdir_path) < 0)) {
     net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
     XD_FlushSendBuffer(180000);
     text_set_string_arg(0,((i8 *)&game_dirs.home));
@@ -2977,6 +3371,7 @@ net_send_message(int msg_type,i32 dest,iptr arg1,iptr arg2,iptr arg3,iptr arg4,
     sent = net.send_to_all((NetMsg *)announce_msg);
     return (int)sent;
   case NM_SERVER_INFO:
+    _memset(server_info_msg,0,sizeof server_info_msg);   /* (BF-293) no stack bytes in the gaps */
     ((NetServerInfoMsg *)server_info_msg)->init();
     server_info_msg->game.session_phase = (i16)net.session_phase;
     sent = net.send_to_all((NetMsg *)server_info_msg);
@@ -2993,6 +3388,7 @@ net_send_message(int msg_type,i32 dest,iptr arg1,iptr arg2,iptr arg3,iptr arg4,
     sent = net.send_to(dest,(NetMsg *)msg_05);
     return (int)sent;
   case NM_SERVER_PATH:
+    _memset(server_path_msg,0,sizeof server_path_msg);   /* (BF-286) no stack bytes after the names */
     server_path_msg->hdr->server_path_init();
     server_path_msg->kind = net.loaded_file_kind;
     crt_strcpy(server_path_msg->name,((i8 *)&net.loaded_file_name));
@@ -3041,6 +3437,7 @@ net_send_message(int msg_type,i32 dest,iptr arg1,iptr arg2,iptr arg3,iptr arg4,
     sent = net.send_to(dest,(NetMsg *)msg_12);
     return (int)sent;
   case NM_SERVER_ANSWER:
+    _memset(answer_msg,0,sizeof answer_msg);   /* (BF-286) no stack bytes in the gaps */
     ((NetServerAnswerMsg *)answer_msg)->init();
     sent = net.send_to(dest,(NetMsg *)answer_msg);
     return (int)sent;
@@ -3128,6 +3525,7 @@ net_send_message(int msg_type,i32 dest,iptr arg1,iptr arg2,iptr arg3,iptr arg4,
     sent = net.send_to(dest,(NetMsg *)&net.ping_message);
     return (int)sent;
   case NM_PLAYER_LIST_NODE:
+    _memset(player_node_msg,0,sizeof player_node_msg);   /* (BF-286) no stack bytes after the name */
     ((NetPlayerNodeMsg *)player_node_msg)->init(arg1);
     sent = net.send_to(dest,(NetMsg *)player_node_msg);
     return (int)sent;
@@ -3862,6 +4260,32 @@ void NetSession::recv_server_info(int *msg,int *msg_hdr)
   crt_strcpy(((i8 *)&net.net_server_version),(const char *)(msg_hdr + 0x10));
 }
 
+/* BF-092, BF-277: a state diff's record (0x15, 0x5c) inside its section: a
+   section of the table (bit 0x8000: run-length coded) and the bytes it
+   writes, raw or decoded, within the section's padded size, as the sender's
+   records are (net_send_state_diff). The record's bytes are inside the
+   message (net_message_body_valid). */
+static int net_state_diff_record_fits(uint section_id,uint offset,uint size,const void *payload)
+{
+  RleStream rle;
+  uint section;
+  uint padded;
+  uint written;
+
+  section = section_id & ~0x8000u;
+  if (0x17 < section) {
+    return 0;
+  }
+  written = size;
+  if ((section_id & 0x8000) != 0) {
+    rle.src = (u8 *)payload;
+    rle.src_end = (u8 *)payload + size;
+    written = (uint)diffeng_rle_decoded_size(&rle);
+  }
+  padded = diffeng_section_table[section].padded_size;
+  return offset <= padded && written <= padded - offset;
+}
+
 /* Part of NetSession::process_messages (0047e94e): a state diff (0x15, 0x5c):
    the changed sections of the game state, raw or run-length coded, copied
    into the game and its mirror; the game's own fields (section 1) and, on the
@@ -3897,6 +4321,10 @@ void NetSession::recv_state_diff(int *msg,uint *payload,MsgArgs &a)
       section_offset = payload[1];
       section_size = payload[2];
       payload += 3;
+      if (!net_state_diff_record_fits(section_id2,section_offset,section_size,payload)) {
+        dbg_logf_int2("recv_state_diff: refused a record of section %d at %d",(i32)section_id2,(i32)section_offset);
+        break;
+      }
       if ((section_id2 & 0x7fff) == 1) {
         saved_active_unit = game.active_unit;
         saved_moving_unit = game.moving_unit;
@@ -3934,7 +4362,9 @@ void NetSession::recv_state_diff(int *msg,uint *payload,MsgArgs &a)
         decoded_size = diffeng_rle_decoded_size(&rle);
         rle.dst = (u8 *)diffeng_section_table[section_id2].data_ptr + section_offset;
         rle.dst_end = rle.dst + decoded_size;
-        diffeng_rle_decode(&rle);
+        if (diffeng_rle_decode(&rle) == 0) {
+          dbg_logf_int2("recv_state_diff: a run-length record of section %d at %d did not decode",(i32)section_id2,(i32)section_offset);
+        }
         crt_memcpy((void *)((int)diffeng_section_table[section_id2].mirror_offset + section_offset + diffeng.mirror_buf),
                      (const void *)((iptr)diffeng_section_table[section_id2].data_ptr + section_offset),decoded_size);
       }
@@ -5488,7 +5918,9 @@ i32 __cdecl net_client_transfer_server(void)
         net.players_awaited_initial = net.players_awaited;
         if (net.players_awaited < 1) {
           slot_civ = saved.civ_ids[0];
-          net.net_civ_slots[saved.civ_ids[0]] = 0;
+          if ((uint)slot_civ < 8) {   /* (BF-162) a civ of the host's list */
+            net.net_civ_slots[saved.civ_ids[0]] = 0;
+          }
           net.slot_civs[0] = saved.civ_ids[0];
         }
         else {
@@ -5516,9 +5948,17 @@ i32 __cdecl net_client_transfer_server(void)
               }
               if (6 < old_slot) {
                 ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_oldindex_max_net_players,(iptr)&str_d_ss_franklinton_netmgr_poll_cpp_5,0x8a7);
+                /* (BF-162) the original stopped at its assertion: a player
+                   not in the old list has no civ (civ_ids[7 * 0x15] is past
+                   the copy); the transfer fails as when no one came */
+                turn_loop.active = 0;
+                player_turn_active = 0;
+                return 0;
               }
               slot_civ = saved.civ_ids[old_slot * 0x15];
-              net.net_civ_slots[slot_civ] = slot;
+              if ((uint)slot_civ < 8) {   /* a civ of the host's list */
+                net.net_civ_slots[slot_civ] = slot;
+              }
               (((i32 *)&net.slot_civs))[slot * 0x15] = slot_civ;
             }
           }
@@ -16892,6 +17332,9 @@ void __cdecl net_on_secure_receive(ushort conn_id,void *data,unsigned long size,
   if (data != 0 && 3 < size) {
     if (*msg == 0x66606660) {
       if (!net_received_message_valid(data,size)) {
+        if (16 <= size) {   /* (port) say so: a game we play never sends one */
+          dbg_logf_int2("SecureReceiveFunc: refused a message of type %d, %d bytes",msg[1],(i32)size);
+        }
         return;
       }
       net.msg_queue.enqueue(conn_id & 0xffff,(NetMsg *)msg,size);
@@ -17144,6 +17587,7 @@ NetMsgHeader *NetPlayerInfoMsg::init()
   iptr j;
   int i;
   
+  _memset(this,0,sizeof *this);   /* (BF-286) nothing of the last names after the new ones */
   hdr.header_init(0x2e);
   civ = 0;
   leader_index = 0;

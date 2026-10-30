@@ -2961,9 +2961,11 @@ static void spy_city_mission_chat(iptr unit,uptr civ,uptr civ2,uint is_spy,uint 
   if ((units[unit].flags & UNITF_VETERAN) != 0) {
     units[unit].aux_timer += 2;
   }
+  /* (BF-289) the table has 15 entries and attitudes go to 100: the original
+     read its caller's frame beyond them; 0, the table's last value, here */
   units[unit].aux_timer =
        units[unit].aux_timer -
-       (char)modifier_table[civs[civ2].attitude[civ]];
+       (char)((uint)civs[civ2].attitude[civ] < 0xf ? modifier_table[civs[civ2].attitude[civ]] : 0);
   morale = units[unit].aux_timer;
   ret = crt_rand_at("spy_city_mission");
   units[unit].aux_timer = morale + (char)(ret % 6);

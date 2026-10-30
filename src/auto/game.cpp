@@ -6811,6 +6811,7 @@ void __cdecl diffeng_buf_append(char *buf,iptr pos_ptr,int capacity,iptr src,int
 {
   if (capacity < *(int *)pos_ptr + len) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_cursize_datsize_bufsize,(iptr)&str_d_ss_franklinton_difference_engine_cpp_5,0x20d);
+    return;   /* (BF-083) the original stopped at its assertion: the copy would overrun */
   }
   crt_memcpy((void *)(*(int *)pos_ptr + buf),(const void *)src,len);
   *(int *)pos_ptr = *(int *)pos_ptr + len;
@@ -7139,6 +7140,10 @@ void __cdecl diffeng_register_blocks(void)
 }
 
 /* 004b24a2 auto */
+/* The decoded size of a run-length coded stream (diffeng_rle_encode): a code
+   below 0x8000 is a run of that many copies of the one byte after it, else
+   a literal of (code & 0x7fff) bytes. (BF-092) A code cut short at the end
+   is not counted: the original read past the stream for it. */
 int __cdecl diffeng_rle_decoded_size(RleStream *stream)
 
 {
@@ -7148,7 +7153,7 @@ int __cdecl diffeng_rle_decoded_size(RleStream *stream)
   
   src = (ushort *)stream->src;
   total = 0;
-  while (src < (ushort *)stream->src_end) {
+  while (2 <= (int)stream->src_end - (int)src) {
     code = (uint)*src;
     if (code < 0x8000) {
       src = (ushort *)((int)src + 3);
@@ -7162,6 +7167,12 @@ int __cdecl diffeng_rle_decoded_size(RleStream *stream)
 }
 
 /* 004b251a auto */
+/* (BF-092) The original took code 0x7fff, the encoder's run of 32767 bytes,
+   for a 65535-byte literal, past what the size above counted, and checked no
+   code against the stream's ends: decoded here as the size counts it, and a
+   code that does not fit the stream or the output fails (0). Valid streams
+   decode as before: the encoder writes no literal code 0x7fff (0xffff is the
+   32767-byte literal). */
 i32 __cdecl diffeng_rle_decode(RleStream *stream)
 
 {
@@ -7171,6 +7182,7 @@ i32 __cdecl diffeng_rle_decode(RleStream *stream)
   i32 result;
   ushort *src;
   void *dst;
+  uint src_left;
   
   decoded_size = diffeng_rle_decoded_size(stream);
   if ((uint)((int)stream->dst_end - (int)stream->dst) < decoded_size) {
@@ -7180,14 +7192,31 @@ i32 __cdecl diffeng_rle_decode(RleStream *stream)
     src = (ushort *)stream->src;
     dst = (void *)stream->dst;
     while (src < (ushort *)stream->src_end) {
+      src_left = (uint)((int)stream->src_end - (int)src);
+      if (src_left < 2) {
+        return 0;
+      }
       run_len = *src;
       payload = src + 1;
-      if (run_len < 0x7fff) {
+      if (run_len < 0x8000) {
+        if (src_left < 3) {
+          return 0;
+        }
+      }
+      else {
+        run_len &= 0x7fff;
+        if (src_left - 2 < (uint)run_len) {
+          return 0;
+        }
+      }
+      if ((uint)((int)stream->dst_end - (int)dst) < (uint)run_len) {
+        return 0;
+      }
+      if (*src < 0x8000) {
         src = (ushort *)((int)src + 3);
         _memset(dst,(int)*(byte *)payload,(uint)run_len);   /* (the run's byte: one byte, not a ushort) */
       }
       else {
-        run_len += 0x8000;
         crt_memcpy(dst,payload,(uint)run_len);
         src = (ushort *)((int)payload + (uint)run_len);
       }

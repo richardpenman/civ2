@@ -5091,7 +5091,7 @@ void __cdecl civ_leonardo_upgrade(iptr civ)
               if ((game.multiplayer < 3) || (human_civ[0] == civ)) {
                 dlg_game_txt_with_unit_flags((const char *)&str_upgrade,unit_type3,(ui_metrics.large_screen == 0) - 1 & 8);
               }
-              else {
+              else if ((uint)net.net_civ_slots[civ] < 7) {   /* (BF-194) -1: its player left */
                 net_send_text_args(0x3e,net.net_slots[net.net_civ_slots[civ]].id,3,0,unit_type3,
                                    ui_metrics.large_screen);
               }

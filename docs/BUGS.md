@@ -639,6 +639,20 @@ for good and keeps the original's results:
 - `net_send_message`'s stack buffers, too small for the largest messages.
 - Receive envelopes, discovery/chat payloads and diagnostic reads:
   [evidence, focused regression and remaining work](bugfix-evidence-network.md).
+- Received message bodies: each message type needs the bytes its handler reads, and a peer's civ,
+  unit, city, map-lock, popup, rule-table and record indices must lie inside our tables (Peter
+  Johnson's ledger BF-130..133, 137, 167, 169, 171, 178, 196, 203, 205..211, 213, 216, 218, 221, 222,
+  227, 228, 233, 240..245, 247..275, 277, 278; and `NM_QUIT_REQUEST`'s civ): the same
+  [evidence page](bugfix-evidence-network.md).
+- `diffeng_rle_decode` taking the encoder's 32767-byte run (code 0x7fff) for a 65535-byte literal,
+  past what it allocated, and reading codes past either end (BF-092). The game's own streams never
+  have that code (difference records are at most 1 KB; full images are never sent): only a crafted
+  message reached it.
+- Host migration with a player missing from the old list, and `diffeng_buf_append`'s overflow
+  check, going on past the original's fatal assertion (BF-162, BF-083).
+- Stack bytes in the gaps of the discovery, answer, path and player messages (BF-286, BF-293).
+- The Leonardo notice and the caption for a civ whose player left (`net_civ_slots` -1; BF-194,
+  BF-203); the diplomat's chat reading past its 15-entry attitude table (BF-289, network only).
 - `spaceship_wnd_launch`'s local, smaller than the star field object built in it.
 
 ## Uninitialised locals that are not bugs
