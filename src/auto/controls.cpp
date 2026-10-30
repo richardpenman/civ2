@@ -1699,8 +1699,11 @@ static void button_underline_hotkey(HDC mem_dc,Button *button,char *label_text,t
   char prefix[256];
   int underline_start;
 
-  if (-1 < (int)button->hotkey_pos) {
-    crt_strcpy(prefix,label_text);
+  /* BF-150 (Peter Johnson's ledger): a label of 256 characters or more is
+     cut, and a hotkey past the 255th not underlined (the original copied the
+     whole label into the 256 bytes) */
+  if ((-1 < (int)button->hotkey_pos) && ((int)button->hotkey_pos < (int)sizeof prefix - 1)) {
+    str_copy_max(prefix,label_text,sizeof prefix);
     prefix[button->hotkey_pos] = '\0';
     len = _strlen(prefix);
     if (len == 0) {
@@ -1717,7 +1720,7 @@ static void button_underline_hotkey(HDC mem_dc,Button *button,char *label_text,t
       DrawTextA(mem_dc,prefix,len,draw_rect,draw_flags);
       underline_start = text_rect->right - 1;
     }
-    crt_strcpy(prefix,label_text);
+    str_copy_max(prefix,label_text,sizeof prefix);
     prefix[button->hotkey_pos + 1] = '\0';
     text_rect->left = saved_left;
     text_rect->top = saved_top;
@@ -2335,8 +2338,9 @@ static void checkbox_underline_hotkey(HDC hdc,Checkbox *checkbox,char *label,tag
   char prefix[256];
   tagRECT text_rect;
 
-  if (checkbox->hotkey_pos != 0xffffffff) {
-    crt_strcpy(prefix,label);
+  /* BF-150 (Peter Johnson's ledger): as button_underline_hotkey */
+  if ((checkbox->hotkey_pos != 0xffffffff) && ((int)checkbox->hotkey_pos < (int)sizeof prefix - 1)) {
+    str_copy_max(prefix,label,sizeof prefix);
     prefix[checkbox->hotkey_pos] = '\0';
     text_rect.left = rect->left;
     text_rect.top = rect->top;
@@ -2353,7 +2357,7 @@ static void checkbox_underline_hotkey(HDC hdc,Checkbox *checkbox,char *label,tag
       DrawTextA(hdc,prefix,len,draw_rect,draw_flags);
       underline_start = text_rect.right - 1;
     }
-    crt_strcpy(prefix,label);
+    str_copy_max(prefix,label,sizeof prefix);
     prefix[checkbox->hotkey_pos + 1] = '\0';
     text_rect.left = rect->left;
     text_rect.top = rect->top;
@@ -3871,13 +3875,20 @@ radiogrp_create_items(iptr count_out,int *rect,int columns,iptr group,int item_c
     else {
       ((RadioItem *)items)[index].enabled = 1;
     }
-    crt_strcpy(((RadioItem *)items)[index].label,(const char *)((void *)label));
+    /* BF-151 (Peter Johnson's ledger): a label cut at 127 characters (the
+       original copied a longer one over the next item) */
+    str_copy_max(((RadioItem *)items)[index].label,(const char *)((void *)label),
+                 sizeof ((RadioItem *)items)[index].label);
     cursor = ((RadioItem *)items)[index].label;
     ((RadioItem *)items)[index].hotkey_pos = 0;
     for (; *cursor != '\0'; cursor++) {
       if (*cursor == '~') {
+        /* BF-152 (Peter Johnson's ledger): the original's walk, which takes
+           the hotkey position for the item, within the items (it went on
+           past them with a position past their number) */
         for (index = (uint)((RadioItem *)items)[index].hotkey_pos;
-            len = _strlen(((RadioItem *)items)[index].label), index < len;
+            (index < (uint)item_count) &&
+            (len = _strlen(((RadioItem *)items)[index].label), index < len);
             index = index + 1) {
           *(i8 *)(index * 0xa5 + 0x1c + items) =
                *(i8 *)(index * 0xa5 + 0x1d + items);
@@ -3887,6 +3898,7 @@ radiogrp_create_items(iptr count_out,int *rect,int columns,iptr group,int item_c
       hotkey_pos = &((RadioItem *)items)[index].hotkey_pos;
       *hotkey_pos = *hotkey_pos + 1;
     }
+    if (item_count <= (int)index) continue;  /* BF-152: no item there */
     len = _strlen(((RadioItem *)items)[index].label);
     if ((uint)((RadioItem *)items)[index].hotkey_pos < len) {
       hotkey[0] = ((RadioItem *)items)[index].label[((RadioItem *)items)[index].hotkey_pos];

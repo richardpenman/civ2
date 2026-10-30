@@ -1980,6 +1980,12 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
                  -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
       dlg_style.pending_idle_callback = net_pump_idle_cb;
       result = dlg.show_modal(0);
+      /* BF-113 (Peter Johnson's ledger): a choice past the two genders (a row
+         added to GAME.TXT's @GENDER) is no choice (the original indexed the
+         leader's names and titles with it) */
+      if (1 < result) {
+        result = -1;
+      }
       net.player_info_gender = result;
       snd_play_effect(SND_MENUOK,0,0,0);
       if (result < 0) {
@@ -9526,6 +9532,15 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
   return;
 }
 
+/* (port) BF-082 (Peter Johnson's ledger): the description of an offer within
+   the 2048 characters build_description checks it for (of its 2464 bytes);
+   longer names (a scenario's rules) or many items are cut there (the original
+   appended without a bound, and its check stopped only a debug build) */
+static void parley_desc_append(const char *text)
+{
+  str_append_max((char *)&text_section_index_pool_block.parley_description,text,0x800);
+}
+
 /* Part of ParleyWindow::build_description (004dbee6): an exchange (mode 0xe):
    the item given (the second item, the GIVE texts), by kind. */
 void ParleyWindow::describe_barter_give(ParleyOfferMsg *second_offer,i32 *second_items)
@@ -9536,45 +9551,45 @@ void ParleyWindow::describe_barter_give(ParleyOfferMsg *second_offer,i32 *second
   case 5:
   case 6:
     label = (iptr)(label_string(label_table.string_ids[0x347]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_treaty_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_treaty_crlf_str));
     describe_treaty(second_offer->item.value,1);
     break;
   case 8:
     label = (iptr)(label_string(label_table.string_ids[0x32e]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_adv_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_adv_crlf_str));
     parley_describe_advances((ParleyOfferItem *)second_items);
     break;
   case 9:
     label = (iptr)(label_string(label_table.string_ids[0x32f]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_gold_crlf_str));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,(iptr)&str_empty_140);
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_gold_crlf_str));
+    parley_desc_append((const char *)(iptr)&str_empty_140);
     parley_describe_gold(second_offer->item.value);
     break;
   case 10:
     label = (iptr)(label_string(label_table.string_ids[0x330]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_units_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_units_crlf_str));
     parley_describe_units((ParleyOfferItem *)second_items);
     break;
   case 0xc:
     label = (iptr)(label_string(label_table.string_ids[0x333]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_war_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_war_crlf_str));
     parley_describe_war_targets((ParleyOfferItem *)second_items);
     break;
   case 0xd:
     label = (iptr)(label_string(label_table.string_ids[0x332]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_maps_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_maps_crlf_str));
     parley_describe_maps(second_offer->item.value,0);
     break;
   case 0x11:
     label = (iptr)(label_string(label_table.string_ids[0x331]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_give_cities_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_give_cities_crlf_str));
     parley_describe_cities((ParleyOfferItem *)second_items);
   }
 }
@@ -9589,45 +9604,45 @@ void ParleyWindow::describe_barter_want(ParleyOfferMsg *offer,int *first_items)
   case 5:
   case 6:
     label = (iptr)(label_string(label_table.string_ids[0x348]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_exch_for_treaty_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_exch_for_treaty_crlf_str));
     describe_treaty(offer->item.value,1);
     break;
   case 8:
     label = (iptr)(label_string(label_table.string_ids[0x334]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_want_adv_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_want_adv_crlf_str));
     parley_describe_advances((ParleyOfferItem *)first_items);
     break;
   case 9:
     label = (iptr)(label_string(label_table.string_ids[0x335]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_want_gold_crlf_str));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,(iptr)&str_empty_141);
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_want_gold_crlf_str));
+    parley_desc_append((const char *)(iptr)&str_empty_141);
     parley_describe_gold(offer->item.value);
     break;
   case 10:
     label = (iptr)(label_string(label_table.string_ids[0x336]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_want_units_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_desc_want_units_crlf_str));
     parley_describe_units((ParleyOfferItem *)first_items);
     break;
   case 0xc:
     label = (iptr)(label_string(label_table.string_ids[0x339]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_exch_for_war_targets_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_exch_for_war_targets_crlf_str));
     parley_describe_war_targets((ParleyOfferItem *)first_items);
     break;
   case 0xd:
     label = (iptr)(label_string(label_table.string_ids[0x338]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_exch_for_maps_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_exch_for_maps_crlf_str));
     parley_describe_maps(offer->item.value,1);
     break;
   case 0x11:
     label = (iptr)(label_string(label_table.string_ids[0x337]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_exch_for_cities_crlf_str));
+    parley_desc_append((const char *)label);
+    parley_desc_append((const char *)((i8 *)&parley_exch_for_cities_crlf_str));
     parley_describe_cities((ParleyOfferItem *)first_items);
   }
 }
@@ -9639,21 +9654,21 @@ void ParleyWindow::describe_threat(ParleyOfferMsg *offer,int *first_items)
   iptr label;
   
   label = (iptr)(label_string(label_table.string_ids[0x32b]));
-  str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-  str_append_space((iptr)&text_section_index_pool_block.parley_description);
+  parley_desc_append((const char *)label);
+  parley_desc_append((const char *)append_space_str);
   if (*first_items == 0xc) {
     label = (iptr)(label_string(label_table.string_ids[0x346]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+    parley_desc_append((const char *)label);
   }
   else if ((*first_items == 5) || (*first_items == 6)) {
     label = (iptr)(label_string(label_table.string_ids[0x345]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+    parley_desc_append((const char *)label);
   }
   else {
     label = (iptr)(label_string(label_table.string_ids[0x32c]));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+    parley_desc_append((const char *)label);
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_threat_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_desc_threat_crlf_str));
   switch(*first_items) {
   case 5:
   case 6:
@@ -9701,8 +9716,8 @@ void ParleyWindow::build_description(ParleyOfferMsg *offer,int received)
     }
     if (received == 0) {
       label = (iptr)(label_string(label_table.string_ids[0x31c]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_transmitted_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_transmitted_crlf_str));
     }
     desc_len = _strlen(((i8 *)&text_section_index_pool_block.parley_description));
     if (0x7ff < desc_len) {
@@ -9714,81 +9729,81 @@ void ParleyWindow::build_description(ParleyOfferMsg *offer,int received)
       break;
     case 7:
       label = (iptr)(label_string(label_table.string_ids[0x326]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_adv_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_adv_crlf_str));
       label = (iptr)(label_string(label_table.string_ids[0x327]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_adv_head_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_adv_head_crlf_str));
       parley_describe_advances((ParleyOfferItem *)first_items);
       break;
     case 8:
       label = (iptr)(label_string(label_table.string_ids[0x326]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_gold_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_gold_crlf_str));
       label = (iptr)(label_string(label_table.string_ids[0x329]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_gold_head_crlf_str));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,(iptr)&str_empty_139);
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_gold_head_crlf_str));
+      parley_desc_append((const char *)(iptr)&str_empty_139);
       parley_describe_gold(offer->item.value);
       break;
     case 9:
       label = (iptr)(label_string(label_table.string_ids[0x326]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_units_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_units_crlf_str));
       label = (iptr)(label_string(label_table.string_ids[0x328]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_units_head_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_units_head_crlf_str));
       parley_describe_units((ParleyOfferItem *)first_items);
       break;
     case 10:
       label = (iptr)(label_string(label_table.string_ids[0x326]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_cities_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_cities_crlf_str));
       label = (iptr)(label_string(label_table.string_ids[0x32a]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_cities_head_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_cities_head_crlf_str));
       parley_describe_cities((ParleyOfferItem *)first_items);
       break;
     case 0xb:
       label = (iptr)(label_string(label_table.string_ids[0x326]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_gift_maps_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_gift_maps_crlf_str));
       parley_describe_maps(offer->item.value,0);
       break;
     case 0xc:
       label = (iptr)(label_string(label_table.string_ids[0x321]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_war_offer_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_war_offer_crlf_str));
       label = (iptr)(label_string(label_table.string_ids[0x325]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_war_head_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_war_head_crlf_str));
       parley_describe_war_targets((ParleyOfferItem *)first_items);
       break;
     case 0xd:
       label = (iptr)(label_string(label_table.string_ids[0x321]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_maps_offer_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_maps_offer_crlf_str));
       maps_kind = offer->item.value;
       if (maps_kind == 0) {
         label = (iptr)(label_string(label_table.string_ids[0x322]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+        parley_desc_append((const char *)label);
       }
       else if (maps_kind == 1) {
         label = (iptr)(label_string(label_table.string_ids[0x323]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+        parley_desc_append((const char *)label);
       }
       else if (maps_kind == 2) {
         label = (iptr)(label_string(label_table.string_ids[0x324]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+        parley_desc_append((const char *)label);
       }
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_maps_kind_crlf_str));
+      parley_desc_append((const char *)((i8 *)&parley_desc_maps_kind_crlf_str));
       break;
     case 0xe:
       label = (iptr)(label_string(label_table.string_ids[0x32d]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_barter_crlf_str));
+      parley_desc_append((const char *)label);
+      parley_desc_append((const char *)((i8 *)&parley_desc_barter_crlf_str));
       describe_barter_give(second_offer,second_items);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_desc_barter_sep_crlf_str));
+      parley_desc_append((const char *)((i8 *)&parley_desc_barter_sep_crlf_str));
       describe_barter_want(offer,first_items);
       break;
     case 0xf:
@@ -9815,24 +9830,24 @@ void __cdecl parley_describe_advances(ParleyOfferItem *items)
   adv_ptr = (int *)((iptr)items + 0xc);
   for (i = 0; i < count; i++) {
     adv_name = (iptr)(label_string(advances[*adv_ptr].name));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,adv_name);
+    parley_desc_append((const char *)adv_name);
     if (1 < count) {
       if (i < count - 2) {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_advances_comma_str));
+        parley_desc_append((const char *)((i8 *)&parley_advances_comma_str));
       }
       else if (count - 2 == i) {
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)append_space_str);
         adv_name = (iptr)(label_string(label_table.string_ids[0x33a]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,adv_name);
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)adv_name);
+        parley_desc_append((const char *)append_space_str);
       }
       else {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_advances_period_str));
+        parley_desc_append((const char *)((i8 *)&parley_advances_period_str));
       }
     }
     adv_ptr++;
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_advances_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_advances_crlf_str));
   return;
 }
 
@@ -9844,11 +9859,11 @@ void __cdecl parley_describe_gold(int gold)
   char gold_text[16];
   
   __itoa(gold,gold_text,10);
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),gold_text);
-  str_append_space((iptr)&text_section_index_pool_block.parley_description);
+  parley_desc_append((const char *)gold_text);
+  parley_desc_append((const char *)append_space_str);
   label = (label_string(label_table.string_ids[0x33b]));
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),(const char *)label);
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_gold_crlf_str));
+  parley_desc_append((const char *)(const char *)label);
+  parley_desc_append((const char *)((i8 *)&parley_gold_crlf_str));
   return;
 }
 
@@ -9884,29 +9899,29 @@ void __cdecl parley_describe_units(ParleyOfferItem *items)
   listed = 0;
   for (unit_type = 0; unit_type < 0x3e; unit_type++) {
     if (type_counts[unit_type] != 0) {
-      str_append_string_id((iptr)&text_section_index_pool_block.parley_description,unit_types[unit_type].name);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_units_open_paren_str));
+      parley_desc_append(label_string(unit_types[unit_type].name));
+      parley_desc_append((const char *)((i8 *)&parley_units_open_paren_str));
       __itoa(type_counts[unit_type],count_text,10);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),count_text);
-      crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_units_close_paren_str));
+      parley_desc_append((const char *)count_text);
+      parley_desc_append((const char *)((i8 *)&parley_units_close_paren_str));
       if (1 < unit_count) {
         if (listed < distinct_types - 2) {
-          crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_units_comma_str));
+          parley_desc_append((const char *)((i8 *)&parley_units_comma_str));
         }
         else if (distinct_types - 2 == listed) {
-          str_append_space((iptr)&text_section_index_pool_block.parley_description);
+          parley_desc_append((const char *)append_space_str);
           label = (iptr)(label_string(label_table.string_ids[0x33a]));
-          str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-          str_append_space((iptr)&text_section_index_pool_block.parley_description);
+          parley_desc_append((const char *)label);
+          parley_desc_append((const char *)append_space_str);
         }
         else {
-          crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_units_period_str));
+          parley_desc_append((const char *)((i8 *)&parley_units_period_str));
         }
       }
       listed++;
     }
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_units_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_units_crlf_str));
   return;
 }
 
@@ -9923,27 +9938,27 @@ void __cdecl parley_describe_cities(ParleyOfferItem *items)
   count = items->value;
   for (i = 0; i < count; i++) {
     city = parley_wnd_block.find_city_by_id(*(i32 *)((iptr)items + 0xc + i * 8));
-    str_append((char *)&text_section_index_pool_block.parley_description,(const char *)&cities[city].name);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_cities_open_paren_str));
+    parley_desc_append((const char *)&cities[city].name);
+    parley_desc_append((const char *)((i8 *)&parley_cities_open_paren_str));
     __itoa(*(int *)((iptr)items + 0x10 + i * 8),size_text,10);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),size_text);
-    crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_cities_close_paren_str));
+    parley_desc_append((const char *)size_text);
+    parley_desc_append((const char *)((i8 *)&parley_cities_close_paren_str));
     if (1 < count) {
       if (i < count - 2) {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_cities_comma_str));
+        parley_desc_append((const char *)((i8 *)&parley_cities_comma_str));
       }
       else if (count - 2 == i) {
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)append_space_str);
         label = (iptr)(label_string(label_table.string_ids[0x33a]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,label);
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)label);
+        parley_desc_append((const char *)append_space_str);
       }
       else {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_cities_period_str));
+        parley_desc_append((const char *)((i8 *)&parley_cities_period_str));
       }
     }
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_cities_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_cities_crlf_str));
   return;
 }
 
@@ -9956,34 +9971,34 @@ void __cdecl parley_describe_maps(int map_kind,int exchange)
   if (map_kind == 0) {
     if (exchange == 0) {
       label = (iptr)(label_string(label_table.string_ids[0x33c]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
     else {
       label = (iptr)(label_string(label_table.string_ids[0x33d]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
   }
   else if (map_kind == 1) {
     if (exchange == 0) {
       label = (iptr)(label_string(label_table.string_ids[0x33e]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
     else {
       label = (iptr)(label_string(label_table.string_ids[0x33f]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
   }
   else if (map_kind == 2) {
     if (exchange == 0) {
       label = (iptr)(label_string(label_table.string_ids[0x340]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
     else {
       label = (iptr)(label_string(label_table.string_ids[0x341]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_maps_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_maps_crlf_str));
   return;
 }
 
@@ -10000,24 +10015,24 @@ void __cdecl parley_describe_war_targets(ParleyOfferItem *items)
   civ_ptr = (iptr *)((iptr)items + 0xc);
   for (i = 0; i < count; i++) {
     text = (iptr)(civ_name_plural(*civ_ptr));
-    str_concat((iptr)&text_section_index_pool_block.parley_description,text);
+    parley_desc_append((const char *)text);
     if (1 < count) {
       if (i < count - 2) {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_war_targets_comma_str));
+        parley_desc_append((const char *)((i8 *)&parley_war_targets_comma_str));
       }
       else if (count - 2 == i) {
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)append_space_str);
         text = (iptr)(label_string(label_table.string_ids[0x33a]));
-        str_concat((iptr)&text_section_index_pool_block.parley_description,text);
-        str_append_space((iptr)&text_section_index_pool_block.parley_description);
+        parley_desc_append((const char *)text);
+        parley_desc_append((const char *)append_space_str);
       }
       else {
-        crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_war_targets_period_str));
+        parley_desc_append((const char *)((i8 *)&parley_war_targets_period_str));
       }
     }
     civ_ptr++;
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_war_targets_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_war_targets_crlf_str));
   return;
 }
 
@@ -10653,36 +10668,36 @@ void ParleyWindow::describe_treaty(int treaty_kind,int exchange)
     switch(treaty_kind) {
     case 0:
       label = (iptr)(label_string(label_table.string_ids[0x31d]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
       break;
     case 1:
       label = (iptr)(label_string(label_table.string_ids[0x31e]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
       break;
     case 2:
       label = (iptr)(label_string(label_table.string_ids[0x31f]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
       break;
     case 3:
       label = (iptr)(label_string(label_table.string_ids[0x320]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
   }
   else if (exchange == 1) {
     if (treaty_kind == 0) {
       label = (iptr)(label_string(label_table.string_ids[0x2f3]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
     else if (treaty_kind == 1) {
       label = (iptr)(label_string(label_table.string_ids[0x2f4]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
     else if (treaty_kind == 2) {
       label = (iptr)(label_string(label_table.string_ids[0x2f5]));
-      str_concat((iptr)&text_section_index_pool_block.parley_description,label);
+      parley_desc_append((const char *)label);
     }
   }
-  crt_strcat(((i8 *)&text_section_index_pool_block.parley_description),((i8 *)&parley_treaty_crlf_str));
+  parley_desc_append((const char *)((i8 *)&parley_treaty_crlf_str));
   return;
 }
 
@@ -14228,7 +14243,8 @@ void ParleyWindow::add_waiting_pane()
   text_set_string_arg_b(0,(const char *)label);
   text_clear();
   text_append_label(0x2e2);
-  text_expand_vars((iptr)&textbuf.buf,(iptr)waiting_text);
+  /* BF-200 (Peter Johnson's ledger): cut at 79 characters */
+  text_expand_vars_max((iptr)&textbuf.buf,(iptr)waiting_text,sizeof waiting_text);
   gfx_set_text_color_index(10);
   if (large_layout == 0) {
     waiting_text_width = ((GameFont *)((i8 *)&font_size20))->text_width((const char *)waiting_text);

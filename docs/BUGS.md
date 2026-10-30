@@ -28,8 +28,8 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 33 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
-B23 to B25, B28, B32 and B33. Fixed in every mode: B1 (our build reads the original's usual
+Status of the list: 34 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
+B23 to B25, B28 and B32 to B34. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
 anyway. Not fixed: B5
@@ -339,6 +339,22 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   option, set before the game; nothing another player computes from it but whether it may join).
 - **Saves:** none (`open_game` is not saved; CIV2.DAT stores `menu_prefs.mp_open_game`).
 - **Status: fixed** (`bugfix_ui()`).
+
+### B34. Hot-seat: a player whose civilization is destroyed in its own turn becomes an earlier player
+- **Where:** `src/auto/game.cpp`, `game_play_loop` (0048b340), lines 5346-5376. Before an AI
+  civilization's turn in a hot-seat game the loop saves the player (`saved_human_civ`) and sets
+  human_civ's low byte to -1; after the turn, whenever the civilization is not human, it puts
+  the saved player back. A human civilization that loses its last city while its own turn is
+  processed (`civ_process_turn`: the city starves at size 1, or builds Settlers at size 1 and
+  the player lets it go) is destroyed and made an AI civilization (`civ_check_destroyed`, which
+  clears its human bit), so the restore runs with no save on that turn.
+- **What goes wrong:** the player becomes the one saved at the last AI civilization's turn (or,
+  with none yet in the session, whatever the original's stack held).
+- **Source:** found by Peter Johnson's reconstruction (BF-164).
+- **Fix:** put the player back only when this turn saved it. **State.**
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`); classic mode restores the player saved at an earlier
+  turn, as the original, and keeps the player when no turn saved one (the original's stack).
 
 ## Scenario and events
 
@@ -671,6 +687,21 @@ for good and keeps the original's results:
 - The Leonardo notice and the caption for a civ whose player left (`net_civ_slots` -1; BF-194,
   BF-203); the diplomat's chat reading past its 15-entry attitude table (BF-289, network only).
 - `spaceship_wnd_launch`'s local, smaller than the star field object built in it.
+- Text of modified game files (a scenario's, a translation's) copied into the original's fixed
+  buffers without a bound: names, labels and lines into 24- to 1024-byte locals and members,
+  `%STRINGn` expansion into its callers' buffers and the text buffer, Civilopedia indexes past
+  their lists, a dialog's options past its 40 and a word past its 80 (Peter Johnson's ledger
+  BF-029, 036, 038, 040, 042..044, 046, 048..054, 056, 057, 059..064, 069, 081, 082, 084, 089, 096,
+  129, 140, 150..152, 184..187, 190, 198..200, 204, 212, 214, 215, 217, 220, 231): a text that fits
+  is copied as before, a longer one is cut where the buffer ends, as on screen
+  ([evidence and focused regression](bugfix-evidence-text.md)).
+- Choices past the rows a section of the game's text has, from rows a scenario's GAME.TXT or
+  DEBUG.TXT adds (hot-seat and e-mail game start, custom city style, gender, Find City, the
+  Foreign Minister's civ and attitude, sabotage, the icon editors' sprites; BF-072, 075, 077,
+  079, 100..103, 110, 113..118): asked again or no choice, where the original indexed its
+  tables with them (the same [evidence page](bugfix-evidence-text.md)).
+- The opening video's audio flags never set (BF-297), and the registry key closed when it was
+  not opened (BF-301; a bad close in the Windows build only).
 
 ## Uninitialised locals that are not bugs
 

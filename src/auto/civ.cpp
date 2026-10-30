@@ -300,7 +300,7 @@ void __cdecl tech_editor_fill_usage_list(void)
   i32 adv_name;
   iptr advance;
   iptr unit_type;
-  char line[80];
+  char line[80];  /* BF-042 (Peter Johnson's ledger): longer names are cut */
   
   advances_header = false;
   units_header = false;
@@ -325,13 +325,13 @@ void __cdecl tech_editor_fill_usage_list(void)
       }
       if (advances[advance].preq[1] < '\0') {
         name2 = (iptr)label_string(advances[advance].name);
-        _sprintf(line,((i8 *)&tech_editor_usage_preq1_fmt),name2);
+        snprintf(line,sizeof line,((i8 *)&tech_editor_usage_preq1_fmt),name2);
       }
       else {
         name2 = (iptr)label_string(advances[advances[advance].preq[1]].name);
         conj = (iptr)label_string(label_table.string_ids[0x7b]);
         adv_name = (iptr)label_string(advances[advance].name);
-        _sprintf(line,str_s_s_s,adv_name,conj,name2);
+        snprintf(line,sizeof line,str_s_s_s,adv_name,conj,name2);
       }
       editor_active.wnd->list_box.add_string((const char *)line);
     }
@@ -343,13 +343,13 @@ void __cdecl tech_editor_fill_usage_list(void)
       }
       if (advances[advance].preq[0] < '\0') {
         name2 = (iptr)label_string(advances[advance].name);
-        _sprintf(line,((i8 *)&tech_editor_usage_preq2_fmt),name2);
+        snprintf(line,sizeof line,((i8 *)&tech_editor_usage_preq2_fmt),name2);
       }
       else {
         name2 = (iptr)label_string(advances[advances[advance].preq[0]].name);
         conj = (iptr)label_string(label_table.string_ids[0x7b]);
         adv_name = (iptr)label_string(advances[advance].name);
-        _sprintf(line,str_s_s_s_2,adv_name,conj,name2);
+        snprintf(line,sizeof line,str_s_s_s_2,adv_name,conj,name2);
       }
       editor_active.wnd->list_box.add_string((const char *)line);
     }
@@ -1003,6 +1003,12 @@ void __cdecl rules_load_advances(int keep_names)
     advances[advance].epoch = (u8)value;
     value = text_next_int();
     advances[advance].category = (u8)value;
+    /* BF-129 (Peter Johnson's ledger): an epoch past the four or a category
+       past the five is a bad line, as a bad prerequisite (the original took
+       them, and the Civilopedia drew sprites past its 20) */
+    if ((3 < advances[advance].epoch) || (4 < advances[advance].category)) {
+      error_report(0xfffffffc,3,(iptr)&textbuf.buf,advance,2);
+    }
     if (advances[advance].preq[0] == -2) {
       advances[advance].enabled = '\0';
     }
@@ -2503,7 +2509,8 @@ void __cdecl civ_rating_window_draw(void)
   int title_index;
   int difficulty_factor;
   int i;
-  i8 line_buf[80];
+  i8 line_buf[0x100];  /* BF-050 (Peter Johnson's ledger): the original's 80,
+                         less than a line of GAME.TXT */
   int line_height;
   int open_failed;
   int best_score;
@@ -2575,7 +2582,7 @@ void __cdecl civ_rating_window_draw(void)
   for (i = 0; i <= title_index; i++) {
     if (open_failed == 0) {
       text_read_line(1);
-      crt_strcpy(line_buf,((i8 *)&textbuf.buf));
+      str_copy_max(line_buf,((i8 *)&textbuf.buf),sizeof line_buf);
     }
     else if (title_index == i) {
       crt_strcpy(line_buf,str_string0);
@@ -2583,7 +2590,8 @@ void __cdecl civ_rating_window_draw(void)
     else {
       crt_strcpy(line_buf,str_error_2);
     }
-    text_expand_vars((iptr)line_buf,(iptr)&textbuf.buf);
+    /* BF-064: expanded within the text buffer */
+    text_expand_vars_max((iptr)line_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
     if (i < title_index) {
       text_set_font((iptr)&civ_rating_title_font_block.civ_rating_title_font);
       text_set_colors(0x1d,0x12,0xffffffff,0xffffffff);
@@ -7763,8 +7771,17 @@ i32 __cdecl cosmic_editor_write_section(FILE *out_file,FILE *in_file)
   char line[128];
   
   for (i = 0; i < 0x16; i++) {
-    _fgets(line,0x80,in_file);
+    /* BF-029 (Peter Johnson's ledger): a section cut short leaves no line
+       (the original used the buffer unset) and a line without a comment no
+       comment (the original printed a null pointer); the value goes on its
+       own line */
+    if (_fgets(line,0x80,in_file) == (char *)0x0) {
+      line[0] = '\0';
+    }
     comment = _strchr(line,0x3b);
+    if (comment == (char *)0x0) {
+      comment = (char *)"\n";
+    }
     _sprintf(((i8 *)&textbuf.buf),str_8d_s,editor_text_dlg_wnd_block.editor_item_recs[0].values[i],comment);
     _fputs(((i8 *)&textbuf.buf),out_file);
   }

@@ -365,7 +365,9 @@ void __cdecl menu_find_city(void)
   }
   if (count != 0) {
     city2 = dialog2.show_modal(0);
-    if (city2 >= 0) {
+    /* BF-101 (Peter Johnson's ledger): a choice past the 256 cities (the 257th
+       row of a GAME.TXT @FINDCITY section) is no choice */
+    if ((city2 >= 0) && (city2 < 0x100)) {
       ((MapView *)((i8 *)&map_views_block.map_views))->center_on((int)cities[city2].x,(int)cities[city2].y);
       if ((dialog2.result_extra != 0) && ((cities[city2].owner == civ2 || (game.reveal_map != '\0')))
          ) {
@@ -3349,7 +3351,10 @@ void __cdecl menu_set_item_label(i32 item_id,i32 label_id,i32 enabled)
   
   text_clear();
   text_append_label(label_id);
-  text_expand_vars((iptr)&textbuf.buf,(iptr)label_text);
+  /* BF-200 (Peter Johnson's ledger): a label is cut at 60 characters, the
+     room its menu item was made with (lang.cpp menu_rows: the original
+     expanded it whole into these 80 bytes and copied it into the item's) */
+  text_expand_vars_max((iptr)&textbuf.buf,(iptr)label_text,0x3d);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_text(item_id,(const char *)label_text);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_enabled(item_id,enabled);
   return;
@@ -4012,13 +4017,15 @@ void __cdecl dialog_prepend_title_label(iptr dialog,i32 label_id)
 {
   size_t len;
   i32 buffer;
-  char title[128];
+  char title[0x200];  /* BF-061 (Peter Johnson's ledger): the original's 128,
+                         less than a label and the dialog's title; a longer
+                         title is cut */
   
   title[0] = '\0';
   str_append_label((iptr)title,label_id);
   if (*(int *)(dialog + 0x134) != 0) {
-    crt_strcat(title,((i8 *)&dialog_title_label_space_str));
-    crt_strcat((char *)((void *)title),(const char *)((void *)(*(i32 *)(dialog + 0x134))));
+    str_append_max(title,((i8 *)&dialog_title_label_space_str),sizeof title);
+    str_append_max((char *)((void *)title),(const char *)((void *)(*(i32 *)(dialog + 0x134))),sizeof title);
   }
   len = _strlen(title);
   buffer = memblock_alloc((MemBlock *)(dialog + 0x254),len + 1);
@@ -4460,7 +4467,8 @@ void FrameWindow::draw_caption()
   int text_y2;
   i32 highlight_color2;
   int text_x2;
-  char caption[256];
+  char caption[0x240];  /* BF-204 (Peter Johnson's ledger): the original's 256,
+                           less than the title, a player's name and a label */
   
   reset_clip();
   highlight_color2 = ui_metrics.highlight_color;
@@ -6882,7 +6890,9 @@ DialogEditField *Dialog::add_edit_field(const char *label,iptr initial_text,size
     max_width = label_width;
   }
   edit_label_width = max_width;
-  if (0xfe < (int)max_len) {
+  /* BF-110 (Peter Johnson's ledger): a length that wrapped negative (a
+     GAME.TXT @LENGTH) is the longest too (the original copied that many) */
+  if ((0xfe < (int)max_len) || ((int)max_len < 0)) {
     max_len = 0xff;
   }
   field->max_len = max_len;
@@ -7038,7 +7048,9 @@ int Dialog::draw_wrapped_text(int draw)
   u32 y2;
   int x2;
   char line_buf[256];
-  char word_buf[80];
+  char word_buf[0x100];  /* BF-052 (Peter Johnson's ledger): the original's 80,
+                           less than a word of a line; longer words and lines
+                           are cut */
   int line_width;
   DialogLine *line;
   int line_height;
@@ -7104,7 +7116,7 @@ int Dialog::draw_wrapped_text(int draw)
         if (line_buf[0] != '\0') {
           crt_strcat(word_buf,((i8 *)&dialog_wrap_space_str));
         }
-        crt_strcat(word_buf,src);
+        str_append_max(word_buf,src,sizeof word_buf);
         text_width = ((GameFont *)body_font)->text_width((const char *)word_buf);
         if ((int)max_width < (int)((uint)has_shadow + text_width + line_width)) {
           if (draw != 0) {
@@ -7125,7 +7137,7 @@ int Dialog::draw_wrapped_text(int draw)
           line_buf[0] = '\0';
           line_width = 0;
         }
-        crt_strcat(line_buf,word_buf);
+        str_append_max(line_buf,word_buf,sizeof line_buf);
         line_width += text_width;
         if (space != (char *)0x0) {
           *space = ' ';
@@ -8594,7 +8606,10 @@ void Dialog::create_controls()
           option_count = 0x28;
         }
       }
-      for (option = option_list; option != (DialogOption *)0x0;
+      /* BF-185, BF-187 (Peter Johnson's ledger): the labels of the first 40
+         options (the original walked every option into its 41 labels after
+         taking 40 of them) */
+      for (option = option_list; (option != (DialogOption *)0x0) && (label_count2 < 0x28);
           option = option->next) {
         labels[label_count2] = (uint)option->text;
         label_count2++;
@@ -9572,6 +9587,25 @@ void Dialog::render()
   return;
 }
 
+/* (port) BF-184 (Peter Johnson's ledger): whether list item index (-1: the
+   selected one) has a text that fits size bytes (the original copied it whole
+   into 132; a longer label comes only from a custom resource) */
+static int dialog_list_text_fits(uptr list,int index,size_t size)
+{
+  HWND hwnd;
+  LRESULT len;
+
+  hwnd = (HWND)(uptr)((ListBox *)list)->hwnd;
+  if (index < 0) {
+    index = (int)SendMessageA(hwnd,0x188,0,0);
+    if (index == -1) {
+      return 1;  /* no selection: the short text the list gives for none */
+    }
+  }
+  len = SendMessageA(hwnd,0x18a,(WPARAM)index,0);
+  return (0 <= len) && ((size_t)len < size);
+}
+
 /* 005a5f34 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
@@ -9654,18 +9688,22 @@ u32 Dialog::run_modal(iptr out_text,iptr timeout_secs)
           result_id = (u32)selected_option->id;
         }
         else {
-          ((ListBox *)listbox[cur_pane])->get_sel_text((char *)sel_text);
           result_id = (u32)option_list->id;
-          option = option_list;
-          i = 0;
-          for (; option != (DialogOption *)0x0; option = option->next) {
-            ((ListBox *)listbox[cur_pane])->get_text(i,
-                       (char *)item_text);
-            result = _strcmp(sel_text,item_text);
-            if (result == 0) {
-              result_id = (uint)option->id;
+          if (dialog_list_text_fits(listbox[cur_pane],-1,sizeof sel_text)) {  /* BF-184 */
+            ((ListBox *)listbox[cur_pane])->get_sel_text((char *)sel_text);
+            option = option_list;
+            i = 0;
+            for (; option != (DialogOption *)0x0; option = option->next) {
+              if (dialog_list_text_fits(listbox[cur_pane],i,sizeof item_text)) {
+                ((ListBox *)listbox[cur_pane])->get_text(i,
+                           (char *)item_text);
+                result = _strcmp(sel_text,item_text);
+                if (result == 0) {
+                  result_id = (uint)option->id;
+                }
+              }
+              i++;
             }
-            i++;
           }
         }
       }
@@ -9712,7 +9750,9 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
         if (*key2 != '\0') {
           key2++;
         }
-        text_expand_vars((iptr)key2,(iptr)expanded);
+        /* BF-059 (Peter Johnson's ledger): expanded is load_text_section's
+           256 bytes; a longer text is cut */
+        text_expand_vars_max((iptr)key2,(iptr)expanded,0x100);
         set_title((const char *)expanded);
       }
       else {
@@ -9723,7 +9763,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
           if (*key2 != '\0') {
             key2++;
           }
-          text_expand_vars((iptr)key2,(iptr)expanded);
+          text_expand_vars_max((iptr)key2,(iptr)expanded,0x100);  /* BF-059 */
           add_button((const char *)expanded);
         }
         else {
@@ -9834,7 +9874,8 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
                                   }
                                   len = _strlen((char *)edit_default);
                                   if (len == 0) {
-                                    crt_strcpy(edit_text,key2);
+                                    /* BF-059: edit_text is load_text_section's 80 bytes */
+                                    str_copy_max(edit_text,key2,0x50);
                                   }
                                 }
                               }
@@ -9879,7 +9920,9 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
   if (plat_extras) {
     extras_note_dialog(this,file_name,section);   /* X33 */
   }
-  crt_strcpy((char *)((void *)(((i8 *)&dialog_text_font_obj_block.dialog_section_name))),(const char *)((void *)section));
+  /* BF-051 (Peter Johnson's ledger): within its 112 bytes */
+  str_copy_max((char *)((void *)(((i8 *)&dialog_text_font_obj_block.dialog_section_name))),(const char *)((void *)section),
+               sizeof dialog_text_font_obj_block.dialog_section_name);
   cmp = text_open_section(file_name,section);
   if (cmp == 0) {
     if ((flags & 0x8000) == 0) {
@@ -9890,7 +9933,9 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
     }
     has_edit = (uint)(edit_default != 0);
     if (has_edit != 0) {
-      crt_strcpy((char *)((void *)edit_text),(const char *)((void *)edit_default));
+      /* BF-186 (Peter Johnson's ledger): a longer default is cut at 79
+         characters (the original copied it whole) */
+      str_copy_max((char *)((void *)edit_text),(const char *)((void *)edit_default),sizeof edit_text);
     }
     do {
       line = text_read_line(1);
@@ -9911,11 +9956,11 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
           load_section_keyword(line,expanded,mode,default_value,has_edit,edit_default,edit_text);
         }
         else if (mode == 1) {
-          text_expand_vars((iptr)line,(iptr)expanded);
+          text_expand_vars_max((iptr)line,(iptr)expanded,sizeof expanded);  /* BF-059 */
           add_line((const char *)expanded,0xffffffff,0xffffffff,0xffffffff,0);
         }
         else if (mode == 2) {
-          text_expand_vars((iptr)line,(iptr)expanded);
+          text_expand_vars_max((iptr)line,(iptr)expanded,sizeof expanded);  /* BF-059 */
           if (has_edit == 0) {
             if ((style_flags & 4) == 0) {
               option = (DialogOption *)((uptr)add_option((const char *)expanded,option_index,0));

@@ -839,7 +839,9 @@ void __cdecl city_editor_on_edit_misc(void)
   }
   dlg_set_parent_window(parent_wnd2);
   choice = popup_text_flags((const char *)&str_debug_11,(const char *)&str_citymisc,1);
-  if (choice != -1) {
+  /* BF-115 (Peter Johnson's ledger): a choice past the 20 sprites (a row
+     added to a scenario's DEBUG.TXT) is no choice */
+  if ((choice != -1) && (-1 < choice) && (choice < 0x14)) {
     switch(choice) {
     case 0:
       sprites = ((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites);
@@ -2960,7 +2962,8 @@ void __cdecl city_assign_default_name(iptr city)
   int name_label;
   uint skip_count;
   int attempt;
-  i8 section_name[24];
+  i8 section_name[0x100];  /* BF-054 (Peter Johnson's ledger): the original's
+                             24, less than a civilization's name */
   
   attempt = 0;
   civ = cities[city].owner;
@@ -2971,7 +2974,7 @@ void __cdecl city_assign_default_name(iptr city)
   else {
     name_label = (int)leaders[civs[civ].tribe].plural;
   }
-  str_append_string_id((iptr)section_name,name_label);
+  str_append_max((char *)section_name,label_string(name_label),sizeof section_name);
   do {
     attempt++;
     if (2 < attempt) break;
@@ -8039,7 +8042,9 @@ void __cdecl impr_editor_edit_misc_icon(void)
   }
   dlg_set_parent_window(parent_wnd2);
   choice = popup_text_flags((const char *)&str_debug_11,(const char *)&str_imprmisc,1);
-  if (choice != -1) {
+  /* BF-114 (Peter Johnson's ledger): a choice past the cursor and the eight
+     explosions (a row added to a scenario's DEBUG.TXT) is no choice */
+  if ((choice != -1) && (-1 < choice) && (choice < 9)) {
     if (choice == 0) {
       sprites = ((i8 *)&map_cursor_sprite_block.map_cursor_sprite);
       sprite_count2 = 5;
@@ -15758,7 +15763,8 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
   iptr *improvement_out;
   iptr improvement;
   iptr unit_type;
-  i8 caption[80];
+  i8 caption[80];  /* BF-051 (Peter Johnson's ledger): a longer name is cut
+                      (and its advice section not found) */
 
   if (((*((char *)&game.game_options + 1)) & (OPT_INSTANT_ADVICE >> 8)) != 0) {
     improvement_out = &improvement;
@@ -15770,7 +15776,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       unit_dialog.load_text((const char *)&str_advice_2,(const char *)&str_military,8);
       str_clear((char *)caption);
       str_append((char *)caption,(const char *)&str_empty_145);
-      str_append_string_id((iptr)caption,unit_types[unit_type].name);
+      str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
       unit_dialog.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),0,0);
       city = unit_dialog.load_text((const char *)&str_advice_3,(const char *)caption,0x8000)
       ;
@@ -15788,7 +15794,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         improvement = -improvement;
         text_set_label_arg(0,improvements[city].name);
         if (improvement < 0x27) {
-          str_append_string_id((iptr)caption,improvements[improvement].name);
+          str_append_max((char *)caption,label_string(improvements[improvement].name),sizeof caption);
           improvement_dialog.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c),
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
@@ -15802,7 +15808,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       else {
         unit_type = improvement;
         text_set_label_arg(0,unit_types[improvement].name);
-        str_append_string_id((iptr)caption,unit_types[unit_type].name);
+        str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
         improvement_dialog.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),0,0
                   );
       }

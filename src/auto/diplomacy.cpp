@@ -828,9 +828,11 @@ static void diplo_exchange_compose_offer(iptr civ2,int mode,iptr advance2,Dialog
   dlg.init_defaults();
   dlg.load_game_text((const char *)&textbuf.buf);
   if ((-1 < diplo_eval.offer_tech_2nd) && (diplo_eval.offer_tech_2nd != diplo_eval.offer_tech_best)) {
-    str_clear((char *)label_buf);
-    str_append_label((iptr)label_buf,0x6b);
-    text_expand_vars((iptr)label_buf,(iptr)&textbuf.buf);
+    /* BF-200 (Peter Johnson's ledger): the label cut at 79 characters,
+       expanded within the text buffer */
+    label_buf[0] = '\0';
+    str_append_max((char *)label_buf,label_string(label_table.string_ids[0x6b]),sizeof label_buf);
+    text_expand_vars_max((iptr)label_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
     dlg.add_option((const char *)&textbuf.buf,2,0);
   }
 }
@@ -4781,7 +4783,13 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
     str_clear((words + j * 0x32));
   }
   label = (iptr)(label_string(advances[advance].name));
-  str_append((char *)words,(const char *)label);
+  /* BF-084 (Peter Johnson's ledger): the name within the first of the five
+     50-byte words, the words after the fifth left out (as shown: the
+     original put them past the words, and read on past them; Verne's rules
+     have names of six and seven words), and the lines within their 52 and 50
+     characters (the original copied a longer name over the words and
+     appended past the lines) */
+  str_copy_max((char *)words,(const char *)label,0x32);
   CharUpperA(words);
   word2 = 0;
   do {
@@ -4792,16 +4800,18 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
     }
     if (words[(int)char_pos + word2 * 0x32] != '\0') {
       words[(int)char_pos + word2 * 0x32] = '\0';
-      str_append((words + (word2 * 5 + 5) * 10),
-                         (const char *)(words + (int)char_pos + word2 * 0x32 + 1));
+      if (word2 < 4) {  /* (the rest after a fifth word went past the words) */
+        str_append((words + (word2 * 5 + 5) * 10),
+                           (const char *)(words + (int)char_pos + word2 * 0x32 + 1));
+      }
     }
     word2++;
-  } while (char_pos != '\0');
+  } while ((char_pos != '\0') && (word2 < 5));
   str_clear((aCStack_641 + 1));
   for (j = 0; (j < 5 && (words[j * 0x32] != '\0'));
       j = j + 1) {
-    str_append((aCStack_641 + 1),(const char *)(words + j * 0x32));
-    str_append((aCStack_641 + 1),(const char *)&str_empty_104);
+    str_append_max((aCStack_641 + 1),(const char *)(words + j * 0x32),sizeof aCStack_641 - 1);
+    str_append_max((aCStack_641 + 1),(const char *)&str_empty_104,sizeof aCStack_641 - 1);
     value = font2.text_width((const char *)(aCStack_641 + 1));
     if (text_width < value) break;
   }
@@ -4819,7 +4829,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       }
       if (truncated != 0) {
         aCStack_641[char_pos] = '\0';
-        str_append((aCStack_641 + 1),(const char *)&str_empty_105);
+        str_append_max((aCStack_641 + 1),(const char *)&str_empty_105,sizeof aCStack_641 - 1);
       }
     }
     CopyRect(&draw_rect,&text_rect);
@@ -4836,7 +4846,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
   else {
     str_clear((aCStack_641 + 1));
     if (j == 0) {
-      str_append((aCStack_641 + 1),(const char *)words);
+      str_append_max((aCStack_641 + 1),(const char *)words,sizeof aCStack_641 - 1);
       word2 = 1;
       value = lstrlenA(line2_buf);
       truncated = 0;
@@ -4850,12 +4860,12 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       }
       if (truncated != 0) {
         aCStack_641[char_pos] = '\0';
-        str_append((aCStack_641 + 1),(const char *)&str_empty_106);
+        str_append_max((aCStack_641 + 1),(const char *)&str_empty_106,sizeof aCStack_641 - 1);
       }
     }
     else {
       for (word2 = 0; word2 < j; word2++) {
-        str_append((aCStack_641 + 1),(const char *)(words + word2 * 0x32));
+        str_append_max((aCStack_641 + 1),(const char *)(words + word2 * 0x32),sizeof aCStack_641 - 1);
       }
     }
     if (top_techs[0xc] != 0) {
@@ -4873,7 +4883,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
     }
     str_clear((char *)line2_buf);
     for (; word2 < 5; word2++) {
-      str_append((char *)line2_buf,(const char *)(words + word2 * 0x32));
+      str_append_max((char *)line2_buf,(const char *)(words + word2 * 0x32),sizeof line2_buf);
     }
     value = lstrlenA(line2_buf);
     truncated = 0;
@@ -4887,7 +4897,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
     }
     if (truncated != 0) {
       line2_buf[char_pos - 1] = '\0';
-      str_append((char *)line2_buf,(const char *)&str_empty_107);
+      str_append_max((char *)line2_buf,(const char *)&str_empty_107,sizeof line2_buf);
     }
     if (top_techs[0xc] != 0) {
       value = font2.font_cached_height();

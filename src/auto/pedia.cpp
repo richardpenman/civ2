@@ -714,7 +714,8 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr 
   i8 *name_arg;
   char format_buf[256];
   int base_trade2;
-  i8 base_name[40];
+  i8 base_name[0x100];  /* BF-043 (Peter Johnson's ledger): the original's 40,
+                          less than a terrain's name */
   int base_shields;
   int special_trade;
   int base_food;
@@ -726,7 +727,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr 
   y2 += line_height * 2;
   terrain_index = pedia_find_terrain_index(terrain3);
   label = pedia_lookup_text(pedia_wnd.terrain_names,terrain_index);
-  crt_strcpy(base_name,label);
+  str_copy_max(base_name,label,sizeof base_name);
   base_food = (int)(char)terrain_types[terrain3].food;
   if (terrain3 == TERRAIN_GRASSLAND) {
     shields = '\0';
@@ -2954,7 +2955,9 @@ void PediaWindow::load_advance_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_advance_count = 0;
     improvement = 0;
-    while (sort_key != -2) {
+    /* BF-217 (Peter Johnson's ledger): at most the game's advances (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 100)) {
       if (advances[improvement].enabled != '\0') {
         pedia_advance_keys[pedia_advance_count] = sort_key;
         pedia_advance_ids[pedia_advance_count] = improvement;
@@ -3009,7 +3012,9 @@ void PediaWindow::load_improvement_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_improve_count = 0;
     improvement = 1;
-    while (sort_key != -2) {
+    /* BF-140, BF-214 (Peter Johnson's ledger): at most the game's improvements (1..38) (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 0x27)) {
       if (-2 < improvements[improvement].preq) {
         pedia_improve_keys[pedia_improve_count] = sort_key;
         pedia_improve_ids[pedia_improve_count] = improvement;
@@ -3063,7 +3068,9 @@ void PediaWindow::load_wonder_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_wonder_count = 0;
     improvement = 0x27;
-    while (sort_key != -2) {
+    /* BF-212 (Peter Johnson's ledger): at most the game's wonders (39..66) (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 0x43)) {
       if (-2 < improvements[improvement].preq) {
         pedia_wonder_keys[pedia_wonder_count] = sort_key;
         pedia_wonder_ids[pedia_wonder_count] = improvement;
@@ -3117,7 +3124,9 @@ void PediaWindow::load_unit_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_unit_count = 0;
     improvement = 0;
-    while (sort_key != -2) {
+    /* BF-215 (Peter Johnson's ledger): at most the game's unit types (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 0x3e)) {
       if (-2 < unit_types[improvement].prerequisite) {
         pedia_unit_keys[pedia_unit_count] = sort_key;
         pedia_unit_ids[pedia_unit_count] = improvement;
@@ -3170,7 +3179,9 @@ void PediaWindow::load_government_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_government_count = 0;
     improvement = 0;
-    while (sort_key != -2) {
+    /* BF-140 (Peter Johnson's ledger): at most the game's governments (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 7)) {
       pedia_government_keys[pedia_government_count] = sort_key;
       pedia_government_ids[pedia_government_count] = improvement;
       node2 = (PediaListNode *)operator_new(0xc);
@@ -3222,7 +3233,9 @@ void PediaWindow::load_terrain_index(PediaListNode *&prev_node2)
     sort_key = text_next_int();
     pedia_terrain_count_2 = 0;
     improvement = 0;
-    while (sort_key != -2) {
+    /* BF-220 (Peter Johnson's ledger): at most the game's terrain types (a longer
+       DESCRIBE.TXT index filled the lists past their ends) */
+    while ((sort_key != -2) && (improvement < 0x21)) {
       if (improvement != IMP_SUPERMARKET) {
         pedia_terrain_keys[pedia_terrain_count_2] = sort_key;
         pedia_terrain_ids[pedia_terrain_count_2] = improvement;
@@ -3281,8 +3294,11 @@ void PediaWindow::load_concept_index(PediaListNode *&prev_node2)
     pedia_concept_count = 0;
     line_prefix[2] = 0;
     improvement = 0;
-    while (reading) {
-      text_read_line(1);
+    /* BF-140 (Peter Johnson's ledger): at most the 256 concepts the list
+       holds; BF-121: the end of the file ends the section (the original read
+       on without end) */
+    while (reading && (pedia_concept_count < 0x100)) {
+      text_read_line_or_end(1);
       _strncpy(line_prefix,((i8 *)&textbuf.buf),2);
       status = _strcmp(line_prefix,((i8 *)&pedia_index_marker_str));
       if (status == 0) {
@@ -4771,12 +4787,15 @@ void PediaWindow::load_improvement_text(iptr improvement_id)
         }
         str_trim(_Str);
         len = _strlen(desc_buf);
+        /* BF-069 (Peter Johnson's ledger): the text cut where the text
+           buffer it is copied into ends (the original appended without a
+           bound and copied the whole of it) */
         if (len != 0) {
           ret_addr = 0x59a2a8;
-          crt_strcat(desc_buf,((i8 *)&pedia_improve_text_space_str));
+          str_append_max(desc_buf,((i8 *)&pedia_improve_text_space_str),TEXTBUF_SIZE);
         }
         ret_addr = 0x59a2be;
-        crt_strcat(desc_buf,_Str);
+        str_append_max(desc_buf,_Str,TEXTBUF_SIZE);
       }
     }
   }
@@ -4865,15 +4884,17 @@ void PediaWindow::append_unit_fact(iptr unit_type,u32 mask,char *desc_buf,int &h
   int line;
 
   line = (int)text_read_line_or_end(1);
+  /* BF-053 (Peter Johnson's ledger): within draw_unit_page's 1000 bytes (the
+     original appended without a bound); a longer text is cut */
   if ((unit_types[unit_type].flags & mask) != 0) {
     if (has_text == 0) {
-      crt_strcpy(desc_buf,(char *)(line + 1));
+      str_copy_max(desc_buf,(char *)(line + 1),1000);
       has_text = 1;
     }
     else {
-      crt_strcat(desc_buf,(char *)(line + 1));
+      str_append_max(desc_buf,(char *)(line + 1),1000);
     }
-    str_append_space((iptr)desc_buf);
+    str_append_max(desc_buf,((i8 *)&append_space_str),1000);
   }
 }
 

@@ -428,6 +428,12 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
                          -(((int)(caption_font_block.screen_height + -0x1e0 + (caption_font_block.screen_height + -0x1e0 >> 0x1f & 7U)) >> 3)
                           + 1));
       choice = dlg.show_modal(0);
+      /* BF-113 (Peter Johnson's ledger): a choice past the two genders (a row
+         added to GAME.TXT's @GENDER) is no choice (the original indexed the
+         leader's names and titles with it) */
+      if (1 < choice) {
+        choice = -1;
+      }
       snd_play_effect(SND_MENUOK,0,0,0);
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
       if (choice < 0) break;  /* back to the difficulty dialog */
@@ -522,6 +528,9 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
           snd_play_effect(SND_MENUOK,0,0,0);
           ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
           if (choice < 0) break;  /* back to the leader's gender */
+          /* BF-102 (Peter Johnson's ledger): a choice past the four styles
+             (a row added to GAME.TXT's @CUSTOMCITY) is asked again */
+          if (3 < (choice & 0xffff)) continue;
           civ_names[game.player_civ].city_style = (short)choice;
           game.civs_alive = game.human_players | 1;
           next_step = setup_choose_opponents(dlg,pick_opponents,leader_i);

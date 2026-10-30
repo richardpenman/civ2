@@ -77,8 +77,7 @@ transaction.
   arrive in separate records, and a check after each record would refuse a valid join midway
   (Peter Johnson's reconstruction had to defer it to the join's ready marker), so one check
   function does not serve both; see [bugfix-evidence-network.md](bugfix-evidence-network.md).
-- BF-014 (whether `events_compact` can move the event the editor is editing) and BF-164 (the
-  hot-seat actor restored from a value not saved on that path) are unsettled.
+- BF-014 and BF-164 are settled in [bugfix-evidence-text.md](bugfix-evidence-text.md).
 - The rest of the multiplayer block (passwords, e-mail addresses) and the events' other
   indices (unit types, civs and terrain of their actions) are read as before.
 - BF-024's trim takes the length of the wrong line (a display difference, only with an

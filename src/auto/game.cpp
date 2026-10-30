@@ -62,6 +62,11 @@ i32 __cdecl setup_hotseat_game(void)
       result = 1;
       return result;
     }
+    if (4 < choice) {  /* BF-075 (Peter Johnson's ledger): a choice past the five
+                          the game knows (a row added to GAME.TXT's @HOTSEAT1) is
+                          asked again (the original went on with no map set) */
+      continue;
+    }
     menu_prefs.hotseat_menu_choice = (short)choice;
     if ((-1 < choice) && (choice < 3)) {
       __chdir(((i8 *)&game_dirs.home));
@@ -737,6 +742,12 @@ int __cdecl setup_start_scenario(void)
                    -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1)
                   );
         choice = dlg.show_modal(0);
+        /* BF-113 (Peter Johnson's ledger): a choice past the two genders (a row
+           added to GAME.TXT's @GENDER) is no choice (the original indexed the
+           leader's names and titles with it) */
+        if (1 < choice) {
+          choice = -1;
+        }
         snd_play_effect(SND_MENUOK,0,0,0);
         if (-1 < choice) {
           is_female = (u8)choice;
@@ -859,6 +870,10 @@ i32 __cdecl load_game_pick_civ(int title_offset)
       dlg.set_position(0xfffffc19,
                  -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
       choice = dlg.show_modal(0);
+      /* BF-113 */
+      if (1 < choice) {
+        choice = -1;
+      }
       snd_play_effect(SND_MENUOK,0,0,0);
       if (-1 < choice) {
         is_female = (u8)choice;
@@ -2195,7 +2210,8 @@ bool __cdecl registry_write_value(iptr key_path,iptr value_name,iptr data,DWORD 
     ok = rc == 0;
   }
   else {
-    RegCloseKey(hkey);
+    /* BF-301 (Peter Johnson's ledger): no key to close (the original closed
+       the handle it had left unset) */
     ok = false;
   }
   return ok;
@@ -2230,8 +2246,7 @@ i8 * __cdecl registry_read_value(iptr key_path,iptr value_name,iptr out_size,ipt
     }
   }
   else {
-    RegCloseKey(hkey);
-    result = (i8 *)0x0;
+    result = (i8 *)0x0;  /* BF-301: no key to close */
   }
   return result;
 }
@@ -2324,6 +2339,10 @@ void __cdecl intro_play_opening_video(void)
   int open_rc;
   
   player.construct();
+  /* BF-297 (Peter Johnson's ledger): the audio's flags start clear, as the
+     original found them on its stack (AviAudio::construct sets only the
+     stream; a heap player keeps the debug heap's fill, as in the original) */
+  player.audio.flags = 0;
   ON_SCOPE_EXIT(player.destruct());
   host_wnd.ModalMenuWindow::construct();
   ON_SCOPE_EXIT(host_wnd.ModalMenuWindow::destruct());
@@ -2902,6 +2921,15 @@ void __cdecl save_set_file_ext(int is_scenario)
   return;
 }
 
+/* (port) BF-038 (Peter Johnson's ledger): an entry's description is its
+   label, cut to 48 characters so that the four entries, their patterns and the
+   list's end fit the 260 bytes save_file_filter clears (the original appended
+   the whole label) */
+static void save_filter_append_label(char *buf,int label_id)
+{
+  str_append_max(buf,label_string(label_table.string_ids[label_id]),0x31);
+}
+
 /* 00473e55 auto */
 i8 * __cdecl save_file_filter(int save_only,int is_scenario,int is_mp)
 
@@ -2927,7 +2955,7 @@ i8 * __cdecl save_file_filter(int save_only,int is_scenario,int is_mp)
     }
     else {
       _memset(((i8 *)&grey_palette_block.save_file_filter_buf),0,0x104);
-      str_append_label((iptr)&grey_palette_block.save_file_filter_buf,0x105);
+      save_filter_append_label((char *)&grey_palette_block.save_file_filter_buf,0x105);
       crt_strcat(((i8 *)&grey_palette_block.save_file_filter_buf),str_mp);
       len = _strlen(((i8 *)&grey_palette_block.save_file_filter_buf));
       crt_strcat((char *)((void *)(len + (iptr)(((u8 *)&grey_palette_block.save_file_filter_buf + 1)))),((i8 *)&save_filter_mp_pattern_str));
@@ -2935,7 +2963,7 @@ i8 * __cdecl save_file_filter(int save_only,int is_scenario,int is_mp)
   }
   else {
     _memset(((i8 *)&grey_palette_block.save_file_filter_buf),0,0x104);
-    str_append_label((iptr)&grey_palette_block.save_file_filter_buf,0x19f);
+    save_filter_append_label((char *)&grey_palette_block.save_file_filter_buf,0x19f);
     crt_strcat(((i8 *)&grey_palette_block.save_file_filter_buf),str_scn);
     len = _strlen(((i8 *)&grey_palette_block.save_file_filter_buf));
     crt_strcat((char *)((void *)(len + (iptr)(((u8 *)&grey_palette_block.save_file_filter_buf + 1)))),str_scn_2);
@@ -2952,7 +2980,7 @@ char * __cdecl save_filter_add_entry(i32 kind,char *buf)
   
   switch(kind) {
   case 0:
-    str_append_label((iptr)buf,0xee);
+    save_filter_append_label(buf,0xee);
     crt_strcat((char *)((void *)buf),str_sav);
     len = _strlen(buf);
     next = (buf + len + 1);
@@ -2961,7 +2989,7 @@ char * __cdecl save_filter_add_entry(i32 kind,char *buf)
     next = next + len + 1;
     break;
   case 1:
-    str_append_label((iptr)buf,0x357);
+    save_filter_append_label(buf,0x357);
     crt_strcat((char *)((void *)buf),str_hot);
     len = _strlen(buf);
     next = (buf + len + 1);
@@ -2970,7 +2998,7 @@ char * __cdecl save_filter_add_entry(i32 kind,char *buf)
     next = next + len + 1;
     break;
   case 2:
-    str_append_label((iptr)buf,0x35a);
+    save_filter_append_label(buf,0x35a);
     crt_strcat((char *)((void *)buf),str_eml);
     len = _strlen(buf);
     next = (buf + len + 1);
@@ -2982,7 +3010,7 @@ char * __cdecl save_filter_add_entry(i32 kind,char *buf)
   case 4:
   case 5:
   case 6:
-    str_append_label((iptr)buf,0x35d);
+    save_filter_append_label(buf,0x35d);
     crt_strcat((char *)((void *)buf),str_net);
     len = _strlen(buf);
     next = (buf + len + 1);
@@ -3267,7 +3295,8 @@ void __cdecl game_save_dialog(int is_scenario)
   _SYSTEMTIME local_time;
   char num_buf[31];
   char file_name_buf[261];
-  char filter_text[260];
+  char filter_text[0x120];  /* BF-038 (Peter Johnson's ledger): the original's
+                              260, less than its label and patterns */
   char *str_ptr;
   
   if (civ_saved_cursor_x_block.game_setup_complete != 0) {
@@ -3357,7 +3386,10 @@ void __cdecl game_save_dialog(int is_scenario)
           else {
             abs_year_rem_neg = (int)game.year % 0xc;
           }
-          str_append_label((iptr)(file_name_buf + 1),0x1af - abs_year_rem_neg);
+          /* BF-038 (Peter Johnson's ledger): the month's label cut to fit
+             the name's 256 bytes with its extension */
+          str_append_max(file_name_buf + 1,
+                         label_string(label_table.string_ids[0x1af - abs_year_rem_neg]),0xf0);
         }
         else {
           if ((int)game.year % 0xc < 1) {
@@ -3366,7 +3398,8 @@ void __cdecl game_save_dialog(int is_scenario)
           else {
             abs_year_rem_pos = (int)game.year % 0xc;
           }
-          str_append_label((iptr)(file_name_buf + 1),abs_year_rem_pos + 0x1a4);
+          str_append_max(file_name_buf + 1,  /* BF-038 */
+                         label_string(label_table.string_ids[abs_year_rem_pos + 0x1a4]),0xf0);
         }
         crt_strcat(file_name_buf + 1,((i8 *)&grey_palette_block.save_file_path));
         __strlwr(file_name_buf + 1);
@@ -3446,7 +3479,8 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
   iptr unit;
   i8 file_path[260];
   int failed;
-  char filter_text[260];
+  char filter_text[0x120];  /* BF-038 (Peter Johnson's ledger): the original's
+                              260, less than its label and patterns */
   GamePalette palette;
   i8 events_path[260];
   char *str_ptr;
@@ -4599,7 +4633,8 @@ void __cdecl game_autosave(iptr civ)
 
 {
   char *leader_name;
-  i8 backup_path[80];
+  i8 backup_path[0x200];  /* BF-046 (Peter Johnson's ledger): the original's
+                             80, less than its label */
   
   if (human_civ[0] == civ) {
     save_set_file_ext(0);
@@ -5239,6 +5274,7 @@ void __cdecl game_play_loop(void)
   int retired;
   uptr civ;
   byte saved_human_civ;
+  int human_civ_saved;  /* B34: 0 never, 1 in an earlier civ's turn, 2 in this one */
   Dialog dialog2;
   int views_hidden;
   int human_count;
@@ -5246,6 +5282,8 @@ void __cdecl game_play_loop(void)
   
   views_hidden = 0;
   pbem_saved = false;
+  saved_human_civ = 0;
+  human_civ_saved = 0;
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
   ((PictureWindow *)((i8 *)&advisor_state.window))->close();
@@ -5305,11 +5343,15 @@ void __cdecl game_play_loop(void)
           }
         }
         status_draw_civ_color(civ);
+        if (human_civ_saved == 2) {
+          human_civ_saved = 1;
+        }
         if ((game.multiplayer == 1) &&
            ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0)) {
           game.human_players = '\0';
           saved_human_civ = (byte)(*(i8 *)&human_civ);
           (*(i8 *)&human_civ) = -1;
+          human_civ_saved = 2;
         }
         if (((*(byte *)&turn_loop.resume_civ) == 0) || (turn_resume_new_game != 0)) {
           if (((*(byte *)&turn_loop.resume_civ) != 0) && (turn_resume_new_game != 0)) {
@@ -5325,7 +5367,12 @@ void __cdecl game_play_loop(void)
              (ai_process_civ_units(), game.multiplayer == 1)) {
             dialog2.close();
             dialog2.init_defaults();
-            (*(i8 *)&human_civ) = (iptr)saved_human_civ;
+            /* B34: a hot-seat player whose civ was destroyed in its own turn
+               (its last city starved) keeps the player: the original took
+               the player saved at an earlier AI civ's turn (or its stack) */
+            if (bugfix_state() ? (human_civ_saved == 2) : (human_civ_saved != 0)) {
+              (*(i8 *)&human_civ) = (iptr)saved_human_civ;
+            }
           }
         }
         else {
@@ -6082,7 +6129,8 @@ void __cdecl password_dialog_set_title(Dialog *dialog,int civ,i32 label_id)
 {
   size_t title_len;
   i32 title_mem;
-  char title[128];
+  char title[0x120];  /* BF-040 (Peter Johnson's ledger): the original's 128,
+                         less than a 24-byte name and a label */
   
   crt_strcpy(title,(const char *)(&civ_names[civ].leader_name));
   str_append_label((iptr)title,label_id);
@@ -8050,12 +8098,13 @@ i32 ScenarioEvents::action_play_wave(ScenarioEvent *event)
     if (event->wave_file != 0) {
       crt_strcpy(path,((i8 *)&net_map_lock_slots_block.scenario_dir_path));
       crt_strcat(path,str_sound_2);
-      crt_strcat(path,(const char *)((const void *)event->wave_file));
+      /* BF-081 (Peter Johnson's ledger): a longer name is cut (and not found) */
+      str_append_max(path,(const char *)((const void *)event->wave_file),sizeof path);
       exists = file_exists((const char *)path);
       if (exists == 0) {
         crt_strcpy(path,((i8 *)&game_dirs.home));
         crt_strcat(path,str_sound_3);
-        crt_strcat(path,(const char *)((const void *)event->wave_file));
+        str_append_max(path,(const char *)((const void *)event->wave_file),sizeof path);
         exists = file_exists((const char *)path);
         if (exists != 0) {
           snd_wave_play((const char *)path,0,0,0);
@@ -11494,35 +11543,40 @@ static TribeStep setup_tribe_city_style(Dialog *dlg,char *input_text,int *choice
   int style2;
   int cancelled;
 
-  if (in_game == 0) {
-    setup_show_side_picture(8,0);
-  }
-  dlg->load_game_section((const char *)&str_customcity_2,0x20001);
-  dialog_prepend_title_label((iptr)dlg,player_slot + 0x25e);
-  for (style2 = 0; style2 < 4; style2++) {
-    label = (iptr)label_string(label_table.string_ids[0xf6 + style2]);
-    dlg->add_sprite(style2 * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360)),style2,(const char *)label);
-  }
-  dlg->set_default_choice((int)leaders[civs[game.player_civ].tribe].city_style);
-  if (in_game == 0) {
-    dlg->set_position(
-               -(((int)(caption_font_block.screen_width - 0x280 + (caption_font_block.screen_width - 0x280 >> 0x1f & 7U)) >> 3) + 1)
-               ,-(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1
-                 ));
-  }
-  if (2 < game_mode) {
-    dlg_style.pending_idle_callback = net_pump_idle_cb;
-  }
-  *choice = dlg->show_modal(0);
-  if ((net.nm_server_canceled_count != 0) || (net.nm_lost_server_on_join_count != 0)) {
-    setup_tribe_server_lost_popup((const char *)&str_lostserver_10,(const char *)&str_serverquit_9);
-    *result = 1;
-    return TRIBE_FINISH;
-  }
-  snd_play_effect(SND_MENUOK,0,0,0);
-  if (in_game == 0) {
-    ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
-  }
+  /* BF-102 (Peter Johnson's ledger): a choice past the four styles (a row
+     added to GAME.TXT's @CUSTOMCITY) is asked again (the original stored it
+     as the style, past the CITIES graphics) */
+  do {
+    if (in_game == 0) {
+      setup_show_side_picture(8,0);
+    }
+    dlg->load_game_section((const char *)&str_customcity_2,0x20001);
+    dialog_prepend_title_label((iptr)dlg,player_slot + 0x25e);
+    for (style2 = 0; style2 < 4; style2++) {
+      label = (iptr)label_string(label_table.string_ids[0xf6 + style2]);
+      dlg->add_sprite(style2 * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360)),style2,(const char *)label);
+    }
+    dlg->set_default_choice((int)leaders[civs[game.player_civ].tribe].city_style);
+    if (in_game == 0) {
+      dlg->set_position(
+                 -(((int)(caption_font_block.screen_width - 0x280 + (caption_font_block.screen_width - 0x280 >> 0x1f & 7U)) >> 3) + 1)
+                 ,-(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1
+                   ));
+    }
+    if (2 < game_mode) {
+      dlg_style.pending_idle_callback = net_pump_idle_cb;
+    }
+    *choice = dlg->show_modal(0);
+    if ((net.nm_server_canceled_count != 0) || (net.nm_lost_server_on_join_count != 0)) {
+      setup_tribe_server_lost_popup((const char *)&str_lostserver_10,(const char *)&str_serverquit_9);
+      *result = 1;
+      return TRIBE_FINISH;
+    }
+    snd_play_effect(SND_MENUOK,0,0,0);
+    if (in_game == 0) {
+      ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
+    }
+  } while ((-1 < *choice) && (3 < (*choice & 0xffff)));
   if (*choice < 0) {
     game.human_players = ~(byte)(1 << (game.player_civ & 0x1fU)) & game.human_players;
     if (2 < game_mode) {
@@ -11627,6 +11681,10 @@ int __cdecl setup_choose_tribe(int player_slot,int game_mode,int in_game)
       dlg_style.pending_idle_callback = net_pump_idle_cb;
     }
     choice = dlg.show_modal(0);
+    /* BF-113 */
+    if (1 < choice) {
+      choice = -1;
+    }
     snd_play_effect(SND_MENUOK,0,0,0);
     if (in_game == 0) {
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
@@ -12086,6 +12144,10 @@ i32 __cdecl scenario_pick_human_civs(int num_players)
       dlg.set_position(0xfffffc19,
                  -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
       result = dlg.show_modal(0);
+      /* BF-113 */
+      if (1 < result) {
+        result = -1;
+      }
       snd_play_effect(SND_MENUOK,0,0,0);
       if (-1 < result) break;
       game.human_players = game.human_players & ~(byte)(1 << ((byte)civ & 0x1f));
@@ -12537,6 +12599,10 @@ i32 __cdecl setup_join_pick_civ(int player_idx)
                      -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) +
                       1));
           civ = dlg.show_modal(0);
+          /* BF-113 */
+          if (1 < civ) {
+            civ = -1;
+          }
           snd_play_effect(SND_MENUOK,0,0,0);
           if (-1 < civ) {
             is_female = (u8)civ;
@@ -12586,7 +12652,8 @@ void __cdecl events_write_actions(iptr fp,ScenarioEvent *event)
   i32 civ_name;
   uint action_bit;
   int i;
-  char line[80];
+  char line[0x120];  /* BF-048 (Peter Johnson's ledger): the original's 80,
+                        less than a name read from a line of the file */
   
   rc = _fputs(str_then,(FILE *)fp);
   if (((rc == -1) || (action_bit = 1, event == 0)) || (event->actions == 0)) {
@@ -13765,10 +13832,12 @@ void __cdecl events_editor_on_help(void)
       }
       bits2 = (uint)event->trigger;
       idx = 0;
-      for (; (bits2 & 1) == 0; bits2 = bits2 >> 1) {
+      /* BF-077 (Peter Johnson's ledger): an event with no trigger has no
+         help (the original's search for its bit never ended) */
+      for (; (bits2 != 0) && ((bits2 & 1) == 0); bits2 = bits2 >> 1) {
         idx++;
       }
-      if (event != (ScenarioEvent *)0x0) {
+      if ((event != (ScenarioEvent *)0x0) && (bits2 != 0)) {
         events_editor_help_trigger(idx);
       }
     }
@@ -13820,38 +13889,42 @@ void __cdecl events_editor_fill_triggers(void)
   for (event = unit_types_block.events_list_head; event != (ScenarioEvent *)0x0;
       event = event->next) {
     num++;
+    /* BF-077 (Peter Johnson's ledger): an event with no trigger (an empty @IF
+       in the events file) is listed by its number (the original listed the
+       line unset); BF-089: lines longer than 255 characters are cut */
+    snprintf(line,sizeof line,"%d)",num);
     trigger = (uint)event->trigger;
     if (trigger < 9) {
       if (trigger == 8) {
-        _sprintf(line,str_d_turninterval_d,num,(uint)event->turn);
+        snprintf(line,sizeof line,str_d_turninterval_d,num,(uint)event->turn);
       }
       else if (trigger == 1) {
         if (((event->unit_name == 0) || (event->who_name == 0)) || (event->whom_name == 0)) {
-          _sprintf(line,str_d_unitkilled,num);
+          snprintf(line,sizeof line,str_d_unitkilled,num);
         }
         else {
-          _sprintf(line,str_d_unitkilled_s_attacker_s_defender_s,num,(uint)event->unit_name,
+          snprintf(line,sizeof line,str_d_unitkilled_s_attacker_s_defender_s,num,(uint)event->unit_name,
                    (uint)event->who_name,(uint)event->whom_name);
         }
       }
       else if (trigger == 2) {
         if (((event->city_name == 0) || (event->who_name == 0)) || (event->whom_name == 0)) {
-          _sprintf(line,str_d_citytaken,num);
+          snprintf(line,sizeof line,str_d_citytaken,num);
         }
         else {
-          _sprintf(line,str_d_citytaken_s_attacker_s_defender_s,num,(uint)event->city_name,
+          snprintf(line,sizeof line,str_d_citytaken_s_attacker_s_defender_s,num,(uint)event->city_name,
                    (uint)event->who_name,(uint)event->whom_name);
         }
       }
       else if (trigger == 4) {
-        _sprintf(line,str_d_turn_d,num,(uint)event->turn);
+        snprintf(line,sizeof line,str_d_turn_d,num,(uint)event->turn);
       }
     }
     else {
       switch(trigger) {
       case 0x10:
         if ((event->who_name == 0) || (event->whom_name == 0)) {
-          _sprintf(line,str_d_negotiation,num);
+          snprintf(line,sizeof line,str_d_negotiation,num);
         }
         else {
           if ((uint)event->listener_type == 1) {
@@ -13872,7 +13945,7 @@ void __cdecl events_editor_fill_triggers(void)
           else {
             talker_type = str_humanorcomputer_6;
           }
-          _sprintf(line,str_d_negotiation_talker_s_s_listener_s_s,num,(uint)event->who_name,
+          snprintf(line,sizeof line,str_d_negotiation_talker_s_s_listener_s_s,num,(uint)event->who_name,
                    talker_type,(uint)event->whom_name,listener_type);
         }
         break;
@@ -14114,32 +14187,32 @@ void __cdecl events_editor_fill_triggers(void)
       case 0xff:
         break;
       case 0x20:
-        _sprintf(line,str_d_scenarioloaded,num);
+        snprintf(line,sizeof line,str_d_scenarioloaded,num);
         break;
       case 0x40:
         if (event->denominator == 0) {
-          _sprintf(line,str_d_randomturn,num);
+          snprintf(line,sizeof line,str_d_randomturn,num);
         }
         else {
-          _sprintf(line,str_d_randomturn_denominator_d,num,(uint)event->denominator);
+          snprintf(line,sizeof line,str_d_randomturn_denominator_d,num,(uint)event->denominator);
         }
         break;
       case 0x80:
         if (event->whom_name == 0) {
-          _sprintf(line,str_d_noschism,num);
+          snprintf(line,sizeof line,str_d_noschism,num);
         }
         else {
-          _sprintf(line,str_d_noschism_s,num,(uint)event->whom_name);
+          snprintf(line,sizeof line,str_d_noschism_s,num,(uint)event->whom_name);
         }
         break;
       case 0x100:
         if (event->whom_name == 0) {
-          _sprintf(line,str_d_receivedtechnology,num);
+          snprintf(line,sizeof line,str_d_receivedtechnology,num);
         }
         else {
           trigger = (uint)event->whom_name;
           tech_name = (i32)label_string(advances[(uint)event->technology].name);
-          _sprintf(line,str_d_receivedtechnology_s_whom_s,num,tech_name,trigger);
+          snprintf(line,sizeof line,str_d_receivedtechnology_s_whom_s,num,tech_name,trigger);
         }
       }
     }
@@ -14178,37 +14251,37 @@ void __cdecl events_editor_fill_actions(i32 unused)
       if (action < 9) {
         if (action == 8) {
           if (event->money_receiver_name == 0) {
-            _sprintf(line,str_changemoney_3);
+            snprintf(line,sizeof line,str_changemoney_3);
           }
           else {
-            _sprintf(line,str_changemoney_receiver_s_amount_d,
+            snprintf(line,sizeof line,str_changemoney_receiver_s_amount_d,
                      (i32)event->money_receiver_name,event->money_amount);
           }
         }
         else if (action == 1) {
           if (event->text[0] == 0) {
-            _sprintf(line,((i8 *)&events_editor_text_caption));
+            snprintf(line,sizeof line,((i8 *)&events_editor_text_caption));
           }
           else {
-            _sprintf(line,str_text_s,(i32)event->text[0]);
+            snprintf(line,sizeof line,str_text_s,(i32)event->text[0]);
           }
         }
         else if (action == 2) {
           if ((event->move_unit_name == 0) || (event->move_owner_name == 0)) {
-            _sprintf(line,str_moveunit_3);
+            snprintf(line,sizeof line,str_moveunit_3);
           }
           else {
-            _sprintf(line,str_moveunit_s_owner_s,(i32)event->move_unit_name,
+            snprintf(line,sizeof line,str_moveunit_s_owner_s,(i32)event->move_unit_name,
                      (i32)event->move_owner_name);
           }
         }
         else if (action == 4) {
           if (((event->create_unit_name == 0) || (event->create_owner_name == 0)) ||
              (event->create_homecity == 0)) {
-            _sprintf(line,str_createunit_3);
+            snprintf(line,sizeof line,str_createunit_3);
           }
           else {
-            _sprintf(line,str_createunit_s_owner_s_veteran_s_homecity,
+            snprintf(line,sizeof line,str_createunit_s_owner_s_veteran_s_homecity,
                      (i32)event->create_unit_name,(i32)event->create_owner_name,
                      ((i8 *)&events_editor_yes_no_strs) + ((event->create_veteran != 0) - 1 & 4),
                      (i32)event->create_homecity);
@@ -14218,66 +14291,66 @@ void __cdecl events_editor_fill_actions(i32 unused)
       else if (action < 0x21) {
         if (action == 0x20) {
           if ((event->aggression_who_name == 0) || (event->aggression_whom_name == 0)) {
-            _sprintf(line,str_makeaggression_3);
+            snprintf(line,sizeof line,str_makeaggression_3);
           }
           else {
-            _sprintf(line,str_makeaggression_aggressor_s_victim_s,
+            snprintf(line,sizeof line,str_makeaggression_aggressor_s_victim_s,
                      (i32)event->aggression_who_name,(i32)event->aggression_whom_name);
           }
         }
         else if (action == 0x10) {
           if (event->wave_file == 0) {
-            _sprintf(line,str_playwavefile_3);
+            snprintf(line,sizeof line,str_playwavefile_3);
           }
           else {
-            _sprintf(line,str_playwavefile_s,(i32)event->wave_file);
+            snprintf(line,sizeof line,str_playwavefile_s,(i32)event->wave_file);
           }
         }
       }
       else if (action < 0x81) {
         if (action == 0x80) {
           if (event->cd_track == 0) {
-            _sprintf(line,str_playcdtrack_3);
+            snprintf(line,sizeof line,str_playcdtrack_3);
           }
           else {
-            _sprintf(line,str_playcdtrack_d,event->cd_track);
+            snprintf(line,sizeof line,str_playcdtrack_d,event->cd_track);
           }
         }
         else if (action == 0x40) {
-          _sprintf(line,str_justonce_3);
+          snprintf(line,sizeof line,str_justonce_3);
         }
       }
       else if (action < 0x201) {
         if (action == 0x200) {
           name_str = (i32)label_string(terrain_types[event->terrain_type].name);
-          _sprintf(line,str_changeterrain_s,name_str);
+          snprintf(line,sizeof line,str_changeterrain_s,name_str);
         }
         else if (action == 0x100) {
-          _sprintf(line,str_dontplaywonders_3);
+          snprintf(line,sizeof line,str_dontplaywonders_3);
         }
       }
       else if (action == 0x400) {
         if (event->destroy_civ < 0) {
           if ((event->trigger_bytes[1] & 1) == 0) {
             if (event->destroy_civ == -3) {
-              _sprintf(line,str_destroyacivilization_triggerattacker);
+              snprintf(line,sizeof line,str_destroyacivilization_triggerattacker);
             }
             else {
-              _sprintf(line,str_destroyacivilization_triggerdefender);
+              snprintf(line,sizeof line,str_destroyacivilization_triggerdefender);
             }
           }
           else {
-            _sprintf(line,str_destroyacivilization_triggerreceiver);
+            snprintf(line,sizeof line,str_destroyacivilization_triggerreceiver);
           }
         }
         else {
           name_str = (i32)(civ_name_plural(event->destroy_civ));
-          _sprintf(line,str_destroyacivilization_s,name_str);
+          snprintf(line,sizeof line,str_destroyacivilization_s,name_str);
         }
       }
       else if (action == 0x800) {
         if (event->give_tech_civ == 0) {
-          _sprintf(line,str_givetechnology_3);
+          snprintf(line,sizeof line,str_givetechnology_3);
         }
         else if (event->give_tech_civ < 0) {
           if ((event->trigger_bytes[1] & 1) == 0) {
@@ -14292,16 +14365,16 @@ void __cdecl events_editor_fill_actions(i32 unused)
             _sprintf(who_str,str_triggerreceiver_4);
           }
           name_str = (i32)label_string(advances[event->give_tech].name);
-          _sprintf(line,str_givetechnology_receiver_s_technology_s_2,who_str,name_str);
+          snprintf(line,sizeof line,str_givetechnology_receiver_s_technology_s_2,who_str,name_str);
         }
         else {
           name_str = (i32)label_string(advances[event->give_tech].name);
           civ_name = (i32)(civ_name_plural(event->give_tech_civ));
-          _sprintf(line,str_givetechnology_receiver_s_technology_s,civ_name,name_str);
+          snprintf(line,sizeof line,str_givetechnology_receiver_s_technology_s,civ_name,name_str);
         }
       }
       else if (action == 0x2000) {
-        _sprintf(line,str_hastriggered_2);
+        snprintf(line,sizeof line,str_hastriggered_2);
       }
       if (line[0] != '\0') {
         editor_active.wnd->action_listbox.add_string((const char *)line);
@@ -15060,7 +15133,8 @@ static void edit_action_move_unit(ScenarioEvent *event,uint *changed)
   char input_buf[260];
   int idx;
   int number_value;
-  char default_text[64];
+  char default_text[64];  /* BF-036 (Peter Johnson's ledger): eight numbers of
+                             the events file cut at 63 characters */
   int result;
   const char *name_str;
 
@@ -15092,7 +15166,7 @@ static void edit_action_move_unit(ScenarioEvent *event,uint *changed)
         event->move_owner_name = (char *)value;
         if (event->move_owner_name != 0) {
           crt_strcpy((char *)((void *)event->move_owner_name),name_str);
-          _sprintf(default_text,str_d_d_d_d_d_d_d_d,event->move_rect[0],event->move_rect[1],
+          snprintf(default_text,sizeof default_text,str_d_d_d_d_d_d_d_d,event->move_rect[0],event->move_rect[1],
                    event->move_rect[2],event->move_rect[3],event->move_rect[4],event->move_rect[5],
                    event->move_rect[6],event->move_rect[7]);
           if (editor_active.wnd == 0) {
@@ -15118,7 +15192,7 @@ static void edit_action_move_unit(ScenarioEvent *event,uint *changed)
                 event->move_rect[idx * 2 + 1] = edit_action_read_coord();
               }
             }
-            _sprintf(default_text,str_d_d_5,event->move_to_x,event->move_to_y);
+            snprintf(default_text,sizeof default_text,str_d_d_5,event->move_to_x,event->move_to_y);
             if (editor_active.wnd == 0) {
               parent_wnd4 = 0;
             }
@@ -15189,7 +15263,8 @@ static void edit_action_create_unit(ScenarioEvent *event,uint *changed)
   char input_buf[260];
   int idx;
   int choice;
-  char default_text[64];
+  char default_text[64];  /* BF-036 (Peter Johnson's ledger): eight numbers of
+                             the events file cut at 63 characters */
   int result;
   char *name_str;
 
@@ -15251,7 +15326,7 @@ static void edit_action_create_unit(ScenarioEvent *event,uint *changed)
                 crt_strcpy((char *)((void *)event->create_homecity),input_buf);
                 for (idx = 0; idx < 10; idx++) {
                   event->create_location_count = idx;
-                  _sprintf(default_text,str_d_d_6,event->create_locations[idx * 2],
+                  snprintf(default_text,sizeof default_text,str_d_d_6,event->create_locations[idx * 2],
                            event->create_locations[idx * 2 + 1]);
                   if (editor_active.wnd == 0) {
                     parent_wnd9 = 0;
@@ -15391,7 +15466,8 @@ static void edit_action_change_terrain(ScenarioEvent *event,uint *changed)
   iptr parent_wnd12;
   char input_buf[260];
   int idx;
-  char default_text[64];
+  char default_text[64];  /* BF-036 (Peter Johnson's ledger): eight numbers of
+                             the events file cut at 63 characters */
   int result;
 
   arg2 = 7;
@@ -15402,7 +15478,7 @@ static void edit_action_change_terrain(ScenarioEvent *event,uint *changed)
   }
   else {
     event->terrain_type = result;
-    _sprintf(default_text,str_d_d_d_d_d_d_d_d_2,event->terrain_rect[0],event->terrain_rect[1],
+    snprintf(default_text,sizeof default_text,str_d_d_d_d_d_d_d_d_2,event->terrain_rect[0],event->terrain_rect[1],
              event->terrain_rect[2],event->terrain_rect[3],event->terrain_rect[4],event->terrain_rect[5],event->terrain_rect[6],
              event->terrain_rect[7]);
     if (editor_active.wnd == 0) {
@@ -19043,6 +19119,11 @@ i32 __cdecl setup_pbem_game(void)
     if (choice < 0) {
       result = 1;
       return result;
+    }
+    if (4 < choice) {  /* BF-079 (Peter Johnson's ledger): a choice past the five
+                          the game knows (a row added to GAME.TXT's @PBEM1) is
+                          asked again (the original went on with no map set) */
+      continue;
     }
     menu_prefs.pbem_menu_choice = (short)choice;
     if ((-1 < choice) && (choice < 3)) {

@@ -293,6 +293,8 @@ struct map_views_block {
 #pragma pack(pop)
 extern struct map_views_block map_views_block;
 inline constexpr TextBuffer &textbuf = map_views_block.textbuf;
+/* (port) the bytes from textbuf.buf to the end of the text buffer (2472) */
+#define TEXTBUF_SIZE (sizeof(TextBuffer) - 1)
 inline constexpr TextParse &text_parse = map_views_block.text_parse;
 inline constexpr DiffEngScan &diffeng_scan = map_views_block.diffeng_scan;
 inline constexpr PathQueue &path_queue = map_views_block.path_queue;

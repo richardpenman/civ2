@@ -195,6 +195,7 @@ void __cdecl net_gamelist_refresh(void); /* 004257fe */
 i32 __cdecl game_profile_popup(int is_join); /* 004259a6 */
 i32 __cdecl popup_game_sprite_flags(const char *section,i32 dlg_flags,iptr sprite,i32 sprite_flags); /* 00426fb0 */
 void __cdecl text_expand_vars(iptr src,iptr dest); /* 00426ff0 */
+void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size);
 i32 __cdecl text_set_label_arg(i32 index,i32 label_id); /* 004271e8 */
 void __cdecl tile_reveal_to_civ(iptr x,iptr y,int civ); /* 004272d0 */
 void __cdecl unit_cancel_goto_on_contact(iptr unit); /* 0042738c */
@@ -327,6 +328,8 @@ void __cdecl rect_offset(iptr rect,int dx,int dy); /* 0043c790 */
 void __cdecl gfx_draw_rect_frame(iptr surface,RECT *rect,i32 color); /* 0043c7c0 */
 void __cdecl text_append_period(void); /* 0043c810 */
 void __cdecl str_append(char *dest,const char *src); /* 0043c840 */
+char * __cdecl str_copy_max(char *dest,const char *src,size_t size);
+char * __cdecl str_append_max(char *dest,const char *src,size_t size);
 void __cdecl text_append_long(i32 value); /* 0043c870 */
 void __cdecl text_append_gold(i32 gold); /* 0043c8a0 */
 i32 __cdecl gfx_draw_text(const char *text,i32 x,iptr y); /* 0043c8d0 */

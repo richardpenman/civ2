@@ -1104,7 +1104,8 @@ static void intel_draw_civ_facts(iptr civ,int left_x,int right_x,int line_height
   iptr city;
   iptr city2;
   int text_x2;
-  char buf[80];
+  char buf[256];  /* BF-044 (Peter Johnson's ledger): the original's 80, less
+                     than a label */
 
   text_clear();
   text_append_label(0x98);
@@ -1196,7 +1197,8 @@ static void intel_draw_contacts(iptr civ,int line_height,int &y2)
   i32 shadow_color;
   i32 shadow_color2;
   int civ2;
-  char buf[80];
+  char buf[256];  /* BF-044 (Peter Johnson's ledger): the original's 80, less
+                     than a label */
 
   for (civ2 = 1; civ2 < 8; civ2++) {
     if (((civ2 != civ) && ((1 << ((byte)civ2 & 0x1f) & (uint)game.civs_alive) != 0)) &&
@@ -1689,6 +1691,10 @@ void __cdecl foreign_minister_show(iptr civ)
         if (dialog2.result_extra == 0) {
           return;
         }
+        /* BF-100, BF-103 (Peter Johnson's ledger): a choice that is not a civ
+           (a row added to GAME.TXT's @REPORTFOREIGN) asks again (the
+           original took it as a civ) */
+        if ((civ2 < 0) || (7 < civ2)) continue;
         if (dialog2.result_extra != 1) break;
         if ((((*(byte *)&civs[civ].treaties[civ2] & TREATY_EMBASSY) == 0) &&
             (has_embassy_wonder == 0)) && (game.reveal_map == '\0')) {
@@ -1731,7 +1737,9 @@ void __cdecl foreign_minister_show(iptr civ)
         }
         dialog2.set_default_choice(cur_level);
         choice = dialog2.show_modal(0);
-        if (-1 < choice) {
+        /* BF-103: a choice past the nine attitudes (a row added to GAME.TXT's
+           @ATTITUDEMULTI) is no choice (the original read past them) */
+        if ((-1 < choice) && (choice < 9)) {
           attitude_values[0] = 0;
           attitude_values[1] = 5;
           attitude_values[2] = 0x11;
@@ -2847,7 +2855,8 @@ void __cdecl hall_of_fame_draw(void)
   int entry_y;
   int entry;
   int line;
-  i8 line_buf[80];
+  i8 line_buf[0x100];  /* BF-050 (Peter Johnson's ledger): the original's 80,
+                         less than a line of GAME.TXT */
   int line_height;
   int open_err;
   i8 title_buf[132];
@@ -2893,7 +2902,7 @@ void __cdecl hall_of_fame_draw(void)
           line = line + 1) {
         if (open_err == 0) {
           text_read_line(1);
-          crt_strcpy(line_buf,((i8 *)&textbuf.buf));
+          str_copy_max(line_buf,((i8 *)&textbuf.buf),sizeof line_buf);
         }
         else if (advisor_window_block.hall_of_fame[entry].title_index == line) {
           crt_strcpy(line_buf,str_string0_2);
@@ -2901,7 +2910,8 @@ void __cdecl hall_of_fame_draw(void)
         else {
           crt_strcpy(line_buf,str_error_3);
         }
-        text_expand_vars((iptr)line_buf,(iptr)title_buf);
+        /* BF-199: a longer title is cut at 131 characters */
+        text_expand_vars_max((iptr)line_buf,(iptr)title_buf,sizeof title_buf);
       }
       text_clear();
       text_append_int(entry + 1);
@@ -3101,6 +3111,27 @@ void __cdecl hall_of_fame_clear(void)
   return;
 }
 
+/* (port) BF-198: whether each place of the Hall of Fame holds what the game
+   writes */
+static int hall_of_fame_valid(void)
+{
+  HallOfFameEntry *entry;
+  int i;
+
+  for (i = 0; i < 6; i++) {
+    entry = &advisor_window_block.hall_of_fame[i];
+    if (entry->score != -1) {
+      if ((entry->title_index < 0) || (0x17 < entry->title_index) ||
+          (5 < (entry->difficulty & 0xff7f)) ||
+          (memchr(entry->leader_name,0,sizeof entry->leader_name) == 0) ||
+          (memchr(entry->civ_name,0,sizeof entry->civ_name) == 0)) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
 /* 00436e28 auto */
 void __cdecl hall_of_fame_load(void)
 
@@ -3121,7 +3152,11 @@ void __cdecl hall_of_fame_load(void)
         break;
       }
     }
-    if (read_failed) {
+    /* BF-198 (Peter Johnson's ledger): a file with a place the game does not
+       write (a title past the 24 of GAME.TXT, a difficulty past the six, a
+       name not ending within its 24 bytes) is read as no file (the report
+       indexed its tables with them) */
+    if (read_failed || (hall_of_fame_valid() == 0)) {
       hall_of_fame_clear();
     }
     _fclose(_File);
@@ -3193,10 +3228,14 @@ void __cdecl hall_of_fame_add_entry(iptr civ)
   advisor_font_block.hof_new_entry.rating = (short)casualty_window_block.civ_rating_percent;
   advisor_font_block.hof_new_entry.leader_female = (ushort)leaders[civs[civ].tribe].female;
   advisor_font_block.hof_new_entry.title_index = (i16)civ_rating_title_font_block.civ_rating_title_index;
+  /* BF-056 (Peter Johnson's ledger): names cut at 23 characters (the
+     original copied them whole into the 24 bytes) */
   value = (i32)(civ_leader_name(civ));
-  crt_strcpy(advisor_font_block.hof_new_entry.leader_name,(char *)value);
+  str_copy_max(advisor_font_block.hof_new_entry.leader_name,(char *)value,
+               sizeof advisor_font_block.hof_new_entry.leader_name);
   value = (i32)(civ_name_plural(civ));
-  crt_strcpy(advisor_font_block.hof_new_entry.civ_name,(char *)value);
+  str_copy_max(advisor_font_block.hof_new_entry.civ_name,(char *)value,
+               sizeof advisor_font_block.hof_new_entry.civ_name);
   hall_of_fame_load();
   advisor_window_block.hall_of_fame[5].score = 0xffff;
   advisor_window_block.hall_of_fame[5].rating = 0xffff;
@@ -3946,8 +3985,8 @@ void ThroneRoomWindow::run_upgrade()
     if (result == 0) {
       str_clear((char *)text_buf);
       while (line = text_read_line_or_end(1), *line != '@') {
-        str_append((char *)text_buf,(const char *)text_parse.line_cursor);
-        str_append((char *)text_buf,(const char *)&str_empty_69);
+        str_append_max((char *)text_buf,(const char *)text_parse.line_cursor,sizeof text_buf);
+        str_append_max((char *)text_buf,(const char *)&str_empty_69,sizeof text_buf);
       }
       SetRect(&rect,100,0x78,0x21c,0x1c2);
       gfx_set_text_color_index(0);
@@ -3979,8 +4018,8 @@ void ThroneRoomWindow::run_upgrade()
       if (result == 0) {
         str_clear((char *)text_buf);
         while (line = text_read_line_or_end(1), *line != '@') {
-          str_append((char *)text_buf,(const char *)text_parse.line_cursor);
-          str_append((char *)text_buf,(const char *)&str_empty_70);
+          str_append_max((char *)text_buf,(const char *)text_parse.line_cursor,sizeof text_buf);
+          str_append_max((char *)text_buf,(const char *)&str_empty_70,sizeof text_buf);
         }
         SetRect(&rect,100,0x78,0x21c,0x1c2);
         gfx_set_text_color_index(0);
@@ -4873,12 +4912,15 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
     text_append_int(page);
     status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&textbuf.buf);
     if (status == 0) {
+      /* BF-060, BF-063 (Peter Johnson's ledger): the caption within its
+         1024 bytes, expanded within the text buffer (the original appended
+         and expanded without a bound) */
       while (line = text_read_line_or_end(1), *line != '@') {
-        str_append((char *)movie_caption_text,(const char *)text_parse.line_cursor);
-        str_append((char *)movie_caption_text,(const char *)&str_empty_86);
+        str_append_max((char *)movie_caption_text,(const char *)text_parse.line_cursor,sizeof movie_caption_text);
+        str_append_max((char *)movie_caption_text,(const char *)&str_empty_86,sizeof movie_caption_text);
       }
       text_clear();
-      text_expand_vars((iptr)(movie_caption_text),(iptr)&textbuf.buf);
+      text_expand_vars_max((iptr)(movie_caption_text),(iptr)&textbuf.buf,TEXTBUF_SIZE);
       ((DibSurface *)movie_frame_surface)->DibSurface::blit((DibSurface *)(iptr)(media_wnd),
                  (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
       OffsetRect((LPRECT)(movie_caption_rect),1,1);
@@ -4923,10 +4965,11 @@ void __cdecl defeat_movie_on_video_end(void)
     while( true ) {
       line = text_read_line_or_end(1);
       if (*line == '@') break;
-      str_append((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)text_parse.line_cursor);
-      str_append((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)&str_empty_87);
+      /* BF-060, BF-063: within the caption's 1024 bytes and the text buffer */
+      str_append_max((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)text_parse.line_cursor,0x400);
+      str_append_max((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)&str_empty_87,0x400);
     }
-    text_expand_vars((*(int *)&endgame_movie_window) + 0xf24,(iptr)&textbuf.buf);
+    text_expand_vars_max((*(int *)&endgame_movie_window) + 0xf24,(iptr)&textbuf.buf,TEXTBUF_SIZE);
     CharUpperA(((i8 *)&textbuf.buf));
     rect_set_xywh((*(int *)&endgame_movie_window) + 0x136c,0xe5,0x4c,200,0x85);
     gfx_set_text_color_index(0);
@@ -5154,11 +5197,12 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
       while( true ) {
         line = text_read_line_or_end(1);
         if (*line == '@') break;
-        str_append((char *)movie_caption_text,(const char *)text_parse.line_cursor);
-        str_append((char *)movie_caption_text,(const char *)&str_empty_90);
+        /* BF-062, BF-063: within the caption's 1024 bytes and the text buffer */
+        str_append_max((char *)movie_caption_text,(const char *)text_parse.line_cursor,sizeof movie_caption_text);
+        str_append_max((char *)movie_caption_text,(const char *)&str_empty_90,sizeof movie_caption_text);
       }
       text_clear();
-      text_expand_vars((iptr)(movie_caption_text),(iptr)&textbuf.buf);
+      text_expand_vars_max((iptr)(movie_caption_text),(iptr)&textbuf.buf,TEXTBUF_SIZE);
       ((DibSurface *)movie_frame_surface)->DibSurface::blit((DibSurface *)(iptr)(media_wnd),
                  (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
       OffsetRect((LPRECT)(movie_caption_rect),1,1);
@@ -5212,8 +5256,9 @@ void __cdecl arrival_movie_on_frame(void)
       line = text_read_line_or_end(1);
       if (*line == '@') break;
       str_clear((char *)(spaceship_arrival_window + 0xf24));
-      str_append((char *)(spaceship_arrival_window + 0xf24),(const char *)text_parse.line_cursor);
-      text_expand_vars(spaceship_arrival_window + 0xf24,(iptr)&textbuf.buf);
+      /* BF-062, BF-063 */
+      str_append_max((char *)(spaceship_arrival_window + 0xf24),(const char *)text_parse.line_cursor,0x400);
+      text_expand_vars_max(spaceship_arrival_window + 0xf24,(iptr)&textbuf.buf,TEXTBUF_SIZE);
       width = rect_width((RECT *)(spaceship_arrival_window + 0x136c));
       gfx_draw_text_centered((const char *)&textbuf.buf,*(i32 *)(spaceship_arrival_window + 0x136c),text_y2,width);
       status = ((GameFont *)(spaceship_arrival_window + 0xf1c))->line_spacing();
@@ -5319,12 +5364,15 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
       text_append_int(page);
       status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&textbuf.buf);
       if (status == 0) {
+        /* BF-062, BF-063 (Peter Johnson's ledger): within the 256 bytes and
+           the text buffer (the original appended and expanded without a
+           bound) */
         while (line = text_read_line_or_end(1), *line != '@') {
-          str_append((char *)text_buf,(const char *)text_parse.line_cursor);
-          str_append((char *)text_buf,(const char *)&str_empty_93);
+          str_append_max((char *)text_buf,(const char *)text_parse.line_cursor,sizeof text_buf);
+          str_append_max((char *)text_buf,(const char *)&str_empty_93,sizeof text_buf);
         }
         text_clear();
-        text_expand_vars((iptr)text_buf,(iptr)&textbuf.buf);
+        text_expand_vars_max((iptr)text_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
         backup_surface.DibSurface::blit((DibSurface *)surface_wnd,&text_rect,&text_rect);
         OffsetRect(&text_rect,1,1);
         gfx_set_text_color_index(0);
@@ -6082,8 +6130,8 @@ void DestroyedCivsWindow::run()
   status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_slam);
   if (status == 0) {
     while (line = text_read_line_or_end(1), *line != '@') {
-      str_append((char *)text_buf,(const char *)text_parse.line_cursor);
-      str_append((char *)text_buf,(const char *)&str_empty_158);
+      str_append_max((char *)text_buf,(const char *)text_parse.line_cursor,sizeof text_buf);
+      str_append_max((char *)text_buf,(const char *)&str_empty_158,sizeof text_buf);
     }
     text_draw_centered((iptr)(media_wnd),(const char *)text_buf,0,0x48,0x280);
   }

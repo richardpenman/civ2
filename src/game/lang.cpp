@@ -486,8 +486,8 @@ void lang_add_labels(int count)
     for (i = 0; i < count; i++) {
         snprintf(key, sizeof key, "label.%d", i);
         std::unordered_map<std::string, std::string>::const_iterator it = translated.find(key);
-        if (it != translated.end())
-            pool_translated[label_table.string_ids[i]] = it->second;
+        if (it != translated.end())     /* (no longer than a LABELS.TXT line) */
+            pool_translated[label_table.string_ids[i]] = it->second.substr(0, 0xfe);
     }
     export_english();
 }

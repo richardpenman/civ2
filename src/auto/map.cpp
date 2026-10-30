@@ -5008,6 +5008,11 @@ void __cdecl terrain_editor_on_edit_icon(void)
       if (dlg_input.help_pressed == 0) break;
       popup_text((const char *)&str_help_6,(const char *)&str_helpforest);
     }
+    /* BF-117 (Peter Johnson's ledger): a choice past the 16 sprites (a row
+       added to a scenario's DEBUG.TXT) is no choice */
+    if ((choice < -1) || (16 < choice)) {
+      choice = -1;
+    }
     if (choice != -1) {
       if (choice == 0) {
         sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
@@ -5036,6 +5041,10 @@ void __cdecl terrain_editor_on_edit_icon(void)
       if (dlg_input.help_pressed == 0) break;
       popup_text((const char *)&str_help_7,(const char *)&str_helphills);
     }
+    /* BF-117 */
+    if ((choice < -1) || (16 < choice)) {
+      choice = -1;
+    }
     if (choice != -1) {
       if (choice == 0) {
         sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
@@ -5063,6 +5072,10 @@ void __cdecl terrain_editor_on_edit_icon(void)
       choice = popup_text_flags((const char *)&str_debug_11,(const char *)&str_mountains_2,1);
       if (dlg_input.help_pressed == 0) break;
       popup_text((const char *)&str_help_8,(const char *)&str_helpmountains);
+    }
+    /* BF-117 */
+    if ((choice < -1) || (16 < choice)) {
+      choice = -1;
     }
     if (choice != -1) {
       if (choice == 0) {
@@ -5120,6 +5133,11 @@ void __cdecl terrain_editor_on_edit_river(void)
     if (dlg_input.help_pressed == 0) break;
     popup_text((const char *)&str_help_9,(const char *)&str_helpriver);
   }
+  /* BF-072 (Peter Johnson's ledger): a choice past the 16 rivers and 4 mouths (a row
+     added to a scenario's DEBUG.TXT) is no choice */
+  if ((choice < -1) || (19 < choice)) {
+    choice = -1;
+  }
   if (choice != -1) {
     if (choice < 0x10) {
       sprites = ((i8 *)&icon_misc_sprites_block.river_sprites) + choice * 0x3c;
@@ -5165,6 +5183,11 @@ void __cdecl terrain_editor_on_edit_coast(void)
     if (dlg_input.help_pressed == 0) break;
     popup_text((const char *)&str_help_10,(const char *)&str_helpcoast);
   }
+  /* BF-118 (Peter Johnson's ledger): a choice past the 32 coast quarters (and the sprite after them, as the original) (a row
+     added to a scenario's DEBUG.TXT) is no choice */
+  if (((int)choice < -1) || (32 < (int)choice)) {
+    choice = 0xffffffff;
+  }
   if (choice != 0xffffffff) {
     sign = (int)choice >> 0x1f;
     sprites = ((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) +
@@ -5206,6 +5229,11 @@ void __cdecl terrain_editor_on_edit_misc(void)
     choice = popup_text_flags((const char *)&str_debug_11,(const char *)&str_terrmisc,1);
     if (dlg_input.help_pressed == 0) break;
     popup_text((const char *)&str_help_11,(const char *)&str_helpterrmisc);
+  }
+  /* BF-116 (Peter Johnson's ledger): a choice past the 24 sprites the section lists (a row
+     added to a scenario's DEBUG.TXT) is no choice */
+  if ((choice < -1) || (23 < choice)) {
+    choice = -1;
   }
   if (choice != -1) {
     if (choice < 3) {

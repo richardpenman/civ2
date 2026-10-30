@@ -251,8 +251,11 @@ void __cdecl text_append_year(i32 year)
   return;
 }
 
-/* 00426ff0 auto */
-void __cdecl text_expand_vars(iptr src,iptr dest)
+/* (port) text_expand_vars within a destination of size bytes: BF-063, 064,
+   199, 200 (Peter Johnson's ledger): the original expanded without a bound
+   into its callers' fixed buffers (a line of a modified GAME.TXT, or string
+   arguments from long names); the text is cut at the buffer's end */
+void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
 
 {
   char *percent_pos;
@@ -262,6 +265,9 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
   uint pad_i;
   char num_buf[40];
   
+  if (size == 0) {
+    return;
+  }
   *(i8 *)dest = 0;
   do {
     percent_pos = _strchr((char *)src,0x25);
@@ -269,7 +275,7 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
       *percent_pos = '\0';
     }
     if (*(char *)src != '\0') {
-      crt_strcat((char *)((void *)dest),(const char *)((void *)src));
+      str_append_max((char *)((void *)dest),(const char *)((void *)src),size);
     }
     tag = percent_pos;
     if (percent_pos != (char *)0x0) {
@@ -282,7 +288,7 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
            another is left out */
         if ((0 <= arg_index) &&
            (arg_index < (int)((sizeof(TextArgs) - offsetof(TextArgs,strings)) / 0x104))) {
-          crt_strcat((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104);
+          str_append_max((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104,size);
         }
         src = (iptr)(percent_pos + 8);
         if (9 < arg_index) {
@@ -295,7 +301,7 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
           arg_index = _atoi(percent_pos + 7);
           if ((0 <= arg_index) && (arg_index < 6)) {  /* BF-197 */
             __ltoa(text_args.numbers[arg_index],num_buf,10);
-            crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
+            str_append_max((char *)((void *)dest),(const char *)((void *)num_buf),size);
           }
           src = (iptr)(percent_pos + 8);
         }
@@ -309,16 +315,16 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
                  padded a longer number (above 0xffff) without end */
               for (pad_i = 0; len = _strlen(num_buf), pad_i + len < 4;
                   pad_i = pad_i + 1) {
-                crt_strcat((char *)((void *)dest),((i8 *)&text_var_hex_pad_str));
+                str_append_max((char *)((void *)dest),((i8 *)&text_var_hex_pad_str),size);
               }
-              crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
+              str_append_max((char *)((void *)dest),(const char *)((void *)num_buf),size);
             }
             src = (iptr)(percent_pos + 5);
           }
           else {
             src = (iptr)tag;
             if (*tag == '%') {
-              crt_strcat((char *)((void *)dest),((i8 *)&text_var_percent_str));
+              str_append_max((char *)((void *)dest),((i8 *)&text_var_percent_str),size);
               src = (iptr)(percent_pos + 2);
             }
           }
@@ -326,6 +332,14 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
       }
     }
   } while (tag != (char *)0x0);
+  return;
+}
+
+/* 00426ff0 auto */
+void __cdecl text_expand_vars(iptr src,iptr dest)
+
+{
+  text_expand_vars_max(src,dest,(size_t)-1);
   return;
 }
 
@@ -478,6 +492,40 @@ void __cdecl str_append(char *dest,const char *src)
 {
   crt_strcat((char *)((void *)dest),(const char *)((void *)src));
   return;
+}
+
+/* (port) Copies into the game's fixed buffers bounded by the buffer's size
+   (Peter Johnson's ledger: text from modified RULES, GAME, PEDIA, LABELS or
+   EVENTS files longer than the buffer the original copied it into). A text
+   that fits is copied as before; a longer one is cut at the buffer's end,
+   as it would be cut on screen. */
+char * __cdecl str_copy_max(char *dest,const char *src,size_t size)
+
+{
+  size_t len;
+
+  if (size != 0) {
+    len = _strlen(src);
+    if (size - 1 < len) {
+      len = size - 1;
+    }
+    crt_memcpy(dest,src,len);
+    dest[len] = '\0';
+  }
+  return dest;
+}
+
+/* (port) str_append within a buffer of size bytes (see str_copy_max). */
+char * __cdecl str_append_max(char *dest,const char *src,size_t size)
+
+{
+  size_t len;
+
+  len = _strlen(dest);
+  if (len < size) {
+    str_copy_max(dest + len,src,size - len);
+  }
+  return dest;
 }
 
 /* 0043c870 auto */
@@ -656,6 +704,11 @@ int __cdecl labels_load(void)
   if (status == 0) {
     text_read_line(1);
     label_table.count = text_next_int();
+    /* BF-096 (Peter Johnson's ledger): at most the 0x378 labels allocated
+       (a longer count wrote past the block) */
+    if (0x378 < label_table.count) {
+      label_table.count = 0x378;
+    }
     label_table.ids_handle = mem_handle_alloc_tracked(0xde0);
     if (label_table.ids_handle == 0) {
       error_report(0xfffffff7,4,0,0x378,4);
@@ -677,6 +730,9 @@ int __cdecl labels_load(void)
           if (status == 0) {
             text_read_line(1);
             status = text_next_int();
+            if (0x378 < status) {  /* BF-096 */
+              status = 0x378;
+            }
             for (i = 0; i < label_table.count; i++) {
               text_read_line(1);
             }
@@ -893,7 +949,9 @@ int __cdecl text_open_file_section(const char *filename,const char *section)
   if (section != 0) {
     section_tag[0] = '@';
     section_tag[1] = 0;
-    crt_strcat((char *)((void *)section_tag),(const char *)((void *)section));
+    /* BF-051 (Peter Johnson's ledger): a longer section name is cut (and
+       not found) */
+    str_append_max((char *)((void *)section_tag),(const char *)((void *)section),sizeof section_tag);
     __strupr(section_tag);
   }
   if (filename == 0) {

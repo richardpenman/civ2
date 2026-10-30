@@ -2612,7 +2612,10 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       text_append_rparen();
       dlg.add_option((const char *)&textbuf.buf,0,0);
       improvement2 = dlg.show_modal(0);
-      if (improvement2 < 0) return;
+      /* BF-231 (Peter Johnson's ledger): a choice past the improvements (a
+         row added to GAME.TXT's @SABOTAGE) is no choice (the original took
+         it as an improvement past the 39) */
+      if ((improvement2 < 0) || (0x26 < improvement2)) return;
       if (improvement2 == IMP_SDI_DEFENSE) {
         popup_game_with_improvement((const char *)&str_sabotageno,IMP_SDI_DEFENSE,8);
         return;
@@ -8633,7 +8636,8 @@ void __cdecl unit_editor_edit_sound(void)
   unit_editor_store_controls();
   item_name = editor_text_dlg_wnd_block.editor_item_name_recs[editor_active.wnd->item];
   label = (iptr)label_string(label_table.string_ids[0x1f7]);
-  _sprintf(title,str_s_s_4,label,item_name);
+  /* BF-049 (Peter Johnson's ledger): a longer label is cut at 127 characters */
+  snprintf(title,sizeof title,str_s_s_4,(char *)label,item_name);
   unit_sound_editor_run((const char *)title,editor_active.wnd->item);
   return;
 }

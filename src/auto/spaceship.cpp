@@ -545,9 +545,11 @@ void SpaceshipWindow::build_stats_text()
   bool over_limit;
   int part_limit;
   int part_index;
+  char text[0x1400];
+  char text2[0x200];
   
   over_limit = false;
-  str_clear((char *)stats_text);
+  str_clear((char *)text);
   for (part_index = 0; part_index < 6; part_index++) {
     part_count = civs[(ship_civ)].spaceship_parts[part_index];
     part_limit = spaceship_part_limit(ship_civ,part_index);
@@ -556,64 +558,69 @@ void SpaceshipWindow::build_stats_text()
     }
   }
   for (part_index = 0; part_index < 6; part_index++) {
-    str_append_string_id((iptr)stats_text,
+    str_append_string_id((iptr)text,
                        label_table.string_ids[spaceship_part_table_block.spaceship_parts[part_index].label_id])
     ;
-    str_append_colon((char *)stats_text);
-    str_append_int((iptr)stats_text,
+    str_append_colon((char *)text);
+    str_append_int((iptr)text,
                        (int)civs[(ship_civ)].spaceship_parts[part_index]);
     if ((over_limit) && (part_index == 0)) {
-      str_append((char *)stats_text,(const char *)&str_empty_127);
+      str_append((char *)text,(const char *)&str_empty_127);
     }
-    str_append((char *)stats_text,(const char *)&str_empty_128);
+    str_append((char *)text,(const char *)&str_empty_128);
   }
-  str_append_label((iptr)stats_text,0x22);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,(int)civs[ship_civ].spaceship_parts[3]);
-  str_append((char *)stats_text,(const char *)&str_0_000_6);
-  str_append((char *)stats_text,(const char *)&str_empty_129);
-  str_append_label((iptr)stats_text,0x42);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,spaceship_stats.support_pct);
-  str_append_percent((iptr)stats_text);
-  str_append((char *)stats_text,(const char *)&str_empty_130);
-  str_append_label((iptr)stats_text,0xcd);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,spaceship_stats.energy_pct);
-  str_append_percent((iptr)stats_text);
-  str_append((char *)stats_text,(const char *)&str_empty_131);
-  str_append_label((iptr)stats_text,0xce);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,spaceship_stats.mass / 10);
-  str_append((char *)stats_text,(const char *)&str_empty_132);
-  str_append_int((iptr)stats_text,spaceship_stats.mass % 10);
-  str_append((char *)stats_text,(const char *)&str_00);
-  str_append_label((iptr)stats_text,0xd1);
-  str_append((char *)stats_text,(const char *)&str_empty_133);
-  str_append_label((iptr)stats_text,200);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,spaceship_stats.fuel_pct);
-  str_append_percent((iptr)stats_text);
+  str_append_label((iptr)text,0x22);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,(int)civs[ship_civ].spaceship_parts[3]);
+  str_append((char *)text,(const char *)&str_0_000_6);
+  str_append((char *)text,(const char *)&str_empty_129);
+  str_append_label((iptr)text,0x42);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,spaceship_stats.support_pct);
+  str_append_percent((iptr)text);
+  str_append((char *)text,(const char *)&str_empty_130);
+  str_append_label((iptr)text,0xcd);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,spaceship_stats.energy_pct);
+  str_append_percent((iptr)text);
+  str_append((char *)text,(const char *)&str_empty_131);
+  str_append_label((iptr)text,0xce);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,spaceship_stats.mass / 10);
+  str_append((char *)text,(const char *)&str_empty_132);
+  str_append_int((iptr)text,spaceship_stats.mass % 10);
+  str_append((char *)text,(const char *)&str_00);
+  str_append_label((iptr)text,0xd1);
+  str_append((char *)text,(const char *)&str_empty_133);
+  str_append_label((iptr)text,200);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,spaceship_stats.fuel_pct);
+  str_append_percent((iptr)text);
   if ((civs[ship_civ].spaceship_flags & SHIP_FUSION) != 0) {
-    str_append_space((iptr)stats_text);
-    str_append_lparen((iptr)stats_text);
-    str_append_label((iptr)stats_text,0xeb);
-    str_append_rparen((iptr)stats_text);
+    str_append_space((iptr)text);
+    str_append_lparen((iptr)text);
+    str_append_label((iptr)text,0xeb);
+    str_append_rparen((iptr)text);
   }
-  str_append((char *)stats_text,(const char *)&str_empty_134);
-  str_append_label((iptr)stats_text,0xcf);
-  str_append_colon((char *)stats_text);
-  str_append_int((iptr)stats_text,spaceship_stats.flight_time / 10);
-  str_append((char *)stats_text,(const char *)&str_empty_135);
-  str_append_int((iptr)stats_text,spaceship_stats.flight_time % 10);
-  str_append_space((iptr)stats_text);
-  str_append_label((iptr)stats_text,0xd2);
-  str_clear((char *)success_text);
-  str_append_label((iptr)(success_text),0xd0);
-  str_append_colon((char *)success_text);
-  str_append_space((iptr)(success_text));
-  str_append_int((iptr)(success_text),spaceship_stats.success_pct);
-  str_append_percent((iptr)(success_text));
+  str_append((char *)text,(const char *)&str_empty_134);
+  str_append_label((iptr)text,0xcf);
+  str_append_colon((char *)text);
+  str_append_int((iptr)text,spaceship_stats.flight_time / 10);
+  str_append((char *)text,(const char *)&str_empty_135);
+  str_append_int((iptr)text,spaceship_stats.flight_time % 10);
+  str_append_space((iptr)text);
+  str_append_label((iptr)text,0xd2);
+  str_clear((char *)text2);
+  str_append_label((iptr)text2,0xd0);
+  str_append_colon((char *)text2);
+  str_append_space((iptr)text2);
+  str_append_int((iptr)text2,spaceship_stats.success_pct);
+  str_append_percent((iptr)text2);
+  /* BF-190 (Peter Johnson's ledger): the texts composed apart and cut to the
+     512 bytes the statistics have (to success_text) and success_text's 128
+     (the original appended the labels in place without a bound) */
+  str_copy_max((char *)stats_text,text,(size_t)(success_text - stats_text));
+  str_copy_max((char *)success_text,text2,sizeof success_text);
   win_flush_pending_msgs();
   return;
 }
@@ -762,13 +769,18 @@ void SpaceshipWindow::init_starfield()
   do {
     value = type_char(0);
   } while (value != 0);
-  str_clear((char *)success_text);
-  label = (iptr)label_string(label_table.string_ids[0x1c6]);
-  str_append((char *)success_text,(const char *)label);
-  str_append_colon((char *)success_text);
-  str_append_space((iptr)(success_text));
-  str_append_year((iptr)(success_text),(int)civs[ship_civ].spaceship_arrival_year
-                    );
+  {
+    /* BF-190: composed apart and cut to success_text's 128 bytes */
+    char text[0x400];
+
+    str_clear(text);
+    label = (iptr)label_string(label_table.string_ids[0x1c6]);
+    str_append(text,(const char *)label);
+    str_append_colon(text);
+    str_append_space((iptr)text);
+    str_append_year((iptr)text,(int)civs[ship_civ].spaceship_arrival_year);
+    str_copy_max((char *)success_text,text,sizeof success_text);
+  }
   SetRect((LPRECT)(status_line_rect),0,0x1c1,0x27f,0x1df);
   rect_offset((iptr)(status_line_rect),1,1);
   gfx_set_text_color_index(10);

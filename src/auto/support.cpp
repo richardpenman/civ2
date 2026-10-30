@@ -406,7 +406,10 @@ void __cdecl error_report(uint error_code,int module_id,iptr context,iptr data1,
   char data1_text[12];
   
   if (context != 0) {
-    crt_strcpy(((i8 *)&error_state.context_text),(const char *)((const void *)context));
+    /* BF-057 (Peter Johnson's ledger): the first 79 characters (the
+       original copied a long line of RULES.TXT whole into the 80 bytes) */
+    str_copy_max(((i8 *)&error_state.context_text),(const char *)((const void *)context),
+                 sizeof error_state.context_text);
   }
   __itoa(error_code,error_text,10);
   __itoa(module_id,module_text,10);
