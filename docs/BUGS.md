@@ -636,6 +636,23 @@ for good and keeps the original's results:
   decoded data is the same.
 - Saved unit/city counts and PCM format chunk extents (BF-091/BF-111/BF-305):
   [evidence and focused regression](bugfix-evidence-files.md).
+- What a save, scenario or map indexes: the game record and civs, map dimensions and squares,
+  units and cities, the scenario block, zoom, history and resume civ, saved event triggers
+  (Peter Johnson's ledger BF-093, 094, 123..128, 134..136, 166, 172, 176, 193, 201, 224, 230,
+  232..234, 236, 281, 282, 284, 287, 288, 291); `CIV2.DAT`'s network names (BF-226): a file
+  outside the domains the game writes is refused as one that does not read
+  ([evidence, focused regression and remaining work](bugfix-evidence-files.md)).
+- A path longer than 79 characters (a save loaded from outside the game's folder) copied whole
+  into the 80-byte last-open path and a 136-byte local; event and unit sound paths shorter than
+  the scenario folder (BF-058, BF-296).
+- Text sections without their closing `@` line read past the end of the file (BF-121);
+  `%STRINGn`/`%NUMBERn`/`%HEXn` outside the arguments and `%HEX`'s endless padding of a number
+  above 0xffff (BF-197); BMP info headers too short and RLE writes outside the image (BF-097,
+  BF-098); the TERRAIN1 export's sprite height read past its block (BF-013).
+- The science advisor's first trim length from an unset line (BF-024), a trade route written at
+  an unset slot (BF-026), a healing facility unset for a fourth unit domain (BF-028), an events
+  file action before any `@IF` (BF-030), a cycle of advance prerequisites recursing until the
+  stack ran out (BF-173); the scenario variants' file searches never closed.
 - `net_send_message`'s stack buffers, too small for the largest messages.
 - Receive envelopes, discovery/chat payloads and diagnostic reads:
   [evidence, focused regression and remaining work](bugfix-evidence-network.md).

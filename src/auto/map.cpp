@@ -6851,6 +6851,34 @@ i32 __cdecl map_write(iptr file,int is_scenario)
   return result;
 }
 
+/* BF-094 (Peter Johnson's ledger): a map header the game can lay out: an
+   even width (doubled x) of at least 2, a height of at least 1, an area that
+   fits map.area (i16). */
+static int map_header_valid(const MapHeader *header)
+{
+  return ((1 < header->width) && ((header->width & 1) == 0) && (0 < header->height) &&
+          ((header->width / 2) * header->height < 0x8000));
+}
+
+/* BF-236, BF-287, BF-288 (Peter Johnson's ledger): squares as the game writes
+   them: terrain 0..10, region (landmass) 0..63, the civ on it 0..7 or none
+   (0xf). */
+static int map_tiles_valid(void)
+{
+  int i;
+  Tile *tile;
+
+  tile = map_data.tiles;
+  for (i = 0; i < map.area; i++) {
+    if ((10 < (tile->terrain & 0xf)) || (0x3f < tile->landmass) ||
+       ((7 < (tile->owner >> 4)) && ((tile->owner >> 4) != 0xf))) {
+      return 0;
+    }
+    tile++;
+  }
+  return 1;
+}
+
 /* 005b8783 auto */
 i32 __cdecl map_read(iptr file,int is_scenario)
 
@@ -6879,6 +6907,9 @@ i32 __cdecl map_read(iptr file,int is_scenario)
         return 1;
       }
     }
+    if (map_header_valid((MapHeader *)header) == 0) {
+      return 1;
+    }
     map_free();
     crt_memcpy(&map,header,0xe);
     map_alloc();
@@ -6891,7 +6922,7 @@ i32 __cdecl map_read(iptr file,int is_scenario)
       }
     }
     nread = _fread(map_data.tiles,map.area * 6,1,(FILE *)file);
-    if (nread != 0) {
+    if ((nread != 0) && (map_tiles_valid() != 0)) {
       result = 0;
     }
   }

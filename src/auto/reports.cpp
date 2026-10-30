@@ -3945,7 +3945,7 @@ void ThroneRoomWindow::run_upgrade()
     result = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_throne);
     if (result == 0) {
       str_clear((char *)text_buf);
-      while (line = text_read_line(1), *line != '@') {
+      while (line = text_read_line_or_end(1), *line != '@') {
         str_append((char *)text_buf,(const char *)text_parse.line_cursor);
         str_append((char *)text_buf,(const char *)&str_empty_69);
       }
@@ -3978,7 +3978,7 @@ void ThroneRoomWindow::run_upgrade()
       result = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_addtothrone);
       if (result == 0) {
         str_clear((char *)text_buf);
-        while (line = text_read_line(1), *line != '@') {
+        while (line = text_read_line_or_end(1), *line != '@') {
           str_append((char *)text_buf,(const char *)text_parse.line_cursor);
           str_append((char *)text_buf,(const char *)&str_empty_70);
         }
@@ -4873,7 +4873,7 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
     text_append_int(page);
     status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&textbuf.buf);
     if (status == 0) {
-      while (line = text_read_line(1), *line != '@') {
+      while (line = text_read_line_or_end(1), *line != '@') {
         str_append((char *)movie_caption_text,(const char *)text_parse.line_cursor);
         str_append((char *)movie_caption_text,(const char *)&str_empty_86);
       }
@@ -4921,7 +4921,7 @@ void __cdecl defeat_movie_on_video_end(void)
   status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_archaeologists3);
   if (status == 0) {
     while( true ) {
-      line = text_read_line(1);
+      line = text_read_line_or_end(1);
       if (*line == '@') break;
       str_append((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)text_parse.line_cursor);
       str_append((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)&str_empty_87);
@@ -5152,7 +5152,7 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
     status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&textbuf.buf);
     if (status == 0) {
       while( true ) {
-        line = text_read_line(1);
+        line = text_read_line_or_end(1);
         if (*line == '@') break;
         str_append((char *)movie_caption_text,(const char *)text_parse.line_cursor);
         str_append((char *)movie_caption_text,(const char *)&str_empty_90);
@@ -5209,7 +5209,7 @@ void __cdecl arrival_movie_on_frame(void)
     text_set_surface(spaceship_arrival_window + 0x4ec);
     text_set_colors(0xff,0,1,1);
     while( true ) {
-      line = text_read_line(1);
+      line = text_read_line_or_end(1);
       if (*line == '@') break;
       str_clear((char *)(spaceship_arrival_window + 0xf24));
       str_append((char *)(spaceship_arrival_window + 0xf24),(const char *)text_parse.line_cursor);
@@ -5319,7 +5319,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
       text_append_int(page);
       status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&textbuf.buf);
       if (status == 0) {
-        while (line = text_read_line(1), *line != '@') {
+        while (line = text_read_line_or_end(1), *line != '@') {
           str_append((char *)text_buf,(const char *)text_parse.line_cursor);
           str_append((char *)text_buf,(const char *)&str_empty_93);
         }
@@ -6081,7 +6081,7 @@ void DestroyedCivsWindow::run()
   str_clear((char *)text_buf);
   status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_slam);
   if (status == 0) {
-    while (line = text_read_line(1), *line != '@') {
+    while (line = text_read_line_or_end(1), *line != '@') {
       str_append((char *)text_buf,(const char *)text_parse.line_cursor);
       str_append((char *)text_buf,(const char *)&str_empty_158);
     }

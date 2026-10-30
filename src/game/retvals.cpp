@@ -148,6 +148,20 @@ static int save_read_event_field(char **field,FILE *_File)
   return 1;
 }
 
+/* BF-234 (Peter Johnson's ledger): a saved event's trigger is none or one of
+   the nine kinds the events file and editor make, and the advance a
+   ReceivedTechnology trigger with a civ waits for (the editor lists its
+   name) is an advance. */
+static int save_event_trigger_valid(const ScenarioEvent *event)
+{
+  if ((event->trigger != 0) &&
+     (((event->trigger & (event->trigger - 1)) != 0) || ((uint)event->trigger > 0x100))) {
+    return 0;
+  }
+  return ((event->trigger != 0x100) || (event->whom_name == (char *)0x0) ||
+          ((0 <= event->technology) && (event->technology < 100)));
+}
+
 /* Part of save_read_game (00475666): the scenario events (when the file has them):
    the events, then their strings; 0 when a read fails. */
 static int save_read_events(FILE *_File)
@@ -174,6 +188,7 @@ static int save_read_events(FILE *_File)
       }
       count_read = _fread(event,0x1bc,1,_File);
       if (count_read == 0) return 0;
+      if (save_event_trigger_valid((ScenarioEvent *)event) == 0) return 0;
     }
     for (event_node = unit_types_block.events_list_head; event_node != (ScenarioEvent *)0x0; event_node = event_node->next) {
       if (save_read_event_field(&event_node->unit_name,_File) == 0) return 0;
@@ -532,6 +547,9 @@ int __cdecl save_read_game(char *path)
        ((count_read = _fread(((i16 *)&map_views_block.mapview_center_y) + idx * 0x1f8,2,1,_File), count_read == 0 ||
         (count_read = _fread(((i16 *)&map_views_block.mapview_zoom) + idx * 0x1f8,2,1,_File), count_read == 0))))
     return status;
+    /* BF-282: a zoom the map window can draw at (-7..8) */
+    if ((((i16 *)&map_views_block.mapview_zoom)[idx * 0x1f8] < -7) ||
+       (8 < ((i16 *)&map_views_block.mapview_zoom)[idx * 0x1f8])) return status;
   }
   if ((is_scenario == 0) && ((game.game_flags & GAME_SCENARIO) == 0)) {
     scenario_reset_params();
@@ -539,10 +557,15 @@ int __cdecl save_read_game(char *path)
   else {
     count_read = _fread(((i16 *)&scenario.flags),100,1,_File);
     if (count_read == 0) return status;
+    /* BF-224, BF-284: the scenario's name ends within its 80 bytes; its
+       objective civ is a civ */
+    if ((memchr(scenario.name,0,sizeof scenario.name) == (void *)0x0) ||
+       (scenario.objective_civ < 0) || (7 < scenario.objective_civ)) return status;
   }
   if (skip_destroyed == 0) {
     count_read = _fread(((i16 *)&destroyed_civs.count),0x152,1,_File);
-    if (count_read == 0) return status;
+    /* BF-166: at most the 12 rows of the history */
+    if ((count_read == 0) || (destroyed_civs.count[0] < 0) || (12 < destroyed_civs.count[0])) return status;
   }
   else {
     destroyed_civs_clear();
@@ -575,6 +598,8 @@ int __cdecl save_read_game(char *path)
         }
       }
     }
+    /* BF-281: the civ to resume with is a civ */
+    if (7 < (*(byte *)&saved_turn.civ)) return status;
     (*(byte *)&turn_loop.resume_civ) = (*(byte *)&saved_turn.civ);
     passwords_refresh_flags();
   }

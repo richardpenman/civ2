@@ -4048,7 +4048,7 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,iptr advance,int has_pe
 
   measure = text_open_section((const char *)pedia_file,(const char *)&str_pediacivfacts);
   if (measure == 0) {
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) &&
        ((((advance == ADV_MONARCHY || (advance == ADV_COMMUNISM)) || (advance == ADV_FUNDAMENTALISM)) ||
         ((advance == ADV_REPUBLIC || (advance == ADV_DEMOCRACY)))))) {
@@ -4056,73 +4056,73 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,iptr advance,int has_pe
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_CONSTRUCTION)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_RADIO)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_RAILROAD)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_REFRIGERATION)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_MYSTICISM)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_ELECTRONICS)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_FUTURE_TECH)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_NUCLEAR_POWER)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_FUSION_POWER)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_PHILOSOPHY)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_COMMUNISM)) {
       draw_text((iptr)font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
-    line = text_read_line(1);
+    line = text_read_line_or_end(1);
     str_append_space((iptr)line);
     crt_strcpy(line_buf,line);
     if (line_buf[0] == '^') {
@@ -4761,7 +4761,7 @@ void PediaWindow::load_improvement_text(iptr improvement_id)
   status = text_open_section((const char *)&str_pedia_5,(const char *)section_name);
   if (status == 0) {
     text_clear();
-    while (_Str = text_read_line(1), *_Str != '@') {
+    while (_Str = text_read_line_or_end(1), *_Str != '@') {
       if ((*_Str != ';') && (len = _strlen(_Str), len != 0)) {
         while ((*_Str == '^' || (*_Str == '*'))) {
           ret_addr = 0x59a253;
@@ -4864,7 +4864,7 @@ void PediaWindow::append_unit_fact(iptr unit_type,u32 mask,char *desc_buf,int &h
 {
   int line;
 
-  line = (int)text_read_line(1);
+  line = (int)text_read_line_or_end(1);
   if ((unit_types[unit_type].flags & mask) != 0) {
     if (has_text == 0) {
       crt_strcpy(desc_buf,(char *)(line + 1));

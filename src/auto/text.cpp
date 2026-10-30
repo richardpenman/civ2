@@ -119,10 +119,19 @@ FILE * __cdecl file_open_path(const char *name2,iptr mode)
 
 {
   FILE *file;
-  char path[136];
+  char path[0x208];  /* BF-058, BF-296: the original's 136 bytes; a saved
+                        game's folder outside the game's is a longer path */
+  size_t len;
   
   file_build_open_path((iptr)path,name2);
-  crt_strcpy(((i8 *)&error_state.last_open_path),path);
+  /* the original copied the whole path into its 80 bytes; the error message
+     shows the first 79 characters of a longer one */
+  len = _strlen(path);
+  if (sizeof error_state.last_open_path - 1 < len) {
+    len = sizeof error_state.last_open_path - 1;
+  }
+  crt_memcpy(((i8 *)&error_state.last_open_path),path,len);
+  error_state.last_open_path[len] = '\0';
   file = _fopen(path,(char *)mode);
   (*(uint *)&error_state.last_open_failed) = (uint)(file == (FILE *)0x0);
   return file;
@@ -268,7 +277,13 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
       arg_index = __strnicmp(tag,str_string,6);
       if (arg_index == 0) {
         arg_index = _atoi(percent_pos + 7);
-        crt_strcat((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104);
+        /* BF-197 (Peter Johnson's ledger): a string argument text_args has
+           (24 of 0x104 bytes after the numbers; the game's text names 0..9);
+           another is left out */
+        if ((0 <= arg_index) &&
+           (arg_index < (int)((sizeof(TextArgs) - offsetof(TextArgs,strings)) / 0x104))) {
+          crt_strcat((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104);
+        }
         src = (iptr)(percent_pos + 8);
         if (9 < arg_index) {
           src = (iptr)(percent_pos + 9);
@@ -278,20 +293,26 @@ void __cdecl text_expand_vars(iptr src,iptr dest)
         arg_index = _strncmp(tag,str_number,6);
         if (arg_index == 0) {
           arg_index = _atoi(percent_pos + 7);
-          __ltoa(text_args.numbers[arg_index],num_buf,10);
-          crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
+          if ((0 <= arg_index) && (arg_index < 6)) {  /* BF-197 */
+            __ltoa(text_args.numbers[arg_index],num_buf,10);
+            crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
+          }
           src = (iptr)(percent_pos + 8);
         }
         else {
           arg_index = _strncmp(tag,((i8 *)&text_var_hex_tag_str),3);
           if (arg_index == 0) {
             arg_index = _atoi(percent_pos + 4);
-            __ltoa(text_args.numbers[arg_index],num_buf,0x10);
-            for (pad_i = 0; len = _strlen(num_buf), pad_i < 4 - len;
-                pad_i = pad_i + 1) {
-              crt_strcat((char *)((void *)dest),((i8 *)&text_var_hex_pad_str));
+            if ((0 <= arg_index) && (arg_index < 6)) {  /* BF-197 */
+              __ltoa(text_args.numbers[arg_index],num_buf,0x10);
+              /* BF-197: zeros up to 4 digits; the original's unsigned 4 - len
+                 padded a longer number (above 0xffff) without end */
+              for (pad_i = 0; len = _strlen(num_buf), pad_i + len < 4;
+                  pad_i = pad_i + 1) {
+                crt_strcat((char *)((void *)dest),((i8 *)&text_var_hex_pad_str));
+              }
+              crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
             }
-            crt_strcat((char *)((void *)dest),(const char *)((void *)num_buf));
             src = (iptr)(percent_pos + 5);
           }
           else {
@@ -991,6 +1012,25 @@ i8 * __cdecl text_read_line(int trim)
     text_close_file();
   }
   return result;
+}
+
+/* BF-121 (Peter Johnson's ledger): text_read_line for the readers that use
+   the line without checking it, most of them up to the section's closing @
+   line: at the end of the file (a section with no @ line after it), "@" in
+   place of no line, as the end of the section. */
+i8 * __cdecl text_read_line_or_end(int trim)
+
+{
+  i8 *line;
+
+  line = text_read_line(trim);
+  if (line == (i8 *)0x0) {
+    textbuf.buf[0] = '@';
+    textbuf.buf[1] = '\0';
+    (*(i8 * *)&text_parse.line_cursor) = ((i8 *)&textbuf.buf);
+    line = ((i8 *)&textbuf.buf);
+  }
+  return line;
 }
 
 /* 004a24b1 auto */

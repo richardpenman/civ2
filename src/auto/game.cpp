@@ -2497,6 +2497,72 @@ void __cdecl save_unpack_layout_rects(void)
   return;
 }
 
+/* A NUL inside a saved text field of `size` bytes. */
+static int save_text_terminated(const char *text,int size)
+{
+  return memchr(text,0,size) != (void *)0x0;
+}
+
+/* BF-093, BF-123..128, BF-193, BF-232, BF-233 (Peter Johnson's ledger): what
+   indexes the game's tables in the units and cities a save brings, as the game
+   writes them: an active unit's type, owner, stack links, home city (none or an
+   active city), a caravan's commodity (0..15, none) and, with goto orders, its
+   square on the map; an active city's owner, trade routes and their partners,
+   commodities supplied and demanded (negative: in use), production and name.
+   0 refuses the file as one that does not read. */
+static int save_records_valid(void)
+{
+  int unit;
+  int city;
+  int i;
+  Unit *u;
+  City *c;
+
+  for (unit = 0; unit < game.num_units; unit++) {
+    u = units + unit;
+    if (u->id == 0) continue;
+    if ((0x3d < u->type) || ((uint)(int)u->owner > 7) ||
+       (u->prev_in_stack < -1) || (0x7ff < u->prev_in_stack) ||
+       (u->next_in_stack < -1) || (0x7ff < u->next_in_stack)) {
+      return 0;
+    }
+    if ((byte)u->home_city != 0xff) {
+      if ((game.num_cities <= (byte)u->home_city) || (cities[(byte)u->home_city].id == 0)) {
+        return 0;
+      }
+    }
+    if ((unit_types[u->type].role == ROLE_TRADE) && (0xf < u->counter) && (u->counter != 0xff)) {
+      return 0;
+    }
+    if (((u->orders == ORDER_GOTO) || (u->orders == ORDER_AI_GOTO)) &&
+       (map_in_bounds((int)u->x,(int)u->y) == 0)) {
+      return 0;
+    }
+  }
+  for (city = 0; city < game.num_cities; city++) {
+    c = cities + city;
+    if (c->id == 0) continue;
+    if (((uint)(int)c->owner > 7) || (3 < c->trade_routes) ||
+       (c->building < -0x42) || (0x3d < c->building) ||
+       (save_text_terminated(c->name,sizeof c->name) == 0)) {
+      return 0;
+    }
+    for (i = 0; i < 3; i++) {
+      if (((char)c->supplies[i] < -0xf) || (0xf < (char)c->supplies[i]) ||
+         ((char)c->demands[i] < -0xf) || (0xf < (char)c->demands[i])) {
+        return 0;
+      }
+    }
+    for (i = 0; i < c->trade_routes; i++) {
+      if ((c->route_partner[i] < 0) || (0xff < c->route_partner[i]) ||
+         (0xf < (char)c->route_goods[i])) {
+        return 0;
+      }
+    }
+  }
+  return 1;
+}
+
 /* 004732a6 auto */
 i32 __cdecl save_read_units_cities(int version,iptr file)
 
@@ -2577,6 +2643,41 @@ i32 __cdecl save_read_units_cities(int version,iptr file)
       if (cities[unit].id != 0) {
         cities[unit].id = next_ids.city;
         next_ids.city++;
+      }
+    }
+  }
+  return save_records_valid();
+}
+
+/* BF-134..136, BF-172, BF-176, BF-201, BF-230, BF-291 (Peter Johnson's
+   ledger): what indexes the game's tables in the game record and the civs a
+   save brings, as the game writes them: the difficulty, barbarian activity,
+   the civs whose turn it is and who plays here (the local one in a game on
+   this computer: hot seat and e-mail games), the power ranks, the AI
+   opponents counted from the civs alive, and each civ's tribe, research,
+   government and names (each with its NUL). 0 refuses the file. */
+static int save_game_record_valid(void)
+{
+  int civ;
+  int i;
+
+  if ((5 < game.difficulty) || (3 < game.barbarian_activity) ||
+     ((uint)(int)game.turn_civ > 7) || ((uint)(int)game.player_civ > 7) ||
+     ((game.multiplayer < 3) && ((uint)(int)game.saved_current_civ > 7)) ||
+     (7 < game.best_human_rank) || (7 < game.worst_human_rank) || (6 < game.num_enemies)) {
+    return 0;
+  }
+  for (civ = 0; civ < 8; civ++) {
+    if (((uint)(int)civs[civ].tribe > 0x14) || (civs[civ].researching < -1) ||
+       (99 < civs[civ].researching) || (6 < civs[civ].government) ||
+       (save_text_terminated(civ_names[civ].leader_name,0x18) == 0) ||
+       (save_text_terminated(civ_names[civ].tribe_name,0x18) == 0) ||
+       (save_text_terminated(civ_names[civ].adjective,0x18) == 0)) {
+      return 0;
+    }
+    for (i = 0; i < 7; i++) {
+      if (save_text_terminated(civ_names[civ].titles[i],0x18) == 0) {
+        return 0;
       }
     }
   }
@@ -2708,7 +2809,7 @@ i32 __cdecl save_load_gpk(int version,iptr file)
       return 0;
     }
   }
-  return 1;
+  return save_game_record_valid();
 }
 
 /* 00473c12 auto */
@@ -3418,6 +3519,7 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
           alt_count++;
           found_next = FindNextFileA(find_handle,&find_data);
         } while (found_next == 1);
+        FindClose(find_handle);  /* (port) the original kept both searches open */
       }
       if (alt_count != 0) {
         result = _rand();
@@ -3426,6 +3528,9 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
           find_handle = FindFirstFileA(alt_pattern,&find_data);
           while (pick_index = pick_index - 1, pick_index != 0) {
             FindNextFileA(find_handle,&find_data);
+          }
+          if (find_handle != 0xffffffff) {
+            FindClose(find_handle);
           }
           crt_strcat(upper_path,find_data.cFileName);
           crt_strcpy(file_path,upper_path);
@@ -6089,7 +6194,12 @@ void __cdecl prefs_load_civ2dat(void)
       prefs_set_defaults();
     }
     read_count = _fread(((i16 *)&menu_prefs.main_menu_choice),0x1bc,1,_File);
-    if (read_count == 0) {
+    /* BF-226 (Peter Johnson's ledger): the game, player, e-mail and address
+       names end within their 32 bytes, else the defaults as for a short file */
+    if ((read_count == 0) || (memchr(menu_prefs.net_game_name,0,0x20) == (void *)0x0) ||
+       (memchr(menu_prefs.net_player_name,0,0x20) == (void *)0x0) ||
+       (memchr(menu_prefs.email_address,0,0x20) == (void *)0x0) ||
+       (memchr(menu_prefs.net_ip_address,0,0x20) == (void *)0x0)) {
       prefs_set_mp_defaults();
     }
     _fclose(_File);
@@ -7930,7 +8040,8 @@ i32 ScenarioEvents::action_play_wave(ScenarioEvent *event)
 {
   i32 result;
   int exists;
-  i8 path[240];
+  i8 path[0x208];  /* (port) 240 in the original: scenario_dir_path (264), SOUND\
+                      and the event's file name (up to 255, BF-296) */
   
   if (((byte)game.game_options & OPT_SOUND) == 0) {
     result = 0;
@@ -10354,7 +10465,7 @@ int ScenarioEvents::parse_file(const char *filename,const char *section)
   int cmp;
   uint state;
   int failed;
-  EventsParseState ps;
+  EventsParseState ps = {};  /* BF-030: no event before the first @IF */
   
   failed = 1;
   state = 1;
@@ -10445,7 +10556,10 @@ int ScenarioEvents::parse_file(const char *filename,const char *section)
         if (parse_trigger(&ps) == 0) break;
       }
       else if (state == 3) {
-        if (parse_action(&ps) == 0) break;
+        /* BF-030 (Peter Johnson's ledger): an action after an @THEN with no
+           @IF before it had no event to go to (the original wrote through
+           an unset pointer): a bad events file */
+        if ((ps.event == (ScenarioEvent *)0x0) || (parse_action(&ps) == 0)) break;
       }
     } while (state < 10);
     if (state == 10) {
@@ -14790,7 +14904,9 @@ void __cdecl events_editor_on_add_trigger(void)
     if (dlg_input.help_pressed == 0) break;
     events_editor_help_trigger(trigger_type);
   }
-  if (trigger_type != -1) {
+  /* BF-234 (Peter Johnson's ledger): one of the nine triggers (the list is
+     from the game's text, which another can make longer); another adds none */
+  if ((0 <= trigger_type) && (trigger_type < 9)) {
     if ((unit_types_block.events_pool_bytes_free < 0x1c4) ||
        (new_event = (int *)((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->alloc(),
        new_event == (int *)0x0)) {

@@ -55,8 +55,8 @@ struct DibSurface {
         memset(pixels, 0, sizeof pixels);
     }
     iptr pixel_ptr(int x, int y) {
-        assert(x >= 0 && x < 640 && y >= 0 && y < 480);
-        return (iptr)&pixels[y][x];
+        assert(y >= 0 && y < 480); // the row table's entries (x may run on)
+        return (iptr)&pixels[0][0] + y * 640 + x;
     }
 };
 struct GamePalette {
@@ -73,11 +73,11 @@ static void palette_get_entry_rgb(GameLogPalette *, int color, iptr r, iptr g, i
 static void put32(std::vector<unsigned char> &v, size_t off, int value) {
     memcpy(v.data() + off, &value, 4);
 }
-static void bmp(const std::vector<unsigned char> &rle) {
+static void bmp(const std::vector<unsigned char> &rle, int info_size = 40) {
     std::vector<unsigned char> bytes(14 + 40 + 1024);
     bytes[0] = 'B';
     bytes[1] = 'M';
-    put32(bytes, 14, 40);
+    put32(bytes, 14, info_size);
     put32(bytes, 18, 640);
     put32(bytes, 22, 480);
     bytes[26] = 1;
@@ -118,5 +118,37 @@ int main() {
         assert(output[1078] == 9 && output[1079] == 9); // first bottom-up row unchanged
         fclose(input);
     }
-    puts("BMP: initial delta, encoded run, default/custom palettes and pixel output passed");
+    // BF-097: an info header too short for the compression read below.
+    bmp({2, 9, 0, 1}, 16);
+    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 0);
+    assert(last_error && strcmp(last_error, "str_error_reading_info_header") == 0);
+    fclose(input);
+    // BF-098: writes outside the image refused; an end of line past the last
+    // row (as encoders write) and the end of bitmap still accepted.
+    std::vector<unsigned char> lines;
+    for (int r = 0; r < 480; r++)
+        lines.insert(lines.end(), {1, 4, 0, 0});
+    lines.insert(lines.end(), {0, 1});
+    bmp(lines);
+    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 1 && !last_error);
+    assert(surface.pixels[0][0] == 4 && surface.pixels[479][0] == 4);
+    fclose(input);
+    std::vector<std::vector<unsigned char>> bad = {
+        {0, 2, 255, 0, 0, 2, 255, 0, 1, 7, 0, 1},       // a delta below the image, then a run
+        {0, 2, 0, 255, 0, 2, 0, 255, 255, 7, 0, 1},     // a run past the image's end
+        {0, 2, 0, 255, 0, 2, 0, 255, 0, 2, 0, 127, 0, 5, 1, 2, 3, 4, 5, 0, 0, 1}, // a literal
+    };
+    std::vector<unsigned char> past; // a run after an end of line past the last row
+    for (int r = 0; r < 480; r++)
+        past.insert(past.end(), {0, 0});
+    past.insert(past.end(), {1, 1, 0, 1});
+    bad.push_back(past);
+    for (auto &rle : bad) {
+        bmp(rle);
+        assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 0);
+        assert(last_error && strcmp(last_error, "str_error_reading_bitmap_image") == 0);
+        fclose(input);
+    }
+    puts("BMP: initial delta, encoded run, short info header, writes outside the image, "
+         "default/custom palettes and pixel output passed");
 }

@@ -908,6 +908,7 @@ void __cdecl text_close_file(void); /* 004a2020 */
 int __cdecl text_open_file_section(const char *filename,const char *section); /* 004a2055 */
 int __cdecl text_open_section(const char *filename,const char *section); /* 004a2379 */
 i8 * __cdecl text_read_line(int trim); /* 004a23fc */
+i8 * __cdecl text_read_line_or_end(int trim);
 i8 * __cdecl text_next_token(void); /* 004a24b1 */
 i32 __cdecl text_next_int(void); /* 004a2534 */
 i32 __cdecl text_read_line_pooled(void); /* 004a257a */

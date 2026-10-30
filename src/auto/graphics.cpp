@@ -1613,6 +1613,8 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
   int col;
   uint run_value;
   char *dst;
+  char *bmp_lo;
+  char *bmp_hi;
   uint file_header[4];
   uint code;
   const char *error_msg;
@@ -1631,7 +1633,9 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
     }
     else if ((file_header[0] & 0xffff) == 0x4d42) {
       nread = _fread(&info_size,4,1,file);
-      if ((nread == 0) || (nread = (info_size - 4 <= (int)sizeof info && 0 < info_size - 4) && _fread(&info,info_size - 4,1,file), nread == 0)) {
+      /* BF-097 (Peter Johnson's ledger): at least the 40 bytes of a
+         BITMAPINFOHEADER, whose compression and colours used are read below */
+      if ((nread == 0) || (nread = (info_size - 4 <= (int)sizeof info && 0x24 <= info_size - 4) && _fread(&info,info_size - 4,1,file), nread == 0)) {
         error_msg = str_error_reading_info_header;
       }
       else {
@@ -1686,6 +1690,18 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
           else if (info.compression == 1) {
             col = 0;  /* BF-073: the first RLE delta has no preceding X writer. */
             row = info.height2 - 1;
+            /* BF-098 (Peter Johnson's ledger): the image's bytes, and rows
+               inside its row table; a row outside it is no position (an end
+               of line after the last row is), and a write there or past the
+               image ends the load as a bad image */
+            bmp_lo = (char *)((DibSurface *)surface)->pixel_ptr(0,0);
+            bmp_hi = (char *)((DibSurface *)surface)->pixel_ptr(0,info.height2 - 1);
+            if (bmp_hi < bmp_lo) {
+              dst = bmp_lo;
+              bmp_lo = bmp_hi;
+              bmp_hi = dst;
+            }
+            bmp_hi += info.width2;
             dst = (char *)((DibSurface *)surface)->pixel_ptr(0,row);
             while( true ) {
               code = CRT_GETC(file);
@@ -1694,7 +1710,7 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
                 code = CRT_GETC(file);
                 if (code == 0) {
                   row--;
-                  dst = (char *)((DibSurface *)surface)->pixel_ptr(0,row);
+                  dst = (row < 0) ? (char *)0x0 : (char *)((DibSurface *)surface)->pixel_ptr(0,row);
                 }
                 else {
                   if (code == 1) break;
@@ -1703,9 +1719,15 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
                     row -= tmp;
                     tmp = CRT_GETC(file);
                     col += tmp;
-                    dst = (char *)((DibSurface *)surface)->pixel_ptr(col,row);
+                    dst = ((row < 0) || (info.height2 <= row)) ? (char *)0x0 :
+                          (char *)((DibSurface *)surface)->pixel_ptr(col,row);
                   }
                   else {
+                    if ((dst == (char *)0x0) || (dst < bmp_lo) || (bmp_hi - dst < (int)code)) {
+                      error_msg = str_error_reading_bitmap_image;
+                      ok = 0;
+                      break;
+                    }
                     for (i = 0; i < (int)code; i++) {
                       tmp = CRT_GETC(file);
                       pixel = (char)tmp;
@@ -1721,6 +1743,11 @@ int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_col
               }
               else {
                 run_value = CRT_GETC(file);
+                if ((dst == (char *)0x0) || (dst < bmp_lo) || (bmp_hi - dst < (int)code)) {
+                  error_msg = str_error_reading_bitmap_image;  /* BF-098 */
+                  ok = 0;
+                  break;
+                }
                 for (i = 0; i < (int)code; i++) {
                   *dst = color_base + (char)run_value;
                   dst++;
@@ -4028,7 +4055,10 @@ void __cdecl sprite_sheet_save_terrain1(void)
   for (i = 0; i < 3; i++) {
     key_color = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + terrain2 * 0x3c))->height();
+    /* BF-013 (Peter Johnson's ledger): the original took the height of
+       sprite terrain2 (11 after the loop above), 660 bytes into a block of
+       184: the improvement's own */
+    height = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->height();
     width = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->width();
     gfx_fill_rect_xywh((iptr)&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((iptr)impr_bg_rect,(iptr)&sprite_editor.sprite_sheet_surface,x2,y2);

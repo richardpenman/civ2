@@ -5455,7 +5455,8 @@ void __cdecl unit_sound_editor_pick_wav(int slot)
   i32 fmt_arg2;
   i32 fmt_arg3;
   i8 wav_path[256];
-  char dest_path[256];
+  char dest_path[0x140];  /* (port) 256 in the original: scenario_dir_path (264),
+                             SOUND\ and the name (BF-296) */
   Dialog dlg;
   int choice;
   

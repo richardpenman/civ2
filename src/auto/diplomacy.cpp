@@ -4955,6 +4955,10 @@ i32 DiploLeaderWindow::init_science()
   top_techs[10] = 0xffffffff;
   top_techs[0xb] = 0xffffffff;
   tech_count = 0;
+  /* BF-024 (Peter Johnson's ledger): science_draw_tech takes the length of
+     the line it trims from line2_buf, which the first advance reads before
+     any is drawn; unset, its length can put the NUL past aCStack_641 (53). */
+  line2_buf[0] = '\0';
   if (((((*(byte *)&civs[human_civ[0]].treaties[((uint)leader_civ)] & TREATY_EMBASSY) == 0) &&
        (value = civ_has_wonder(human_civ[0],WONDER_UNITED_NATIONS), value == 0)) &&
       (value = civ_has_wonder(human_civ[0],WONDER_MARCO_POLO), value == 0)) && (game.difficulty != DIFF_CHIEFTAIN)) {

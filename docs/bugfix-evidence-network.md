@@ -85,7 +85,9 @@ source probes (tests/*_test.cpp) after the recorded cases.
 - The contents of state images and difference records: active units' types, owners and stack
   links, city records, map dimensions, region and owner nibbles, turn and objective civs (BF-093,
   BF-094, BF-168, BF-170, BF-230, BF-232, BF-236, BF-285, BF-287, BF-288, BF-291), and the section
-  headers of full images (`diffeng_apply_image`, never sent by the game).
+  headers of full images (`diffeng_apply_image`, never sent by the game). Saves now check them
+  ([bugfix-evidence-files.md](bugfix-evidence-files.md)); a join's records arrive apart, so the
+  same check after each record would refuse valid joins.
 - Parley item ids (advances, units, cities, civs) and items whose kind does not match the mode;
   the city of a joining unit's home (BF-233's cross-check).
 - `net_slots[net_civ_slots[civ]]` with a civ whose player left (-1) is used in about 170 other

@@ -3293,6 +3293,7 @@ void __cdecl city_add_trade_route(uptr city,uptr city2,iptr commodity)
   }
   else {
     min_value = 9999;
+    weakest_slot = -1;
     for (slot = 0; slot < (char)cities[city].trade_routes; slot++) {
       if ((*(char *)&cities[city].route_goods[slot] < '\0') && (commodity < 0)) {
         return;
@@ -3318,7 +3319,10 @@ void __cdecl city_add_trade_route(uptr city,uptr city2,iptr commodity)
         weakest_slot = slot;
       }
     }
-    if (min_value <= cities[city2].base_trade) {
+    /* BF-026 (Peter Johnson's ledger): with every route worth 9999 or more
+       (and a partner whose trade is as much) no slot was picked; the
+       original wrote the route at an unset slot */
+    if ((-1 < weakest_slot) && (min_value <= cities[city2].base_trade)) {
       city_set_trade_route_slot(city,weakest_slot,city2,commodity);
       city_calc_commodity_demand(city);
       city_calc_commodity_demand(city2);
@@ -8229,7 +8233,7 @@ void EditorWindow::impr_editor_paint()
   open_err = text_open_section((const char *)&str_pedia,(const char *)&textbuf.buf);
   if (open_err == 0) {
     do {
-      line = text_read_line(1);
+      line = text_read_line_or_end(1);
       if (*line == '^') {
         line++;
       }

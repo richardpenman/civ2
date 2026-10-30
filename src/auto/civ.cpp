@@ -3418,6 +3418,10 @@ void __cdecl civ_heal_units(iptr civ)
   iptr improvement;
   uint heal_amount;
   
+  /* BF-028 (Peter Johnson's ledger): a unit type of another domain than land,
+     air or sea (a modified RULES.TXT) left the facility unset for the first
+     unit; 0 is none (later units keep the one before, as in the original) */
+  improvement = 0;
   for (unit = 0; unit < game.num_units; unit++) {
     if (2 < game.multiplayer) {
       net.process_messages(1,0);
@@ -5020,30 +5024,36 @@ i32 __cdecl civ_has_advance(iptr civ,iptr advance_id)
   return result;
 }
 
+/* BF-173 (Peter Johnson's ledger): advance_has_prereq's search, which goes
+   to each advance once.  A scenario's RULES.TXT can make advances each
+   other's prerequisites (the original takes them, Bonaparte's rules have
+   two); the original's search went round such a cycle until the stack ran
+   out.  The answer is the same where it had one: whether prereq is among
+   the advance's prerequisites, at any distance. */
+static i32 advance_has_prereq_seen(iptr advance,iptr prereq,u8 (&seen)[100])
+{
+  if (advance < 0) {
+    return 0;
+  }
+  if (advance == prereq) {
+    return 1;
+  }
+  if ((99 < advance) || (seen[advance] != 0)) {
+    return 0;
+  }
+  seen[advance] = 1;
+  return ((advance_has_prereq_seen((int)advances[advance].preq[0],prereq,seen) != 0) ||
+          (advance_has_prereq_seen((int)advances[advance].preq[1],prereq,seen) != 0));
+}
+
 /* 004bdaa5 auto */
 i32 __cdecl advance_has_prereq(iptr advance,iptr prereq)
 
 {
-  i32 result;
-  int found;
-  
-  if (advance < 0) {
-    result = 0;
-  }
-  else if (advance == prereq) {
-    result = 1;
-  }
-  else {
-    found = advance_has_prereq((int)advances[advance].preq[0],prereq);
-    if ((found == 0) &&
-       (found = advance_has_prereq((int)advances[advance].preq[1],prereq), found == 0)) {
-      result = 0;
-    }
-    else {
-      result = 1;
-    }
-  }
-  return result;
+  u8 seen[100];
+
+  _memset(seen,0,sizeof seen);
+  return advance_has_prereq_seen(advance,prereq,seen);
 }
 
 /* 004be6ba auto */
@@ -7672,7 +7682,7 @@ void __cdecl cosmic_editor_fill_list(void)
   editor_active.wnd->list_box.clear();
   text_open_section((const char *)&str_debug_11,(const char *)&str_editcosmic);
   while( true ) {
-    _Str = text_read_line(1);
+    _Str = text_read_line_or_end(1);
     len = _strlen(_Str);
     if ((len < 3) || (0x15 < index)) break;
     if (editor_text_dlg_wnd_block.editor_item_recs[1].values[index] < 10) {
