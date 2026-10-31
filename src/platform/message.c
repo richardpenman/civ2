@@ -279,9 +279,39 @@ static WINBOOL log_msg(const MSG *m, UINT remove, UINT lo, UINT hi)
     return TRUE;
 }
 
-WINBOOL WINAPI PeekMessageA(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
+/* What plat_modal_tick may deliver meanwhile: 2 the sound's messages (the
+   game waits for any message: no window or range given), 1 MM_WOM_DONE
+   (the game dispatches those itself: win_dispatch_custom_msgs), 0 none. */
+static int may_deliver;
+
+void sound_poll(void);
+
+static int deliverable(HWND h, UINT lo, UINT hi)
 {
-    API_TRACE();
+    return h ? 0 : !lo && !hi ? 2 : lo <= MM_WOM_DONE && hi >= MM_WOM_DONE ? 1 : 0;
+}
+
+/* While a menu of the system's menu bar is open (Windows, macOS: the host's
+ * loop holds this one; host_modal_tick): as Windows' menu loop, which goes
+ * on dispatching what was posted, the sound's messages delivered, so the
+ * sound streamed in parts (the opening screen's MENULOOP) and the music go
+ * on.  Only where the game would itself take them (may_deliver). */
+void plat_modal_tick(void)
+{
+    static int busy;
+    MSG m;
+    if (busy || !may_deliver || plat_replay)
+        return;
+    busy = 1;
+    sound_poll();
+    while (take(&m, NULL, MM_WOM_DONE, MM_WOM_DONE, PM_REMOVE) ||
+           (may_deliver == 2 && take(&m, NULL, MM_MCINOTIFY, MM_MCINOTIFY, PM_REMOVE)))
+        DispatchMessageA(&m);
+    busy = 0;
+}
+
+static WINBOOL peek_message(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
+{
     msg_pump_events(0);
     xd_poll();      /* (the network library's messages, as its windows got them) */
     if (take(msg, h, lo, hi, remove) || paint_message(msg, h, lo, hi)) {
@@ -306,12 +336,27 @@ WINBOOL WINAPI PeekMessageA(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
     return FALSE;
 }
 
+WINBOOL WINAPI PeekMessageA(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
+{
+    int was = may_deliver;
+    WINBOOL r;
+    API_TRACE();
+    may_deliver = deliverable(h, lo, hi);
+    r = peek_message(msg, h, lo, hi, remove);
+    may_deliver = was;
+    return r;
+}
+
 WINBOOL WINAPI GetMessageA(LPMSG msg, HWND h, UINT lo, UINT hi)
 {
     API_TRACE();
     while (!PeekMessageA(msg, h, lo, hi, PM_REMOVE))
-        if (!plat_replay)
+        if (!plat_replay) {
+            int was = may_deliver;
+            may_deliver = deliverable(h, lo, hi);
             msg_pump_events(1);     /* nothing to do: wait for input (at most 10 ms, for timers) */
+            may_deliver = was;
+        }
     return msg->message != WM_QUIT;
 }
 

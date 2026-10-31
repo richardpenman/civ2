@@ -36,6 +36,13 @@ static void module_path(const char *in, char *out, size_t n)
 }
 
 #define HOST(name) w2c_host_host_##name
+static w2c_civ2 module;
+
+void host_modal_tick(void)
+{
+    w2c_civ2_plat_modal_tick(&module);
+}
+
 typedef struct w2c_host Host;
 
 u32 HOST(init)(Host *h, u32 headless) { (void)h; return (u32)host_init((int)headless); }
@@ -196,7 +203,6 @@ void HOST(net_close)(Host *h, u32 s) { (void)h; host_net_close((int)s); }
 
 int main(int argc, char **argv)
 {
-    static w2c_civ2 module;
     static Host host = {&module};
     static struct w2c_wasi__snapshot__preview1 wasi = {&module};
     wasm_rt_trap_t trap;

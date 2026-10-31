@@ -111,7 +111,7 @@ TARGETS = {
         'ldflags': ['--target=wasm32-wasip1', '-Wl,--error-limit=0', '-Wl,-z,stack-size=16777216',
                     # nothing below 64K, as on Windows: smaller pointers are taken for atoms and resource ids
                     '-Wl,--global-base=65536', '-Wl,--initial-memory=67108864',
-                    '-Wl,--export=malloc'],
+                    '-Wl,--export=malloc', '-Wl,--export=plat_modal_tick'],
         'libs': ['-lwasi-emulated-process-clocks'],
     },
     'win64': {

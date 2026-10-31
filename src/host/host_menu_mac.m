@@ -82,6 +82,13 @@ static void make_target(void)
         return;
     w = cocoa_window();
     target = [[Civ2MenuTarget alloc] init];
+    /* While a menu is open (the run loop in its tracking mode, the program's
+       loop held): host_modal_tick. */
+    [[NSRunLoop currentRunLoop] addTimer:[NSTimer timerWithTimeInterval:0.02 repeats:YES block:^(NSTimer *t) {
+                                    (void)t;
+                                    host_modal_tick();
+                                }]
+                                 forMode:NSEventTrackingRunLoopMode];
     [[NSNotificationCenter defaultCenter] addObserver:target selector:@selector(didEnter:)
                                                  name:NSWindowDidEnterFullScreenNotification object:w];
     [[NSNotificationCenter defaultCenter] addObserver:target selector:@selector(didExit:)
