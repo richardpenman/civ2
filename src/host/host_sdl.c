@@ -123,10 +123,17 @@ int host_open_maximized_window(int32_t *w, int32_t *h, int scale)
                               SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!window)
         return 0;
-    for (i = 0; i < 200 && same < 20; i++) {       /* the size: steady a while */
+    /* The size: maximized (changed from 1024x768, the window manager can
+       take a while to get to it), then steady a while; at most 3 seconds.
+       The desktop's size is fixed from it: one sized before the window
+       grew was drawn small in the middle of it. */
+    SDL_MaximizeWindow(window);
+    for (i = 0; i < 300; i++) {
         SDL_PumpEvents();
         SDL_GetWindowSize(window, &cw, &ch);
         same = cw == lw && ch == lh ? same + 1 : 0;
+        if ((cw != 1024 || ch != 768) && same >= 20)
+            break;
         lw = cw;
         lh = ch;
         SDL_Delay(10);
@@ -180,15 +187,20 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
 #endif
     if (SDL_GetDisplayBounds(0, &full))
         full.w = full.h = 0;
+    if (mode == 2)
+        SDL_MaximizeWindow(window);
     /* The size once the window manager is done (maximizing, the full
        screen animation): full screen, the display's (or, where it is not
        quite that, as with a camera notch, changed and then steady);
+       maximized: changed from 1024x768 and steady (at most 3 seconds:
+       a desktop sized before the window grew was drawn small in it);
        else steady a while. */
     for (i = 0; i < 500; i++) {
         SDL_PumpEvents();
         SDL_GetWindowSize(window, &cw, &ch);
         same = cw == lw && ch == lh ? same + 1 : 0;
-        if (mode == 1 ? (cw == full.w && ch == full.h) || ((cw != 1024 || ch != 768) && same >= 50) : same >= 20)
+        if (mode == 1 ? (cw == full.w && ch == full.h) || ((cw != 1024 || ch != 768) && same >= 50) :
+            mode == 2 ? ((cw != 1024 || ch != 768) && same >= 20) || i >= 300 : same >= 20)
             break;
         lw = cw;
         lh = ch;
