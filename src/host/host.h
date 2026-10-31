@@ -46,13 +46,26 @@ int HOST_API(host_open_window)(int w, int h, int scale);
  * over scale (*w x *h; 0: host_desktop_scale).  Returns the scale, 0: none. */
 int HOST_API(host_open_maximized_window)(int32_t *w, int32_t *h, int scale);
 /* Whole pixels per desktop pixel for a w x h pixel display (the platform
- * layer's too, src/platform/main.c): scale, or (0) as many as leave a
- * 1024x768 desktop; never a desktop smaller than 640x480. */
+ * layer's too, src/platform/main.c): scale, or (0) the step that makes the
+ * desktop nearest the original's 1024x768 in area, a step above 1 leaving
+ * at least 800x560 (a MacBook Air's window: 3, 980x594; a 4K screen: 3,
+ * 1280x720; 2560x1440: 2; 1920x1080: 1); never a desktop smaller than
+ * 640x480. */
 static inline int host_desktop_scale(int w, int h, int scale)
 {
-    int most = w / 640 < h / 480 ? w / 640 : h / 480;
-    if (scale < 1)
-        scale = w / 1024 < h / 768 ? w / 1024 : h / 768;
+    int most = w / 640 < h / 480 ? w / 640 : h / 480, k;
+    if (scale < 1) {
+        double best = 0;
+        for (k = 1, scale = 1; k <= most && (k == 1 || (w / k >= 800 && h / k >= 560)); k++) {
+            double r = (double)(w / k) * (h / k) / (1024.0 * 768.0);
+            if (r < 1)
+                r = 1 / r;          /* how far from 1024x768, as a ratio */
+            if (k == 1 || r < best) {
+                best = r;
+                scale = k;
+            }
+        }
+    }
     if (scale > most)
         scale = most;
     return scale < 1 ? 1 : scale;
@@ -77,6 +90,11 @@ enum { HOST_MENU_POPUP = 1, HOST_MENU_SEPARATOR = 2, HOST_MENU_GRAYED = 4, HOST_
 void HOST_API(host_menu_begin)(void);
 void HOST_API(host_menu_add)(int level, int flags, int id, const char *text);
 void HOST_API(host_menu_end)(void);
+/* The program's (src/platform, plat_modal_tick; the host calls it): every
+ * 20 ms or so while a loop of the system's holds the program's own (a menu
+ * of that menu bar open), as Windows' menu loop goes on delivering the
+ * messages posted meanwhile (the sound's). */
+void host_modal_tick(void);
 void HOST_API(host_present)(const void *pixels, int stride);
 /* Minimize the window (the desktop's main window was minimized). */
 void HOST_API(host_minimize)(void);

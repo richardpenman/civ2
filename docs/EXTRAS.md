@@ -62,12 +62,12 @@ The game opens in a window, maximized to fill the screen. To play full screen in
 screen to 1 in Game > OpenCiv2 Options (Display and messages), or `FullScreen=1` in `CIV.INI`; it
 takes effect the next time the game starts.
 
-On a large screen the game is drawn larger, in whole steps, so it stays sharp: each of the
-game's pixels becomes 2×2 or 3×3 of the screen's. By default the step is the largest that
-still leaves the game at least 1024×768 (a 4K screen: 2, the game at 1920×1080). Change it in
-Game > OpenCiv2 Options (Display and messages), Screen scale, or with `Scale=` in `CIV.INI`
-(0 means by the screen's size); it takes effect the next time the game starts. The game is never
-made smaller than 640×480.
+On a high-resolution screen the game is drawn larger, in whole steps, so it stays sharp: each
+of the game's pixels becomes 2×2, 3×3 or 4×4 of the screen's. The step is the one that brings
+the game nearest the original's 1024×768 (in area), leaving it at least 800×560: a MacBook
+Air's window 3 (the game at 980×594), a 4K screen 3 (1280×720), 2560×1440 2 (1280×720),
+1920×1080 1. `Scale=` in `CIV.INI` sets the step instead (0: by the screen's size); it takes
+effect the next time the game starts. The game is never made smaller than 640×480.
 
 ## Rule changes
 
