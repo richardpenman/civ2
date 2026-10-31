@@ -169,12 +169,14 @@ def exe(cross_windows=False):
     mac = sys.platform == 'darwin' and not cross_windows
     # (the set-up of the game from the user's copy, src/host/setup.h, with
     # unshield and zlib for the CD's cabinet, libogg and libvorbis for a
-    # disc image's music: their sources, from tools/fetch-toolchain.sh)
+    # disc image's music: their sources, from tools/fetch-toolchain.sh;
+    # stb_vorbis to play the music)
     host = [os.path.join(ROOT, 'src', 'host', f) for f in
             ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'setup.c', 'setup_disc.c') +
             (('host_menu_win.c', 'setup_win.c') if windows else ('setup_unix.c',)) +
             (('host_menu_mac.m', 'setup_mac.m') if mac else ())]
-    third = (sorted(glob.glob(os.path.join(paths.UNSHIELD, 'lib', '*.c'))) +
+    third = [os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c')] + \
+        (sorted(glob.glob(os.path.join(paths.UNSHIELD, 'lib', '*.c'))) +
              [os.path.join(paths.UNSHIELD, 'lib', 'md5', 'md5c.c')] +
              [os.path.join(paths.ZLIB, f + '.c') for f in ('adler32', 'crc32', 'inffast', 'inflate', 'inftrees',
                                                           'zutil')] +

@@ -323,10 +323,10 @@ def main():
         # The Indeo 4 decoder (FFmpeg's, LGPL): indeo4.c is included by iv41.c.
         sources += [os.path.join(ROOT, 'src', 'third_party', 'indeo4', f + '.c')
                     for f in ('iv41', 'ivi', 'ivi_dsp', 'vlc', 'reverse', 'zigzag')]
-        # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music.
-        sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     if args.target.startswith('linux'):
         sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c')]
+        # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.
+        sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     sources += [os.path.join(ROOT, f) for f in t.get('extra', [])]
     headers = max(os.path.getmtime(h) for h in glob.glob(os.path.join(ROOT, 'src', '*', '*.h')))
     jobs = []

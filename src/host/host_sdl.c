@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../platform/win32_vk.h"
+#define STB_VORBIS_HEADER_ONLY
+#include "../third_party/stb_vorbis/stb_vorbis.c"
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
@@ -36,8 +38,11 @@ int host_init(int headless)
     return 1;
 }
 
+static void music_end_thread(void);
+
 void host_quit(void)
 {
+    music_end_thread();
     SDL_Quit();
 }
 
@@ -548,6 +553,183 @@ void host_audio_clear(int dev)
 void host_audio_close(int dev)
 {
     SDL_CloseAudioDevice((SDL_AudioDeviceID)dev);
+}
+
+/* ---- music: decoded on a thread of its own ----
+ *
+ * The program's loop fed the music before; a system menu bar (Windows,
+ * macOS) runs its own loop while a menu is open, and the music stopped once
+ * what was queued had played.  Here a thread keeps about a second queued. */
+
+static struct {
+    SDL_mutex *lock;
+    SDL_Thread *thread;
+    int quit;
+    unsigned char *file;        /* the file's bytes */
+    stb_vorbis *ogg;            /* its decoder (Ogg Vorbis), else WAV samples: */
+    const unsigned char *pcm;
+    uint32_t pcm_left;
+    int playing, ended;         /* playing: until all of it has played */
+    int dev, rate, chans;
+} music;
+
+static uint32_t rd32(const unsigned char *p) { return p[0] | p[1] << 8 | p[2] << 16 | (uint32_t)p[3] << 24; }
+
+static void music_close(void)
+{
+    if (music.ogg)
+        stb_vorbis_close(music.ogg);
+    music.ogg = NULL;
+    free(music.file);
+    music.file = NULL;
+    music.pcm = NULL;
+    music.pcm_left = 0;
+    music.playing = 0;
+}
+
+static int music_thread(void *arg)
+{
+    static short buf[22050];
+    (void)arg;
+    SDL_LockMutex(music.lock);
+    while (!music.quit) {
+        uint32_t want = (uint32_t)(music.rate * music.chans * 2);
+        while (music.playing && !music.ended && SDL_GetQueuedAudioSize((SDL_AudioDeviceID)music.dev) < want) {
+            uint32_t n;
+            if (music.ogg) {
+                int got = stb_vorbis_get_samples_short_interleaved(music.ogg, music.chans, buf,
+                                                                   (int)(sizeof buf / sizeof buf[0]));
+                n = got > 0 ? (uint32_t)got * (uint32_t)music.chans * 2 : 0;
+                if (n)
+                    SDL_QueueAudio((SDL_AudioDeviceID)music.dev, buf, n);
+            } else {
+                n = music.pcm_left < sizeof buf ? music.pcm_left : (uint32_t)sizeof buf;
+                if (n)
+                    SDL_QueueAudio((SDL_AudioDeviceID)music.dev, music.pcm, n);
+                music.pcm += n;
+                music.pcm_left -= n;
+            }
+            if (!n)
+                music.ended = 1;
+        }
+        if (music.playing && music.ended && !SDL_GetQueuedAudioSize((SDL_AudioDeviceID)music.dev))
+            music_close();
+        SDL_UnlockMutex(music.lock);
+        SDL_Delay(20);
+        SDL_LockMutex(music.lock);
+    }
+    SDL_UnlockMutex(music.lock);
+    return 0;
+}
+
+static void music_end_thread(void)
+{
+    if (!music.thread)
+        return;
+    SDL_LockMutex(music.lock);
+    music.quit = 1;
+    SDL_UnlockMutex(music.lock);
+    SDL_WaitThread(music.thread, NULL);
+    music.thread = NULL;
+}
+
+/* The music's output at rate, chans (16-bit samples); 0: none. */
+static int music_device(int rate, int chans)
+{
+    if (music.dev && (music.rate != rate || music.chans != chans)) {
+        SDL_CloseAudioDevice((SDL_AudioDeviceID)music.dev);
+        music.dev = 0;
+    }
+    if (!music.dev) {
+        music.dev = host_audio_open(rate, chans, 16);
+        music.rate = rate;
+        music.chans = chans;
+    }
+    return music.dev != 0;
+}
+
+static int music_start(const unsigned char *file, uint32_t len)
+{
+    if (!(music.file = malloc(len ? len : 1)))
+        return 0;
+    memcpy(music.file, file, len);
+    if (len >= 4 && !memcmp(file, "OggS", 4)) {
+        int err;
+        stb_vorbis_info info;
+        if (!(music.ogg = stb_vorbis_open_memory(music.file, (int)len, &err, NULL)))
+            return 0;
+        info = stb_vorbis_get_info(music.ogg);
+        return info.channels >= 1 && info.channels <= 2 && music_device((int)info.sample_rate, info.channels);
+    }
+    if (len >= 12 && !memcmp(file, "RIFF", 4) && !memcmp(file + 8, "WAVE", 4)) {
+        uint32_t at = 12, rate = 0, chans = 0, bits = 0;
+        while (len - at >= 8) {
+            uint32_t size = rd32(music.file + at + 4);
+            at += 8;
+            if (size > len - at)
+                size = len - at;
+            if (!memcmp(music.file + at - 8, "fmt ", 4) && size >= 16) {
+                chans = music.file[at + 2] | music.file[at + 3] << 8;
+                rate = rd32(music.file + at + 4);
+                bits = music.file[at + 14] | music.file[at + 15] << 8;
+            } else if (!memcmp(music.file + at - 8, "data", 4)) {
+                if (bits != 16 || !rate || chans < 1 || chans > 2 || !music_device((int)rate, (int)chans))
+                    return 0;
+                music.pcm = music.file + at;
+                music.pcm_left = size & ~(chans * 2 - 1);
+                return 1;
+            }
+            at += size + (size & 1);
+            if (at > len)
+                break;
+        }
+    }
+    return 0;
+}
+
+int host_music_play(const void *file, uint32_t len)
+{
+    int ok;
+    if (!music.lock && !(music.lock = SDL_CreateMutex()))
+        return 0;
+    SDL_LockMutex(music.lock);
+    music_close();
+    if (music.dev)
+        SDL_ClearQueuedAudio((SDL_AudioDeviceID)music.dev);
+    ok = music_start(file, len);
+    if (ok) {
+        music.playing = 1;
+        music.ended = 0;
+    } else
+        music_close();
+    SDL_UnlockMutex(music.lock);
+    if (ok && !music.thread && !(music.thread = SDL_CreateThread(music_thread, "music", NULL))) {
+        host_music_stop();
+        return 0;
+    }
+    return ok;
+}
+
+void host_music_stop(void)
+{
+    if (!music.lock)
+        return;
+    SDL_LockMutex(music.lock);
+    music_close();
+    if (music.dev)
+        SDL_ClearQueuedAudio((SDL_AudioDeviceID)music.dev);
+    SDL_UnlockMutex(music.lock);
+}
+
+int host_music_playing(void)
+{
+    int playing;
+    if (!music.lock)
+        return 0;
+    SDL_LockMutex(music.lock);
+    playing = music.playing;
+    SDL_UnlockMutex(music.lock);
+    return playing;
 }
 
 /* ---- message boxes ---- */

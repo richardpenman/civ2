@@ -104,6 +104,13 @@ void HOST_API(host_audio_queue)(int dev, const void *data, uint32_t len);
 uint32_t HOST_API(host_audio_queued)(int dev);
 void HOST_API(host_audio_clear)(int dev);
 void HOST_API(host_audio_close)(int dev);
+/* Music: a whole Ogg Vorbis or RIFF WAVE (16-bit PCM) file's len bytes
+ * (copied), decoded and played by the host as it plays, also while the
+ * program's loop is held (as by a system menu bar's own loop); 1 if it
+ * started.  Stop: at once.  Playing: 1 until it has all played or stopped. */
+int HOST_API(host_music_play)(const void *file, uint32_t len);
+void HOST_API(host_music_stop)(void);
+int HOST_API(host_music_playing)(void);
 
 /* A modal message box; returns the chosen button's id, -1 if it failed.
  * icon: 0 information, 1 warning, 2 error; enter/escape: the indices of
