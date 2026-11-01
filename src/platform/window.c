@@ -1161,6 +1161,39 @@ static void get_minmax(Window *w, MINMAXINFO *mmi)
     wnd_send(w, WM_GETMINMAXINFO, 0, (LPARAM)mmi);
 }
 
+/* The desktop now w x h (the host's window changed size, as to full screen
+ * and back): its surfaces, and the maximized windows maximized anew in it,
+ * as Windows does when the display's resolution changes. */
+void wnd_resize_desktop(int w, int h)
+{
+    Bitmap *s = bmp_create(w, h, 32, 0), *r = bmp_create(w, h, 32, 0);
+    Window *list[256], *c;
+    int n = 0, i, y;
+    for (y = 0; y < h && y < root->h; y++)
+        memcpy(bmp_row(r, y), bmp_row(root, y), (size_t)(w < root->w ? w : root->w) * 4);
+    bmp_destroy(screen);
+    bmp_destroy(root);
+    screen = s;
+    root = r;
+    screen_w = w;
+    screen_h = h;
+    desktop->rect.right = w;
+    desktop->rect.bottom = h;
+    desktop->client = desktop->rect;
+    wnd_generation++;
+    for (c = desktop->children; c && n < 256; c = c->next)
+        if (c->maximized && !c->minimized)
+            list[n++] = c;
+    for (i = 0; i < n; i++)
+        if (wnd_get(list[i]->hwnd)) {
+            MINMAXINFO mmi;
+            get_minmax(list[i], &mmi);
+            SetWindowPos(list[i]->hwnd, 0, mmi.ptMaxPosition.x, mmi.ptMaxPosition.y, mmi.ptMaxSize.x,
+                         mmi.ptMaxSize.y, SWP_NOZORDER | SWP_NOACTIVATE);
+        }
+    InvalidateRect(0, NULL, TRUE);
+}
+
 static int first_focus = 1;
 
 /* Wine's set_focus_window. */

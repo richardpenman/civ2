@@ -60,6 +60,38 @@ void plat_present_now(void)
     plat_present();
 }
 
+/* The host's window changed size (full screen and back, or resized by
+   hand): the desktop follows it, at the scale it opened with where that
+   leaves 640x480 (src/host/host.h: host_desktop_scale), never smaller
+   (then shrunk to fit).  Not while a popup menu is drawn on the screen
+   itself: once it is gone.  In a game the windows are then arranged anew,
+   as View > Arrange Windows does (where the game would take the command). */
+static int want_scale, resize_w, resize_h;
+
+static void resize_desktop(void)
+{
+    int k = host_desktop_scale(resize_w, resize_h, want_scale), w = resize_w / k, h = resize_h / k, id;
+    HWND main_wnd = 0;
+    Window *c;
+    if (!resize_w || plat_overlay)
+        return;
+    resize_w = resize_h = 0;
+    if (w < 640) w = 640;
+    if (h < 480) h = 480;
+    if (w == screen_w && h == screen_h)
+        return;
+    plat_scale = k;
+    host_resize_desktop(w, h);
+    wnd_resize_desktop(w, h);
+    last_present = 0;
+    for (c = desktop->children; c && !main_wnd; c = c->next)
+        if (c->menu && (c->style & WS_VISIBLE))
+            main_wnd = c->hwnd;
+    if (main_wnd && game_in_play() && IsWindowEnabled(main_wnd) &&
+        (id = menu_find_enabled(GetMenu(main_wnd), "Arrange Windows")))
+        PostMessageA(main_wnd, WM_COMMAND, (WPARAM)id, 0);
+}
+
 int msg_pump_events(int wait)
 {
     HostEvent e;
@@ -120,8 +152,13 @@ int msg_pump_events(int wait)
         case HOST_EV_COMMAND:
             menu_native_command(e.vk);
             break;
+        case HOST_EV_RESIZE:
+            resize_w = e.x;
+            resize_h = e.y;
+            break;
         }
     }
+    resize_desktop();
     return n;
 }
 
@@ -197,7 +234,7 @@ int main(int argc, char **argv)
         if (!classic && !scale && (k = host_open_native_window(&dw, &dh, fullscreen ? 1 : 2, want))) {
             screen_w = dw;
             screen_h = dh;
-            plat_scale = k;
+            plat_scale = want_scale = k;
             window_open = plat_native_menu = 1;
         } else if (scale) {
             plat_fullscreen = 0;
@@ -211,7 +248,7 @@ int main(int argc, char **argv)
         } else if ((k = host_open_maximized_window(&dw, &dh, want))) {
             screen_w = dw;
             screen_h = dh;
-            plat_scale = k;
+            plat_scale = want_scale = k;
             window_open = 1;
         }
     }

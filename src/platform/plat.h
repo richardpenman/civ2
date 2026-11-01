@@ -192,6 +192,7 @@ void wnd_visible_region(Window *w, int client, Region *out);   /* desktop coordi
 int wnd_is_visible(Window *w);
 LRESULT wnd_send(Window *w, UINT msg, WPARAM wp, LPARAM lp);
 void wnd_invalidate_desktop(const RECT *r);     /* InvalidateRect(NULL) */
+void wnd_resize_desktop(int w, int h);          /* the desktop now w x h */
 void wnd_expose(Window *top, const RECT *r);    /* repaint an area of a top-level window's surface */
 Window *wnd_top(Window *w);
 int wnd_nc_button(Window *w, POINT screen);      /* HTCLOSE/HTMAXBUTTON/HTMINBUTTON at a point, or 0 */
@@ -232,6 +233,7 @@ int menu_bar_click(Window *w, int x, int y);
 int menu_key(Window *w, int vk);
 void menu_native_sync(void);            /* the menu bar to the host, if it changed */
 void menu_native_command(int id);       /* the host's menu bar: an item chosen */
+int menu_find_enabled(HMENU menu, const char *text);  /* its enabled item labelled text: the id, or 0 */
 int menu_native_find(const char *text); /* its item labelled text: the id, or 0 */
 
 /* ---- builtin controls ---- */

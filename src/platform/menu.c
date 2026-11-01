@@ -727,6 +727,25 @@ static int find_label(HMENU h, const char *text)
     return 0;
 }
 
+/* menu's enabled item labelled text: its id, or 0. */
+int menu_find_enabled(HMENU menu, const char *text)
+{
+    Menu *m = menu_get(menu);
+    int i, id;
+    for (i = 0; m && i < m->n; i++) {
+        const MenuItem *it = &m->items[i];
+        if (it->flags & (MF_GRAYED | MF_DISABLED))
+            continue;
+        if (it->flags & MF_POPUP) {
+            if ((id = menu_find_enabled((HMENU)it->id, text)) != 0)
+                return id;
+        } else if (is_label(it, text)) {
+            return (int)it->id;
+        }
+    }
+    return 0;
+}
+
 int menu_native_find(const char *text)
 {
     Window *w = wnd_get(native_owner);

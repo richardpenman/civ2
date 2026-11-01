@@ -15,6 +15,7 @@ static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
 static int screen_w, screen_h;
+static int follows_window;      /* the desktop follows the window's size (HOST_EV_RESIZE) */
 static Uint64 perf_start;
 static Uint32 menu_event;           /* an SDL user event: a native menu's item chosen */
 
@@ -113,7 +114,18 @@ static int size_desktop(int32_t *w, int32_t *h, int scale)
     scale = host_desktop_scale(cw, ch, scale);
     *w = screen_w = cw / scale;
     *h = screen_h = ch / scale;
+    follows_window = 1;
     return make_texture(screen_w, screen_h) ? scale : 0;
+}
+
+void host_resize_desktop(int w, int h)
+{
+    if (w == screen_w && h == screen_h)
+        return;
+    SDL_DestroyTexture(texture);
+    screen_w = w;
+    screen_h = h;
+    make_texture(w, h);
 }
 
 int host_open_maximized_window(int32_t *w, int32_t *h, int scale)
@@ -401,8 +413,16 @@ static int convert(const SDL_Event *s, HostEvent *e)
         e->button = s->wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -s->wheel.y : s->wheel.y;
         return 1;
     case SDL_WINDOWEVENT:
-        if (s->window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+        if (s->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+            int w, h;
             fit_desktop();
+            if (follows_window && renderer && !SDL_GetRendererOutputSize(renderer, &w, &h)) {
+                e->type = HOST_EV_RESIZE;
+                e->x = w;
+                e->y = h;
+                return 1;
+            }
+        }
         if (s->window.event != SDL_WINDOWEVENT_EXPOSED)
             return 0;
         e->type = HOST_EV_EXPOSED;
