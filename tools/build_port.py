@@ -189,8 +189,10 @@ def exe(cross_windows=False):
         ([] if windows else ['-DHAVE_ALLOCA_H'])
     # (CFLAGS, LDFLAGS: added, e.g. macOS's -arch for each architecture)
     cflags = os.environ.get('CFLAGS', '').split()
+    # unshield's bundled MD5 uses old-style function declarations and
+    # definitions, which C23 (the default in GCC 15) no longer supports.
     jobs = [(s, ['-O2', '-fno-strict-aliasing', '-w'] + cflags) for s in gen + rt] + \
-           [(s, ['-O2', '-w'] + cflags + third_inc) for s in third] + \
+           [(s, ['-std=gnu17', '-O2', '-w'] + cflags + third_inc) for s in third] + \
            [(s, ['-O2', '-Wall', '-Wno-format-truncation', '-Werror=implicit-function-declaration'] + cflags +
              sdl_cflags + third_inc +
              (['-fobjc-arc'] if s.endswith('.m') else [])) for s in host]
