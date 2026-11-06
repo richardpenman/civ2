@@ -32,6 +32,9 @@ The game opens in a window filling the screen; on a high-resolution screen it is
 2×, 3× or 4×, sharp, at about the original's 1024×768 (a MacBook Air: 980×594, a 4K screen:
 1280×720). To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
+On Linux, the window uses the system's title bar with the game's menu bar inside it.
+`CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.
+
 ### Multiplayer
 
 All of the original's multiplayer modes are supported: hot seat on one computer, and network

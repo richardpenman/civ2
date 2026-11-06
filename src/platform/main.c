@@ -220,15 +220,17 @@ int main(int argc, char **argv)
          * [OpenCiv2] FullScreen=1: full screen, as the original on Windows.
          * Where the system has its own (Windows, macOS): its window and menu
          * bar (full screen: Windows' with the menu bar shown, macOS' own).
-         * Elsewhere, or with CIV2_CLASSIC=1 (the menu bar and caption drawn
-         * as the original's): a desktop of the window's size (full screen:
-         * the display's).  Either in steps of whole pixels per desktop pixel:
+         * Elsewhere the menu bar is drawn inside the host's frame. With
+         * CIV2_CLASSIC=1 the caption and frame are drawn as the original's
+         * too. The desktop is the window's size (full screen: the display's),
+         * in steps of whole pixels per desktop pixel:
          * CIV.INI's Scale=, or (0) by the size (host_desktop_scale).
          * CIV2_SCALE=N: the 1024x768 desktop in a window, N times. */
         int fullscreen = (getenv("CIV2_FULLSCREEN") && *getenv("CIV2_FULLSCREEN")) ||
                          GetPrivateProfileIntA("OpenCiv2", "FullScreen", 0, "CIV.INI") != 0;
         int want = (int)GetPrivateProfileIntA("OpenCiv2", "Scale", 0, "CIV.INI"), k;
         int32_t dw, dh;
+        plat_host_frame = !classic;
         plat_lock_panels = !classic;
         plat_fullscreen = fullscreen;
         if (!classic && !scale && (k = host_open_native_window(&dw, &dh, fullscreen ? 1 : 2, want))) {
@@ -265,7 +267,7 @@ int main(int argc, char **argv)
     if (plat_replay && getenv("CIV2_TEST_NATIVE") && *getenv("CIV2_TEST_NATIVE"))
         /* Tests: the game as on Windows and macOS (the host's menu bar, no
            caption of its own, panels locked), the host's part left out. */
-        plat_native_menu = plat_lock_panels = 1;
+        plat_host_frame = plat_native_menu = plat_lock_panels = 1;
     gdi_init();
     wnd_init();
     resources_init();
