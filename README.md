@@ -31,6 +31,11 @@ make            # -> build/OpenCiv2 (several minutes; the first time it download
 make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
 ```
 
+`make` (or `make build`) builds the native executable for the local machine without
+Docker. `make native` is the separate 32-bit Linux development build; it needs
+working Docker and the development images built with `make images`. See
+[DEVELOPMENT.md](docs/DEVELOPMENT.md#tooling) for those development targets.
+
 What to install first:
 
 - **macOS:** `xcode-select --install` (compiler and make) and `brew install sdl2`.
