@@ -16,7 +16,7 @@ ifeq ($(OS),Windows_NT)
 EXE  := .exe
 PLAY  = cmd //c "tools\run-civ2.bat $(GAME)"
 else
-PLAY  = tools/run-civ2.sh $(GAME)
+PLAY  = tools/run-civ2.sh "$(GAME)"
 endif
 
 all: build
