@@ -1,5 +1,6 @@
-# Civilization II reconstruction — common entry points.  Everything runs in
-# Docker (tools/dk); see README.md.  (src/auto is edited directly: the
+# Civilization II reconstruction — common entry points.  Build and play
+# locally with make / make run; development targets use Docker (tools/dk).
+# See README.md.  (src/auto is edited directly: the
 # Ghidra regeneration is retired; tools/gen_c.py refuses without
 # CIV2_REGENERATE=1.  The Windows graft build is retired: tag pre-step5.)
 

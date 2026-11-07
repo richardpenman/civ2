@@ -32,6 +32,9 @@ The game opens in a window filling the screen; on a high-resolution screen it is
 2×, 3× or 4×, sharp, at about the original's 1024×768 (a MacBook Air: 980×594, a 4K screen:
 1280×720). To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
+On Linux, the window uses the system's title bar with the game's menu bar inside it.
+`CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.
+
 ### Multiplayer
 
 All of the original's multiplayer modes are supported: hot seat on one computer, and network
@@ -50,6 +53,11 @@ make            # -> build/OpenCiv2 (several minutes; the first time it download
                 #    wabt and the libraries' sources into tools/toolchain)
 make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
 ```
+
+`make` (or `make build`) builds the native executable for the local machine without
+Docker. `make native` is the separate 32-bit Linux development build; it needs
+working Docker and the development images built with `make images`. See
+[DEVELOPMENT.md](docs/DEVELOPMENT.md#tooling) for those development targets.
 
 What to install first:
 

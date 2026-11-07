@@ -18,7 +18,7 @@ static Menu *menu_get(HMENU h) { return obj_get(h, OBJ_MENU); }
 
 /* The host's menu bar (plat_native_menu): the menu of native_owner, sent
  * again whenever a menu changes. */
-int plat_native_menu;
+int plat_host_frame, plat_native_menu;
 static int native_dirty = 1, native_enabled = -1;
 static HWND native_owner;
 #define CHANGED() (native_dirty = 1)
@@ -210,11 +210,11 @@ WINBOOL WINAPI SetMenu(HWND h, HMENU menu)
         return FALSE;
     w->menu = menu;
     CHANGED();
-    if (plat_native_menu && menu) {
-        /* The host's window has the caption, frame and menu bar: the main
-           window (the one with a menu bar) fills it (maximized, it fills
-           the desktop). */
+    if (plat_native_menu && menu)
         native_owner = h;
+    if (plat_host_frame && menu) {
+        /* The host owns the main window's caption and frame. Linux keeps
+           the drawn menu bar; Windows and macOS use the host's menu too. */
         w->style &= ~(WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
     }
     /* The client area changes: SetWindowPos(SWP_FRAMECHANGED). */
