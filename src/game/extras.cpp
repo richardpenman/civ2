@@ -1059,10 +1059,9 @@ static void status_draw_production_icon(int city, int x, int y)
         ((Sprite *)(caption_close_button_sprite_block.improvement_icon_sprites + -b * 0x3c))
             ->draw((iptr)r, (iptr)&advisor_state.window, x, y);
     else {
-        gfx_set_zoom_scale(-4);
+        /* Wonders use the same 36x20 icon frame as ordinary improvements. */
         ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (-b * 4 - 0x9c) * 0xf))
             ->draw((iptr)r, (iptr)&advisor_state.window, x, y);
-        gfx_reset_zoom_scale();
     }
 }
 
@@ -1153,7 +1152,7 @@ void extras_city_status_draw(void)
         }
         x = status_col_prod;
         status_draw_production_icon(city, x, ty);
-        x += 0x18;
+        x += 36 + 4; /* Full improvement/wonder width, then a gap before the name. */
         text_clear();
         if (cities[city].building < 0) {
             int imp = -cities[city].building;
