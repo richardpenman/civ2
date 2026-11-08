@@ -419,5 +419,18 @@ void map_redraw_probe(void)
         if(!matches)plat_fatal("Map redraw retains selection pixels (pass %d, zoom %d)",pass,m->zoom);
     }
     free(clean);
-    plat_log("map redraw verified: blink, selection move, full redraw at zoom %d\n",m->zoom);
+    /* Movement/revealing terrain repaints a larger radius than cursor blinks.
+     * Check the whole dirty rectangle, including its formerly unpainted upper
+     * corners, against the full render left by the last pass. */
+    for(int radius=1;radius<=3;radius++) {
+        m->tile_radius_rect(x,y,radius,(iptr)&r);
+        clean=hd_debug_capture_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top);
+        for(int repeat=0;repeat<2;repeat++) {
+            m->redraw_area(x,y,radius,human_civ[0],0);
+            int matches=hd_debug_compare_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top,clean,tolerance);
+            if(!matches)plat_fatal("Map radius redraw differs (radius %d, zoom %d)",radius,m->zoom);
+        }
+        free(clean);
+    }
+    plat_log("map redraw verified: blink, selection move, movement radii 1-3, full redraw at zoom %d\n",m->zoom);
 }

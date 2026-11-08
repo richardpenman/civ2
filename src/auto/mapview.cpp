@@ -2386,13 +2386,14 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
   
   tile_radius_rect(center_x,center_y,radius,(iptr)clip_rect);
   set_clip((RECT *)clip_rect);
-  /* HD diamonds have translucent edges. Repainting over the old selection
-   * leaves pale seams (and repeatedly blends terrain/grid edges). Rebuild
-   * the clipped patch from an opaque background, as the viewport cache does. */
+  /* Rebuild HD overlays from an opaque background to erase old selection
+   * pixels and avoid repeatedly blending terrain/grid edges. Every row must
+   * cover the whole cleared rectangle: the original tapered upper rows rely
+   * on existing pixels and leave black corners when radius is greater than 0. */
   if (hd_enabled) fill(10);
   extent = radius * 2 + 2;
   for (dy = -extent; (int)dy <= (int)extent; dy++) {
-    if ((int)dy < 1) {
+    if (!hd_enabled && (int)dy < 1) {
       row_abs = ~dy + 1;
     }
     else {

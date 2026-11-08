@@ -300,6 +300,16 @@ redraw is complete, avoiding partial-frame composition and idle sleeps between
 tiles. Multiplayer retains its existing message-pumping cadence. Deterministic
 correctness replays retain their original virtual-clock polling schedule.
 
+HD partial redraws clear their entire dirty rectangle and repaint its full width
+on every tile row. The original tapered upper rows depend on existing pixels;
+using them after a clear leaves dark corners around moving units and fog edges.
+`tests/map_radius_redraw_test.cpp` checks repeated radius 0-3 redraws against full
+renders at every fixed zoom, including wrapped and clipped viewports.
+`python tools/test_map_redraw.py --game PATH` checks the actual artwork with the
+GPU camera (`--fixed` for fixed GPU zoom or `--cpu` for software rendering).
+`--new-game` moves a settler on a fresh map and checks unexplored terrain using
+fixed zoom and the virtual clock, without needing a save file.
+
 The minimap still evaluates the game's live visibility, ownership and blink
 state. Its indexed background updates are collected into one upload, or a GPU
 copy of the cached background when the resulting indices and palette match.
