@@ -1579,6 +1579,7 @@ void __cdecl trade_advisor_draw(void)
   row_y = top_y;
   first_row2 = (*(uint *)&advisor_state.first_row);
   row = (*(uint *)&advisor_state.first_row);
+  hd_report_rows(top_y+6,line_height,first_row2,int_clamp(total_rows-first_row2,0,rows_per_page));
   do {
     if ((int)(first_row2 + rows_per_page) <= (int)row) {
       if (advisor_state.controls_created == 0) {
@@ -1597,7 +1598,6 @@ void __cdecl trade_advisor_draw(void)
       return;
     }
     if ((int)row < total_rows) {
-      hd_report_row(row_y+6,line_height,row);
       col_x = advisor_state.client_x + 2;
       right_col_x = advisor_state.client_x + 0x14f;
       if (row == 0) {
@@ -1767,12 +1767,12 @@ void __cdecl city_status_draw(void)
   row = 0;
   row_y = top_y;
   first_row2 = advisor_state.first_row;
+  hd_report_rows(top_y+6,line_height,first_row2,int_clamp(city_count-first_row2,0,rows_per_page));
   for (city = 0; city < game.num_cities; city++) {
     next_row = row;
     if ((((cities[city].id != 0) && (cities[city].owner == civ)) &&
         (next_row = row + 1, first_row2 <= (int)row)) && ((int)row < first_row2 + rows_per_page))
     {
-      hd_report_row(row_y+6,line_height,row);
       col_x = (next_row & 1) * 0x40 + advisor_state.client_x + 2;
       row = next_row;
       gfx_draw_city((iptr)&advisor_state.window,city,0,col_x,row_y,0);

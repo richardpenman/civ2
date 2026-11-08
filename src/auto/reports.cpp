@@ -864,11 +864,11 @@ void __cdecl defense_minister_draw(void)
       row_index = 0;
       advisor_state.first_row = y;
       row_y = list_top;
+      hd_report_rows(list_top+8,line_height,y,int_clamp(type_count-y,0,rows_per_page));
       for (unit_type = 0; unit_type < 0x3e; unit_type++) {
         next_row = row_index;
         if (((type_listed[unit_type] != '\0') && (next_row = row_index + 1, y <= (int)row_index)) &&
            ((int)row_index < y + rows_per_page)) {
-          hd_report_row(row_y+8,line_height,row_index);
           row_x = (next_row & 1) * 0x40 + advisor_state.client_x;
           unit = unit_make_dummy(unit_type,civ);
           gfx_draw_unit((iptr)&advisor_state.window,unit,0,row_x + 2,row_y,0,0);

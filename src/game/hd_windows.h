@@ -10,5 +10,5 @@ void hd_knowledge(DiploLeaderWindow *, int advance, int y, GameFont &);
 bool hd_advance(DibSurface *, int advance, int x, int y, int w, int h);
 void hd_stockpile(DibSurface *, const RECT &, int value, int capacity, int threshold, const char *role);
 void hd_report_background();
-void hd_report_row(int y, int height, int row);
+void hd_report_rows(int y, int height, int first_row, int count);
 #endif

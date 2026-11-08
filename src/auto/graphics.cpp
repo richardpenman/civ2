@@ -3446,8 +3446,7 @@ int gfx_city_sprite_index(int city,uint draw_flags,int *display_size)
 }
 
 /* 0056d289 auto */
-void __cdecl
-gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
+void __cdecl gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
 
 {
   if (!net.map_redraw_busy && map_camera_owns((void *)surface) && city >= 0 && city < game.num_cities)
@@ -3502,7 +3501,11 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
                flag_y);
   }
   if ((draw_flags & 1) == 0) {
-    if ((cities[city].flags & CITYF_DISORDER) == 0) {
+    /* Reports need the population even during disorder. Keep the warning next
+       to the number, where it cannot disappear against the HD city artwork. */
+    bool report_disorder = hd_enabled && surface == (iptr)&advisor_state.window &&
+                           (cities[city].flags & CITYF_DISORDER);
+    if ((cities[city].flags & CITYF_DISORDER) == 0 || report_disorder) {
       if (map_camera_surface((void *)surface) || !gfx_show_status_text(surface,zoom)) {
         gfx_reset_zoom_scale();
         return;
@@ -3511,6 +3514,7 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
       text_set_font((iptr)&status_window_block.map_label_font);
       text_set_surface(surface);
       __itoa(city_size,size_text,10);
+      if (report_disorder) crt_strcat(size_text,"!");
       width2 = ((GameFont *)((i8 *)&status_window_block.map_label_font))->text_width((const char *)size_text);
       height2 = ((GameFont *)((i8 *)&status_window_block.map_label_font))->font_cached_height();
       crt_strcpy(template_text,((i8 *)&city_size_digit_str));

@@ -1133,9 +1133,9 @@ void extras_city_status_draw(void)
     advisor_state.page_count = int_clamp((rows_per_page - 1 + status_count) / rows_per_page, 1, 99);
     max_row = int_clamp(status_count - 1, 0, 999);
     advisor_state.first_row = int_clamp(advisor_state.first_row, 0, max_row);
+    hd_report_rows(status_list_top + 6, 0x18, 0, int_clamp(status_count - advisor_state.first_row, 0, rows_per_page));
     for (row = 0; row < rows_per_page && advisor_state.first_row + row < status_count; row++) {
         int city = status_cities[advisor_state.first_row + row], y = status_list_top + row * 0x18, ty = y + 9;
-        hd_report_row(y + 6, 0x18, row);
         uint cost;
         gfx_draw_city((iptr)&advisor_state.window, city, 0, ((row + 1) & 1) * 0x40 + advisor_state.client_x + 2, y, 0);
         text_set_font((iptr)&advisor_bold_font);

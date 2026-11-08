@@ -55,13 +55,16 @@ void hd_report_background()
     box((DibSurface *)&advisor_state.window, advisor_state.client_x, advisor_state.client_y,
         advisor_state.client_width, advisor_state.window.clip_bottom - advisor_state.client_y, 26);
 }
-void hd_report_row(int y, int height, int row)
+void hd_report_rows(int y, int height, int first_row, int count)
 {
     if (!hd_enabled)
         return;
-    /* Bands follow the live row geometry, including scrolling and font size. */
+    /* Paint every band before the list contents: staggered 48px sprites extend
+       into the following 24px row and must not be erased by its background. */
     DibSurface *s = (DibSurface *)&advisor_state.window;
-    box(s, advisor_state.client_x + 2, y, advisor_state.client_width - 4, height, row & 1 ? 26 : 35);
+    for (int row = 0; row < count; row++)
+        box(s, advisor_state.client_x + 2, y + row * height, advisor_state.client_width - 4,
+            height, (first_row + row) & 1 ? 26 : 35);
 }
 
 bool hd_advance(DibSurface *s, int advance, int x, int y, int w, int h)
