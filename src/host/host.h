@@ -45,7 +45,8 @@ int HOST_API(host_base_path)(char *buf, int size);
  * negative: full screen, -scale pixels per desktop pixel. */
 int HOST_API(host_open_window)(int w, int h, int scale);
 /* A window with its frame, maximized; the desktop is its size in pixels
- * over scale (*w x *h; 0: host_desktop_scale).  Returns the scale, 0: none. */
+ * over scale (*w x *h; 0: Windows' display scale, elsewhere
+ * host_desktop_scale).  Returns the scale, 0: none. */
 int HOST_API(host_open_maximized_window)(int32_t *w, int32_t *h, int scale);
 /* Whole pixels per desktop pixel for a w x h pixel display (the platform
  * layer's too, src/platform/main.c): scale, or (0) the step that makes the
@@ -79,8 +80,8 @@ int HOST_API(host_usable_size)(int32_t *w, int32_t *h);
 /* A window of the system's own kind, where there is one (Windows, macOS):
  * mode 0 as is usual there (Windows: maximized; macOS: the screen below
  * the menu bar), 1 full screen, 2 a window.  The desktop is its size in
- * pixels over scale (*w x *h), scale whole pixels per desktop pixel (0: by
- * the display's size: host_desktop_scale); its menu bar is the system's
+ * pixels over scale (*w x *h), scale whole pixels per desktop pixel (0:
+ * Windows' display scale, elsewhere by the display's size: host_desktop_scale); its menu bar is the system's
  * (host_menu_*).  Returns the scale, 0: none (then host_open_window). */
 int HOST_API(host_open_native_window)(int32_t *w, int32_t *h, int mode, int scale);
 

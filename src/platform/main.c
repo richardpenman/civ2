@@ -237,7 +237,8 @@ int main(int argc, char **argv)
          * CIV2_CLASSIC=1 the caption and frame are drawn as the original's
          * too. The desktop is the window's size (full screen: the display's),
          * in steps of whole pixels per desktop pixel:
-         * CIV.INI's Scale=, or (0) by the size (host_desktop_scale).
+         * CIV.INI's Scale=, or (0) Windows' display scale, elsewhere by the
+         * size (host_desktop_scale).
          * CIV2_SCALE=N: the 1024x768 desktop in a window, N times. */
         int fullscreen = (getenv("CIV2_FULLSCREEN") && *getenv("CIV2_FULLSCREEN")) ||
                          GetPrivateProfileIntA("OpenCiv2", "FullScreen", 0, "CIV.INI") != 0;

@@ -99,9 +99,23 @@ int host_open_window(int w, int h, int scale)
     return window && create_renderer() && make_texture(w, h);
 }
 
+/* Windows: the step of the display's scale in Settings > Display (its DPI
+   over 96, to the nearest: 100% 1, 150% and 200% 2, 300% 3), as the
+   original is enlarged by the system there; 0 elsewhere or unknown. */
+static int system_scale(void)
+{
+#ifdef _WIN32
+    float dpi = 0;
+    int d = SDL_GetWindowDisplayIndex(window);
+    if (SDL_GetDisplayDPI(d < 0 ? 0 : d, NULL, &dpi, NULL) == 0 && dpi >= 48)
+        return (int)(dpi / 96.0f + 0.5f);
+#endif
+    return 0;
+}
+
 /* Once the window manager is done (maximizing): the desktop in its pixels
-   (macOS: its size is in points) over scale (host_desktop_scale).  Returns
-   the scale, 0: none. */
+   (macOS: its size is in points) over scale (0: Windows' display scale,
+   system_scale; elsewhere host_desktop_scale).  Returns the scale, 0: none. */
 static int size_desktop(int32_t *w, int32_t *h, int scale)
 {
     int cw = 0, ch = 0;
@@ -111,6 +125,8 @@ static int size_desktop(int32_t *w, int32_t *h, int scale)
         cw = 1024;
         ch = 768;
     }
+    if (scale < 1)
+        scale = system_scale();
     scale = host_desktop_scale(cw, ch, scale);
     *w = screen_w = cw / scale;
     *h = screen_h = ch / scale;
