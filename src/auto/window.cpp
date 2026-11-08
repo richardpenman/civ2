@@ -2,6 +2,7 @@
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
 #include "lang.h"
+#include "../platform/hd.h"
 
 /* 00408010 auto */
 void WndBase::set_cursor(i32 cursor)
@@ -10483,7 +10484,12 @@ void __cdecl wnd_obj_set_bg_color(NativeWindow *wnd,uint color_index)
   if (wnd->bg_brush != 0) {
     DeleteObject(wnd->bg_brush);
   }
-  if (display_palette.palettized == 0) {
+  if (hd_enabled && wnd == main_frame_wnd_block.main_frame_wnd.native_wnd && color_index == 0x9e) {
+    // The original startup background index is pink in the HD palette.
+    // Use an earthy surround for the title/setup artwork without changing it.
+    wnd->bg_brush = CreateSolidBrush(RGB(98,92,76));
+  }
+  else if (display_palette.palettized == 0) {
     wnd_view = (WndBase *)GetWindowLongA(wnd->hwnd,0);
     self = (GamePalette *)wnd_view->get_palette();
     self->get_entry(color_index & 0xff,(iptr)red,(iptr)green,(iptr)blue);
