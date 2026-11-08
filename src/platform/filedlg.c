@@ -376,6 +376,12 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
             PostQuitMessage((int)msg.wParam);
             break;
         }
+        /* The filename edit initially owns focus. The file list is the
+           dialog's scrollable area, regardless of which control has focus. */
+        if (msg.message == WM_MOUSEWHEEL && (msg.hwnd == fd.dlg || IsChild(fd.dlg, msg.hwnd))) {
+            SendMessageA(fd.list, msg.message, msg.wParam, msg.lParam);
+            continue;
+        }
         if (msg.message == WM_KEYDOWN && (msg.hwnd == fd.dlg || IsChild(fd.dlg, msg.hwnd)) &&
             (msg.wParam == VK_RETURN || msg.wParam == VK_ESCAPE)) {
             if (msg.wParam == VK_ESCAPE)
