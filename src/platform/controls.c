@@ -782,6 +782,7 @@ typedef struct {
     HFONT font;
     int focused;
     int vscroll;                /* created with WS_VSCROLL: shown when the items do not fit */
+    int wheel_delta;
 } ListBox;
 
 static ListBox *lb_of(Window *w) { return w ? (ListBox *)w->control : NULL; }
@@ -924,6 +925,23 @@ static void lb_update_scroll(Window *w)
     if (!(w->style & WS_VSCROLL))
         ShowScrollBar(w->hwnd, SB_VERT, TRUE);
     SetScrollPos(w->hwnd, SB_VERT, lb->top, TRUE);
+}
+
+/* Wheel scrolling moves the viewport, not the selected item or keyboard focus. */
+static void lb_wheel(Window *w, int delta)
+{
+    ListBox *lb = lb_of(w);
+    int top, last = lb->n - lb_page(w);
+    lb->wheel_delta += delta;
+    top = lb->top - (lb->wheel_delta / 120) * 3;
+    lb->wheel_delta %= 120;
+    if (top > last) top = last;
+    if (top < 0) top = 0;
+    if (top != lb->top) {
+        lb->top = top;
+        lb_update_scroll(w);
+        InvalidateRect(w->hwnd, NULL, TRUE);
+    }
 }
 
 static void lb_set_cur(Window *w, int i, int scroll)
@@ -1124,6 +1142,9 @@ LRESULT ctl_listbox_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         InvalidateRect(h, NULL, TRUE);
         return 0;
     }
+    case WM_MOUSEWHEEL:
+        lb_wheel(w, (short)HIWORD(wp));
+        return 0;
     case LB_ADDSTRING:
         i = lb_insert(w, -1, (const char *)lp, 0);
         lb_update_scroll(w);
@@ -1152,6 +1173,7 @@ LRESULT ctl_listbox_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         lb->n = 0;
         lb->cur = -1;
         lb->top = 0;
+        lb->wheel_delta = 0;
         lb_update_scroll(w);
         InvalidateRect(h, NULL, TRUE);
         return 0;

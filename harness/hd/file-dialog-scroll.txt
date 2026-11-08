@@ -1,0 +1,35 @@
+# Real Load Game dialog, with a long directory supplied by the test runner.
+wait 2000
+key Down Down Down Down
+wait 500
+key Return
+wait 1000
+type keep
+wait 300
+shot top
+wheel 300 200 -3
+wait 300
+shot wheel
+wheel 300 200 3
+wait 300
+shot top-restored
+wheel 300 200 -100
+wait 300
+shot bottom
+wheel 300 200 -10
+wait 300
+shot bottom-limit
+wheel 300 200 100
+wait 300
+shot home
+click 200 150
+wait 300
+shot selected
+wheel 300 200 -3
+wait 300
+shot selected-wheel
+wheel 300 200 3
+wait 300
+shot selected-restored
+key Escape
+wait 500
