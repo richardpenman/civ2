@@ -57,6 +57,7 @@ typedef struct {
     int pw, ph;
     unsigned char *small;
     int small_w, small_h; /* one cached minification size; zoom/density may change */
+    int opaque_tile;
     int cx, cy, cw, ch; /* dynamic crop, in source logical coordinates */
     uint64_t used;
 } Image;
@@ -396,6 +397,7 @@ int hd_crop(int id, int x, int y, int w, int h)
     images[count].rgba = NULL;
     images[count].small = NULL;
     images[count].small_w = images[count].small_h = 0;
+    images[count].opaque_tile = 0; /* A crop need not be a whole terrain diamond. */
     images[count].indexed = NULL;
     images[count].cx = x;
     images[count].cy = y;
@@ -711,13 +713,17 @@ static uint32_t blend(uint32_t dst, unsigned r, unsigned g, unsigned b, unsigned
    can miss a flagpole or a thin unit detail entirely at small map zooms. Work
    in premultiplied color so transparent RGB never creates a fringe. The cache
    belongs to the decoded atlas image and is included in its eviction budget. */
+typedef struct { double r,g,b,a; } LinearSample;
+static LinearSample linear_sample(const Image *,int,int,int,int,int);
 static void minify(Image *a, Image *sample, int w, int h)
 {
     int x, y;
-    if (w > a->pw) w = a->pw;
-    if (h > a->ph) h = a->ph;
+    if (!a->opaque_tile) {
+        if (w > a->pw) w = a->pw;
+        if (h > a->ph) h = a->ph;
+    }
     *sample = *a;
-    if ((w == a->pw && h == a->ph) || !a->length) return;
+    if ((!a->opaque_tile && w == a->pw && h == a->ph) || !a->length) return;
     if (a->small_w != w || a->small_h != h) {
         cache_bytes -= (uint64_t)a->small_w * a->small_h * 4;
         free(a->small);
@@ -729,8 +735,13 @@ static void minify(Image *a, Image *sample, int w, int h)
             int sx, sy, left = x*a->pw, right = (x+1)*a->pw;
             int top = y*a->ph, bottom = (y+1)*a->ph;
             double rr = 0, gg = 0, bb = 0, aa = 0;
+            double area = (double)a->pw*a->ph;
+            int inside=(int64_t)abs(2*x+1-w)*h+(int64_t)abs(2*y+1-h)*w < (int64_t)w*h;
             unsigned char *out = a->small + (y*w+x)*4;
-            for (sy = top/h; sy*h < bottom; sy++) {
+            if (w>a->pw || h>a->ph) {
+                LinearSample c=linear_sample(a,x,y,w,h,-1);
+                rr=c.r;gg=c.g;bb=c.b;aa=c.a;area=1;
+            } else for (sy = top/h; sy*h < bottom; sy++) {
                 int t = sy*h > top ? sy*h : top;
                 int b = (sy+1)*h < bottom ? (sy+1)*h : bottom;
                 for (sx = left/w; sx*w < right; sx++) {
@@ -742,10 +753,27 @@ static void minify(Image *a, Image *sample, int w, int h)
                     rr += alpha*p[0]; gg += alpha*p[1]; bb += alpha*p[2];
                 }
             }
+            if (a->opaque_tile && inside && !aa) {
+                /* Enlargement can expose a stair step in the source mask.
+                 * Extend its nearest interior row color into that pixel. */
+                int sx=(int)((x+.5)*a->pw/w),sy=(int)((y+.5)*a->ph/h);
+                const unsigned char *p=a->rgba+(sy*a->pw+sx)*4;
+                while (!p[3] && sx!=a->pw/2) {
+                    sx+=sx<a->pw/2 ? 1 : -1;p=a->rgba+(sy*a->pw+sx)*4;
+                }
+                aa=p[3];rr=p[0]*aa;gg=p[1]*aa;bb=p[2]*aa;area=1;
+            }
             out[0] = aa ? (unsigned char)(rr/aa+.5) : 0;
             out[1] = aa ? (unsigned char)(gg/aa+.5) : 0;
             out[2] = aa ? (unsigned char)(bb/aa+.5) : 0;
-            out[3] = (unsigned char)(aa/((double)a->pw*a->ph)+.5);
+            out[3] = (unsigned char)(aa/area+.5);
+            /* Complementary alpha edges do not add under source-over: two
+             * half-covered tiles leave 25% of the background visible. Assign
+             * each physical pixel to one opaque diamond instead, after color
+             * filtering. Neighboring diamonds now meet without gaps/overlap;
+             * the camera can still filter the completed map for smooth zoom. */
+            if (a->opaque_tile)
+                out[3] = inside ? 255 : 0;
         }
     }
     sample->rgba = a->small;
@@ -755,12 +783,11 @@ void hd_draw(void *bits, int id, int x, int y, int w, int h, int l, int t, int r
 {
     hd_draw_bitmap(bmp_of_bits(bits), id, x, y, w, h, l, t, r, bot, tint);
 }
-static Sample filtered_sample(const Image *a, int x, int y, int w, int h, int tint, int grey, int key)
+static LinearSample linear_sample(const Image *a, int x, int y, int w, int h, int key)
 {
     double u = (x+.5)*a->pw/w-.5, v = (y+.5)*a->ph/h-.5;
     int xx = (int)floor(u), yy = (int)floor(v), i, j;
     double fx = u-xx, fy = v-yy, rr = 0, gg = 0, bb = 0, aa = 0;
-    Sample out;
     for (j = 0; j < 2; j++) for (i = 0; i < 2; i++) {
         int sx = xx+i, sy = yy+j;
         const unsigned char *p;
@@ -774,6 +801,13 @@ static Sample filtered_sample(const Image *a, int x, int y, int w, int h, int ti
             a->indexed[(sy*a->h/a->ph)*a->w+sx*a->w/a->pw] == (unsigned)key) continue;
         aa += k*p[3]; rr += k*p[0]*p[3]; gg += k*p[1]*p[3]; bb += k*p[2]*p[3];
     }
+    return (LinearSample){rr,gg,bb,aa};
+}
+static Sample filtered_sample(const Image *a, int x, int y, int w, int h, int tint, int grey, int key)
+{
+    LinearSample c=linear_sample(a,x,y,w,h,key);
+    double rr=c.r,gg=c.g,bb=c.b,aa=c.a;
+    Sample out;
     if (tint >= 0) {
         uint32_t c = palette32[tint & 255];
         rr = ((c>>16)&255)*aa; gg = ((c>>8)&255)*aa; bb = (c&255)*aa;
@@ -818,7 +852,8 @@ static int gpu_paint(Bitmap *b,Image *a,int x,int y,int w,int h,int l,int t,int 
     HostGpuBlit draw;
     if(!a->pw && a->length)a=decode((int)(a-images)+1);
     sw=a->pw;sh=a->ph;
-    if(a->length && key<0) { if(sw>w*d)sw=w*d;if(sh>h*d)sh=h*d; }
+    if(a->opaque_tile) { sw=w*d;sh=h*d; }
+    else if(a->length && key<0) { if(sw>w*d)sw=w*d;if(sh>h*d)sh=h*d; }
     texture=gpu_image_find(source,sw,sh,kind,key);
     if(!texture) {
         unsigned char *masked=NULL;
@@ -1176,6 +1211,17 @@ int hd_sprite_image(const void *s)
 {
     SpriteImage *p = sprite_image(s);
     return p ? p->image : 0;
+}
+void hd_sprite_opaque_tile(const void *s)
+{
+    SpriteImage *p=sprite_image(s);
+    if(!p || !p->image)return; /* Never impose terrain coverage on a capture. */
+    Image *a=images+p->image-1;
+    if(a->opaque_tile)return;
+    a->opaque_tile=1;
+    gpu_image_forget(a);filtered_forget(a);
+    cache_bytes-=(uint64_t)a->small_w*a->small_h*4;
+    free(a->small);a->small=NULL;a->small_w=a->small_h=0;
 }
 void hd_sprite_forget(const void *s)
 {

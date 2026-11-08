@@ -218,6 +218,7 @@ int main(int argc,char **argv)
     gpu_bitmap=bitmap(0,0);hd_sync(gpu_bitmap);assert(gpu_bitmap->hd_gpu);
     hd_gpu_active=0;cpu_bitmap=bitmap(1,1);hd_sync(cpu_bitmap);hd_gpu_active=1;
     copy=bitmap(2,1);hd_sync(copy);
+    tile_coverage(gpu_bitmap);
     check_text(gpu_bitmap,cpu_bitmap);
     check_text_batch(gpu_bitmap,copy,cpu_bitmap);
     check_indexed_cache(gpu_bitmap,cpu_bitmap);

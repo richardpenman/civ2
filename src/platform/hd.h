@@ -51,6 +51,8 @@ void hd_grey_pixels(uint32_t *pixels, uint64_t count, int strength);
 void hd_sprite_tint(const void *sprite, int old_color, int new_color);
 void hd_sprite_copy(const void *dst, const void *src);
 void hd_sprite_bind(const void *sprite, const char *key);
+/* Base terrain/coast/fog diamonds tile an opaque plane; overlays retain alpha. */
+void hd_sprite_opaque_tile(const void *sprite);
 /* Platform-only helpers (Bitmap is not part of the game's data layout). */
 struct Bitmap;
 void hd_draw_bitmap(struct Bitmap *bitmap, int image, int x, int y, int w, int h, int left, int top,

@@ -26,12 +26,20 @@ def fixture():
                                   for x in range(64)) for y in range(64))
     pole = (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>2I5B',64,64,8,6,0,0,0))
             +chunk(b'IDAT',zlib.compress(rows))+chunk(b'IEND',b''))
+    # An opaque terrain diamond. Downsampling creates complementary partial
+    # edge coverage; ordinary source-over blending leaves dark grid seams.
+    rows = b''.join(b'\0'+b''.join(bytes((255,255,255,
+        255 if abs(2*x+1-64)+2*abs(2*y+1-32)<64 else 0))
+        for x in range(64)) for y in range(32))
+    tile = (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>2I5B',64,32,8,6,0,0,0))
+            +chunk(b'IDAT',zlib.compress(rows))+chunk(b'IEND',b''))
+    items = [('file/test', png(False)), ('tint/file/test/2', png(True)), ('test/pole', pole), ('test/tile', tile)]
     index, payload = b'', b''
-    for key, data in sorted([('file/test', png(False)), ('tint/file/test/2', png(True)), ('test/pole', pole)]):
-        offset = 780+3*180+len(payload)
+    for key, data in sorted(items):
+        offset = 780+len(items)*180+len(payload)
         index += key.encode().ljust(160, b'\0') + struct.pack('<5I', 4, 4, offset, len(data), offset+len(data))
         payload += data+bytes([2]*16)
-    return b'C2ATLAS1' + struct.pack('<I', 3) + palette + index + payload
+    return b'C2ATLAS1' + struct.pack('<I', len(items)) + palette + index + payload
 
 
 def main():

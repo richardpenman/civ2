@@ -85,6 +85,13 @@ void hd_game_windows_grey(int on)
 
 void hd_bind_map_masks()
 {
+    /* Only the opaque base diamonds partition the map. Keep authored alpha
+       on transitions, fog edges, resources and every other overlay. */
+    for (int t=0;t<11;t++)
+        hd_sprite_opaque_tile((Sprite *)&terrain_base_sprites_block.terrain_base_sprites+t);
+    hd_sprite_opaque_tile(&unexplored_tile_sprite);
+    for (int i=0;i<32;i++)
+        hd_sprite_opaque_tile((Sprite *)&tutorial_icon_sprite_block.coast_quarter_sprites+i);
     /* These sprites are manufactured from indexed dither masks by the original
        loader. Bind the authored quarter alpha masks after that manufacturing;
        map topology, ordering and zoom gates remain unchanged. */

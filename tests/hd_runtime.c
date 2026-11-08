@@ -59,6 +59,25 @@ static Bitmap *bitmap(int index, int bottom)
     bitmaps[index] = b;
     return b;
 }
+static void tile_coverage(Bitmap *b)
+{
+    int token=0,d=hd_density;
+    hd_sprite_bind(&token,"test/tile");
+    hd_sprite_opaque_tile(&token);
+    for(int z=-7;z<=8;z++)for(int quarter=0;quarter<2;quarter++) {
+        int w=(quarter ? 4 : 8)*(z+8),h=w/2;
+        memset(b->bits,0,192);hd_changed(b->bits,0,0,16,12);
+        for(int row=-2;row*h/2<12;row++)
+            for(int x=-w;x<16+w;x+=w)
+                hd_sprite_draw(&token,b->bits,x+(row&1)*w/2,row*h/2,w,h,0,0,16,12,-1);
+        const uint32_t *pixels=hd_pixels(b);
+        for(int i=0;i<16*12*d*d;i++)if(pixels[i]!=0xffffffffu) {
+            fprintf(stderr,"Terrain seam: zoom %d quarter %d density %d pixel %d = %08x\n",
+                    z,quarter,d,i,pixels[i]);abort();
+        }
+    }
+    hd_sprite_forget(&token);
+}
 static void zoom_clips(Bitmap *a, Bitmap *b, int id)
 {
     static const int sizes[][2] = {{64,48},{14,22},{12,20}};
@@ -326,6 +345,7 @@ int main(int argc, char **argv)
     for (x = 0; x < 16*12*d*d; x++) assert(b->hd[x] == 0xff000000u);
     hd_sprite_forget(&clone);
     zoom_clips(a,b,id);
+    tile_coverage(a);
     copy_clips(a,b);
     filter_samples(b);
     for (x = 0; x < 2; x++) {
