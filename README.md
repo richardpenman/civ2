@@ -10,10 +10,21 @@ and the same random numbers, call for call, on recorded games.
 You need your own copy of Civilization II Multiplayer Gold Edition: installed, on CD, or a
 disc image (`.cue`/`.bin`). Download the program for your system:
 
-- **Windows:** [OpenCiv2-windows.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-windows.zip): unzip and run `OpenCiv2.exe`.
-- **macOS** 11+: [OpenCiv2-macos.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-macos.zip): unzip and open `OpenCiv2.app`. The first time macOS
+- **Windows:** [OpenCiv2-windows.zip](https://github.com/PeterJohnson/openciv2/releases/download/latest/OpenCiv2-windows.zip): unzip and run `OpenCiv2.exe`.
+- **macOS** 11+: [OpenCiv2-macos.zip](https://github.com/PeterJohnson/openciv2/releases/download/latest/OpenCiv2-macos.zip): unzip and open `OpenCiv2.app`. The first time macOS
   blocks it: System Settings > Privacy & Security > "Open Anyway".
-- **Linux** x86-64: [OpenCiv2-linux-x86_64.tar.gz](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-linux-x86_64.tar.gz): unpack and run `OpenCiv2/OpenCiv2`.
+- **Linux** x86-64: [OpenCiv2-linux-x86_64.tar.gz](https://github.com/PeterJohnson/openciv2/releases/download/latest/OpenCiv2-linux-x86_64.tar.gz): unpack and run `OpenCiv2/OpenCiv2`.
+
+The executable includes Atlas HD replacement graphics. Original GIFs, BMPs, image DLLs,
+and `civ2.exe` are not required in HD mode; the rules and text still come from your copy
+of the game. To play with the original graphics instead, add to that game's `CIV.INI`:
+
+```ini
+[OpenCiv2]
+OriginalGraphics=1
+```
+
+See [HD-GRAPHICS.md](docs/HD-GRAPHICS.md) for density settings, build details, and scope.
 
 The first time, it finds your copy of the game (or asks where it is) and sets it up, music
 included when it comes from the CD or a disc image. `--setup [FOLDER or IMAGE.cue]` sets it
@@ -29,8 +40,8 @@ the original game instead: its bugs, its interface, and its menu bar and window 
 the original's.
 
 The game opens in a window filling the screen; on a high-resolution screen it is drawn at
-2×, 3× or 4×, sharp, at about the original's 1024×768 (a MacBook Air: 980×594, a 4K screen:
-1280×720). To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
+2Ã—, 3Ã— or 4Ã—, sharp, at about the original's 1024Ã—768 (a MacBook Air: 980Ã—594, a 4K screen:
+1280Ã—720). To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 On Linux, the window uses the system's title bar with the game's menu bar inside it.
 `CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.
@@ -44,11 +55,11 @@ use TCP port 4993, and UDP port 4994 to find games on a local network.
 
 ## Build and run
 
-To build it yourself, install your copy of Civilization II in `~/Civ2` (the directory with
-`civ2.exe`, `Tiles.dll`, the `.TXT` files …), or point `CIV2_GAME` at it.
+To play a local build, put your Civilization II rules and text in `~/Civ2`, or point
+`CIV2_GAME` at that directory. Building does not require original game graphics.
 
 ```sh
-git clone https://github.com/richardpenman/civ2 && cd civ2
+git clone https://github.com/PeterJohnson/openciv2 && cd openciv2
 make            # -> build/OpenCiv2 (several minutes; the first time it downloads wasi-sdk,
                 #    wabt and the libraries' sources into tools/toolchain)
 make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
@@ -61,6 +72,10 @@ working Docker and the development images built with `make images`. See
 
 What to install first:
 
+- **All systems:** Python 3.10+. The build downloads a pinned, cached graphics release;
+  Pillow is needed only when rebuilding an `openciv2-assets` clone. See
+  [the game/graphics build](docs/ASSET-DEPENDENCIES.md) for local paths and offline builds.
+
 - **macOS:** `xcode-select --install` (compiler and make) and `brew install sdl2`.
 - **Linux:** a C compiler, make, Python 3 and `libsdl2-dev` from the package manager.
 - **Windows:** in an [MSYS2](https://www.msys2.org) **MINGW64** shell, `pacman -S git make
@@ -69,14 +84,15 @@ What to install first:
   play with `tools\run-civ2.bat [GAMEDIR]` from a Command Prompt or by double-clicking it.
 
 `make windows` cross-compiles `build/OpenCiv2.exe` on Linux (it also downloads SDL2's MinGW
-release): the one file the release has, SDL2 and the fonts built in.
+release): the one file the release has, SDL2, fonts and HD graphics built in.
 
 ## Status
 
 Playable. Every function of the game that can run has source; the only parts not reconstructed
 are the original's MSVC runtime (replaced by the platform's C library) and unreachable 16-bit
 leftovers. All 41 recorded scenarios match the original exactly, pixel for pixel, with the same
-sounds and videos asked for. They run 72% of the game's functions (78% leaving out networking);
+sounds and videos asked for, when using original graphics (the reference harness default).
+They run 72% of the game's functions (78% leaving out networking);
 playing sound and video and the High Council's window can't be compared under Wine. Multiplayer is supported and compatible with the original: OpenCiv2 and
 the original game play each other on a LAN or over the Internet, either one hosting. Automated
 tests (`tools/xdnet/nettest.py`) play two or three games against each other, including

@@ -104,6 +104,26 @@ void HOST(menu_add)(Host *h, u32 level, u32 flags, u32 id, u32 text)
 }
 void HOST(menu_end)(Host *h) { (void)h; host_menu_end(); }
 void HOST(present)(Host *h, u32 pixels, u32 stride) { (void)h; host_present(MEM(pixels), (int)stride); }
+void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density) { (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
+u32 HOST(gpu_available)(Host *h) { (void)h;return host_gpu_available(); }
+u32 HOST(gpu_create)(Host *h,u32 w,u32 height,u32 kind,u32 pixels,u32 pitch)
+{ (void)h;return host_gpu_create(w,height,kind,pixels ? MEM(pixels) : NULL,pitch); }
+void HOST(gpu_destroy)(Host *h,u32 id) { (void)h;host_gpu_destroy(id); }
+u32 HOST(gpu_blit)(Host *h,u32 draw) { (void)h;return host_gpu_blit(MEM(draw)); }
+u32 HOST(gpu_camera)(Host *h,u32 draw) { (void)h;return host_gpu_camera(MEM(draw)); }
+u32 HOST(gpu_text)(Host *h,u32 draw) { (void)h;return host_gpu_text(MEM(draw)); }
+u32 HOST(gpu_text_batch)(Host *h,u32 draws,u32 count) { (void)h;return host_gpu_text_batch(MEM(draws),count); }
+u32 HOST(gpu_fill)(Host *h,u32 id,u32 x,u32 y,u32 w,u32 height,u32 color)
+{ (void)h;return host_gpu_fill(id,x,y,w,height,color); }
+u32 HOST(gpu_upload)(Host *h,u32 id,u32 x,u32 y,u32 w,u32 height,u32 pixels,u32 pitch,u32 scale)
+{ (void)h;return host_gpu_upload(id,x,y,w,height,MEM(pixels),pitch,scale); }
+u32 HOST(gpu_read)(Host *h,u32 id,u32 x,u32 y,u32 w,u32 height,u32 pixels,u32 pitch)
+{ (void)h;return host_gpu_read(id,x,y,w,height,MEM(pixels),pitch); }
+u32 HOST(gpu_present)(Host *h,u32 id) { (void)h;return host_gpu_present(id); }
+void HOST(gpu_finish)(Host *h) { (void)h;host_gpu_finish(); }
+void HOST(gpu_fence)(Host *h) { (void)h;host_gpu_fence(); }
+u32 HOST(memory_equal)(Host *h,u32 a,u32 b,u32 bytes) { (void)h;return host_memory_equal(MEM(a),MEM(b),bytes); }
+void HOST(memory_move)(Host *h,u32 dst,u32 src,u32 bytes) { (void)h;host_memory_move(MEM(dst),MEM(src),bytes); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
 void HOST(resize_desktop)(Host *h, u32 w, u32 hh) { (void)h; host_resize_desktop((int)w, (int)hh); }
 

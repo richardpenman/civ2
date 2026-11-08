@@ -1,0 +1,40 @@
+# Live HD windows; a local He_Auto.SAV with cities is required.
+# Run with CIV2_TEST_HD=1. No original image files are needed.
+wait 8000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+shot map
+call city_status_show 42d71e 2
+wait 3000
+shot cities
+key Escape
+wait 1000
+call cityview_open 454260 0
+wait 3000
+shot panorama
+key Escape
+wait 2000
+call diplo_leader_wnd_launch 493f0f 2 1
+wait 5000
+shot diplomacy
+call diplo_leader_wnd_close 494148
+wait 2000
+call spaceship_wnd_run 4d0208 1
+wait 60000
+shot spacecraft
+key Escape
+wait 2000
+call throneroom_show_upgrade 44cc80 1
+wait 3000
+shot throne
+click 400 300
+wait 120000
+shot throne-choices
+click 225 180
+wait 300000
+shot throne-improved

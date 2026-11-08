@@ -19,6 +19,7 @@
 #include <strings.h>
 #include <ctype.h>
 #include "win32_api.h"
+#include "../include/map_camera.h"
 #include "plat_files.h"
 
 /* ---- handles ---- */
@@ -86,6 +87,12 @@ typedef struct Bitmap {
     int ncolors;
     int is_dib;
     int selected;               /* selected into a DC */
+    uint32_t *hd;
+    void *hd_before;            /* packed 8-bit indices, otherwise 32-bit raw pixels */
+    int hd_image;               /* Atlas source sheet; never stored in saves */
+    int hd_grey;                /* grey backdrop presentation, pixels retained */
+    int hd_gpu;                 /* optional host render target; HD CPU pixels may be stale */
+    struct HdIndexedCache *hd_indexed_cache;
 } Bitmap;
 
 unsigned char *bmp_row(const Bitmap *b, int y);     /* row y, top = 0 */
@@ -221,6 +228,7 @@ void input_key(int vk, int down);
 void input_mouse_move(int x, int y);
 void input_mouse_button(int button, int down);
 void input_mouse_wheel(int notches);       /* WM_MOUSEWHEEL to the focus window */
+void input_mouse_wheel_precise(double notches);
 void pointer_init(int x, int y);
 void pointer_check(void);              /* the pointer's window changed: WM_MOUSEMOVE */
 extern BYTE key_state[256];
@@ -252,6 +260,9 @@ void text_metrics(FontFace *f, TEXTMETRICA *tm);
 int text_width(FontFace *f, const char *s, int n);
 int text_height(FontFace *f);
 void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip);   /* logical coords, top left */
+/* kind: 0 city names, 1 population badges, 2 unit text, 3 fixed map messages. */
+void text_camera_labels(Bitmap *dst,const MapCameraLabel *labels,int count,double height,
+                        int origin_x,int origin_y,const RECT *clip,int kind);
 
 /* ---- presentation ---- */
 

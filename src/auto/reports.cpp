@@ -1,6 +1,7 @@
 /* The game, the advisors, the High Council and the reports: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* 00419ed3 auto */
 void __cdecl leaders_fixup_names(void)
@@ -454,6 +455,7 @@ void __cdecl attitude_advisor_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y = advisor_state.client_y + 2;
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -804,6 +806,7 @@ void __cdecl defense_minister_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y = advisor_state.client_y + 2;
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -865,6 +868,7 @@ void __cdecl defense_minister_draw(void)
         next_row = row_index;
         if (((type_listed[unit_type] != '\0') && (next_row = row_index + 1, y <= (int)row_index)) &&
            ((int)row_index < y + rows_per_page)) {
+          hd_report_row(row_y+8,line_height,row_index);
           row_x = (next_row & 1) * 0x40 + advisor_state.client_x;
           unit = unit_make_dummy(unit_type,civ);
           gfx_draw_unit((iptr)&advisor_state.window,unit,0,row_x + 2,row_y,0,0);
@@ -1311,6 +1315,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
       item_y = line_height * row + y2;
       item_x = advisor_state.column_width * column + left_x;
       item_index = value;
+      if(!hd_advance((DibSurface *)(iptr)&advisor_state.window,advance,item_x,item_y,36,20))
       ((Sprite *)
                  (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                  (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw((iptr)icon_rect,(iptr)&advisor_state.window,item_x,item_y);
@@ -1371,6 +1376,7 @@ void __cdecl intel_report_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y2 = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -2246,6 +2252,7 @@ void __cdecl top_cities_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y2 = advisor_state.client_y + 2;
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -2544,6 +2551,7 @@ void __cdecl demographics_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y2 = advisor_state.client_y + 2;
   bottom = advisor_state.client_y + 0x174;
   row_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -2865,6 +2873,7 @@ void __cdecl hall_of_fame_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   y = advisor_state.client_y + 1;
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -3405,6 +3414,7 @@ void __cdecl credits_draw_scroll(int full_redraw)
   else {
     ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
     ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   }
   top = advisor_state.client_y;
   bottom = advisor_state.client_y + 0x176;
@@ -4142,6 +4152,7 @@ void ThroneRoomWindow::draw_click_prompt()
 i32 ThroneRoomWindow::render()
 
 {
+  if(hd_enabled)return hd_throne_room(this,false);
   int loaded;
   i8 draw_tmp9[16];
   i32 fail8;
@@ -4528,6 +4539,7 @@ void ThroneRoomWindow::add_choice_regions()
 i32 ThroneRoomWindow::render_choices()
 
 {
+  if(hd_enabled)return hd_throne_room(this,true);
   int loaded;
   i8 draw_tmp2[16];
   i32 fail2;

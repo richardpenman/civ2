@@ -345,18 +345,35 @@ static int unpack_resource(int id, const char *path)
     return 1;
 }
 
-/* The fonts in data beside the program, where missing. */
+/* Validate the extracted file against the embedded zlib stream's checksum so
+   replacing the executable also updates artwork (and repairs interrupted writes). */
+static int resource_matches(int id,const char *path)
+{
+    HRSRC r=FindResourceA(NULL,MAKEINTRESOURCEA(id),(LPCSTR)RT_RCDATA);
+    HGLOBAL g=r?LoadResource(NULL,r):NULL;
+    const unsigned char *data=g?LockResource(g):NULL;
+    DWORD n=r?SizeofResource(NULL,r):0;
+    unsigned char buf[65536];size_t got;uLong sum=adler32(0L,Z_NULL,0);FILE *f;
+    unsigned long long size=0,expected=0;int i;
+    if(!data || n<12 || !(f=fopen(path,"rb")))return 0;
+    for(i=0;i<8;i++)expected|=(unsigned long long)data[i]<<(8*i);
+    while((got=fread(buf,1,sizeof buf,f))!=0){size+=got;sum=adler32(sum,buf,(uInt)got);}
+    i=!ferror(f);fclose(f);
+    return i && size==expected && sum==((uLong)data[n-4]<<24 | (uLong)data[n-3]<<16 | (uLong)data[n-2]<<8 | data[n-1]);
+}
+
+/* The program's own fonts and replacement graphics beside the executable. */
 int os_program_files(void)
 {
     static const struct { int id; const char *name; } files[] = {
-        {SETUP_RES_FONTS, "fonts.bin"}, {SETUP_RES_FONTS_AA, "fonts_aa.bin"}};
+        {SETUP_RES_FONTS, "fonts.bin"}, {SETUP_RES_FONTS_AA, "fonts_aa.bin"}, {SETUP_RES_ATLAS,"atlas-hd.pack"}};
     char dir[MAX_PATH], data[MAX_PATH], path[MAX_PATH];
     size_t i;
     program_dir(dir, sizeof dir);
     snprintf(data, sizeof data, "%s\\data", dir);
     for (i = 0; i < sizeof files / sizeof files[0]; i++) {
         snprintf(path, sizeof path, "%s\\%s", data, files[i].name);
-        if (os_file_exists(path))
+        if (resource_matches(files[i].id,path))
             continue;
         os_make_dirs(data);
         os_progress_show("Unpacking", path);

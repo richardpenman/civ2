@@ -8,6 +8,7 @@
  * as Wine's DIB engine does.
  */
 #include "plat.h"
+#include "hd.h"
 
 Bitmap *screen;                 /* the composed desktop: what is shown */
 Bitmap *root;                   /* the desktop background */
@@ -45,6 +46,7 @@ void bmp_destroy(Bitmap *b)
 {
     if (!b)
         return;
+    hd_bitmap_destroy(b);
     if (b->owns_bits)
         free(b->bits);
     free(b);
@@ -101,6 +103,7 @@ void surf_put(Bitmap *b, int x, int y, COLORREF c)
             p[x >> 3] &= (unsigned char)~(0x80 >> (x & 7));
         break;
     }
+    hd_pixel(b, x, y, GetRValue(c)<<16 | GetGValue(c)<<8 | GetBValue(c));
 }
 
 COLORREF surf_get(Bitmap *b, int x, int y)
@@ -284,14 +287,133 @@ Bitmap *dc_target(DC *dc)
 int plat_color_lut_on;
 unsigned char plat_color_lut[256];
 
+static void compose_gpu_piece(Bitmap *src,int dx,int dy,const RECT *rect)
+{
+    RECT r=*rect;
+    int y;
+    if(r.left<dx)r.left=dx;if(r.top<dy)r.top=dy;
+    if(r.right>dx+src->w)r.right=dx+src->w;
+    if(r.bottom>dy+src->h)r.bottom=dy+src->h;
+    if(r.left>=r.right || r.top>=r.bottom)return;
+    hd_composite(screen,src,dx,dy,r.left,r.top,r.right,r.bottom);
+    for(y=r.top;y<r.bottom;y++)
+        memcpy((DWORD *)bmp_row(screen,y)+r.left,(DWORD *)bmp_row(src,y-dy)+r.left-dx,
+               (size_t)(r.right-r.left)*4);
+}
+/* Top-level surfaces are opaque. Copy only the uncovered pieces, so a
+   maximized map does not first copy several density-scaled windows behind it. */
+static int compose_camera_piece(Window *w,Bitmap *chrome,int dx,int dy,const RECT *rect)
+{
+    MapCameraTransform c;
+    Window *map=wnd_get((HWND)map_camera_get(&c));
+    Bitmap *src;
+    POINT origin={0,0};
+    RECT view;
+    Region visible={0},normal={0};
+    DWORD palette[256];
+    int i,px,py,sx,sy;
+    if(!map || wnd_top(map)!=w)return 0;
+    wnd_client_screen(map,&origin);
+    view=(RECT){origin.x+c.left,origin.y+c.top,origin.x+c.left+c.width,origin.y+c.top+c.height};
+    src=bmp_of_bits(map_camera_pixels());
+    if(!src || (src->bpp!=8 && src->bpp!=32))return 0;
+    sx=c.left;sy=c.top;
+    if(sx<0 || sy<0 || sx+c.width>src->w || sy+c.height>src->h)return 0;
+    /* The map and city/advisor windows are siblings on one top-level surface.
+     * Preserve their occlusion as well as top-level dialogs. Sample the map's
+     * own backing: the shared surface contains foreground-window pixels at
+     * source positions that a fractional camera can move into an exposed area. */
+    wnd_visible_region(map,1,&visible);
+    rgn_intersect_rect(&visible,&view);rgn_intersect_rect(&visible,rect);
+    if(!visible.n) { rgn_free(&visible);return 0; }
+    rgn_set(&normal,rect);
+    for(i=0;i<visible.n;i++)rgn_subtract_rect(&normal,visible.r+i);
+    for(i=0;i<normal.n;i++)compose_gpu_piece(chrome,dx,dy,normal.r+i);
+    if(src->bpp==8)for(i=0;i<256;i++) {
+        RGBQUAD q=src->colors[i];
+        palette[i]=(DWORD)q.rgbRed<<16|(DWORD)q.rgbGreen<<8|q.rgbBlue;
+    }
+    for(i=0;i<visible.n;i++) {
+        RECT inside=visible.r[i];
+        hd_composite_camera(screen,src,sx,sy,c.width,c.height,
+            view.left+c.x,view.top+c.y,c.width*c.scale,c.height*c.scale,
+            inside.left,inside.top,inside.right,inside.bottom);
+        {
+            /* Up to one order and one work counter per unit, without frame allocations. */
+            static MapCameraLabel labels[4096];
+            double height=0;
+            int count=map_camera_labels(labels,256,&height,1);
+            text_camera_labels(screen,labels,count,height,view.left,view.top,&inside,1);
+            count=map_camera_unit_labels(labels,4096,&height);
+            text_camera_labels(screen,labels,count,height,view.left,view.top,&inside,2);
+            count=map_camera_labels(labels,256,&height,0);
+            text_camera_labels(screen,labels,count,height,view.left,view.top,&inside,0);
+            count=extras_camera_messages(labels,4,&height);
+            text_camera_labels(screen,labels,count,height,view.left,view.top,&inside,3);
+        }
+        /* Keep the logical desktop coherent for legacy captures/GetPixel. No HD
+         * readback: map picking itself still reads the original indexed masks. */
+        for(py=inside.top;py<inside.bottom;py++) {
+            int yy=sy+(int)((py-view.top-c.y)/c.scale);
+            DWORD *out=(DWORD *)bmp_row(screen,py);
+            unsigned char *in=bmp_row(src,yy);
+            for(px=inside.left;px<inside.right;px++) {
+                int xx=sx+(int)((px-view.left-c.x)/c.scale);
+                out[px]=src->bpp==8 ? palette[in[xx]] : ((DWORD *)in)[xx];
+            }
+        }
+    }
+    rgn_free(&normal);rgn_free(&visible);
+    return 1;
+}
+static void compose_gpu_windows(Window **order,int n)
+{
+    Region uncovered={0},visible={0};
+    RECT all={0,0,screen_w,screen_h};
+    int i,j;
+    rgn_set(&uncovered,&all);
+    for(i=0;i<n && uncovered.n;i++) {
+        Window *w=order[i];
+        Bitmap *s;
+        RECT shown;
+        int dx,dy;
+        if(!(w->style & WS_VISIBLE) || w->minimized)continue;
+        wnd_shown_rect(w,&shown);
+        rgn_copy(&visible,&uncovered);rgn_intersect_rect(&visible,&shown);
+        if(!visible.n)continue;
+        s=wnd_surface(w);
+        dx=w->rect.left+(w->host_clipped ? w->host_dx : 0);
+        dy=w->rect.top+(w->host_clipped ? w->host_dy : 0);
+        /* A stale host clip may extend beyond its backing surface. Keep the
+           exposed part for lower windows, matching the ordinary compositor. */
+        { RECT backing={dx,dy,dx+s->w,dy+s->h};
+          rgn_intersect_rect(&visible,&backing);
+          if(!rect_intersect(&shown,&shown,&backing))continue; }
+        for(j=0;j<visible.n;j++) {
+            RECT *r=visible.r+j;
+            if(!compose_camera_piece(w,s,dx,dy,r))compose_gpu_piece(s,dx,dy,r);
+        }
+        rgn_subtract_rect(&uncovered,&shown);
+    }
+    for(j=0;j<uncovered.n;j++) {
+        RECT *r=uncovered.r+j;
+        compose_gpu_piece(root,0,0,r);
+    }
+    rgn_free(&visible);rgn_free(&uncovered);
+}
 void plat_compose(void)
 {
     Window *order[512], *w;
     int n = 0, i, y;
-    memcpy(screen->bits, root->bits, (size_t)screen->stride * (size_t)screen->h);
+    if(!hd_gpu_active)memcpy(screen->bits, root->bits, (size_t)screen->stride * (size_t)screen->h);
+    if (hd_enabled && !hd_gpu_active) {
+        hd_sync(root); hd_sync(screen);
+        memcpy(screen->hd, root->hd, (size_t)screen_w*screen_h*hd_density*hd_density*4);
+    }
     for (w = desktop->children; w && n < 512; w = w->next)
         order[n++] = w;
-    for (i = n - 1; i >= 0; i--) {
+    if(hd_gpu_active)compose_gpu_windows(order,n);
+    for (i = hd_gpu_active ? -1 : n - 1; i >= 0; i--) {
         RECT shown, r;
         Bitmap *s;
         int dx, dy;
@@ -305,6 +427,17 @@ void plat_compose(void)
         /* Surface pixel (x, y) shows at screen (rect.left + x + host_dx, ...). */
         dx = w->rect.left + (w->host_clipped ? w->host_dx : 0);
         dy = w->rect.top + (w->host_clipped ? w->host_dy : 0);
+        if (hd_enabled && !hd_gpu_active) {
+            int py, d=hd_density;
+            hd_sync(s);
+            for (py=r.top*d;py<r.bottom*d;py++) {
+                int sy=py-dy*d, x0=r.left*d, x1=r.right*d;
+                if(sy<0 || sy>=s->h*d)continue;
+                if(x0<dx*d)x0=dx*d;
+                if(x1>(dx+s->w)*d)x1=(dx+s->w)*d;
+                if(x1>x0)memcpy(screen->hd+py*screen_w*d+x0,s->hd+sy*s->w*d+x0-dx*d,(x1-x0)*4);
+            }
+        }
         for (y = r.top; y < r.bottom; y++) {
             int sy = y - dy, x0 = r.left, x1 = r.right;
             if (sy < 0 || sy >= s->h)
@@ -315,7 +448,19 @@ void plat_compose(void)
                 memcpy((DWORD *)bmp_row(screen, y) + x0, (DWORD *)bmp_row(s, sy) + (x0 - dx), (size_t)(x1 - x0) * 4);
         }
     }
+    if(hd_gpu_active && (hd_fade_grey || plat_color_lut_on))
+        hd_read_region(screen,0,0,screen_w*hd_density,screen_h*hd_density);
+    if (hd_enabled && hd_fade_grey)
+        hd_grey_pixels(screen->hd, (uint64_t)screen_w*screen_h*hd_density*hd_density, hd_fade_grey);
     if (plat_color_lut_on) {
+        if (hd_enabled) {
+            size_t i, n=(size_t)screen_w*screen_h*hd_density*hd_density;
+            for(i=0;i<n;i++) {
+                uint32_t c=screen->hd[i];
+                screen->hd[i]=(c&0xff000000u)|((uint32_t)plat_color_lut[(c>>16)&255]<<16)|
+                    ((uint32_t)plat_color_lut[(c>>8)&255]<<8)|plat_color_lut[c&255];
+            }
+        }
         /* X35 (docs/EXTRAS.md): the colour correction, on what is shown */
         for (y = 0; y < screen->h; y++) {
             DWORD *p = (DWORD *)bmp_row(screen, y);
@@ -326,6 +471,11 @@ void plat_compose(void)
                        ((DWORD)plat_color_lut[(c >> 8) & 0xff] << 8) | plat_color_lut[c & 0xff];
             }
         }
+    }
+    if(hd_gpu_active) {
+        if(hd_fade_grey || plat_color_lut_on)
+            hd_upload_region(screen,0,0,screen_w*hd_density,screen_h*hd_density);
+        hd_bitmap_commit(screen);
     }
 }
 
@@ -645,11 +795,24 @@ HBITMAP WINAPI CreateCompatibleBitmap(HDC h, int w, int hgt)
 /* The bitmap whose pixels p points to (start of its rows), or NULL. */
 Bitmap *bmp_of_bits(const void *p)
 {
+    /* Cache handles, not borrowed Bitmap pointers: deletion, handle reuse and
+       DIB storage replacement are validated by obj_get and the bits check. */
+    static struct { const void *bits; Handle handle; } cache[64];
+    unsigned slot = (((uintptr_t)p >> 4) ^ ((uintptr_t)p >> 14)) & 63;
+    Bitmap *b;
     int i;
+    if (!p) return NULL;
+    if (cache[slot].bits == p) {
+        b = obj_get(cache[slot].handle,OBJ_BITMAP);
+        if (b && b->bits == p) return b;
+    }
     for (i = 1; i < 8192; i++) {
-        Bitmap *b = obj_get(((Handle)OBJ_BITMAP << 16) | (Handle)i, OBJ_BITMAP);
-        if (b && b->bits && (const unsigned char *)p == b->bits)
+        Handle handle = ((Handle)OBJ_BITMAP << 16) | (Handle)i;
+        b = obj_get(handle, OBJ_BITMAP);
+        if (b && (const unsigned char *)p == b->bits) {
+            cache[slot].bits = p; cache[slot].handle = handle;
             return b;
+        }
     }
     return NULL;
 }
@@ -891,6 +1054,8 @@ static void fill_device(Bitmap *b, const Region *clip, const RECT *r, COLORREF r
         if (a.top < 0) a.top = 0;
         if (a.right > b->w) a.right = b->w;
         if (a.bottom > b->h) a.bottom = b->h;
+        if (hd_enabled && rop2_xor)
+            hd_bitmap_invert(b,a.left,a.top,a.right-a.left,a.bottom-a.top);
         if (b->bpp == 8) {
             int idx = surf_nearest(b, rgb);
             for (y = a.top; y < a.bottom; y++) {
@@ -912,6 +1077,10 @@ static void fill_device(Bitmap *b, const Region *clip, const RECT *r, COLORREF r
             for (y = a.top; y < a.bottom; y++)
                 for (x = a.left; x < a.right; x++)
                     surf_put(b, x, y, rop2_xor ? surf_get(b, x, y) ^ 0xffffff : rgb);
+        }
+        if (hd_enabled) {
+            if (rop2_xor) hd_bitmap_commit_rect(b,a.left,a.top,a.right-a.left,a.bottom-a.top);
+            else hd_bitmap_changed(b,a.left,a.top,a.right-a.left,a.bottom-a.top);
         }
     }
 }
@@ -1174,13 +1343,36 @@ static void xfer_row(Xfer *x, int sy, int dy, int dx0, int n, const int *sxs, DW
     }
 }
 
+/* Unscaled HD presentation still maintains the logical backing pixels. Avoid
+ * sampling and ROP dispatch for every pixel of an ordinary opaque copy. */
+static int xfer_copy_rect(Xfer *xf,const RECT *a,int x,int y,int sx,int sy)
+{
+    Bitmap *src=xf->src,*dst=xf->dst;
+    int row,col,n=a->right-a->left,left=sx+a->left-x,top=sy+a->top-y;
+    if(src==dst || left<0 || top<0 || left+n>src->w || top+a->bottom-a->top>src->h)return 0;
+    if(!(xf->identity && dst->bpp==8) && !(dst->bpp==32 && (src->bpp==8 || src->bpp==32)))return 0;
+    for(row=a->top;row<a->bottom;row++) {
+        const unsigned char *in=bmp_row(src,sy+row-y);
+        unsigned char *out=bmp_row(dst,row);
+        if(dst->bpp==8)memcpy(out+a->left,in+left,(size_t)n);
+        else if(src->bpp==8) {
+            DWORD *p=(DWORD *)out+a->left;
+            for(col=0;col<n;col++)p[col]=xf->map32[in[left+col]];
+        } else {
+            DWORD *p=(DWORD *)out+a->left;
+            const DWORD *q=(const DWORD *)in+left;
+            for(col=0;col<n;col++)p[col]=q[col]&0xffffff;
+        }
+    }
+    return 1;
+}
 static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, int sw, int sh, DWORD rop)
 {
     DC *dd = get_dc(hd), *sd = get_dc(hs);
     Region clip = {0, 0, NULL};
     Bitmap *dst, *src;
     Xfer xf;
-    int i, flipx = 0, flipy = 0, *sxs, row;
+    int i, flipx = 0, flipy = 0, *sxs=NULL, row;
     if (!dd)
         return FALSE;
     if (rop == BLACKNESS || rop == WHITENESS || rop == PATCOPY || rop == DSTINVERT) {
@@ -1223,7 +1415,6 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
             plat_log("trace: blit to %d,%d %dx%d from %s %d,%d rop %06x\n", (int)sr.left, (int)sr.top, w, h,
                      sd->is_memory ? "memory" : "window", sx, sy, (unsigned)rop);
     }
-    sxs = malloc(sizeof(int) * (size_t)w);
     for (i = 0; i < clip.n; i++) {
         RECT a, want;
         want.left = x; want.top = y; want.right = x + w; want.bottom = y + h;
@@ -1233,6 +1424,14 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
         if (a.top < 0) a.top = 0;
         if (a.right > dst->w) a.right = dst->w;
         if (a.bottom > dst->h) a.bottom = dst->h;
+        if (hd_enabled && rop==SRCCOPY && !flipx && !flipy)
+            hd_transfer(dst,src,x,y,w,h,sx,sy,sw,sh,a.left,a.top,a.right,a.bottom);
+        if(hd_enabled && rop==SRCCOPY && !flipx && !flipy && w==sw && h==sh &&
+           xfer_copy_rect(&xf,&a,x,y,sx,sy)) {
+            hd_bitmap_commit_rect(dst,a.left,a.top,a.right-a.left,a.bottom-a.top);
+            continue;
+        }
+        if(!sxs)sxs=malloc(sizeof(int)*(size_t)w);
         for (row = a.top; row < a.bottom; row++) {
             int ry = row - y, srow, n = 0, col;
             if (flipy)
@@ -1253,6 +1452,10 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
             }
             xfer_row(&xf, srow, row, a.left, n, sxs, rop);
         }
+        if (hd_enabled) {
+            if(rop!=SRCCOPY || flipx || flipy)hd_bitmap_changed(dst,a.left,a.top,a.right-a.left,a.bottom-a.top);
+            hd_bitmap_commit_rect(dst,a.left,a.top,a.right-a.left,a.bottom-a.top);
+        }
     }
     free(sxs);
     rgn_free(&clip);
@@ -1263,6 +1466,24 @@ WINBOOL WINAPI BitBlt(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy
 {
     API_TRACE();
     return blit(hd, x, y, w, h, hs, sx, sy, w, h, rop);
+}
+
+/* Alpha controls bypass the old color-key/monochrome mask construction. */
+int hd_gdi_bitmap(uintptr_t h,uintptr_t bitmap,int x,int y,int w,int hgt,int sx,int sy)
+{
+    DC *dc=dc_get((HDC)h);
+    Bitmap *src=obj_get((HBITMAP)bitmap,OBJ_BITMAP),*dst;
+    int id,k;
+    if(!dc || !src || !src->hd_image)return 0;
+    dst=dc_target(dc);if(!dst)return 0;
+    id=hd_crop(src->hd_image,sx,sy,w,hgt);
+    x+=dc->origin.x;y+=dc->origin.y;
+    if(dc->is_memory)hd_draw_bitmap(dst,id,x,y,w,hgt,0,0,dst->w,dst->h,-1);
+    else for(k=0;k<dc->clip.n;k++) {
+        RECT *r=dc->clip.r+k;
+        hd_draw_bitmap(dst,id,x,y,w,hgt,r->left,r->top,r->right,r->bottom,-1);
+    }
+    return 1;
 }
 
 /* Only the source-less operations blit() fills itself. */

@@ -1,6 +1,7 @@
 /* The game, text: game text files, strings, resources and files: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 #include "lang.h"
 
 /* 0040bbb0 auto */
@@ -1743,6 +1744,7 @@ i8 * __cdecl file_find_fallback_drive(const char *filename)
 i32 __cdecl file_resolve_path(const char *path)
 
 {
+  if (hd_virtual_file(path)) return 1;
   char *next;
   char ch;
   iptr len;

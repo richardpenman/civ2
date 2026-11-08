@@ -1,6 +1,7 @@
 /* The game, controls: buttons, lists, combo and check boxes, edit fields, scroll bars: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 0040f380 auto */
 void Control::show_and_redraw()
@@ -1648,6 +1649,12 @@ static HPEN button_face_pen(HDC mem_dc,Button *button)
    (line by line with a palette pen). */
 static void button_fill_face(HDC mem_dc,Button *button,tagRECT *bounds,HPEN bg_pen)
 {
+  if(hd_enabled) {
+    HBRUSH brush=CreateSolidBrush(RGB(64,91,77));
+    FillRect(mem_dc,bounds,brush);DeleteObject(brush);
+    SetTextColor(mem_dc,RGB(244,238,225));
+    return;
+  }
   HGDIOBJ old_obj;
   int line_y;
 

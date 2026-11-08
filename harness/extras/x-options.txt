@@ -20,7 +20,7 @@ wait 3000
 shot xo-b-choose
 key Return
 wait 3000
-click 40 203                # Turn in the status panel
+click 40 192                # Turn in the status panel
 wait 1000
 shot xo-c-interface
 key Return

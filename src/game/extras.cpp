@@ -8,6 +8,7 @@
 #include <math.h>
 #include "game.h"
 #include "lang.h"
+#include "hd_windows.h"
 
 EXTERN_C int plat_replay;
 
@@ -240,6 +241,7 @@ static const struct { const char *key, *english; } texts[] = {
     {"option.PathLines", "Path lines with Shift"},
     {"option.SentryHalftone", "Sentries in grey shades"},
     {"option.DefaultZoom1", "New games at zoom 1:1"},
+    {"option.GpuMapCamera", "Map drag and zoom (GPU)"},
     {"option.WorkerHandover", "Workers hand over their work"},
     {"option.GotoNoZocStop", "Go To past foreign units"},
     {"option.UnitRotation", "Units of a stack in turn"},
@@ -380,10 +382,12 @@ int extras_rich_width(iptr font, const char *text)
    it has done on its terrain order so far, for the player's own units. */
 void extras_draw_work_counter(iptr surface, int unit, int px, int py, int zoom)
 {
+    if(map_camera_surface((void *)surface))return;
     char text[8];
     const Unit *u = &units[unit];
     int x, y;
-    if (unit_types[u->type].role != ROLE_SETTLE || u->counter == 0 || zoom < -3)
+    if (unit_types[u->type].role != ROLE_SETTLE || u->counter == 0 ||
+        map_camera_detail_zoom((void *)surface,zoom) < -3)
         return;
     if (u->owner != human_civ[0] && game.reveal_map == '\0')
         return;
@@ -443,6 +447,12 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
     int px, py, w, h;
     u8 *keep;
     DibSurface *s = (DibSurface *)surface;
+    if (hd_enabled) {
+        hd_sprite_greyscale(sprite, 1);
+        sprite->draw((iptr)&r, surface, x, y);
+        hd_sprite_greyscale(sprite, 0);
+        return;
+    }
     grey_map_update();
     sprite->draw((iptr)&r, surface, x, y);
     w = r.right - r.left;
@@ -1065,6 +1075,7 @@ void extras_city_status_draw(void)
     ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
     ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
     ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+    hd_report_background();
     top_y = advisor_state.client_y + 2;
     list_bottom = advisor_state.client_y + 0x174;
     line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -1124,6 +1135,7 @@ void extras_city_status_draw(void)
     advisor_state.first_row = int_clamp(advisor_state.first_row, 0, max_row);
     for (row = 0; row < rows_per_page && advisor_state.first_row + row < status_count; row++) {
         int city = status_cities[advisor_state.first_row + row], y = status_list_top + row * 0x18, ty = y + 9;
+        hd_report_row(y + 6, 0x18, row);
         uint cost;
         gfx_draw_city((iptr)&advisor_state.window, city, 0, ((row + 1) & 1) * 0x40 + advisor_state.client_x + 2, y, 0);
         text_set_font((iptr)&advisor_bold_font);
@@ -1451,9 +1463,25 @@ static void messages_expire(void)
         map_redraw_keep_input();
 }
 
+/* Camera messages are UI: keep their size and position independent of map zoom. */
+int extras_camera_messages(MapCameraLabel *labels,int capacity,double *height)
+{
+    if(!extra_ui(X_SUPPRESS_POPUPS))return 0;
+    int count=0,y=4,spacing=advisor_bold_font.line_spacing();
+    *height=14;
+    for(int i=0;i<4 && count<capacity;i++)if(messages[i].text[0]) {
+        MapCameraLabel &label=labels[count++];
+        label.x=6;label.y=y;label.color=0x29;label.flags=0;
+        snprintf(label.text,sizeof label.text,"%s",messages[i].text);
+        y+=spacing;
+    }
+    return count;
+}
+
 /* The messages over the top of the map (surface: the main map view). */
 void extras_draw_map_messages(iptr surface, int blit)
 {
+    if(map_camera_surface((void *)surface))return;
     MapView *m = (MapView *)surface;
     iptr font = (iptr)&advisor_bold_font;
     int i, y = m->client_y + 4, lh = ((GameFont *)font)->line_spacing(), any = 0;
@@ -1925,6 +1953,22 @@ static int options_checks(const char *title, const char *note, const KeyItem *ke
     return 1;
 }
 
+static int options_interface(void)
+{
+    /* The camera is opt-in and independent of the default-on UI additions.
+     * Borrow a bit only for this dialog; do not change their stored mask. */
+    const uint64_t camera_bit=(uint64_t)1<<63;
+    const int n=(int)(sizeof extra_keys/sizeof extra_keys[0]);
+    KeyItem keys[n+1];
+    memcpy(keys,extra_keys,sizeof extra_keys);
+    keys[n]={63,"GpuMapCamera"};
+    uint64_t bits=(extras_enabled & ~camera_bit) | (map_camera_option() ? camera_bit : 0);
+    if(!options_checks(extras_text("options.interface"),0,keys,n+1,&bits,2))return 0;
+    extras_enabled=(extras_enabled & camera_bit) | (bits & ~camera_bit);
+    map_camera_set_option((bits & camera_bit)!=0);
+    return 1;
+}
+
 /* A page of numbers (and text): keys[n], each shown as shown[i]; those
    changed written.  Returns 1 if OK (value[i]: the numbers, text: the last
    field's text if is_text). */
@@ -2083,8 +2127,7 @@ void extras_options_dialog(void)
         if (choice < 0)
             return;
         if (choice == 0) {
-            if (options_checks(extras_text("options.interface"), 0, extra_keys,
-                               (int)(sizeof extra_keys / sizeof extra_keys[0]), &extras_enabled, 2))
+            if (options_interface())
                 options_apply(before);
         } else if (choice == 1 && !network_game()) {
             options_checks(extras_text("options.rules"), extras_text("options.rules_note"), rule_keys, 5,

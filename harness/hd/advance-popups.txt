@@ -1,0 +1,25 @@
+# Advance art in ordinary popups and the research completion dialogs.
+# Tests use an isolated copy of the save. Cheat mode changes only that copy.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call civ_golden_age_popup 4bee56 2
+wait 2000
+shot golden-age
+key Return
+wait 1000
+call menu_command 4e2803 0 1793
+wait 1000
+key Down Return
+wait 1000
+call menu_command 4e2803 0 1841
+wait 1500
+shot choose-civ
+key Return
+wait 2000
+shot research-complete

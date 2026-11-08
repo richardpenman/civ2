@@ -11,12 +11,16 @@
  *   CIV2_HOOK_LOG=FILE   log of script actions (plat_log)
  *   CIV2_CALL_LOG=FILE   log of the sounds played and the videos looked for
  *                        (as hook/stackprobe.c logs the original's)
+ *   CIV2_BENCHMARK=1    log wall-clock microseconds for finite call_sync actions
+ *   CIV2_BENCHMARK_FRAME=1 also compose the desktop before ending that timer
  */
 #ifndef __wasm__
 #include <dlfcn.h>
 #include <execinfo.h>
 #endif
 #include "plat.h"
+#include "hd.h"
+#include "../host/host.h"
 
 static char **script;
 static int script_len, script_pos;
@@ -216,24 +220,26 @@ static void ensure_focus(void)
 void plat_screenshot(const char *path)
 {
     FILE *f = fopen(path, "wb");
-    int y, x, stride = (screen_w * 3 + 3) & ~3;
+    int w=screen_w*(hd_enabled?hd_density:1), h=screen_h*(hd_enabled?hd_density:1);
+    int y, x, stride = (w * 3 + 3) & ~3;
     unsigned char hdr[54] = {'B', 'M'}, *row;
-    unsigned size = 54 + (unsigned)(stride * screen_h);
+    unsigned size = 54 + (unsigned)(stride * h);
     if (!f)
         return;
     if (!plat_overlay)          /* (as presenting) a popup menu is on the screen itself */
         plat_compose();
+    if(hd_enabled)hd_read_region(screen,0,0,w,h);
     hdr[2] = (unsigned char)size; hdr[3] = (unsigned char)(size >> 8); hdr[4] = (unsigned char)(size >> 16);
     hdr[5] = (unsigned char)(size >> 24);
     hdr[10] = 54; hdr[14] = 40;
-    hdr[18] = (unsigned char)screen_w; hdr[19] = (unsigned char)(screen_w >> 8);
-    hdr[22] = (unsigned char)screen_h; hdr[23] = (unsigned char)(screen_h >> 8);
+    hdr[18] = (unsigned char)w; hdr[19] = (unsigned char)(w >> 8);
+    hdr[22] = (unsigned char)h; hdr[23] = (unsigned char)(h >> 8);
     hdr[26] = 1; hdr[28] = 24;
     fwrite(hdr, 1, 54, f);
     row = calloc((size_t)stride, 1);
-    for (y = screen_h - 1; y >= 0; y--) {
-        const DWORD *p = (const DWORD *)bmp_row(screen, y);
-        for (x = 0; x < screen_w; x++) {
+    for (y = h - 1; y >= 0; y--) {
+        const DWORD *p = hd_enabled ? screen->hd+y*w : (const DWORD *)bmp_row(screen, y);
+        for (x = 0; x < w; x++) {
             row[x * 3] = (unsigned char)p[x];
             row[x * 3 + 1] = (unsigned char)(p[x] >> 8);
             row[x * 3 + 2] = (unsigned char)(p[x] >> 16);
@@ -321,7 +327,7 @@ void replay_run_script(void)
             input_mouse_button(b == 3 ? 2 : b == 2 ? 3 : 1, 0);
             next_action_us = vclock_us + 100 * 1000;
             break;
-        } else if (!strcmp(cmd, "call")) {
+        } else if (!strcmp(cmd, "call") || !strcmp(cmd, "call_sync")) {
             /* call FUNCTION ADDR [ARGS]: run a game function directly (tests
                of screens hard to reach by input); the original's address is
                for hook/replay.c, which runs the same scripts.  The functions
@@ -337,9 +343,22 @@ void replay_run_script(void)
                 for (i = 0; replay_calltable[i].name && strcmp(replay_calltable[i].name, name); i++)
                     ;
                 if (replay_calltable[i].name) {
+                    uint64_t started = 0;
                     next_action_us = vclock_us + 100 * 1000;
-                    running = 0;        /* the call may run a modal loop that idles */
+                    /* Modal calls need input from subsequent script commands.
+                       Finite redraws use call_sync so a shot cannot interrupt
+                       them at an internal message-pump/idle boundary. */
+                    if (!strcmp(cmd, "call")) running = 0;
+                    if (!strcmp(cmd, "call_sync") && getenv("CIV2_BENCHMARK")) {
+                        /* Do not charge previously queued GPU work to this call. */
+                        if(hd_gpu_active)host_gpu_fence();
+                        started = host_time_us();
+                    }
                     ((int (*)(int, int, int, int))replay_calltable[i].fn)(args[0], args[1], args[2], args[3]);
+                    if(started && getenv("CIV2_BENCHMARK_FRAME"))plat_compose();
+                    if(started && hd_gpu_active)host_gpu_finish();
+                    if (started) plat_log("benchmark: %s %llu us\n",name,
+                                          (unsigned long long)(host_time_us()-started));
                     running = 1;
                 } else
                     plat_log("replay: no function %s (tools/build_native.py gen_calltable)\n", name);
@@ -354,6 +373,28 @@ void replay_run_script(void)
                 input_mouse_button(b == 3 ? 2 : b == 2 ? 3 : 1, cmd[5] == 'd');
             next_action_us = vclock_us + 100 * 1000;
             break;
+        } else if (!strcmp(cmd,"drag_burst")) {
+            /* Queue a complete gesture before dispatch, as when input piles
+             * up during a redraw. Event positions must survive the burst. */
+            int x=0,y=0,dx=0,dy=0;
+            sscanf(arg,"%d %d %d %d",&x,&y,&dx,&dy);
+            input_mouse_move(x,y);input_mouse_button(1,1);
+            for(int i=1;i<=8;i++)input_mouse_move(x+dx*i/8,y+dy*i/8);
+            input_mouse_button(1,0);
+            next_action_us=vclock_us+100*1000;break;
+        } else if (!strcmp(cmd, "camera_probe")) {
+            int x=0,y=0;sscanf(arg,"%d %d",&x,&y);
+            map_camera_probe(x,y);
+        } else if (!strcmp(cmd,"camera_benchmark")) {
+            int count=atoi(arg);
+            if(count<1)count=1;if(count>200)count=200;
+            for(int i=0;i<count+1;i++) {
+                uint64_t start;
+                if(hd_gpu_active)host_gpu_fence();
+                start=host_time_us();plat_compose();
+                if(hd_gpu_active)host_gpu_fence();
+                if(i)plat_log("camera compose: %llu us\n",(unsigned long long)(host_time_us()-start));
+            }
         } else if (!strcmp(cmd, "wheel")) {
             /* wheel X Y N: the wheel turned N notches (positive: away) */
             int x = 0, y = 0, n = 0;
@@ -362,6 +403,10 @@ void replay_run_script(void)
             input_mouse_wheel(n);
             next_action_us = vclock_us + 100 * 1000;
             break;
+        } else if (!strcmp(cmd,"wheel_precise")) {
+            int x=0,y=0;double n=0;sscanf(arg,"%d %d %lf",&x,&y,&n);
+            input_mouse_move(x,y);input_mouse_wheel_precise(n);
+            next_action_us=vclock_us+100*1000;break;
         } else if (!strcmp(cmd, "menu")) {
             /* menu LABEL: the host's menu bar's item so labelled chosen
                (CIV2_TEST_NATIVE), as with the mouse */
@@ -415,4 +460,6 @@ void replay_init(void)
         snprintf(shot_dir, sizeof shot_dir, "%s", d);
     load_script(getenv("CIV2_SCRIPT"));
     plat_log("replay: %d script lines\n", script_len);
+    if(getenv("CIV2_BENCHMARK") && getenv("CIV2_BENCHMARK_FRAME"))
+        plat_log("benchmark: includes desktop composition\n");
 }

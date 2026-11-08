@@ -1,0 +1,36 @@
+# Four synchronous full redraws at standard, medium-out and maximum-in zoom.
+# CIV2_BENCHMARK=1 records real CPU elapsed time, independent of replay time.
+wait 8000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_find_city 40e017
+wait 2000
+key Return
+wait 3000
+call_sync menu_command 4e2803 0 801
+call_sync mapview_center_if_moved 489b9b 131 67
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+shot standard
+call_sync menu_command 4e2803 0 802
+call_sync mapview_center_if_moved 489b9b 131 67
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+shot medium
+call_sync menu_command 4e2803 0 800
+call_sync mapview_center_if_moved 489b9b 131 67
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+call_sync map_redraw_all_views 47cf9e 6 1
+shot final
+quit

@@ -26,6 +26,7 @@ zlib's, libogg's and libvorbis's sources, SDL2's MinGW release) is downloaded fi
 Command Line Tools' clang), CFLAGS, LDFLAGS, SDL2_CONFIG (an sdl2-config),
 SDL2_STATIC=1 (SDL2 linked in), JOBS.
 """
+import argparse
 import concurrent.futures
 import glob
 import os
@@ -50,7 +51,13 @@ def run(cmd, **kw):
 
 
 def module():
+    atlas()
     run([sys.executable, os.path.join(ROOT, 'tools', 'build_native.py'), '--target', 'wasm'])
+
+
+def atlas():
+    from prepare_assets import prepare
+    prepare()
 
 
 def to_c():
@@ -110,8 +117,8 @@ def windows_resources(cc, obj):
     import zlib
     res = os.path.join(obj, 'res')
     os.makedirs(res, exist_ok=True)
-    for name in ('fonts.bin', 'fonts_aa.bin'):
-        src = os.path.join(ROOT, 'data', 'native', name)
+    for name in ('fonts.bin', 'fonts_aa.bin', 'atlas-hd.pack'):
+        src = os.path.join(ROOT, 'build', 'data', name)
         out = os.path.join(res, name + '.z')
         if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
             print('compressing %s' % os.path.relpath(src, ROOT), flush=True)
@@ -134,6 +141,7 @@ def exe(cross_windows=False):
     """build/OpenCiv2: compile the generated C with the host runtime.
     cross_windows: build/OpenCiv2.exe with MinGW-w64 and SDL2's MinGW
     release (tools/fetch-toolchain.sh windows), e.g. on Linux."""
+    atlas()
     windows = cross_windows or on_windows()
     if cross_windows:
         cc = os.environ.get('CC') or 'x86_64-w64-mingw32-gcc'
@@ -172,7 +180,7 @@ def exe(cross_windows=False):
     # disc image's music: their sources, from tools/fetch-toolchain.sh;
     # stb_vorbis to play the music)
     host = [os.path.join(ROOT, 'src', 'host', f) for f in
-            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'setup.c', 'setup_disc.c') +
+            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_gpu.c', 'host_net.c', 'setup.c', 'setup_disc.c') +
             (('host_menu_win.c', 'setup_win.c') if windows else ('setup_unix.c',)) +
             (('host_menu_mac.m', 'setup_mac.m') if mac else ())]
     third = [os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c')] + \
@@ -236,10 +244,12 @@ def pack():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with tarfile.open(out, 'w:gz') as t:
         for rel in ('build/wasm/c', 'src/host', 'src/platform/win32_vk.h', 'tools/build_port.py',
-                    'tools/paths.py', 'tools/run-civ2.sh', 'tools/toolchain/unshield', 'tools/toolchain/zlib',
-                    'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native', 'harness/CIV2.DAT',
-                    'README.md', 'THIRD-PARTY.txt'):
+                    'tools/paths.py', 'tools/prepare_assets.py', 'tools/dependency.py', 'dependencies.json',
+                    'build/native/gen/hd_layouts.h', 'tools/run-civ2.sh', 'src/third_party/stb_vorbis', 'build/data', 'harness/CIV2.DAT',
+                      'README.md', 'docs/HD-GRAPHICS.md', 'docs/ASSET-DEPENDENCIES.md', 'LICENSE', 'THIRD-PARTY.txt'):
             t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel))
+        for name, source in [('unshield', paths.UNSHIELD), ('zlib', paths.ZLIB), ('libogg', paths.OGG), ('libvorbis', paths.VORBIS)]:
+            t.add(source, arcname='OpenCiv2/tools/toolchain/' + name)
     print('wrote %s (%d MB)' % (os.path.relpath(out, ROOT), os.path.getsize(out) >> 20))
 
 
@@ -264,10 +274,26 @@ def fetch_toolchain(steps):
 
 
 def main():
-    steps = sys.argv[1:] or ['module', 'c', 'exe']
+    ap = argparse.ArgumentParser(description=__doc__)
+    choice = ap.add_mutually_exclusive_group()
+    choice.add_argument('--assets', help='local openciv2-assets clone or extracted release')
+    choice.add_argument('--assets-url', help='release ZIP URL')
+    ap.add_argument('--assets-sha256', help='required checksum for --assets-url')
+    ap.add_argument('steps', nargs='*', choices=['atlas', 'module', 'c', 'exe', 'exe-windows', 'pack'])
+    args = ap.parse_args()
+    if args.assets:
+        os.environ['CIV2_ASSETS_DIR'] = args.assets
+        os.environ.pop('CIV2_ASSETS_URL', None)
+    elif args.assets_url:
+        os.environ.pop('CIV2_ASSETS_DIR', None)
+        os.environ['CIV2_ASSETS_URL'] = args.assets_url
+        os.environ['CIV2_ASSETS_SHA256'] = args.assets_sha256 or ''
+    if args.assets or args.assets_url:
+        os.environ.pop('CIV2_ATLAS_PREBUILT', None)
+    steps = args.steps or ['module', 'c', 'exe']
     fetch_toolchain(steps)
     for s in steps:
-        {'module': module, 'c': to_c, 'exe': exe, 'exe-windows': lambda: exe(True), 'pack': pack}[s]()
+        {'atlas': atlas, 'module': module, 'c': to_c, 'exe': exe, 'exe-windows': lambda: exe(True), 'pack': pack}[s]()
 
 
 if __name__ == '__main__':

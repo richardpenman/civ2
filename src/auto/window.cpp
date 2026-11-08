@@ -1835,15 +1835,17 @@ void WndBase::set_caption_height(i32 height)
 }
 
 /* 004a6b80 auto */
-void __cdecl
-popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,iptr advance,i32 sprite_flags)
+void __cdecl popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,iptr advance,i32 sprite_flags)
 
 {
-  popup_text_with_sprite((iptr)filename,section,dlg_flags,
-                     (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                           (char)advances[advance].category * 0xf0 +
-                           (char)advances[advance].epoch * 0x3c),sprite_flags);
-  return;
+  Dialog dialog2;
+  dialog2.Dialog::construct(0x4000);
+  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  dialog2.load_text(filename,section,dlg_flags);
+  dialog2.add_advance(advance);
+  dialog2.set_image_zoom(sprite_flags);
+  dialog2.show_modal(0);
+  (*(u32 *)&dlg_input.help_pressed) = dialog2.result_extra;
 }
 
 /* 004a6bdc auto */
@@ -2691,16 +2693,19 @@ static void menu_cmd_view_zoom(int cmd)
 {
   switch(cmd) {
   case CMD_STANDARD_ZOOM:
+    map_camera_forget(&map_views_block.map_views);
     map_views_block.mapview_zoom[0] = 0;
     map_views_block.map_view_center_x[0] = map_cursor.x[0];
     map_views_block.mapview_center_y[0] = map_cursor.y[0];
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
   case CMD_MEDIUM_ZOOM_OUT:
+    map_camera_forget(&map_views_block.map_views);
     map_views_block.mapview_zoom[0] = -3;
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
   case CMD_MAX_ZOOM_OUT:
+    map_camera_forget(&map_views_block.map_views);
     map_views_block.mapview_zoom[0] = -7;
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
@@ -3030,7 +3035,7 @@ void __cdecl menu_command(i32 menu,int cmd)
         }
         else if (cmd < 0x311) {
           if (cmd == CMD_ZOOM_IN) {
-            if (map_views_block.mapview_zoom[0] < 8) {
+            if (!map_camera_zoom_step(&map_views_block.map_views,1) && map_views_block.mapview_zoom[0] < 8) {
               map_views_block.mapview_zoom[0]++;
               ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
             }
@@ -3041,10 +3046,12 @@ void __cdecl menu_command(i32 menu,int cmd)
         }
         else if (cmd < 0x321) {
           if (cmd == CMD_MAX_ZOOM_IN) {
+            map_camera_forget(&map_views_block.map_views);
             map_views_block.mapview_zoom[0] = 8;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
-          else if ((cmd == CMD_ZOOM_OUT) && (-7 < map_views_block.mapview_zoom[0])) {
+          else if ((cmd == CMD_ZOOM_OUT) && !map_camera_zoom_step(&map_views_block.map_views,-1) &&
+                   (-7 < map_views_block.mapview_zoom[0])) {
             map_views_block.mapview_zoom[0]--;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }

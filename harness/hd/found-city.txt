@@ -1,0 +1,19 @@
+# Append to harness/scripts/newgame.txt; run at 1024x768 with CIV2_TEST_HD=1.
+# Found the first city and dismiss the tutorial to exercise its real controls.
+key b
+wait 3000
+key Return
+wait 10000
+key Return
+wait 5000
+key Return
+wait 5000
+shot city
+call city_button_info 50b9a4 0
+wait 3000
+shot city-info
+call city_button_change 50a473 0
+wait 3000
+shot production-choices
+key Escape
+wait 1000

@@ -1,0 +1,11 @@
+# Append to harness/scripts/newgame.txt at 1024x768, density 2.
+# CIV2_TEST_EXTRAS=41 enables only SentryHalftone for grey detail.
+key s
+wait 3000
+shot sleeping
+call screen_fade_out 46efd6
+wait 1000
+shot grey-backdrop
+call screen_fade_in 46f06f
+wait 1000
+shot restored

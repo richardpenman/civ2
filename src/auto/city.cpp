@@ -1,6 +1,7 @@
 /* The game, cities: growth, production, happiness, the city window and city view: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* 0040bdac auto */
 void __cdecl
@@ -1495,6 +1496,7 @@ void __cdecl trade_advisor_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -1595,6 +1597,7 @@ void __cdecl trade_advisor_draw(void)
       return;
     }
     if ((int)row < total_rows) {
+      hd_report_row(row_y+6,line_height,row);
       col_x = advisor_state.client_x + 2;
       right_col_x = advisor_state.client_x + 0x14f;
       if (row == 0) {
@@ -1713,6 +1716,7 @@ void __cdecl city_status_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -1768,6 +1772,7 @@ void __cdecl city_status_draw(void)
     if ((((cities[city].id != 0) && (cities[city].owner == civ)) &&
         (next_row = row + 1, first_row2 <= (int)row)) && ((int)row < first_row2 + rows_per_page))
     {
+      hd_report_row(row_y+6,line_height,row);
       col_x = (next_row & 1) * 0x40 + advisor_state.client_x + 2;
       row = next_row;
       gfx_draw_city((iptr)&advisor_state.window,city,0,col_x,row_y,0);
@@ -1939,6 +1944,7 @@ void __cdecl wonders_report_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -4654,6 +4660,7 @@ i32 CityViewWindow::layout_buildings()
 void CityViewWindow::draw_buildings()
 
 {
+  if(hd_enabled){hd_city_panorama(this);redraw_scrolled();return;}
   i8 draw_rect[16];
   int i;
   
@@ -13607,6 +13614,11 @@ void CityWindow::draw_food_box(int blit)
     rect_set_xywh((iptr)&box_rect.left,arg_x,arg_y,box_w,box_h);
     rect_offset((iptr)&box_rect.left,food_box_rect,
                        food_box_rect_top);
+    if(hd_enabled) {
+      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].food_box,(cities[city_index].size+1)*city_calc.food_box_rows,((city_has_improvement(city_index,IMP_GRANARY) || civ_has_wonder(cities[city_index].owner,WONDER_PYRAMIDS)) ? (cities[city_index].size+1)*(city_calc.food_box_rows>>1) : 0),"food");
+      if(blit)wnd_blit_surface_rect((iptr)&food_box_rect);
+      return;
+    }
     arg_y = scale(3);
     arg_x = scale(3);
     rect_deflate((iptr)&box_rect.left,arg_x,arg_y);
@@ -13774,6 +13786,11 @@ void CityWindow::draw_production(int blit)
       rect_set_xywh((iptr)&box_rect.left,arg_x,arg_y,arg_w,arg_h);
       rect_offset((iptr)&box_rect.left,production_rect,
                          production_rect_top);
+    if(hd_enabled) {
+      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].shield_box,build_cost*city_calc.shield_rows,0,"production");
+      if(blit)wnd_blit_surface_rect((iptr)&production_rect);
+      return;
+    }
       arg_y = scale(3);
       arg_x = scale(3);
       rect_deflate((iptr)&box_rect.left,arg_x,arg_y);

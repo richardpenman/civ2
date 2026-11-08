@@ -1927,13 +1927,13 @@ void __cdecl map_window_ascii(uint key)
           }
           break;
         case 0x58:
-          if (-7 < map_views_block.mapview_zoom[0]) {
+          if (!map_camera_zoom_step(&map_views_block.map_views,-1) && -7 < map_views_block.mapview_zoom[0]) {
             map_views_block.mapview_zoom[0]--;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
           break;
         case 0x5a:
-          if (map_views_block.mapview_zoom[0] < 8) {
+          if (!map_camera_zoom_step(&map_views_block.map_views,1) && map_views_block.mapview_zoom[0] < 8) {
             map_views_block.mapview_zoom[0]++;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }

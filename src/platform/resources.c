@@ -5,6 +5,7 @@
  * built in.
  */
 #include "plat.h"
+#include "hd.h"
 #include "../host/host.h"
 
 typedef struct {
@@ -130,15 +131,27 @@ static Module *module_of(HMODULE h)
     return obj_get(h, OBJ_MODULE);
 }
 
+int hd_module_image(uintptr_t h,int id,const char *type)
+{
+    Module *m=module_of((HMODULE)h);char key[240],name[160];const char *p,*s;unsigned i;
+    if(!m)return 0;
+    p=m->name;for(s=p;*s;s++)if(*s=='/' || *s=='\\')p=s+1;
+    snprintf(name,sizeof name,"%s",p);
+    for(i=0;name[i];i++)name[i]=tolower((unsigned char)name[i]);
+    snprintf(key,sizeof key,"resource/%s/%s/%d",name,type,id);
+    return hd_find(key);
+}
+
 void resources_init(void)
 {
     char win[1100];
     Module *m;
     GetModuleFileNameA(0, win, sizeof win);
-    m = load_pe(win);
+    m = hd_enabled ? NULL : load_pe(win);
     if (!m) {
         m = calloc(1, sizeof *m);
-        plat_log("civ2.exe not found: no cursors, icons or bitmaps from it\n");
+        snprintf(m->name,sizeof m->name,"civ2.exe");
+        if (!hd_enabled) plat_log("civ2.exe not found: no cursors, icons or bitmaps from it\n");
     }
     exe_module = obj_new(OBJ_MODULE, m);
 }
@@ -148,9 +161,17 @@ HMODULE plat_exe_module(void) { return exe_module; }
 HMODULE WINAPI LoadLibraryExA(LPCSTR name, HANDLE file, DWORD flags)
 { API_TRACE();
     Module *m;
-    const char *base = strrchr(name, '\\');
+    const char *base = name, *s;
     (void)file; (void)flags;
-    base = base ? base + 1 : name;
+    for(s=name;*s;s++)if(*s=='/' || *s=='\\')base=s+1;
+    if (hd_enabled && (strstr(base,".dll") || strstr(base,".DLL"))) {
+        static const char *const art[]={"tiles.dll","intro.dll","cv.dll","pv.dll","mk.dll","ss.dll","civ2art.dll","wonder.dll"};
+        unsigned i;
+        for(i=0;i<sizeof art/sizeof art[0];i++) if(!strcasecmp(base,art[i])) {
+            m=calloc(1,sizeof *m);snprintf(m->name,sizeof m->name,"%s",art[i]);
+            return obj_new(OBJ_MODULE,m);
+        }
+    }
     if (!strcasecmp(base, "timerdll.dll") || !strcasecmp(base, "timerdll")) {
         m = calloc(1, sizeof *m);
         m->builtin = 1;
@@ -295,6 +316,14 @@ static Bitmap *dib_to_bitmap(const unsigned char *p, int icon, Bitmap **mask)
 HBITMAP WINAPI LoadBitmapA(HINSTANCE inst, LPCSTR name)
 { API_TRACE();
     unsigned size;
+    if (hd_enabled) {
+        int id=hd_module_image((uintptr_t)inst,(int)(uintptr_t)name,"2"),w,h;
+        Bitmap *b; HBITMAP handle;
+        if(!id)return 0;
+        hd_size(id,&w,&h);b=bmp_create(w,h,32,0);handle=obj_new(OBJ_BITMAP,b);
+        hd_attach(b->bits,id);
+        return handle;
+    }
     const unsigned char *p = find_res(module_of(inst), name, (LPCSTR)RT_BITMAP, &size);
     if (!p)
         return 0;
@@ -304,6 +333,25 @@ HBITMAP WINAPI LoadBitmapA(HINSTANCE inst, LPCSTR name)
 /* ---- icons and cursors ---- */
 
 typedef struct { Bitmap *image, *mask; int hx, hy; int host; } Cursor;
+
+static Cursor *atlas_cursor(int id,int cursor)
+{
+    Cursor *c;int w,h,pw,ph,x,y;const unsigned char *rgba;
+    if(!id)return NULL;
+    hd_size(id,&w,&h);rgba=hd_rgba(id,&pw,&ph);
+    c=calloc(1,sizeof *c);
+    if(!c)plat_fatal("Out of memory loading Atlas cursor");
+    c->image=bmp_create(w,h,32,0);c->mask=bmp_create(w,h,1,0);
+    /* Authored arrow tips are at the upper left of the fitted logical frame. */
+    c->hx=cursor?1:0;c->hy=cursor?1:0;
+    for(y=0;y<h;y++)for(x=0;x<w;x++) {
+        const unsigned char *p=rgba+4*((y*ph/h)*pw+x*pw/w);
+        ((uint32_t *)bmp_row(c->image,y))[x]=(uint32_t)p[0]<<16|p[1]<<8|p[2];
+        if(p[3]<128)bmp_row(c->mask,y)[x>>3]|=0x80>>(x&7);
+    }
+    c->image->hd_image=id;
+    return c;
+}
 
 /* The best image of an icon/cursor group: the largest. */
 static const unsigned char *group_image(Module *m, LPCSTR name, int cursor, int *hx, int *hy)
@@ -355,6 +403,11 @@ static HCURSOR load_cursor_or_icon(HINSTANCE inst, LPCSTR name, int cursor)
     const unsigned char *img;
     if (!inst && IS_INTRESOURCE(name))
         return system_cursor((int)(uintptr_t)name);
+    if (hd_enabled) {
+        int id=hd_module_image((uintptr_t)inst,(int)(uintptr_t)name,cursor?"12":"14");
+        c=atlas_cursor(id,cursor);
+        return c?obj_new(OBJ_CURSOR,c):(cursor?system_cursor(32512):0);
+    }
     img = group_image(module_of(inst), name, cursor, &hx, &hy);
     if (!img)
         return cursor ? system_cursor(32512) : 0;
@@ -394,6 +447,16 @@ WINBOOL WINAPI DrawIcon(HDC hdc, int x, int y, HICON h)
     if (!c || !dc || !c->image)
         return FALSE;
     b = dc_target(dc);
+    if(hd_enabled && c->image->hd_image) {
+        int k;
+        x+=dc->origin.x;y+=dc->origin.y;
+        if(dc->is_memory)hd_draw_bitmap(b,c->image->hd_image,x,y,c->image->w,c->image->h,0,0,b->w,b->h,-1);
+        else for(k=0;k<dc->clip.n;k++) {
+            RECT *r=dc->clip.r+k;
+            hd_draw_bitmap(b,c->image->hd_image,x,y,c->image->w,c->image->h,r->left,r->top,r->right,r->bottom,-1);
+        }
+        return TRUE;
+    }
     for (j = 0; j < c->image->h; j++)
         for (i = 0; i < c->image->w; i++) {
             int px = x + i + dc->origin.x, py = y + j + dc->origin.y, k, inside = dc->is_memory;

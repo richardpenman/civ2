@@ -3,6 +3,7 @@
  */
 #include "host.h"
 #include "host_menu.h"
+#include "host_gpu.h"
 #include "box_text.h"
 #include <SDL.h>
 #include <stdio.h>
@@ -15,6 +16,7 @@
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
+static int texture_density = 1;
 static int screen_w, screen_h;
 static int follows_window;      /* the desktop follows the window's size (HOST_EV_RESIZE) */
 static Uint64 perf_start;
@@ -45,6 +47,7 @@ static void music_end_thread(void);
 void host_quit(void)
 {
     music_end_thread();
+    gpu_renderer_destroy();
     SDL_Quit();
 }
 
@@ -58,9 +61,26 @@ int host_base_path(char *buf, int size)
 
 static int create_renderer(void)
 {
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    /* We exclusively use SDL's render API, including when selecting a driver.
+       Explicit selection otherwise disables SDL's command batching. */
+    SDL_SetHintWithPriority(SDL_HINT_RENDER_BATCHING,"1",SDL_HINT_DEFAULT);
+#ifdef _WIN32
+    if(!SDL_GetHint(SDL_HINT_RENDER_DRIVER)) {
+        int i;
+        SDL_RendererInfo info;
+        /* D3D11 can transfer small CPU-effect regions. The legacy D3D9 driver
+           reads the entire render target even for a tiny text rectangle. */
+        for(i=0;i<SDL_GetNumRenderDrivers();i++)
+            if(!SDL_GetRenderDriverInfo(i,&info) && !strcmp(info.name,"direct3d11")) {
+                renderer=SDL_CreateRenderer(window,i,SDL_RENDERER_ACCELERATED|SDL_RENDERER_TARGETTEXTURE);
+                break;
+            }
+    }
+#endif
+    if(!renderer)renderer = SDL_CreateRenderer(window, -1, 0);
     if (!renderer)
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+    if (renderer) gpu_renderer_init(renderer);
     return renderer != NULL;
 }
 
@@ -69,6 +89,7 @@ static int create_renderer(void)
 static void fit_desktop(void)
 {
     int w = 0, h = 0;
+    gpu_window_target();
     if (renderer && !SDL_GetRendererOutputSize(renderer, &w, &h))
         SDL_RenderSetIntegerScale(renderer, w >= screen_w && h >= screen_h ? SDL_TRUE : SDL_FALSE);
 }
@@ -76,9 +97,10 @@ static void fit_desktop(void)
 /* The w x h desktop shown in the window (fit_desktop). */
 static int make_texture(int w, int h)
 {
+    gpu_window_target();
     SDL_RenderSetLogicalSize(renderer, w, h);
     fit_desktop();
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w*texture_density, h*texture_density);
     return texture != NULL;
 }
 
@@ -96,7 +118,8 @@ int host_open_window(int w, int h, int scale)
     else
         window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   w * (scale < 1 ? 1 : scale), h * (scale < 1 ? 1 : scale),
-                                  SDL_WINDOW_RESIZABLE | (full ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+                                  SDL_WINDOW_RESIZABLE | (full ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) |
+                                  (getenv("CIV2_TEST_GPU") && !getenv("CIV2_SHOW") ? SDL_WINDOW_HIDDEN : 0));
     return window && create_renderer() && make_texture(w, h);
 }
 
@@ -304,10 +327,21 @@ int host_usable_size(int32_t *w, int32_t *h)
     return 1;
 }
 
+void host_present_hd(const void *pixels, int stride, int density)
+{
+    if (texture && texture_density != density) {
+        SDL_DestroyTexture(texture);
+        texture_density = density;
+        make_texture(screen_w, screen_h);
+    }
+    host_present(pixels, stride);
+}
+
 void host_present(const void *pixels, int stride)
 {
     if (!texture)
         return;
+    gpu_window_target();
     SDL_UpdateTexture(texture, NULL, pixels, stride);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -390,6 +424,10 @@ static int convert(const SDL_Event *s, HostEvent *e)
 {
     memset(e, 0, sizeof *e);
     switch (s->type) {
+    case SDL_RENDER_TARGETS_RESET:
+    case SDL_RENDER_DEVICE_RESET:
+        gpu_renderer_lost();
+        return 0;
     case SDL_QUIT:
         e->type = HOST_EV_QUIT;
         return 1;
@@ -424,12 +462,17 @@ static int convert(const SDL_Event *s, HostEvent *e)
         e->button = s->button.button == SDL_BUTTON_LEFT ? 1 : s->button.button == SDL_BUTTON_RIGHT ? 2 : 3;
         return 1;
     case SDL_MOUSEWHEEL:
-        if (s->wheel.y == 0)
+        if (s->wheel.preciseY == 0 && s->wheel.y == 0)
             return 0;
         e->type = HOST_EV_WHEEL;
         e->button = s->wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -s->wheel.y : s->wheel.y;
+        e->wheel_y=s->wheel.preciseY ? s->wheel.preciseY : s->wheel.y;
+        if(s->wheel.direction==SDL_MOUSEWHEEL_FLIPPED)e->wheel_y=-e->wheel_y;
         return 1;
     case SDL_WINDOWEVENT:
+        if(s->window.event==SDL_WINDOWEVENT_FOCUS_LOST) {
+            e->type=HOST_EV_FOCUS_LOST;return 1;
+        }
         if (s->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
             int w, h;
             fit_desktop();
@@ -463,6 +506,8 @@ static int convert(const SDL_Event *s, HostEvent *e)
 int host_poll_event(HostEvent *e)
 {
     SDL_Event s;
+    /* SDL uses its saved window viewport for logical input coordinates while
+       an offscreen target is active. Keep queued tile draws batched here. */
     while (SDL_PollEvent(&s))
         if (convert(&s, e))
             return 1;

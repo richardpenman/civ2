@@ -1,6 +1,7 @@
 /* The game, the Civilopedia: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* 00451af0 auto */
 void PediaWindow::draw_category_body(i32 category,i32 flags)
@@ -2335,7 +2336,10 @@ void PediaWindow::draw_list_icon(int icon_mode,uint is_selected,int col_base,int
       fill_color_a = dlg_style.list_sel_bg;
     }
     fill_rect((iptr)&row_rect,fill_color_a);
-    icon_sprite->draw((iptr)icon_ctx,(iptr)&pedia_wnd.window,panel_layout.margin_x + col_x,row_rect.top + 1);
+    if (category != 1 || !hd_advance((DibSurface *)&pedia_wnd.window,
+        list_items[list_top_index + col_base + row],panel_layout.margin_x + col_x,row_rect.top + 1,
+        dim_a * 3 / 2,icon_sprite->height() * 3 / 2))
+      icon_sprite->draw((iptr)icon_ctx,(iptr)&pedia_wnd.window,panel_layout.margin_x + col_x,row_rect.top + 1);
   }
   else if (icon_mode == 0) {
     dim_a = icon_sprite->width();
@@ -4199,6 +4203,7 @@ void PediaWindow::draw_advance_page()
   row_height = ((GameFont *)((i8 *)&font_size21))->font_cached_height();
   y2 = content_top + 5;
   advance = pedia_advance_ids[resize_border];
+  if(!hd_advance((DibSurface *)(iptr)&pedia_wnd.window,advance,panel_layout.margin_x + x2,y2,36,20))
   ((Sprite *)
              (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
              (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw(
@@ -4304,6 +4309,18 @@ void PediaWindow::show_topic_modal(iptr advance_id)
   return;
 }
 
+/* Tree nodes share the advance-specific art used by the detail page. Keep
+ * the category icon's slot for text, links and connector anchors. */
+static int *pedia_draw_tree_icon(Sprite *icon,int advance,int *bounds,DibSurface *surface,int x,int y)
+{
+  int w=icon->get_width(),h=icon->get_height();
+  if (!hd_advance(surface,advance,x,y,w,h))
+    return (int *)icon->draw((iptr)bounds,(iptr)surface,x,y);
+  SetRect((RECT *)bounds,x,y,x+w,y+h);
+  IntersectRect((RECT *)bounds,(RECT *)bounds,(RECT *)&surface->clip_left);
+  return bounds;
+}
+
 /* 005666da auto */
 void PediaWindow::draw_advance_tree()
 
@@ -4361,7 +4378,7 @@ void PediaWindow::draw_advance_tree()
   x2 = (content_right - 3) - (icon_width + root_anchor_x[2]);
   measure = rect_height((RECT *)&content_left);
   y2 = (content_top + measure / 2) - line_height / 2;
-  icon_rect = (int *)icon->draw((iptr)root_ctx,(iptr)&pedia_wnd.window,x2,y2);
+  icon_rect = pedia_draw_tree_icon(icon,advance,(int *)root_ctx,(DibSurface *)&pedia_wnd.window,x2,y2);
   icon_box.left = *icon_rect;
   icon_box.top = icon_rect[1];
   icon_box.right = icon_rect[2];
@@ -4397,7 +4414,7 @@ void PediaWindow::draw_advance_tree()
       measure2 = rect_width((RECT *)&content_left);
       x2 = ((int)(measure * 2 + (measure * 2 >> 0x1f & 3U)) >> 2) +
                  ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
-      icon_rect = (int *)icon->draw((iptr)parent_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      icon_rect = pedia_draw_tree_icon(icon,parent_ids[i],(int *)parent_ctx,(DibSurface *)&pedia_wnd.window,x2,y2);
       icon_box.left = *icon_rect;
       icon_box.top = icon_rect[1];
       icon_box.right = icon_rect[2];
@@ -4447,7 +4464,7 @@ void PediaWindow::draw_advance_tree()
         measure2 = rect_width((RECT *)&content_left);
         x2 = ((int)(measure + (measure >> 0x1f & 3U)) >> 2) +
                    ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
-        icon_rect = (int *)icon->draw((iptr)grand_ctx,(iptr)&pedia_wnd.window,x2,y2);
+        icon_rect = pedia_draw_tree_icon(icon,tier2_ids[i * 2 + j],(int *)grand_ctx,(DibSurface *)&pedia_wnd.window,x2,y2);
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];
@@ -4497,7 +4514,7 @@ void PediaWindow::draw_advance_tree()
                    (char)advances[tier3_ids[i * 2 + j]].epoch * 0x3c);
         icon_width = icon->get_width();
         icon_width += 3;
-        icon_rect = (int *)icon->draw((iptr)gp_ctx,(iptr)&pedia_wnd.window,x2,y2);
+        icon_rect = pedia_draw_tree_icon(icon,tier3_ids[i * 2 + j],(int *)gp_ctx,(DibSurface *)&pedia_wnd.window,x2,y2);
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];

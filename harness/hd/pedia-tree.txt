@@ -1,0 +1,15 @@
+# Advance-specific art in the list and all four levels of the tree, at 640x480.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_command 4e2803 0 2305
+wait 1500
+shot advances-list
+click 320 404
+wait 1500
+shot advances-tree

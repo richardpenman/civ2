@@ -3,3 +3,4 @@
 
 SETUP_RES_FONTS RCDATA "fonts.bin.z"
 SETUP_RES_FONTS_AA RCDATA "fonts_aa.bin.z"
+SETUP_RES_ATLAS RCDATA "atlas-hd.pack.z"
