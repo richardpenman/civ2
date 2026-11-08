@@ -512,8 +512,16 @@ enables HD for replays, while still respecting `OriginalGraphics=1` and classic
 mode. `harness/hd/windows.txt` exercises live windows with a local `He_Auto.SAV`.
 `python tools/test_hd_game.py --game PATH` copies rules/text and saves into an
 isolated folder, excludes original graphics, runs that replay and checks its
-screenshots. `--baseline EXE` additionally compares original-mode output and RNG
+screenshots. It also compares the full RNG trace of startup, city reports,
+panorama, diplomacy, spaceship and throne-room display with original mode using
+identical settings. `--baseline EXE` additionally compares original-mode output and RNG
 against a separately built `main` executable using a common replay.
+`python tests/source_probe.py tests/hd_rng_test.cpp` compares the production HD
+and original drawing branches across military ranks, optional video outcomes,
+all throne furnishing/bonus masks, ship counts and palette fades. Palette
+versions use the gameplay RNG, including retries for zero. HD replacements must
+retain the original palette initialization/loads or call `new_version()` for
+each skipped palette commit; do not move these calls to a separate RNG.
 `python tools/test_hd_effects.py --game PATH` additionally checks detailed sleeping
 units, grey-backdrop transitions and color restoration in a new-game replay with
 no original image files, plus the built pack's status and shadow colors.

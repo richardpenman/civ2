@@ -4152,7 +4152,17 @@ void ThroneRoomWindow::draw_click_prompt()
 i32 ThroneRoomWindow::render()
 
 {
-  if(hd_enabled)return hd_throne_room(this,false);
+  if (hd_enabled) {
+    // Each furnished slot and installed bonus below loads one GIF, committing
+    // the palette. Preserve those gameplay RNG draws without decoding images.
+    GamePalette *palette = (GamePalette *)&control_list;
+    for (int slot = 0; slot < 8; ++slot)
+      if (civs[throne_civ].throne_room[slot] != 0) palette->new_version();
+    if (throne_complete != 0)
+      for (int slot = 0; slot < 7; ++slot)
+        if (civs[throne_civ].throne_room[8] & (1 << slot)) palette->new_version();
+    return hd_throne_room(this,false);
+  }
   int loaded;
   i8 draw_tmp9[16];
   i32 fail8;
@@ -4539,7 +4549,19 @@ void ThroneRoomWindow::add_choice_regions()
 i32 ThroneRoomWindow::render_choices()
 
 {
-  if(hd_enabled)return hd_throne_room(this,true);
+  if (hd_enabled) {
+    // The background and each available choice load a GIF in the original.
+    GamePalette *palette = (GamePalette *)&control_list;
+    palette->new_version();
+    if (throne_complete == 0) {
+      for (int slot = 0; slot < 8; ++slot)
+        if (civs[throne_civ].throne_room[slot] < 4) palette->new_version();
+    } else {
+      for (int slot = 0; slot < 7; ++slot)
+        if (!(civs[throne_civ].throne_room[8] & (1 << slot))) palette->new_version();
+    }
+    return hd_throne_room(this,true);
+  }
   int loaded;
   i8 draw_tmp2[16];
   i32 fail2;

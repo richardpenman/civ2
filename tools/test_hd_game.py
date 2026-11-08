@@ -40,7 +40,7 @@ def main():
         if name not in files:
             parser.error(f'--game needs {name}')
 
-    def run(name, exe, script, original, hardware=True):
+    def run(name, exe, script, original, hardware=True, match_settings=False):
         out = work/name;out.mkdir()
         game = out/'game';game.mkdir()
         allowed = {'.txt', '.sav', '.dat'}
@@ -60,7 +60,7 @@ def main():
         if os.name != 'nt':env['CIV2_DATA'] = str(ROOT/'build/data')
         if args.gpu:
             env.pop('SDL_VIDEODRIVER',None);env['CIV2_TEST_GPU']='1'
-        if not original:
+        if not original or match_settings:
             env['CIV2_TEST_FULL'] = '1024x768'
             env['CIV2_TEST_FIXES'] = '1'
         with (out/'output.log').open('wb') as log:
@@ -92,6 +92,17 @@ def main():
         assert im.size == (2048, 1536)
     assert 'CreateFont(Arial, -13' in (city/'hooks.log').read_text(), 'Stockpile meters were not drawn'
     print('HD windows rendered without original image files.', flush=True)
+    # Use identical game settings and actions in both modes. Stop before the
+    # throne choices, whose clickable layout differs (covered exhaustively by
+    # hd_rng_test.cpp). Comparing the whole trace also catches divergence at
+    # startup or in shared loaders, before any window opens.
+    rng_script = work/'rng-parity.txt'
+    rng_script.write_text((ROOT/'harness/hd/windows.txt').read_text().split('click 400 300')[0])
+    rng_original = run('rng-original', exe, rng_script, True, match_settings=True)
+    rng_hd = run('rng-hd', exe, rng_script, False)
+    assert (rng_original/'rand.log').read_bytes() == (rng_hd/'rand.log').read_bytes(), (
+        'HD and original RNG traces differ', rng_original, rng_hd)
+    print('HD and original-mode RNG traces match through startup and window transitions.', flush=True)
     if args.gpu:
         run('cpu-fallback',exe,ROOT/'harness/hd/windows.txt',False,hardware=False)
         print('HardwareGraphics=0 rendered HD windows through the CPU fallback.',flush=True)

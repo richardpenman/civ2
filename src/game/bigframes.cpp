@@ -1499,7 +1499,13 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
 /* 0x004d17bf: unwind funclet 0x004d4a11 destroys the control at EBP-0x12c (surf_1eb). */
 i32 SpaceshipWindow::render_ship()
 {
-  if(hd_enabled)return hd_spaceship(this);
+  if (hd_enabled) {
+    // render_ship_load_surfaces loads eleven GIFs, followed by one structure
+    // GIF below, regardless of built parts. Each commits the ship palette.
+    for (int i = 0; i < 12; ++i)
+      ((GamePalette *)ship_palette)->new_version();
+    return hd_spaceship(this);
+  }
   int load_ok;
   i8 sprite_final[16];
   i8 sprite_part[16];

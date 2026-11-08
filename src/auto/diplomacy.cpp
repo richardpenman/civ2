@@ -4674,7 +4674,6 @@ uint DiploLeaderWindow::init_main_art()
 i32 DiploLeaderWindow::init_military()
 
 {
-  if(hd_enabled)return hd_military(this);
   int loaded;
   i8 draw_ctx[16];
   i32 fail_result;
@@ -4696,6 +4695,12 @@ i32 DiploLeaderWindow::init_military()
   surface_ctor(&surface);
   ON_SCOPE_EXIT(surface_dtor(&surface));
   icon_count = game.power_rank[leader_civ] - 1;
+  if (hd_enabled) {
+    // The skipped GIF load commits this palette once (except at rank one).
+    // Palette versions share the gameplay RNG; keep the initialization above.
+    if (icon_count != 0) palette.new_version();
+    return hd_military(this);
+  }
   if (icon_count == 0) {
     result = 1;
   }
@@ -5068,7 +5073,6 @@ i32 DiploLeaderWindow::init_portrait()
 i8 DiploLeaderWindow::init_video()
 
 {
-  if(hd_enabled)return 0;
   i8 result;
   int found;
   i8 file_stem[20];
@@ -5097,8 +5101,19 @@ i8 DiploLeaderWindow::init_video()
     ((AviPlayer *)video_player)->create_child((iptr)&str_empty_108,0x200,
                leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][0],
                leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1],(iptr)leader_surface);
+    ON_SCOPE_EXIT(if (hd_enabled) {
+      avi_close((AviPlayer *)video_player);
+      ((DibSurface *)video_player)->wnd_destroy_with_surface();
+    });
     open_err = ((AviPlayer *)video_player)->open((const char *)video_path);
     if (open_err == 0) {
+      if (hd_enabled) {
+        // Retain palette initialization and any updates made while opening
+        // optional video, then account for the CTAB load and palette copy.
+        palette.new_version();
+        ((GamePalette *)leader_palette)->new_version();
+        return 0;
+      }
       ((AviPlayer *)video_player)->set_end_callback(diplo_leader_video_end_cb);
       ((AviPlayer *)video_player)->set_transparent(1);
       palette.load_ctab_res(leader_tribe + 1000);

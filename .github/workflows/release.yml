@@ -72,6 +72,8 @@ jobs:
           dpkg --add-architecture i386
           apt-get update
           apt-get install -y --no-install-recommends python3 ca-certificates gcc-multilib g++-multilib libsdl2-dev:i386 zlib1g-dev:i386
+      - name: HD drawing RNG parity
+        run: python3 tests/source_probe.py tests/hd_rng_test.cpp
       - name: Build the runner
         run: CIV2_ATLAS_PREBUILT= python3 tools/build_native.py --target linux32test
       - name: Run the unit tests

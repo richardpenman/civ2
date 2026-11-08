@@ -1535,11 +1535,20 @@ void __cdecl screen_fade_out(void)
   
   blink.unit_active = 0;
   if (hd_enabled) {
+    // HD fades keep RGBA pixels, but palette version updates must still use
+    // the shared RNG on displays where the original performs a palette fade.
+    GamePalette *palette = (GamePalette *)&game_palette_block.game_palette;
+    if (display_palette.palettized != 0) palette->new_version(); // fade_begin
     for (step = 0; step <= 10; step++) {
       hd_fade_grey = step * 255 / 10;
       ui_delay_ticks(1);
     }
+    if (display_palette.palettized != 0) palette_set_nocollapse_all();
     gfx_grey_out_windows();
+    if (display_palette.palettized != 0) {
+      palette->new_version(); // fade_end
+      palette_set_nocollapse_all();
+    }
     hd_fade_grey = 0;
     return;
   }
@@ -1567,6 +1576,8 @@ void __cdecl screen_fade_in(void)
   int step;
   
   if (hd_enabled) {
+    GamePalette *palette = (GamePalette *)&game_palette_block.game_palette;
+    if (display_palette.palettized != 0) palette->new_version(); // fade_begin
     hd_fade_grey = 255;
     hd_game_windows_grey(0);
     /* The source pixels were retained; restore them without calling inactive
@@ -1575,6 +1586,10 @@ void __cdecl screen_fade_in(void)
     for (step = 10; step >= 0; step--) {
       hd_fade_grey = step * 255 / 10;
       ui_delay_ticks(1);
+    }
+    if (display_palette.palettized != 0) {
+      palette->new_version(); // fade_end
+      palette_set_nocollapse_all();
     }
     return;
   }
