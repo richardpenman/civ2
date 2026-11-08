@@ -3,6 +3,7 @@
  */
 #include "host.h"
 #include "host_menu.h"
+#include "box_text.h"
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -787,6 +788,7 @@ int host_message_box(int icon, const char *title, const char *text, int nbuttons
 {
     SDL_MessageBoxButtonData buttons[8];
     SDL_MessageBoxData data;
+    char wrapped[4096];
     int i, hit = -1;
     if (nbuttons > 8)
         nbuttons = 8;
@@ -800,7 +802,7 @@ int host_message_box(int icon, const char *title, const char *text, int nbuttons
     data.flags = icon == 2 ? SDL_MESSAGEBOX_ERROR : icon == 1 ? SDL_MESSAGEBOX_WARNING : SDL_MESSAGEBOX_INFORMATION;
     data.window = window;
     data.title = title;
-    data.message = text;
+    data.message = box_text(text, wrapped, sizeof wrapped);
     data.numbuttons = nbuttons;
     data.buttons = buttons;
     if (SDL_ShowMessageBox(&data, &hit))
