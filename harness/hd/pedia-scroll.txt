@@ -1,0 +1,57 @@
+# Long Airbases description supplied by tools/test_pedia_scroll.py, at 640x480.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_command 4e2803 0 2317
+wait 1000
+click 170 404
+wait 500
+shot top
+wheel 300 200 -3
+wait 300
+shot wheel
+wheel 300 200 3
+wait 300
+shot wheel-top
+key Next
+wait 300
+shot page
+key Prior
+wait 300
+shot page-top
+key Home
+wait 300
+click 624 373
+wait 300
+shot arrow
+click 624 78
+wait 300
+shot arrow-top
+mousedown 624 103
+wait 100
+mousemove 624 280
+wait 100
+mouseup 624 280
+wait 300
+shot drag
+key End
+wait 300
+shot bottom
+wheel 300 200 -10
+wait 300
+shot bottom-limit
+key Home
+wait 300
+shot home
+key End
+wait 300
+click 170 404
+wait 700
+click 170 404
+wait 300
+shot reset
