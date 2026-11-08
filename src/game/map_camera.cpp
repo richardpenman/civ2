@@ -4,6 +4,7 @@
 #include "game.h"
 #include "../platform/hd.h"
 EXTERN_C void plat_log(const char *,...);
+EXTERN_C void plat_fatal(const char *,...);
 
 static struct {
     MapView *view;
@@ -62,21 +63,6 @@ int map_camera_backing_zoom(double scale,int width,int height)
     return zoom<-7 ? -7 : zoom>8 ? 8 : zoom;
 }
 static double clamp(double v,double lo,double hi) { return v<lo ? lo : v>hi ? hi : v; }
-int map_camera_near_edge(void *view,int x,int y)
-{
-    if(!map_camera_owns(view))return -1;
-    /* The backing surface contains overscan outside the displayed viewport.
-     * Unit activation must test the latter, including fractional pan/zoom. */
-    if(game.rules & RULE_FLAT_WORLD)x=(int)clamp(x,2,map.width-3);
-    y=(int)clamp(y,2,map.height-3);
-    /* source_x/source_y measure the diamond's top-left corner. Its center is
-     * one half-tile farther along each world axis. */
-    double dx=x+1.0-camera.cx,dy=y+1.0-camera.cy;
-    if(!(game.rules & RULE_FLAT_WORLD))dx-=floor(dx/map.width+.5)*map.width;
-    double half_w=camera.width/(64*camera.scale),half_h=camera.height/(32*camera.scale);
-    return (map.width>2*half_w && fabs(dx)>=half_w-1) ||
-           (map.height>2*half_h && fabs(dy)>=half_h-1);
-}
 void map_camera_recenter(void *view)
 {
     /* A drag can move the visible center without changing MapView's backing
@@ -95,6 +81,43 @@ static double source_x(MapView *m,double px)
 { return m->origin_x+1+(px-m->client_x-m->margin_x)/(double)m->half_tile_width; }
 static double source_y(MapView *m,double py)
 { return m->origin_y+1+(py-m->client_y-m->margin_y)/(double)m->half_tile_height; }
+
+/* Center the displayed crop on the actual tile, bounded by the world and by
+ * the source pixels available at its edges. The legacy backing midpoint can
+ * stop several displayed rows short of a pole when the camera enlarges it. */
+static void focus_position(MapView *m,int x,int y,double *cx,double *cy)
+{
+    double half_w=m->client_width/(64*camera.scale),half_h=m->client_height/(32*camera.scale);
+    *cx=horizontal_center(x+1.0,camera.scale,m->client_width);
+    *cy=map.height+1<=2*half_h ? (map.height+1)*.5 : clamp(y+1.0,half_h,map.height+1-half_h);
+    if(game.rules & RULE_FLAT_WORLD) {
+        if(m->origin_x<=0 || m->margin_x)
+            *cx=fmax(*cx,source_x(m,m->client_x)+half_w);
+        if(m->origin_x+2*(int)m->half_view_width>=map.width+1 || m->margin_x)
+            *cx=fmin(*cx,source_x(m,m->client_x+m->client_width)-half_w);
+    }
+    if(m->origin_y<0 || m->margin_y)
+        *cy=fmax(*cy,source_y(m,m->client_y)+half_h);
+    if(m->origin_y+2*(int)m->field_2fc>=map.height+1 || m->margin_y)
+        *cy=fmin(*cy,source_y(m,m->client_y+m->client_height)-half_h);
+}
+int map_camera_near_edge(void *view,int x,int y)
+{
+    if(!map_camera_owns(view))return -1;
+    /* Check the real tile center, not the legacy two-row inset at a pole.
+     * Only request a scroll when the bounded crop can move toward the unit;
+     * units at a reached map edge must not trigger endless redraws. */
+    double cx,cy;focus_position((MapView *)view,x,y,&cx,&cy);
+    double dx=x+1.0-camera.cx,dy=y+1.0-camera.cy,move_x=cx-camera.cx;
+    if(!(game.rules & RULE_FLAT_WORLD)) {
+        dx-=floor(dx/map.width+.5)*map.width;
+        move_x-=floor(move_x/map.width+.5)*map.width;
+    }
+    double half_w=camera.width/(64*camera.scale),half_h=camera.height/(32*camera.scale);
+    return (((game.rules & RULE_FLAT_WORLD) || map.width>2*half_w) &&
+            fabs(dx)>=half_w-1 && dx*move_x>1e-8) ||
+           (fabs(dy)>=half_h-1 && dy*(cy-camera.cy)>1e-8);
+}
 
 static void transform(void)
 {
@@ -166,6 +189,7 @@ void map_camera_layout(void *view)
             camera.target=camera.scale;
             camera.cx=source_x(m,m->client_x+m->client_width*.5);
             camera.cy=source_y(m,m->client_y+m->client_height*.5);
+            if(camera.recenter)focus_position(m,m->center_x,m->center_y,&camera.cx,&camera.cy);
             camera.recenter=0;
         }
     }
@@ -464,6 +488,45 @@ int map_camera_input(void *message)
         return 1;
     }
     return 0;
+}
+
+/* Replay diagnostic: put a boundary tile just outside the displayed crop,
+ * then exercise the same tracking entry point as active-unit selection. */
+void map_camera_edge_focus_probe(int edge)
+{
+    if(!getenv("CIV2_CAMERA_FOCUS_VERIFY") || !map_camera_active())return;
+    MapView *m=camera.view;
+    int x=map.width/2,y=map.height/2;
+    if(edge<2) {
+        y=edge==0 ? map.height-1 : 0;
+        if((x+y)&1)x++;
+    } else {
+        x=edge==2 ? 0 : map.width-1;
+        if((x+y)&1)y++;
+    }
+    double scale=camera.scale,half=edge<2 ? camera.height/(32*scale) : camera.width/(64*scale);
+    cancel_drag();camera.animating=0;camera.target=scale;camera.dirty=0;
+    camera.cx=x+1;camera.cy=y+1;
+    if(edge<2)camera.cy+=(edge==0 ? -1 : 1)*(half+.25);
+    else camera.cx+=(edge==2 ? 1 : -1)*(half+.25);
+    coverage();
+    auto position=[&](double &px,double &py) {
+        int sx,sy;m->tile_to_screen((iptr)&sx,(iptr)&sy,x,y);
+        px=camera.transform.x+(sx+m->half_tile_width-m->client_x)*camera.transform.scale;
+        py=camera.transform.y+(sy+m->half_tile_height-m->client_y)*camera.transform.scale;
+    };
+    double px,py;position(px,py);
+    double before=edge<2 ? py : px,size=edge<2 ? camera.height : camera.width;
+    if(before>=0 && before<size)plat_fatal("Boundary focus probe did not start offscreen (edge %d)",edge);
+    if(!mapviews_ensure_visible(x,y,human_civ[0]))plat_fatal("Boundary focus did not scroll (edge %d)",edge);
+    map_camera_tick();position(px,py);
+    if(px<0 || px>=camera.width || py<0 || py>=camera.height || camera.scale!=scale)
+        plat_fatal("Boundary focus left tile offscreen or changed zoom (edge %d)",edge);
+    double cx=camera.cx,cy=camera.cy;
+    if(mapviews_ensure_visible(x,y,human_civ[0]) || camera.cx!=cx || camera.cy!=cy)
+        plat_fatal("Boundary focus keeps scrolling at a reached edge (edge %d)",edge);
+    plat_log("camera edge focus verified: edge=%d tile=%d,%d before=%.6f after=%.6f scale=%.6f\n",
+             edge,x,y,before,edge<2 ? py : px,scale);
 }
 
 /* Replay diagnostics use the real game's mask-based picker, without orders. */

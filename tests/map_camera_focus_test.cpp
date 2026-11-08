@@ -1,7 +1,9 @@
-// SOURCE src/game/map_camera.cpp map_camera_near_edge
 // SOURCE src/game/map_camera.cpp map_camera_recenter
+// SOURCE src/game/map_camera.cpp horizontal_center
 // SOURCE src/game/map_camera.cpp source_x
 // SOURCE src/game/map_camera.cpp source_y
+// SOURCE src/game/map_camera.cpp focus_position
+// SOURCE src/game/map_camera.cpp map_camera_near_edge
 // SOURCE src/game/map_camera.cpp map_camera_layout
 // SOURCE src/auto/mapview.cpp MapView::scroll_if_near_edge
 // SOURCE src/auto/mapview.cpp mapviews_ensure_visible
@@ -29,6 +31,7 @@ struct MapView {
     int origin_x=92,origin_y=85,margin_x=0,margin_y=0;
     uptr origin_x_uptr=92,origin_y_uptr=85;
     u32 half_view_width=8,tile_columns=9,end_y_u=113,margin_x_u=0,margin_y_u=0;
+    int field_2fc=15;
     int scroll_if_near_edge(int,int);
     void center_on(int,int);
 };
@@ -57,7 +60,8 @@ void MapView::center_on(int x,int y)
 {
     centers++;center_x=map_wrap_x(x);center_y=y;
     map_camera_recenter(this);
-    origin_x=map_wrap_x(center_x-8);origin_y=center_y-15;
+    origin_x=map_wrap_x(center_x-8);
+    origin_y=int_clamp(center_y-field_2fc,-1,map.height+1-2*field_2fc);
     origin_x_uptr=origin_x;origin_y_uptr=origin_y;end_y_u=origin_y+28;
     map_camera_layout(this);
 }
@@ -104,6 +108,9 @@ int main()
     game.rules=RULE_FLAT_WORLD;camera.cx=5;camera.cy=10;
     assert(!map_camera_near_edge(&view,0,0));
     camera.cx=195;camera.cy=150;
+    assert(map_camera_near_edge(&view,199,159)); // A small remaining pan still matters.
+    camera.cx=201-camera.width/(64*camera.scale);
+    camera.cy=161-camera.height/(32*camera.scale);
     assert(!map_camera_near_edge(&view,199,159));
     // No tracking scroll when the complete map fits in the visible viewport.
     map.width=20;map.height=20;camera.scale=.125;camera.cx=10;camera.cy=10;
@@ -128,5 +135,22 @@ int main()
         int expected=legacy.scroll_if_near_edge(x,y);
         active=1;assert(map_camera_near_edge(&aligned,x,y)==expected);
     }
-    puts("Camera focus: offscreen activation, same backing center, visible units, tracking settings, fractional zoom, wrapping and legacy fallback passed.");
+    // Last-row units must be checked at their real location, then brought into
+    // the visible crop even though the backing image cannot recenter farther.
+    MapView pole;camera.view=&pole;camera.width=740;camera.height=680;camera.scale=2;
+    camera.cx=102;camera.cy=149.1;pole.origin_y=131;pole.origin_y_uptr=131;
+    assert((160-camera.cy)*32+camera.height/2.0>camera.height);
+    assert(pole.scroll_if_near_edge(101,159));
+    assert(pole.center_y==159);
+    double unit_y=(160-camera.cy)*32+camera.height/2.0;
+    assert(unit_y>=0 && unit_y<camera.height);
+    double cy=camera.cy;
+    assert(!pole.scroll_if_near_edge(101,159) && camera.cy==cy);
+    // A zoomed-out backing can have blank margins. Even when the world could
+    // fit in the viewport, a pan can put its last row outside the visible crop.
+    map.height=80;camera.map_h=80;camera.scale=.24;camera.cy=80-680/(32*.24)-.25;
+    pole.half_tile_height=2;pole.field_2fc=40;pole.margin_y=260;pole.origin_y=0;
+    assert(pole.scroll_if_near_edge(101,79));
+    assert(camera.cy==40.5 && !pole.scroll_if_near_edge(101,79));
+    puts("Camera focus: offscreen activation, map-boundary units, same backing center, tracking settings, fractional zoom, wrapping and legacy fallback passed.");
 }

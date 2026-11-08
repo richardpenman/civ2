@@ -63,8 +63,10 @@ It currently applies to the main map window only.
   backing coordinates used by the GPU presentation. World wrapping stays in
   the original picker.
 - Movement tracking tests the displayed viewport, so an active unit outside
-  it recenters the map even if its tile is still in the backing image. Visible
-  units keep the current fractional pan and zoom; tracking settings still apply.
+  it recenters the map even if its tile is still in the backing image. Units
+  safely inside the viewport keep the current fractional pan and zoom; tracking
+  settings still apply. Boundary units use their actual tile coordinates, and
+  the displayed crop moves to the available map edge without repeated scrolling.
 
 `src/game/map_camera.cpp` keeps camera state outside the serialized game
 structures. `MapView` keeps a live surface at a nearby integer zoom, so units,
@@ -182,6 +184,9 @@ measure settled composition; `drag_burst` queues a full drag before dispatch.
 through the game's visibility entry point at densities 1 and 4, including a tile
 inside the backing image but outside the displayed map. It also verifies that
 tracking preserves zoom and leaves a visible unit's fractional pan unchanged.
+At each of the four map boundaries it starts a target just off-screen, checks
+its rendered position after tracking, and verifies that a repeated call stays put.
+The pole checks also run at fractional overview zoom with blank backing margins.
 `tests/map_camera_focus_test.cpp` covers tracking masks, wrapped and flat edges,
 whole-world views, explicit recentering and the fixed-zoom fallback.
 `python tools/test_map_camera_options.py --game PATH` checks the live checkbox,

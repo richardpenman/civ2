@@ -37,7 +37,8 @@ def main():
         for key in ('CIV2_CLASSIC', 'CIV2_DATA', 'CIV2_GAME', 'CIV2_TEST_NATIVE', 'CIV2_NORMAL_DESKTOP',
                     'CIV2_SHOW', 'CIV2_TEST_EXTRAS', 'CIV2_TEST_SETTINGS', 'CIV2_BENCHMARK', 'SDL_VIDEODRIVER'):
             env.pop(key, None)
-        env.update(CIV2_REALTIME='1', CIV2_TEST_HD='1', CIV2_TEST_GPU='1', CIV2_TEST_FIXES='1',
+        env.update(CIV2_CAMERA_FOCUS_VERIFY='1', CIV2_CAMERA_BOUNDARY_TEST='1',
+                   CIV2_REALTIME='1', CIV2_TEST_HD='1', CIV2_TEST_GPU='1', CIV2_TEST_FIXES='1',
                    CIV2_TEST_FULL='1024x768', CIV2_SEED='7', SDL_AUDIODRIVER='dummy',
                    CIV2_SCRIPT=str(ROOT / 'harness/hd/camera-focus.txt'), CIV2_SHOT_DIR=str(out),
                    CIV2_HOOK_LOG=str(out / 'hooks.log'))
@@ -58,7 +59,8 @@ def main():
             assert max(abs(world[i][j] - target[j]) for j in (0, 1)) < 2, (out, 'unit not centered', i, world[i], target)
         assert world[1] == world[2] and world[3] == world[4], (out, 'visible unit reset camera', world)
         assert world[2] != world[3], (out, 'pan was not exercised')
-        print(f'Density {density}: offscreen tracking centers all four directions, preserves zoom and leaves visible units stationary.', flush=True)
+        assert re.findall(r'camera edge focus verified: edge=(\d)', hooks) == ['0', '1', '2', '3', '0', '1'], out
+        print(f'Density {density}: offscreen tracking and all four map boundaries bring targets on-screen without changing zoom or repeated scrolling.', flush=True)
 
 
 if __name__ == '__main__':

@@ -56,6 +56,7 @@ int map_camera_backing_zoom(double scale,int width,int height);
 void map_camera_cancel(void);
 void map_camera_probe(int x,int y);
 void map_camera_boundary_test(int flat);
+void map_camera_edge_focus_probe(int edge);
 /* Native window containing the map; the transform is in its client coordinates. */
 uintptr_t map_camera_get(MapCameraTransform *out);
 /* Unoccluded indexed/HD backing; child windows share the desktop surface. */

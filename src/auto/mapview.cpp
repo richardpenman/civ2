@@ -563,6 +563,7 @@ int MapView::scroll_if_near_edge(int x,int y)
 
 {
   const int camera_scroll = map_camera_near_edge(this,x,y);
+  const int target_x = x,target_y = y;
   uptr view_left;
   uptr view_top;
   u32 view_cols;
@@ -591,7 +592,11 @@ int MapView::scroll_if_near_edge(int x,int y)
       ((int)(view_bottom - 1) <= y)))) {
     need_scroll = 1;
   }
-  if (camera_scroll >= 0) need_scroll = camera_scroll;
+  if (camera_scroll >= 0) {
+    need_scroll = camera_scroll;
+    x = target_x;
+    y = target_y;
+  }
   if (need_scroll != 0) {
     blink.unit_skip_tick = 1;
     blink.unit_phase = moving_units_mode == 0;

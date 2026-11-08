@@ -45,4 +45,15 @@ camera_probe 380 418
 call_sync mapviews_ensure_visible 4105f8 132 90 -1
 wait 300
 camera_probe 380 418
+call_sync map_camera_edge_focus_probe 0 0
+call_sync map_camera_edge_focus_probe 0 1
+call_sync map_camera_boundary_test 0 1
+call_sync map_camera_edge_focus_probe 0 2
+call_sync map_camera_edge_focus_probe 0 3
+call_sync menu_command 4e2803 0 801
+wheel 400 400 -10
+call_sync win_dispatch_all_messages 0
+wait 600
+call_sync map_camera_edge_focus_probe 0 0
+call_sync map_camera_edge_focus_probe 0 1
 quit
