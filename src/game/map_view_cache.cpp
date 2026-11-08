@@ -387,3 +387,37 @@ void map_view_cache_probe(void)
     }
     plat_log("camera cache mutations verified: terrain/fog, %d unit, %d city\n",units_checked,cities_checked);
 }
+
+/* Replay diagnostic: antialiased terrain must erase a selection marker just
+ * as completely as a fresh image, both on blink updates and on recentering. */
+void map_redraw_probe(void)
+{
+    if(!hd_enabled || !getenv("CIV2_MAP_REDRAW_VERIFY"))return;
+    MapView *m=&map_views_block.map_view_recs[0];
+    auto saved_blink=blink;auto saved_cursor=map_cursor;
+    auto saved_mode=moving_units_mode;auto saved_turn=player_turn_active;
+    hd_redraw_begin();
+    ON_SCOPE_EXIT(blink=saved_blink;map_cursor=saved_cursor;moving_units_mode=saved_mode;
+                  player_turn_active=saved_turn;hd_redraw_end());
+    player_turn_active=0;moving_units_mode=0;blink.unit_active=1;blink.unit_phase=0;
+    int x=m->center_x,y=m->center_y;
+    map_cursor.x[0]=(i16)x;map_cursor.y[0]=(i16)y;
+    RECT r;m->tile_radius_rect(x,y,1,(iptr)&r);
+    m->set_clip((RECT *)&m->client_rect);m->fill(10);m->draw_all_tiles(human_civ[0]);
+    uint32_t *clean=hd_debug_capture_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top);
+    int tolerance=hd_gpu_active && !getenv("CIV2_GPU_NO_ATLAS") ? 3 : 0;
+    for(int pass=0;pass<3;pass++) {
+        blink.unit_phase=1;m->redraw_cursor_tile();
+        blink.unit_phase=0;
+        if(pass==0)m->redraw_cursor_tile();
+        if(pass==1) {
+            map_set_cursor_pos(map_wrap_x(x+2),y);
+            blink.unit_phase=0;m->redraw_cursor_tile();
+        }
+        if(pass==2)m->draw_all_tiles(human_civ[0]);
+        int matches=hd_debug_compare_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top,clean,tolerance);
+        if(!matches)plat_fatal("Map redraw retains selection pixels (pass %d, zoom %d)",pass,m->zoom);
+    }
+    free(clean);
+    plat_log("map redraw verified: blink, selection move, full redraw at zoom %d\n",m->zoom);
+}

@@ -2386,6 +2386,10 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
   
   tile_radius_rect(center_x,center_y,radius,(iptr)clip_rect);
   set_clip((RECT *)clip_rect);
+  /* HD diamonds have translucent edges. Repainting over the old selection
+   * leaves pale seams (and repeatedly blends terrain/grid edges). Rebuild
+   * the clipped patch from an opaque background, as the viewport cache does. */
+  if (hd_enabled) fill(10);
   extent = radius * 2 + 2;
   for (dy = -extent; (int)dy <= (int)extent; dy++) {
     if ((int)dy < 1) {
@@ -2429,7 +2433,7 @@ void MapView::draw_all_tiles(i32 civ)
   int col;
   int row_width;
   
-  if ((margin_x_u != 0) || (margin_y_u != 0)) {
+  if (hd_enabled || (margin_x_u != 0) || (margin_y_u != 0)) {
     gfx_fill_surface((iptr)this,10);
   }
   for (row = 0; (int)row < (int)(field_2fc + field_304 + 1);

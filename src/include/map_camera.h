@@ -65,6 +65,7 @@ void map_view_cache_clear(void);
 int map_view_cache_rendering(void);
 int map_view_cache_surface(void *surface);
 void map_view_cache_probe(void);
+void map_redraw_probe(void);
 #ifdef __cplusplus
 }
 #endif
