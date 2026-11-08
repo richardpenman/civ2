@@ -263,11 +263,42 @@ int os_find_image(char *out, size_t size)
 
 /* ---- talking to the user ---- */
 
+/* The text for a message box: SDL's on X11 breaks lines only at '\n', so
+   a long message was one line wider than the screen; there it is broken
+   at spaces, lines of at most 72 characters (macOS' boxes wrap their own). */
+static const char *box_text(const char *text)
+{
+#ifdef __APPLE__
+    return text;
+#else
+    static char out[4 * SETUP_PATH + 512];
+    size_t i, n = strlen(text), line = 0, space = 0;
+    if (n >= sizeof out)
+        n = sizeof out - 1;
+    memcpy(out, text, n);
+    out[n] = 0;
+    for (i = 0; i < n; i++) {
+        if (out[i] == '\n') {
+            line = i + 1;
+            space = 0;
+        } else if (out[i] == ' ') {
+            space = i;
+        }
+        if (i - line >= 72 && space > line) {
+            out[space] = '\n';
+            line = space + 1;
+            space = 0;
+        }
+    }
+    return out;
+#endif
+}
+
 void os_message(const char *text, int kind)
 {
     Uint32 flags = kind == OS_ERROR ? SDL_MESSAGEBOX_ERROR : kind == OS_WARNING ? SDL_MESSAGEBOX_WARNING :
                    SDL_MESSAGEBOX_INFORMATION;
-    if (SDL_ShowSimpleMessageBox(flags, TITLE, text, NULL))
+    if (SDL_ShowSimpleMessageBox(flags, TITLE, box_text(text), NULL))
         fprintf(stderr, "OpenCiv2: %s\n", text);
 }
 
@@ -327,7 +358,7 @@ int os_confirm(const char *text)
     memset(&box, 0, sizeof box);
     box.flags = SDL_MESSAGEBOX_INFORMATION;
     box.title = TITLE;
-    box.message = text;
+    box.message = box_text(text);
     box.numbuttons = 2;
     box.buttons = buttons;
     if (SDL_ShowMessageBox(&box, &id)) {
