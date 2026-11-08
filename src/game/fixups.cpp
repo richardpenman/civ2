@@ -4,6 +4,7 @@
  * a switch on a handle).  Rewritten following the original machine code.
  */
 #include "game.h"
+#include "../platform/hd.h"
 
 /* ------------------------------------------------------------------------ */
 /* 0x005c8791: unload a font resource: delete its cached GDI fonts, remove
@@ -439,6 +440,8 @@ i32 __stdcall spritebtn_wndproc(HWND hwnd,uint msg,WPARAM wparam,uint lparam)
             hdcSrc = ((GdiDib *)height)->hdc;
             /* The original uses the same accessor for both dimensions here. */
             height = ((DibSurface *)((int)ctrl + 0x7c))->surface_width();
+            if (hd_enabled)
+                height = ((DibSurface *)((int)ctrl + 0x7c))->surface_height();
             width = ((DibSurface *)((int)ctrl + 0x7c))->surface_width();
             BitBlt(hdc, 0, 0, width, height, hdcSrc, 0, 0, 0xcc0020);
             ((DibSurface *)((int)ctrl + 0x7c))->unlock();
