@@ -178,8 +178,21 @@ static void set_dirs(const char *argv0, const char *gamedir)
     d = getenv("CIV2_DATA");
     if (d && *d)
         snprintf(plat_data_dir, 1024, "%s", d);
-    else
+    else {
+        /* A release: data beside the program. A build in the source tree
+           (build/OpenCiv2): the tree's data/native. */
+        char probe[1100];
+        FILE *f;
         snprintf(plat_data_dir, 1024, "%sdata", *base ? base : "./");
+        snprintf(probe, sizeof probe, "%s/fonts.bin", plat_data_dir);
+        if (!(f = fopen(probe, "rb"))) {
+            snprintf(probe, sizeof probe, "%s../data/native/fonts.bin", *base ? base : "./");
+            if ((f = fopen(probe, "rb")))
+                snprintf(plat_data_dir, 1024, "%s../data/native", *base ? base : "./");
+        }
+        if (f)
+            fclose(f);
+    }
     (void)argv0;
 }
 
