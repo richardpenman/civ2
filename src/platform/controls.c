@@ -1753,7 +1753,9 @@ static int scroll_hit(const Scroll *s, int len, int thick, int at, int *thumb_po
     return SB_THUMBTRACK;
 }
 
-typedef struct { int dragging, grab, vert; } ScrollCtl;
+/* (track: the thumb's position while it is dragged, sent with
+   SB_THUMBPOSITION when it is let go, as Wine's control does) */
+typedef struct { int dragging, grab, vert, track; } ScrollCtl;
 
 LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
 {
@@ -1784,7 +1786,10 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             SendMessageA(w->parent->hwnd, WM_CTLCOLORSCROLLBAR, (WPARAM)hdc, (LPARAM)h);
         {
             POINT org = {0, 0};
-            scroll_draw(hdc, &r, sc->vert, &w->hscroll, 1, !w->hscroll.enabled || (w->style & WS_DISABLED), org);
+            Scroll s = w->hscroll;
+            if (sc->dragging)
+                s.pos = sc->track;      /* the thumb follows the pointer */
+            scroll_draw(hdc, &r, sc->vert, &s, 1, !w->hscroll.enabled || (w->style & WS_DISABLED), org);
         }
         EndPaint(h, &ps);
         return 0;
@@ -1799,6 +1804,7 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         if (code == SB_THUMBTRACK) {
             sc->dragging = 1;
             sc->grab = at - tp;
+            sc->track = w->hscroll.pos;
             SetCapture(h);
             return 0;
         }
@@ -1821,6 +1827,10 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             pos = track > 0 ? w->hscroll.min + (int)((long long)(at - sc->grab - btn) * range / track) : 0;
             if (pos < w->hscroll.min) pos = w->hscroll.min;
             if (pos > w->hscroll.max) pos = w->hscroll.max;
+            if (pos != sc->track) {
+                sc->track = pos;
+                InvalidateRect(h, NULL, FALSE);
+            }
             if (w->parent)
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, MAKEWPARAM(SB_THUMBTRACK, pos), (LPARAM)h);
         }
@@ -1831,7 +1841,7 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             ReleaseCapture();
             if (w->parent) {
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL,
-                             MAKEWPARAM(SB_THUMBPOSITION, w->hscroll.pos), (LPARAM)h);
+                             MAKEWPARAM(SB_THUMBPOSITION, sc->track), (LPARAM)h);
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, SB_ENDSCROLL, (LPARAM)h);
             }
         }
