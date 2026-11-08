@@ -17,7 +17,7 @@ Python 3.10+ is required. Install Pillow only when building the graphics clone:
 ```sh
 python -m pip install -r openciv2-assets/requirements.txt
 python openciv2-assets/tools/build.py
-python openciv2-assets/tools/build.py --release --version 2026.11.07.1
+python openciv2-assets/tools/build.py --release --version 2026.11.08.1
 
 python openciv2/tools/build_port.py --assets /path/to/openciv2-assets module c exe
 # Cross-compile a Windows executable: replace exe with exe-windows.
@@ -74,8 +74,8 @@ software notices. Portable source packages retain it under `build/data`.
 
 With no explicit dependency or sibling clone, game builds download the URL
 and SHA-256 pinned in the game's `dependencies.json`. The asset repository has
-no dependency lock file. The runtime release tag is `v2026.11.07.1`; its archive
-must be published before those default download URLs can be used.
+no dependency lock file. The pinned runtime release tag is `v2026.11.08.1`.
+Publish each release archive before updating the game's URL and checksum.
 
 ```sh
 python openciv2/tools/build_port.py --assets-url URL --assets-sha256 SHA256 atlas
