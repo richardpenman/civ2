@@ -62,6 +62,9 @@ It currently applies to the main map window only.
   and movement-direction masks inverse-transform the pointer into the same
   backing coordinates used by the GPU presentation. World wrapping stays in
   the original picker.
+- Movement tracking tests the displayed viewport, so an active unit outside
+  it recenters the map even if its tile is still in the backing image. Visible
+  units keep the current fractional pan and zoom; tracking settings still apply.
 
 `src/game/map_camera.cpp` keeps camera state outside the serialized game
 structures. `MapView` keeps a live surface at a nearby integer zoom, so units,
@@ -175,6 +178,12 @@ suite also checks fractional camera placement and clipping. `CIV2_CAMERA_TRACE=1
 adds gesture routing, source-refresh timing and bounds-clamping diagnostics.
 The replay's `camera_probe` and `camera_benchmark` commands inspect picking and
 measure settled composition; `drag_burst` queues a full drag before dispatch.
+`python tools/test_map_camera_focus.py --game PATH` checks offscreen unit tracking
+through the game's visibility entry point at densities 1 and 4, including a tile
+inside the backing image but outside the displayed map. It also verifies that
+tracking preserves zoom and leaves a visible unit's fractional pan unchanged.
+`tests/map_camera_focus_test.cpp` covers tracking masks, wrapped and flat edges,
+whole-world views, explicit recentering and the fixed-zoom fallback.
 `python tools/test_map_camera_options.py --game PATH` checks the live checkbox,
 OK/Cancel, restart persistence and CPU fallback at densities 1 and 4, including
 the dialog's 640x480 layout. `tests/map_camera_options_test.cpp` covers defaults,

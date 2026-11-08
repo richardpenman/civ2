@@ -42,6 +42,9 @@ int map_camera_active(void);
 int map_camera_option(void);
 void map_camera_set_option(int on);
 int map_camera_owns(void *view);
+/* -1: use legacy bounds; otherwise test the displayed viewport. */
+int map_camera_near_edge(void *view,int x,int y);
+void map_camera_recenter(void *view);
 int map_camera_surface(void *surface);
 int map_camera_detail_zoom(void *surface,int zoom);
 int map_camera_topology_zoom(void *surface,int zoom);

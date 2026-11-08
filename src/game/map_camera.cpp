@@ -14,7 +14,7 @@ static struct {
     POINT start;
     DWORD tick;
     int zoom,center_x,center_y,width,height,map_w,map_h,civ;
-    int button,moved,double_click,refreshing,animating,dirty,prefetch,detail;
+    int button,moved,double_click,refreshing,animating,dirty,prefetch,detail,recenter;
 } camera;
 
 static int camera_option=-1;
@@ -62,6 +62,27 @@ int map_camera_backing_zoom(double scale,int width,int height)
     return zoom<-7 ? -7 : zoom>8 ? 8 : zoom;
 }
 static double clamp(double v,double lo,double hi) { return v<lo ? lo : v>hi ? hi : v; }
+int map_camera_near_edge(void *view,int x,int y)
+{
+    if(!map_camera_owns(view))return -1;
+    /* The backing surface contains overscan outside the displayed viewport.
+     * Unit activation must test the latter, including fractional pan/zoom. */
+    if(game.rules & RULE_FLAT_WORLD)x=(int)clamp(x,2,map.width-3);
+    y=(int)clamp(y,2,map.height-3);
+    /* source_x/source_y measure the diamond's top-left corner. Its center is
+     * one half-tile farther along each world axis. */
+    double dx=x+1.0-camera.cx,dy=y+1.0-camera.cy;
+    if(!(game.rules & RULE_FLAT_WORLD))dx-=floor(dx/map.width+.5)*map.width;
+    double half_w=camera.width/(64*camera.scale),half_h=camera.height/(32*camera.scale);
+    return (map.width>2*half_w && fabs(dx)>=half_w-1) ||
+           (map.height>2*half_h && fabs(dy)>=half_h-1);
+}
+void map_camera_recenter(void *view)
+{
+    /* A drag can move the visible center without changing MapView's backing
+     * center. Explicit centering must take effect even when those fields match. */
+    if(map_camera_owns(view))camera.recenter=1;
+}
 static double horizontal_center(double center,double scale,int width)
 {
     if(!(game.rules & RULE_FLAT_WORLD))return center;
@@ -138,13 +159,14 @@ void map_camera_layout(void *view)
         bool fresh=camera.view!=m || camera.hwnd!=hwnd || camera.zoom!=m->zoom ||
             camera.width!=m->client_width || camera.height!=m->client_height ||
             camera.map_w!=(int)map.width || camera.map_h!=(int)map.height || camera.civ!=human_civ[0];
-        if(fresh || camera.center_x!=m->center_x || camera.center_y!=m->center_y) {
+        if(fresh || camera.recenter || camera.center_x!=m->center_x || camera.center_y!=m->center_y) {
             if(fresh)map_view_cache_clear();
             cancel_drag();camera.animating=0;camera.dirty=fresh;
             if(fresh) { camera.scale=(m->zoom+8)/8.0;camera.prefetch=-1; }
             camera.target=camera.scale;
             camera.cx=source_x(m,m->client_x+m->client_width*.5);
             camera.cy=source_y(m,m->client_y+m->client_height*.5);
+            camera.recenter=0;
         }
     }
     camera.view=m;camera.hwnd=hwnd;remember();transform();

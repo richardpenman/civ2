@@ -550,6 +550,7 @@ void MapView::center_on(iptr x,i32 y)
   wrapped_x = map_wrap_x(x);
   *(short *)&center_x_u = (short)wrapped_x;
   *(i16 *)((int)&center_x_u + 2) = (i16)y;
+  map_camera_recenter(this);
   saved_blink = blink.unit_active;
   blink.unit_active = 0;
   redraw(human_civ[0],1);
@@ -561,6 +562,7 @@ void MapView::center_on(iptr x,i32 y)
 int MapView::scroll_if_near_edge(int x,int y)
 
 {
+  const int camera_scroll = map_camera_near_edge(this,x,y);
   uptr view_left;
   uptr view_top;
   u32 view_cols;
@@ -589,6 +591,7 @@ int MapView::scroll_if_near_edge(int x,int y)
       ((int)(view_bottom - 1) <= y)))) {
     need_scroll = 1;
   }
+  if (camera_scroll >= 0) need_scroll = camera_scroll;
   if (need_scroll != 0) {
     blink.unit_skip_tick = 1;
     blink.unit_phase = moving_units_mode == 0;
