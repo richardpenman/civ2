@@ -2136,7 +2136,7 @@ HWND __cdecl checkbox_create_hwnd(RECT *rect,iptr ctrl,char *label,int visible);
 void __cdecl checkbox_destroy_hwnd(int hwnd); /* 005cc248 */
 void __cdecl checkbox_toggle_by_hotkey(HWND hwnd); /* 005cc274 */
 i32 __stdcall checkbox_wndproc(HWND hwnd,uint msg,WPARAM wparam,LPARAM lparam); /* 005cc320 */
-void __stdcall control_subclass_wndproc(HWND hwnd,int msg,i32 wparam,i32 lparam); /* 005cce80 */
+LRESULT __stdcall control_subclass_wndproc(HWND hwnd,int msg,i32 wparam,i32 lparam); /* 005cce80 */
 HWND __cdecl scrollbar_create_hwnd(int *rect,iptr ctrl,uint style_flags,int visible); /* 005ccf17 */
 void __cdecl scrollbar_destroy_hwnd(i32 hwnd); /* 005cd139 */
 void __cdecl scrollbar_hwnd_handle_msg(HWND hwnd,uint msg,uint wparam,int lparam); /* 005cd149 */

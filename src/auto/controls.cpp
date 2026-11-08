@@ -2599,21 +2599,23 @@ void Checkbox::fire_callback(i32 ctrl_id,i32 checked)
 }
 
 /* 005cce80 auto */
-void __stdcall control_subclass_wndproc(HWND hwnd,int msg,i32 wparam,i32 lparam)
+/* (the base procedure's result is returned: the original left it in EAX;
+   lost, a scroll bar's WM_NCHITTEST answered garbage, so clicks on it came
+   as non-client messages it ignores) */
+LRESULT __stdcall control_subclass_wndproc(HWND hwnd,int msg,i32 wparam,i32 lparam)
 
 {
   DWORD class_extra;
   WNDPROC base_proc;
   Control *self;
-  
+
   class_extra = GetClassLongA(hwnd,-0x12);
   base_proc = (WNDPROC)GetWindowLongA(hwnd,class_extra - 4);
   if ((msg == 2) &&
      (self = (Control *)GetWindowLongA(hwnd,class_extra - 8), self != (Control *)0x0)) {
     self->set_hwnd(0);
   }
-  (*base_proc)(hwnd,msg,wparam,lparam);
-  return;
+  return (*base_proc)(hwnd,msg,wparam,lparam);
 }
 
 /* 005ccf17 auto */
