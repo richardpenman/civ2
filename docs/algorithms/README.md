@@ -6,7 +6,7 @@ Each specification must explain its behavior without requiring the reader to
 inspect source code. The collection covers simulation, AI, scenarios, persistence,
 multiplayer, and the algorithms behind the original player interface.
 
-The backlog contains **65 specification entries: 3 written and 62 planned**.
+The backlog contains **65 specification entries: 4 written and 61 planned**.
 The IDs below are stable references for tracking work and dependencies. Prefix
 each specification filename with its uppercase ID and a hyphen, for example
 `F01-determinism-and-arithmetic.md`. Keep this index named `README.md`. Planned
@@ -60,8 +60,9 @@ code does not establish a playable PBEM mode in this MGE release
 | Written | The scoped algorithm is described, with source traceability and explicit limits. Independent conformance is not implied. |
 | Checked | The document has also been reviewed against its evidence and exercised by independent conformance cases; record exactly what those cases establish. |
 
-X01, F01 and W02 are **Written**. F01 owns the shared arithmetic and random
-primitives, with numeric vectors. W02 pins an earlier OpenCiv2 revision and now
+X01, F01, F02 and W02 are **Written**. F01 owns the shared arithmetic and random
+primitives, with numeric vectors. F02 defines shared state, identity, collection
+invariants and mutation boundaries. W02 pins an earlier OpenCiv2 revision and now
 references F01 for those unchanged primitives. None is promoted here to a claim
 of complete original-program conformance; W02's full classic-target review
 remains part of the first work batch below.
@@ -115,7 +116,7 @@ loading logic; the main `src/auto` file is not always the complete implementatio
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
 | F01 | Written | [Determinism and arithmetic](F01-determinism-and-arithmetic.md) | Both shared random generators, seeding, clock inputs, range helpers, integer and floating-point conventions, and replay input contracts. Individual algorithms own their draw order. |
-| F02 | Planned | `F02-game-state-and-invariants.md` | Game, civilization, city, unit, map, and scenario state; IDs, lifetimes, flags, sentinels, ownership, list invariants, cached versus authoritative values, and mutation contracts. File encoding belongs to F06. |
+| F02 | Written | [Game state and invariants](F02-game-state-and-invariants.md) | Game, civilization, city, unit, map, and scenario state; IDs, lifetimes, flags, sentinels, ownership, list invariants, cached versus authoritative values, and mutation contracts. File encoding belongs to F06. |
 | F03 | Planned | `F03-rules-and-configuration.md` | RULES.TXT parsing, section order, defaults, conversions, validation, cross-references, technology prerequisites, unit and terrain definitions, cosmic parameters, and classic game-option effects. Include custom-rule input limits. |
 | F04 | Planned | `F04-turn-sequencing.md` | Single-player session loop; global, civilization, city, and unit phase order; year progression, turn counters, expiry/reset timing, event hooks, autosave, and end checks. Calls the mechanics below without duplicating their formulas. |
 | F05 | Planned | `F05-game-setup-and-starting-positions.md` | New and premade worlds, tribe/leader selection, world parameter resolution, civilization allocation, starting advances and units, start-site search and relaxation, balancing, accelerated starts, and new-game resets. W02 owns terrain generation. |
@@ -354,7 +355,7 @@ The next concrete work items are:
   pinned behavior silently.
 - [x] Write [F01, Determinism and arithmetic](F01-determinism-and-arithmetic.md),
   and reference it from W02 for shared primitives and numeric vectors.
-- [ ] Write F02, `F02-game-state-and-invariants.md`.
+- [x] Write [F02, Game state and invariants](F02-game-state-and-invariants.md).
 - [ ] Write F03, `F03-rules-and-configuration.md`.
 - [ ] Write W01, `W01-map-geometry-and-spatial-state.md`.
 - [ ] Draft F04, `F04-turn-sequencing.md`, with an explicit ordered call graph and
@@ -367,6 +368,9 @@ its call conditions, inputs, outputs, and ordering, then link to it. In particul
 
 - F01 owns random-generator definitions; every consuming algorithm owns its
   exact draw sequence, including discarded draws.
+- F02 owns shared state meanings, slot/token identity and collection invariants.
+  Lifecycle and mechanics documents own complete mutations and reference F02's
+  contracts without duplicating its state model.
 - F04 and N03 own phase ordering; city/civilization/unit documents own the work
   performed in each phase.
 - W01 owns shared geometry and coordinate predicates; U03 owns path search and
