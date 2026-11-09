@@ -55,10 +55,15 @@ struct MapView {
                     pixels[py*320+px]=color;
         // A translucent unit extending above the diamond also checks ordering
         // and that repeated repainting starts from clean terrain.
-        if((x+3*y)%7==0)
+        if((x+3*y)%7==0) {
             for(int py=std::max(clip.top,sy-h/2);py<std::min(clip.bottom,sy+h/2);py++)
                 for(int px=std::max(clip.left,sx+w/4);px<std::min(clip.right,sx+3*w/4);px++)
                     pixels[py*320+px]=(pixels[py*320+px]>>1 & 0x7f7f7f)+0x703020;
+            // A transport's stacked banner/shadow extends left of the sprite.
+            for(int py=std::max(clip.top,sy-h/2);py<std::min(clip.bottom,sy+h/8);py++)
+                for(int px=std::max(clip.left,sx-w/32-1);px<std::min(clip.right,sx+w/8);px++)
+                    pixels[py*320+px]=(pixels[py*320+px]>>1 & 0x7f7f7f)+0x204050;
+        }
     }
 };
 static void gfx_fill_surface(iptr surface,int color) { ((MapView *)surface)->fill(color); }

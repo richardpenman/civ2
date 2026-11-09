@@ -2372,6 +2372,13 @@ void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
   top -= (radius * 2 + 1) * half_tile_height_u;
   left += half_tile_width_u * radius * -2;
   width2 = (radius * 2 + 1) * tile_width_u;
+  if (hd_enabled) {
+    /* Stacked shields extend four scaled pixels to the side, plus a fixed
+     * one-pixel shadow. Include them when blinking or erasing a moved unit. */
+    int pad = half_tile_width_u / 8 + 1;
+    left -= pad;
+    width2 += pad * 2;
+  }
   rect_set_xywh((iptr)rect,left,top,width2,(radius * 4 + 3) * half_tile_height_u);
   rect_intersect_into((LPRECT)out_rect,(iptr)rect,(iptr)&client_rect);
   return;
@@ -2415,7 +2422,8 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
       else {
         dx_abs = dx;
       }
-      if (dx_abs != extent) {
+      /* HD also repaints the side columns covering the shield overhang. */
+      if (hd_enabled || dx_abs != extent) {
         x = map_wrap_x(dx + center_x);
         in_view = tile_in_view(x,center_y + dy);
         if (in_view != 0) {

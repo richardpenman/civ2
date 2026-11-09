@@ -323,6 +323,10 @@ renders at every fixed zoom, including wrapped and clipped viewports.
 GPU camera (`--fixed` for fixed GPU zoom or `--cpu` for software rendering).
 `--new-game` moves a settler on a fresh map and checks unexplored terrain using
 fixed zoom and the virtual clock, without needing a save file.
+Unit redraws include the stacked banner and its shadow outside the nominal
+sprite width. Movement saves, presents and restores that full footprint, so
+transports leave no banner lines behind. The redraw replay checks single and
+stacked triremes in all eight directions; `--all-zooms` checks all 16 fixed zooms.
 
 The minimap still evaluates the game's live visibility, ownership and blink
 state. Its indexed background updates are collected into one upload, or a GPU

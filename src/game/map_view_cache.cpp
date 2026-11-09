@@ -432,5 +432,30 @@ void map_redraw_probe(void)
         }
         free(clean);
     }
+    /* A transport's second shield projects outside its 64x48 sprite. Slide a
+     * temporary trireme over the real map without placing it in a tile stack;
+     * every pixel must return to the clean background after the animation. */
+    auto saved_dummy=dummy_unit;auto saved_combat=combat_anim;
+    auto saved_options=game.game_options;
+    ON_SCOPE_EXIT(dummy_unit=saved_dummy;combat_anim=saved_combat;game.game_options=saved_options);
+    game.game_options|=OPT_FAST_PIECE_SLIDE;
+    int unit=unit_make_dummy(UNIT_TRIREME,human_civ[0]);
+    m->tile_radius_rect(x,y,2,(iptr)&r);
+    clean=hd_debug_capture_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top);
+    for(int stacked=0;stacked<=1;stacked++)for(int dir=0;dir<8;dir++) {
+        dummy_unit.prev_in_stack=stacked ? 0 : -1;
+        if(dir==0) {
+            int sx,sy;m->tile_to_screen((iptr)&sx,(iptr)&sy,x,y);
+            gfx_draw_unit((iptr)m,unit,5,sx,sy-m->half_tile_height,m->zoom,1);
+            m->redraw_area(x,y,0,human_civ[0],0);
+            int matches=hd_debug_compare_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top,clean,tolerance);
+            if(!matches)plat_fatal("Unit redraw leaves shield pixels (stacked %d, zoom %d)",stacked,m->zoom);
+        }
+        map_animate_unit_move(unit,x,y,dir,-1,-1);
+        int matches=hd_debug_compare_rect((void *)m->bits,r.left,r.top,r.right-r.left,r.bottom-r.top,clean,tolerance);
+        if(!matches)plat_fatal("Unit animation leaves pixels (stacked %d, direction %d, zoom %d)",stacked,dir,m->zoom);
+    }
+    free(clean);
+    plat_log("unit animation verified: single/stacked triremes in all 8 directions at zoom %d\n",m->zoom);
     plat_log("map redraw verified: blink, selection move, movement radii 1-3, full redraw at zoom %d\n",m->zoom);
 }
