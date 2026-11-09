@@ -23,6 +23,11 @@ progress: [STATUS.md](STATUS.md).
 | `tools/` | Build, analysis and refactoring scripts. |
 | `docs/` | Notes on the reconstruction and its verification; progress in `STATUS.md`. |
 
+The [algorithm specifications](algorithms/README.md) describe game algorithms in
+enough detail for independent implementations. The collection currently covers
+[map generation](algorithms/map-generation.md), including its random stream,
+coordinate rules, generation passes, and derived map metadata.
+
 ## Approach
 
 1. **Inventory**: Ghidra decompiles all ~4,900 functions; names and types for every function,
