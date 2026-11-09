@@ -7,7 +7,9 @@ inspect source code. The collection covers simulation, AI, scenarios, persistenc
 multiplayer, and the algorithms behind the original player interface.
 
 The backlog contains **65 specification entries: 3 written and 62 planned**.
-The IDs below are stable references for tracking work and dependencies. Planned
+The IDs below are stable references for tracking work and dependencies. Prefix
+each specification filename with its uppercase ID and a hyphen, for example
+`F01-determinism-and-arithmetic.md`. Keep this index named `README.md`. Planned
 filenames are shown as code; links lead to documents that already exist. Update
 this index when a specification is added, split, or reviewed.
 
@@ -15,7 +17,7 @@ this index when a specification is added, split, or reviewed.
 
 The target is **Civilization II Multiplayer Gold Edition 5.4.0f, patch 3**, with
 the original game rules and supported custom rules and scenarios.
-[X01: Classic compatibility contract](classic-compatibility-contract.md) defines
+[X01: Classic compatibility contract](X01-classic-compatibility-contract.md) defines
 the target, domains, observations and evidence requirements. Preserve its
 observable arithmetic, order of operations, random draws, selection tie breaks,
 state transitions, file formats, and implementation quirks. Difficulty, government,
@@ -94,12 +96,12 @@ loading logic; the main `src/auto` file is not always the complete implementatio
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| F01 | Written | [Determinism and arithmetic](determinism-and-arithmetic.md) | Both shared random generators, seeding, clock inputs, range helpers, integer and floating-point conventions, and replay input contracts. Individual algorithms own their draw order. |
-| F02 | Planned | `game-state-and-invariants.md` | Game, civilization, city, unit, map, and scenario state; IDs, lifetimes, flags, sentinels, ownership, list invariants, cached versus authoritative values, and mutation contracts. File encoding belongs to F06. |
-| F03 | Planned | `rules-and-configuration.md` | RULES.TXT parsing, section order, defaults, conversions, validation, cross-references, technology prerequisites, unit and terrain definitions, cosmic parameters, and classic game-option effects. Include custom-rule input limits. |
-| F04 | Planned | `turn-sequencing.md` | Single-player session loop; global, civilization, city, and unit phase order; year progression, turn counters, expiry/reset timing, event hooks, autosave, and end checks. Calls the mechanics below without duplicating their formulas. |
-| F05 | Planned | `game-setup-and-starting-positions.md` | New and premade worlds, tribe/leader selection, world parameter resolution, civilization allocation, starting advances and units, start-site search and relaxation, balancing, accelerated starts, and new-game resets. W02 owns terrain generation. |
-| F06 | Planned | `save-load-and-file-formats.md` | Save, scenario, and map layouts; versions, sizes, byte order, record validation, strings, event storage, state restoration, mode adaptation, derived-state rebuilds, saved settings/window state, and partial-load failure behavior. |
+| F01 | Written | [Determinism and arithmetic](F01-determinism-and-arithmetic.md) | Both shared random generators, seeding, clock inputs, range helpers, integer and floating-point conventions, and replay input contracts. Individual algorithms own their draw order. |
+| F02 | Planned | `F02-game-state-and-invariants.md` | Game, civilization, city, unit, map, and scenario state; IDs, lifetimes, flags, sentinels, ownership, list invariants, cached versus authoritative values, and mutation contracts. File encoding belongs to F06. |
+| F03 | Planned | `F03-rules-and-configuration.md` | RULES.TXT parsing, section order, defaults, conversions, validation, cross-references, technology prerequisites, unit and terrain definitions, cosmic parameters, and classic game-option effects. Include custom-rule input limits. |
+| F04 | Planned | `F04-turn-sequencing.md` | Single-player session loop; global, civilization, city, and unit phase order; year progression, turn counters, expiry/reset timing, event hooks, autosave, and end checks. Calls the mechanics below without duplicating their formulas. |
+| F05 | Planned | `F05-game-setup-and-starting-positions.md` | New and premade worlds, tribe/leader selection, world parameter resolution, civilization allocation, starting advances and units, start-site search and relaxation, balancing, accelerated starts, and new-game resets. W02 owns terrain generation. |
+| F06 | Planned | `F06-save-load-and-file-formats.md` | Save, scenario, and map layouts; versions, sizes, byte order, record validation, strings, event storage, state restoration, mode adaptation, derived-state rebuilds, saved settings/window state, and partial-load failure behavior. |
 
 Establish F01–F03 first. F04 can initially define the phase contract with named
 calls into future documents; its final review follows the city, civilization,
@@ -115,12 +117,12 @@ Start with [map.cpp](../../src/auto/map.cpp), [game.cpp](../../src/auto/game.cpp
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| W01 | Planned | `map-geometry-and-spatial-state.md` | Doubled coordinates, parity aliasing, wrapping, distances, neighborhood tables, tile access, ownership and region queries, land/water labeling, border bits, resource/shield/hut predicates, and spatial cache invalidation. |
-| W02 | Written | [Map generation](map-generation.md) | Land creation, terrain, rainfall, age operations, rivers, polar edits, region labeling, initial coarse connectivity, fertility, resources, and huts; ordered random draws and phase checks. |
-| W03 | Planned | `visibility-and-exploration.md` | Per-civilization known terrain, tile and unit visibility, revelation radii and exceptions, contact discovery hooks, map sharing, city investigation/reveal, and what movement or ownership changes refresh. |
-| W04 | Planned | `terrain-work-and-improvements.md` | Settler/engineer orders, eligibility, work accumulation and completion, irrigation sources, mining, transformation, roads, railways, fortresses, airbases, pollution cleanup, and pillaging. AI chooses jobs in A03. |
-| W05 | Planned | `pollution-and-global-warming.md` | Pollution generation from city state, probability and tile selection, global accumulation and warming thresholds, terrain changes, recalculation/revelation, and cleanup interaction. Nuclear placement calls into this state. |
-| W06 | Planned | `huts-and-barbarians.md` | Hut outcome selection and consumption, gold/advances/mercenaries/nomads/cities, uprising and sea-raid generation, placement constraints, barbarian leaders and ransom, and barbarian-specific behavior. Ordinary combat is U06. |
+| W01 | Planned | `W01-map-geometry-and-spatial-state.md` | Doubled coordinates, parity aliasing, wrapping, distances, neighborhood tables, tile access, ownership and region queries, land/water labeling, border bits, resource/shield/hut predicates, and spatial cache invalidation. |
+| W02 | Written | [Map generation](W02-map-generation.md) | Land creation, terrain, rainfall, age operations, rivers, polar edits, region labeling, initial coarse connectivity, fertility, resources, and huts; ordered random draws and phase checks. |
+| W03 | Planned | `W03-visibility-and-exploration.md` | Per-civilization known terrain, tile and unit visibility, revelation radii and exceptions, contact discovery hooks, map sharing, city investigation/reveal, and what movement or ownership changes refresh. |
+| W04 | Planned | `W04-terrain-work-and-improvements.md` | Settler/engineer orders, eligibility, work accumulation and completion, irrigation sources, mining, transformation, roads, railways, fortresses, airbases, pollution cleanup, and pillaging. AI chooses jobs in A03. |
+| W05 | Planned | `W05-pollution-and-global-warming.md` | Pollution generation from city state, probability and tile selection, global accumulation and warming thresholds, terrain changes, recalculation/revelation, and cleanup interaction. Nuclear placement calls into this state. |
+| W06 | Planned | `W06-huts-and-barbarians.md` | Hut outcome selection and consumption, gold/advances/mercenaries/nomads/cities, uprising and sea-raid generation, placement constraints, barbarian leaders and ransom, and barbarian-specific behavior. Ordinary combat is U06. |
 
 W01 depends on F01–F03. W03 uses W01 and unit identity from U01. W04 uses U01
 and F03. W05 uses city outputs from C03 and C05. W06 uses F04, U01, and C01.
@@ -136,13 +138,13 @@ human command callers and AI callers of the same operation.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| U01 | Planned | `unit-lifecycle-and-stacks.md` | Unit allocation, creation/deletion, stack links and ordering, relocation, cargo ownership, home-city links, off-map units, visibility flags, and bookkeeping. Includes cascading removal and rehoming primitives. |
-| U02 | Planned | `movement-and-zones-of-control.md` | Domain and terrain legality, movement allowance and costs, roads/railways/rivers, zones of control, occupied tiles, treaty restrictions and expulsion, entry dispatch, failed moves, and post-move effects. |
-| U03 | Planned | `pathfinding-and-goto.md` | Local flood search, cost grids, caching, coarse connectivity and waypoints, directional tie breaks, fallback movement, route continuation/replanning, and differences between route estimates and actual move execution. |
-| U04 | Planned | `unit-orders-and-activation.md` | Active-unit selection and cycling, wait/sleep/sentry/fortify/disband/home/goto/automation commands, order persistence, wake-up rules, turn resets, healing, and interrupted or exhausted orders. Delegates job and move execution. |
-| U05 | Planned | `transport-and-special-movement.md` | Boarding, cargo gathering, unloading and landing, transport loss, air fuel and basing, trireme loss, airlift, paradrop, and exceptional movement checks and costs. Combat and diplomacy consequences are cross-references. |
-| U06 | Planned | `combat-and-veterancy.md` | Attack eligibility, best-defender selection, strength modifiers, hit probability, hit points/firepower, damage loops, special unit interactions, retreat or survival where supported, stack casualties, promotion, and victory aftermath dispatch. |
-| U07 | Planned | `nuclear-attacks.md` | Delivery and interception checks, blast footprint, unit and city damage, pollution, diplomatic effects, and the exact ordering of cascading changes. Spy delivery enters through V06; ordinary battles remain U06. |
+| U01 | Planned | `U01-unit-lifecycle-and-stacks.md` | Unit allocation, creation/deletion, stack links and ordering, relocation, cargo ownership, home-city links, off-map units, visibility flags, and bookkeeping. Includes cascading removal and rehoming primitives. |
+| U02 | Planned | `U02-movement-and-zones-of-control.md` | Domain and terrain legality, movement allowance and costs, roads/railways/rivers, zones of control, occupied tiles, treaty restrictions and expulsion, entry dispatch, failed moves, and post-move effects. |
+| U03 | Planned | `U03-pathfinding-and-goto.md` | Local flood search, cost grids, caching, coarse connectivity and waypoints, directional tie breaks, fallback movement, route continuation/replanning, and differences between route estimates and actual move execution. |
+| U04 | Planned | `U04-unit-orders-and-activation.md` | Active-unit selection and cycling, wait/sleep/sentry/fortify/disband/home/goto/automation commands, order persistence, wake-up rules, turn resets, healing, and interrupted or exhausted orders. Delegates job and move execution. |
+| U05 | Planned | `U05-transport-and-special-movement.md` | Boarding, cargo gathering, unloading and landing, transport loss, air fuel and basing, trireme loss, airlift, paradrop, and exceptional movement checks and costs. Combat and diplomacy consequences are cross-references. |
+| U06 | Planned | `U06-combat-and-veterancy.md` | Attack eligibility, best-defender selection, strength modifiers, hit probability, hit points/firepower, damage loops, special unit interactions, retreat or survival where supported, stack casualties, promotion, and victory aftermath dispatch. |
+| U07 | Planned | `U07-nuclear-attacks.md` | Delivery and interception checks, blast footprint, unit and city damage, pollution, diplomatic effects, and the exact ordering of cascading changes. Spy delivery enters through V06; ordinary battles remain U06. |
 
 Write U01 before U02 and U04; U02 before U03 and U05; and U06 before U07.
 All use F01–F03 and W01. U06 hands city transfer to C09, and U07 hands pollution
@@ -158,15 +160,15 @@ recalculation from the operations that commit a city's turn.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| C01 | Planned | `city-lifecycle-and-ownership.md` | Founding eligibility, city allocation and names, initial state, radius claims, lookup, deletion, ownership-transfer primitives, and trade/unit/map bookkeeping. Capture policy belongs to C09. |
-| C02 | Planned | `city-tiles-and-worker-assignment.md` | Tile yields, specials and improvements, government modifiers, usable and blocked squares, shared radii, manual/default worker assignment, specialist allocation, and deterministic assignment tie breaks. |
-| C03 | Planned | `city-economy-and-corruption.md` | Food/shield/trade totals, capital links, corruption and waste, tax/science/luxury splits, rounding and modifier order, route contributions, and the complete city-stat recalculation pipeline. |
-| C04 | Planned | `city-happiness-and-disorder.md` | Initial citizen moods, difficulty and empire-size effects, specialists, martial law, luxury and building/wonder effects, military unhappiness, celebration and disorder thresholds, and stage-by-stage clamps. |
-| C05 | Planned | `city-growth-and-support.md` | Food boxes, granaries, growth limits, starvation, celebration growth, settler food costs, government-dependent unit support, shortage handling, and unsupported-unit removal. Specifies when each change becomes visible. |
-| C06 | Planned | `city-production-and-purchasing.md` | Build eligibility, production categories, shield accumulation, item switching and penalties, rush-buy prices, completion, repeat/default orders, capitalization, selling improvements, wonder races, and unit-placement failures. |
-| C07 | Planned | `trade-and-commodities.md` | Commodity supply/demand and refresh timing, caravan/freight selection and delivery, revenue and research bonuses, route insertion/replacement, recurring yields, food routes, distance and road/sea connections, and ownership effects. |
-| C08 | Planned | `buildings-and-wonders.md` | Improvement/wonder eligibility, acquisition, obsolescence, maintenance, uniqueness and effect scope. Provides an effect-to-consumer catalog linking each bonus to the document that owns its formula. |
-| C09 | Planned | `city-capture-and-revolt.md` | Combat capture and incited transfer, population/building losses, plunder, palace relocation, wonder control, rehoming, partisans, destruction, civilization-elimination/civil-war checks, and event/notification order. |
+| C01 | Planned | `C01-city-lifecycle-and-ownership.md` | Founding eligibility, city allocation and names, initial state, radius claims, lookup, deletion, ownership-transfer primitives, and trade/unit/map bookkeeping. Capture policy belongs to C09. |
+| C02 | Planned | `C02-city-tiles-and-worker-assignment.md` | Tile yields, specials and improvements, government modifiers, usable and blocked squares, shared radii, manual/default worker assignment, specialist allocation, and deterministic assignment tie breaks. |
+| C03 | Planned | `C03-city-economy-and-corruption.md` | Food/shield/trade totals, capital links, corruption and waste, tax/science/luxury splits, rounding and modifier order, route contributions, and the complete city-stat recalculation pipeline. |
+| C04 | Planned | `C04-city-happiness-and-disorder.md` | Initial citizen moods, difficulty and empire-size effects, specialists, martial law, luxury and building/wonder effects, military unhappiness, celebration and disorder thresholds, and stage-by-stage clamps. |
+| C05 | Planned | `C05-city-growth-and-support.md` | Food boxes, granaries, growth limits, starvation, celebration growth, settler food costs, government-dependent unit support, shortage handling, and unsupported-unit removal. Specifies when each change becomes visible. |
+| C06 | Planned | `C06-city-production-and-purchasing.md` | Build eligibility, production categories, shield accumulation, item switching and penalties, rush-buy prices, completion, repeat/default orders, capitalization, selling improvements, wonder races, and unit-placement failures. |
+| C07 | Planned | `C07-trade-and-commodities.md` | Commodity supply/demand and refresh timing, caravan/freight selection and delivery, revenue and research bonuses, route insertion/replacement, recurring yields, food routes, distance and road/sea connections, and ownership effects. |
+| C08 | Planned | `C08-buildings-and-wonders.md` | Improvement/wonder eligibility, acquisition, obsolescence, maintenance, uniqueness and effect scope. Provides an effect-to-consumer catalog linking each bonus to the document that owns its formula. |
+| C09 | Planned | `C09-city-capture-and-revolt.md` | Combat capture and incited transfer, population/building losses, plunder, palace relocation, wonder control, rehoming, partisans, destruction, civilization-elimination/civil-war checks, and event/notification order. |
 
 Write C01–C02 before the C03–C06 calculation/turn sequence. C07 feeds C03;
 C08 supplies an effect catalog that must be checked against all consumers.
@@ -183,14 +185,14 @@ Start with [civ.cpp](../../src/auto/civ.cpp),
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| V01 | Planned | `civilization-lifecycle-and-civil-war.md` | Civilization creation/reset, elimination and revival where supported, leader assignment, survival checks, civil-war eligibility and partition, transfers, and destroyed-civilization records. F05 owns initial setup orchestration. |
-| V02 | Planned | `governments-and-tax-rates.md` | Government availability, revolution/anarchy and transitions, rate caps and balancing, civilization treasury/upkeep settlement, and government effects on other systems. City-level consumption is owned by C03–C05. |
-| V03 | Planned | `research-and-technology.md` | Advance availability, prerequisite and research-goal traversal, cost calculation, beaker accumulation and completion, technology grants/theft/exchange, first-discovery effects, obsolescence and upgrades, and research-selection rules. |
-| V04 | Planned | `diplomacy-and-treaties.md` | Contact, attitude and reputation state, peace/ceasefire/alliance/war transitions, expiry, treaty violations, senate constraints, shared information, expulsion, and alliance obligations. |
-| V05 | Planned | `diplomatic-negotiation.md` | Audience/session flow, offers and demands, gifts, tribute, technology exchange, map sharing, joint wars, acceptance/refusal effects, patience, and human/AI or human/human branches. A08 owns AI valuations and policy. |
-| V06 | Planned | `espionage-and-bribery.md` | Diplomat/spy mission eligibility and menus, embassy/investigation, technology theft, sabotage, poisoning, nuclear planting, bribery and incitement prices, success/capture/escape, veteran effects, and incidents. |
-| V07 | Planned | `spaceship.md` | Part groups and dependencies, construction limits, assembly, mass/thrust/life-support/energy/success calculations, launch, travel/arrival, loss, and race state. Production belongs to C06; victory checks to V08. |
-| V08 | Planned | `scoring-victory-and-retirement.md` | Score and rating components, scenario objectives, conquest and space outcomes, retirement warnings and year rules, endgame ordering, continuation, and Hall of Fame qualification/storage rules. |
+| V01 | Planned | `V01-civilization-lifecycle-and-civil-war.md` | Civilization creation/reset, elimination and revival where supported, leader assignment, survival checks, civil-war eligibility and partition, transfers, and destroyed-civilization records. F05 owns initial setup orchestration. |
+| V02 | Planned | `V02-governments-and-tax-rates.md` | Government availability, revolution/anarchy and transitions, rate caps and balancing, civilization treasury/upkeep settlement, and government effects on other systems. City-level consumption is owned by C03–C05. |
+| V03 | Planned | `V03-research-and-technology.md` | Advance availability, prerequisite and research-goal traversal, cost calculation, beaker accumulation and completion, technology grants/theft/exchange, first-discovery effects, obsolescence and upgrades, and research-selection rules. |
+| V04 | Planned | `V04-diplomacy-and-treaties.md` | Contact, attitude and reputation state, peace/ceasefire/alliance/war transitions, expiry, treaty violations, senate constraints, shared information, expulsion, and alliance obligations. |
+| V05 | Planned | `V05-diplomatic-negotiation.md` | Audience/session flow, offers and demands, gifts, tribute, technology exchange, map sharing, joint wars, acceptance/refusal effects, patience, and human/AI or human/human branches. A08 owns AI valuations and policy. |
+| V06 | Planned | `V06-espionage-and-bribery.md` | Diplomat/spy mission eligibility and menus, embassy/investigation, technology theft, sabotage, poisoning, nuclear planting, bribery and incitement prices, success/capture/escape, veteran effects, and incidents. |
+| V07 | Planned | `V07-spaceship.md` | Part groups and dependencies, construction limits, assembly, mass/thrust/life-support/energy/success calculations, launch, travel/arrival, loss, and race state. Production belongs to C06; victory checks to V08. |
+| V08 | Planned | `V08-scoring-victory-and-retirement.md` | Score and rating components, scenario objectives, conquest and space outcomes, retirement warnings and year rules, endgame ordering, continuation, and Hall of Fame qualification/storage rules. |
 
 V02–V03 use F03 and city outputs. V04 precedes V05–V06; C09 and U07 receive
 the consequences of particular espionage missions. V07 precedes V08. F04 must
@@ -207,14 +209,14 @@ choices, and fallbacks, not just strategic intent.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| A01 | Planned | `ai-strategy-and-assessment.md` | Civilization assessment, continent policies, power/threat estimates, role counts and quotas, goals and standing goals, priorities, leader/difficulty parameters, and per-turn orchestration. |
-| A02 | Planned | `ai-city-production.md` | City surveys, defense needs, improvement/wonder/unit scoring, special-unit and spaceship choices, redundant sales, rush buying, and final production tie breaks and fallbacks. Uses C06 eligibility. |
-| A03 | Planned | `ai-settlement-and-terrain-work.md` | City-site evaluation, expansion goals, settler/engineer job selection, road links, irrigation/mining/transformation priorities, fortress placement, travel and reassignment, including human automation. |
-| A04 | Planned | `ai-ground-tactics.md` | Land-unit target and move scoring, exploration, attack/defense, garrisons, pillage, partisan behavior, healing/retreat, trespass response, persistent goto, and exhausted/no-action outcomes. |
-| A05 | Planned | `ai-naval-and-transport.md` | Ship goals, embarkation and cargo assignment, port and landing selection, overseas raids, coastal defense, unloading, and coordination with carried units and land goals. |
-| A06 | Planned | `ai-air-and-nuclear.md` | Air basing, target selection and valuation, city raids and strikes, range/fuel constraints, nuclear targeting, and coordination with movement/combat rules. |
-| A07 | Planned | `ai-special-unit-missions.md` | Caravan routes and deliveries, diplomat/spy target and mission selection, paratrooper objectives, and the specialized dispatch within unit-order selection. Barbarian-specific policy is W06. |
-| A08 | Planned | `ai-research-government-and-diplomacy.md` | Technology valuation and selection, government choice, diplomatic stance and security assessments, offer/demand pricing, alliance and war decisions, aid, relation reviews, and spaceship-race influence. |
+| A01 | Planned | `A01-ai-strategy-and-assessment.md` | Civilization assessment, continent policies, power/threat estimates, role counts and quotas, goals and standing goals, priorities, leader/difficulty parameters, and per-turn orchestration. |
+| A02 | Planned | `A02-ai-city-production.md` | City surveys, defense needs, improvement/wonder/unit scoring, special-unit and spaceship choices, redundant sales, rush buying, and final production tie breaks and fallbacks. Uses C06 eligibility. |
+| A03 | Planned | `A03-ai-settlement-and-terrain-work.md` | City-site evaluation, expansion goals, settler/engineer job selection, road links, irrigation/mining/transformation priorities, fortress placement, travel and reassignment, including human automation. |
+| A04 | Planned | `A04-ai-ground-tactics.md` | Land-unit target and move scoring, exploration, attack/defense, garrisons, pillage, partisan behavior, healing/retreat, trespass response, persistent goto, and exhausted/no-action outcomes. |
+| A05 | Planned | `A05-ai-naval-and-transport.md` | Ship goals, embarkation and cargo assignment, port and landing selection, overseas raids, coastal defense, unloading, and coordination with carried units and land goals. |
+| A06 | Planned | `A06-ai-air-and-nuclear.md` | Air basing, target selection and valuation, city raids and strikes, range/fuel constraints, nuclear targeting, and coordination with movement/combat rules. |
+| A07 | Planned | `A07-ai-special-unit-missions.md` | Caravan routes and deliveries, diplomat/spy target and mission selection, paratrooper objectives, and the specialized dispatch within unit-order selection. Barbarian-specific policy is W06. |
+| A08 | Planned | `A08-ai-research-government-and-diplomacy.md` | Technology valuation and selection, government choice, diplomatic stance and security assessments, offer/demand pricing, alliance and war decisions, aid, relation reviews, and spaceship-race influence. |
 
 A01 is the common prerequisite. Draft each specialized AI document after the
 corresponding world, unit, city, or diplomacy mechanics. Keep the orchestration
@@ -231,10 +233,10 @@ sprite/sound editors in [graphics.cpp](../../src/auto/graphics.cpp) and
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| S01 | Planned | `scenario-loading-and-parameters.md` | Scenario selection, parameter overrides, date/calendar and objective settings, human-civilization selection, asset/rule overrides, scenario reset/setup, and the scenario-loaded event boundary. |
-| S02 | Planned | `event-language-and-execution.md` | Event-file grammar and parsing, storage and references, all supported triggers and actions, matching order, random-turn checks, one-shot/persistent behavior, action ordering, event hooks, and save/reload continuation. |
-| S03 | Planned | `world-and-scenario-editors.md` | Classic cheat/editor commands that mutate map, cities, units, civilizations, money, visibility, victory, and scenario state; validation, cancellation, derived-state repairs, and scenario/event writing. |
-| S04 | Planned | `rules-and-asset-editors.md` | Terrain/unit/building/technology/tribe/cosmic rule edits, references and rename propagation, sprite and sound edits, preview/apply/cancel behavior, and text/asset round trips. Parsing semantics remain F03. |
+| S01 | Planned | `S01-scenario-loading-and-parameters.md` | Scenario selection, parameter overrides, date/calendar and objective settings, human-civilization selection, asset/rule overrides, scenario reset/setup, and the scenario-loaded event boundary. |
+| S02 | Planned | `S02-event-language-and-execution.md` | Event-file grammar and parsing, storage and references, all supported triggers and actions, matching order, random-turn checks, one-shot/persistent behavior, action ordering, event hooks, and save/reload continuation. |
+| S03 | Planned | `S03-world-and-scenario-editors.md` | Classic cheat/editor commands that mutate map, cities, units, civilizations, money, visibility, victory, and scenario state; validation, cancellation, derived-state repairs, and scenario/event writing. |
+| S04 | Planned | `S04-rules-and-asset-editors.md` | Terrain/unit/building/technology/tribe/cosmic rule edits, references and rename propagation, sprite and sound edits, preview/apply/cancel behavior, and text/asset round trips. Parsing semantics remain F03. |
 
 F03 and F06 precede this group. S02 must be cross-checked at its F04, U06, C09,
 V01, V03, and V05 call sites. S03–S04 use existing mutation and parser contracts;
@@ -250,11 +252,11 @@ reconcile and link or relocate that material when N05 is written.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| N01 | Planned | `multiplayer-session-and-lobby.md` | Discovery/join/host setup, player slots and civilization assignment, passwords, scenario/world negotiation, startup waits, disconnects, lost-player handling, and host handoff. |
-| N02 | Planned | `network-commands-and-state-synchronization.md` | Game message schema and dispatch, validation, authority, command routing, busy/lock rules, batching, state sections, checksums/diffs, resynchronization, and join/load state transfer. |
-| N03 | Planned | `multiplayer-turn-sequencing.md` | Host/client phase state machines, AI versus local/remote human turns, production/movement barriers, simultaneous movement options, timers/timeouts, completion signals, and RNG ownership. Uses F04's simulation phases. |
-| N04 | Planned | `hotseat-and-player-handoff.md` | Local multiplayer player masks, passwords, turn transitions, concealed views and knowledge, per-player cursor/window state, save/load adaptation, and end/session transitions. Record unreachable e-mail paths separately. |
-| N05 | Planned | `transport-and-wire-protocol.md` | Classic XDaemon TCP framing, UDP discovery, IDs/routing, handshake, buffers, callback ordering, errors and shutdown. Inventory IPX/SPX, modem, serial, and lobby transport contracts, distinguishing original support, reconstruction support, and evidence gaps. |
+| N01 | Planned | `N01-multiplayer-session-and-lobby.md` | Discovery/join/host setup, player slots and civilization assignment, passwords, scenario/world negotiation, startup waits, disconnects, lost-player handling, and host handoff. |
+| N02 | Planned | `N02-network-commands-and-state-synchronization.md` | Game message schema and dispatch, validation, authority, command routing, busy/lock rules, batching, state sections, checksums/diffs, resynchronization, and join/load state transfer. |
+| N03 | Planned | `N03-multiplayer-turn-sequencing.md` | Host/client phase state machines, AI versus local/remote human turns, production/movement barriers, simultaneous movement options, timers/timeouts, completion signals, and RNG ownership. Uses F04's simulation phases. |
+| N04 | Planned | `N04-hotseat-and-player-handoff.md` | Local multiplayer player masks, passwords, turn transitions, concealed views and knowledge, per-player cursor/window state, save/load adaptation, and end/session transitions. Record unreachable e-mail paths separately. |
+| N05 | Planned | `N05-transport-and-wire-protocol.md` | Classic XDaemon TCP framing, UDP discovery, IDs/routing, handshake, buffers, callback ordering, errors and shutdown. Inventory IPX/SPX, modem, serial, and lobby transport contracts, distinguishing original support, reconstruction support, and evidence gaps. |
 
 N05 supplies transport contracts; N01–N02 supply session and command contracts;
 N03 joins them to F04. N04 depends on F04, F06, and W03 and can be written
@@ -273,16 +275,16 @@ for observable timing, rasterization, and input behavior where needed.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| P01 | Planned | `map-projection-and-interaction.md` | Tile/screen transforms, zoom, clipping, wrapping views, centering and scrolling, hit testing, cursor movement, selection, drag behavior, and multiwindow view coordinates. |
-| P02 | Planned | `map-rendering-and-minimap.md` | Terrain/coast/river/road composition, resources, cities, units and stack selection, fog and explored edges, labels, blink/animation layers, minimap colors and viewport rectangles, and redraw order. |
-| P03 | Planned | `graphics-and-asset-processing.md` | Original resource lookup and asset overrides, sheet extraction and hotspot metadata, palettes and transparency, sprite scaling, clipping and blitting, surface composition, and image-format behavior visible to the game. |
-| P04 | Planned | `text-and-dialogs.md` | Label/text-section parsing, variable substitution, numeric/year/name formatting, wrapping and measurement, dialog layout, lists and controls, modal results, keyboard defaults, and cancellation semantics. |
-| P05 | Planned | `input-and-command-dispatch.md` | Original menus, keyboard/mouse dispatch, view/move modes, active-unit and city command routing, enable/disable conditions, modal input gating, queued input, and timer/message ordering relevant to behavior. |
-| P06 | Planned | `city-interface.md` | City resource and citizen displays, worker/specialist interactions, production and purchase flows, supported/present units, city cycling, city-view composition, refresh timing, and close/delete/reentrancy behavior. |
-| P07 | Planned | `advisors-reports-and-history.md` | Advisor aggregates and lists, demographics, power/history graphs, top cities, intelligence and casualty reports, score/endgame displays, sorting/ties, visibility filters, and refresh behavior. Simulation formulas remain with their owners. |
-| P08 | Planned | `civilopedia-and-technology-tree.md` | Entry construction from rules/text, lookup and navigation, hyperlinks, prerequisite/tree layout, history/description views, and classic rule-derived statistics. |
-| P09 | Planned | `council-and-throne-room.md` | Advisor-opinion and clip selection, presentation sequencing, throne-room qualification and piece upgrades, layout, interaction, and persistent display state. |
-| P10 | Planned | `audio-video-and-animation.md` | Effect and music selection, spatial positioning, mixing/resampling contracts, stream scheduling, video ranges and callbacks, map/combat/nuclear animations, skip/cancel behavior, and timing. Separate gameplay effects from presentation completion. |
+| P01 | Planned | `P01-map-projection-and-interaction.md` | Tile/screen transforms, zoom, clipping, wrapping views, centering and scrolling, hit testing, cursor movement, selection, drag behavior, and multiwindow view coordinates. |
+| P02 | Planned | `P02-map-rendering-and-minimap.md` | Terrain/coast/river/road composition, resources, cities, units and stack selection, fog and explored edges, labels, blink/animation layers, minimap colors and viewport rectangles, and redraw order. |
+| P03 | Planned | `P03-graphics-and-asset-processing.md` | Original resource lookup and asset overrides, sheet extraction and hotspot metadata, palettes and transparency, sprite scaling, clipping and blitting, surface composition, and image-format behavior visible to the game. |
+| P04 | Planned | `P04-text-and-dialogs.md` | Label/text-section parsing, variable substitution, numeric/year/name formatting, wrapping and measurement, dialog layout, lists and controls, modal results, keyboard defaults, and cancellation semantics. |
+| P05 | Planned | `P05-input-and-command-dispatch.md` | Original menus, keyboard/mouse dispatch, view/move modes, active-unit and city command routing, enable/disable conditions, modal input gating, queued input, and timer/message ordering relevant to behavior. |
+| P06 | Planned | `P06-city-interface.md` | City resource and citizen displays, worker/specialist interactions, production and purchase flows, supported/present units, city cycling, city-view composition, refresh timing, and close/delete/reentrancy behavior. |
+| P07 | Planned | `P07-advisors-reports-and-history.md` | Advisor aggregates and lists, demographics, power/history graphs, top cities, intelligence and casualty reports, score/endgame displays, sorting/ties, visibility filters, and refresh behavior. Simulation formulas remain with their owners. |
+| P08 | Planned | `P08-civilopedia-and-technology-tree.md` | Entry construction from rules/text, lookup and navigation, hyperlinks, prerequisite/tree layout, history/description views, and classic rule-derived statistics. |
+| P09 | Planned | `P09-council-and-throne-room.md` | Advisor-opinion and clip selection, presentation sequencing, throne-room qualification and piece upgrades, layout, interaction, and persistent display state. |
+| P10 | Planned | `P10-audio-video-and-animation.md` | Effect and music selection, spatial positioning, mixing/resampling contracts, stream scheduling, video ranges and callbacks, map/combat/nuclear animations, skip/cancel behavior, and timing. Separate gameplay effects from presentation completion. |
 
 P03–P04 define shared presentation primitives. P01 uses W01; P02 adds W03;
 P05 routes into U04 and city/civilization commands. P06–P09 consume the relevant
@@ -297,8 +299,8 @@ checked. They do not replace the subsystem specifications.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| X01 | Written | [Classic compatibility contract](classic-compatibility-contract.md) | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use BUGS.md to locate differences. |
-| X02 | Planned | `whole-game-conformance.md` | Fixture/state format, random and external-input capture, phase snapshots, integration scenarios, expected outputs, source/function coverage ownership, and explicit validation gaps across the complete game. |
+| X01 | Written | [Classic compatibility contract](X01-classic-compatibility-contract.md) | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use BUGS.md to locate differences. |
+| X02 | Planned | `X02-whole-game-conformance.md` | Fixture/state format, random and external-input capture, phase snapshots, integration scenarios, expected outputs, source/function coverage ownership, and explicit validation gaps across the complete game. |
 
 X01 establishes the compatibility and evidence contract. Define X02's concrete
 fixture format next. Expand X02 as specifications gain conformance cases;
@@ -326,18 +328,18 @@ contracts are established.
 
 The next concrete work items are:
 
-- [x] Write [X01, Classic compatibility contract](classic-compatibility-contract.md),
+- [x] Write [X01, Classic compatibility contract](X01-classic-compatibility-contract.md),
   including evidence conventions and required fixture information.
 - [ ] Establish X02's concrete fixture format and executable conformance cases.
 - [ ] Review W02 against the classic target; record its source revision, covered
   cases, and any differences from current classic paths without changing its
   pinned behavior silently.
-- [x] Write [F01, Determinism and arithmetic](determinism-and-arithmetic.md),
+- [x] Write [F01, Determinism and arithmetic](F01-determinism-and-arithmetic.md),
   and reference it from W02 for shared primitives and numeric vectors.
-- [ ] Write F02, `game-state-and-invariants.md`.
-- [ ] Write F03, `rules-and-configuration.md`.
-- [ ] Write W01, `map-geometry-and-spatial-state.md`.
-- [ ] Draft F04, `turn-sequencing.md`, with an explicit ordered call graph and
+- [ ] Write F02, `F02-game-state-and-invariants.md`.
+- [ ] Write F03, `F03-rules-and-configuration.md`.
+- [ ] Write W01, `W01-map-geometry-and-spatial-state.md`.
+- [ ] Draft F04, `F04-turn-sequencing.md`, with an explicit ordered call graph and
   unresolved downstream contracts.
 
 ## Ownership and coverage rules

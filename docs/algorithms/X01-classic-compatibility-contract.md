@@ -12,7 +12,7 @@ The inspected OpenCiv2 revision is
 `/home/peter/project/civ2` at
 `4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`. These are evidence revisions, not
 alternative game versions. Earlier specifications retain their own explicitly
-pinned contracts until reviewed; in particular, [W02](map-generation.md) pins
+pinned contracts until reviewed; in particular, [W02](W02-map-generation.md) pins
 OpenCiv2 `1ff87e33fbec8b7be8c4bf98c77709e16aad4f31`.
 
 ## 1. The behavior being reproduced
@@ -37,7 +37,7 @@ Do not infer freedom to reorder work from matching return values. A redraw can
 consume random state; a message pump can dispatch a callback; a failed attempt
 can consume a draw or change a cache. Each owning document must state these
 effects or constrain its boundary so they cannot occur. F01 gives the shared
-[determinism contract](determinism-and-arithmetic.md).
+[determinism contract](F01-determinism-and-arithmetic.md).
 
 No universal numeric tolerance applies. Integer state and file/protocol fields
 are exact. Floating operations follow the specified precision and rounding;
@@ -226,7 +226,7 @@ narrow its supported domain; missing behavior must not be hidden by a status.
 | [Original bug ledger](../BUGS.md), [extras](../EXTRAS.md) | Selectable changes, always-on repairs, stale-state assumptions and optional behavior. |
 | [Status and coverage](../STATUS.md) | PBEM reachability, provider gaps and finite replay coverage. |
 | [Replay comparison](../../harness/compare.py), [determinism hook](../../hook/determinism.c), [native replay](../../src/platform/replay.c) | Scope of screenshot, primary-random and media-request observations. |
-| [W02](map-generation.md), [F01](determinism-and-arithmetic.md) | Existing scoped algorithm and shared arithmetic contracts. |
+| [W02](W02-map-generation.md), [F01](F01-determinism-and-arithmetic.md) | Existing scoped algorithm and shared arithmetic contracts. |
 
 This document was checked against those source conditions and evidence notes.
 It introduces no claim that an original executable or whole-game conformance

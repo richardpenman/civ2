@@ -14,10 +14,10 @@ material are collected at the end. “Must” means necessary for matching this 
 including where a more conventional algorithm would produce a different result.
 
 Shared numeric operations, random primitives and clock-to-seed conversion are
-specified in [F01: Determinism and arithmetic](determinism-and-arithmetic.md).
+specified in [F01: Determinism and arithmetic](F01-determinism-and-arithmetic.md).
 Those definitions agree with the helpers at this document's pinned revision;
 their extraction does not change its generation behavior. The
-[classic compatibility contract (X01)](classic-compatibility-contract.md)
+[classic compatibility contract (X01)](X01-classic-compatibility-contract.md)
 defines evidence and equivalence claims; a complete review of this pinned
 generation implementation against the original program remains separate work.
 
@@ -130,7 +130,7 @@ Where a procedure says **full byte**, do not mask terrain flags before comparing
 
 ## Arithmetic and geometry
 
-Use [F01's numeric model](determinism-and-arithmetic.md#1-numeric-model-and-notation)
+Use [F01's numeric model](F01-determinism-and-arithmetic.md#1-numeric-model-and-notation)
 for widths, signedness, division, shifts, overflow and narrow stores. Ordinary
 scalar calculations here use its default `i32` model unless otherwise stated;
 most do not overflow within the valid dimension and parameter domain. `clamp`
@@ -138,7 +138,7 @@ below means F01's `clampAB` helper.
 
 ### Random draws
 
-`R()` means F01's [primaryNext](determinism-and-arithmetic.md#3-primary-generator),
+`R()` means F01's [primaryNext](F01-determinism-and-arithmetic.md#3-primary-generator),
 operating on shared state `S`. Map generation does not use the secondary stream.
 The map-specific guarded helper is:
 
@@ -152,7 +152,7 @@ Use `pick` only where stated. Other expressions such as `R()%2` call the primary
 generator directly, with F01's draw-consumption and modulo semantics.
 
 On a new map, set `P = mapPatternSeedFromTicks(ticks)` using
-[F01's map-pattern conversion](determinism-and-arithmetic.md#game-ticks).
+[F01's map-pattern conversion](F01-determinism-and-arithmetic.md#game-ticks).
 A retained map keeps its existing `P`. The generation phases below own the order
 of random draws and map edits; F01 owns the shared primitives they invoke.
 
@@ -960,8 +960,8 @@ gameplay.
 
 ### Small deterministic vectors
 
-Run [F01's primary vectors](determinism-and-arithmetic.md#primary-vectors) and
-[tick/pattern-seed vectors](determinism-and-arithmetic.md#game-ticks) for the
+Run [F01's primary vectors](F01-determinism-and-arithmetic.md#primary-vectors) and
+[tick/pattern-seed vectors](F01-determinism-and-arithmetic.md#game-ticks) for the
 shared primitives. The following checks cover map-specific behavior without
 needing the game's UI or assets:
 
@@ -1033,7 +1033,7 @@ the source.
 | Tile storage, wrap, allocation, seed | Same file, `tile_at`, `0x005b8931`; `map_wrap_x`, `0x005ae052`; `map_alloc`, `0x005b7fe0`; `map_new_seed`, `0x005b85fe` |
 | Resources and huts | Same file, `tile_resource`, `0x005b8ee1`; `tile_has_hut`, `0x005b8ffa` |
 | Presets, custom limits, parameter selection | [game.cpp](../../src/auto/game.cpp), `setup_choose_map_size`, `setup_custom_world`, and new-game callers |
-| Shared arithmetic, random generator and seed conversion | [F01 traceability](determinism-and-arithmetic.md#7-source-traceability-and-validation) |
+| Shared arithmetic, random generator and seed conversion | [F01 traceability](F01-determinism-and-arithmetic.md#7-source-traceability-and-validation) |
 | Map and region layouts | [civ2types.h](../../src/include/civ2types.h), `MapHeader`, `Tile`, `Landmass` |
 | Ordered neighbor constants | [data.bin](../../data/image/data.bin), addresses `0x0062833c`, `0x00628344`, `0x00628350`, `0x00628360`, `0x00628370`, `0x006283a0`, `0x006283d0`, `0x006283e0`; section mapping in [layout.json](../../data/image/layout.json) |
 

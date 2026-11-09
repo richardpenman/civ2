@@ -1,11 +1,11 @@
 # Determinism and arithmetic
 
 **ID:** F01. **Status:** Written. **Target:** Civilization II Multiplayer Gold
-Edition **5.4.0f, patch 3**, under the [X01 contract](classic-compatibility-contract.md).
+Edition **5.4.0f, patch 3**, under the [X01 contract](X01-classic-compatibility-contract.md).
 
 This specification defines numeric operations, the two shared random streams,
 seed changes, clock-derived inputs and the information required for deterministic
-execution. Individual algorithms own their precise call order. [W02](map-generation.md)
+execution. Individual algorithms own their precise call order. [W02](W02-map-generation.md)
 uses these shared definitions; its `R` and `S` correspond to `primaryNext` and
 `S` below.
 
@@ -172,7 +172,7 @@ Many callers use `primaryNext() % n` for a positive `n`. Preserve the modulo
 bias and the fact that this consumes a draw even for `n=1`. It is not rejection
 sampling. Callers must specify their handling of zero or negative bounds.
 
-W02's [map-local `pick` helper](map-generation.md#random-draws) has a guard that
+W02's [map-local `pick` helper](W02-map-generation.md#random-draws) has a guard that
 can skip the draw. Use that helper only where W02 calls it. Do not introduce its
 guard into an unconditional primary draw or the secondary inclusive range.
 
