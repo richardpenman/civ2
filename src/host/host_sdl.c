@@ -343,6 +343,8 @@ void host_present(const void *pixels, int stride)
         return;
     gpu_window_target();
     SDL_UpdateTexture(texture, NULL, pixels, stride);
+    /* Keep the unused window border independent of earlier GPU fills. */
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);

@@ -314,6 +314,9 @@ sprite blending, enlargement, opaque copies, window composition and presentation
 on the GPU. Indexed planes remain available for legacy game queries. Windows
 prefers SDL's Direct3D 11 driver; other platforms use SDL's selected driver.
 `SDL_RENDER_DRIVER` can override the driver. Command batching stays enabled.
+Both presentation paths clear the physical window to black before copying the
+desktop. Integer scaling can leave a narrow unused border at the bottom; its
+color must not inherit the latest unit or terrain fill and flash during blinking.
 
 Single-player full redraws poll events about every 2 ms and present once the
 redraw is complete, avoiding partial-frame composition and idle sleeps between
@@ -502,7 +505,9 @@ The compositor also checks thin-detail coverage and clipped/unclipped equality
 for unit, flag and shield dimensions at every map zoom from -7 through +8.
 `python tools/test_hd_gpu.py` compares the actual SDL backend with CPU pixels at
 densities 1â€“4, including colored text gamma, source/destination clipping, overlap,
-captures, inversion, input scaling, resize and thin details. It needs an
+captures, inversion, input scaling, resize and thin details. A separate
+before-present pixel check covers the physical window's bottom edge at exact and
+uneven integer scales while offscreen fill colors change. It needs an
 accelerated display session. Set `CC` and `SDL2_DIR` for a Windows SDL prefix;
 otherwise it uses `sdl2-config`. Direct3D 11, Direct3D 9 and OpenGL passed on the
 Windows host. CPU tests also verify the capability fallback without SDL.

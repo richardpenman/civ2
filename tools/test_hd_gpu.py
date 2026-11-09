@@ -36,6 +36,10 @@ def main():
                     str(ROOT/'src/host/host_gpu.c'), *libs, '-lm', '-o', str(exe)], check=True)
     for key in ('OriginalGraphics','CIV2_TEST_HD','SDL_VIDEODRIVER'):
         env.pop(key,None)
+    present_exe = out/('hd-gpu-present.exe' if os.name == 'nt' else 'hd-gpu-present')
+    subprocess.run([os.environ.get('CC','cc'), '-std=gnu99', '-O2', *atlas_flags, *cflags,
+                    str(ROOT/'tests/hd_gpu_present.c'), *libs, '-lm', '-o', str(present_exe)], check=True)
+    subprocess.run([str(present_exe)], env=env, check=True)
     for density in range(1,5):
         subprocess.run([str(exe),str(out)], env=dict(env,GraphicsDensity=str(density)), check=True)
 

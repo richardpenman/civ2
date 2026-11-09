@@ -506,6 +506,8 @@ int host_gpu_present(int id)
     SDL_SetTextureBlendMode(t->texture,SDL_BLENDMODE_NONE);
     SDL_SetTextureColorMod(t->texture,255,255,255);
     SDL_SetTextureScaleMode(t->texture,SDL_ScaleModeLinear);
+    /* Integer scaling can leave a window border outside the desktop. */
+    SDL_SetRenderDrawColor(gpu,0,0,0,255);
     if (SDL_RenderClear(gpu) || SDL_RenderCopy(gpu,t->texture,NULL,NULL)) return 0;
     SDL_RenderPresent(gpu);
     return 1;
