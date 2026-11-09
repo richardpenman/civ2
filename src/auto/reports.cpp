@@ -2342,6 +2342,81 @@ void __cdecl top_cities_show(iptr report_civ)
   return;
 }
 
+/* HD fonts need measured columns: the original 142-pixel value column cannot
+ * hold land areas, and right-aligned rival statistics can run into the rank.
+ * Collect the report's text before laying it out, keeping its localized
+ * strings, colors and ranking rules intact. */
+struct DemographicsCell {
+  char text[TEXTBUF_SIZE];
+  TextStyle style;
+  int column,y;
+};
+struct DemographicsTable {
+  DemographicsCell cells[13 * 4];
+  int count;
+};
+static DemographicsTable *demographics_table;
+
+static void demographics_text(int column,const char *text,int x,int y,int width=0)
+{
+  if (demographics_table) {
+    DemographicsCell &cell = demographics_table->cells[demographics_table->count++];
+    snprintf(cell.text,sizeof cell.text,"%s",text);
+    cell.style = text_style;
+    cell.column = column;
+    cell.y = y;
+  }
+  else if (column == 3) gfx_draw_text_right(text,x,y,width);
+  else gfx_draw_text(text,x,y);
+}
+
+static void demographics_draw_table(DemographicsTable &table,int left,int right)
+{
+  if (!hd_enabled) return;
+  auto saved_style = text_style;
+  DibSurface *surface = (DibSurface *)&advisor_state.window;
+  RECT saved_clip;
+  surface->get_clip(&saved_clip);
+  GameFont compact;
+  compact.init_empty();
+  ON_SCOPE_EXIT(text_style=saved_style;surface->set_clip(&saved_clip);compact.destroy());
+  GameFont *font = (GameFont *)&advisor_font_block.advisor_font;
+  int line_height = font->line_spacing();
+  int widths[4],total;
+  const int gap = 12;
+  for (int size=18;;size--) {
+    if (size < 18) { compact.set(0,size);font = &compact; }
+    memset(widths,0,sizeof widths);
+    for (int i=0;i<table.count;i++) {
+      DemographicsCell &cell = table.cells[i];
+      int w = font->text_width(cell.text) + 2; /* include the HD shadow */
+      if (w > widths[cell.column]) widths[cell.column] = w;
+    }
+    total = widths[0] + widths[1] + widths[2] + widths[3];
+    if (total + gap * 3 <= right - left || size == 6) break;
+  }
+  /* Bound unusually long translated/custom strings even at the minimum font
+   * size. Ordinary reports fit at their measured widths without clipping. */
+  if (total + gap * 3 > right - left)
+    for (int col=0;col<4;col++) widths[col] = widths[col] * (right-left-gap*3) / total;
+  int x[4] = {left,0,0,0};
+  for (int col=1;col<4;col++) x[col] = x[col-1] + widths[col-1] + gap;
+  x[3] = right - widths[3];
+  for (int i=0;i<table.count;i++) {
+    DemographicsCell &cell = table.cells[i];
+    int col = cell.column;
+    RECT bounds = {x[col],cell.y,x[col]+widths[col],cell.y+advisor_state.row_height};
+    RECT clip;
+    IntersectRect(&clip,&saved_clip,&bounds);
+    surface->set_clip(&clip);
+    text_style = cell.style;
+    text_style.font = font;
+    int y = cell.y + (line_height - font->line_spacing()) / 2;
+    if (col == 3) gfx_draw_text_right(cell.text,x[col],y,widths[col]);
+    else gfx_draw_text(cell.text,x[col],y);
+  }
+}
+
 /* 004331d1 auto */
 void __cdecl
 demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,int right_x)
@@ -2386,7 +2461,7 @@ demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,i
   }
   text_clear();
   text_append_label(rank + 0x189);
-  gfx_draw_text((const char *)&textbuf.buf,left_x,y);
+  demographics_text(2,(const char *)&textbuf.buf,left_x,y);
   if ((civ != civ2) &&
      (((((*(byte *)&civs[human_civ[0]].treaties[civ2] & TREATY_EMBASSY) != 0 ||
         (has_wonder = civ_has_wonder(human_civ[0],WONDER_UNITED_NATIONS), has_wonder != 0)) ||
@@ -2406,7 +2481,7 @@ demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,i
     bg_color = 0x12;
     color = civ_color_secondary(civ2);
     text_set_colors(color,bg_color,shadow_color,shadow_color2);
-    gfx_draw_text_right((const char *)&textbuf.buf,left_x,y,right_x - left_x);
+    demographics_text(3,(const char *)&textbuf.buf,left_x,y,right_x - left_x);
   }
   return;
 }
@@ -2499,7 +2574,7 @@ static void demographics_row_label(i32 label_color,int label_x,int row_y,int id)
   value = label_x;
   text_y = row_y;
   label = (iptr)label_string(label_table.string_ids[id]);
-  gfx_draw_text((const char *)label,value,text_y);
+  demographics_text(0,(const char *)label,value,text_y);
 }
 
 /* Part of demographics_draw (00433434): the rule under a row, and the
@@ -2545,6 +2620,11 @@ void __cdecl demographics_draw(void)
   int literacy[8];
   int line_right;
   
+  DemographicsTable table;
+  table.count = 0;
+  DemographicsTable *saved_table = demographics_table;
+  demographics_table = hd_enabled ? &table : nullptr;
+  ON_SCOPE_EXIT(demographics_table=saved_table);
   civ = advisor_state.report_civ;
   demographics_gather(life_expect,pollution,approval,food_surplus,land_area,income,literacy,gnp,shields2,
                       population);
@@ -2584,7 +2664,7 @@ void __cdecl demographics_draw(void)
   value = label_x;
   text_y = row_y;
   label = (iptr)label_string(label_table.string_ids[0x175]);
-  gfx_draw_text((const char *)label,value,text_y);
+  demographics_text(0,(const char *)label,value,text_y);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
     value = population[civ2];
     if (value < 2) {
@@ -2595,7 +2675,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_43,rank_x,right_x);
@@ -2607,7 +2687,7 @@ void __cdecl demographics_draw(void)
     if (civ2 == civ) {
       text_clear();
       text_append_population(civ2,0xffffffff);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_0000,rank_x,right_x);
@@ -2622,7 +2702,7 @@ void __cdecl demographics_draw(void)
       text_append_label(0x188);
       text_append_space();
       text_append((const char *)&str_empty_44);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_m,rank_x,right_x);
@@ -2635,7 +2715,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x182);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2650,7 +2730,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_000);
       text_append_label(0x183);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_000_2,rank_x,right_x);
@@ -2681,7 +2761,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_45,rank_x,right_x);
@@ -2703,7 +2783,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,-row_y,(iptr)&str_empty_46,rank_x,right_x);
@@ -2718,7 +2798,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_0);
       text_append_label(0x184);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2735,7 +2815,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x185);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2752,7 +2832,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2] % 10);
       text_append_space();
       text_append_label(0x187);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
     values[civ2] = values[civ2] / 10;
   }
@@ -2766,7 +2846,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x185);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)suffix_buf,rank_x,right_x);
@@ -2787,7 +2867,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_empty_49);
       text_append_label(0x189);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_50,rank_x,right_x);
@@ -2798,10 +2878,11 @@ void __cdecl demographics_draw(void)
     if (civ2 == civ) {
       text_clear();
       text_append_long(values[civ2]);
-      gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
+      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_51,rank_x,right_x);
+  demographics_draw_table(table,label_x,right_x);
   ((DibSurface *)((i8 *)&advisor_state.window))->wnd_blit_surface();
   return;
 }

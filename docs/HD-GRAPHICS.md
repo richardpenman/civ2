@@ -293,6 +293,9 @@ Non-map enhancements include:
   or wonder sprites.
 - Numerical food and production meters, live report row backgrounds, clearer
   button faces, scalable text and authored interface graphics.
+- Demographics columns measured from the displayed labels, values, ranks and
+  rival statistics. Long values such as land area keep a gap before their rank;
+  crowded reports use a smaller body font while preserving column alignment.
 
 Panorama placement adapts the review's layout to live selected objects using
 rectangle overlap scoring; it does not depend on review fixtures or consume RNG.
