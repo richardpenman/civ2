@@ -91,6 +91,15 @@ a wrapping counter, a terrain test that excludes marked tiles, or a tie-break
 order. File and wire formats still require exact encodings at their external
 boundaries; those encodings do not dictate an implementation's internal layout.
 
+Include cross-references when they supply a required definition, describe an
+invoked operation, or explain a relevant input, state change or scope boundary.
+A shared-primitive specification does not need backlinks merely to list its
+consumers. Keep examples self-contained when they illustrate the local algorithm,
+and put general navigation and document ownership in this README. Retain
+references to caller behavior when it affects the specified state, such as
+reseeding a shared random stream. Evidence links belong in the traceability
+appendix.
+
 ## Document backlog
 
 ### Foundations and game orchestration

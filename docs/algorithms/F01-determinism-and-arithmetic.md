@@ -5,9 +5,7 @@ Edition **5.4.0f, patch 3**, under the [X01 contract](X01-classic-compatibility-
 
 This specification defines numeric operations, the two shared random streams,
 seed changes, clock-derived inputs and the information required for deterministic
-execution. Individual algorithms own their precise call order. [W02](W02-map-generation.md)
-uses these shared definitions; its `R` and `S` correspond to `primaryNext` and
-`S` below.
+execution. Individual algorithms own their precise call order.
 
 Evidence is pinned to OpenCiv2
 `ce18e5e52e19870cf1598651eee7c1a97d517519` and the independent reconstruction in
@@ -178,10 +176,6 @@ Many callers use `primaryNext() % n` for a positive `n`. Preserve the modulo
 bias and the fact that this consumes a draw even for `n=1`. It is not rejection
 sampling. Callers must specify their handling of zero or negative bounds.
 
-W02's [map-local `pick` helper](W02-map-generation.md#random-draws) has a guard that
-can skip the draw. Use that helper only where W02 calls it. Do not introduce its
-guard into an unconditional primary draw or the secondary inclusive range.
-
 ### Primary vectors
 
 Starting from `S=1`, successive calls return:
@@ -199,9 +193,9 @@ Starting from `S=1`, successive calls return:
 | 9 | 26962 | `69521988` |
 | 10 | 24464 | `df90722b` |
 
-Starting from `S=1`, W02's `pick(1)` returns zero and leaves `S=1`.
-Starting separately from `S=1`, `primaryNext()%1` returns zero and leaves
-`S=0x0029e2c0`. Identical return values do not establish identical execution.
+Starting from `S=1`, `primaryNext()%1` returns zero and leaves `S=0x0029e2c0`.
+Returning zero without calling `primaryNext` would leave `S=1` instead.
+Identical return values do not establish identical execution.
 
 ## 4. Secondary generator and inclusive range
 
@@ -354,11 +348,11 @@ newMapPatternSeed():
     P = mapPatternSeedFromTicks(gameTicks())
 ```
 
-There is one tick query and no random draw. For W02, its input named `ticks` is
-this **already converted game-tick value**, not raw milliseconds. A retained map
-keeps its existing `P` unless a caller explicitly requests reseeding; the world
-loader/editor's reseeding decisions belong to F05/S03. Coordinate predicates
-using `P` belong to W01 and remain embedded in W02 for now.
+`newMapPatternSeed` makes one tick query and no random draw. The input to
+`mapPatternSeedFromTicks` is an **already converted game-tick value**, not raw
+milliseconds. A supplied map seed remains unchanged unless a caller explicitly
+invokes a seed-changing operation; these primitives do not decide when a map
+should be reseeded.
 
 | Raw milliseconds | Game ticks | New `P` |
 | --- | --- | --- |
@@ -427,7 +421,8 @@ processor architecture.
 Original scalar `char`, `short`, `int`, `long` and pointers occupy 8, 16, 32, 32
 and 32 bits respectively, with plain `char` signed in this build. Multi-byte
 memory/file values are little-endian where the relevant record format exposes
-their bytes. Record layouts and pointer replacements belong to F02/F06.
+their bytes. Specific record layouts and pointer replacements are outside this
+numeric primitive contract.
 
 The original RNG states occupy 32-bit words. Decode them as nonnegative `u32`
 values for the recurrences, even where reconstructed source declares a signed
@@ -559,7 +554,7 @@ conformance. Existing [unit-case inventory](../../tests/unit/cases.tsv) includes
 the secondary routines, but a zero primary-random-call count there does not mean
 the secondary routine consumed no randomness.
 
-Remaining integration work belongs to X02 and consuming algorithms: complete
-capture of both streams, callback/draw ordering, save/load and second-session
-state, city-view-to-AI interactions, and mode-specific scheduling. This document
-does not establish all those call sequences simply by defining their primitives.
+These primitive checks do not establish complete capture of both streams,
+callback/draw ordering, save/load and second-session state, city-view-to-AI
+interactions, or mode-specific scheduling. Those require integration cases at
+the relevant algorithm boundaries.
