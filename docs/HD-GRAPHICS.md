@@ -291,8 +291,13 @@ Non-map enhancements include:
   technology editor retains its category/era preview because it edits that shared
   sprite. Dialogs preserve their original layout and any accompanying building
   or wonder sprites.
-- Numerical food and production meters, live report row backgrounds, clearer
-  button faces, scalable text and authored interface graphics.
+- Numerical food and production meters with turns remaining at the current net
+  output, rounded up. Food counts down to full storage, not population growth;
+  full storage, deficits and stalled output have explicit labels. Production
+  accounts for support, waste and disorder; purchased builds show one turn.
+  Counts update with workers and production choices, and fit all city sizes.
+  Live report row backgrounds, clearer button faces, scalable text and authored
+  interface graphics.
 - Demographics columns measured from the displayed labels, values, ranks and
   rival statistics. Long values such as land area keep a gap before their rank;
   crowded reports use a smaller body font while preserving column alignment.
@@ -511,6 +516,9 @@ uneven integer scales while offscreen fill colors change. It needs an
 accelerated display session. Set `CC` and `SDL2_DIR` for a Windows SDL prefix;
 otherwise it uses `sdl2-config`. Direct3D 11, Direct3D 9 and OpenGL passed on the
 Windows host. CPU tests also verify the capability fallback without SDL.
+`python tests/source_probe.py tests/hd_stockpile_test.cpp` checks countdown
+rounding, full and stalled stockpiles, granary markers and all three city sizes.
+`harness/hd/city-stockpiles.txt` exercises live city and production changes.
 The atlas tests compare packed sprites against private textures under clipping,
 enlargement, tinting, alpha and mixed filtering. They cover a full 2,048-quad
 batch, deletion of queued sources, handle reuse, and page lifetime. Add

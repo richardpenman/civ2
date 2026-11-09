@@ -13576,6 +13576,11 @@ void CityWindow::draw_resource_map(int blit)
     gfx_reset_zoom_scale();
     if (blit != 0) {
       wnd_blit_surface_rect((iptr)(&resource_map_rect));
+      if (hd_enabled) {
+        /* Partial resource redraws also change the stockpile countdowns. */
+        draw_food_box(1);
+        draw_production(1);
+      }
     }
   }
   return;
@@ -13615,7 +13620,9 @@ void CityWindow::draw_food_box(int blit)
     rect_offset((iptr)&box_rect.left,food_box_rect,
                        food_box_rect_top);
     if(hd_enabled) {
-      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].food_box,(cities[city_index].size+1)*city_calc.food_box_rows,((city_has_improvement(city_index,IMP_GRANARY) || civ_has_wonder(cities[city_index].owner,WONDER_PYRAMIDS)) ? (cities[city_index].size+1)*(city_calc.food_box_rows>>1) : 0),"food");
+      int surplus = city_calc.yield_totals[0] - cities[city_index].size * (int)cosmic.food_per_citizen -
+                    city_calc.settlers_supported * city_calc.settler_food_cost;
+      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].food_box,(cities[city_index].size+1)*city_calc.food_box_rows,((city_has_improvement(city_index,IMP_GRANARY) || civ_has_wonder(cities[city_index].owner,WONDER_PYRAMIDS)) ? (cities[city_index].size+1)*(city_calc.food_box_rows>>1) : 0),surplus,"food");
       if(blit)wnd_blit_surface_rect((iptr)&food_box_rect);
       return;
     }
@@ -13786,11 +13793,13 @@ void CityWindow::draw_production(int blit)
       rect_set_xywh((iptr)&box_rect.left,arg_x,arg_y,arg_w,arg_h);
       rect_offset((iptr)&box_rect.left,production_rect,
                          production_rect_top);
-    if(hd_enabled) {
-      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].shield_box,build_cost*city_calc.shield_rows,0,"production");
-      if(blit)wnd_blit_surface_rect((iptr)&production_rect);
-      return;
-    }
+      if(hd_enabled) {
+        int surplus = (cities[city_index].flags & CITYF_DISORDER) ? 0 :
+                      city_calc.total_shields - city_calc.shield_support;
+        hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].shield_box,build_cost*city_calc.shield_rows,0,surplus,"production");
+        if(blit)wnd_blit_surface_rect((iptr)&production_rect);
+        return;
+      }
       arg_y = scale(3);
       arg_x = scale(3);
       rect_deflate((iptr)&box_rect.left,arg_x,arg_y);

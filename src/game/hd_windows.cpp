@@ -130,7 +130,22 @@ void hd_knowledge(DiploLeaderWindow *v, int advance, int y, GameFont &f)
     s->draw_text_rect((iptr)&f, label_string(advances[advance].name), (iptr)&r, 0);
 }
 
-void hd_stockpile(DibSurface *s, const RECT &r, int value, int capacity, int threshold, const char *role)
+static void stockpile_label(DibSurface *s, const char *text, RECT r)
+{
+    GameFont f;
+    f.init_empty();
+    for (int size = 13; size >= 8; size--) {
+        f.set(1, size);
+        if (f.text_width(text) <= r.right - r.left &&
+            (int)f.font_cached_height() <= r.bottom - r.top)
+            break;
+    }
+    gfx_set_text_color_index(26);
+    s->draw_text_in_rect((iptr)&f, text, &r, 0);
+    f.destroy();
+}
+
+void hd_stockpile(DibSurface *s, const RECT &r, int value, int capacity, int threshold, int surplus, const char *role)
 {
     const int w = r.right - r.left, h = r.bottom - r.top, pad = w / 12, bar = h / 7 > 8 ? h / 7 : 8;
     char key[64], text[80];
@@ -138,16 +153,34 @@ void hd_stockpile(DibSurface *s, const RECT &r, int value, int capacity, int thr
     int icon = h / 3;
     if (icon > w / 3)
         icon = w / 3;
-    art(s, key, r.left + pad, r.top + h / 6, icon, icon, true);
     snprintf(text, sizeof text, "%d / %d", value, capacity);
-    label(s, text, r.left + pad + icon + 6, r.top + h / 6, w - pad * 2 - icon - 6, icon, 13);
     int x = r.left + pad, y = r.top + h * 2 / 3, bw = w - 2 * pad;
+    if (w < 140) {
+        icon -= 4;
+        art(s, key, r.left + (w - icon) / 2, r.top + 2, icon, icon, true);
+        stockpile_label(s, text, {x, r.top + h / 3 + 2, x + bw, y - 4});
+    } else {
+        art(s, key, r.left + pad, r.top + h / 6, icon, icon, true);
+        stockpile_label(s, text, {r.left + pad + icon + 6, r.top + h / 6, r.right - pad, r.top + h / 6 + icon});
+    }
     box(s, x, y, bw, bar, 18);
     if (capacity > 0)
         box(s, x + 1, y + 1, (int)((int64_t)(bw - 2) * int_clamp(value, 0, capacity) / capacity), bar - 2,
             !strcmp(role, "food") ? 44 : 84);
     if (capacity > 0 && threshold > 0)
         box(s, x + (int)((int64_t)bw * threshold / capacity), y - 2, 2, bar + 4, 118);
+    const bool food = !strcmp(role, "food");
+    if (capacity > 0 && food && value >= capacity)
+        snprintf(text, sizeof text, "%s", extras_text("stockpile.full"));
+    else if (capacity > 0 && (value >= capacity || surplus > 0)) {
+        /* Purchased production is still completed on the next city turn. Food
+           estimates storage filling, not growth (which can need an aqueduct). */
+        int turns = value >= capacity ? 1 : (int)(((int64_t)capacity - value + surplus - 1) / surplus);
+        snprintf(text, sizeof text, "%d %s", turns, extras_text(turns == 1 ? "stockpile.turn" : "stockpile.turns"));
+    } else
+        snprintf(text, sizeof text, "%s", extras_text(food ?
+            (surplus < 0 ? "stockpile.deficit" : "stockpile.no_surplus") : "stockpile.no_production"));
+    stockpile_label(s, text, {x, y + bar + 4, x + bw, r.bottom});
 }
 
 int hd_spaceship(SpaceshipWindow *v)

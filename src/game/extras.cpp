@@ -205,6 +205,9 @@ static const struct { const char *key, *english; } texts[] = {
     {"turn", "Turn"},                               /* X5: the status panel */
     {"cities", "cities"},                           /* X31: the City Status advisor */
     {"size", "Size"}, {"name", "Name"}, {"production", "Production"},
+    {"stockpile.turn", "turn"}, {"stockpile.turns", "turns"},
+    {"stockpile.full", "Full"}, {"stockpile.no_surplus", "No surplus"},
+    {"stockpile.deficit", "Food deficit"}, {"stockpile.no_production", "No production"},
     {"menu.arrange_s", "Arrange Windows S"},        /* X38 (default: the game's Arrange Windows, S) */
     {"menu.arrange_l", "Arrange Windows L"},
     {"menu.options", "Ope&nCiv2 Options"},          /* the Game menu; & before the hotkey */

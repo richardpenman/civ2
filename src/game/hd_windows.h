@@ -8,7 +8,7 @@ int hd_military(DiploLeaderWindow *);
 void hd_diplomacy_flag(DibSurface *, int color);
 void hd_knowledge(DiploLeaderWindow *, int advance, int y, GameFont &);
 bool hd_advance(DibSurface *, int advance, int x, int y, int w, int h);
-void hd_stockpile(DibSurface *, const RECT &, int value, int capacity, int threshold, const char *role);
+void hd_stockpile(DibSurface *, const RECT &, int value, int capacity, int threshold, int surplus, const char *role);
 void hd_report_background();
 void hd_report_rows(int y, int height, int first_row, int count);
 #endif
