@@ -20,6 +20,7 @@ concurrency:
 
 env:
   SDL2_VERSION: 2.30.9
+  CIV2_ATLAS_PREBUILT: 1
 
 jobs:
   game:
@@ -28,15 +29,32 @@ jobs:
       - uses: actions/checkout@v4
       - name: Toolchain (wasi-sdk, wabt)
         run: sh tools/fetch-toolchain.sh
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: openciv2-assets-${{ hashFiles('dependencies.json') }}
+      - name: Asset dependency tests
+        run: |
+          python3 tests/test_dependency.py
+          python3 tests/test_asset_preparation.py
+      - name: HD compositor tests
+        run: python3 tools/test_hd.py
       - name: The game as C
         # (compiler errors as annotations: visible without the log)
         run: |
           set -o pipefail
-          python3 tools/build_port.py module c 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
+          CIV2_ATLAS_PREBUILT= python3 tools/build_port.py module c 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: game-c
-          path: build/wasm/c
+          path: |
+            build/wasm/c
+            build/native/gen/hd_layouts.h
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atlas-data
+          path: build/data
           retention-days: 1
 
   # The unit tests (tests/unit: recorded calls of the game's functions, run
@@ -53,11 +71,13 @@ jobs:
         run: |
           dpkg --add-architecture i386
           apt-get update
-          apt-get install -y --no-install-recommends python3 gcc-multilib g++-multilib libsdl2-dev:i386 zlib1g-dev:i386
+          apt-get install -y --no-install-recommends python3 ca-certificates gcc-multilib g++-multilib libsdl2-dev:i386 zlib1g-dev:i386
+      - name: HD drawing RNG parity
+        run: python3 tests/source_probe.py tests/hd_rng_test.cpp
       - name: Build the runner
-        run: python3 tools/build_native.py --target linux32test
+        run: CIV2_ATLAS_PREBUILT= python3 tools/build_native.py --target linux32test
       - name: Run the unit tests
-        run: cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz
+        run: cd build && CIV2_DATA=./data ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz
 
   windows:
     needs: game
@@ -67,7 +87,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: game-c
-          path: build/wasm/c
+          path: build
+      - uses: actions/download-artifact@v4
+        with:
+          name: atlas-data
+          path: build/data
       - name: Toolchain (MinGW, SDL2 for MinGW, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -85,12 +109,17 @@ jobs:
           mkdir -p pkg/OpenCiv2
           cp build/OpenCiv2.exe pkg/OpenCiv2/OpenCiv2.exe
           cp LICENSE pkg/OpenCiv2/LICENSE.txt
+          cp build/data/ATLAS-PROVENANCE.md pkg/OpenCiv2/ATLAS-PROVENANCE.md
+          cp build/data/ASSET-NOTICES.txt pkg/OpenCiv2/ASSET-NOTICES.txt
           cp THIRD-PARTY.txt src/third_party/indeo4/COPYING.LGPLv2.1 src/third_party/wasm2c/LICENSE-Apache-2.0.txt pkg/OpenCiv2/
           cat > pkg/OpenCiv2/README.txt <<'TXT'
           OpenCiv2 - Civilization II (Multiplayer Gold) reconstructed
           https://github.com/${{ github.repository }}
 
-          You need your own copy of Civilization II Multiplayer Gold Edition.
+          You need the rules/text from your copy of Civilization II Multiplayer Gold Edition.
+          Replacement HD graphics are included. To use original graphics, add
+          [OpenCiv2] OriginalGraphics=1 (on separate lines) to GameData/CIV.INI
+          and retain the original image files. See docs/HD-GRAPHICS.md in the source.
 
           1. Put OpenCiv2.exe in any folder and double-click it.
           2. The first time, it finds the game where it is installed, or
@@ -128,7 +157,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: game-c
-          path: build/wasm/c
+          path: build
+      - uses: actions/download-artifact@v4
+        with:
+          name: atlas-data
+          path: build/data
       - name: Toolchain (SDL2 linked in, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -156,14 +189,19 @@ jobs:
         run: |
           mkdir -p pkg/OpenCiv2/data
           cp build/OpenCiv2 pkg/OpenCiv2/OpenCiv2
-          cp data/native/fonts.bin data/native/fonts_aa.bin pkg/OpenCiv2/data/
+          cp build/data/fonts.bin build/data/fonts_aa.bin build/data/atlas-hd.pack pkg/OpenCiv2/data/
           cp LICENSE pkg/OpenCiv2/LICENSE.txt
+          cp build/data/ATLAS-PROVENANCE.md pkg/OpenCiv2/ATLAS-PROVENANCE.md
+          cp build/data/ASSET-NOTICES.txt pkg/OpenCiv2/ASSET-NOTICES.txt
           cp THIRD-PARTY.txt src/third_party/indeo4/COPYING.LGPLv2.1 src/third_party/wasm2c/LICENSE-Apache-2.0.txt pkg/OpenCiv2/
           cat > pkg/OpenCiv2/README.txt <<'TXT'
           OpenCiv2 - Civilization II (Multiplayer Gold) reconstructed
           https://github.com/${{ github.repository }}
 
-          You need your own copy of Civilization II Multiplayer Gold Edition.
+          You need the rules/text from your copy of Civilization II Multiplayer Gold Edition.
+          Replacement HD graphics are included. To use original graphics, add
+          [OpenCiv2] OriginalGraphics=1 (on separate lines) to GameData/CIV.INI
+          and retain the original image files. See docs/HD-GRAPHICS.md in the source.
 
           1. Unpack this folder anywhere and run OpenCiv2 in it.
           2. The first time, it finds the game where it is usually installed
@@ -203,7 +241,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: game-c
-          path: build/wasm/c
+          path: build
+      - uses: actions/download-artifact@v4
+        with:
+          name: atlas-data
+          path: build/data
       - name: Toolchain (SDL2 linked in, for Apple silicon and Intel; unshield, zlib, libogg, libvorbis)
         run: |
           curl -fL# https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
@@ -228,7 +270,7 @@ jobs:
           app=pkg/OpenCiv2.app/Contents
           mkdir -p $app/MacOS $app/Resources/data
           cp build/OpenCiv2 $app/MacOS/OpenCiv2
-          cp data/native/fonts.bin data/native/fonts_aa.bin $app/Resources/data/
+          cp build/data/fonts.bin build/data/fonts_aa.bin build/data/atlas-hd.pack $app/Resources/data/
           cat > $app/Info.plist <<'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -249,12 +291,17 @@ jobs:
           sed -i '' 's/^          //' $app/Info.plist
           codesign --force --deep --sign - pkg/OpenCiv2.app
           cp LICENSE pkg/LICENSE.txt
+          cp build/data/ATLAS-PROVENANCE.md pkg/ATLAS-PROVENANCE.md
+          cp build/data/ASSET-NOTICES.txt pkg/ASSET-NOTICES.txt
           cp THIRD-PARTY.txt src/third_party/indeo4/COPYING.LGPLv2.1 src/third_party/wasm2c/LICENSE-Apache-2.0.txt pkg/
           cat > pkg/README.txt <<'TXT'
           OpenCiv2 - Civilization II (Multiplayer Gold) reconstructed
           https://github.com/${{ github.repository }}
 
-          You need your own copy of Civilization II Multiplayer Gold Edition.
+          You need the rules/text from your copy of Civilization II Multiplayer Gold Edition.
+          Replacement HD graphics are included. To use original graphics, add
+          [OpenCiv2] OriginalGraphics=1 (on separate lines) to GameData/CIV.INI
+          and retain the original image files. See docs/HD-GRAPHICS.md in the source.
 
           1. Move OpenCiv2.app to Applications (or anywhere).
           2. The program is not signed by a registered Apple developer: the

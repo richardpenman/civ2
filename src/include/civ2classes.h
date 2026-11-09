@@ -918,6 +918,7 @@ typedef struct Dialog {
     void set_select_change_fn(DialogSelectFn callback);    /* 0059ec1c */
     void set_image_zoom(u32 zoom);    /* 0059ec64 */
     DialogSprite *add_sprite(iptr sprite,iptr sprite_id,const char *label);    /* 0059ec88 */
+    void add_advance(int advance,iptr sprite_id=0); /* HD art with the ordinary category sprite as fallback */
     DialogOption *add_option(const char *text,iptr option_id,uint data);    /* 0059edf0 */
     DialogOption *add_checkbox_option(const char *text,iptr option_id,int checked);    /* 0059f026 */
     DialogEditField *add_edit_field(const char *label,iptr initial_text,size_t max_len);    /* 0059f06d */

@@ -18,7 +18,7 @@ OpenCiv2.exe)    # the Windows build (64-bit) under Wine: its Winsock code; path
     w() { printf 'Z:%s' "$1" | tr / '\\'; }
     [ -f $HOME/wine64/system.reg ] || DISPLAY=:$D WINEARCH=win64 WINEPREFIX=$HOME/wine64 /usr/lib/wine/wine64 wineboot -i >/dev/null 2>&1
     cd $G && DISPLAY=:$D SDL_AUDIODRIVER=dummy WINEDEBUG=-all WINEARCH=win64 WINEPREFIX=$HOME/wine64 \
-        CIV2_DATA=$(w /work/data/native) CIV2_WINDIR=$(w $G) CIV2_XDLOG=$OUT/xdlog-$ROLE.txt \
+        CIV2_DATA=$(w /work/build/data) CIV2_WINDIR=$(w $G) CIV2_XDLOG=$OUT/xdlog-$ROLE.txt \
         /usr/lib/wine/wine64 /work/build/OpenCiv2.exe "$(w $G)" > $OUT/ours-$ROLE.log 2>&1 &
     sleep 1
     echo started
@@ -27,7 +27,7 @@ OpenCiv2.exe)    # the Windows build (64-bit) under Wine: its Winsock code; path
 esac
 # GDB=1: a crash's (or a fatal error's) backtrace in the log
 [ -n "$GDB" ] && set -- gdb -batch -ex "handle SIGPIPE nostop noprint" -ex "break plat_fatal" -ex run -ex "bt 80" -ex "bt -40" --args "$@"
-cd $G && DISPLAY=:$D SDL_AUDIODRIVER=dummy CIV2_DATA=/work/data/native CIV2_WINDIR=$G \
+cd $G && DISPLAY=:$D SDL_AUDIODRIVER=dummy CIV2_DATA=/work/build/data CIV2_WINDIR=$G \
     CIV2_XDLOG=$OUT/xdlog-$ROLE.txt "$@" > $OUT/ours-$ROLE.log 2>&1 &
 sleep 1
 echo started

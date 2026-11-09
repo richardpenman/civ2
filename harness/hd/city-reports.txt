@@ -1,0 +1,39 @@
+# He_Auto.SAV, at 1024x768. Run with and without CIV2_TEST_EXTRAS=31.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_command 4e2803 0 1538
+wait 1000
+shot top-five
+key Escape
+wait 700
+call menu_command 4e2803 0 1281
+wait 1000
+shot cities
+call_sync city_status_on_scroll 42d618 1
+wait 500
+shot cities-scroll
+call_sync city_status_on_scroll 42d618 11
+wait 500
+shot cities-end
+call_sync city_status_on_scroll 42d618 0
+wait 500
+shot cities-reset
+key Escape
+wait 700
+call menu_command 4e2803 0 1282
+wait 1000
+shot military
+key Escape
+wait 700
+call menu_command 4e2803 0 1285
+wait 1000
+shot trade
+call_sync trade_advisor_on_scroll 42ccf4 6
+wait 500
+shot trade-scroll

@@ -1,0 +1,61 @@
+# At 640x480, exercise the live camera checkbox, OK, Cancel and re-enabling.
+# tools/test_map_camera_options.py runs this with both compositors.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call_sync menu_command 4e2803 0 801
+call menu_command 4e2803 0 263
+wait 1000
+key Return
+wait 1000
+shot options-off
+click 340 353
+shot options-on
+key Return
+wait 1000
+key Escape
+wait 1000
+wheel_precise 200 250 0.5
+call_sync win_dispatch_all_messages 0
+wait 800
+camera_probe 200 250
+shot enabled
+call menu_command 4e2803 0 263
+wait 1000
+key Return
+wait 1000
+shot options-saved
+click 340 353
+key Escape
+wait 1000
+key Escape
+wait 500
+camera_probe 200 250
+call menu_command 4e2803 0 263
+wait 1000
+key Return
+wait 1000
+shot options-after-cancel
+click 340 353
+key Return
+wait 1000
+key Escape
+wait 1000
+camera_probe 200 250
+shot disabled
+call menu_command 4e2803 0 263
+wait 1000
+key Return
+wait 1000
+shot options-disabled
+click 340 353
+key Return
+wait 1000
+key Escape
+wait 1000
+camera_probe 200 250

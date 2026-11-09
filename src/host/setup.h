@@ -10,6 +10,7 @@
 /* Windows: the program's own files, as resources (src/host/setup.rc): deflated. */
 #define SETUP_RES_FONTS 1
 #define SETUP_RES_FONTS_AA 2
+#define SETUP_RES_ATLAS 3
 
 /* Where the game is, before it starts (port_main.c): with no arguments
    GameData (Windows: beside the program; macOS, Linux: in the user's data

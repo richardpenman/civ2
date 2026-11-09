@@ -17,12 +17,30 @@
 #define HOST_API(name) name
 #endif
 
+/* HD shadow comparisons and indexed viewport copies use native bulk routines;
+ * translated wasm32 libc otherwise performs slow byte-at-a-time loops. */
+#ifdef __wasm__
+int HOST_API(host_memory_equal)(const void *a,const void *b,uint32_t bytes);
+void HOST_API(host_memory_move)(void *dst,const void *src,uint32_t bytes);
+#else
+#include <string.h>
+static inline int host_memory_equal(const void *a,const void *b,uint32_t bytes)
+{
+    return !memcmp(a,b,bytes);
+}
+static inline void host_memory_move(void *dst,const void *src,uint32_t bytes)
+{
+    memmove(dst,src,bytes);
+}
+#endif
+
 /* Input events; keys arrive as Windows virtual-key codes. */
 enum {
     HOST_EV_NONE, HOST_EV_QUIT, HOST_EV_KEYDOWN, HOST_EV_KEYUP, HOST_EV_MOTION,
     HOST_EV_BUTTONDOWN, HOST_EV_BUTTONUP, HOST_EV_EXPOSED,
     HOST_EV_COMMAND,        /* a native menu's item chosen: vk is its id */
     HOST_EV_WHEEL,          /* the mouse wheel turned: button notches, positive away from the user */
+    HOST_EV_FOCUS_LOST,
     HOST_EV_RESIZE          /* a maximized or native window's size changed (as to full screen and
                                back): x, y its size in pixels; the desktop follows (host_resize_desktop) */
 };
@@ -31,6 +49,7 @@ typedef struct HostEvent {
     int32_t vk;             /* keys */
     int32_t x, y;           /* pointer, desktop coordinates */
     int32_t button;         /* 1 left, 2 right, 3 middle */
+    float wheel_y;         /* fractional wheel notches; other events leave zero */
 } HostEvent;
 
 /* Set-up: headless (no window, no audio device) for replays. */
@@ -99,6 +118,44 @@ void HOST_API(host_menu_end)(void);
  * messages posted meanwhile (the sound's). */
 void host_modal_tick(void);
 void HOST_API(host_present)(const void *pixels, int stride);
+void HOST_API(host_present_hd)(const void *pixels, int stride, int density);
+/* Optional HD texture compositor. Handles are host-owned; coordinates are
+ * physical pixels. Sources use premultiplied alpha. A zero capability result
+ * keeps the platform on its CPU compositor (including headless replays). */
+typedef struct HostGpuBlit {
+    uint32_t dst, src;
+    int32_t x, y, w, h, sx, sy, sw, sh, l, t, r, b;
+    uint32_t color;
+    int32_t blend, linear;
+} HostGpuBlit;
+typedef struct HostGpuText { HostGpuBlit draw; uint32_t layers[2]; } HostGpuText;
+/* Map presentation only: fractional destination, integer source and scissor.
+ * This does not change legacy drawing or sprite-cache dimensions. */
+typedef struct HostGpuCamera {
+    uint32_t dst, src;
+    int32_t sx, sy, sw, sh;
+    float x, y, w, h;
+    int32_t l, t, r, b;
+} HostGpuCamera;
+int HOST_API(host_gpu_camera)(const HostGpuCamera *draw);
+/* Capability bits: 1 texture compositor, 2 colored-text gamma passes. */
+int HOST_API(host_gpu_available)(void);
+/* kind: 0 render target initialized from ARGB (or black when pixels is NULL),
+ * 1 straight RGBA image, 2 its grayscale variant, 3 its white alpha mask,
+ * 4 already-premultiplied RGBA (affine colored-text branches). */
+int HOST_API(host_gpu_create)(int w, int h, int kind, const void *pixels, int pitch);
+void HOST_API(host_gpu_destroy)(int id);
+int HOST_API(host_gpu_blit)(const HostGpuBlit *draw);
+int HOST_API(host_gpu_text)(const HostGpuText *draw);
+/* Same destination, disjoint clipped glyph rectangles; preserves draw order. */
+int HOST_API(host_gpu_text_batch)(const HostGpuText *draws,int count);
+int HOST_API(host_gpu_fill)(int id, int x, int y, int w, int h, uint32_t color);
+int HOST_API(host_gpu_upload)(int id, int x, int y, int w, int h, const void *pixels, int pitch, int scale);
+int HOST_API(host_gpu_read)(int id, int x, int y, int w, int h, void *pixels, int pitch);
+int HOST_API(host_gpu_present)(int id);
+/* Benchmark fence, never used by ordinary sprite drawing. */
+void HOST_API(host_gpu_fence)(void);
+void HOST_API(host_gpu_finish)(void);
 /* The desktop shown in the window is now w x h (HOST_EV_RESIZE). */
 void HOST_API(host_resize_desktop)(int w, int h);
 /* Minimize the window (the desktop's main window was minimized). */

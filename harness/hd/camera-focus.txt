@@ -1,0 +1,59 @@
+# Active-unit tracking must use the visible camera crop, not backing overscan.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_find_city 40e017
+wait 2000
+key Return
+wait 2000
+call_sync menu_command 4e2803 0 801
+call_sync mapview_center_if_moved 489b9b 131 67
+wait 500
+wheel 400 400 20
+call_sync win_dispatch_all_messages 0
+wait 600
+camera_probe 380 418
+shot before-focus
+# This tile is off the left edge but still inside the backing map's safe area.
+# unit_activate_next calls this same entry point with the new unit's location.
+call_sync mapviews_ensure_visible 4105f8 124 68 -1
+wait 300
+camera_probe 380 418
+shot after-focus
+call_sync mapviews_ensure_visible 4105f8 124 68 -1
+wait 300
+camera_probe 380 418
+# A fractional pan with the tile still visible must survive repeated tracking.
+drag_burst 400 400 40 20
+call_sync win_dispatch_all_messages 0
+wait 300
+camera_probe 380 418
+call_sync mapviews_ensure_visible 4105f8 124 68 -1
+wait 300
+camera_probe 380 418
+call_sync mapviews_ensure_visible 4105f8 138 68 -1
+wait 300
+camera_probe 380 418
+call_sync mapviews_ensure_visible 4105f8 132 44 -1
+wait 300
+camera_probe 380 418
+call_sync mapviews_ensure_visible 4105f8 132 90 -1
+wait 300
+camera_probe 380 418
+call_sync map_camera_edge_focus_probe 0 0
+call_sync map_camera_edge_focus_probe 0 1
+call_sync map_camera_boundary_test 0 1
+call_sync map_camera_edge_focus_probe 0 2
+call_sync map_camera_edge_focus_probe 0 3
+call_sync menu_command 4e2803 0 801
+wheel 400 400 -10
+call_sync win_dispatch_all_messages 0
+wait 600
+call_sync map_camera_edge_focus_probe 0 0
+call_sync map_camera_edge_focus_probe 0 1
+quit

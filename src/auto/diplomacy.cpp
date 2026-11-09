@@ -1,6 +1,7 @@
 /* The game, diplomacy and treaties: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* 00448cc0 auto */
 void __cdecl diplo_status_icons_global_init(void)
@@ -4664,6 +4665,7 @@ uint DiploLeaderWindow::init_main_art()
     ((GamePalette *)leader_palette)->set_rgb(0x6a,0x28,(iptr)rgb_buf)
     ;
     ((DibSurface *)leader_surface)->set_palette((iptr)(leader_palette));
+    if (hd_enabled) hd_diplomacy_flag((DibSurface *)leader_surface,color_index);
   }
   return (uint)(loaded != 0);
 }
@@ -4693,6 +4695,12 @@ i32 DiploLeaderWindow::init_military()
   surface_ctor(&surface);
   ON_SCOPE_EXIT(surface_dtor(&surface));
   icon_count = game.power_rank[leader_civ] - 1;
+  if (hd_enabled) {
+    // The skipped GIF load commits this palette once (except at rank one).
+    // Palette versions share the gameplay RNG; keep the initialization above.
+    if (icon_count != 0) palette.new_version();
+    return hd_military(this);
+  }
   if (icon_count == 0) {
     result = 1;
   }
@@ -4767,6 +4775,7 @@ void DiploLeaderWindow::science_rank_top_techs(int (&top_techs)[13],int &tech_co
 /* Part of DiploLeaderWindow::init_science (00494e2a): draw one advance: its category icon and its name on one or two lines. words, aCStack_641 and line2_buf are the caller's buffers (line2_buf is read before it is written, with what the previous advance left). */
 void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&category_sprites)[5],i8 (&draw_ctx)[16],i32 draw_x,int draw_y,tagRECT &text_rect,int text_width,int (&top_techs)[13],i8 (&text_colors)[4],CHAR (&words)[252],CHAR (&aCStack_641)[53],CHAR (&line2_buf)[51])
 {
+  if(hd_enabled){hd_knowledge(this,advance,draw_y,font2);return;}
   int value;
   iptr label;
   int rect_height2;
@@ -5092,8 +5101,19 @@ i8 DiploLeaderWindow::init_video()
     ((AviPlayer *)video_player)->create_child((iptr)&str_empty_108,0x200,
                leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][0],
                leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1],(iptr)leader_surface);
+    ON_SCOPE_EXIT(if (hd_enabled) {
+      avi_close((AviPlayer *)video_player);
+      ((DibSurface *)video_player)->wnd_destroy_with_surface();
+    });
     open_err = ((AviPlayer *)video_player)->open((const char *)video_path);
     if (open_err == 0) {
+      if (hd_enabled) {
+        // Retain palette initialization and any updates made while opening
+        // optional video, then account for the CTAB load and palette copy.
+        palette.new_version();
+        ((GamePalette *)leader_palette)->new_version();
+        return 0;
+      }
       ((AviPlayer *)video_player)->set_end_callback(diplo_leader_video_end_cb);
       ((AviPlayer *)video_player)->set_transparent(1);
       palette.load_ctab_res(leader_tribe + 1000);

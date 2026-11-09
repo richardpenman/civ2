@@ -1,6 +1,7 @@
 /* The game, controls: buttons, lists, combo and check boxes, edit fields, scroll bars: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 0040f380 auto */
 void Control::show_and_redraw()
@@ -889,6 +890,57 @@ i32 EditControl::get_line(i32 line,char *buffer,i32 max_len)
   return length;
 }
 
+static void button_draw_raised_bevel(HDC mem_dc,tagRECT *bounds,HPEN h_01,HPEN h_02,HGDIOBJ &old_obj);
+
+/* City navigation uses sprite controls, but its HD face and bevel should match
+   the neighboring text buttons. Draw the arrow without the asset's own frame. */
+static void hd_city_arrow_face(DibSurface *surface,bool down,bool pressed)
+{
+  HDC target = surface->get_dib()->hdc;
+  RECT full = {0,0,(int)surface->surface_width(),(int)surface->surface_height()};
+  RECT bounds = {0,0,full.right-2,full.bottom-2}; /* Exclude the HWND border. */
+  /* Match text buttons' true-color bitmaps before copying into the sprite's
+     indexed surface; direct fills there quantize the HD face color. */
+  HDC dc = CreateCompatibleDC(target);
+  HBITMAP bitmap = CreateBitmap(full.right,full.bottom,1,32,NULL);
+  HGDIOBJ old_bitmap = SelectObject(dc,bitmap);
+  HBRUSH face = CreateSolidBrush(RGB(64,91,77));
+  HPEN light = CreatePen(0,1,RGB(255,255,255));
+  HPEN dark = CreatePen(0,1,RGB(128,128,128));
+  HPEN arrow = CreatePen(0,1,RGB(244,238,225));
+  HGDIOBJ old;
+  FillRect(dc,&full,face);
+  if (pressed) {
+    old = SelectObject(dc,dark);
+    for (int i=0;i<2;i++) {
+      MoveToEx(dc,i,bounds.bottom-i,NULL);
+      LineTo(dc,i,i);
+      LineTo(dc,bounds.right-i,i);
+    }
+    SelectObject(dc,old);
+  }
+  else button_draw_raised_bevel(dc,&bounds,light,dark,old);
+  int half = int_clamp((bounds.right<bounds.bottom ? bounds.right : bounds.bottom)/4,2,8);
+  int cx = bounds.right/2+(pressed ? 1 : 0);
+  int cy = bounds.bottom/2+(pressed ? 1 : 0);
+  int tip = (down ? 1 : -1)*(half/2);
+  old = SelectObject(dc,arrow);
+  for (int i=0;i<2;i++) {
+    MoveToEx(dc,cx-half,cy-tip+i,NULL);
+    LineTo(dc,cx,cy+tip+i);
+    LineTo(dc,cx+half,cy-tip+i);
+  }
+  SelectObject(dc,old);
+  BitBlt(target,0,0,full.right,full.bottom,dc,0,0,SRCCOPY);
+  SelectObject(dc,old_bitmap);
+  DeleteObject(bitmap);
+  DeleteDC(dc);
+  DeleteObject(arrow);
+  DeleteObject(dark);
+  DeleteObject(light);
+  DeleteObject(face);
+}
+
 /* 005011b4 auto */
 void __cdecl
 spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr sprite,RECT *rect)
@@ -946,6 +998,10 @@ spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr s
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
   ((DibSurface *)&button->on_select)->set_palette(palette);
+  if (hd_enabled) {
+    hd_city_arrow_face((DibSurface *)&button->on_select,ctrl_id==10,false);
+    hd_city_arrow_face((DibSurface *)button->button_surface,ctrl_id==10,true);
+  }
   return;
 }
 
@@ -1648,6 +1704,12 @@ static HPEN button_face_pen(HDC mem_dc,Button *button)
    (line by line with a palette pen). */
 static void button_fill_face(HDC mem_dc,Button *button,tagRECT *bounds,HPEN bg_pen)
 {
+  if(hd_enabled) {
+    HBRUSH brush=CreateSolidBrush(RGB(64,91,77));
+    FillRect(mem_dc,bounds,brush);DeleteObject(brush);
+    SetTextColor(mem_dc,RGB(244,238,225));
+    return;
+  }
   HGDIOBJ old_obj;
   int line_y;
 

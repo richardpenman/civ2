@@ -2507,9 +2507,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       }
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
-        popup_game_with_sprite((const char *)&str_steal,(iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                                          (char)advances[advance].epoch * 0x3c +
-                                          (char)advances[advance].category * 0xf0),8);
+        popup_game_with_advance((const char *)&str_steal,advance,8);
       }
       civ_give_advance(civ,advance,civ2,0,0);
       cities[city].flags = cities[city].flags | CITYF_TECH_STOLEN;

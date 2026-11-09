@@ -1,6 +1,7 @@
 /* The game, the map windows: drawing, scrolling, the mini map: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 00406a80 auto */
 /* Library Function - Multiple Matches With Different Base Names
@@ -248,6 +249,8 @@ void __cdecl minimap_redraw(void)
     ((FrameWindow *)((i8 *)&minimap_state.window))->layout();
     gfx_set_draw_target((iptr)&minimap_state.window);
     minimap_calc_layout();
+    void *hd_bits=(void *)((DibSurface *)&minimap_state.window)->bits;
+    hd_indexed_begin(hd_bits);
     gfx_fill_draw_target(0);
     screen_y = minimap_state.client_y + minimap_state.margin_y;
     for (row = 0; row < minimap_layout.view_rows; row++) {
@@ -276,6 +279,7 @@ void __cdecl minimap_redraw(void)
       }
       screen_y += minimap_layout.tile_height;
     }
+    hd_indexed_end(hd_bits);
     win_flush_pending_msgs();
     minimap_draw_view_rect();
     ((FrameWindow *)((i8 *)&minimap_state.window))->FrameWindow::draw_caption();
@@ -546,6 +550,7 @@ void MapView::center_on(iptr x,i32 y)
   wrapped_x = map_wrap_x(x);
   *(short *)&center_x_u = (short)wrapped_x;
   *(i16 *)((int)&center_x_u + 2) = (i16)y;
+  map_camera_recenter(this);
   saved_blink = blink.unit_active;
   blink.unit_active = 0;
   redraw(human_civ[0],1);
@@ -557,6 +562,8 @@ void MapView::center_on(iptr x,i32 y)
 int MapView::scroll_if_near_edge(int x,int y)
 
 {
+  const int camera_scroll = map_camera_near_edge(this,x,y);
+  const int target_x = x,target_y = y;
   uptr view_left;
   uptr view_top;
   u32 view_cols;
@@ -584,6 +591,11 @@ int MapView::scroll_if_near_edge(int x,int y)
      ((y = int_clamp(y,2,map.height - 3), y <= (int)(view_top + 1) ||
       ((int)(view_bottom - 1) <= y)))) {
     need_scroll = 1;
+  }
+  if (camera_scroll >= 0) {
+    need_scroll = camera_scroll;
+    x = target_x;
+    y = target_y;
   }
   if (need_scroll != 0) {
     blink.unit_skip_tick = 1;
@@ -632,6 +644,7 @@ uint __cdecl mapviews_ensure_visible(i32 x,i32 y,iptr civ)
 int MapView::point_unit_dir(int mouse_x,int mouse_y,i32 unit_x,i32 unit_y)
 
 {
+  if (!map_camera_pick(this,&mouse_x,&mouse_y)) return 8;
   short client_dx;
   short client_dy;
   int dir;
@@ -1031,13 +1044,13 @@ void __cdecl mapview_on_caption_button(i32 button)
       ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
       break;
     case 2:
-      if ((short)this2->zoom_u < 8) {
+      if (!map_camera_zoom_step(this2,1) && (short)this2->zoom_u < 8) {
         *(short *)&this2->zoom_u = (short)this2->zoom_u + 1;
         this2->redraw(human_civ[0],1);
       }
       break;
     case 3:
-      if (-7 < (short)this2->zoom_u) {
+      if (!map_camera_zoom_step(this2,-1) && -7 < (short)this2->zoom_u) {
         *(short *)&this2->zoom_u = (short)this2->zoom_u - 1;
         this2->redraw(human_civ[0],1);
       }
@@ -1329,6 +1342,7 @@ void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color)
 void MapView::init_state(u32 view_index)
 
 {
+  map_camera_forget(this);
   map_view_index = view_index;
   if (view_index == 0) {
     *(i16 *)((int)&open_u + 2) = 1;
@@ -1442,6 +1456,7 @@ void MapView::update_layout()
     tile_small_font.set(1,font_size);
     tile_small_font_size = font_size;
   }
+  map_camera_layout(this);
   return;
 }
 
@@ -1449,6 +1464,7 @@ void MapView::update_layout()
 i32 MapView::screen_to_tile(iptr out_x,iptr out_y,i32 mouse_x,i32 mouse_y)
 
 {
+  if (!map_camera_pick(this,&mouse_x,&mouse_y)) return 1;
   short px;
   short py;
   i32 result;
@@ -1506,6 +1522,7 @@ void MapView::tile_to_screen(iptr out_x,iptr out_y,int x,int y)
    far out, else the coast quarters and the river mouths. */
 void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,iptr x,int y,int zoom,u32 half_w,u32 half_h)
 {
+  const int detail_zoom = map_camera_topology_zoom((void *)surface,zoom);
   int check;
   byte *known;
   i8 mouth_rect[16];
@@ -1519,7 +1536,7 @@ void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,iptr x,int 
   int quarter_x;
   iptr quarter;
 
-  if (zoom < -3) {
+  if (detail_zoom < -3) {
     ((Sprite *)((i8 *)&terrain_base_sprites_block.terrain_ocean_sprite))->draw((iptr)ocean_rect,surface,screen_x,screen_y);
   }
   else {
@@ -1548,6 +1565,8 @@ void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,iptr x,int 
    river, irrigation and farmland, the grassland shield. */
 void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y,int zoom,uint terrain2,uint improvements2,uint has_river,u32 half_w,u32 half_h,uint *dither_terrain)
 {
+  const int detail_zoom = map_camera_detail_zoom((void *)surface,zoom);
+  const int topology_zoom = map_camera_topology_zoom((void *)surface,zoom);
   byte nbr_raw;
   uint new_flags;
   int check;
@@ -1579,7 +1598,7 @@ void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y
 
   variant = 0;
   river_mask = 0;
-  if (zoom < -4) {
+  if (topology_zoom < -4) {
     river_mask = 0xf;
   }
   else {
@@ -1609,7 +1628,7 @@ void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y
   }
   ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->draw((iptr)base_rect,surface,screen_x,
              screen_y);
-  if (-5 < zoom) {
+  if (-5 < detail_zoom) {
     for (quad = 0; quad < 4; quad++) {
       if (-1 < (int)dither_terrain[quad]) {
         if (quad < 2) {
@@ -1644,14 +1663,14 @@ void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y
     ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + variant * 0x3c))->draw((iptr)hill_rect,surface,screen_x,
                screen_y);
   }
-  if (((-4 < zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 0xc)) {
+  if (((-4 < detail_zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 0xc)) {
     ((Sprite *)((i8 *)&land_improvement_sprites_block.farmland_sprite))->draw((iptr)farmland_rect,surface,screen_x,screen_y);
   }
-  if (((-7 < zoom) && (has_river != 0)) && (map_show_hidden_terrain == 0)) {
+  if (((-7 < topology_zoom) && (has_river != 0)) && (map_show_hidden_terrain == 0)) {
     ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + river_mask * 0x3c))->draw((iptr)river_rect,surface,screen_x,
                screen_y);
   }
-  if (-4 < zoom) {
+  if (-4 < detail_zoom) {
     irrig_flags = 0;
     if (((byte)improvements2 & 0x42) == 2) {
       for (dir = 2; dir < 5; dir += 2) {
@@ -1676,7 +1695,7 @@ void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y
       }
     }
   }
-  if (((-4 < zoom) && (terrain2 == TERRAIN_GRASSLAND)) &&
+  if (((-4 < detail_zoom) && (terrain2 == TERRAIN_GRASSLAND)) &&
      (check = tile_grassland_has_shield(x,y), check != 0)) {
     ((Sprite *)((i8 *)&grassland_shield_sprite))->draw((iptr)shield_rect,surface,screen_x,screen_y);
   }
@@ -1795,12 +1814,16 @@ void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,iptr x,i
         break;
       }
     }
+    if (hd_enabled && variant) {
+      hd_sprite_tint((Sprite *)&airbase_sprites_block.airbase_sprites + variant,8,
+                     civ_color_primary(tile_owner(x,y)));
+    }
     ((Sprite *)(((i8 *)&airbase_sprites_block.airbase_sprites) + variant * 0x3c))->draw((iptr)airbase_rect,surface,screen_x,
                screen_y - half_h);
     rect_set_xywh((iptr)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
     civ = tile_owner(x,y);
     color = civ_color_primary(civ);
-    ((DibSurface *)surface)->replace_color((iptr)airbase_area,0x106,color);
+    if (!hd_enabled) ((DibSurface *)surface)->replace_color((iptr)airbase_area,0x106,color);
   }
 }
 
@@ -1892,6 +1915,7 @@ void MapView::draw_tile_unexplored_edges(iptr surface,int screen_x,int screen_y,
 void MapView::draw_tile_terrain(iptr surface,int screen_x,int screen_y,iptr x,int y, int viewer_civ,int zoom,iptr city_tile_idx)
 
 {
+  const int detail_zoom = map_camera_detail_zoom((void *)surface,zoom);
   int check;
   byte *known;
   i8 mine_rect[16];
@@ -1988,22 +2012,22 @@ void MapView::draw_tile_terrain(iptr surface,int screen_x,int screen_y,iptr x,in
   else {
     draw_tile_land(surface,screen_x,screen_y,x,y,zoom,terrain2,improvements2,has_river,half_w,half_h,dither_terrain);
   }
-  if (((-4 < zoom) && (hidden == 0)) &&
+  if (((-4 < detail_zoom) && (hidden == 0)) &&
      (resource = tile_resource(x,y), resource != 0)) {
     ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78 + (resource * 4 - 4) * 0xf))->draw(
                (iptr)resource_rect,surface,screen_x,screen_y);
   }
-  if (((-4 < zoom) && (map_show_hidden_terrain == 0)) &&
+  if (((-4 < detail_zoom) && (map_show_hidden_terrain == 0)) &&
      (((improvements2 & 0x10) != 0 || (check = tile_city_owner(x,y), -1 < check)))) {
     draw_tile_roads(surface,screen_x,screen_y,x,y,viewer_civ,improvements2);
   }
-  if (((-4 < zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 8)) {
+  if (((-4 < detail_zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 8)) {
     ((Sprite *)((i8 *)&land_improvement_sprites_block.mine_sprite))->draw((iptr)mine_rect,surface,screen_x,screen_y);
   }
-  if ((-5 < zoom) && (hidden == 0)) {
+  if ((-5 < detail_zoom) && (hidden == 0)) {
     draw_tile_specials(surface,screen_x,screen_y,x,y,improvements2,tile_w,tile_h,half_h);
   }
-  if ((-4 < zoom) && (-1 < viewer_civ)) {
+  if ((-4 < map_camera_topology_zoom((void *)surface,zoom)) && (-1 < viewer_civ)) {
     draw_tile_unexplored_edges(surface,screen_x,screen_y,x,y,viewer_civ,city_tile_idx,half_w,half_h);
   }
   gfx_reset_zoom_scale();
@@ -2075,11 +2099,13 @@ void MapView::draw_unit_at(iptr unit)
   return;
 }
 
-/* 0047bd04 auto */
-void MapView::draw_stack_unit(iptr unit,i32 screen_x,i32 screen_y)
-
+/* Shared read-only selection keeps overlay text synchronized with visibility,
+ * stacked units, active-unit blinking and combat. */
+int map_stack_unit(int unit,uint *flags)
 {
   int selectable;
+  if(unit<0)return -1;
+  *flags=5;
   
   if ((combat_anim.defender < 0) || (combat_anim.defender != unit)) {
     if ((combat_anim.origin_stack_unit < 0) || (unit != combat_anim.origin_stack_unit)) {
@@ -2087,59 +2113,60 @@ void MapView::draw_stack_unit(iptr unit,i32 screen_x,i32 screen_y)
            (units[game.active_unit].y == units[unit].y)) &&
           (((uint)game.human_players & 1 << (units[game.active_unit].owner & 0x1fU)) != 0)) &&
          (selectable = unit_is_selectable((int)game.active_unit), selectable != 0)) {
-        draw_unit_blinking((int)game.active_unit,screen_x,screen_y);
-        return;
+        unit=(int)game.active_unit;
+        return (!blink.unit_active || !blink.unit_phase || moving_units_mode!=1) ? unit : -1;
       }
-      draw_unit_stacked(unit,4,screen_x,screen_y);
+      *flags=7;
+      return unit;
     }
     else {
-      gfx_draw_unit((iptr)this,unit,5,screen_x,screen_y,(int)(short)zoom_u,0);
+      return unit;
     }
   }
   else {
-    draw_unit_blinking(unit,screen_x,screen_y);
+    return (!blink.unit_active || !blink.unit_phase || moving_units_mode!=1) ? unit : -1;
   }
-  return;
+  return -1;
 }
 
-/* 0047be63 auto */
-void MapView::draw_tile_units(i32 screen_x,int screen_y,int x,int y)
-
+int map_tile_unit(int x,int y,int first)
 {
-  int draw_y;
   int result;
   iptr unit;
   int visible2;
   
-  draw_y = screen_y - half_tile_height_u;
   result = map_in_bounds(x,y);
   if (result != 0) {
-    unit = tile_first_unit(x,y);
+    /* The camera already has each stack head; avoid a unit-table search per
+     * label on every frame. Legacy callers request the normal lookup with -2. */
+    unit = first==-2 ? tile_first_unit(x,y) : first;
+    if(first!=-2 && unit_move_anim_active && tile_unit_owner(x,y)<0)unit=-1;
     if (((combat_anim.defender < 0) || (combat_anim.defender_x != x)) || (combat_anim.defender_y != y)) {
       if (((combat_anim.origin_stack_unit < 0) || (x != combat_anim.origin_x)) || (y != combat_anim.origin_y)) {
+        if(unit<0)return -1;
         result = tile_city_owner(x,y);
         if (-1 < result) {
           if (moving_units_mode != 1) {
-            return;
+            return -1;
           }
           if (blink.unit_active == '\0') {
-            return;
+            return -1;
           }
           for (; (game.active_unit != unit && (-1 < unit));
               unit = unit_next_in_stack(unit)) {
           }
           if (unit < 0) {
-            return;
+            return -1;
           }
           result = unit_is_selectable(unit);
           if (result == 0) {
-            return;
+            return -1;
           }
           if (units[unit].orders == ORDER_FORTIFYING) {
-            return;
+            return -1;
           }
           if (units[unit].orders == ORDER_FORTIFIED) {
-            return;
+            return -1;
           }
         }
         visible2 = tile_visible_to(x,y,(*(i8 *)&human_civ));
@@ -2154,26 +2181,42 @@ void MapView::draw_tile_units(i32 screen_x,int screen_y,int x,int y)
           }
         }
         if ((visible2 != 0) || (game.reveal_map != '\0')) {
-          draw_stack_unit(unit,screen_x,draw_y);
+          return (int)unit;
         }
       }
       else {
-        draw_stack_unit(combat_anim.origin_stack_unit,screen_x,draw_y);
+        return combat_anim.origin_stack_unit;
       }
     }
     else {
       for (; (unit != combat_anim.defender && (-1 < unit)); unit = unit_next_in_stack(unit)) {
       }
-      draw_stack_unit(unit,screen_x,draw_y);
+      return (int)unit;
     }
   }
-  return;
+  return -1;
+}
+
+/* 0047bd04 auto */
+void MapView::draw_stack_unit(iptr unit,i32 screen_x,i32 screen_y)
+{
+  uint flags;
+  int shown=map_stack_unit((int)unit,&flags);
+  if(shown>=0)gfx_draw_unit((iptr)this,shown,flags,screen_x,screen_y,(int)(short)zoom_u,0);
+}
+
+/* 0047be63 auto */
+void MapView::draw_tile_units(i32 screen_x,int screen_y,int x,int y)
+{
+  int unit=map_tile_unit(x,y,-2);
+  if(unit>=0)draw_stack_unit(unit,screen_x,screen_y-half_tile_height_u);
 }
 
 /* 0047c103 auto */
 void MapView::draw_tile(iptr x,iptr y,int civ)
 
 {
+  if (!net.map_redraw_busy) map_view_cache_invalidate(this,x,y,0);
   int result;
   i8 grid_rect[16];
   i8 radius_rect[16];
@@ -2185,8 +2228,8 @@ void MapView::draw_tile(iptr x,iptr y,int civ)
   tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
   draw_tile_terrain((iptr)this,screen_x,screen_y,x,y,civ,
                      (int)(short)zoom_u,-1);
-  win_flush_pending_msgs();
-  if (2 < game.multiplayer) {
+  if (!map_view_cache_rendering() && hd_redraw_poll_due()) win_flush_pending_msgs();
+  if (!map_view_cache_rendering() && 2 < game.multiplayer) {
     net.process_messages(1,0);
   }
   result = map_in_bounds(x,y);
@@ -2234,6 +2277,8 @@ i32 MapView::tile_in_view(i32 tile_x,i32 tile_y)
 void MapView::draw_city_names(i32 center_x,i32 center_y,int radius)
 
 {
+  /* Camera labels are drawn at final display resolution, after map scaling. */
+  if (map_camera_surface(this)) return;
   int label_x;
   int text_width;
   i32 shadow_color;
@@ -2327,6 +2372,13 @@ void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
   top -= (radius * 2 + 1) * half_tile_height_u;
   left += half_tile_width_u * radius * -2;
   width2 = (radius * 2 + 1) * tile_width_u;
+  if (hd_enabled) {
+    /* Stacked shields extend four scaled pixels to the side, plus a fixed
+     * one-pixel shadow. Include them when blinking or erasing a moved unit. */
+    int pad = half_tile_width_u / 8 + 1;
+    left -= pad;
+    width2 += pad * 2;
+  }
   rect_set_xywh((iptr)rect,left,top,width2,(radius * 4 + 3) * half_tile_height_u);
   rect_intersect_into((LPRECT)out_rect,(iptr)rect,(iptr)&client_rect);
   return;
@@ -2336,6 +2388,7 @@ void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
 void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
 
 {
+  if (!net.map_redraw_busy) map_view_cache_invalidate(this,center_x,center_y,radius);
   uint extent;
   uint row_abs;
   i32 x;
@@ -2348,9 +2401,14 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
   
   tile_radius_rect(center_x,center_y,radius,(iptr)clip_rect);
   set_clip((RECT *)clip_rect);
+  /* Rebuild HD overlays from an opaque background to erase old selection
+   * pixels and avoid repeatedly blending terrain/grid edges. Every row must
+   * cover the whole cleared rectangle: the original tapered upper rows rely
+   * on existing pixels and leave black corners when radius is greater than 0. */
+  if (hd_enabled) fill(10);
   extent = radius * 2 + 2;
   for (dy = -extent; (int)dy <= (int)extent; dy++) {
-    if ((int)dy < 1) {
+    if (!hd_enabled && (int)dy < 1) {
       row_abs = ~dy + 1;
     }
     else {
@@ -2364,7 +2422,8 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
       else {
         dx_abs = dx;
       }
-      if (dx_abs != extent) {
+      /* HD also repaints the side columns covering the shield overhang. */
+      if (hd_enabled || dx_abs != extent) {
         x = map_wrap_x(dx + center_x);
         in_view = tile_in_view(x,center_y + dy);
         if (in_view != 0) {
@@ -2382,6 +2441,8 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
 void MapView::draw_all_tiles(i32 civ)
 
 {
+  if (map_view_cache_draw(this,civ)) return;
+  map_view_cache_invalidate(this,0,0,-1);
   uptr origin_y;
   uptr origin_x;
   i32 x;
@@ -2389,7 +2450,7 @@ void MapView::draw_all_tiles(i32 civ)
   int col;
   int row_width;
   
-  if ((margin_x_u != 0) || (margin_y_u != 0)) {
+  if (hd_enabled || (margin_x_u != 0) || (margin_y_u != 0)) {
     gfx_fill_surface((iptr)this,10);
   }
   for (row = 0; (int)row < (int)(field_2fc + field_304 + 1);
@@ -2450,6 +2511,7 @@ void DibSurface::mapview_blit_with_net_pump()
 void MapView::redraw_area(i32 tile_x,i32 tile_y,i32 radius, iptr viewer_civ,int do_blit)
 
 {
+  map_view_cache_invalidate(this,tile_x,tile_y,radius);
   int in_view;
   iptr civ;
   i8 cursor_rect[16];
@@ -2457,6 +2519,12 @@ void MapView::redraw_area(i32 tile_x,i32 tile_y,i32 radius, iptr viewer_civ,int 
   i32 cursor_y;
   
   if (turn_loop.active != '\0') {
+    /* Blink/partial redraws poll messages once per tile too. Present the
+     * finished patch once, as for full redraws, instead of repeatedly
+     * composing all camera labels while the map is still being painted. */
+    const bool batch_hd = hd_gpu_active && game.multiplayer < 3;
+    if (batch_hd) hd_redraw_begin();
+    ON_SCOPE_EXIT(if (batch_hd) hd_redraw_end());
     net.map_redraw_busy = 1;
     if (game.reveal_map == '\0') {
       civ = viewer_civ;
@@ -2504,6 +2572,9 @@ void MapView::redraw(iptr viewer_civ,int do_blit)
   iptr civ;
   
   if (turn_loop.active != '\0') {
+    const bool batch_hd = hd_gpu_active && game.multiplayer < 3;
+    if (batch_hd) hd_redraw_begin();
+    ON_SCOPE_EXIT(if (batch_hd) hd_redraw_end());
     net.map_redraw_busy = 1;
     layout();
     update_layout();
@@ -2553,6 +2624,7 @@ MapView * __thiscall mapview_ctor(MapView *self)
 void __thiscall mapview_dtor(MapView *self)
 
 {
+  map_camera_forget(self);
   int eh_state;
   
   eh_state = eh_state & 0xff;

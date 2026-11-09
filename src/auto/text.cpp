@@ -1,6 +1,7 @@
 /* The game, text: game text files, strings, resources and files: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 #include "lang.h"
 
 /* 0040bbb0 auto */
@@ -1743,6 +1744,7 @@ i8 * __cdecl file_find_fallback_drive(const char *filename)
 i32 __cdecl file_resolve_path(const char *path)
 
 {
+  if (hd_virtual_file(path)) return 1;
   char *next;
   char ch;
   iptr len;
@@ -1994,9 +1996,26 @@ int __cdecl text_draw_shadowed(iptr surface,const char *text,int x,int y)
   int width;
   
   if (-1 < text_style.shadow_color) {
-    gfx_set_text_color_index(text_style.shadow_color);
+    int color = text_style.shadow_color;
+    int dx = text_style.shadow_dx + text_style.fake_bold;
+    int dy = text_style.shadow_dy;
+    /* HD reports have light, flat backgrounds. The legacy dark offset reads
+       as duplicate lettering here; use a close, neutral-gray shadow instead.
+       Keep the legacy text extents so columns and centered headings stay put. */
+    if (hd_enabled && surface == (iptr)&advisor_state.window) {
+      color = 23;
+      /* Pale status colors still need a dark edge against the report paper. */
+      if (text_style.fg_color >= 0) {
+        const unsigned char *rgb = hd_palette() + (text_style.fg_color & 255) * 3;
+        if (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114 > 150000)
+          color = 19;
+      }
+      dx = (dx > 0) - (dx < 0);
+      dy = (dy > 0) - (dy < 0);
+    }
+    gfx_set_text_color_index(color);
     ((DibSurface *)surface)->draw_text((iptr)text_style.font,text,
-               text_style.shadow_dx + text_style.fake_bold + x,text_style.shadow_dy + y,5);
+               dx + x,dy + y,5);
   }
   if (-1 < text_style.fg_color) {
     gfx_set_text_color_index(text_style.fg_color);

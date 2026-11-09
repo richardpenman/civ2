@@ -6,6 +6,10 @@ contain the following software by others, under their licences, given in
 full or as their notices require below.  The game itself (Civilization II)
 is not included: it is set up from the player's own copy.
 
+Notices for bundled replacement artwork and font data are separate:
+ASSET-NOTICES.txt accompanies executable releases; source builds and portable
+C packages place it at build/data/ASSET-NOTICES.txt.
+
   1. unshield 1.6.2           MIT licence; its MD5 code: RSA's notice
   2. zlib 1.3.1               zlib licence
   3. libogg 1.3.5             BSD licence (3 clauses)
@@ -15,6 +19,7 @@ is not included: it is set up from the player's own copy.
   7. Indeo 4 decoder (FFmpeg) GNU LGPL 2.1 or later
   8. wasm2c runtime (wabt)    Apache License 2.0
   9. wasi-libc (wasi-sdk)     MIT licence (and others, see below)
+ 10. stb_image 2.30           MIT licence (or public domain)
 
 unshield, zlib (the set-up's reader of the CD's InstallShield cabinet),
 libogg and libvorbis (its Ogg Vorbis encoder of the CD's music) are in the
@@ -274,3 +279,27 @@ musl's code (MIT licence: Copyright (c) 2005-2020 Rich Felker, et al.),
 under the licences in its repository: MIT, Apache License 2.0 with LLVM
 exception, and others (https://github.com/WebAssembly/wasi-libc, files
 LICENSE*).
+
+
+10. stb_image  https://github.com/nothings/stb
+------------------------------------------------
+
+PNG decoder, version 2.30, commit f0569113c93ad095470c54bf34a17b36646bbbb5.
+Unmodified header in src/third_party/stb_image/stb_image.h.
+
+Copyright (c) 2017 Sean Barrett
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -63,6 +63,7 @@ typedef struct {
     int len, cap, limit;
     int sel_start, sel_end;     /* sel_end is the caret */
     int first;                  /* first visible character (single line) */
+    int top_line, wheel_delta;   /* multiline viewport and partial wheel notch */
     HFONT font;
     int focused, modified, readonly;
     int border;                 /* draws a one-pixel border itself */
@@ -85,6 +86,7 @@ static void edit_set_text(Edit *e, const char *s)
     e->len = n;
     e->sel_start = e->sel_end = 0;
     e->first = 0;
+    e->top_line = e->wheel_delta = 0;
 }
 
 static void edit_replace(Edit *e, const char *s)
@@ -278,6 +280,72 @@ static int edit_layout(Window *w, int *starts, int *lens)
     return n;
 }
 
+static int edit_page_lines(Window *w)
+{
+    RECT r;
+    FontFace *f = font_face_of(edit_of(w)->font);
+    int height = f ? text_height(f) : 0, page;
+    edit_format_rect(w, &r);
+    page = height > 0 ? (r.bottom - r.top) / height : 1;
+    return page > 0 ? page : 1;
+}
+
+/* The text and the scrollbar share a viewport, including after rewrapping
+ * on resize or replacing a long description with a shorter one. */
+static void edit_update_scroll(Window *w, int lines)
+{
+    Edit *e = edit_of(w);
+    int page = edit_page_lines(w), last = lines > page ? lines - page : 0;
+    if (e->top_line < 0) e->top_line = 0;
+    if (e->top_line > last) e->top_line = last;
+    if ((w->style & WS_VSCROLL) &&
+        (w->vscroll.min != 0 || w->vscroll.max != lines - 1 ||
+         w->vscroll.page != page || w->vscroll.pos != e->top_line)) {
+        w->vscroll.min = 0;
+        w->vscroll.max = lines - 1;
+        w->vscroll.page = page;
+        w->vscroll.pos = e->top_line;
+        wnd_nc_paint(w);
+    }
+}
+
+static int edit_scroll_to(Window *w, int line)
+{
+    Edit *e = edit_of(w);
+    int starts[EDIT_MAX_LINES], lens[EDIT_MAX_LINES], old = e->top_line;
+    e->top_line = line;
+    edit_update_scroll(w, edit_layout(w, starts, lens));
+    if (old != e->top_line) {
+        InvalidateRect(w->hwnd, NULL, TRUE);
+        notify(w->hwnd, EN_VSCROLL);
+    }
+    return e->top_line - old;
+}
+
+static int edit_scroll_command(Window *w, int command, int thumb)
+{
+    int line = edit_of(w)->top_line, page = edit_page_lines(w);
+    switch (command) {
+    case SB_LINEUP: line--; break;
+    case SB_LINEDOWN: line++; break;
+    case SB_PAGEUP: line -= page > 1 ? page - 1 : 1; break;
+    case SB_PAGEDOWN: line += page > 1 ? page - 1 : 1; break;
+    case SB_THUMBPOSITION: case SB_THUMBTRACK: line = thumb; break;
+    case SB_TOP: line = 0; break;
+    case SB_BOTTOM: line = EDIT_MAX_LINES; break;
+    default: return 0;
+    }
+    return edit_scroll_to(w, line);
+}
+
+static void edit_wheel(Window *w, int delta)
+{
+    Edit *e = edit_of(w);
+    e->wheel_delta += delta;
+    edit_scroll_to(w, e->top_line - (e->wheel_delta / 120) * 3);
+    e->wheel_delta %= 120;
+}
+
 static void edit_paint(Window *w, HDC hdc)
 {
     Edit *e = edit_of(w);
@@ -321,18 +389,9 @@ static void edit_paint(Window *w, HDC hdc)
         static int starts[EDIT_MAX_LINES], lens[EDIT_MAX_LINES];
         DC *dc = dc_get(hdc);
         int n = edit_layout(w, starts, lens), l;
-        if (w->style & WS_VSCROLL) {
-            /* EDIT_UpdateScrollInfo: all the lines, a page of what shows */
-            int vlc = text_height(f) ? (r.bottom - r.top) / text_height(f) : 1;
-            if (w->vscroll.min != 0 || w->vscroll.max != n - 1 || w->vscroll.page != vlc) {
-                w->vscroll.min = 0;
-                w->vscroll.max = n - 1;
-                w->vscroll.page = vlc;
-                wnd_nc_paint(w);
-            }
-        }
-        for (l = 0; l < n; l++) {
-            int lx = x, ly = y + l * text_height(f), i = starts[l], end = starts[l] + lens[l];
+        edit_update_scroll(w, n);
+        for (l = e->top_line; l < n; l++) {
+            int lx = x, ly = y + (l - e->top_line) * text_height(f), i = starts[l], end = starts[l] + lens[l];
             if (ly >= clip.bottom)
                 break;
             while (i < end) {
@@ -401,36 +460,78 @@ static void edit_paint(Window *w, HDC hdc)
     }
 }
 
-static int edit_pos_from_x(Window *w, int px)
+static int edit_pos_from_point(Window *w, int px, int py)
 {
     Edit *e = edit_of(w);
     FontFace *f = font_face_of(e->font);
-    int i, x, y;
+    int i, x, y, end = e->len;
     if (!f)
         return 0;
     edit_origin(w, &x, &y);
-    for (i = e->first; i < e->len; i++) {
+    i = e->first;
+    if (w->style & ES_MULTILINE) {
+        int starts[EDIT_MAX_LINES], lens[EDIT_MAX_LINES];
+        int n = edit_layout(w, starts, lens), height = text_height(f);
+        int line = e->top_line + (height > 0 ? (py - y) / height : 0);
+        if (line < 0) line = 0;
+        if (line >= n) line = n - 1;
+        i = starts[line];
+        end = i + lens[line];
+    }
+    for (; i < end; i++) {
         int cw = text_width(f, e->text + i, 1);
         if (px < x + cw / 2)
             return i;
         x += cw;
     }
-    return e->len;
+    return end;
 }
 
-/* Keep the caret visible in a single-line edit. */
+/* Keep the caret visible without changing the selection. Scrollbar and wheel
+ * actions deliberately do not call this: the caret may remain off screen. */
 static void edit_scroll(Window *w)
 {
     Edit *e = edit_of(w);
     FontFace *f = font_face_of(e->font);
     RECT r;
-    if (!f || (w->style & ES_MULTILINE))
+    if (!f)
         return;
+    if (w->style & ES_MULTILINE) {
+        int starts[EDIT_MAX_LINES], lens[EDIT_MAX_LINES];
+        int line = edit_layout(w, starts, lens) - 1, page = edit_page_lines(w);
+        while (line > 0 && starts[line] > e->sel_end) line--;
+        if (line < e->top_line) edit_scroll_to(w, line);
+        else if (line >= e->top_line + page) edit_scroll_to(w, line - page + 1);
+        return;
+    }
     GetClientRect(w->hwnd, &r);
     if (e->sel_end < e->first)
         e->first = e->sel_end;
     while (e->first < e->sel_end && text_width(f, e->text + e->first, e->sel_end - e->first) > r.right - 2)
         e->first++;
+}
+
+static void edit_move_vertical(Window *w, int delta, int page_move)
+{
+    Edit *e = edit_of(w);
+    FontFace *f = font_face_of(e->font);
+    int starts[EDIT_MAX_LINES], lens[EDIT_MAX_LINES];
+    int n = edit_layout(w, starts, lens), line = n - 1, target, x, i, end;
+    if (!f) return;
+    while (line > 0 && starts[line] > e->sel_end) line--;
+    end = e->sel_end < starts[line] + lens[line] ? e->sel_end : starts[line] + lens[line];
+    x = text_width(f, e->text + starts[line], end - starts[line]);
+    target = line + delta;
+    if (target < 0) target = 0;
+    if (target >= n) target = n - 1;
+    end = starts[target] + lens[target];
+    for (i = starts[target]; i < end; i++) {
+        int width = text_width(f, e->text + i, 1);
+        if (x < width / 2) break;
+        x -= width;
+    }
+    e->sel_end = i;
+    if (page_move) edit_scroll_to(w, e->top_line + delta);
 }
 
 LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
@@ -512,13 +613,13 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         return 1;
     case WM_LBUTTONDOWN:
         SetFocus(h);
-        e->sel_start = e->sel_end = edit_pos_from_x(w, (short)LOWORD(lp));
+        e->sel_start = e->sel_end = edit_pos_from_point(w, (short)LOWORD(lp), (short)HIWORD(lp));
         SetCapture(h);
         InvalidateRect(h, NULL, FALSE);
         return 0;
     case WM_MOUSEMOVE:
         if (GetCapture() == h) {
-            e->sel_end = edit_pos_from_x(w, (short)LOWORD(lp));
+            e->sel_end = edit_pos_from_point(w, (short)LOWORD(lp), (short)HIWORD(lp));
             InvalidateRect(h, NULL, FALSE);
         }
         return 0;
@@ -552,6 +653,13 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         case VK_RIGHT: if (e->sel_end < e->len) e->sel_end++; break;
         case VK_HOME: e->sel_end = 0; break;
         case VK_END: e->sel_end = e->len; break;
+        case VK_UP: case VK_DOWN: case VK_PRIOR: case VK_NEXT:
+            if (w->style & ES_MULTILINE) {
+                int page = wp == VK_PRIOR || wp == VK_NEXT;
+                int delta = page ? edit_page_lines(w) : 1;
+                edit_move_vertical(w, wp == VK_UP || wp == VK_PRIOR ? -delta : delta, page);
+            } else moved = 0;
+            break;
         case VK_DELETE:
             if (!e->readonly) {
                 if (e->sel_start == e->sel_end && e->sel_end < e->len)
@@ -635,9 +743,29 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         }
     }
     case EM_GETFIRSTVISIBLELINE:
-        return (w->style & ES_MULTILINE) ? 0 : e->first;
+        return (w->style & ES_MULTILINE) ? e->top_line : e->first;
+    case WM_VSCROLL:
+        if (w->style & ES_MULTILINE) {
+            edit_scroll_command(w, LOWORD(wp), HIWORD(wp));
+            return 0;
+        }
+        break;
+    case WM_MOUSEWHEEL:
+        if (w->style & ES_MULTILINE) {
+            edit_wheel(w, (short)HIWORD(wp));
+            return 0;
+        }
+        break;
+    case EM_SCROLL:
+        if (w->style & ES_MULTILINE)
+            return MAKELONG(edit_scroll_command(w, (int)wp, 0), TRUE);
+        return 0;
     case EM_LINESCROLL:
+        if (!(w->style & ES_MULTILINE)) return FALSE;
+        edit_scroll_to(w, e->top_line + (int)lp);
+        return TRUE;
     case EM_SCROLLCARET:
+        edit_scroll(w);
         return TRUE;
     }
     return DefWindowProcA(h, m, wp, lp);
@@ -654,6 +782,7 @@ typedef struct {
     HFONT font;
     int focused;
     int vscroll;                /* created with WS_VSCROLL: shown when the items do not fit */
+    int wheel_delta;
 } ListBox;
 
 static ListBox *lb_of(Window *w) { return w ? (ListBox *)w->control : NULL; }
@@ -796,6 +925,23 @@ static void lb_update_scroll(Window *w)
     if (!(w->style & WS_VSCROLL))
         ShowScrollBar(w->hwnd, SB_VERT, TRUE);
     SetScrollPos(w->hwnd, SB_VERT, lb->top, TRUE);
+}
+
+/* Wheel scrolling moves the viewport, not the selected item or keyboard focus. */
+static void lb_wheel(Window *w, int delta)
+{
+    ListBox *lb = lb_of(w);
+    int top, last = lb->n - lb_page(w);
+    lb->wheel_delta += delta;
+    top = lb->top - (lb->wheel_delta / 120) * 3;
+    lb->wheel_delta %= 120;
+    if (top > last) top = last;
+    if (top < 0) top = 0;
+    if (top != lb->top) {
+        lb->top = top;
+        lb_update_scroll(w);
+        InvalidateRect(w->hwnd, NULL, TRUE);
+    }
 }
 
 static void lb_set_cur(Window *w, int i, int scroll)
@@ -996,6 +1142,9 @@ LRESULT ctl_listbox_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         InvalidateRect(h, NULL, TRUE);
         return 0;
     }
+    case WM_MOUSEWHEEL:
+        lb_wheel(w, (short)HIWORD(wp));
+        return 0;
     case LB_ADDSTRING:
         i = lb_insert(w, -1, (const char *)lp, 0);
         lb_update_scroll(w);
@@ -1024,6 +1173,7 @@ LRESULT ctl_listbox_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         lb->n = 0;
         lb->cur = -1;
         lb->top = 0;
+        lb->wheel_delta = 0;
         lb_update_scroll(w);
         InvalidateRect(h, NULL, TRUE);
         return 0;

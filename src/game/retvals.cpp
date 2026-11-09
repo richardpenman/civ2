@@ -129,6 +129,8 @@ void PediaWindow::load_description(int topic2)
     }
     ((Control *)((iptr)this + 0x1a98))->set_text((const char *)desc_text);
     ((Control *)((iptr)this + 0x1a98))->show_and_redraw();
+    /* Let a newly opened description receive wheel and navigation keys. */
+    ((Control *)((iptr)this + 0x1a98))->set_focus();
   }
   return;
 }

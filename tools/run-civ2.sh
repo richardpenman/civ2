@@ -9,4 +9,4 @@ here=$(cd "$(dirname "$0")/.." && pwd)
 game=${1:-${CIV2_GAME:-$HOME/Civ2}}
 [ -d "$game" ] || { echo "no game in $game: install Civilization II there or name its directory" >&2; exit 1; }
 [ -f "$game/CIV2.DAT" ] || cp "$here/harness/CIV2.DAT" "$game/"
-CIV2_DATA="$here/data/native" exec "$here/build/OpenCiv2" "$(cd "$game" && pwd)"
+CIV2_DATA="$here/build/data" exec "$here/build/OpenCiv2" "$(cd "$game" && pwd)"

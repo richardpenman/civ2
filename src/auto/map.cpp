@@ -1,6 +1,7 @@
 /* The game, the world map: terrain, generation, visibility: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 004087c0 auto */
 i32 __cdecl map_in_bounds(iptr x,iptr y)
@@ -1927,13 +1928,13 @@ void __cdecl map_window_ascii(uint key)
           }
           break;
         case 0x58:
-          if (-7 < map_views_block.mapview_zoom[0]) {
+          if (!map_camera_zoom_step(&map_views_block.map_views,-1) && -7 < map_views_block.mapview_zoom[0]) {
             map_views_block.mapview_zoom[0]--;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
           break;
         case 0x5a:
-          if (map_views_block.mapview_zoom[0] < 8) {
+          if (!map_camera_zoom_step(&map_views_block.map_views,1) && map_views_block.mapview_zoom[0] < 8) {
             map_views_block.mapview_zoom[0]++;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
@@ -5976,6 +5977,7 @@ map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr
   int rect_top2[8];
   int frame_delay;
   RECT dirty_rect;
+  RECT sprite_rect[8];
   i32 save_w[8];
   int rect_right2[8];
   int to_sy;
@@ -6030,26 +6032,49 @@ map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr
                  (iptr)&to_sy,to_x,to_y);
       from_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
       to_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
+      RECT &bounds = sprite_rect[view];
+      rect_set_xywh((iptr)&bounds,0,0,map_views_block.map_view_recs[view].tile_width,
+                    map_views_block.map_view_recs[view].unit_sprite_height);
+      if (hd_enabled) {
+        /* gfx_draw_unit also paints shields and their one-pixel shadows. A
+         * transport's stack shield can extend left of the sprite (even a
+         * single shield does at low zoom). Save/erase that whole footprint. */
+        int type = units[unit].type;
+        if (type == UNIT_DIPLOMAT && units[unit].owner == 0) type = 0x3e;
+        int zoom = map_views_block.map_view_recs[view].zoom;
+        int shield_x = gfx_zoom_scale(road_sprites_block.unit_shield_x_offsets[type],zoom);
+        int shield_y = gfx_zoom_scale(road_sprites_block.unit_shield_y_offsets[type],zoom);
+        int stack = units[unit].prev_in_stack >= 0 || units[unit].next_in_stack >= 0
+                    ? gfx_zoom_scale(4,zoom) : 0;
+        int left = road_sprites_block.unit_shield_x_offsets[type] < 32;
+        int l = shield_x - (left ? stack + 1 : 0);
+        int r = shield_x + gfx_zoom_scale(12,zoom) + (left ? 0 : stack + 1);
+        int b = shield_y + gfx_zoom_scale(20,zoom) + 1;
+        if (l < bounds.left) bounds.left = l;
+        if (shield_y < bounds.top) bounds.top = shield_y;
+        if (r > bounds.right) bounds.right = r;
+        if (b > bounds.bottom) bounds.bottom = b;
+      }
       tmp = to_sx;
       if (from_sx <= to_sx) {
         tmp = from_sx;
       }
-      rect_left2[view] = tmp;
+      rect_left2[view] = tmp + bounds.left;
       tmp = to_sy;
       if (from_sy <= to_sy) {
         tmp = from_sy;
       }
-      rect_top2[view] = tmp;
+      rect_top2[view] = tmp + bounds.top;
       tmp = to_sx;
       if (to_sx <= from_sx) {
         tmp = from_sx;
       }
-      rect_right2[view] = map_views_block.map_view_recs[view].tile_width + tmp - 1;
+      rect_right2[view] = bounds.right + tmp - 1;
       tmp = to_sy;
       if (to_sy <= from_sy) {
         tmp = from_sy;
       }
-      rect_bottom2[view] = map_views_block.map_view_recs[view].unit_sprite_height + tmp - 1;
+      rect_bottom2[view] = bounds.bottom + tmp - 1;
       cur_sx[view] = from_sx;
       cur_sy[view] = from_sy;
       rect_set((iptr)rect,rect_left2[view],rect_top2[view],
@@ -6112,11 +6137,11 @@ map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr
             gfx_draw_unit((iptr)&map_views_block.map_view_recs[view],unit,5,
                                cur_sx[view],cur_sy[view],
                                (int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8],1);
-            rect_set_xywh((iptr)&dirty_rect,cur_sx[view] + step[view] * -2,
-                               cur_sy[view] + step[view] * -2,
-                               step[view] * 4 + map_views_block.map_view_recs[view].tile_width
-                               ,step[view] * 4 +
-                                map_views_block.map_view_recs[view].unit_sprite_height);
+            RECT &bounds = sprite_rect[view];
+            rect_set_xywh((iptr)&dirty_rect,cur_sx[view] + bounds.left - step[view] * 2,
+                               cur_sy[view] + bounds.top - step[view] * 2,
+                               step[view] * 4 + bounds.right - bounds.left,
+                               step[view] * 4 + bounds.bottom - bounds.top);
             tmp = rect_left2[view];
             if (rect_left2[view] <= dirty_rect.left) {
               tmp = dirty_rect.left;
@@ -6139,12 +6164,11 @@ map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr
             dirty_rect.bottom = tmp;
             map_views_block.map_view_recs[view].wnd_blit_surface_rect((iptr)&dirty_rect);
             gfx_copy_rect_clipped((iptr)(saved_bg + view),(iptr)&map_views_block.map_view_recs[view]
-                               ,cur_sx[view] - rect_left2[view],
-                               cur_sy[view] - rect_top2[view],0,0,
-                               cur_sx[view],cur_sy[view],
+                               ,cur_sx[view] + bounds.left - rect_left2[view],
+                               cur_sy[view] + bounds.top - rect_top2[view],0,0,
+                               cur_sx[view] + bounds.left,cur_sy[view] + bounds.top,
                                (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],
-                               map_views_block.map_view_recs[view].tile_width,
-                               map_views_block.map_view_recs[view].unit_sprite_height);
+                               bounds.right - bounds.left,bounds.bottom - bounds.top);
             cur_sx[view] += step_x[view];
             cur_sy[view] += step_y[view];
           }

@@ -1,0 +1,35 @@
+# Camera composition must respect both child windows and top-level dialogs.
+# He_Auto.SAV at 1024x768, real clock; the third Find City entry is Brighton.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+wheel_precise 400 400 0.5
+call_sync win_dispatch_all_messages 0
+wait 700
+call menu_find_city 40e017
+wait 1000
+key Down Down
+click 330 610
+wait 2000
+shot city
+wait 3000
+shot city-idle
+call city_button_info 50b9a4 0
+wait 1000
+shot city-info
+call civ_golden_age_popup 4bee56 2
+wait 1000
+shot city-popup
+key Return
+wait 1000
+call city_button_change 50a473 0
+wait 1000
+shot city-production
+key Escape
+wait 1000
+shot city-restored

@@ -26,8 +26,9 @@
 int setup_game_folder(const char *dir)
 {
     char p[SETUP_PATH];
-    return *dir && os_entry(dir, "Civ2Art.dll", p, sizeof p) && os_file_exists(p) &&
-           os_entry(dir, "RULES.TXT", p, sizeof p) && os_file_exists(p);
+    return *dir && os_entry(dir, "GAME.TXT", p, sizeof p) && os_file_exists(p) &&
+           os_entry(dir, "RULES.TXT", p, sizeof p) && os_file_exists(p) &&
+           os_entry(dir, "LABELS.TXT", p, sizeof p) && os_file_exists(p);
 }
 
 /* The game's CD (or a copy of it): the cabinet the installer unpacks, the

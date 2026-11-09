@@ -1,6 +1,7 @@
 /* The game, multiplayer: network sessions, negotiation, lobby and chat: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* Receive boundaries (independent reconstruction BF-177/179/180/183/223/246/280,
  * then BF-130..133/137/167/169/171/178/196/203/205..211/222/227/228/233/240..278).
@@ -2443,7 +2444,9 @@ void __cdecl parley_draw_advance_list(iptr pane)
         }
         tmp2 = row_top + row_height / 2;
         tmp = icon_sprite->get_height();
-        icon_sprite->draw((iptr)sprite_rect,(iptr)&parley_wnd_block,list_left + icon_x,tmp2 - tmp / 2);
+        if (!hd_advance((DibSurface *)&parley_wnd_block,advance,list_left + icon_x,tmp2 - tmp / 2,
+                        icon_sprite->get_width(),icon_sprite->get_height()))
+          icon_sprite->draw((iptr)sprite_rect,(iptr)&parley_wnd_block,list_left + icon_x,tmp2 - tmp / 2);
         text_clear();
         name_label = (label_string(advances[advance].name));
         text_append(name_label);
@@ -11345,10 +11348,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     break;
   case 0x4d:
     dlg.load_game_text((const char *)&str_endwonder_4);
-    dlg.add_sprite(
-               (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                     (char)advances[entry[4]].category * 0xf0 +
-                     (char)advances[entry[4]].epoch * 0x3c),0,0);
+    dlg.add_advance(entry[4]);
     dlg.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[5] * 0x3c),0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);

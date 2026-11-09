@@ -1,0 +1,65 @@
+# All map zooms (-7..8), centered on Leipzig (131,67) in the reference He_Auto.SAV.
+# call_sync waits for each finite redraw before taking the screenshot.
+# Live HD windows; a local He_Auto.SAV with cities is required.
+# Run with CIV2_TEST_HD=1. No original image files are needed.
+wait 8000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_find_city 40e017
+wait 2000
+key Return
+wait 3000
+call_sync menu_command 4e2803 0 804
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-00
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-01
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-02
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-03
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-04
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-05
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-06
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-07
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-08
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-09
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-10
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-11
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-12
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-13
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-14
+call_sync menu_command 4e2803 0 784
+call_sync mapview_center_if_moved 489b9b 131 67
+shot zoom-15
+quit

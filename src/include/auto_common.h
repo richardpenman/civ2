@@ -82,6 +82,12 @@ static inline void editor_copy_pool_name(char *dest, const char *src, size_t wid
 }
 /* The interface additions (docs/EXTRAS.md): extra_ui(X_...), marked X<n>. */
 #include "extras.h"
+#include "map_camera.h"
+/* City sprite and badge offsets share the same revealed-size/style selection. */
+int gfx_city_sprite_index(int city,uint draw_flags,int *display_size);
+int gfx_unit_order_char(int unit);
+int map_tile_unit(int x,int y,int first);
+int map_stack_unit(int unit,uint *flags);
 /* The sounds played and videos looked for, logged in a replay for the
  * comparison with the original (CIV2_CALL_LOG, src/platform/replay.c). */
 EXTERN_C void replay_log_sound(int effect, int mode, int loop);

@@ -1,6 +1,11 @@
 /* The game, graphics: sprites, surfaces, palettes, fonts: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
+int hd_load_surface(DibSurface *, int, GamePalette *);
+int hd_encode_sprite(Sprite *, DibSurface *, RECT *,int);
+void hd_bind_map_masks();
+void hd_game_windows_grey(int);
 
 /* 00407f90 auto */
 int __cdecl rect_width(RECT *rect)
@@ -769,6 +774,7 @@ void __cdecl gfx_load_terrain_sprites(void)
     base_x += 0x41;
   }
   ((DibSurface *)((i8 *)&gfx_sheet_surface_block.gfx_sheet_surface))->release();
+  if (hd_enabled) hd_bind_map_masks();
   return;
 }
 
@@ -1479,6 +1485,11 @@ void __cdecl gfx_free_grey_remap(void)
 void __cdecl gfx_grey_out_windows(void)
 
 {
+  if (hd_enabled) {
+    hd_game_windows_grey(1);
+    ui_blit_all_windows();
+    return;
+  }
   int remap_table;
   int view;
   
@@ -1523,6 +1534,24 @@ void __cdecl screen_fade_out(void)
   int step;
   
   blink.unit_active = 0;
+  if (hd_enabled) {
+    // HD fades keep RGBA pixels, but palette version updates must still use
+    // the shared RNG on displays where the original performs a palette fade.
+    GamePalette *palette = (GamePalette *)&game_palette_block.game_palette;
+    if (display_palette.palettized != 0) palette->new_version(); // fade_begin
+    for (step = 0; step <= 10; step++) {
+      hd_fade_grey = step * 255 / 10;
+      ui_delay_ticks(1);
+    }
+    if (display_palette.palettized != 0) palette_set_nocollapse_all();
+    gfx_grey_out_windows();
+    if (display_palette.palettized != 0) {
+      palette->new_version(); // fade_end
+      palette_set_nocollapse_all();
+    }
+    hd_fade_grey = 0;
+    return;
+  }
   if (display_palette.palettized != 0) {
     ((GamePalette *)((i8 *)&game_palette_block.game_palette))->fade_begin(10,0xec,10,(iptr)&grey_palette_block.grey_palette);
     ui_blit_all_windows();
@@ -1546,6 +1575,24 @@ void __cdecl screen_fade_in(void)
 {
   int step;
   
+  if (hd_enabled) {
+    GamePalette *palette = (GamePalette *)&game_palette_block.game_palette;
+    if (display_palette.palettized != 0) palette->new_version(); // fade_begin
+    hd_fade_grey = 255;
+    hd_game_windows_grey(0);
+    /* The source pixels were retained; restore them without calling inactive
+       windows' paint callbacks (which can start their own modal loops). */
+    ui_blit_all_windows();
+    for (step = 10; step >= 0; step--) {
+      hd_fade_grey = step * 255 / 10;
+      ui_delay_ticks(1);
+    }
+    if (display_palette.palettized != 0) {
+      palette->new_version(); // fade_end
+      palette_set_nocollapse_all();
+    }
+    return;
+  }
   if (display_palette.palettized != 0) {
     ((GamePalette *)((i8 *)&game_palette_block.game_palette))->fade_begin(10,0xec,10,(iptr)&grey_palette_block.grey_palette);
     ((GamePalette *)((i8 *)&game_palette_block.game_palette))->fade_step(0);
@@ -1592,6 +1639,8 @@ GamePalette *GamePalette::get_logpalette()
 int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_color,int num_colors,iptr palette)
 
 {
+  if (hd_enabled) return hd_load_surface((DibSurface *)surface,hd_file(filename),(GamePalette *)palette);
+
   char color_base;
   size_t nread;
   GamePalette *logpal;
@@ -2980,11 +3029,86 @@ void __cdecl gfx_select_zoom_font(i32 zoom)
   return;
 }
 
+/* The replacement shield is an alpha mask, not a sheet of palette markers 5/6.
+   Tint it while drawing so its filtered edge and the indexed copy agree. The
+   original sprite still uses the two replace_color calls at each draw site. */
+static void gfx_draw_unit_shield(iptr clip,iptr surface,int x,int y,int color)
+{
+  Sprite *shield = (Sprite *)&unit_shield_sprite;
+  if (hd_enabled) {
+    shield->draw_silhouette(clip,surface,x,y,color);
+  }
+  else {
+    shield->draw(clip,surface,x,y);
+  }
+}
+
+static void gfx_recolor_unit_shield(iptr surface,RECT *rect,int primary,int mid)
+{
+  /* HD draws the final colors directly. Its quantized background may also
+     contain indices 5/6, so the legacy marker sweep must not touch it. */
+  if (!hd_enabled) {
+    ((DibSurface *)surface)->replace_color((iptr)rect,0x106,primary);
+    ((DibSurface *)surface)->replace_color((iptr)rect,0x105,mid);
+  }
+}
+
+/* Tiny order glyphs and city-size boxes obscure HD overview maps. Apply the
+ * same readability cutoff to fixed CPU/GPU zooms and the smooth camera. */
+static int gfx_show_status_text(iptr surface,int zoom)
+{
+  return !hd_enabled || map_camera_detail_zoom((void *)surface,zoom) >= -3;
+}
+
+/* Used by both the indexed painter and the camera's native-size overlay. */
+int gfx_unit_order_char(int unit)
+{
+  uptr order;
+  int civ=units[unit].owner;
+  u8 order_char=0;
+  order = (int)units[unit].orders & 0xf;
+  if (units[unit].orders == ORDER_AI_IDLE) {
+    order = 0xffffffff;
+  }
+  if ((int)order < 1) {
+    order_char = '-';
+    if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
+      order_char = '*';
+    }
+  }
+  else if ((int)order < 0xb) {
+    order_char = order_names[order].key;
+  }
+  else if (order == 0xb) {
+    if ((game.reveal_map == '\0') ||
+       ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
+      if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
+        order_char = '-';
+      }
+      else {
+        order_char = order_names[0xb].key;
+      }
+    }
+    else {
+      order_char = units[unit].ai_task;
+    }
+  }
+  else {
+    order_char = '-';
+    if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
+      order_char = '*';
+    }
+  }
+  return order_char;
+}
+
 /* 0056baff auto */
 void __cdecl
 gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int no_fortress)
 
 {
+  if (!net.map_redraw_busy && map_camera_owns((void *)surface) && unit >= 0 && unit < game.num_units)
+    map_view_cache_invalidate((void *)surface,units[unit].x,units[unit].y,0);
   int tmp;
   iptr scaled;
   int text_y;
@@ -2998,7 +3122,6 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
   i8 clip_shield_shadow[16];
   i8 clip_stack[16];
   i8 clip_stack_shadow[16];
-  uptr order;
   iptr civ;
   int shield_x;
   int stack_dy;
@@ -3062,28 +3185,23 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
       abs_dx = stack_dx;
     }
     if (2 < (int)abs_dx) {
-      ((Sprite *)((i8 *)&unit_shield_sprite))->draw((iptr)clip_stack_shadow,surface,
-                 side + stack_dx + shield_x,stack_dy + shield_y + 1);
+      gfx_draw_unit_shield((iptr)clip_stack_shadow,surface,
+                 side + stack_dx + shield_x,stack_dy + shield_y + 1,0xf);
       rect_offset((iptr)&shield_rect.left,side,1);
-      ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x106,0xf);
-      ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x105,0xf);
+      gfx_recolor_unit_shield(surface,&shield_rect,0xf,0xf);
       rect_offset((iptr)&shield_rect.left,-side,0xffffffff);
     }
-    ((Sprite *)((i8 *)&unit_shield_sprite))->draw((iptr)clip_stack,surface,stack_dx + shield_x,
-               stack_dy + shield_y);
-    ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x106,color_mid);
-    ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x105,color_mid);
+    gfx_draw_unit_shield((iptr)clip_stack,surface,stack_dx + shield_x,
+               stack_dy + shield_y,color_mid);
+    gfx_recolor_unit_shield(surface,&shield_rect,color_mid,color_mid);
   }
   rect_set_xywh((iptr)&shield_rect.left,shield_x,shield_y,shield_width,shield_height);
-  ((Sprite *)((i8 *)&unit_shield_sprite))->draw((iptr)clip_shield_shadow,surface,side + shield_x,shield_y + 1
-            );
+  gfx_draw_unit_shield((iptr)clip_shield_shadow,surface,side + shield_x,shield_y + 1,0x10);
   rect_offset((iptr)&shield_rect.left,side,1);
-  ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x106,0x10);
-  ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x105,0x10);
+  gfx_recolor_unit_shield(surface,&shield_rect,0x10,0x10);
   rect_offset((iptr)&shield_rect.left,-side,0xffffffff);
-  ((Sprite *)((i8 *)&unit_shield_sprite))->draw((iptr)clip_shield,surface,shield_x,shield_y);
-  ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x106,color_primary);
-  ((DibSurface *)surface)->replace_color((iptr)&shield_rect.left,0x105,color_mid);
+  gfx_draw_unit_shield((iptr)clip_shield,surface,shield_x,shield_y,color_primary);
+  gfx_recolor_unit_shield(surface,&shield_rect,color_primary,color_mid);
   scaled = gfx_zoom_scale(2,zoom);
   rect_set_xywh((iptr)&band_rect.left,shield_x,shield_y,shield_width,scaled);
   gfx_fill_rect(surface,(RECT *)&band_rect.left,10);
@@ -3110,7 +3228,7 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
   if ((draw_flags & 4) == 0) {
     dmg = 0;
   }
-  if (zoom < -3) {
+  if (map_camera_topology_zoom((void *)surface,zoom) < -3) {
     dmg = 0;
   }
   hp_width = (int)((max_hp - dmg) * bar_width) / max_hp;
@@ -3133,40 +3251,8 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
     band_rect.right = hp_rect.right - (bar_width - hp_width);
     gfx_fill_rect(surface,(RECT *)&band_rect.left,hp_color);
   }
-  order = (int)units[unit2].orders & 0xf;
-  if (units[unit2].orders == ORDER_AI_IDLE) {
-    order = 0xffffffff;
-  }
-  if ((int)order < 1) {
-    order_char = '-';
-    if ((units[unit2].flags & UNITF_AUTOMATED) != 0) {
-      order_char = '*';
-    }
-  }
-  else if ((int)order < 0xb) {
-    order_char = order_names[order].key;
-  }
-  else if (order == 0xb) {
-    if ((game.reveal_map == '\0') ||
-       ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
-      if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
-        order_char = '-';
-      }
-      else {
-        order_char = order_names[0xb].key;
-      }
-    }
-    else {
-      order_char = units[unit2].ai_task;
-    }
-  }
-  else {
-    order_char = '-';
-    if ((units[unit2].flags & UNITF_AUTOMATED) != 0) {
-      order_char = '*';
-    }
-  }
-  if (order_char != '\0') {
+  order_char = (u8)gfx_unit_order_char((int)unit2);
+  if (order_char != '\0' && !map_camera_surface((void *)surface) && gfx_show_status_text(surface,zoom)) {
     order_text[0] = order_char;
     order_text[1] = 0;
     tmp = gfx_zoom_scale(3,zoom);
@@ -3187,7 +3273,17 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
     tmp = rect_height((RECT *)&shield_rect.left);
     text_y = shield_rect.top + tmp / 2;
     tmp = rect_width((RECT *)&shield_rect.left);
-    ((DibSurface *)surface)->draw_text((iptr)&status_window_block.map_label_font,(const char *)order_text,shield_rect.left + tmp / 2,text_y,value);
+    DibSurface *target = (DibSurface *)surface;
+    RECT saved_clip, order_clip;
+    if (hd_enabled) {
+      /* The smallest font is six logical pixels tall. At low zoom the shield
+         can be smaller; its order glyph must not spill into the HP bar/map. */
+      target->get_clip(&saved_clip);
+      IntersectRect(&order_clip,&saved_clip,&shield_rect);
+      target->set_clip(&order_clip);
+    }
+    target->draw_text((iptr)&status_window_block.map_label_font,(const char *)order_text,shield_rect.left + tmp / 2,text_y,value);
+    if (hd_enabled) target->set_clip(&saved_clip);
   }
   silhouette = (uint)(units[unit2].orders == ORDER_SLEEP);
   if ((((unit_types[units[unit2].type].domain == DOMAIN_AIR) &&
@@ -3207,7 +3303,7 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
   }
   else {
     ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + sprite_type * 0x3c))->draw_silhouette((iptr)clip_silhouette,surface,px,
-               py,0x1a);
+               py,hd_enabled ? 23 : 0x1a);
   }
   if (units[unit2].orders == ORDER_FORTIFIED) {
     ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->draw((iptr)clip_fortify,surface,px,py);
@@ -3262,47 +3358,13 @@ gfx_copy_rect_clipped(iptr src,iptr dst,int src_x,int src_y,int src_origin_x,int
   return;
 }
 
-/* 0056d289 auto */
-void __cdecl
-gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
-
+/* Share the sprite/offset selection with display-resolution camera badges.
+ * Enemy cities must use the last revealed size, just as the legacy painter does. */
+int gfx_city_sprite_index(int city,uint draw_flags,int *display_size)
 {
-  char shown_size;
+  int civ=cities[city].owner,tmp,walled,style2,size_idx,city_size;
   short style_id;
-  int tmp;
-  size_t text_len;
-  int box_dx;
-  i8 clip_disorder[16];
-  i8 clip_flag[16];
-  i8 clip_city[16];
-  iptr civ;
-  int style2;
-  int height2;
-  iptr width2;
-  int size_idx;
-  i32 color_mid;
-  int flag_y;
-  i32 color_primary;
-  int scale_factor;
-  int flag_x;
-  int pad;
-  i8 template_text[8];
-  uint occupied;
-  int walled;
-  char size_text[8];
-  struct { int left; iptr top; i32 right; i32 bottom; } label_rect;
-  int city_size;
-  
-  gfx_set_zoom_scale(zoom);
-  width2 = gfx_zoom_scale(0x40,zoom);
-  height2 = gfx_zoom_scale(0x30,zoom);
-  civ = (iptr)cities[city].owner;
-  rect_set_xywh((iptr)&label_rect.left,px,py,width2,height2);
-  gfx_set_draw_target(surface);
-  color_mid = civ_color_mid(civ);
-  color_primary = civ_color_primary(civ);
-  tmp = tile_unit_owner((int)cities[city].x,(int)cities[city].y);
-  occupied = (uint)(-1 < tmp);
+  char shown_size;
   tmp = city_has_improvement(city,IMP_CITY_WALLS);
   if ((tmp == 0) && (tmp = civ_has_wonder(civ,WONDER_GREAT_WALL), tmp == 0)) {
     walled = 0;
@@ -3310,7 +3372,6 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
   else {
     walled = 1;
   }
-  scale_factor = (-1 < zoom) + 1;
   style_id = leaders[civs[civ].tribe].city_style;
   if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
     style_id = civ_names[civ].city_style;
@@ -3380,6 +3441,51 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
       && (size_idx < 3)))) {
     size_idx++;
   }
+  *display_size=city_size;
+  return style2*8+size_idx*2+walled;
+}
+
+/* 0056d289 auto */
+void __cdecl gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
+
+{
+  if (!net.map_redraw_busy && map_camera_owns((void *)surface) && city >= 0 && city < game.num_cities)
+    map_view_cache_invalidate((void *)surface,cities[city].x,cities[city].y,3);
+  int tmp;
+  size_t text_len;
+  int box_dx;
+  i8 clip_disorder[16];
+  i8 clip_flag[16];
+  i8 clip_city[16];
+  iptr civ;
+  int style2;
+  int height2;
+  iptr width2;
+  int size_idx;
+  i32 color_mid;
+  int flag_y;
+  i32 color_primary;
+  int flag_x;
+  int pad;
+  i8 template_text[8];
+  uint occupied;
+  int walled;
+  char size_text[8];
+  struct { int left; iptr top; i32 right; i32 bottom; } label_rect;
+  int city_size;
+
+  gfx_set_zoom_scale(zoom);
+  width2 = gfx_zoom_scale(0x40,zoom);
+  height2 = gfx_zoom_scale(0x30,zoom);
+  civ = (iptr)cities[city].owner;
+  rect_set_xywh((iptr)&label_rect.left,px,py,width2,height2);
+  gfx_set_draw_target(surface);
+  color_mid = civ_color_mid(civ);
+  color_primary = civ_color_primary(civ);
+  tmp = tile_unit_owner((int)cities[city].x,(int)cities[city].y);
+  occupied = (uint)(-1 < tmp);
+  int sprite_index=gfx_city_sprite_index((int)city,draw_flags,&city_size);
+  style2=sprite_index/8;size_idx=(sprite_index%8)/2;walled=sprite_index%2;
   ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + size_idx * 0x78 + walled * 0x3c + style2 * 0x1e0))->draw((iptr)clip_city,surface,px,py);
   tmp = tile_unit_owner((int)cities[city].x,(int)cities[city].y);
   if ((-1 < tmp) && ((draw_flags & 2) == 0)) {
@@ -3389,15 +3495,26 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
     flag_y = gfx_zoom_scale(peace_treaty_icon_sprite_block.city_flag_y_offsets[style2 * 8 + walled + size_idx * 2],
                                   zoom);
     flag_y = py + flag_y;
+    if (hd_enabled) hd_sprite_tint((Sprite *)editor_tile_backdrop_sprite_block.civ_flag_sprites + civ * 2,
+                                  8,color_primary);
     ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + civ * 0x78))->draw((iptr)clip_flag,surface,flag_x,
                flag_y);
   }
   if ((draw_flags & 1) == 0) {
-    if ((cities[city].flags & CITYF_DISORDER) == 0) {
+    /* Reports need the population even during disorder. Keep the warning next
+       to the number, where it cannot disappear against the HD city artwork. */
+    bool report_disorder = hd_enabled && surface == (iptr)&advisor_state.window &&
+                           (cities[city].flags & CITYF_DISORDER);
+    if ((cities[city].flags & CITYF_DISORDER) == 0 || report_disorder) {
+      if (map_camera_surface((void *)surface) || !gfx_show_status_text(surface,zoom)) {
+        gfx_reset_zoom_scale();
+        return;
+      }
       gfx_select_zoom_font(zoom);
       text_set_font((iptr)&status_window_block.map_label_font);
       text_set_surface(surface);
       __itoa(city_size,size_text,10);
+      if (report_disorder) crt_strcat(size_text,"!");
       width2 = ((GameFont *)((i8 *)&status_window_block.map_label_font))->text_width((const char *)size_text);
       height2 = ((GameFont *)((i8 *)&status_window_block.map_label_font))->font_cached_height();
       crt_strcpy(template_text,((i8 *)&city_size_digit_str));
@@ -3426,8 +3543,14 @@ gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
       gfx_draw_text((const char *)size_text,label_rect.left + (pad >> 1) + 1,label_rect.top);
     }
     else {
-      ((Sprite *)((i8 *)&fortify_overlay_sprites_block.city_disorder_icon_sprite))->draw((iptr)clip_disorder,surface,px,py);
-      ((DibSurface *)surface)->replace_color((iptr)&label_rect.left,0x106,color_primary);
+      if (hd_enabled) {
+        ((Sprite *)&fortify_overlay_sprites_block.city_disorder_icon_sprite)->draw_silhouette(
+            (iptr)clip_disorder,surface,px,py,color_primary);
+      }
+      else {
+        ((Sprite *)((i8 *)&fortify_overlay_sprites_block.city_disorder_icon_sprite))->draw((iptr)clip_disorder,surface,px,py);
+        ((DibSurface *)surface)->replace_color((iptr)&label_rect.left,0x106,color_primary);
+      }
     }
   }
   gfx_reset_zoom_scale();
@@ -6646,6 +6769,8 @@ DibSurface * __thiscall surface_dtor(DibSurface *self)
 i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_count,iptr palette)
 
 {
+  if (hd_enabled) return hd_load_surface(this,hd_file(filename),(GamePalette *)palette);
+
   int result;
   i32 ret;
   uint table_size;
@@ -6774,6 +6899,8 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
 i32 DibSurface::load_gif_resource(iptr res_id,uint first_color,uint color_count,iptr palette)
 
 {
+  if (hd_enabled) return hd_load_surface(this,hd_resource(res_id),(GamePalette *)palette);
+
   i32 ret;
   int result;
   uint table_size;
@@ -7010,6 +7137,7 @@ void DibSurface::fill_rect(iptr rect,i32 color)
     dib_fill_rect8(bits,color,clipped.left,clipped.top,width2,height2,
                  ((-(uint)(top_down == 0) & 0xfffffffe) + 1) * pitch,surf_height);
   }
+  if (hd_enabled) hd_changed((void *)bits,clipped.left,clipped.top,clipped.right-clipped.left,clipped.bottom-clipped.top);
   return;
 }
 
@@ -7221,6 +7349,7 @@ void DibSurface::set_pixel(i32 x,i32 y,i32 color)
     pixel = (i8 *)pixel_ptr(x,y);
     *pixel = (i8)color;
   }
+  if (hd_enabled) hd_changed((void *)bits,x,y,1,1);
   return;
 }
 
@@ -7471,6 +7600,12 @@ i8 DibSurface::in_clip(int x,int y)
 void DibSurface::remap_colors(iptr remap_table,iptr base_index,i32 unused)
 
 {
+  /* This operation is used by the grey backdrop transition. Keep HD pixels
+     and picking indices intact instead of replacing art with palette blocks. */
+  if (hd_enabled) {
+    hd_surface_grey((void *)bits,1);
+    return;
+  }
   byte *pixel;
   int col;
   int row;
@@ -8336,6 +8471,8 @@ i32 Sprite::create_solid(i32 width,i32 height,uint color)
 void Sprite::free()
 
 {
+  if (hd_enabled) hd_sprite_forget(this);
+
   uptr ptr;
   u32 handle;
   
@@ -8490,6 +8627,8 @@ void Sprite::get_origin(iptr out_x,iptr out_y)
 void Sprite::replace_color(i32 old_color,i32 new_color)
 
 {
+  if (hd_enabled) hd_sprite_tint(this,old_color,new_color);
+
   int rows_left;
   int *len_ptr;
   char had_data;
@@ -8526,6 +8665,9 @@ void Sprite::replace_color(i32 old_color,i32 new_color)
 int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
 
 {
+  if (hd_enabled)
+    return hd_encode_sprite(this,(DibSurface *)surface,src_rect,key_mode);
+
   char locked;
   int rect_h;
   int rect_w;
@@ -8740,6 +8882,23 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
 int *Sprite::blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y)
 
 {
+  int hd_x=0,hd_y=0,hd_w=0,hd_h=0,atlas=0;
+  if (hd_enabled) {
+    hd_x=x+gfx_scale_length(offset_x,0,0);hd_y=y+gfx_scale_length(offset_y,0,0);
+    hd_w=gfx_scale_length(width(),0,0);hd_h=gfx_scale_length(height(),0,0);
+    atlas=hd_sprite_draw_keyed(this,(void *)surface->bits,hd_x,hd_y,hd_w,hd_h,
+                         surface->clip_left,surface->clip_top,surface->clip_right,surface->clip_bottom,-1,key_arg);
+  }
+  /* Keep the indexed draw too: map picking and editor color queries consume it.
+     Its bytes must not subsequently replace the true-color presentation. */
+  ON_SCOPE_EXIT(if (hd_enabled) {
+    RECT *drawn = (RECT *)out_rect;
+    if(atlas)hd_commit_rect((void *)surface->bits,drawn->left,drawn->top,
+                           drawn->right-drawn->left,drawn->bottom-drawn->top);
+    else hd_changed((void *)surface->bits,drawn->left,drawn->top,
+                    drawn->right-drawn->left,drawn->bottom-drawn->top);
+  });
+
   int trim_y;
   int tmp;
   int scaled_trim_x;
@@ -8832,6 +8991,23 @@ int *Sprite::blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x
 int *Sprite::blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y,i32 color)
 
 {
+  int hd_x=0,hd_y=0,hd_w=0,hd_h=0,atlas=0;
+  if (hd_enabled) {
+    hd_x=x+gfx_scale_length(offset_x,0,0);hd_y=y+gfx_scale_length(offset_y,0,0);
+    hd_w=gfx_scale_length(width(),0,0);hd_h=gfx_scale_length(height(),0,0);
+    atlas=hd_sprite_draw_keyed(this,(void *)surface->bits,hd_x,hd_y,hd_w,hd_h,
+                         surface->clip_left,surface->clip_top,surface->clip_right,surface->clip_bottom,color,key_arg);
+  }
+  /* Keep the indexed draw too: map picking and editor color queries consume it.
+     Its bytes must not subsequently replace the true-color presentation. */
+  ON_SCOPE_EXIT(if (hd_enabled) {
+    RECT *drawn = (RECT *)out_rect;
+    if(atlas)hd_commit_rect((void *)surface->bits,drawn->left,drawn->top,
+                           drawn->right-drawn->left,drawn->bottom-drawn->top);
+    else hd_changed((void *)surface->bits,drawn->left,drawn->top,
+                    drawn->right-drawn->left,drawn->bottom-drawn->top);
+  });
+
   int trim_y;
   int tmp;
   int scaled_trim_x;
@@ -8924,6 +9100,11 @@ int *Sprite::blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int ke
 void Sprite::merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy)
 
 {
+  if (hd_enabled) {
+    if(!dst->data_handle && !dx && !dy)hd_sprite_copy(dst,src);
+    else hd_sprite_forget(dst); /* pixel-edited composite uses its new indexed rows */
+  }
+
   byte row_mask;
   LONG width;
   LONG height;
@@ -9975,6 +10156,9 @@ gfx_copy_pixels(int src_bits,int dst_bits,int src_x,int src_y,int dst_x,int dst_
             int height,int src_height,int dst_height,int src_pitch,int dst_pitch)
 
 {
+  int hd_dst_y = dst_y; /* logical coordinate, before bottom-up row conversion */
+  if (hd_enabled) hd_copy((void *)dst_bits,(void *)src_bits,dst_x,dst_y,src_x,src_y,width,height);
+
   i8 pixel;
   uint count;
   int abs_pitch;
@@ -10014,6 +10198,7 @@ gfx_copy_pixels(int src_bits,int dst_bits,int src_x,int src_y,int dst_x,int dst_
     dst = (i32 *)((int)dst + (dst_pitch - width));
     rows_left--;
   } while (rows_left != 0);
+  if (hd_enabled) hd_commit_rect((void *)dst_bits,dst_x,hd_dst_y,width,height);
   return;
 }
 
@@ -10377,6 +10562,7 @@ gdi_blit_transparent(HDC dst_dc,HGDIOBJ bitmap,int dst_x,int dst_y,int width,int
             ,int src_y)
 
 {
+  if (hd_enabled && hd_gdi_bitmap((uintptr_t)dst_dc,(uintptr_t)bitmap,dst_x,dst_y,width,height,src_x,src_y)) return;
   HDC hdc;
   HGDIOBJ h;
   HDC hdc_00;

@@ -29,6 +29,11 @@ which shows at once what it changes, or in the `[OpenCiv2]` section of `CIV.INI`
 game keeps its own settings in, in its Windows directory, where the dialog writes them too): its
 key `=0`.
 
+The same page includes **Map drag and zoom (GPU)** (`GpuMapCamera`), which
+is off by default. It enables dragging and smooth wheel zoom on the main map
+when HD GPU rendering is active. Changes apply immediately and are saved to
+`CIV.INI`. CPU and original-graphics rendering keep their fixed zoom controls.
+
 | Key | What |
 | --- | --- |
 | `MouseWheel` | Use the mouse wheel and middle button. The wheel scrolls whatever list or scroll bar is under the pointer (advisors, dialogs, the city window, the Civilopedia), changes the specialist under the pointer in the city window, and moves the tax rate bars. Ctrl+wheel zooms the map and Ctrl+middle click returns to normal zoom. Middle click centres the map on that spot; dragging with the middle button pans it. |

@@ -1,0 +1,86 @@
+# GPU camera gestures and picking, on the real clock (CIV2_REALTIME=1).
+# Explicit dispatch barriers keep gestures outside the save's startup work.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_find_city 40e017
+wait 2000
+key Return
+wait 2000
+call_sync menu_command 4e2803 0 801
+call_sync mapview_center_if_moved 489b9b 131 67
+wait 2000
+# Run in both map topologies, each with/without the persistent cache.
+call_sync map_camera_boundary_test 0 0
+wheel 400 400 -20
+wait 800
+camera_probe 400 400
+shot wrap-start
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-0
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-1
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-2
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-3
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-4
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-5
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-6
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot wrap-7
+wheel 400 400 2
+wait 800
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot fractional-wrap-0
+drag_burst 300 400 400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot fractional-wrap-1
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot fractional-wrap-2
+drag_burst 300 400 -400 0
+call_sync win_dispatch_all_messages 0
+wait 200
+camera_probe 400 400
+shot fractional-wrap-3
+quit

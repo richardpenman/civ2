@@ -1,6 +1,7 @@
 /* The game, cities: growth, production, happiness, the city window and city view: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../game/hd_windows.h"
 
 /* 0040bdac auto */
 void __cdecl
@@ -1506,6 +1507,7 @@ void __cdecl trade_advisor_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -1588,6 +1590,7 @@ void __cdecl trade_advisor_draw(void)
   row_y = top_y;
   first_row2 = (*(uint *)&advisor_state.first_row);
   row = (*(uint *)&advisor_state.first_row);
+  hd_report_rows(top_y+6,line_height,first_row2,int_clamp(total_rows-first_row2,0,rows_per_page));
   do {
     if ((int)(first_row2 + rows_per_page) <= (int)row) {
       if (advisor_state.controls_created == 0) {
@@ -1724,6 +1727,7 @@ void __cdecl city_status_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -1774,6 +1778,7 @@ void __cdecl city_status_draw(void)
   row = 0;
   row_y = top_y;
   first_row2 = advisor_state.first_row;
+  hd_report_rows(top_y+6,line_height,first_row2,int_clamp(city_count-first_row2,0,rows_per_page));
   for (city = 0; city < game.num_cities; city++) {
     next_row = row;
     if ((((cities[city].id != 0) && (cities[city].owner == civ)) &&
@@ -1950,6 +1955,7 @@ void __cdecl wonders_report_draw(void)
   ((FrameWindow *)((i8 *)&advisor_state.window))->layout();
   ((FrameWindow *)((i8 *)&advisor_state.window))->FrameWindow::draw_caption();
   ((PictureWindow *)((i8 *)&advisor_state.window))->blit();
+  hd_report_background();
   top_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
@@ -4665,6 +4671,7 @@ i32 CityViewWindow::layout_buildings()
 void CityViewWindow::draw_buildings()
 
 {
+  if(hd_enabled){hd_city_panorama(this);redraw_scrolled();return;}
   i8 draw_rect[16];
   int i;
   
@@ -13580,6 +13587,11 @@ void CityWindow::draw_resource_map(int blit)
     gfx_reset_zoom_scale();
     if (blit != 0) {
       wnd_blit_surface_rect((iptr)(&resource_map_rect));
+      if (hd_enabled) {
+        /* Partial resource redraws also change the stockpile countdowns. */
+        draw_food_box(1);
+        draw_production(1);
+      }
     }
   }
   return;
@@ -13618,6 +13630,13 @@ void CityWindow::draw_food_box(int blit)
     rect_set_xywh((iptr)&box_rect.left,arg_x,arg_y,box_w,box_h);
     rect_offset((iptr)&box_rect.left,food_box_rect,
                        food_box_rect_top);
+    if(hd_enabled) {
+      int surplus = city_calc.yield_totals[0] - cities[city_index].size * (int)cosmic.food_per_citizen -
+                    city_calc.settlers_supported * city_calc.settler_food_cost;
+      hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].food_box,(cities[city_index].size+1)*city_calc.food_box_rows,((city_has_improvement(city_index,IMP_GRANARY) || civ_has_wonder(cities[city_index].owner,WONDER_PYRAMIDS)) ? (cities[city_index].size+1)*(city_calc.food_box_rows>>1) : 0),surplus,"food");
+      if(blit)wnd_blit_surface_rect((iptr)&food_box_rect);
+      return;
+    }
     arg_y = scale(3);
     arg_x = scale(3);
     rect_deflate((iptr)&box_rect.left,arg_x,arg_y);
@@ -13785,6 +13804,13 @@ void CityWindow::draw_production(int blit)
       rect_set_xywh((iptr)&box_rect.left,arg_x,arg_y,arg_w,arg_h);
       rect_offset((iptr)&box_rect.left,production_rect,
                          production_rect_top);
+      if(hd_enabled) {
+        int surplus = (cities[city_index].flags & CITYF_DISORDER) ? 0 :
+                      city_calc.total_shields - city_calc.shield_support;
+        hd_stockpile(this,*(RECT *)&box_rect.left,cities[city_index].shield_box,build_cost*city_calc.shield_rows,0,surplus,"production");
+        if(blit)wnd_blit_surface_rect((iptr)&production_rect);
+        return;
+      }
       arg_y = scale(3);
       arg_x = scale(3);
       rect_deflate((iptr)&box_rect.left,arg_x,arg_y);

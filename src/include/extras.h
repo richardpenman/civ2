@@ -79,6 +79,7 @@ EXTRAS_C int plat_color_lut_on;                 /* src/platform/gdi.c: X35, the 
 EXTRAS_C unsigned char plat_color_lut[256];     /* colours through this table */
 
 EXTRAS_C HWND plat_window_at_cursor(POINT *pt);  /* src/platform/message.c */
+EXTRAS_C HWND plat_window_at_point(int x,int y);
 EXTRAS_C int plat_profile_string(const char *file, const char *section, const char *key, char *out, int n);
 
 /* src/game/extras.cpp */

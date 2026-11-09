@@ -1,0 +1,34 @@
+# The English AD 160 save as He_Auto.SAV, 1024x768, real clock, Atlas graphics.
+wait 2000
+key Down Down Down Down
+wait 500
+file He_Auto.SAV
+key Return
+wait 2000
+key Return
+wait 2000
+call menu_find_city 40e017
+wait 1000
+key Down Down
+click 330 610
+wait 1500
+shot stockpiles
+call city_button_next_city 50bd13 0
+wait 800
+shot stockpiles-next
+click 220 280
+wait 500
+shot stockpiles-worker
+click 220 280
+wait 500
+shot stockpiles-worker-restored
+call city_button_prev_city 50bf72 0
+wait 800
+shot stockpiles-restored
+call city_button_change 50a473 0
+wait 800
+shot production-choices
+key Up Up Return
+wait 1000
+shot stockpiles-changed
+quit
