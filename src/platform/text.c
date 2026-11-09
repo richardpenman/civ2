@@ -40,6 +40,24 @@ static FontFace *faces[NFACES][MAXH + 1][2][2];
 static unsigned char *font_data, *aa_data;
 extern char plat_data_dir[];
 
+/* The font file: in play (plat_win_fonts) the one captured with Liberation
+   Serif, Sans and Mono, which have Times New Roman's, Arial's and Courier
+   New's widths, so text is laid out as on Windows (with the DejaVu fonts the
+   reference environment substitutes, wider, text overflowed: issue 17);
+   replays and classic mode the reference environment's, as the recordings.
+   (The other where the first is missing.) */
+static FILE *open_fonts(char *path, size_t size, const char *name, const char *win_name)
+{
+    FILE *f;
+    if (plat_win_fonts) {
+        snprintf(path, size, "%s/%s", plat_data_dir, win_name);
+        if ((f = fopen(path, "rb")))
+            return f;
+    }
+    snprintf(path, size, "%s/%s", plat_data_dir, name);
+    return fopen(path, "rb");
+}
+
 static void load_aa(void)
 {
     char path[1024];
@@ -47,8 +65,7 @@ static void load_aa(void)
     long n;
     unsigned char *p, *end;
     unsigned count, i;
-    snprintf(path, sizeof path, "%s/fonts_aa.bin", plat_data_dir);
-    f = fopen(path, "rb");
+    f = open_fonts(path, sizeof path, "fonts_aa.bin", "fonts_win_aa.bin");
     if (!f)
         plat_fatal("cannot open %s", path);
     fseek(f, 0, SEEK_END);
@@ -129,8 +146,7 @@ static void load_fonts(void)
     long n;
     unsigned char *p, *end;
     unsigned count, i;
-    snprintf(path, sizeof path, "%s/fonts.bin", plat_data_dir);
-    f = fopen(path, "rb");
+    f = open_fonts(path, sizeof path, "fonts.bin", "fonts_win.bin");
     if (!f)
         plat_fatal("cannot open %s", path);
     fseek(f, 0, SEEK_END);

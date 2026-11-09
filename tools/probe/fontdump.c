@@ -21,6 +21,14 @@
  *             (w+7)/8*h bytes of bits (msb first), x,y = top left of the
  *             bitmap relative to the text origin (top left of the cell)
  * Run with tools/probe/run.sh fontdump OUTFILE.
+ *
+ * data/native/fonts_win.bin (played with outside replays and classic mode:
+ * src/platform/text.c, open_fonts) is the same capture with the Liberation 2
+ * fonts installed (Debian's fonts-liberation2), which Wine then draws in
+ * place of Times New Roman, Arial and Courier: their widths are those of
+ * the Windows fonts, so text is laid out as on Windows.  In the civ2-dev
+ * container: apt-get install fonts-liberation2 (as root), then run.sh as
+ * the user dev (Wine's prefix is his).  Its licence: THIRD-PARTY.txt.
  */
 #include <windows.h>
 #include <stdio.h>

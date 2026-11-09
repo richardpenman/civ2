@@ -110,7 +110,7 @@ def windows_resources(cc, obj):
     import zlib
     res = os.path.join(obj, 'res')
     os.makedirs(res, exist_ok=True)
-    for name in ('fonts.bin', 'fonts_aa.bin'):
+    for name in ('fonts.bin', 'fonts_aa.bin', 'fonts_win.bin', 'fonts_win_aa.bin'):
         src = os.path.join(ROOT, 'data', 'native', name)
         out = os.path.join(res, name + '.z')
         if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):

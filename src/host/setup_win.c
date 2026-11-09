@@ -349,7 +349,8 @@ static int unpack_resource(int id, const char *path)
 int os_program_files(void)
 {
     static const struct { int id; const char *name; } files[] = {
-        {SETUP_RES_FONTS, "fonts.bin"}, {SETUP_RES_FONTS_AA, "fonts_aa.bin"}};
+        {SETUP_RES_FONTS, "fonts.bin"}, {SETUP_RES_FONTS_AA, "fonts_aa.bin"},
+        {SETUP_RES_FONTS_WIN, "fonts_win.bin"}, {SETUP_RES_FONTS_WIN_AA, "fonts_win_aa.bin"}};
     char dir[MAX_PATH], data[MAX_PATH], path[MAX_PATH];
     size_t i;
     program_dir(dir, sizeof dir);

@@ -71,6 +71,11 @@ MacBook Air's window 3 (the game at 980×594), a 4K screen 3 (1280×720), 2560×
 (1280×720), 1920×1080 1. `Scale=` in `CIV.INI` sets the step instead (0: by the screen's size); it takes
 effect the next time the game starts. The game is never made smaller than 640×480.
 
+Text is drawn with fonts that have the widths of Windows' Times New Roman, Arial and Courier
+New (the Liberation fonts, `data/fonts_win.bin`), so it is laid out as the original's on
+Windows. The replays, and classic mode, use the fonts Wine draws instead (DejaVu, wider), as
+the recordings of the original do; with them some text overflows its window.
+
 ## Rule changes
 
 CIV2UIA's items that change the game's rules, and the limits it took from civ2patch, are off

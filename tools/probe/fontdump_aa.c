@@ -11,7 +11,8 @@
  * u8 w, u8 h, u16 n, n bytes of run-length coded coverage (row by row):
  * a byte b < 0x80 is followed by b+1 literal values; b >= 0x80 by one value
  * repeated b-0x80+2 times.
- * Run with tools/probe/run.sh fontdump_aa OUTFILE.
+ * Run with tools/probe/run.sh fontdump_aa OUTFILE (fonts_win_aa.bin: with
+ * the Liberation fonts installed, as fontdump.c says).
  */
 #include <windows.h>
 #include <stdio.h>
