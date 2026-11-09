@@ -169,6 +169,11 @@ Original addresses identify evidence; they are not required runtime addresses.
 Little-endian file fields, integer widths, ordering, timing inputs, and aliases
 that affect behavior must still be represented explicitly.
 
+Specifications should express logical behavior in the main procedure and map it
+to the original storage in a validation appendix. Compare logical state directly,
+or encode it through that mapping when using original snapshots. A byte-for-byte
+reference comparison does not require identical internal records or enums.
+
 Model platform calls by their inputs, results and side effects. At minimum,
 specify relevant clock returns, message/timer callbacks, file contents and
 errors, input events, transport deliveries, and media completion. Record ordering

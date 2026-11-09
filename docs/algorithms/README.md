@@ -70,8 +70,8 @@ Every document should contain:
 
 1. The compatibility target, scope, entry conditions, inputs, outputs, and
    observable side effects, including calls to other specified algorithms.
-2. State and data definitions, units, coordinate systems, widths, signedness,
-   rounding, overflow, sentinels, and rule-table dependencies.
+2. Logical state and data definitions, units, coordinate systems, rule-table
+   dependencies, and any rounding, overflow or sentinel behavior affecting results.
 3. Ordered pseudocode with constants, branch conditions, loop and scan order,
    tie breaking, random-stream selection, and exact random-call consumption.
 4. Relevant mode and rule variations, boundary conditions, failure or cancellation
@@ -81,6 +81,15 @@ Every document should contain:
 6. A source-traceability appendix with revisions, function/address references,
    original observations, and the validation limits. Source access must be optional
    for the implementer reading the algorithm itself.
+
+Describe the main algorithm using logical properties, named values and ordered
+operations that allow a new implementation to choose its own representation.
+Put original byte layouts, numeric enum encodings, bitmasks and scratch-field
+reuse in a validation appendix, with a mapping from logical state to reference
+snapshots. Keep consequences that affect behavior in the main text: for example,
+a wrapping counter, a terrain test that excludes marked tiles, or a tie-break
+order. File and wire formats still require exact encodings at their external
+boundaries; those encodings do not dictate an implementation's internal layout.
 
 ## Document backlog
 
