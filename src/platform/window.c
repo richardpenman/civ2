@@ -392,19 +392,33 @@ static void link_bottom(Window *w)
 }
 
 /* Raising a top-level window raises the windows it owns above it. */
+/* The windows w owns, and those they own in turn, raised above it (as
+   Windows does): a box owned by a window owned by the one clicked stayed
+   behind its owner (issue 18: the diplomacy screen's background clicked,
+   its picture raised over the emissary's box, the game waiting on it). */
+static void raise_owned(Window *w, int depth)
+{
+    Window *s, *next, *owned[64];
+    int i, n = 0;
+    for (s = desktop->children; s; s = next) {
+        next = s->next;
+        if (s->owner == w && s != w && n < 64)
+            owned[n++] = s;
+    }
+    for (i = 0; i < n; i++) {
+        unlink_wnd(owned[i]);
+        link_top(owned[i]);
+        if (depth < 8)
+            raise_owned(owned[i], depth + 1);
+    }
+}
+
 static void raise_wnd(Window *w)
 {
-    Window *s, *next;
     unlink_wnd(w);
     link_top(w);
     if (w->parent == desktop)
-        for (s = desktop->children; s; s = next) {
-            next = s->next;
-            if (s->owner == w && s != w) {
-                unlink_wnd(s);
-                link_top(s);
-            }
-        }
+        raise_owned(w, 0);
     wnd_generation++;
 }
 
