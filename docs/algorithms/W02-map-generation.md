@@ -1251,7 +1251,7 @@ pinned revision. Those later names do not change the compatibility target.
 | Tile storage, wrap, allocation, seed | [map.cpp](../../src/auto/map.cpp), `tile_at`, `0x005b8931`; `map_wrap_x`, `0x005ae052`; `map_alloc`, `0x005b7fe0`; `map_new_seed`, `0x005b85fe` |
 | Resources and huts | Same file, `tile_resource`, `0x005b8ee1`; `tile_has_hut`, `0x005b8ffa` |
 | Presets, custom limits, parameter selection | [game.cpp](../../src/auto/game.cpp), `setup_choose_map_size`, `setup_custom_world`, and new-game callers |
-| Shared arithmetic, random generator and seed conversion | [F01 traceability](F01-determinism-and-arithmetic.md#7-source-traceability-and-validation) |
+| Shared arithmetic, random generator and seed conversion | [F01 traceability](F01-determinism-and-arithmetic.md#appendix-c-source-traceability-and-validation) |
 | Map and region layouts | [civ2types.h](../../src/include/civ2types.h), `MapHeader`, `Tile`, `Landmass` |
 | Terrain, unit-slot and unit-flag encodings | [enums.h](../../src/include/enums.h) |
 | Ordered neighbor constants | [data.bin](../../data/image/data.bin), addresses `0x0062833c`, `0x00628344`, `0x00628350`, `0x00628360`, `0x00628370`, `0x006283a0`, `0x006283d0`, `0x006283e0`; section mapping in [layout.json](../../data/image/layout.json) |

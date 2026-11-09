@@ -16,18 +16,26 @@ Evidence is pinned to OpenCiv2
 limits appear at the end. These procedures do not require the original memory
 layout or source-language types.
 
+The main text specifies mathematical values, reductions and rounding steps.
+An implementation may use larger integers, arbitrary-precision arithmetic or
+different storage if it preserves those results at each specified boundary.
+[Appendix A](#appendix-a-original-runtime-and-representation) describes the
+original runtime and representation;
+[Appendix B](#appendix-b-reference-harness-conventions) describes its replay
+test environment.
+
 ## 1. Numeric model and notation
 
-Use the following explicit numeric types. An unsuffixed scalar in the algorithms
-is a signed 32-bit integer unless its owner specifies another type. Coordinates,
-record fields, bitmasks and constants must retain their individually declared
-width and signedness; do not infer them from this default.
+The following names denote **mathematical domains and conversion operations**,
+not required language or storage types. An unsuffixed scalar uses the `i32`
+domain unless its owning algorithm specifies otherwise. Individually declared
+domains and conversion boundaries take precedence over that default.
 
-| Type | Meaning |
+| Domain | Meaning |
 | --- | --- |
-| `u8`, `u16`, `u32`, `u64` | Unsigned integers of exactly 8, 16, 32 or 64 bits. |
-| `i8`, `i16`, `i32`, `i64` | Two's-complement signed integers of those widths. |
-| `binary32`, `binary64` | IEEE binary floating formats with 24- and 53-bit significands respectively, including the implicit leading bit. |
+| `u8`, `u16`, `u32`, `u64` | Integers in `0..2^N-1`, for `N` equal to 8, 16, 32 or 64. |
+| `i8`, `i16`, `i32`, `i64` | Integers in `-2^(N-1)..2^(N-1)-1`, for the corresponding `N`. |
+| `binary32`, `binary64` | Values and rounding of the IEEE binary formats with 24- and 53-bit significands respectively, including the implicit leading bit. |
 
 For mathematical integer `x`, define:
 
@@ -37,51 +45,52 @@ iN(x) = uN(x)                    if uN(x) < 2^(N-1)
         uN(x) - 2^N             otherwise
 ```
 
-These conversions truncate bits, without saturation. For example,
+These conversions reduce values without saturation. For example,
 `u8(260)=4`, `i8(255)=-1`, `i16(32768)=-32768` and
-`i32(0xffffffff)=-1`. Widening a signed value preserves its mathematical value;
-widening an unsigned value zero-extends it. Thus reading the same byte as `i8`
-and as `u8` can produce different arithmetic and comparisons.
+`i32(0xffffffff)=-1`. Widening into a domain containing the value preserves that
+value. Signed interpretation still matters: `i8(255)` and `u8(255)` produce
+different inputs to later arithmetic and comparisons.
 
-Original scalar `char`, `short`, `int`, `long` and pointers occupy 8, 16, 32, 32
-and 32 bits respectively, with plain `char` signed in this build. A modern
-64-bit host's `long`, pointer or native integer size must not redefine game
-arithmetic. Multi-byte memory/file values are little-endian where the relevant
-record format exposes their bytes. Record layouts and pointer replacements
-belong to F02/F06 rather than this specification.
+For example, an arbitrary-precision integer can hold `S`, provided each RNG
+update applies `u32` before selecting the returned value. The modulo operation
+is required; allocating a four-byte object is optional. Bitwise notation below
+operates on the mathematical two's-complement representation of the stated
+domain, independently of how the implementation stores it.
 
 ### Integer operations
 
-- A recovered 32-bit add, subtract or low-word multiply keeps its low 32 bits;
-  reinterpret the result as signed where the next operation requires it. Preserve
-  the width at each intermediate step, not just at the final assignment.
-- Narrow stores retain the low field-width bits. Subsequent reads sign-extend or
-  zero-extend according to that field's type. Byte arithmetic is often performed
-  after integer promotion; it is not necessarily an 8-bit operation at every step.
+- An add, subtract or multiply specified in the 32-bit arithmetic domain applies
+  `u32` or `i32` to its result as appropriate. Preserve each intermediate reduction,
+  rather than reducing only the final result of a longer expression.
+- A conversion to a narrower domain applies its `uN` or `iN` operation at the
+  stated boundary. A small stored field does not imply reduction after every
+  arithmetic operation involving its value; the owning algorithm specifies that.
 - Signed division truncates toward zero: `sdiv(-7,3)=-2`. Signed remainder is
   `a - sdiv(a,b)*b`, so `srem(-7,3)=-1`. This differs from floor division and
   from a language's always-nonnegative modulo operator.
 - Unsigned division uses nonnegative values and rounds down. Unsigned remainder
   is nonnegative. Do not exchange signed and unsigned comparisons or divisions.
-- Signed arithmetic right shift fills with the sign bit: `asr32(-7,1)=-4`.
-  Unsigned right shift fills with zero. Left shift discards high bits.
-- An x86 32-bit variable shift uses the low five count bits, hence shifting by
-  32 uses count zero. This is the rule for the helper below; an owning algorithm
-  must identify any operation with a different width.
+- For `v` in `i32` and an effective count `k` in `0..31`,
+  `asr32(v,k) = floor(v/2^k)`; for example, `asr32(-7,1)=-4`.
+  Unsigned right shift is `floor(u32(v)/2^k)`.
+  Left shift multiplies by `2^k` and reduces to the stated result domain.
+- A 32-bit variable shift reduces its count modulo 32, so a count of 32 means
+  zero. This is the rule for the helper below; an owning algorithm must identify
+  any operation with a different count rule or value domain.
 - Do not reassociate expressions, move a cast across an operation, substitute
   shift for signed division on negative values, or replace integer arithmetic
   with floating arithmetic without proving the same intermediate results.
 
-Signed division by zero and `INT_MIN / -1` do not have ordinary 32-bit results
-on the original x86 instruction; they fault. A caller must exclude these inputs
-or specify its failure behavior. Do not turn them into zero, saturation or wrap
-as a supposed classic result. Original carry-dependent, multiword or exceptional
-operations need their own explicit contract; this is not permission to assume
-every decompiled C expression defines portable overflow behavior.
+Signed division by zero and `INT_MIN / -1`, where `INT_MIN=-2147483648`, are
+failure cases with no ordinary `i32` result. A caller must exclude these inputs
+or specify its failure behavior; zero, saturation and wrap are not substitute
+results. Operations depending on carries, multiple numeric domains or exceptional
+values need their own explicit contract. The original processor behavior and
+source-language pitfalls are described in Appendix A.
 
 ### Shared clamp and shift helpers
 
-All arguments here are `i32`; comparisons are signed. The two clamp forms agree
+All arguments here are in `i32`; comparisons are signed. The two clamp forms agree
 for `lo <= hi`, but **do not swap reversed bounds**:
 
 ```text
@@ -108,35 +117,32 @@ without a host-language signed negation overflow.
 
 ### Floating point
 
-The original startup selects **53-bit x87 precision**. For the finite,
-ordinary-magnitude computations below, use round-to-nearest, ties-to-even,
-with a separately rounded result for each floating operation. A stored `double`
-is binary64. Do not use binary32, fused multiply-add, decimal arithmetic or
-fast-math reassociation in the random-range procedure.
+For the finite, ordinary-magnitude computations below, use a **53-bit binary
+significand**, round-to-nearest, ties-to-even, and a separately rounded result
+at each specified floating operation. Binary64 arithmetic supplies these results
+in the range used here. Another arithmetic system is also suitable if it applies
+the same rounding steps. Higher intermediate precision, fused operations or
+expression reassociation must not bypass those steps.
 
-An x87 register still has the extended exponent range when its precision control
-selects a 53-bit significand. Therefore “use double” is sufficient for the bounded
-random calculations below, not a proof of equivalence for every possible
-floating expression elsewhere in the game. An owner involving underflow,
-overflow, special values, library math or a changed FPU control word must specify
-those details separately. If a test deliberately changes the control word,
-capture it; the original random-range operations use the incoming precision and
-rounding, except that the final integer conversion temporarily selects truncation.
+An algorithm involving underflow, overflow, special values, library math or an
+alternate arithmetic environment must specify those details separately. The
+normal random-range contract here does not establish equivalence for all
+floating expressions elsewhere in the game. Appendix A records the original
+precision controls and their relevance to nondefault reference tests.
 
-Floating-to-integer conversion in the range helper truncates toward zero. The
-original conversion produces a signed 64-bit integer, then uses its low 32 bits.
-It restores the prior rounding control. All products possible in the range
-procedure below fit that conversion domain.
+Floating-to-integer conversion in the range helper truncates toward zero, then
+applies the specified `u32`/`i32` conversions. Its products fit the `i64` domain;
+no particular intermediate storage type is required.
 
 ## 2. State and primitive boundaries
 
-| State | Width | Fresh executable value | Meaning |
+| State | Value domain | Fresh-process value | Meaning |
 | --- | --- | --- | --- |
 | `S` | `u32` | `0x00000001` | Primary Microsoft CRT random state. |
 | `N` | `u32` | `0x00bc6840` | Secondary Numerical Recipes linear-congruential state. |
-| `P` | `u16`, ordinarily `1..32767` when newly generated | Supplied with map state | Resource/shield/hut pattern input; not a third random stream. |
+| `P` | `0..65535` for a supplied map value; `1..32767` when newly generated | Supplied with map state | Resource/shield/hut pattern input; not a third random stream. |
 
-Fresh executable values precede startup seeding. They are not defaults to insert
+Fresh-process values precede startup seeding. They are not defaults to insert
 when loading a fixture or starting another game in an existing process. A
 fixture entering after startup must supply the actual states at its boundary.
 F06 owns whether and how particular save/load operations restore or retain them;
@@ -148,9 +154,9 @@ placement around calls are the caller's responsibility. No primary operation
 implicitly advances `N`, and no secondary operation implicitly advances `S`.
 Setting `P` itself advances neither; later operations can use `P` to reseed `N`.
 
-The source comment describing the secondary generator as cosmetic is incomplete:
-its range helper is also called by AI, city production and diplomacy. Keeping a
-separate generator for each subsystem would change classic outcomes.
+The secondary generator serves presentation as well as AI, city production and
+diplomacy. Keeping a separate generator for each subsystem would change classic
+outcomes.
 
 ## 3. Primary generator
 
@@ -165,8 +171,8 @@ primaryNext():
 
 `seedPrimary(0)` really sets zero. Seeding replaces state without advancing it
 and does not reset the secondary generator. The observable result of a draw
-includes its returned 15-bit value and the entire updated 32-bit state; the
-returned value alone cannot be used to reconstruct the next state.
+includes its returned value in `0..32767` and the entire updated state in `u32`;
+the returned value alone cannot be used to reconstruct the next state.
 
 Many callers use `primaryNext() % n` for a positive `n`. Preserve the modulo
 bias and the fact that this consumes a draw even for `n=1`. It is not rejection
@@ -203,10 +209,10 @@ Define `round53(x)` as nearest-even rounding to a 53-bit significand. All values
 in this section are in binary64's normal range or exactly zero, so binary64
 arithmetic at the stated boundaries implements it. `trunc(x)` is mathematical
 truncation toward zero. Multiplication/addition in the state update are integer
-operations, with the final low 32 bits retained.
+operations, with the final result reduced modulo `2^32`.
 
 ```text
-exchangeSecondarySeed(seed):     # input is a 32-bit bit pattern
+exchangeSecondarySeed(seed):     # seed is interpreted through u32
     if u32(seed) == 0:
         return 0                 # N is unchanged; no draw
     previous = N
@@ -218,14 +224,14 @@ secondaryUnit():
     return round53(integer_value(N) / 4294967295)
 ```
 
-The numerator is **unsigned**, even when bit 31 is set. The denominator is
-`2^32-1`, not `2^32`. The floating result is in the closed interval `[0,1]`;
+The numerator is the **nonnegative value of N**, including when `N >= 2^31`.
+The denominator is `2^32-1`, not `2^32`. The floating result is in the closed interval `[0,1]`;
 both endpoints are possible. A zero seed request is a no-op, whereas an actual
 zero state can occur through the recurrence or be explicitly supplied in a
 boundary fixture. A fixture with `N=0` must not attempt to establish that state
 by calling `exchangeSecondarySeed(0)`.
 
-The inclusive integer helper takes signed 32-bit endpoints in either order:
+The inclusive integer helper takes endpoints in the `i32` domain, in either order:
 
 ```text
 secondaryRange(lo, hi):
@@ -237,16 +243,18 @@ secondaryRange(lo, hi):
     difference = i32(u32(hi) - u32(lo))
     adjustment = binary64_bits(0x3feffffde7210be9)
     span = round53(integer_value(difference) + adjustment)
-    # span is stored as binary64 before the draw
+    # span has binary64 precision before the draw
     fraction = secondaryUnit()
     product = round53(fraction * span)
-    integral = trunc(product)               # signed 64-bit result
+    integral = trunc(product)               # result fits the i64 domain
     return i32(u32(integral) + u32(lo))
 ```
 
-`adjustment` is the executable's binary64 encoding of decimal `0.999999`
-(`0x1.ffffde7210be9p-1` in hexadecimal floating notation). Preserve this exact
-constant and the addition/division/multiplication rounding points. The normal
+`binary64_bits` identifies an exact numerical value by its standard binary64
+encoding; it does not require an in-memory reinterpretation. Here `adjustment`
+is the binary64 value nearest decimal `0.999999`, equivalently
+`0x1.ffffde7210be9p-1` in hexadecimal floating notation. Preserve this exact
+value and the addition/division/multiplication rounding points. The normal
 result lies in `[min(lo,hi),max(lo,hi)]` when their mathematical difference is
 at most `2147483647`. It is not a modulo reduction and is not an exactly uniform
 integer sampler. The adjustment and rounded multiplication are part of the
@@ -255,10 +263,9 @@ behavior, including at the endpoints.
 For a wider signed-endpoint interval, the difference wraps to a negative `i32`.
 The result then need not lie between the requested endpoints. This is original
 operation behavior, not an instruction to widen, clamp or reject the difference.
-The pinned OpenCiv2 C++ uses `(hi-lo)` directly, which does not explicitly define
-portable signed overflow. The independent reconstruction preserves the original
-wrapping subtraction, binary64 span store, x87 quotient/multiply and truncating
-conversion. A clean implementation should use the explicit operations above.
+Use the explicit reductions above even when the implementation's native integers
+can hold the wider difference. Appendix A explains the corresponding original
+operations and a portability limitation in the reconstructed C++.
 
 Every call consumes exactly one secondary draw, including equal bounds. Swapping
 endpoints and seed exchange consume none. There is no loop, rejection or special
@@ -293,8 +300,8 @@ returns zero and leaves the state unchanged; exchanging seed one then returns
 
 The recovered startup sequence includes these distinct actions:
 
-1. System initialization seeds `S` with the low 32 bits of the wall-clock
-   seconds result returned by `_time`.
+1. System initialization seeds `S` with `u32` applied to the external wall-clock
+   seconds result.
 2. Later application startup requests a 4 ms timer period, calls the game's
    tick helper, and seeds `S` from that result.
 3. It makes a **second** tick-helper call and passes that result to
@@ -320,20 +327,20 @@ to reproduce every decision.
 
 ### Game ticks
 
-Let `milliseconds` be the `u32` result of a single `GetTickCount` call. The game
-tick helper computes:
+Let `readMilliseconds()` supply one external millisecond-clock value in `u32`.
+The game tick helper computes:
 
 ```text
 gameTicks():
-    milliseconds = external GetTickCount()
+    milliseconds = external readMilliseconds()
     return u32(6 * milliseconds) / 100       # unsigned integer division
 ```
 
 The multiplication wraps **before** division. This is not unbounded
-`floor(milliseconds*0.06)`. Its output is in `0..42949672`, so the subsequent
-signed return wrapper preserves its value. Do not replace existing busy-wait
-comparisons with wrap-aware elapsed-time formulas unless their owner specifies
-that behavior; the original helper's discontinuities are observable inputs.
+`floor(milliseconds*0.06)`. Its output is in `0..42949672`, which also fits `i32`.
+Do not replace existing busy-wait comparisons with wrap-aware elapsed-time
+formulas unless their owner specifies that behavior; the original helper's
+discontinuities are observable inputs.
 
 Creating a new map-pattern seed is a separate operation:
 
@@ -396,7 +403,101 @@ state, return value, caller/phase, and ordered clock/seed events. Compare state
 at phase boundaries as well as draw values. For a subsystem that promises no
 random effects, verify both streams remain unchanged.
 
-### Existing harness conventions
+A fixture must declare either an ordered transcript of external inputs, including
+clock values and callback deliveries, or a fully specified clock and scheduling
+model with its initial state. Wall-clock seconds and millisecond-clock queries
+are distinct inputs. Preserve query order even when consecutive values happen
+to be equal, and record any nondefault arithmetic environment.
+
+The full event-loop/timer/input ordering belongs to P05 and X02. The pinned
+reference harness is one concrete environment, described in
+[Appendix B](#appendix-b-reference-harness-conventions). A new implementation
+can supply equivalent inputs through a different interface; the harness's
+environment variables and virtual clock are not intrinsic game rules.
+
+## Appendix A: Original runtime and representation
+
+This appendix explains the source-language and processor mechanisms behind the
+main mathematical contract. They support source review, reference-state decoding
+and validation; they do not prescribe a new implementation's internal types or
+processor architecture.
+
+### Scalar storage and instruction behavior
+
+Original scalar `char`, `short`, `int`, `long` and pointers occupy 8, 16, 32, 32
+and 32 bits respectively, with plain `char` signed in this build. Multi-byte
+memory/file values are little-endian where the relevant record format exposes
+their bytes. Record layouts and pointer replacements belong to F02/F06.
+
+The original RNG states occupy 32-bit words. Decode them as nonnegative `u32`
+values for the recurrences, even where reconstructed source declares a signed
+state variable. The map-pattern seed occupies an unsigned 16-bit field. Hex
+state values in the main text and vectors identify mathematical integers; when
+comparing original memory snapshots, encode them in these widths and byte order.
+
+Original narrow stores retain low field-width bits. Later reads sign-extend or
+zero-extend according to the recovered type; byte arithmetic is often promoted
+to a larger integer domain before the next store. A fixture decoder must preserve
+that interpretation. It must not impose an 8-bit reduction after every operation
+merely because one source field was a byte.
+
+The x86 variable-shift instructions mask 32-bit shift counts to their low five
+bits. Their signed right shift fills with the sign bit, implementing the floor
+division specified in the main text. Signed integer division faults on a zero
+divisor and on `INT_MIN / -1`. The owning algorithm must specify the corresponding
+failure boundary; this does not require a new implementation to trigger a
+hardware exception by executing the same instruction.
+
+Decompiler expressions are not themselves portable arithmetic contracts. In
+particular, the pinned OpenCiv2 C++ range helper uses `(hi-lo)` directly, which
+does not explicitly define portable signed overflow for extreme endpoints. The
+independent reconstruction preserves the original wrapping subtraction. Both
+must be assessed against the explicit `i32`/`u32` operations in the main text,
+rather than the host compiler's interpretation of an overflowing signed expression.
+
+### Floating runtime mechanics
+
+Original startup selects 53-bit x87 precision through
+`__controlfp(0x10000,0x30000)`. A stored `double` is binary64, but an x87 register
+retains the extended exponent range even with a 53-bit significand. Consequently,
+ordinary binary64 operations reproduce the bounded random calculations here;
+they do not establish equivalence for all possible floating computations.
+Underflow, overflow, special values and library math require their owning
+algorithm's contract.
+
+The range helper stores its computed span as binary64 before drawing. The
+quotient from the secondary generator remains on the x87 stack for the
+multiplication. In the normal arithmetic environment these operations produce
+the `round53` results specified in the main text.
+
+For the final conversion, the original runtime saves the control word,
+temporarily selects rounding toward zero, converts to a signed 64-bit integer,
+then restores the control word. It uses the low 32 bits of that integer for the
+endpoint addition. The abstract procedure expresses the same result through
+`trunc`, `u32` and `i32`, without requiring a control-word change or an actual
+64-bit temporary object.
+
+If a reference test deliberately changes the incoming control word, capture it.
+The original range operations use that incoming precision and rounding except
+for the final truncating conversion. Such a test needs an explicit arithmetic
+environment beyond the normal 53-bit, nearest-even contract; silently assuming
+the normal environment is not an equivalent test.
+
+### Clock interfaces
+
+The main text's external wall-clock seconds result comes from `_time` in the
+original system initializer. The later application initializer requests a 4 ms
+timer resolution using `timeBeginPeriod(4)` before its two game-tick queries.
+`readMilliseconds()` corresponds to one `GetTickCount` call, returning an
+unsigned 32-bit millisecond count. The game-tick calculation then multiplies by
+six with 32-bit wrap and divides by 100. Its signed return wrapper preserves
+the result because that result fits `i32`.
+
+A new implementation can provide these clock inputs through its own platform
+adapter. Preserve the returned values, query order and relevant scheduling
+effects when matching a reference execution.
+
+## Appendix B: Reference harness conventions
 
 These conventions explain existing reference recordings. They are environment
 inputs for a replay, not the game's native clock algorithm:
@@ -423,7 +524,7 @@ first tick query returns `1000000` milliseconds and `gameTicks()` returns
 the game-tick result is still `60000`. These query counts are part of the input
 history even though many consecutive returns are equal.
 
-## 7. Source traceability and validation
+## Appendix C: Source traceability and validation
 
 Original addresses below identify routines/data in the target executable; an
 implementer does not need to use those addresses.
