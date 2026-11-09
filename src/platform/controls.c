@@ -1753,7 +1753,7 @@ static int scroll_hit(const Scroll *s, int len, int thick, int at, int *thumb_po
     return SB_THUMBTRACK;
 }
 
-typedef struct { int dragging, grab, vert; } ScrollCtl;
+typedef struct { int dragging, grab, vert, track; } ScrollCtl;   /* track: the dragged thumb's position */
 
 LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
 {
@@ -1784,7 +1784,10 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             SendMessageA(w->parent->hwnd, WM_CTLCOLORSCROLLBAR, (WPARAM)hdc, (LPARAM)h);
         {
             POINT org = {0, 0};
-            scroll_draw(hdc, &r, sc->vert, &w->hscroll, 1, !w->hscroll.enabled || (w->style & WS_DISABLED), org);
+            Scroll s = w->hscroll;
+            if (sc->dragging)
+                s.pos = sc->track;      /* the thumb where it is dragged, as Windows draws it */
+            scroll_draw(hdc, &r, sc->vert, &s, 1, !w->hscroll.enabled || (w->style & WS_DISABLED), org);
         }
         EndPaint(h, &ps);
         return 0;
@@ -1799,11 +1802,18 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         if (code == SB_THUMBTRACK) {
             sc->dragging = 1;
             sc->grab = at - tp;
+            sc->track = w->hscroll.pos;
             SetCapture(h);
             return 0;
         }
+        /* (Windows sends these from its tracking, while the button is down:
+           the game steps on an arrow only if it still is -- a click's
+           button-up may already be in.  Not in a replay: its clicks are
+           instant, and the original ignored them on an arrow too.) */
+        plat_lbutton_held = !plat_replay && (code == SB_LINEUP || code == SB_LINEDOWN);
         if (code != SB_ENDSCROLL && w->parent)
             SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, (WPARAM)code, (LPARAM)h);
+        plat_lbutton_held = 0;
         if (w->parent)
             SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, SB_ENDSCROLL, (LPARAM)h);
         return 0;
@@ -1821,6 +1831,10 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             pos = track > 0 ? w->hscroll.min + (int)((long long)(at - sc->grab - btn) * range / track) : 0;
             if (pos < w->hscroll.min) pos = w->hscroll.min;
             if (pos > w->hscroll.max) pos = w->hscroll.max;
+            if (pos != sc->track) {
+                sc->track = pos;
+                InvalidateRect(h, NULL, FALSE);
+            }
             if (w->parent)
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, MAKEWPARAM(SB_THUMBTRACK, pos), (LPARAM)h);
         }
@@ -1831,7 +1845,7 @@ LRESULT ctl_scrollbar_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             ReleaseCapture();
             if (w->parent) {
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL,
-                             MAKEWPARAM(SB_THUMBPOSITION, w->hscroll.pos), (LPARAM)h);
+                             MAKEWPARAM(SB_THUMBPOSITION, sc->track), (LPARAM)h);   /* where it was dragged to */
                 SendMessageA(w->parent->hwnd, sc->vert ? WM_VSCROLL : WM_HSCROLL, SB_ENDSCROLL, (LPARAM)h);
             }
         }
