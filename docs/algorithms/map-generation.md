@@ -1,5 +1,7 @@
 # Map generation algorithm specification
 
+**ID:** W02. **Status:** Written.
+
 This specification describes the map produced by OpenCiv2's `map_generate`,
 including the order of its random draws and its observable implementation quirks.
 It is intended to let an implementer reproduce the algorithm without reading the
@@ -10,6 +12,14 @@ The compatibility target is the implementation at commit
 `1ff87e33fbec8b7be8c4bf98c77709e16aad4f31`. Source references and corroborating
 material are collected at the end. “Must” means necessary for matching this target,
 including where a more conventional algorithm would produce a different result.
+
+Shared numeric operations, random primitives and clock-to-seed conversion are
+specified in [F01: Determinism and arithmetic](determinism-and-arithmetic.md).
+Those definitions agree with the helpers at this document's pinned revision;
+their extraction does not change its generation behavior. The
+[classic compatibility contract (X01)](classic-compatibility-contract.md)
+defines evidence and equivalence claims; a complete review of this pinned
+generation implementation against the original program remains separate work.
 
 ## Scope and entry contract
 
@@ -45,8 +55,8 @@ failures, corrupt saves, and callback-driven mutation are not specified here.
 | `T` | Temperature: `-1`, `0`, or `1`, from colder to warmer. |
 | `A` | Age: `-1`, `0`, or `1`; selects the counts of weathering and voting operations. |
 | `keep` | Zero generates a new map. Any nonzero value runs only common finalization on an existing map. |
-| `S` | Full 32-bit state of the gameplay random generator **at entry**. |
-| `ticks` | Clock value used to create the resource-pattern seed on a new map. |
+| `S` | Full state of F01's primary random generator **at entry**. |
+| `ticks` | Already converted game ticks used by F01's `mapPatternSeedFromTicks` on a new map; not raw milliseconds. |
 | `wideLayout` | Existing `map_layout_wide` setting; nonzero skips distant-ocean resource suppression. It is independent of `F`. |
 | `rules[0..21]` | Terrain food, shields, trade, mining target, and irrigation target, used for fertility. |
 
@@ -120,35 +130,31 @@ Where a procedure says **full byte**, do not mask terrain flags before comparing
 
 ## Arithmetic and geometry
 
-All random state arithmetic is unsigned 32-bit arithmetic modulo `2^32`.
-Ordinary scalar calculations use signed 32-bit integers; division truncates
-toward zero. Right shifts of signed negative values are arithmetic shifts,
-rounding down. Bit operations use two's-complement representation. Byte stores
-retain the low eight bits; 16-bit stores retain the low sixteen bits. In the valid
-dimension and parameter domain, most scalar arithmetic does not overflow.
+Use [F01's numeric model](determinism-and-arithmetic.md#1-numeric-model-and-notation)
+for widths, signedness, division, shifts, overflow and narrow stores. Ordinary
+scalar calculations here use its default `i32` model unless otherwise stated;
+most do not overflow within the valid dimension and parameter domain. `clamp`
+below means F01's `clampAB` helper.
 
 ### Random draws
 
-There is one gameplay random stream:
+`R()` means F01's [primaryNext](determinism-and-arithmetic.md#3-primary-generator),
+operating on shared state `S`. Map generation does not use the secondary stream.
+The map-specific guarded helper is:
 
 ```text
-R():
-    S = (214013*S + 2531011) modulo 2^32
-    return (S >> 16) & 32767
-
 pick(n):
     if n <= 1: return 0                 # consumes no draw
     return R() % n
 ```
 
-Use `pick` only where stated. For example, `R()%2` always draws. Modulo reduction
-is intentional; rejection sampling would change both distribution and state.
-The separate Numerical Recipes generator used elsewhere in the game is not used
-by map generation.
+Use `pick` only where stated. Other expressions such as `R()%2` call the primary
+generator directly, with F01's draw-consumption and modulo semantics.
 
-On a new map, set resource seed `P = ticks & 32767`, replacing zero by one. This
-does **not** seed or advance `R`. `P` and `S` are independent inputs. A retained
-map keeps its existing `P`.
+On a new map, set `P = mapPatternSeedFromTicks(ticks)` using
+[F01's map-pattern conversion](determinism-and-arithmetic.md#game-ticks).
+A retained map keeps its existing `P`. The generation phases below own the order
+of random draws and map edits; F01 owns the shared primitives they invoke.
 
 ### Coordinates and access
 
@@ -217,7 +223,7 @@ indices 0 through 19 only.
 ```text
 if keep == 0:
     clear 21 start-x and 21 start-y hints to -1
-    set resource seed P from ticks
+    P = mapPatternSeedFromTicks(ticks)  # F01; no random draw
     if flat: C *= 2; T *= 2            # mutate the effective parameters
     allocate and initialize map
     choose land-generation bounds
@@ -954,13 +960,13 @@ gameplay.
 
 ### Small deterministic vectors
 
-These checks exercise arithmetic without needing the game's UI or assets:
+Run [F01's primary vectors](determinism-and-arithmetic.md#primary-vectors) and
+[tick/pattern-seed vectors](determinism-and-arithmetic.md#game-ticks) for the
+shared primitives. The following checks cover map-specific behavior without
+needing the game's UI or assets:
 
 | Check | Expected result |
 | --- | --- |
-| First ten `R()` values with initial `S=1` | `41,18467,6334,26500,19169,15724,11478,29358,26962,24464` |
-| State after those ten draws | `0xdf90722b` |
-| Resource seed from ticks 0, 32768, 32769, 65535 | `1,1,1,32767` |
 | `W=100,H=80` | `U=50,N=4000,CW=25,CH=20` |
 | Access `(8,5)` and `(9,5)` for those dimensions | Both index 254. |
 | Cylindrical `wrap(-1)`, `wrap(100)`, `wrap(201)` with `W=100` | `99,0,101`; the last is still out of bounds. |
@@ -1008,7 +1014,8 @@ implementation conforms to every phase specified here.
 ## Source traceability
 
 These references allow maintainers to audit the specification. An implementer
-can use the normative definitions above without inspecting the source.
+can use the procedures above and the referenced F01 primitives without inspecting
+the source.
 
 | Subject | Primary source and original entry address |
 | --- | --- |
@@ -1026,7 +1033,7 @@ can use the normative definitions above without inspecting the source.
 | Tile storage, wrap, allocation, seed | Same file, `tile_at`, `0x005b8931`; `map_wrap_x`, `0x005ae052`; `map_alloc`, `0x005b7fe0`; `map_new_seed`, `0x005b85fe` |
 | Resources and huts | Same file, `tile_resource`, `0x005b8ee1`; `tile_has_hut`, `0x005b8ffa` |
 | Presets, custom limits, parameter selection | [game.cpp](../../src/auto/game.cpp), `setup_choose_map_size`, `setup_custom_world`, and new-game callers |
-| Random generator | [crt.cpp](../../src/native/crt.cpp), `crt_rand_at` |
+| Shared arithmetic, random generator and seed conversion | [F01 traceability](determinism-and-arithmetic.md#7-source-traceability-and-validation) |
 | Map and region layouts | [civ2types.h](../../src/include/civ2types.h), `MapHeader`, `Tile`, `Landmass` |
 | Ordered neighbor constants | [data.bin](../../data/image/data.bin), addresses `0x0062833c`, `0x00628344`, `0x00628350`, `0x00628360`, `0x00628370`, `0x006283a0`, `0x006283d0`, `0x006283e0`; section mapping in [layout.json](../../data/image/layout.json) |
 

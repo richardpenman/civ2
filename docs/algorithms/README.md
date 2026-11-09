@@ -6,7 +6,7 @@ Each specification must explain its behavior without requiring the reader to
 inspect source code. The collection covers simulation, AI, scenarios, persistence,
 multiplayer, and the algorithms behind the original player interface.
 
-The backlog contains **65 specification entries: 1 written and 64 planned**.
+The backlog contains **65 specification entries: 3 written and 62 planned**.
 The IDs below are stable references for tracking work and dependencies. Planned
 filenames are shown as code; links lead to documents that already exist. Update
 this index when a specification is added, split, or reviewed.
@@ -14,7 +14,9 @@ this index when a specification is added, split, or reviewed.
 ## Classic compatibility target
 
 The target is **Civilization II Multiplayer Gold Edition 5.4.0f, patch 3**, with
-the original game rules and supported custom rules and scenarios. Preserve its
+the original game rules and supported custom rules and scenarios.
+[X01: Classic compatibility contract](classic-compatibility-contract.md) defines
+the target, domains, observations and evidence requirements. Preserve its
 observable arithmetic, order of operations, random draws, selection tie breaks,
 state transitions, file formats, and implementation quirks. Difficulty, government,
 human versus AI control, topology, and game mode are inputs wherever they affect
@@ -56,10 +58,11 @@ code does not establish a playable PBEM mode in this MGE release
 | Written | The scoped algorithm is described, with source traceability and explicit limits. Independent conformance is not implied. |
 | Checked | The document has also been reviewed against its evidence and exercised by independent conformance cases; record exactly what those cases establish. |
 
-The existing map-generation document is **Written**. It pins an earlier OpenCiv2
-revision and includes arithmetic vectors; it has not been promoted here to a
-claim of complete original-program conformance. Its classic-target review is part
-of the first work batch below.
+X01, F01 and W02 are **Written**. F01 owns the shared arithmetic and random
+primitives, with numeric vectors. W02 pins an earlier OpenCiv2 revision and now
+references F01 for those unchanged primitives. None is promoted here to a claim
+of complete original-program conformance; W02's full classic-target review
+remains part of the first work batch below.
 
 Every document should contain:
 
@@ -91,7 +94,7 @@ loading logic; the main `src/auto` file is not always the complete implementatio
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| F01 | Planned | `determinism-and-arithmetic.md` | Gameplay and secondary random generators, seeding, clock inputs, range helpers, integer and floating-point conventions, and replay input contracts. Individual algorithms own their draw order. |
+| F01 | Written | [Determinism and arithmetic](determinism-and-arithmetic.md) | Both shared random generators, seeding, clock inputs, range helpers, integer and floating-point conventions, and replay input contracts. Individual algorithms own their draw order. |
 | F02 | Planned | `game-state-and-invariants.md` | Game, civilization, city, unit, map, and scenario state; IDs, lifetimes, flags, sentinels, ownership, list invariants, cached versus authoritative values, and mutation contracts. File encoding belongs to F06. |
 | F03 | Planned | `rules-and-configuration.md` | RULES.TXT parsing, section order, defaults, conversions, validation, cross-references, technology prerequisites, unit and terrain definitions, cosmic parameters, and classic game-option effects. Include custom-rule input limits. |
 | F04 | Planned | `turn-sequencing.md` | Single-player session loop; global, civilization, city, and unit phase order; year progression, turn counters, expiry/reset timing, event hooks, autosave, and end checks. Calls the mechanics below without duplicating their formulas. |
@@ -121,8 +124,9 @@ Start with [map.cpp](../../src/auto/map.cpp), [game.cpp](../../src/auto/game.cpp
 
 W01 depends on F01–F03. W03 uses W01 and unit identity from U01. W04 uses U01
 and F03. W05 uses city outputs from C03 and C05. W06 uses F04, U01, and C01.
-W02 already embeds several shared helpers: keep it self-contained until W01 and
-U03 exist, then reconcile cross-references without silently changing its contract.
+W02 references F01 for shared arithmetic and random primitives. It still embeds
+geometry and path helpers; retain those until W01 and U03 exist, then reconcile
+cross-references without silently changing its contract.
 
 ### Units and combat
 
@@ -293,12 +297,12 @@ checked. They do not replace the subsystem specifications.
 
 | ID | State | Document | Scope |
 | --- | --- | --- | --- |
-| X01 | Planned | `classic-compatibility-contract.md` | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use BUGS.md to locate differences. |
+| X01 | Written | [Classic compatibility contract](classic-compatibility-contract.md) | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use BUGS.md to locate differences. |
 | X02 | Planned | `whole-game-conformance.md` | Fixture/state format, random and external-input capture, phase snapshots, integration scenarios, expected outputs, source/function coverage ownership, and explicit validation gaps across the complete game. |
 
-Define X01 and the fixture contract of X02 early. Expand X02 as specifications
-gain conformance cases; complete its coverage audit after all document groups
-have been reconciled.
+X01 establishes the compatibility and evidence contract. Define X02's concrete
+fixture format next. Expand X02 as specifications gain conformance cases;
+complete its coverage audit after all document groups have been reconciled.
 
 ## Writing order and first work batch
 
@@ -322,12 +326,14 @@ contracts are established.
 
 The next concrete work items are:
 
-- [ ] Write X01, `classic-compatibility-contract.md`, and establish the X02
-  fixture format and evidence conventions.
+- [x] Write [X01, Classic compatibility contract](classic-compatibility-contract.md),
+  including evidence conventions and required fixture information.
+- [ ] Establish X02's concrete fixture format and executable conformance cases.
 - [ ] Review W02 against the classic target; record its source revision, covered
   cases, and any differences from current classic paths without changing its
   pinned behavior silently.
-- [ ] Write F01, `determinism-and-arithmetic.md`.
+- [x] Write [F01, Determinism and arithmetic](determinism-and-arithmetic.md),
+  and reference it from W02 for shared primitives and numeric vectors.
 - [ ] Write F02, `game-state-and-invariants.md`.
 - [ ] Write F03, `rules-and-configuration.md`.
 - [ ] Write W01, `map-geometry-and-spatial-state.md`.

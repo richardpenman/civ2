@@ -24,9 +24,12 @@ progress: [STATUS.md](STATUS.md).
 | `docs/` | Notes on the reconstruction and its verification; progress in `STATUS.md`. |
 
 The [algorithm specifications](algorithms/README.md) describe game algorithms in
-enough detail for independent implementations. The collection currently covers
-[map generation](algorithms/map-generation.md), including its random stream,
-coordinate rules, generation passes, and derived map metadata.
+enough detail for independent implementations. Start with the
+[classic compatibility contract](algorithms/classic-compatibility-contract.md)
+and [determinism and arithmetic](algorithms/determinism-and-arithmetic.md).
+[Map generation](algorithms/map-generation.md) uses those foundations for its
+coordinate rules, generation passes, and derived map metadata. The algorithms
+README tracks the remaining classic-game specifications.
 
 ## Approach
 
