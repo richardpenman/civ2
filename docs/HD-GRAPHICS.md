@@ -296,6 +296,9 @@ Non-map enhancements include:
 - Demographics columns measured from the displayed labels, values, ranks and
   rival statistics. Long values such as land area keep a gap before their rank;
   crowded reports use a smaller body font while preserving column alignment.
+- Defense Minister statistics use measured columns for names, combat values,
+  active units and production counts. Abilities occupy a separate line in taller
+  rows, with scrolling adjusted to keep the last unit sprite above the controls.
 
 Panorama placement adapts the review's layout to live selected objects using
 rectangle overlap scoring; it does not depend on review fixtures or consume RNG.

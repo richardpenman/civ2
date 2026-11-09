@@ -604,6 +604,94 @@ void __cdecl attitude_advisor_show(iptr report_civ)
   return;
 }
 
+/* HD report text uses measured columns so localized names, counts and rival
+ * statistics cannot overlap. A negative column spans the full text area on a
+ * separate line, used for Defense Minister unit abilities. */
+struct ReportTextCell {
+  char text[TEXTBUF_SIZE];
+  TextStyle style;
+  int column,y;
+};
+struct ReportTextTable {
+  ReportTextCell cells[13 * 6];
+  int count;
+};
+struct ReportTextLayout {
+  int size,style,columns,gap,right_column;
+};
+static ReportTextTable *report_text_table;
+
+static void report_text(int column,const char *text,int x,int y,int width=0)
+{
+  if (report_text_table) {
+    ReportTextCell &cell = report_text_table->cells[report_text_table->count++];
+    snprintf(cell.text,sizeof cell.text,"%s",text);
+    cell.style = text_style;
+    cell.column = column;
+    cell.y = y;
+  }
+  else if (width) gfx_draw_text_right(text,x,y,width);
+  else gfx_draw_text(text,x,y);
+}
+
+static void report_draw_table(ReportTextTable &table,int left,int right,const ReportTextLayout &layout)
+{
+  if (!hd_enabled || !table.count) return;
+  auto saved_style = text_style;
+  DibSurface *surface = (DibSurface *)&advisor_state.window;
+  RECT saved_clip;
+  surface->get_clip(&saved_clip);
+  GameFont compact,detail;
+  compact.init_empty();detail.init_empty();
+  ON_SCOPE_EXIT(text_style=saved_style;surface->set_clip(&saved_clip);compact.destroy();detail.destroy());
+  GameFont *font = table.cells[0].style.font;
+  int line_height = font->line_spacing();
+  int widths[5],total;
+  int size = layout.size;
+  int gaps = layout.gap * (layout.columns - 1);
+  for (;;size--) {
+    if (size < layout.size) { compact.set_styled(0,size,layout.style);font = &compact; }
+    memset(widths,0,sizeof widths);
+    for (int i=0;i<table.count;i++) {
+      ReportTextCell &cell = table.cells[i];
+      if (cell.column < 0) continue;
+      int w = font->text_width(cell.text) + 2; /* include the HD shadow */
+      if (w > widths[cell.column]) widths[cell.column] = w;
+    }
+    total = 0;
+    for (int col=0;col<layout.columns;col++) total += widths[col];
+    if (total + gaps <= right - left || size == 6) break;
+  }
+  /* Bound unusually long translated/custom strings even at the minimum font
+   * size. Ordinary reports fit at their measured widths without clipping. */
+  if (total + gaps > right - left)
+    for (int col=0;col<layout.columns;col++) widths[col] = widths[col] * (right-left-gaps) / total;
+  int x[5] = {left,0,0,0,0};
+  for (int col=1;col<layout.columns;col++) x[col] = x[col-1] + widths[col-1] + layout.gap;
+  if (layout.right_column >= 0) x[layout.right_column] = right - widths[layout.right_column];
+  for (int i=0;i<table.count;i++) {
+    ReportTextCell &cell = table.cells[i];
+    int col = cell.column;
+    int cell_x = col < 0 ? left : x[col];
+    int width = col < 0 ? right-left : widths[col];
+    GameFont *cell_font = font;
+    if (col < 0) {
+      for (int detail_size=size;cell_font->text_width(cell.text)+2>width && detail_size>6;) {
+        detail.set_styled(0,--detail_size,layout.style);cell_font = &detail;
+      }
+    }
+    RECT bounds = {cell_x,cell.y,cell_x+width,cell.y+line_height};
+    RECT clip;
+    IntersectRect(&clip,&saved_clip,&bounds);
+    surface->set_clip(&clip);
+    text_style = cell.style;
+    text_style.font = cell_font;
+    int y = cell.y + (line_height - cell_font->line_spacing()) / 2;
+    if (col >= 0 && col == layout.right_column) gfx_draw_text_right(cell.text,cell_x,y,width);
+    else gfx_draw_text(cell.text,cell_x,y);
+  }
+}
+
 /* 0042e1e8 auto */
 void __cdecl defense_append_ability_label(i32 label_id)
 
@@ -633,13 +721,13 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
   text_append((const char *)&str_empty_36);
   text_append_int((int)(char)unit_types[unit_type].move /
                      (int)(uint)cosmic.road_move_mult);
-  gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
+  report_text(1,(const char *)&textbuf.buf,col_x,text_y2);
   col_x = row_x + 0x123;
   text_clear();
   text_append_int((int)(char)unit_types[unit_type].hit_points / 10);
   text_append((const char *)&str_empty_37);
   text_append_int((int)(char)unit_types[unit_type].firepower);
-  gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
+  report_text(2,(const char *)&textbuf.buf,col_x,text_y2);
   col_x = row_x + 0x143;
   if (*(char *)&civs[civ].units_active[unit_type] != '\0') {
     text_set_colors(0x7a,10,0xffffffff,0xffffffff);
@@ -647,7 +735,7 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
     text_append_int((uint)civs[civ].units_active[unit_type]);
     text_append_space();
     text_append_label(0x15a);
-    gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
+    report_text(3,(const char *)&textbuf.buf,col_x,text_y2);
   }
   col_x = row_x + 0x180;
   if (*(char *)&civs[civ].units_in_production[unit_type] != '\0') {
@@ -656,7 +744,7 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
     text_append_int((uint)civs[civ].units_in_production[unit_type]);
     text_append_space();
     text_append_label(0x15b);
-    gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
+    report_text(4,(const char *)&textbuf.buf,col_x,text_y2);
   }
   col_x = row_x + 0x1c1;
   text_clear();
@@ -717,7 +805,7 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
     defense_append_ability_label(0x16b);
   }
   if ((*(uint *)&tiles_dll_block.unit_ability_list_nonempty) != 0) {
-    gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
+    report_text(-1,(const char *)&textbuf.buf,col_x,text_y2 + (report_text_table ? 18 : 0));
   }
 }
 
@@ -799,6 +887,12 @@ void __cdecl defense_minister_draw(void)
   i8 frame_rect2[16];
   int rows_per_page;
   
+  const bool hd_stats = hd_enabled && advisor_state.report_param == 0;
+  ReportTextTable table;
+  table.count = 0;
+  ReportTextTable *saved_table = report_text_table;
+  report_text_table = hd_stats ? &table : nullptr;
+  ON_SCOPE_EXIT(report_text_table=saved_table);
   if (bugfix_ui()) {
     lost_x = -0x8000;  /* B17: no casualty listed yet, no frame (docs/BUGS.md) */
   }
@@ -848,11 +942,12 @@ void __cdecl defense_minister_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
   list_top = y + 2;
-  line_height = 0x18;
-  advisor_state.row_height = 0x18;
-  advisor_state.list_top = y + 0x1a;
+  // Two text lines per HD statistics row; alternating 48px sprites still fit.
+  line_height = hd_stats ? 40 : 0x18;
+  advisor_state.row_height = line_height;
+  advisor_state.list_top = list_top + line_height;
   advisor_state.list_height = bottom - list_top;
-  advisor_state.rows_per_page = int_clamp((bottom - list_top) / 0x18,1,99);
+  advisor_state.rows_per_page = int_clamp((bottom - list_top - (hd_stats ? 8 : 0)) / line_height,1,99);
   rows_per_page = advisor_state.rows_per_page;
   type_count = 0;
   unit_type = 0;
@@ -875,11 +970,11 @@ void __cdecl defense_minister_draw(void)
           text_set_font((iptr)&advisor_bold_font);
           text_set_colors(0x25,0x12,1,1);
           row_x = advisor_state.client_x;
-          name_y = row_y + 0x11;
+          name_y = row_y + (hd_stats ? 8 : 0x11);
           name_x = advisor_state.client_x + 0x8c;
           text_y2 = name_y;
           unit = (iptr)label_string(unit_types[unit_type].name);
-          gfx_draw_text((const char *)unit,name_x,name_y);
+          report_text(0,(const char *)unit,name_x,name_y);
           col_x = row_x + 0xec;
           if (advisor_state.report_param == 0) {
             defense_draw_unit_stats(civ,unit_type,row_x,col_x,text_y2);
@@ -892,6 +987,9 @@ void __cdecl defense_minister_draw(void)
         }
         row_index = next_row;
       }
+      if (hd_stats)
+        report_draw_table(table,advisor_state.client_x+0x8c,
+                          advisor_state.client_right-advisor_state.vscroll_width-10,{14,1,5,10,-1});
       if ((advisor_state.report_param != 0) && (!bugfix_ui() || (lost_x != -0x8000))) {
         rect_set((iptr)frame_rect2,lost_x - 8,list_top,lost_x + 0x10,bottom);
         value = civ_color_primary(civ);
@@ -2342,81 +2440,6 @@ void __cdecl top_cities_show(iptr report_civ)
   return;
 }
 
-/* HD fonts need measured columns: the original 142-pixel value column cannot
- * hold land areas, and right-aligned rival statistics can run into the rank.
- * Collect the report's text before laying it out, keeping its localized
- * strings, colors and ranking rules intact. */
-struct DemographicsCell {
-  char text[TEXTBUF_SIZE];
-  TextStyle style;
-  int column,y;
-};
-struct DemographicsTable {
-  DemographicsCell cells[13 * 4];
-  int count;
-};
-static DemographicsTable *demographics_table;
-
-static void demographics_text(int column,const char *text,int x,int y,int width=0)
-{
-  if (demographics_table) {
-    DemographicsCell &cell = demographics_table->cells[demographics_table->count++];
-    snprintf(cell.text,sizeof cell.text,"%s",text);
-    cell.style = text_style;
-    cell.column = column;
-    cell.y = y;
-  }
-  else if (column == 3) gfx_draw_text_right(text,x,y,width);
-  else gfx_draw_text(text,x,y);
-}
-
-static void demographics_draw_table(DemographicsTable &table,int left,int right)
-{
-  if (!hd_enabled) return;
-  auto saved_style = text_style;
-  DibSurface *surface = (DibSurface *)&advisor_state.window;
-  RECT saved_clip;
-  surface->get_clip(&saved_clip);
-  GameFont compact;
-  compact.init_empty();
-  ON_SCOPE_EXIT(text_style=saved_style;surface->set_clip(&saved_clip);compact.destroy());
-  GameFont *font = (GameFont *)&advisor_font_block.advisor_font;
-  int line_height = font->line_spacing();
-  int widths[4],total;
-  const int gap = 12;
-  for (int size=18;;size--) {
-    if (size < 18) { compact.set(0,size);font = &compact; }
-    memset(widths,0,sizeof widths);
-    for (int i=0;i<table.count;i++) {
-      DemographicsCell &cell = table.cells[i];
-      int w = font->text_width(cell.text) + 2; /* include the HD shadow */
-      if (w > widths[cell.column]) widths[cell.column] = w;
-    }
-    total = widths[0] + widths[1] + widths[2] + widths[3];
-    if (total + gap * 3 <= right - left || size == 6) break;
-  }
-  /* Bound unusually long translated/custom strings even at the minimum font
-   * size. Ordinary reports fit at their measured widths without clipping. */
-  if (total + gap * 3 > right - left)
-    for (int col=0;col<4;col++) widths[col] = widths[col] * (right-left-gap*3) / total;
-  int x[4] = {left,0,0,0};
-  for (int col=1;col<4;col++) x[col] = x[col-1] + widths[col-1] + gap;
-  x[3] = right - widths[3];
-  for (int i=0;i<table.count;i++) {
-    DemographicsCell &cell = table.cells[i];
-    int col = cell.column;
-    RECT bounds = {x[col],cell.y,x[col]+widths[col],cell.y+advisor_state.row_height};
-    RECT clip;
-    IntersectRect(&clip,&saved_clip,&bounds);
-    surface->set_clip(&clip);
-    text_style = cell.style;
-    text_style.font = font;
-    int y = cell.y + (line_height - font->line_spacing()) / 2;
-    if (col == 3) gfx_draw_text_right(cell.text,x[col],y,widths[col]);
-    else gfx_draw_text(cell.text,x[col],y);
-  }
-}
-
 /* 004331d1 auto */
 void __cdecl
 demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,int right_x)
@@ -2461,7 +2484,7 @@ demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,i
   }
   text_clear();
   text_append_label(rank + 0x189);
-  demographics_text(2,(const char *)&textbuf.buf,left_x,y);
+  report_text(2,(const char *)&textbuf.buf,left_x,y);
   if ((civ != civ2) &&
      (((((*(byte *)&civs[human_civ[0]].treaties[civ2] & TREATY_EMBASSY) != 0 ||
         (has_wonder = civ_has_wonder(human_civ[0],WONDER_UNITED_NATIONS), has_wonder != 0)) ||
@@ -2481,7 +2504,7 @@ demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,i
     bg_color = 0x12;
     color = civ_color_secondary(civ2);
     text_set_colors(color,bg_color,shadow_color,shadow_color2);
-    demographics_text(3,(const char *)&textbuf.buf,left_x,y,right_x - left_x);
+    report_text(3,(const char *)&textbuf.buf,left_x,y,right_x - left_x);
   }
   return;
 }
@@ -2574,7 +2597,7 @@ static void demographics_row_label(i32 label_color,int label_x,int row_y,int id)
   value = label_x;
   text_y = row_y;
   label = (iptr)label_string(label_table.string_ids[id]);
-  demographics_text(0,(const char *)label,value,text_y);
+  report_text(0,(const char *)label,value,text_y);
 }
 
 /* Part of demographics_draw (00433434): the rule under a row, and the
@@ -2620,11 +2643,11 @@ void __cdecl demographics_draw(void)
   int literacy[8];
   int line_right;
   
-  DemographicsTable table;
+  ReportTextTable table;
   table.count = 0;
-  DemographicsTable *saved_table = demographics_table;
-  demographics_table = hd_enabled ? &table : nullptr;
-  ON_SCOPE_EXIT(demographics_table=saved_table);
+  ReportTextTable *saved_table = report_text_table;
+  report_text_table = hd_enabled ? &table : nullptr;
+  ON_SCOPE_EXIT(report_text_table=saved_table);
   civ = advisor_state.report_civ;
   demographics_gather(life_expect,pollution,approval,food_surplus,land_area,income,literacy,gnp,shields2,
                       population);
@@ -2664,7 +2687,7 @@ void __cdecl demographics_draw(void)
   value = label_x;
   text_y = row_y;
   label = (iptr)label_string(label_table.string_ids[0x175]);
-  demographics_text(0,(const char *)label,value,text_y);
+  report_text(0,(const char *)label,value,text_y);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
     value = population[civ2];
     if (value < 2) {
@@ -2675,7 +2698,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_43,rank_x,right_x);
@@ -2687,7 +2710,7 @@ void __cdecl demographics_draw(void)
     if (civ2 == civ) {
       text_clear();
       text_append_population(civ2,0xffffffff);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_0000,rank_x,right_x);
@@ -2702,7 +2725,7 @@ void __cdecl demographics_draw(void)
       text_append_label(0x188);
       text_append_space();
       text_append((const char *)&str_empty_44);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_m,rank_x,right_x);
@@ -2715,7 +2738,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x182);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2730,7 +2753,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_000);
       text_append_label(0x183);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_000_2,rank_x,right_x);
@@ -2761,7 +2784,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_45,rank_x,right_x);
@@ -2783,7 +2806,7 @@ void __cdecl demographics_draw(void)
       text_clear();
       text_append_long(values[civ2]);
       text_append_percent();
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,-row_y,(iptr)&str_empty_46,rank_x,right_x);
@@ -2798,7 +2821,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_0);
       text_append_label(0x184);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2815,7 +2838,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x185);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   str_clear((char *)suffix_buf);
@@ -2832,7 +2855,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2] % 10);
       text_append_space();
       text_append_label(0x187);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
     values[civ2] = values[civ2] / 10;
   }
@@ -2846,7 +2869,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append_space();
       text_append_label(0x185);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)suffix_buf,rank_x,right_x);
@@ -2867,7 +2890,7 @@ void __cdecl demographics_draw(void)
       text_append_long(values[civ2]);
       text_append((const char *)&str_empty_49);
       text_append_label(0x189);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_50,rank_x,right_x);
@@ -2878,11 +2901,11 @@ void __cdecl demographics_draw(void)
     if (civ2 == civ) {
       text_clear();
       text_append_long(values[civ2]);
-      demographics_text(1,(const char *)&textbuf.buf,value_x,row_y);
+      report_text(1,(const char *)&textbuf.buf,value_x,row_y);
     }
   }
   demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_51,rank_x,right_x);
-  demographics_draw_table(table,label_x,right_x);
+  report_draw_table(table,label_x,right_x,{18,0,4,12,3});
   ((DibSurface *)((i8 *)&advisor_state.window))->wnd_blit_surface();
   return;
 }
