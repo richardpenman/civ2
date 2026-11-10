@@ -73,8 +73,8 @@ effect the next time the game starts. The game is never made smaller than 640×4
 
 Text is drawn with fonts that have the widths of Windows' Times New Roman, Arial and Courier
 New (the Liberation fonts, `data/fonts_win.bin`), so it is laid out as the original's on
-Windows. The replays, and classic mode, use the fonts Wine draws instead (DejaVu, wider), as
-the recordings of the original do; with them some text overflows its window.
+Windows, classic mode included. The replays use the fonts Wine draws instead (DejaVu, wider),
+as the recordings of the original do; with them some text overflows its window.
 
 ## Rule changes
 

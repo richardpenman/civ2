@@ -22,7 +22,7 @@
  *             bitmap relative to the text origin (top left of the cell)
  * Run with tools/probe/run.sh fontdump OUTFILE.
  *
- * data/native/fonts_win.bin (played with outside replays and classic mode:
+ * data/native/fonts_win.bin (played with outside replays and the unit tests:
  * src/platform/text.c, open_fonts) is the same capture with the Liberation 2
  * fonts installed (Debian's fonts-liberation2), which Wine then draws in
  * place of Times New Roman, Arial and Courier: their widths are those of

@@ -184,9 +184,9 @@ static void set_dirs(const char *argv0, const char *gamedir)
         char probe[1100];
         FILE *f;
         snprintf(plat_data_dir, 1024, "%sdata", *base ? base : "./");
-        snprintf(probe, sizeof probe, "%s/fonts.bin", plat_data_dir);
+        snprintf(probe, sizeof probe, "%s/fonts_win.bin", plat_data_dir);
         if (!(f = fopen(probe, "rb"))) {
-            snprintf(probe, sizeof probe, "%s../data/native/fonts.bin", *base ? base : "./");
+            snprintf(probe, sizeof probe, "%s../data/native/fonts_win.bin", *base ? base : "./");
             if ((f = fopen(probe, "rb")))
                 snprintf(plat_data_dir, 1024, "%s../data/native", *base ? base : "./");
         }
@@ -220,10 +220,11 @@ int main(int argc, char **argv)
     /* The interface additions (docs/EXTRAS.md) likewise; CIV2_TEST_EXTRAS
        turns them on in a replay (tests). */
     /* Text laid out as on Windows (src/platform/text.c: open_fonts), not as
-       in the reference environment: in play only, not in replays or the
-       interface additions' tests, which are compared with recordings
-       (CIV2_TEST_WIN_FONTS=1: in a replay too, tests). */
-    plat_win_fonts = !classic && !unit_test &&
+       in the reference environment: in play, classic mode included (the
+       original on Windows), not in replays or the interface additions'
+       tests, which are compared with recordings (CIV2_TEST_WIN_FONTS=1: in
+       a replay too, tests). */
+    plat_win_fonts = !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_WIN_FONTS") && *getenv("CIV2_TEST_WIN_FONTS")));
     plat_extras = !classic && !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_EXTRAS") && *getenv("CIV2_TEST_EXTRAS")));

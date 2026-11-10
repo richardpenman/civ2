@@ -1,7 +1,5 @@
 /* The program's own files (setup.h), deflated by tools/build_port.py. */
 #include "setup.h"
 
-SETUP_RES_FONTS RCDATA "fonts.bin.z"
-SETUP_RES_FONTS_AA RCDATA "fonts_aa.bin.z"
 SETUP_RES_FONTS_WIN RCDATA "fonts_win.bin.z"
 SETUP_RES_FONTS_WIN_AA RCDATA "fonts_win_aa.bin.z"

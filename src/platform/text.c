@@ -44,17 +44,16 @@ extern char plat_data_dir[];
    Serif, Sans and Mono, which have Times New Roman's, Arial's and Courier
    New's widths, so text is laid out as on Windows (with the DejaVu fonts the
    reference environment substitutes, wider, text overflowed: issue 17);
-   replays and classic mode the reference environment's, as the recordings.
-   (The other where the first is missing.) */
+   classic mode too, as the original on Windows; replays and the unit tests
+   the reference environment's, as the recordings (in the source tree only:
+   the releases have only the first).  The other where the one is missing. */
 static FILE *open_fonts(char *path, size_t size, const char *name, const char *win_name)
 {
     FILE *f;
-    if (plat_win_fonts) {
-        snprintf(path, size, "%s/%s", plat_data_dir, win_name);
-        if ((f = fopen(path, "rb")))
-            return f;
-    }
-    snprintf(path, size, "%s/%s", plat_data_dir, name);
+    snprintf(path, size, "%s/%s", plat_data_dir, plat_win_fonts ? win_name : name);
+    if ((f = fopen(path, "rb")))
+        return f;
+    snprintf(path, size, "%s/%s", plat_data_dir, plat_win_fonts ? name : win_name);
     return fopen(path, "rb");
 }
 

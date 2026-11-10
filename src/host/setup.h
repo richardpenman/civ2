@@ -8,8 +8,6 @@
 #include <stddef.h>
 
 /* Windows: the program's own files, as resources (src/host/setup.rc): deflated. */
-#define SETUP_RES_FONTS 1
-#define SETUP_RES_FONTS_AA 2
 #define SETUP_RES_FONTS_WIN 3       /* with Windows' widths (src/platform/text.c) */
 #define SETUP_RES_FONTS_WIN_AA 4
 
