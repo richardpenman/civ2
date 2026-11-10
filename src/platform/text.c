@@ -2,8 +2,8 @@
  * Fonts and text, from the glyphs the reference environment draws: Times
  * New Roman, Arial, System and Courier at 6..48 pixels, regular/bold/italic.
  * Wine draws 1-bit glyphs on surfaces of 8 bits or less
- * (data/native/fonts.bin, tools/probe/fontdump.c) and antialiased ones on
- * deeper surfaces (data/native/fonts_aa.bin, tools/probe/fontdump_aa.c),
+ * (data/native/fonts_win.bin, tools/probe/fontdump.c) and antialiased ones on
+ * deeper surfaces (data/native/fonts_win_aa.bin, tools/probe/fontdump_aa.c),
  * blended as its DIB engine does (tools/probe/aaprobe.c checks the model).
  */
 #include "plat.h"
@@ -19,6 +19,7 @@ typedef struct {
 } Glyph;
 
 typedef struct {
+    short adv;                      /* drawn without antialiasing: the drawing advance */
     signed char x, y;
     unsigned char w, h;
     unsigned short n;
@@ -31,6 +32,7 @@ struct FontFace {
     int tm[11];
     Glyph g[256];
     AaGlyph *aa;                    /* 256 entries, loaded on demand */
+    int aa_mono;                    /* drawn without antialiasing (gasp): advances as drawn */
 };
 
 #define NFACES 4
@@ -40,20 +42,14 @@ static FontFace *faces[NFACES][MAXH + 1][2][2];
 static unsigned char *font_data, *aa_data;
 extern char plat_data_dir[];
 
-/* The font file: in play (plat_win_fonts) the one captured with Liberation
-   Serif, Sans and Mono, which have Times New Roman's, Arial's and Courier
-   New's widths, so text is laid out as on Windows (with the DejaVu fonts the
-   reference environment substitutes, wider, text overflowed: issue 17);
-   classic mode too, as the original on Windows; replays and the unit tests
-   the reference environment's, as the recordings (in the source tree only:
-   the releases have only the first).  The other where the one is missing. */
-static FILE *open_fonts(char *path, size_t size, const char *name, const char *win_name)
+/* The font files: captured under Wine with the Liberation 2 fonts, which
+   have the widths of Times New Roman, Arial and Courier New, so text is laid
+   out as on Windows (with the DejaVu fonts Wine substituted before, wider,
+   text overflowed: issue 17).  The original's recordings are made with the
+   same fonts (tools/docker). */
+static FILE *open_fonts(char *path, size_t size, const char *name)
 {
-    FILE *f;
-    snprintf(path, size, "%s/%s", plat_data_dir, plat_win_fonts ? win_name : name);
-    if ((f = fopen(path, "rb")))
-        return f;
-    snprintf(path, size, "%s/%s", plat_data_dir, plat_win_fonts ? name : win_name);
+    snprintf(path, size, "%s/%s", plat_data_dir, name);
     return fopen(path, "rb");
 }
 
@@ -64,7 +60,7 @@ static void load_aa(void)
     long n;
     unsigned char *p, *end;
     unsigned count, i;
-    f = open_fonts(path, sizeof path, "fonts_aa.bin", "fonts_win_aa.bin");
+    f = open_fonts(path, sizeof path, "fonts_win_aa.bin");
     if (!f)
         plat_fatal("cannot open %s", path);
     fseek(f, 0, SEEK_END);
@@ -81,8 +77,10 @@ static void load_aa(void)
         int face = p[0], height = p[1], bold = (p[2] | p[3] << 8) >= 600, it = p[4] != 0, c;
         FontFace *ff = face < NFACES && height >= MINH && height <= MAXH ? faces[face][height][bold][it] : NULL;
         AaGlyph *g = calloc(256, sizeof *g);
+        int mono = p[5];
         p += 8 + 44;
         for (c = 0; c < 256; c++) {
+            g[c].adv = (short)(p[0] | p[1] << 8);
             g[c].x = (signed char)p[2];
             g[c].y = (signed char)p[3];
             g[c].w = p[4];
@@ -91,8 +89,10 @@ static void load_aa(void)
             g[c].rle = p + 8;
             p += 8 + g[c].n;
         }
-        if (ff)
+        if (ff) {
             ff->aa = g;
+            ff->aa_mono = mono;
+        }
         else
             free(g);
     }
@@ -145,7 +145,7 @@ static void load_fonts(void)
     long n;
     unsigned char *p, *end;
     unsigned count, i;
-    f = open_fonts(path, sizeof path, "fonts.bin", "fonts_win.bin");
+    f = open_fonts(path, sizeof path, "fonts_win.bin");
     if (!f)
         plat_fatal("cannot open %s", path);
     fseek(f, 0, SEEK_END);
@@ -188,8 +188,9 @@ static void load_fonts(void)
     }
 }
 
-/* Wine's substitutes: Times New Roman -> DejaVu Serif, Arial and System ->
- * DejaVu Sans, Courier -> DejaVu Sans Mono. */
+/* Wine's substitutes: Times New Roman -> Liberation Serif, Arial ->
+ * Liberation Sans, Courier -> Liberation Mono (the DejaVu names: the faces
+ * Wine substituted before, which the game's text can still ask for). */
 static int face_index(const LOGFONTA *lf)
 {
     const char *n = lf->lfFaceName;
@@ -279,6 +280,17 @@ static FontFace *dc_face(DC *dc)
     return font ? font->face : NULL;
 }
 
+/* Glyphs placed at their measured advances (text_draw_measured), not their
+   drawing ones: as Uniscribe places them (Wine's EDIT control). */
+static int measured_advances;
+
+void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
+{
+    measured_advances = 1;
+    text_draw(dc, x, y, s, n, clip);
+    measured_advances = 0;
+}
+
 /* Glyphs at logical (x, y) = top left of the text cell, clipped to `clip`
  * (logical) and the DC's clip region. */
 void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
@@ -323,7 +335,9 @@ void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
     }
     c = dc_resolve_color(dc, dc->text_color);
     if (b->bpp > 8) {
-        /* Antialiased, as Wine draws on deep surfaces. */
+        /* Antialiased, as Wine draws on deep surfaces (but for the sizes the
+           font's "gasp" table says not to: those glyphs as Wine draws them,
+           coverage 0 or 16; tools/probe/fontdump_aa.c). */
         unsigned tr = GetRValue(c), tg = GetGValue(c), tb = GetBValue(c);
         if (!aa_data)
             load_aa();
@@ -351,7 +365,8 @@ void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
                                                   aa_blend(GetBValue(d), tb, v)));
                     }
             }
-            x += f->g[(unsigned char)s[i]].adv;     /* antialiased glyphs advance as measured */
+            /* antialiased glyphs advance as measured, the others as drawn */
+            x += f->aa_mono && !measured_advances ? g->adv : f->g[(unsigned char)s[i]].adv;
         }
         rgn_free(&rg);
         return;
@@ -387,7 +402,7 @@ void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
                     }
                 }
             }
-            x += g->dadv;
+            x += measured_advances ? g->adv : g->dadv;
         }
     }
     rgn_free(&rg);

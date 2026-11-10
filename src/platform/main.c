@@ -219,13 +219,6 @@ int main(int argc, char **argv)
         (!plat_replay || (getenv("CIV2_TEST_FIXES") && *getenv("CIV2_TEST_FIXES")));
     /* The interface additions (docs/EXTRAS.md) likewise; CIV2_TEST_EXTRAS
        turns them on in a replay (tests). */
-    /* Text laid out as on Windows (src/platform/text.c: open_fonts), not as
-       in the reference environment: in play, classic mode included (the
-       original on Windows), not in replays or the interface additions'
-       tests, which are compared with recordings (CIV2_TEST_WIN_FONTS=1: in
-       a replay too, tests). */
-    plat_win_fonts = !unit_test &&
-        (!plat_replay || (getenv("CIV2_TEST_WIN_FONTS") && *getenv("CIV2_TEST_WIN_FONTS")));
     plat_extras = !classic && !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_EXTRAS") && *getenv("CIV2_TEST_EXTRAS")));
     /* Replays reproduce the reference desktop (Wine without a window

@@ -244,7 +244,7 @@ HFONT plat_menu_font(void)
     if (!f) {
         LOGFONTA lf;
         memset(&lf, 0, sizeof lf);
-        lf.lfHeight = -11;          /* Wine's menu font: MS Shell Dlg, -11 (DejaVu Sans) */
+        lf.lfHeight = -11;          /* Wine's menu font: MS Shell Dlg, -11 (Liberation Sans) */
         lf.lfWeight = 400;
         strcpy(lf.lfFaceName, "MS Shell Dlg");
         f = CreateFontIndirectA(&lf);
@@ -259,12 +259,14 @@ int menu_bar_height(Window *w)
     return plat_native_menu ? 0 : GetSystemMetrics(SM_CYMENU);
 }
 
+/* Wine's menucharsize.cx: GdiGetCharDimensions, the average width of the
+   letters (with DejaVu Sans 7, as its tmAveCharWidth; with Liberation Sans,
+   narrower). */
 static int char_width(void)
 {
-    TEXTMETRICA tm;
+    static const char abc[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     Font *f = obj_get(plat_menu_font(), OBJ_FONT);
-    text_metrics(f->face, &tm);
-    return tm.tmAveCharWidth;
+    return (text_width(f->face, abc, 52) / 26 + 1) / 2;
 }
 
 static int item_text_width(const char *text)
@@ -288,18 +290,19 @@ static int item_text_width(const char *text)
 }
 
 /* Item rectangles of the bar, in client coordinates horizontally and window
- * coordinates vertically: as Wine lays them out, text width + 14. */
+ * coordinates vertically: as Wine lays them out, text width + 2 average
+ * characters. */
 static int bar_items(Window *w, RECT *rects, int max)
 {
     Menu *m = menu_get(w->menu);
-    int i, x = 0, top, h = menu_bar_height(w);
+    int i, x = 0, top, h = menu_bar_height(w), cw = char_width();
     if (!m)
         return 0;
     top = w->client.top - h;
     for (i = 0; i < m->n && i < max; i++) {
         int tw = item_text_width(m->items[i].text);
         rects[i].left = x;
-        rects[i].right = x + tw + 14;
+        rects[i].right = x + tw + 2 * cw;
         rects[i].top = top;
         rects[i].bottom = top + h;
         x = rects[i].right;
@@ -326,11 +329,14 @@ void menu_bar_paint(Window *w)
     SelectObject(hdc, plat_menu_font());
     SetBkMode(hdc, TRANSPARENT);
     n = bar_items(w, rects, 64);
-    (void)cw;
+    cw = char_width();
     for (i = 0; i < n; i++) {
         RECT t = rects[i];
-        t.left += w->client.left + 7;
-        t.right += w->client.left;
+        /* Wine's text rectangle: the item less an average character each
+           side, the text clipped to it (a last glyph drawn wider than
+           measured loses its edge: the "w" of View with Liberation Sans) */
+        t.left += w->client.left + cw;
+        t.right += w->client.left - cw;
         SetTextColor(hdc, (m->items[i].flags & MF_GRAYED) ? GetSysColor(COLOR_GRAYTEXT) : GetSysColor(COLOR_MENUTEXT));
         /* Wine's item rectangles start one pixel below the bar's top. */
         t.top += 1;

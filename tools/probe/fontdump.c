@@ -1,9 +1,9 @@
 /*
  * Capture the game's fonts exactly as the reference environment (Wine, with
- * the DejaVu fonts it substitutes for Times New Roman, Arial, System and
- * Courier) draws them on 8-bpp surfaces, where glyphs are 1-bit: every
+ * the Liberation 2 fonts it substitutes for Times New Roman, Arial and
+ * Courier: tools/docker installs fonts-liberation2) draws them on 8-bpp surfaces, where glyphs are 1-bit: every
  * character of every face, height, weight and slant the game can ask for.
- * The native platform layer draws text from this file (data/fonts.bin), so
+ * The native platform layer draws text from this file (data/native/fonts_win.bin), so
  * its text is pixel-identical to the original's.
  *
  * Text is laid out with the advances GetTextExtentPoint reports, but Wine
@@ -22,13 +22,9 @@
  *             bitmap relative to the text origin (top left of the cell)
  * Run with tools/probe/run.sh fontdump OUTFILE.
  *
- * data/native/fonts_win.bin (played with outside replays and the unit tests:
- * src/platform/text.c, open_fonts) is the same capture with the Liberation 2
- * fonts installed (Debian's fonts-liberation2), which Wine then draws in
- * place of Times New Roman, Arial and Courier: their widths are those of
- * the Windows fonts, so text is laid out as on Windows.  In the civ2-dev
- * container: apt-get install fonts-liberation2 (as root), then run.sh as
- * the user dev (Wine's prefix is his).  Its licence: THIRD-PARTY.txt.
+ * Liberation's widths are those of the Windows fonts, so text is laid out as
+ * on Windows (before, with the DejaVu fonts Wine substitutes without them,
+ * wider, text overflowed: issue 17).  Their licence: THIRD-PARTY.txt.
  */
 #include <windows.h>
 #include <stdio.h>
@@ -47,7 +43,7 @@ int main(int argc, char **argv)
     struct { BITMAPINFOHEADER h; RGBQUAD c[256]; } bi;
     unsigned char *bits;
     HDC dc = CreateCompatibleDC(NULL);
-    FILE *out = fopen(argc > 1 ? argv[1] : "fonts.bin", "wb");
+    FILE *out = fopen(argc > 1 ? argv[1] : "fonts_win.bin", "wb");
     int face, height, bold, italic, n = 0, c;
 
     memset(&bi, 0, sizeof bi);

@@ -15,9 +15,9 @@ wait 3000
 key Down                # Customize Rules
 key Return
 wait 3000
-click 300 183           # Simplified Combat
+click 150 183           # Simplified Combat
 wait 500
-click 300 279           # Accelerated Startup
+click 150 279           # Accelerated Startup
 wait 500
 shot 01-features
 key Return

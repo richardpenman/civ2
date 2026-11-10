@@ -191,7 +191,7 @@ static void edit_draw_items(DC *dc, FontFace *f, int x, int y, const char *s, in
     int i = 0;
     while (i < n) {
         int j = edit_item_end(s, i, n);
-        text_draw(dc, x, y, s + i, j - i, clip);
+        text_draw_measured(dc, x, y, s + i, j - i, clip);
         x += text_width(f, s + i, j - i);
         i = j;
     }
@@ -346,7 +346,7 @@ static void edit_paint(Window *w, HDC hdc)
                     dc_fill_rect(dc, &hl, GetSysColor(COLOR_HIGHLIGHT));
                     SetTextColor(hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
                     SetBkMode(hdc, TRANSPARENT);
-                    text_draw(dc, lx, ly, e->text + i, run - i, &clip);
+                    text_draw_measured(dc, lx, ly, e->text + i, run - i, &clip);
                     SetBkMode(hdc, mode);
                 } else {
                     SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));
@@ -379,7 +379,7 @@ static void edit_paint(Window *w, HDC hdc)
                     dc_fill_rect(dc, &hl, GetSysColor(COLOR_HIGHLIGHT));
                     SetTextColor(hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
                     SetBkMode(hdc, TRANSPARENT);
-                    text_draw(dc, x, y, e->text + i, run - i, &clip);
+                    text_draw_measured(dc, x, y, e->text + i, run - i, &clip);
                     SetBkMode(hdc, mode);
                 } else {
                     SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));

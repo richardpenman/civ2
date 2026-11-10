@@ -56,7 +56,6 @@ extern int plat_lbutton_held;           /* a scroll bar control's arrow is being
                                            tracking runs while it is (controls.c) */
 extern int plat_lock_panels;            /* the game's panels (child windows: map, world, status) not
                                            moved or sized by the mouse, as the original allows */
-extern int plat_win_fonts;              /* the fonts with Windows' widths (text.c: open_fonts) */
 extern int plat_fix_bugs;               /* the original's bugs fixed (docs/BUGS.md): not with
                                            CIV2_CLASSIC=1, in replays or the unit tests */
 #include "../include/extras.h"              /* plat_extras: the interface additions (docs/EXTRAS.md),
@@ -256,6 +255,7 @@ void text_metrics(FontFace *f, TEXTMETRICA *tm);
 int text_width(FontFace *f, const char *s, int n);
 int text_height(FontFace *f);
 void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip);   /* logical coords, top left */
+void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *clip);   /* as Uniscribe places glyphs */
 
 /* ---- presentation ---- */
 
