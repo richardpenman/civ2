@@ -277,7 +277,18 @@ void TaxRateDialog::paint()
   text_append_colon();
   text_append_int(max_rate_value * 10);
   text_append_percent();
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x_value,title_y_value,bar_width_value);
+  if (bugfix_ui()) {
+    /* Centred on the dialog, not on the sliders, and never left of it: with
+       DejaVu Serif, wider than Windows' Times New Roman (the fonts of the
+       recordings, tools/probe/fontdump.c), the line is wider than the
+       sliders and started left of the dialog, its "G" cut off (issue 17) */
+    int line_w = text_style.font->text_width((const char *)&textbuf.buf);
+    text_draw_shadowed((iptr)this,(const char *)&textbuf.buf,
+                       line_w < dialog_w ? client_x + (dialog_w - line_w) / 2 : client_x,title_y_value);
+  }
+  else {
+    text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x_value,title_y_value,bar_width_value);
+  }
   text_set_colors(0x25,0x12,1,1);
   text_clear();
   text_append_int(0);

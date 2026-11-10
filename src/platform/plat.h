@@ -51,6 +51,9 @@ extern int plat_normal_desktop;         /* windows framed and captioned as on Wi
                                            reference (Wine, no window manager), for comparisons */
 extern int plat_host_frame;             /* the host owns the main window's caption and frame */
 extern int plat_native_menu;            /* the main window's menu bar is the host's (host_menu_*) */
+extern int plat_lbutton_held;           /* a scroll bar control's arrow is being pressed: the left
+                                           button reads as down (GetAsyncKeyState), as Windows'
+                                           tracking runs while it is (controls.c) */
 extern int plat_lock_panels;            /* the game's panels (child windows: map, world, status) not
                                            moved or sized by the mouse, as the original allows */
 extern int plat_fix_bugs;               /* the original's bugs fixed (docs/BUGS.md): not with

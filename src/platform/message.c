@@ -846,6 +846,7 @@ MMRESULT WINAPI timeEndPeriod(UINT p) { API_TRACE(); (void)p; return TIMERR_NOER
 int plat_replay;
 int plat_normal_desktop = 1;
 int plat_lock_panels;
+int plat_lbutton_held;
 int plat_fix_bugs;
 int plat_extras;
 int plat_scale = 1;
@@ -1067,7 +1068,8 @@ SHORT WINAPI GetAsyncKeyState(int vk)
     } else {
         msg_pump_events(0);
     }
-    r = (SHORT)(((async_state[vk & 0xff] & 0x80) ? 0x8000 : 0) | (async_pressed[vk & 0xff] ? 1 : 0));
+    r = (SHORT)(((async_state[vk & 0xff] & 0x80) || ((vk & 0xff) == VK_LBUTTON && plat_lbutton_held) ? 0x8000 : 0) |
+                (async_pressed[vk & 0xff] ? 1 : 0));
     async_pressed[vk & 0xff] = 0;
     return r;
 }
