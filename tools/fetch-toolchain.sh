@@ -30,7 +30,7 @@ case "$os-$arch" in
     *) [ -z "$wasm" ] || { echo "no prebuilt toolchain for $os $arch" >&2; exit 1; } ;;
 esac
 if [ -n "$wasm" ] && [ ! -d wasi-sdk ]; then
-    curl -fL# https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-$sdk.tar.gz | tar xz
+    curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-$sdk.tar.gz | tar xz
     mv wasi-sdk-25.0-$sdk wasi-sdk
 fi
 if [ -n "$wasm" ] && [ ! -d wabt ]; then
@@ -38,11 +38,11 @@ if [ -n "$wasm" ] && [ ! -d wabt ]; then
         echo "wabt: no prebuilt release for this system; install it (brew install wabt) and set WABT=\$(brew --prefix wabt)" >&2
         exit 1
     fi
-    curl -fL# https://github.com/WebAssembly/wabt/releases/download/1.0.41/wabt-1.0.41-$wabt.tar.gz | tar xz
+    curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/WebAssembly/wabt/releases/download/1.0.41/wabt-1.0.41-$wabt.tar.gz | tar xz
     mv wabt-1.0.41 wabt
 fi
 if [ -n "$mingw" ] && [ ! -d SDL2-mingw ]; then
-    curl -fL# https://github.com/libsdl-org/SDL/releases/download/release-2.30.9/SDL2-devel-2.30.9-mingw.tar.gz | tar xz
+    curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-2.30.9/SDL2-devel-2.30.9-mingw.tar.gz | tar xz
     mv SDL2-2.30.9 SDL2-mingw
 fi
 # The set-up's readers of the game's CD (src/host/setup.c): unshield (its
@@ -51,7 +51,7 @@ fi
 # sources, built into the program by tools/build_port.py.
 fetch_src() {   # url sha256 top-level-folder name
     if [ ! -d "$4" ]; then
-        curl -fL# "$1" -o "$4.tar.gz"
+        curl -fL# --retry 5 --retry-all-errors --retry-delay 5 "$1" -o "$4.tar.gz"
         sum=$( (sha256sum "$4.tar.gz" 2>/dev/null || shasum -a 256 "$4.tar.gz") | cut -d' ' -f1)
         if [ "$sum" != "$2" ]; then
             echo "$4.tar.gz: not the expected file (SHA-256 $sum)" >&2
@@ -64,9 +64,9 @@ fetch_src https://github.com/twogood/unshield/archive/refs/tags/1.6.2.tar.gz \
     a937ef596ad94d16e7ed2c8553ad7be305798dcdcfd65ae60210b1e54ab51a2f unshield-1.6.2 unshield
 fetch_src https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz \
     9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23 zlib-1.3.1 zlib
-fetch_src https://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz \
+fetch_src https://github.com/xiph/ogg/releases/download/v1.3.5/libogg-1.3.5.tar.gz \
     0eb4b4b9420a0f51db142ba3f9c64b333f826532dc0f48c6410ae51f4799b664 libogg-1.3.5 libogg
-fetch_src https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.gz \
+fetch_src https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz \
     0e982409a9c3fc82ee06e08205b1355e5c6aa4c36bca58146ef399621b0ce5ab libvorbis-1.3.7 libvorbis
 # (what unshield's cmake would configure)
 cat > unshield/lib/unshield_config.h <<'EOF2'

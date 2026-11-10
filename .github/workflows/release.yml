@@ -137,7 +137,7 @@ jobs:
             libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxkbcommon-dev \
             libwayland-dev wayland-protocols libdecor-0-dev libegl1-mesa-dev libgl1-mesa-dev \
             libgles2-mesa-dev libasound2-dev libpulse-dev libdbus-1-dev libudev-dev libdrm-dev libgbm-dev
-          curl -fL# https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
+          curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
           cmake -S SDL2-$SDL2_VERSION -B sdl-build -G Ninja -DCMAKE_BUILD_TYPE=Release \
             -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=$PWD/sdl
           cmake --build sdl-build
@@ -195,7 +195,7 @@ jobs:
 
   macos:
     needs: game
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
@@ -206,7 +206,7 @@ jobs:
           path: build/wasm/c
       - name: Toolchain (SDL2 linked in, for Apple silicon and Intel; unshield, zlib, libogg, libvorbis)
         run: |
-          curl -fL# https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
+          curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
           cmake -S SDL2-$SDL2_VERSION -B sdl-build -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=OFF -DSDL_STATIC=ON \
             -DSDL_TEST=OFF -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64' -DCMAKE_INSTALL_PREFIX=$PWD/sdl
           cmake --build sdl-build -j 3
