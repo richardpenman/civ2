@@ -809,21 +809,19 @@ void __cdecl mapview_on_lbuttondown(void)
 void __cdecl mapview_on_lbuttonup_any(void)
 
 {
-  int view;
+  SurfaceWindow *view;
   
   if ((city_turn.processing == 0) && ((game.multiplayer == '\0' || (net.ui_input_busy == 0)))) {
     net.ui_input_busy = 1;
-    view = wnd_get_active_child();
-    if (view == 0) {
-      view = 0;
-    }
-    else {
-      view -= 0x48;
+    view = (SurfaceWindow *)wnd_get_active_child();
+    if (view != 0) {
+      /* the active window is a SurfaceWindow's Wnd */
+      view = (SurfaceWindow *)((u8 *)view - offsetof(SurfaceWindow, window));
     }
     if (-1 < map_click.drag_hold_timer) {
       mapview_cancel_drag();
     }
-    ((WndBase *)(view + 0x48))->release_capture();
+    view->window.release_capture();
     net.ui_input_busy = 0;
   }
   return;

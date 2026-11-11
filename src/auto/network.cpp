@@ -2481,14 +2481,12 @@ void ParleyWindow::create_unit_list_pane(RECT *rect,int pane,i32 own_side)
   i32 hotspot;
   i32 scrollbar;
   RECT sb_rect;
-  int window;
+  SurfaceWindow *window;
   
-  window = wnd_get_active_child();
-  if (window == 0) {
-    window = 0;
-  }
-  else {
-    window -= 0x48;
+  window = (SurfaceWindow *)wnd_get_active_child();
+  if (window != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    window = (SurfaceWindow *)((u8 *)window - offsetof(SurfaceWindow, window));
   }
   prefs_main_menu_choice_block.parley_list_own_side[pane] = own_side;
   sb_rect.left = rect->left;
@@ -4807,7 +4805,7 @@ void NetSession::run_blocked_input()
   blocked_input_kind = 0;
   switch(deferred_input) {
   case 1:
-    if (*(short *)((u32)blocked_input_window + 0x2dc) != 0) {
+    if (((MapView *)blocked_input_window)->open != 0) {
       if (blocked_input_window == 0) {
         click_wnd = 0;
       }
@@ -4820,7 +4818,7 @@ void NetSession::run_blocked_input()
     }
     break;
   case 2:
-    if (*(short *)((u32)blocked_input_window + 0x2dc) != 0) {
+    if (((MapView *)blocked_input_window)->open != 0) {
       if (blocked_input_window == 0) {
         dblclick_wnd = 0;
       }
@@ -7096,7 +7094,7 @@ ParleyWindow *ParleyWindow::construct(RECT *rect)
   }
   else {
     wnd_x = *(u32 *)init_rect;
-    wnd_y = *(u32 *)(init_rect + 4);
+    wnd_y = (u32)((RECT *)init_rect)->top;
     if (width < 0x321) {
       large_layout = 0;
     }
@@ -7338,7 +7336,7 @@ void ParleyWindow::create(u32 mode)
     height = rect_height((RECT *)init_rect);
     width = rect_width((RECT *)init_rect);
     wnd_create_with_surface(0,0x602,*(i32 *)init_rect,
-               *(i32 *)(init_rect + 4),width,height,(iptr)palette,(iptr)parent);
+               (i32)((RECT *)init_rect)->top,width,height,(iptr)palette,(iptr)parent);
   }
   else {
     parent = ((i8 *)&main_frame_wnd_block.main_frame_wnd);
@@ -7346,7 +7344,7 @@ void ParleyWindow::create(u32 mode)
     height = rect_height((RECT *)init_rect);
     width = rect_width((RECT *)init_rect);
     wnd_create_with_surface(0,0x602,*(i32 *)init_rect,
-               *(i32 *)(init_rect + 4),width,height,(iptr)palette,(iptr)parent);
+               (i32)((RECT *)init_rect)->top,width,height,(iptr)palette,(iptr)parent);
   }
   calc_rect();
   window.move_to_rect(init_rect);
@@ -7384,7 +7382,7 @@ void __cdecl parley_wnd_on_move(void)
   }
   wnd2->window.get_rect_in_parent((iptr)wnd2->init_rect);
   wnd2->wnd_x = *(i32 *)wnd2->init_rect;
-  wnd2->wnd_y = *(i32 *)((int)wnd2->init_rect + 4);
+  wnd2->wnd_y = (i32)((RECT *)wnd2->init_rect)->top;
   return;
 }
 
@@ -9452,7 +9450,7 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     dest->type = item_type;
     dest->size = item_size;
     dest->value = (i32)offer_counts[side];
-    item_ptr2 = (i32 *)((iptr)dest + 0xc);
+    item_ptr2 = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
       if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
@@ -9476,7 +9474,7 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     dest->type = item_type;
     dest->size = item_size;
     dest->value = (i32)offer_counts[side];
-    pair_ptr = (i32 *)((iptr)dest + 0xc);
+    pair_ptr = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
       if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
@@ -9493,7 +9491,7 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     dest->type = item_type;
     dest->size = item_size;
     dest->value = (i32)offer_counts[side];
-    item_ptr2 = (i32 *)((iptr)dest + 0xc);
+    item_ptr2 = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
       if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
@@ -9515,7 +9513,7 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     dest->type = item_type;
     dest->size = item_size;
     dest->value = (i32)offer_counts[side];
-    pair_ptr = (i32 *)((iptr)dest + 0xc);
+    pair_ptr = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
       if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
@@ -9827,7 +9825,7 @@ void __cdecl parley_describe_advances(ParleyOfferItem *items)
   int *adv_ptr;
   
   count = items->value;
-  adv_ptr = (int *)((iptr)items + 0xc);
+  adv_ptr = (int *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     adv_name = (iptr)(label_string(advances[*adv_ptr].name));
     parley_desc_append((const char *)adv_name);
@@ -10012,7 +10010,7 @@ void __cdecl parley_describe_war_targets(ParleyOfferItem *items)
   int i;
   
   count = items->value;
-  civ_ptr = (iptr *)((iptr)items + 0xc);
+  civ_ptr = (iptr *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     text = (iptr)(civ_name_plural(*civ_ptr));
     parley_desc_append((const char *)text);
@@ -10320,7 +10318,7 @@ void __cdecl parley_apply_war_pact(int civ,ParleyOfferItem *items)
   int i;
   
   count = items->value;
-  civ_ptr = (iptr *)((iptr)items + 0xc);
+  civ_ptr = (iptr *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     diplo_set_treaty_flags(civ,*civ_ptr,0x2000);
     civ_ptr++;
@@ -10354,7 +10352,7 @@ void __cdecl parley_transfer_advances(int civ,int civ2,ParleyOfferItem *items)
   int i;
   
   count = items->value;
-  adv_ptr = (iptr *)((iptr)items + 0xc);
+  adv_ptr = (iptr *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     has_adv = civ_has_advance(civ2,*adv_ptr);
     if (has_adv != 0) {
@@ -10378,7 +10376,7 @@ void __cdecl parley_transfer_cities(int civ,ParleyOfferItem *items)
   int i;
   
   count = items->value;
-  city_id_ptr = (i32 *)((iptr)items + 0xc);
+  city_id_ptr = (i32 *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     city = parley_wnd_block.find_city_by_id(*city_id_ptr);
     if ((-1 < city) && (cities[city].id != 0)) {
@@ -10557,7 +10555,7 @@ void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
   i32 *id_ptr;
   
   count = items->value;
-  id_ptr = (i32 *)((iptr)items + 0xc);
+  id_ptr = (i32 *)(items + 1);   /* the ids after the item */
   for (i = 0; i < count; i++) {
     unit_id = *id_ptr;
     id_ptr++;
@@ -14309,7 +14307,7 @@ void ParleyWindow::add_review_pane()
     if (((received_offer->mode == 0xf) && (*item_kind_ptr == 8)) ||
        ((received_offer->mode == 0xe && (*item_kind_ptr == 8)))) {
       tech_count = item_buf->item.value;
-      tech_ptr = (iptr *)((uptr)item_buf + 0x2c);
+      tech_ptr = (iptr *)(item_buf + 1);   /* the ids after the item */
       for (tech_idx = 0; tech_idx < tech_count; tech_idx++) {
         label = *tech_ptr;
         tech_ptr++;
@@ -15039,16 +15037,14 @@ void __cdecl chat_on_mute_checkbox(int ctrl_id)
 
 {
   i32 checked;
-  int chat_wnd2;
+  SurfaceWindow *chat_wnd2;
   
-  chat_wnd2 = wnd_get_active_child();
-  if (chat_wnd2 == 0) {
-    chat_wnd2 = 0;
+  chat_wnd2 = (SurfaceWindow *)wnd_get_active_child();
+  if (chat_wnd2 != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    chat_wnd2 = (SurfaceWindow *)((u8 *)chat_wnd2 - offsetof(SurfaceWindow, window));
   }
-  else {
-    chat_wnd2 -= 0x48;
-  }
-  ((Wnd *)(chat_wnd2 + 0x48))->activate();
+  chat_wnd2->window.activate();
   if ((0x428 < ctrl_id) && (ctrl_id < 0x430)) {
     checked = ((Checkbox *)chat_wnd_block.mute_checkboxes[(ctrl_id - 0x428)])->is_checked();
     chat_wnd_block.muted_civs[(ctrl_id - 0x428)] = checked;
@@ -15062,16 +15058,14 @@ void __cdecl chat_on_send_checkbox(int ctrl_id)
 {
   i32 checked;
   int slot;
-  int chat_wnd2;
+  SurfaceWindow *chat_wnd2;
   
-  chat_wnd2 = wnd_get_active_child();
-  if (chat_wnd2 == 0) {
-    chat_wnd2 = 0;
+  chat_wnd2 = (SurfaceWindow *)wnd_get_active_child();
+  if (chat_wnd2 != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    chat_wnd2 = (SurfaceWindow *)((u8 *)chat_wnd2 - offsetof(SurfaceWindow, window));
   }
-  else {
-    chat_wnd2 -= 0x48;
-  }
-  ((Wnd *)(chat_wnd2 + 0x48))->activate();
+  chat_wnd2->window.activate();
   switch(ctrl_id) {
   case 0x415:
     chat_wnd_block.remain_anonymous = ((Checkbox *)chat_wnd_block.anonymous_checkbox)->is_checked();

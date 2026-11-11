@@ -3740,20 +3740,13 @@ void __cdecl events_relink_pool(void)
       ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_pstrings_charptr_pevents_pstrings_scenar,(iptr)&str_d_ss_franklinton_netmgr_poll_cpp_6,0x913);
     }
     for (i = 0; i < event_count; i++) {
-      event[0x1bc] = '\0';
-      event[0x1bd] = '\0';
-      event[0x1be] = '\0';
-      event[0x1bf] = '\0';
-      event[0x1c0] = '\0';
-      event[0x1c1] = '\0';
-      event[0x1c2] = '\0';
-      event[0x1c3] = '\0';
+      ((ScenarioEvent *)event)->next = 0;
+      ((ScenarioEvent *)event)->prev = 0;
       if (0 < i) {
-        *(char **)(event + 0x1c0) = event;
-        *(int *)(event + 0x1c0) = *(int *)(event + 0x1c0) - 0x1c4;
-        *(char **)(*(int *)(event + 0x1c0) + 0x1bc) = event;
+        ((ScenarioEvent *)event)->prev = (ScenarioEvent *)event - 1;
+        ((ScenarioEvent *)event)->prev->next = (ScenarioEvent *)event;
       }
-      event += 0x1c4;
+      event += sizeof(ScenarioEvent);
     }
     for (event = (char *)unit_types_block.events_list_head; event != (char *)0x0;
         event = (char *)((ScenarioEvent *)event)->next) {
@@ -4255,7 +4248,7 @@ static void barbarians_city_uprising(iptr city,uint freq_mask)
             units[unit2].flags = units[unit2].flags | UNITF_VETERAN;
           }
           unit = (int)tile_at(x2,y2);
-          units[unit2].visibility = *(byte *)(unit + 4) | units[unit2].visibility;
+          units[unit2].visibility = ((Tile *)unit)->visible | units[unit2].visibility;
         }
       }
       if ((-1 < unit2) && (autoplay.active == 0)) {
@@ -17390,7 +17383,7 @@ void __cdecl cheat_scenario_params(void)
             *(i8 *)&cities[city].revealed_size[player] = cities[city].size;
           }
           value = (int)tile_at(cities[city].x,cities[city].y);
-          *(i8 *)(value + 4) = 0xff;
+          ((Tile *)value)->visible = 0xff;
         }
       }
       scenario.flags[0] = scenario.flags[0] | 8;
@@ -18450,7 +18443,7 @@ static void status_draw_tile_info(iptr x2,iptr y2,int text_x,int *text_y2,int li
   }
   else {
     value = (int)tile_at(x2,y2);
-    terrain = *(byte *)(value + 1);
+    terrain = ((Tile *)value)->improvements;
   }
   if ((terrain & 0x1c) != 0) {
     text_clear();

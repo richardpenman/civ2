@@ -67,7 +67,7 @@ void __cdecl taxrate_on_tax_scroll(int pos)
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
   taxrate_balance(&tax_rate2,&science_rate2,&lux_rate,(int *)&taxrate_wnd.dlg->init_sci_rate,
-                     (int *)((iptr)taxrate_wnd.dlg + 0x350),(int *)((iptr)taxrate_wnd.dlg + 0x354));
+                     &taxrate_wnd.dlg->rate_locked[1],&taxrate_wnd.dlg->rate_locked[2]);
   taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
   if (requested_rate != tax_rate2) {
     taxrate_wnd.dlg->tax_scrollbar_obj.set_pos(tax_rate2);
@@ -106,7 +106,7 @@ void __cdecl taxrate_on_science_scroll(int pos)
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
   taxrate_balance(&science_rate2,&lux_rate,&tax_rate2,(int *)&taxrate_wnd.dlg->init_lux_rate,
-                     (int *)((iptr)taxrate_wnd.dlg + 0x354),(int *)((iptr)taxrate_wnd.dlg + 0x34c));
+                     &taxrate_wnd.dlg->rate_locked[2],&taxrate_wnd.dlg->rate_locked[0]);
   taxrate_wnd.dlg->sci_rate_sel = science_rate2;
   if (requested_rate != science_rate2) {
     taxrate_wnd.dlg->sci_scrollbar.set_pos(science_rate2);
@@ -145,7 +145,7 @@ void __cdecl taxrate_on_lux_scroll(int pos)
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
   taxrate_balance(&lux_rate,&tax_rate2,&science_rate2,(int *)&taxrate_wnd.dlg->init_tax_rate,
-                     (int *)((iptr)taxrate_wnd.dlg + 0x34c),(int *)((iptr)taxrate_wnd.dlg + 0x350));
+                     &taxrate_wnd.dlg->rate_locked[0],&taxrate_wnd.dlg->rate_locked[1]);
   taxrate_wnd.dlg->lux_rate_sel = lux_rate;
   if (lux_rate != requested_rate) {
     taxrate_wnd.dlg->lux_scrollbar.set_pos(lux_rate);
@@ -539,7 +539,7 @@ void TaxRateDialog::run(uptr civ)
     checkbox_y += 6;
   }
   for (i = 0; i < 3; i++) {
-    *(i32 *)(rate_values + i * 4 - 0x18) =
+    rate_locked[i] =
          taxrate_state.lock_flags[i];
     if (this == (TaxRateDialog *)0x0) {
       parent_wnd_lock = (u8 *)0x0;
@@ -547,11 +547,11 @@ void TaxRateDialog::run(uptr civ)
     else {
       parent_wnd_lock = (u8 *)&window;
     }
-    ((Checkbox *)((u8 *)&advance_pane_rects + i * 0x3c + 0x58))->create((iptr)parent_wnd_lock,
+    lock_checkboxes[i].create((iptr)parent_wnd_lock,
                i + 300,label_center_x - 0x10,checkbox_y,(const char *)&str_empty_9);
-    ((Checkbox *)((u8 *)&advance_pane_rects + i * 0x3c + 0x58))->set_checked(
-               *(i32 *)(rate_values + i * 4 - 0x18));
-    ((Checkbox *)((u8 *)&advance_pane_rects + i * 0x3c + 0x58))->set_callback(taxrate_on_lock_toggled)
+    lock_checkboxes[i].set_checked(
+               rate_locked[i]);
+    lock_checkboxes[i].set_callback(taxrate_on_lock_toggled)
     ;
     checkbox_y = checkbox_y + bar_gap + bar_height + row_spacing_value;
   }
@@ -573,7 +573,7 @@ void TaxRateDialog::run(uptr civ)
   (*(DibSurface * *)&taxrate_state.bg_surface) = (DibSurface *)0x0;
   for (i = 0; i < 3; i++) {
     taxrate_state.lock_flags[i] =
-         *(i32 *)(rate_values + i * 4 - 0x18);
+         rate_locked[i];
   }
   if (((uint)civs[civ].tax_rate != tax_rate_sel) ||
      ((uint)civs[civ].science_rate != sci_rate_sel)) {
@@ -12071,7 +12071,7 @@ CityWindow *CityWindow::construct()
   
   this->FrameWindow::construct();
   clickmap.construct();
-  ((GameFont *)&city_font)->init_empty();
+  city_font.init_empty();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 5);
   reset_state();
   return this;
@@ -12088,7 +12088,7 @@ void CityWindow::destruct()
   (*((char *)&seh_state + 0)) = 2;
   remove_hotspots();
   (*((char *)&seh_state + 0)) = 1;
-  /* inlined unwind funclet 00501673 */ { ((GameFont *)(((int)this) + 0x16ac))->destroy(); }
+  /* inlined unwind funclet 00501673 */ { city_font.destroy(); }
   seh_state = seh_state & 0xffffff00;
   /* inlined unwind funclet 00501682 */ { clickmap.destruct(); }
   seh_state = 0xffffffff;
@@ -13551,7 +13551,7 @@ void CityWindow::draw_resource_map(int blit)
     origin_y2 = half_tile_h * 4 + map_top;
     draw_resource_tiles(half_tile_w,half_tile_h,origin_x2,origin_y2);
     draw_resource_yields(tile_w,half_tile_w,half_tile_h,origin_x2,origin_y2);
-    text_set_font((GameFont *)&city_font);
+    text_set_font(&city_font);
     gfx_set_zoom_scale(view_scale * 4 - 8);
     text_clear();
     text_append_label(0x1c2);
@@ -14549,7 +14549,7 @@ void CityWindow::draw_units_present()
   cell_x = row_start_x;
   cell_y = area_top + offset_y;
   text_set_surface(this);
-  text_set_font((GameFont *)&city_font);
+  text_set_font(&city_font);
   saved_per_row = per_row;
   for (; -1 < unit; unit = unit_next_in_stack(unit)) {
     gfx_draw_unit(this,unit,4,cell_x,cell_y,zoom2,0);
@@ -14634,7 +14634,7 @@ void CityWindow::draw_units_present()
   row_start_x = cell_x;
   cell_y = scale(0x85);
   cell_y = area_top + cell_y;
-  line_h = ((GameFont *)&city_font)->line_spacing();
+  line_h = city_font.line_spacing();
   line_h -= 2;
   text_set_colors(0x79,0x12,1,1);
   scaled = civ_has_advance(cities[city_index].owner,ADV_TRADE);
@@ -14754,11 +14754,11 @@ void CityWindow::draw_support_map()
   text_clear();
   text_append_label(0x1c4);
   text_set_colors(0x7c,0x12,1,1);
-  title_width = rect_width((RECT *)(iptr)((u8 *)this + 0x168c));
+  title_width = rect_width((RECT *)&info_title_rect);
   origin_x = scale(1);
   gfx_draw_text_centered((const char *)&textbuf.buf,info_title_rect,info_title_rect_top + origin_x,title_width);
-  origin_x = rect_width((RECT *)(iptr)((u8 *)this + 0x164c));
-  origin_y = rect_height((RECT *)(iptr)((u8 *)this + 0x164c));
+  origin_x = rect_width((RECT *)&info_panel_rect);
+  origin_y = rect_height((RECT *)&info_panel_rect);
   pixel_size = int_clamp((origin_x - 4) / (int)map.width,1,(origin_y - 4) / (int)map.height);
   origin_x = ((origin_x - 4) - map.width * pixel_size >> 1) + 2 + info_panel_rect;
   origin_y = ((origin_y - 4) - map.height * pixel_size >> 1) + 2 + info_panel_rect_top;
@@ -14889,7 +14889,7 @@ void CityWindow::happy_draw_unit_effects(iptr x_ptr,int row_top,int row_h,int ma
   unit_h = gfx_zoom_scale(0x30,zoom2);
   half_row_h = row_h >> 1;
   if (gov_type == GOV_FUNDAMENTALISM) {
-    unit_w = ((GameFont *)((u8 *)this + 0x16ac))->line_spacing();
+    unit_w = city_font.line_spacing();
     unit_w = (half_row_h + row_top) - (unit_w >> 1);
     text_set_colors(0x29,10,1,0);
     flag = 0;
@@ -14996,15 +14996,15 @@ void CityWindow::draw_happiness()
   text_clear();
   text_append_label(0x1c5);
   text_set_colors(0x7c,0x12,1,1);
-  width = rect_width((RECT *)(iptr)((u8 *)this + 0x168c));
+  width = rect_width((RECT *)&info_title_rect);
   scaled = scale(1);
   gfx_draw_text_centered((const char *)&textbuf.buf,info_title_rect,info_title_rect_top + scaled,width);
   area_left = info_title_rect + 2;
   scaled = scale(0xe);
   area_y = info_title_rect_top + scaled + 2;
-  area_w = rect_width((RECT *)(iptr)((u8 *)this + 0x168c));
+  area_w = rect_width((RECT *)&info_title_rect);
   area_w -= 4;
-  area_h = rect_height((RECT *)(iptr)((u8 *)this + 0x168c));
+  area_h = rect_height((RECT *)&info_title_rect);
   area_h -= 4;
   row_h = area_h / 5;
   area_x = area_left;
@@ -15055,7 +15055,7 @@ void CityWindow::draw_happiness()
       if ((uint)city_calc.happy_after_units - (uint)city_calc.unhappy_after_units == (uint)city_calc.happy_after_wonders - (uint)city_calc.unhappy_after_wonders)
       continue;
       mid_y = (row_h >> 1) + row_y;
-      scaled = ((GameFont *)((u8 *)this + 0x16ac))->line_spacing();
+      scaled = city_font.line_spacing();
       icon_y = mid_y - (scaled >> 1);
       text_set_colors(0x29,10,1,0);
       width = 0;
@@ -15074,7 +15074,7 @@ void CityWindow::draw_happiness()
     row_w = scaled;
     if ((stage == 2) && (civs[civ].government == GOV_FUNDAMENTALISM)) {
       mid_y = (row_h >> 1) + row_y;
-      scaled = ((GameFont *)((u8 *)this + 0x16ac))->line_spacing();
+      scaled = city_font.line_spacing();
       icon_y = mid_y - (scaled >> 1);
       text_set_colors(0x29,10,1,0);
       text_clear();
@@ -15284,7 +15284,7 @@ void CityWindow::apply_size()
   }
   small_style = (uint)(view_scale < 3);
   font_h = scale(0xc);
-  ((GameFont *)&city_font)->set_styled(1,font_h,small_style);
+  city_font.set_styled(1,font_h,small_style);
   if ((margin_x_2 == prev_content_offset_x) &&
      (content_offset_y == prev_content_offset_y)) {
     if (prev_content_offset_x < 0) {

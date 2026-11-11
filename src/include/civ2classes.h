@@ -1288,6 +1288,7 @@ typedef struct ParleyOfferMsg {
     i32 kind;                       /* 0x1c */
     ParleyOfferItem item;           /* 0x20 */
 } ParleyOfferMsg;
+static_assert(sizeof(ParleyOfferItem) == 0xc && sizeof(ParleyOfferMsg) == 0x2c, "");   /* the item's ids follow it */
 static_assert(sizeof(NetMsg) == 0x2c && sizeof(NetAddrMsg) == 0x30 && sizeof(NetNamedMsg) == 0x74, "");
 static_assert(sizeof(NetServerInfoMsg) == 0x198 && sizeof(NetServerAnswerMsg) == 0x134, "");
 static_assert(sizeof(NetPlayerNodeMsg) == 0x64 && sizeof(NetPlayerListMsg) == 0x280, "");
@@ -1898,11 +1899,32 @@ typedef struct DdwinAttachBackBufferView {
     union { u32 field_8; u32 surf_width; };
 } DdwinAttachBackBufferView;
 
+/* 13 methods, size 0xc */
+typedef struct PtrList {
+    union { uptr field_0; uptr head; };
+    union { uptr field_4; uptr tail; };
+    union { uptr field_8; uptr iter_node; };
+    /* methods */
+    i32 first();    /* 005f0590 */
+    i32 next();    /* 005f05d0 */
+    void clear();    /* 005f0724 */
+    uint is_empty();    /* 005f0742 */
+    i32 first_impl();    /* 005f0770 */
+    i32 next_impl();    /* 005f0833 */
+    void remove_current();    /* 005f0c69 */
+    void clear_impl();    /* 005f0e13 */
+    void destruct();    /* 005f04c0 */
+} PtrList;
+
 /* 1 methods, size 0xd0 */
 typedef struct DDWindow {
-    union { u8 pad_0[204]; struct { u8 gap_0[68];
-        union { u8 handlers[124]; struct { u8 gap_44[120]; WndActivateFn on_activate_app; /* 0xbc */ }; };
-        u8 child_controls[12]; }; };
+    u8 pad_0[68];
+    WndHandlers handlers;           /* 0x44 */
+    u8 pad_ac[4];
+    u32 native_wnd;                 /* 0xb0 */
+    u8 pad_b4[8];
+    WndActivateFn on_activate_app;  /* 0xbc */
+    PtrList child_controls;         /* 0xc0 */
     union { uptr field_cc; uptr hover_control; };
     /* methods */
     void remove_all_controls();    /* 005f029e */
@@ -1911,6 +1933,7 @@ typedef struct DDWindow {
     void call_activate_app(i32 active);    /* 005efd70 */
     void destruct();
 } DDWindow;
+static_assert(sizeof(DDWindow) == 0xd0 && __builtin_offsetof(DDWindow, handlers) == 0x44 && __builtin_offsetof(DDWindow, native_wnd) == 0xb0 && __builtin_offsetof(DDWindow, on_activate_app) == 0xbc && __builtin_offsetof(DDWindow, child_controls) == 0xc0, "");
 
 /* DDWindow where the code reaches past its end: the object is larger */
 typedef struct DDWindowExt {
@@ -1932,22 +1955,6 @@ typedef struct PtrListInitView {
     union { u32 field_8; u32 cur_node; };
 } PtrListInitView;
 
-/* 13 methods, size 0xc */
-typedef struct PtrList {
-    union { uptr field_0; uptr head; };
-    union { uptr field_4; uptr tail; };
-    union { uptr field_8; uptr iter_node; };
-    /* methods */
-    i32 first();    /* 005f0590 */
-    i32 next();    /* 005f05d0 */
-    void clear();    /* 005f0724 */
-    uint is_empty();    /* 005f0742 */
-    i32 first_impl();    /* 005f0770 */
-    i32 next_impl();    /* 005f0833 */
-    void remove_current();    /* 005f0c69 */
-    void clear_impl();    /* 005f0e13 */
-    void destruct();    /* 005f04c0 */
-} PtrList;
 
 /* 2 methods, size 0xc */
 typedef struct PtrListLastView {
@@ -2721,7 +2728,7 @@ typedef struct TaxRateDialog : FrameWindow {
     uptr conceal_button_value;
     uptr reveal_button_value;
     uptr rates_clamped;
-    u8 pad_34c[12];
+    i32 rate_locked[3];             /* 0x34c tax, science, luxury: locked (the check boxes) */
     union { Scrollbar tax_scrollbar_obj; struct { uptr tax_scrollbar; u8 gap_35c_1[8]; u8 rate_values[8]; }; };
     union { Scrollbar lux_scrollbar; struct { u8 lux_rate_scrollbar[4]; u8 gap_39c_1[36]; u32 advance_pane_rects[1]; }; };
     union { Scrollbar sci_scrollbar; u8 sci_rate_scrollbar[8]; };
@@ -2736,6 +2743,7 @@ typedef struct TaxRateDialog : FrameWindow {
     void destruct();    /* 0040f1e0 */
 } TaxRateDialog;
 static_assert(sizeof(TaxRateDialog) == 0x510, "");
+static_assert(__builtin_offsetof(TaxRateDialog, rate_locked) == 0x34c, "");
 
 /* A map view window (mapview_ctor 0047dce0, 0x3f0 bytes;
    map_views_block.map_view_recs[8], view 0 is the main map).  The members
@@ -2964,8 +2972,7 @@ typedef struct CityWindow : FrameWindow {
     u32 info_title_rect_right;
     u8 pad_1698[4];
     u8 improvements_scrollbar_rect[16];
-    u32 city_font;
-    u8 pad_16b0[4];
+    GameFont city_font;             /* 0x16ac */
     u32 buy_button;
     union { struct Button *change_button; struct { u8 change_button_b0[1]; u8 change_button_byte1[1]; u8 change_button_byte2[1]; u8 change_button_byte3[1]; }; };
     union { struct Button *exit_button; struct { u8 exit_button_b0[1]; u8 exit_button_byte1[1]; u8 exit_button_byte2[1]; u8 exit_button_byte3[1]; }; };
@@ -3035,6 +3042,7 @@ typedef struct CityWindow : FrameWindow {
     int scale(int value);    /* 00511690 */
 } CityWindow;
 static_assert(sizeof(CityWindow) == 0x16e0, "");
+static_assert(__builtin_offsetof(CityWindow, city_font) == 0x16ac && __builtin_offsetof(CityWindow, info_panel_rect) == 0x164c && __builtin_offsetof(CityWindow, info_title_rect) == 0x168c, "");
 
 /* A report picture window (picwnd_ctor 0043c260, 0x4a4 bytes:
    advisor_window_block, casualty_window_block): a background surface, four

@@ -5155,16 +5155,14 @@ void *DiploLeaderWindow::scalar_destruct(uint flags)
 void __cdecl diplo_wnd_escape_close(i32 unused)
 
 {
-  i32 wnd2;
+  SurfaceWindow *wnd2;
   
-  wnd2 = wnd_get_active_child();
-  if (wnd2 == 0) {
-    wnd2 = 0;
+  wnd2 = (SurfaceWindow *)wnd_get_active_child();
+  if (wnd2 != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    wnd2 = (SurfaceWindow *)((u8 *)wnd2 - offsetof(SurfaceWindow, window));
   }
-  else {
-    wnd2 -= 0x48;
-  }
-  ((Wnd *)(wnd2 + 0x48))->activate();
+  wnd2->window.activate();
   diplo_wnd_close_active();
   return;
 }

@@ -62,12 +62,12 @@ void DDWindow::destruct()
 {
     WndHandlers *member;
 
-    *(i32 *)((iptr)this + 0xb0) = ddwin_destroy_native((i32 *)*(i32 *)((iptr)this + 0xb0));
+    native_wnd = ddwin_destroy_native((i32 *)native_wnd);
     remove_all_controls();
     /* funclet 005eff2b */
-    ((PtrList *)((iptr)this + 0xc0))->destruct();
+    child_controls.destruct();
     /* funclet 005eff3a */
-    member = (this != NULL) ? (WndHandlers *)((iptr)this + 0x44) : NULL;
+    member = (this != NULL) ? &handlers : NULL;
     member->destruct();
     /* funclet 005eff62 */
     ((DDSurface *)this)->destruct();

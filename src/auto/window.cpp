@@ -12192,7 +12192,7 @@ void __cdecl wnd_cycle_control_focus(WndBase *wnd,HWND hwnd,int direction)
     }
   }
   if (hwnd == (HWND)0x0) {
-    if (*(int *)((u8 *)wnd + 0xb8) == 0) {
+    if (((Wnd *)wnd)->control_list == 0) {
       return;
     }
     if (direction == 2) {
@@ -12259,7 +12259,7 @@ void __cdecl wnd_cycle_control_focus(WndBase *wnd,HWND hwnd,int direction)
         wnd_cycle_control_focus(wnd,group_hwnd,direction);
         return;
       }
-      self = (Checkbox *)ctrl_list_find_by_hwnd(hwnd,(Control *)*(i32 *)((u8 *)wnd + 0xb8));
+      self = (Checkbox *)ctrl_list_find_by_hwnd(hwnd,(Control *)((Wnd *)wnd)->control_list);
       if ((self != (Checkbox *)0x0) &&
          ((((result = self->get_type(), result == 6 &&
             (result = ((Button *)self)->ctrl_is_enabled(), result != 0)) ||
@@ -12799,7 +12799,7 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
       def_result = DefWindowProcA(hwnd,msg,wparam,lparam);
       return def_result;
     }
-    can_close = ((WndHandlers *)self->handlers)->call_close();
+    can_close = self->handlers.call_close();
     if (can_close != 0) {
       def_result = DefWindowProcA(hwnd,0x10,wparam,lparam);
       return def_result;
@@ -12821,7 +12821,7 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
     if (msg == 0x200) {
       handled = self->dispatch_ctrl_msg(0x200,lparam & 0xffff,lparam >> 0x10);
       if (handled == '\0') {
-        ((WndHandlers *)self->handlers)->call_mousemove(lparam & 0xffff,lparam >> 0x10);
+        self->handlers.call_mousemove(lparam & 0xffff,lparam >> 0x10);
       }
     }
     else if (msg == 0x100) {
@@ -12830,14 +12830,14 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
       handled = self->dispatch_ctrl_msg(0x100,key,zero_arg);
       if (handled == '\0') {
         key = input_map_vkey(wparam);
-        ((WndHandlers *)self->handlers)->call_keydown_pre(key);
+        self->handlers.call_keydown_pre(key);
         key = input_map_vkey(wparam);
-        ((WndHandlers *)self->handlers)->call_keydown(key);
+        self->handlers.call_keydown(key);
       }
     }
     else if (msg == 0x101) {
       key = input_map_vkey(wparam);
-      ((WndHandlers *)self->handlers)->call_keyup(key);
+      self->handlers.call_keyup(key);
     }
     else {
       if (msg != 0x102) {
@@ -12846,17 +12846,17 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
       }
       handled = self->dispatch_ctrl_msg(0x102,wparam & 0xff,0);
       if (handled == '\0') {
-        ((WndHandlers *)self->handlers)->call_char(wparam & 0xff);
+        self->handlers.call_char(wparam & 0xff);
       }
     }
   }
   else if (msg < 0x211) {
     if (msg == 0x210) {
       if ((wparam & 0xffff) == 0x201) {
-        ((WndHandlers *)self->handlers)->call_lbuttondown(lparam & 0xffff,lparam >> 0x10);
+        self->handlers.call_lbuttondown(lparam & 0xffff,lparam >> 0x10);
       }
       else if ((wparam & 0xffff) == 0x204) {
-        ((WndHandlers *)self->handlers)->call_rbuttondown(lparam & 0xffff,lparam >> 0x10);
+        self->handlers.call_rbuttondown(lparam & 0xffff,lparam >> 0x10);
       }
     }
     else {
@@ -12868,7 +12868,7 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
           ((DDWindowExt *)self)->lbutton_held_byte1[0] = '\0';
           ((DDWindowExt *)self)->lbutton_held_byte2[0] = '\0';
           ((DDWindowExt *)self)->lbutton_held_byte3[0] = '\0';
-          ((WndHandlers *)self->handlers)->call_lbuttondown(lparam & 0xffff,lparam >> 0x10);
+          self->handlers.call_lbuttondown(lparam & 0xffff,lparam >> 0x10);
         }
         break;
       case 0x202:
@@ -12879,15 +12879,15 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
             ((DDWindowExt *)self)->lbutton_held_byte1[0] = '\0';
             ((DDWindowExt *)self)->lbutton_held_byte2[0] = '\0';
             ((DDWindowExt *)self)->lbutton_held_byte3[0] = '\0';
-            ((WndHandlers *)self->handlers)->call_lbuttonup(lparam & 0xffff,lparam >> 0x10);
+            self->handlers.call_lbuttonup(lparam & 0xffff,lparam >> 0x10);
           }
-          ((WndHandlers *)self->handlers)->call_lbuttonup_raw(lparam & 0xffff,lparam >> 0x10);
+          self->handlers.call_lbuttonup_raw(lparam & 0xffff,lparam >> 0x10);
         }
         break;
       case 0x203:
         handled = self->dispatch_ctrl_msg(msg,lparam & 0xffff,lparam >> 0x10);
         if (handled == '\0') {
-          ((WndHandlers *)self->handlers)->call_dblclick(lparam & 0xffff,lparam >> 0x10);
+          self->handlers.call_dblclick(lparam & 0xffff,lparam >> 0x10);
         }
         break;
       case 0x204:
@@ -12897,7 +12897,7 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
           ((DDWindowExt *)self)->rbutton_held_byte1[0] = '\0';
           ((DDWindowExt *)self)->rbutton_held_byte2[0] = '\0';
           ((DDWindowExt *)self)->rbutton_held_byte3[0] = '\0';
-          ((WndHandlers *)self->handlers)->call_rbuttondown(lparam & 0xffff,lparam >> 0x10);
+          self->handlers.call_rbuttondown(lparam & 0xffff,lparam >> 0x10);
         }
         break;
       case 0x205:
@@ -12908,9 +12908,9 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
             ((DDWindowExt *)self)->rbutton_held_byte1[0] = '\0';
             ((DDWindowExt *)self)->rbutton_held_byte2[0] = '\0';
             ((DDWindowExt *)self)->rbutton_held_byte3[0] = '\0';
-            ((WndHandlers *)self->handlers)->call_rbuttonup(lparam & 0xffff,lparam >> 0x10);
+            self->handlers.call_rbuttonup(lparam & 0xffff,lparam >> 0x10);
           }
-          ((WndHandlers *)self->handlers)->call_rbuttonup_raw(lparam & 0xffff,lparam >> 0x10);
+          self->handlers.call_rbuttonup_raw(lparam & 0xffff,lparam >> 0x10);
         }
         break;
       default:
@@ -12925,7 +12925,7 @@ LRESULT __stdcall ddwin_native_wndproc(HWND hwnd,uint msg,uint wparam,uint lpara
       return def_result;
     }
     if (lparam == 0x20d) {
-      ((WndHandlers *)self->handlers)->call_msg4c8(0);
+      self->handlers.call_msg4c8(0);
     }
   }
   return 0;
@@ -12949,10 +12949,10 @@ void DDWindow::remove_all_controls()
 {
   i32 ctrl;
   
-  ctrl = ((PtrList *)child_controls)->first();
+  ctrl = child_controls.first();
   while (ctrl != 0) {
-    ((PtrList *)child_controls)->remove_current();
-    ctrl = ((PtrList *)child_controls)->first();
+    child_controls.remove_current();
+    ctrl = child_controls.first();
   }
   return;
 }
@@ -12963,10 +12963,10 @@ void DDWindow::deactivate_controls()
 {
   i32 ctrl;
   
-  ctrl = ((PtrList *)child_controls)->first();
+  ctrl = child_controls.first();
   while (ctrl != 0) {
     ((DDControl *)ctrl)->deactivate();
-    ctrl = ((PtrList *)child_controls)->next();
+    ctrl = child_controls.next();
   }
   return;
 }
@@ -12987,14 +12987,14 @@ i8 DDWindow::dispatch_ctrl_msg(int msg,int x,int y)
       hover_control = 0;
     }
   }
-  ctrl = (DDControl *)((PtrList *)child_controls)->first();
+  ctrl = (DDControl *)child_controls.first();
   while( true ) {
     if (ctrl == (DDControl *)0x0) {
       return 0;
     }
     handled = ctrl->dispatch_msg(msg,x,y);
     if (handled != 0) break;
-    ctrl = (DDControl *)((PtrList *)child_controls)->next();
+    ctrl = (DDControl *)child_controls.next();
   }
   if (msg == 0x200) {
     hover_control = (uptr)ctrl;

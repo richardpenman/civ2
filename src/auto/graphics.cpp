@@ -2303,21 +2303,22 @@ void __cdecl portrait_dlg_on_button(int button_id)
 
 {
   iptr child;
-  iptr dlg;
+  PortraitDialog *dlg;
   
   child = wnd_get_active_child();
   if (child == 0) {
     dlg = 0;
   }
   else {
-    dlg = child - 0x48;
+    /* the active window is the dialog's Wnd */
+    dlg = (PortraitDialog *)((u8 *)child - offsetof(PortraitDialog, window));
   }
   if (((button_id != 100) && (button_id == 0x65)) &&
-     (*(i32 *)(dlg + 0x1e4) = *(i32 *)(dlg + 0x1e0),
-     leaders[civs[*(int *)(dlg + 0x1dc)].tribe].female != '\0')) {
-    *(int *)(dlg + 0x1e4) = *(int *)(dlg + 0x1e4) + 0x15;
+     (dlg->result = dlg->field_1e0,
+     leaders[civs[(int)dlg->civ].tribe].female != '\0')) {
+    dlg->result = dlg->result + 0x15;
   }
-  ((ModalMenuWindow *)(dlg + 0x48))->end_modal_loop();
+  dlg->window.end_modal_loop();
   return;
 }
 
@@ -7111,7 +7112,7 @@ void DibSurface::blit(DibSurface *src,RECT *dest_rect,RECT *src_rect)
     src_was_locked = 0;
   }
   IntersectRect(&dest_clip,dest_rect,(RECT *)&clip_left);
-  IntersectRect(&src_clip,src_rect,(RECT *)((iptr)src + 0x14));
+  IntersectRect(&src_clip,src_rect,(RECT *)&src->clip_left);
   width2 = src_clip.right - src_clip.left;
   if (dest_clip.right - dest_clip.left <= src_clip.right - src_clip.left) {
     width2 = dest_clip.right - dest_clip.left;
@@ -8947,12 +8948,12 @@ void Sprite::merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy)
   
   if (src->data_handle != 0) {
     if (dst->data_handle == 0) {
-      SetRect((LPRECT)dst,(int)src->frame_rect,(int)src->frame_top,*(int *)((iptr)src + 8) + dx,
-              *(int *)((iptr)src + 0xc) + dy);
+      SetRect((LPRECT)dst,(int)src->frame_rect,(int)src->frame_top,*(int *)src->frame_right + dx,
+              *(int *)src->frame_bottom + dy);
       dst->bounds_rect = src->bounds_rect;
       dst->bounds_top = src->bounds_top;
-      *(i32 *)dst->bounds_right = *(i32 *)((iptr)src + 0x18);
-      *(i32 *)dst->bounds_bottom = *(i32 *)((iptr)src + 0x1c);
+      *(i32 *)dst->bounds_right = *(i32 *)src->bounds_right;
+      *(i32 *)dst->bounds_bottom = *(i32 *)src->bounds_bottom;
       OffsetRect((LPRECT)&dst->bounds_rect,dx,dy);
       dst->offset_x = (int)src->offset_x + dx;
       dst->offset_y = (int)src->offset_y + dy;
@@ -8965,9 +8966,9 @@ void Sprite::merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy)
     }
     else {
       src_top = ((int)src->bounds_top + dy) - dst->bounds_top;
-      src_w = rect_width((RECT *)((iptr)src + 0x10));
+      src_w = rect_width((RECT *)&src->bounds_rect);
       value = (int)src->bounds_rect;
-      src_h = rect_height((RECT *)((iptr)src + 0x10));
+      src_h = rect_height((RECT *)&src->bounds_rect);
       merged = rect_width((RECT *)&dst->bounds_rect);
       merged = dst->bounds_rect + merged;
       dst_h = rect_height((RECT *)&dst->bounds_rect);

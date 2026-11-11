@@ -163,6 +163,8 @@ def match(mt, t, deref):
         return 'generic'
     if scalar_size(mt) and scalar_size(mt) == scalar_size(t):
         return 'alias'      # the same bytes as another scalar type: *(T *)&P
+    if not deref and t in LAY and scalar_size(mt):
+        return 'alias'      # a struct (RECT ...) whose first field is this member: (T *)&P
     return None
 
 

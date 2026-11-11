@@ -959,14 +959,12 @@ void __cdecl spaceship_video_on_lbuttonup(i32 x,i32 y)
   int hit;
   int hotspot_id;
   SpaceshipWindow *ship_wnd;
-  int active_wnd;
+  SurfaceWindow *active_wnd;
   
-  active_wnd = wnd_get_active_child();
-  if (active_wnd == 0) {
-    active_wnd = 0;
-  }
-  else {
-    active_wnd -= 0x48;
+  active_wnd = (SurfaceWindow *)wnd_get_active_child();
+  if (active_wnd != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    active_wnd = (SurfaceWindow *)((u8 *)active_wnd - offsetof(SurfaceWindow, window));
   }
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
   if ((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_state == 2) {
@@ -991,13 +989,13 @@ void __cdecl spaceship_video_on_lbuttonup(i32 x,i32 y)
           }
         }
         else {
-          ((ModalMenuWindow *)(active_wnd + 0x48))->end_modal_loop();
+          active_wnd->window.end_modal_loop();
         }
       }
       else if (((hotspot_id == 1) && (ship_wnd->launch_state == 1)) && (ship_wnd->launched != 0)) {
         ship_wnd->draw_launch_btn(1,0);
         ship_wnd->launch_state = 2;
-        ((ModalMenuWindow *)(active_wnd + 0x48))->end_modal_loop();
+        active_wnd->window.end_modal_loop();
       }
     }
   }
@@ -1104,15 +1102,13 @@ void __cdecl spaceship_wnd_on_key(int key)
 {
   SpaceshipWindow *self;
   int more;
-  int active_wnd;
+  SurfaceWindow *active_wnd;
   
-  active_wnd = wnd_get_active_child();
+  active_wnd = (SurfaceWindow *)wnd_get_active_child();
   self = spaceship_launch_sprite_xs_block.spaceship_wnd;
-  if (active_wnd == 0) {
-    active_wnd = 0;
-  }
-  else {
-    active_wnd -= 0x48;
+  if (active_wnd != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    active_wnd = (SurfaceWindow *)((u8 *)active_wnd - offsetof(SurfaceWindow, window));
   }
   if ((0xcf < key) && (key < 0xd3)) {
     if ((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_state == 2) {
@@ -1132,7 +1128,7 @@ void __cdecl spaceship_wnd_on_key(int key)
         self->draw_close_btn(1,1);
       }
       else {
-        ((ModalMenuWindow *)(active_wnd + 0x48))->end_modal_loop();
+        active_wnd->window.end_modal_loop();
       }
     }
   }
@@ -1191,15 +1187,13 @@ void __cdecl spaceship_wnd_on_lbuttonup(i32 x,i32 y)
   u32 timer;
   int hotspot_id;
   SpaceshipWindow *ship_wnd;
-  int active_wnd;
+  SurfaceWindow *active_wnd;
   
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
-  active_wnd = wnd_get_active_child();
-  if (active_wnd == 0) {
-    active_wnd = 0;
-  }
-  else {
-    active_wnd -= 0x48;
+  active_wnd = (SurfaceWindow *)wnd_get_active_child();
+  if (active_wnd != 0) {
+    /* the active window is a SurfaceWindow's Wnd */
+    active_wnd = (SurfaceWindow *)((u8 *)active_wnd - offsetof(SurfaceWindow, window));
   }
   if (ship_wnd->launch_state == 2) {
     ship_wnd->launch_video_player->window.end_modal_loop();
@@ -1229,13 +1223,13 @@ void __cdecl spaceship_wnd_on_lbuttonup(i32 x,i32 y)
             }
           }
           else {
-            ((ModalMenuWindow *)(active_wnd + 0x48))->end_modal_loop();
+            active_wnd->window.end_modal_loop();
           }
         }
       }
       else if ((hotspot_id == 1) && ((ship_wnd)->launch_btn_pressed != 0)) {
         ship_wnd->launch_state = 2;
-        ((ModalMenuWindow *)(active_wnd + 0x48))->end_modal_loop();
+        active_wnd->window.end_modal_loop();
       }
     }
     if ((((ship_wnd)->close_btn_pressed != 0) &&

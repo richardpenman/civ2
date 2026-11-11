@@ -5259,7 +5259,7 @@ void __cdecl arrival_movie_on_frame(void)
       /* BF-062, BF-063 */
       str_append_max((char *)spaceship_arrival_window->movie_caption_text,(const char *)text_parse.line_cursor,0x400);
       text_expand_vars_max((const char *)spaceship_arrival_window->movie_caption_text,textbuf.buf,TEXTBUF_SIZE);
-      width = rect_width((RECT *)((iptr)spaceship_arrival_window + 0x136c));
+      width = rect_width(&spaceship_arrival_window->movie_caption_rect);
       gfx_draw_text_centered((const char *)&textbuf.buf,(i32)spaceship_arrival_window->movie_caption_rect.left,text_y2,width);
       status = spaceship_arrival_window->movie_caption_font.line_spacing();
       text_y2 += status;
@@ -5289,7 +5289,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
   int status;
   iptr str;
   char *line;
-  i8 surface_wnd[276];
+  SurfaceWindow surface_wnd;
   ModalMenuWindow frame_wnd;
   tagRECT text_rect;
   int page;
@@ -5301,8 +5301,8 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
   i8 dll_path[128];
   GamePalette palette;
   
-  ((SurfaceWindow *)surface_wnd)->SurfaceWindow::construct();
-  ON_SCOPE_EXIT(((SurfaceWindow *)&surface_wnd)->SurfaceWindow::destruct());
+  surface_wnd.SurfaceWindow::construct();
+  ON_SCOPE_EXIT(surface_wnd.SurfaceWindow::destruct());
   dll.init();
   ON_SCOPE_EXIT(dll.free());
   frame_wnd.ModalMenuWindow::construct();
@@ -5328,18 +5328,18 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
     ((WndBase *)&frame_wnd)->create_with_handlers((const char *)&str_empty_91,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
                (screen_bounds.bottom - screen_bounds.top) + 5,(iptr)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
     ((WndBase *)&frame_wnd)->set_bg_color(0);
-    ((DibSurface *)surface_wnd)->wnd_create((iptr)&str_empty_92,0x800,0,0,0x280,0xf0,(iptr)&palette);
-    ((DibSurface *)surface_wnd)->load_gif_resource(30000,10,0xec,(iptr)&palette);
-    ((WndBase *)(surface_wnd + 0x48))->center();
+    surface_wnd.wnd_create((iptr)&str_empty_92,0x800,0,0,0x280,0xf0,(iptr)&palette);
+    surface_wnd.load_gif_resource(30000,10,0xec,(iptr)&palette);
+    surface_wnd.window.center();
     backup_surface.DibSurface::create(0x280,0xf0);
-    ((DibSurface *)surface_wnd)->DibSurface::blit(&backup_surface,&text_rect,&text_rect);
+    surface_wnd.DibSurface::blit(&backup_surface,&text_rect,&text_rect);
     backup_surface.set_palette((iptr)&palette);
     ((WndBase *)&frame_wnd)->handle_show_raise();
     wnd_flush_paint();
     ((WndBase *)&frame_wnd)->set_palette((iptr)&palette);
-    ((SurfaceWindow *)surface_wnd)->SurfaceWindow::show();
+    surface_wnd.SurfaceWindow::show();
     wnd_flush_paint();
-    ((WndBase *)(surface_wnd + 0x48))->set_capture();
+    surface_wnd.window.set_capture();
     gfx_set_text_color_index(0xff);
     text_clear();
     text_append_year((int)civs[civ].spaceship_launch_year);
@@ -5373,20 +5373,20 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
         }
         text_clear();
         text_expand_vars_max(text_buf,textbuf.buf,TEXTBUF_SIZE);
-        backup_surface.DibSurface::blit((DibSurface *)surface_wnd,&text_rect,&text_rect);
+        backup_surface.DibSurface::blit(&surface_wnd,&text_rect,&text_rect);
         OffsetRect(&text_rect,1,1);
         gfx_set_text_color_index(0);
-        ((DibSurface *)surface_wnd)->draw_text_rect((iptr)&font2,(const char *)&textbuf.buf,(iptr)&text_rect,0);
+        surface_wnd.draw_text_rect((iptr)&font2,(const char *)&textbuf.buf,(iptr)&text_rect,0);
         OffsetRect(&text_rect,-1,-1);
         gfx_set_text_color_index(0xff);
-        ((DibSurface *)surface_wnd)->draw_text_rect((iptr)&font2,(const char *)&textbuf.buf,(iptr)&text_rect,0);
-        gfx_dissolve_blit((DibSurface *)surface_wnd,&text_rect,4,5);
+        surface_wnd.draw_text_rect((iptr)&font2,(const char *)&textbuf.buf,(iptr)&text_rect,0);
+        gfx_dissolve_blit(&surface_wnd,&text_rect,4,5);
         text_close_file();
         ui_delay_ticks(0x168);
       }
     }
-    ((WndBase *)(surface_wnd + 0x48))->release_capture();
-    ((WndBase *)(surface_wnd + 0x48))->hide();
+    surface_wnd.window.release_capture();
+    surface_wnd.window.hide();
     wnd_flush_paint();
     ((WndBase *)&frame_wnd)->set_palette((iptr)&game_palette_block.game_palette);
     ((WndBase *)&frame_wnd)->hide();
