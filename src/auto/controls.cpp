@@ -925,21 +925,21 @@ spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr s
   center = rect2.top + size / 2;
   size = ((Sprite *)sprite)->height();
   icon_y = center - size / 2;
-  ((Sprite *)sprite)->draw((iptr)draw_ctx,(iptr)&button->on_select,icon_x,icon_y);
-  ((Sprite *)sprite)->draw((iptr)shadow_ctx,(iptr)(button->button_surface),icon_x + 2,
+  ((Sprite *)sprite)->draw((RECT *)draw_ctx,(DibSurface *)&button->on_select,icon_x,icon_y);
+  ((Sprite *)sprite)->draw((RECT *)shadow_ctx,((DibSurface *)button->button_surface),icon_x + 2,
              icon_y + 2);
-  gfx_draw_rect_frame((iptr)&button->on_select,&rect2,10);
-  gfx_draw_rect_frame((iptr)(button->button_surface),&rect2,10);
+  gfx_draw_rect_frame((DibSurface *)&button->on_select,&rect2,10);
+  gfx_draw_rect_frame(((DibSurface *)button->button_surface),&rect2,10);
   inner_rect.left = rect2.left;
   inner_rect.top = rect2.top;
   inner_rect.right = rect2.right;
   inner_rect.bottom = rect2.bottom;
   rect_deflate(&inner_rect,1,1);
-  gfx_draw_bevel_rect((iptr)&button->on_select,&inner_rect,0x1f,0xf);
-  gfx_draw_bevel_rect((iptr)(button->button_surface),&inner_rect,0xf,10);
+  gfx_draw_bevel_rect((DibSurface *)&button->on_select,&inner_rect,0x1f,0xf);
+  gfx_draw_bevel_rect(((DibSurface *)button->button_surface),&inner_rect,0xf,10);
   rect_deflate(&inner_rect,1,1);
-  gfx_draw_bevel_rect((iptr)&button->on_select,&inner_rect,0x1f,0xf);
-  gfx_draw_bevel_rect((iptr)(button->button_surface),&inner_rect,0xf,10);
+  gfx_draw_bevel_rect((DibSurface *)&button->on_select,&inner_rect,0x1f,0xf);
+  gfx_draw_bevel_rect(((DibSurface *)button->button_surface),&inner_rect,0xf,10);
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
   ((DibSurface *)button->button_surface)->set_palette(palette);
@@ -3720,8 +3720,8 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   half_h = ((Sprite *)sprite)->get_height();
   half_h = half_h >> 1;
   ((Sprite *)sprite)->set_origin(-half_w,-half_h);
-  ((Sprite *)sprite)->draw((iptr)draw_ctx_a,(iptr)(button_surface),center_x,center_y);
-  ((Sprite *)sprite)->draw((iptr)draw_ctx_b,(iptr)&on_select,center_x,center_y);
+  ((Sprite *)sprite)->draw((RECT *)draw_ctx_a,((DibSurface *)button_surface),center_x,center_y);
+  ((Sprite *)sprite)->draw((RECT *)draw_ctx_b,(DibSurface *)&on_select,center_x,center_y);
   ((Sprite *)sprite)->set_origin(origin_x2,origin_y2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
   size = ((DibSurface *)button_surface)->surface_height();

@@ -1383,9 +1383,9 @@ typedef struct Sprite {
     void encode_rect(iptr surface,int x,int y,int width,int height);    /* 005cebec */
     void grab_rect(iptr surface,uint key_color,iptr rect);    /* 005cec44 */
     void grab_from_surface(iptr surface,uint key_color,int x,int y,int width, int height);    /* 005cedad */
-    iptr draw(iptr dest,iptr surface,i32 x,i32 y);    /* 005cef31 */
-    iptr draw_keyed(iptr dest,iptr surface,uint key_color,i32 x, i32 y);    /* 005cef66 */
-    iptr draw_silhouette(iptr dest,iptr surface,i32 x,i32 y, i32 color);    /* 005cf126 */
+    RECT *draw(RECT *dest,DibSurface *surface,i32 x,i32 y);    /* 005cef31 */
+    RECT *draw_keyed(RECT *dest,DibSurface *surface,uint key_color,i32 x, i32 y);    /* 005cef66 */
+    RECT *draw_silhouette(RECT *dest,DibSurface *surface,i32 x,i32 y, i32 color);    /* 005cf126 */
     void merge_onto(iptr dest);    /* 005cf23f */
     void lock();    /* 005cf2ff */
     void unlock();    /* 005cf337 */

@@ -617,10 +617,10 @@ void EditorWindow::tech_editor_paint()
   
   this->FrameWindow::draw_caption();
   if (((*(int *)&editor_ui.bg_surface) == 0) || (editor_lists.running == 0)) {
-    gfx_fill_rect((iptr)this,(RECT *)&client_rect,0x1d);
+    gfx_fill_rect(this,(RECT *)&client_rect,0x1d);
   }
   else {
-    gfx_copy_rect_xywh((*(int *)&editor_ui.bg_surface),(iptr)this,0,0,client_x,client_y,wnd_width_u,
+    gfx_copy_rect_xywh(((DibSurface *)*(int *)&editor_ui.bg_surface),this,0,0,client_x,client_y,wnd_width_u,
                        wnd_height_u);
   }
   icon_x = client_x + 0x20;
@@ -630,12 +630,12 @@ void EditorWindow::tech_editor_paint()
              editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[3] * 0xf0 +
              editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[2] * 0x3c);
   key_color = icon->get_key_color();
-  gfx_fill_rect_xywh((iptr)this,icon_x,icon_y,0x48,0x28,(uint)key_color);
+  gfx_fill_rect_xywh(this,icon_x,icon_y,0x48,0x28,(uint)key_color);
   gfx_set_scale_ratio(2,1);
-  icon->draw((iptr)sprite_rect,(iptr)this,icon_x,icon_y);
+  icon->draw((RECT *)sprite_rect,this,icon_x,icon_y);
   gfx_set_scale_ratio(1,1);
-  gfx_draw_tiled_frame((iptr)this,icon_x,icon_y,0x48,0x28,6);
-  text_set_surface((iptr)this);
+  gfx_draw_tiled_frame(this,icon_x,icon_y,0x48,0x28,6);
+  text_set_surface(this);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   label_x = tech_editor_combo_x_table_block.tech_editor_prereq1_ctrl_x + client_x + 0x32;
@@ -643,38 +643,38 @@ void EditorWindow::tech_editor_paint()
   text_clear();
   text_append_label(0x7e);
   crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_prereq1_suffix_str));
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = tech_editor_combo_x_table_block.tech_editor_prereq2_ctrl_x + client_x + 0x32;
   label_y = ((tech_editor_combo_x_table_block.tech_editor_prereq2_ctrl_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x7e);
   crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_prereq2_suffix_str));
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = tech_editor_combo_x_table_block.tech_editor_epoch_ctrl_x + client_x + 0x32;
   label_y = ((tech_editor_combo_x_table_block.tech_editor_epoch_ctrl_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1eb);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = tech_editor_combo_x_table_block.tech_editor_category_ctrl_x + client_x + 0x32;
   label_y = ((client_y + tech_editor_combo_x_table_block.tech_editor_category_ctrl_y_i32) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1ec);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = tech_editor_edit_x_table_block.tech_editor_edit_x_table[0] + client_x + 0x18;
   label_y = ((tech_editor_edit_x_table_block.tech_editor_edit_y_table[0] + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1ed);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = tech_editor_edit_x_table_block.tech_editor_modifier_edit_x + client_x + 0x18;
   label_y = ((tech_editor_edit_x_table_block.tech_editor_modifier_edit_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1ee);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = client_x + (int)wnd_width_u / 2;
   label_y = (client_y - font_height_uptr) + 0xe6;
   text_clear();
   text_append_label(0x1ea);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   wnd_blit_surface();
   return;
 }
@@ -1782,7 +1782,7 @@ void __cdecl science_advisor_draw(void)
   cur_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
-  text_set_surface((iptr)&advisor_state.window);
+  text_set_surface(&advisor_state.window);
   text_set_font((iptr)&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
@@ -1841,12 +1841,12 @@ void __cdecl science_advisor_draw(void)
     value -= 10;
     bar_height = 0xe;
     max_value = civ_research_cost(civ);
-    sprite_draw_spaced_row((iptr)&advisor_state.window,(iptr)&tax_rate_icon_sprites_block.science_icon_sprite,advisor_state.client_rect + 5,draw_y,
+    sprite_draw_spaced_row(&advisor_state.window,(iptr)&tax_rate_icon_sprites_block.science_icon_sprite,advisor_state.client_rect + 5,draw_y,
                        (int)civs[civ].research_progress,max_value,bar_height,value,bar_flag);
     box_bottom = cur_y + 0x20;
     cur_y = box_bottom;
     rect_set((RECT *)frame_rect2,advisor_state.client_rect + 2,box_top,advisor_state.client_right - 2,box_bottom);
-    gfx_draw_rect_frame((iptr)&advisor_state.window,(RECT *)frame_rect2,0x29);
+    gfx_draw_rect_frame(&advisor_state.window,(RECT *)frame_rect2,0x29);
     cur_y += 6;
   }
   research_cost = civ_research_cost(civ);
@@ -1907,7 +1907,7 @@ void __cdecl science_advisor_draw(void)
       ((Sprite *)
                  (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                  (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw(
-                 (iptr)sprite_rect,(iptr)&advisor_state.window,item_x,draw_y);
+                 (RECT *)sprite_rect,&advisor_state.window,item_x,draw_y);
       text_x2 = item_x + 0x26;
       text_set_colors((-(uint)((char)game.first_discoverer[advance] == civ) & 0xffffffcb) +
                          0x5e,0x12,1,1);
@@ -2082,7 +2082,7 @@ static int civ_score_draw_citizens(iptr civ,int left_x,int text_y3)
         }
         citizen_count++;
         ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + sprite_index * 0x3c))->draw(
-                   (iptr)citizen_rect,(iptr)&advisor_state.window,draw_x,draw_y);
+                   (RECT *)citizen_rect,&advisor_state.window,draw_x,draw_y);
         row_wrapped = 0;
         draw_x += icon_width;
         column++;
@@ -2132,7 +2132,7 @@ static int civ_score_draw_wonders(iptr civ,int left_x,int text_y3)
     if ((((-1 < game.wonder_city[wonder]) && (game.wonder_city[wonder] < game.num_cities))
         && (cities[game.wonder_city[wonder]].id != 0)) &&
        (city = (iptr)game.wonder_city[wonder], cities[city].owner == civ)) {
-      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c))->draw((iptr)wonder_rect,(iptr)&advisor_state.window,
+      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c))->draw((RECT *)wonder_rect,&advisor_state.window,
                  draw_x,draw_y);
       text_x2 = draw_x + 0x26;
       text_set_colors(0x5e,0x12,0xffffffff,0xffffffff);
@@ -2336,7 +2336,7 @@ void __cdecl civ_score_window_draw(void)
   header_y = advisor_state.client_y + 2;
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
-  text_set_surface((iptr)&advisor_state.window);
+  text_set_surface(&advisor_state.window);
   text_set_font((iptr)&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
@@ -2549,7 +2549,7 @@ void __cdecl civ_rating_window_draw(void)
   }
   civ_rating_title_font_block.civ_rating_title_index = title_index;
   casualty_window_block.civ_rating_percent = rating_percent;
-  text_set_surface((iptr)&advisor_state.window);
+  text_set_surface(&advisor_state.window);
   text_set_font((iptr)&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
@@ -5689,7 +5689,7 @@ research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int 
   ((Sprite *)
              (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
              (char)advances[advance].category * 0xf0 + (char)advances[advance].epoch * 0x3c))->draw(
-             (iptr)draw_ctx,surface,draw_x,draw_y);
+             (RECT *)draw_ctx,(DibSurface *)surface,draw_x,draw_y);
   return 0;
 }
 
@@ -5716,7 +5716,7 @@ research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x
   y_offset = (sprite_height2 - height) / 2;
   draw_y -= y_offset;
   gfx_set_zoom_scale(zoom2);
-  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((iptr)draw_ctx,surface,draw_x,
+  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)draw_ctx,(DibSurface *)surface,draw_x,
              draw_y);
   gfx_reset_zoom_scale();
   return 0;
@@ -5739,7 +5739,7 @@ research_option_draw_improvement(i32 dialog,iptr surface,int improvement,byte fl
   }
   y_offset = (0x14 - height) / 2;
   draw_y = y - y_offset;
-  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((iptr)draw_ctx,surface,draw_x,
+  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)draw_ctx,(DibSurface *)surface,draw_x,
              draw_y);
   return 0;
 }
@@ -7851,8 +7851,8 @@ void EditorWindow::cosmic_editor_draw_bg()
 
 {
   this->FrameWindow::draw_caption();
-  gfx_fill_rect((iptr)this,(RECT *)&client_rect,0x1a);
-  text_set_surface((iptr)this);
+  gfx_fill_rect(this,(RECT *)&client_rect,0x1a);
+  text_set_surface(this);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   wnd_blit_surface();

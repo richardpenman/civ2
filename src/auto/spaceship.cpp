@@ -348,7 +348,7 @@ void SpaceshipWindow::run_modal()
                  *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_ys) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
                  *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_widths) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
                  *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_part_sprite_heights) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10));
-      launch_sprite.draw((iptr)clip_rect,(iptr)&control_list,
+      launch_sprite.draw((RECT *)clip_rect,(DibSurface *)&control_list,
                  *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_xs) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
                  *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_ys) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10));
     }
@@ -467,7 +467,7 @@ void SpaceshipWindow::present()
         draw_close_btn(1,0);
         draw_launch_btn(0,1);
         SetRect(&screen_rect2,0,0,0x280,0x1e0);
-        gfx_dissolve_blit((iptr)&control_list,&screen_rect2,5,1);
+        gfx_dissolve_blit((DibSurface *)&control_list,&screen_rect2,5,1);
         draw_close_btn(1,1);
         value = game_timer_create((TimerFn)spaceship_wnd_type_tick,10,0xffffffff);
         anim_timer = value;
@@ -791,7 +791,7 @@ void SpaceshipWindow::init_starfield()
   ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(medium_font),
              (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
   ((DibSurface *)&control_list)->wnd_blit_surface_rect((iptr)(status_line_rect));
-  ((Sprite *)ship_image_sprite)->draw((iptr)clip_rect,(iptr)&control_list,0xaf,99);
+  ((Sprite *)ship_image_sprite)->draw((RECT *)clip_rect,(DibSurface *)&control_list,0xaf,99);
   if (launch_state == 3) {
     type_y = 0x8c;
   }
@@ -906,15 +906,15 @@ void SpaceshipWindow::draw_close_btn(int enabled,int raised)
     SetRect(&btn_rect,0x22f,0x1a1,0x272,0x1c5);
   }
   if (raised == 0) {
-    ((Sprite *)close_btn_disabled_sprite)->draw((iptr)disabled_clip,(iptr)&control_list,
+    ((Sprite *)close_btn_disabled_sprite)->draw((RECT *)disabled_clip,(DibSurface *)&control_list,
                btn_rect.left,btn_rect.top);
   }
   else if (enabled == 0) {
-    ((Sprite *)close_btn_pressed_sprite)->draw((iptr)pressed_clip,(iptr)&control_list,
+    ((Sprite *)close_btn_pressed_sprite)->draw((RECT *)pressed_clip,(DibSurface *)&control_list,
                btn_rect.left,btn_rect.top);
   }
   else {
-    ((Sprite *)close_btn_normal_sprite)->draw((iptr)normal_clip,(iptr)&control_list,
+    ((Sprite *)close_btn_normal_sprite)->draw((RECT *)normal_clip,(DibSurface *)&control_list,
                btn_rect.left,btn_rect.top);
   }
   ((DibSurface *)&control_list)->wnd_blit_surface_rect((iptr)&btn_rect);
@@ -935,15 +935,15 @@ void SpaceshipWindow::draw_launch_btn(int enabled,int raised)
      (launch_state != 2)) {
     SetRect(&btn_rect,0x22f,0x1a1,0x272,0x1c5);
     if (raised == 0) {
-      ((Sprite *)launch_btn_disabled_sprite)->draw((iptr)disabled_clip,(iptr)&control_list,
+      ((Sprite *)launch_btn_disabled_sprite)->draw((RECT *)disabled_clip,(DibSurface *)&control_list,
                  btn_rect.left,btn_rect.top);
     }
     else if (enabled == 0) {
-      ((Sprite *)launch_btn_pressed_sprite)->draw((iptr)pressed_clip,(iptr)&control_list,
+      ((Sprite *)launch_btn_pressed_sprite)->draw((RECT *)pressed_clip,(DibSurface *)&control_list,
                  btn_rect.left,btn_rect.top);
     }
     else {
-      ((Sprite *)launch_btn_normal_sprite)->draw((iptr)normal_clip,(iptr)&control_list,
+      ((Sprite *)launch_btn_normal_sprite)->draw((RECT *)normal_clip,(DibSurface *)&control_list,
                  btn_rect.left,btn_rect.top);
     }
     ((DibSurface *)&control_list)->wnd_blit_surface_rect((iptr)&btn_rect);

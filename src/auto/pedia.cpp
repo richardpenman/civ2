@@ -23,7 +23,7 @@ void PediaWindow::draw_category_body(i32 category,i32 flags)
   title_height = ((GameFont *)((i8 *)&font_size24_bold))->font_cached_height();
   body_height = line_height * 9 + title_height + panel_layout.margin_y * 0xd;
   SetRect(&body_rect,xLeft,yTop,col_width + xLeft,body_height + yTop);
-  gfx_set_draw_target((iptr)&pedia_wnd.window);
+  gfx_set_draw_target(&pedia_wnd.window);
   dispatch_category_draw(body_rect.left,body_rect.top,body_rect.right,body_rect.bottom,category);
   wnd_blit_surface_rect((iptr)pedia_body_blit_rect);
   return;
@@ -839,13 +839,13 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,iptr terrain2,int y2
         if (improve_kind == 0) {
           icon_center_y = y2 + row_height / 2;
           measured = ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->get_height();
-          ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->draw((iptr)food_sprite_ctx2,(iptr)&pedia_wnd.window,x2,
+          ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->draw((RECT *)food_sprite_ctx2,&pedia_wnd.window,x2,
                      (icon_center_y - 2) - measured / 2);
         }
         else {
           icon_center_y = y2 + row_height / 2;
           measured = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-          ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((iptr)shield_sprite_ctx2,(iptr)&pedia_wnd.window,x2,
+          ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_sprite_ctx2,&pedia_wnd.window,x2,
                      (icon_center_y - 2) - measured / 2);
         }
       }
@@ -949,7 +949,7 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,iptr terrain2,in
       x2 = x2 + measured + 3;
       icon_center_y = y2 + row_height / 2;
       measured = ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->get_height();
-      ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->draw((iptr)trade_sprite_ctx2,(iptr)&pedia_wnd.window,x2,
+      ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->draw((RECT *)trade_sprite_ctx2,&pedia_wnd.window,x2,
                  (icon_center_y - 2) - measured / 2);
     }
   }
@@ -1051,33 +1051,33 @@ void PediaWindow::draw_terrain_page()
   y2 += (row_height / 2 - sprite_height2 / 2);
   terrain3 = terrain2 % 0xb;
   sprite_area_width = sprite_width2 * 2 + panel_layout.margin_x * 2;
-  ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain3 * 0x3c))->draw((iptr)base_sprite_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain3 * 0x3c))->draw((RECT *)base_sprite_ctx,&pedia_wnd.window,x2,
              y2);
   if (terrain2 < 0xb) {
     if (terrain2 == TERRAIN_FOREST) {
-      ((Sprite *)((i8 *)&forest_sprites))->draw((iptr)forest_sprite_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      ((Sprite *)((i8 *)&forest_sprites))->draw((RECT *)forest_sprite_ctx,&pedia_wnd.window,x2,y2);
     }
     else if (terrain2 == TERRAIN_HILLS) {
-      ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((iptr)hill_sprite_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((RECT *)hill_sprite_ctx,&pedia_wnd.window,x2,y2);
     }
     else if (terrain2 == TERRAIN_MOUNTAINS) {
-      ((Sprite *)((i8 *)&mountain_sprites))->draw((iptr)mountain_sprite_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      ((Sprite *)((i8 *)&mountain_sprites))->draw((RECT *)mountain_sprite_ctx,&pedia_wnd.window,x2,y2);
     }
   }
   else {
     resource_variant = (uint)(0x15 < terrain2);
     if ((terrain2 == 0xd) || (terrain2 == 0x18)) {
-      ((Sprite *)((i8 *)&grassland_shield_sprite))->draw((iptr)grass_shield_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      ((Sprite *)((i8 *)&grassland_shield_sprite))->draw((RECT *)grass_shield_ctx,&pedia_wnd.window,x2,y2);
     }
     else {
       switch(terrain2) {
       case 0xe:
       case 0x19:
-        ((Sprite *)((i8 *)&forest_sprites))->draw((iptr)forest_sprite_ctx2,(iptr)&pedia_wnd.window,x2,y2);
+        ((Sprite *)((i8 *)&forest_sprites))->draw((RECT *)forest_sprite_ctx2,&pedia_wnd.window,x2,y2);
         break;
       case 0xf:
       case 0x1a:
-        ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((iptr)hill_sprite_ctx2,(iptr)&pedia_wnd.window,x2,y2);
+        ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((RECT *)hill_sprite_ctx2,&pedia_wnd.window,x2,y2);
         break;
       case 0x10:
       case 0x11:
@@ -1088,8 +1088,8 @@ void PediaWindow::draw_terrain_page()
       case 0x16:
       case 0x17: ;
       }
-      ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain3 * 0x78 + resource_variant * 0x3c))->draw((iptr)resource_sprite_ctx,
-                 (iptr)&pedia_wnd.window,x2,y2);
+      ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain3 * 0x78 + resource_variant * 0x3c))->draw((RECT *)resource_sprite_ctx,
+                 &pedia_wnd.window,x2,y2);
     }
   }
   gfx_set_scale_ratio(scale_num2,scale_den2);
@@ -1167,7 +1167,7 @@ void PediaWindow::draw_terrain_page()
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
   measured = ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->get_height();
-  ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->draw((iptr)food_sprite_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->draw((RECT *)food_sprite_ctx,&pedia_wnd.window,x2,
              (icon_center_y - 2) - measured / 2);
   x2 = content_left + margin;
   y2 += line_height;
@@ -1188,7 +1188,7 @@ void PediaWindow::draw_terrain_page()
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
   measured = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((iptr)shield_sprite_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_sprite_ctx,&pedia_wnd.window,x2,
              (icon_center_y - 2) - measured / 2);
   x2 = content_left + margin;
   y2 += line_height;
@@ -1203,7 +1203,7 @@ void PediaWindow::draw_terrain_page()
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
   measured = ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->get_height();
-  ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->draw((iptr)trade_sprite_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->draw((RECT *)trade_sprite_ctx,&pedia_wnd.window,x2,
              (icon_center_y - 2) - measured / 2);
   if ((terrain2 < 0) || (10 < terrain2)) {
     draw_terrain_special_bonus(font2,terrain2,terrain3,y2,line_height,margin);
@@ -2008,7 +2008,7 @@ void __cdecl pedia_redraw_page(void)
       ((PediaWindow *)((i8 *)&pedia_wnd.window))->set_category_title(pedia_wnd.category);
     }
     ((PediaWindow *)((i8 *)&pedia_wnd.window))->clear_links();
-    gfx_set_draw_target((iptr)&pedia_wnd.window);
+    gfx_set_draw_target(&pedia_wnd.window);
     ((PediaWindow *)((i8 *)&pedia_wnd.window))->draw_frame();
     ((PediaWindow *)((i8 *)&pedia_wnd.window))->draw_category_body(pedia_wnd.category,pedia_wnd.page_mode);
     ((DibSurface *)((i8 *)&pedia_wnd.window))->wnd_blit_surface();
@@ -2124,7 +2124,7 @@ void PediaWindow::draw_frame()
   reset_clip();
   crt_memcpy(&rect,pedia_frame_rect,0x10);
   for (i = 0; i < panel_layout.bevel_width; i++) {
-    gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_light_color,(uint)dlg_style.bevel_dark_color);
+    gfx_draw_bevel_rect(this,&rect,(uint)dlg_style.bevel_light_color,(uint)dlg_style.bevel_dark_color);
     rect_deflate(&rect,1,1);
   }
   fill_background(&rect,1);
@@ -2134,7 +2134,7 @@ void PediaWindow::draw_frame()
   tmp_b = ((GameFont *)((i8 *)&font_size24))->line_spacing();
   rect.bottom = tmp_a + ((panel_layout.margin_y * -3 + panel_layout.padding_y * -2) - tmp_b);
   for (i = 0; i < panel_layout.bevel_width; i++) {
-    gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_dark_color,(uint)dlg_style.bevel_light_color);
+    gfx_draw_bevel_rect(this,&rect,(uint)dlg_style.bevel_dark_color,(uint)dlg_style.bevel_light_color);
     rect_deflate(&rect,1,1);
   }
   fill_background(&rect,2);
@@ -2145,7 +2145,7 @@ void PediaWindow::draw_frame()
   y2 = ((int)header_height >> 1) - ((int)panel_height >> 1);
   SetRect(&rect,tmp_a,y2,panel_width + tmp_a,panel_height + y2);
   gfx_set_scale_ratio(header_height,0x18);
-  ((Sprite *)close_box_sprite)->draw((iptr)sprite_ctx,(iptr)this,x2,y2
+  ((Sprite *)close_box_sprite)->draw((RECT *)sprite_ctx,this,x2,y2
             );
   gfx_reset_zoom_scale();
   x2 += panel_width;
@@ -2176,14 +2176,14 @@ void PediaWindow::fill_background(RECT *rect,int style)
   
   if ((dlg_style.frame_tile_surface == 0) || (style != 1)) {
     if ((dlg_style.client_tile_surface == 0) || (style != 2)) {
-      gfx_fill_rect((iptr)this,rect,(uint)dlg_style.bg_color);
+      gfx_fill_rect(this,rect,(uint)dlg_style.bg_color);
     }
     else {
       offset_y = 0;
       offset_x = 0;
       height = rect_height(rect);
       width = rect_width(rect);
-      gfx_tile_fill((iptr)this,dlg_style.client_tile_surface,rect->left,rect->top
+      gfx_tile_fill(this,(DibSurface *)dlg_style.client_tile_surface,rect->left,rect->top
                          ,width,height,offset_x,offset_y);
     }
   }
@@ -2192,7 +2192,7 @@ void PediaWindow::fill_background(RECT *rect,int style)
     offset_x = 0;
     height = rect_height(rect);
     width = rect_width(rect);
-    gfx_tile_fill((iptr)this,dlg_style.frame_tile_surface,rect->left,rect->top,
+    gfx_tile_fill(this,(DibSurface *)dlg_style.frame_tile_surface,rect->left,rect->top,
                        width,height,offset_x,offset_y);
   }
   return;
@@ -2254,38 +2254,38 @@ void PediaWindow::draw_list_terrain_icon(iptr advance,uint is_selected,int col_b
     terrain_fill_color = dlg_style.list_sel_bg;
   }
   fill_rect((iptr)&row_rect,terrain_fill_color);
-  ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + base_terrain * 0x3c))->draw((iptr)base_ctx,(iptr)&pedia_wnd.window,
+  ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + base_terrain * 0x3c))->draw((RECT *)base_ctx,&pedia_wnd.window,
              icon_x + col_x,row_y);
   if (advance < 0xb) {
     if (advance == TERRAIN_FOREST) {
-      ((Sprite *)((i8 *)&forest_sprites))->draw((iptr)forest_ctx,(iptr)&pedia_wnd.window,icon_x + col_x,
+      ((Sprite *)((i8 *)&forest_sprites))->draw((RECT *)forest_ctx,&pedia_wnd.window,icon_x + col_x,
                  row_y);
     }
     else if (advance == TERRAIN_HILLS) {
-      ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((iptr)hill_ctx,(iptr)&pedia_wnd.window,icon_x + col_x,
+      ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((RECT *)hill_ctx,&pedia_wnd.window,icon_x + col_x,
                  row_y);
     }
     else if (advance == TERRAIN_MOUNTAINS) {
-      ((Sprite *)((i8 *)&mountain_sprites))->draw((iptr)mountain_ctx,(iptr)&pedia_wnd.window,icon_x + col_x,
+      ((Sprite *)((i8 *)&mountain_sprites))->draw((RECT *)mountain_ctx,&pedia_wnd.window,icon_x + col_x,
                  row_y);
     }
   }
   else {
     resource_variant = (uint)(0x15 < advance);
     if ((advance == 0xd) || (advance == 0x18)) {
-      ((Sprite *)((i8 *)&grassland_shield_sprite))->draw((iptr)grass_ctx,(iptr)&pedia_wnd.window,icon_x + col_x,
+      ((Sprite *)((i8 *)&grassland_shield_sprite))->draw((RECT *)grass_ctx,&pedia_wnd.window,icon_x + col_x,
                  row_y);
     }
     else {
       switch(advance) {
       case 0xe:
       case 0x19:
-        ((Sprite *)((i8 *)&forest_sprites))->draw((iptr)forest_ctx2,(iptr)&pedia_wnd.window,icon_x + col_x,
+        ((Sprite *)((i8 *)&forest_sprites))->draw((RECT *)forest_ctx2,&pedia_wnd.window,icon_x + col_x,
                    row_y);
         break;
       case 0xf:
       case 0x1a:
-        ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((iptr)hill_ctx2,(iptr)&pedia_wnd.window,icon_x + col_x,
+        ((Sprite *)((i8 *)&hill_sprites_block.hill_sprites))->draw((RECT *)hill_ctx2,&pedia_wnd.window,icon_x + col_x,
                    row_y);
         break;
       case 0x10:
@@ -2298,7 +2298,7 @@ void PediaWindow::draw_list_terrain_icon(iptr advance,uint is_selected,int col_b
       case 0x17: ;
       }
       ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + base_terrain * 0x78 + resource_variant * 0x3c))->draw(
-                 (iptr)resource_ctx,(iptr)&pedia_wnd.window,icon_x + col_x,row_y);
+                 (RECT *)resource_ctx,&pedia_wnd.window,icon_x + col_x,row_y);
     }
   }
 }
@@ -2335,7 +2335,7 @@ void PediaWindow::draw_list_icon(int icon_mode,uint is_selected,int col_base,int
       fill_color_a = dlg_style.list_sel_bg;
     }
     fill_rect((iptr)&row_rect,fill_color_a);
-    icon_sprite->draw((iptr)icon_ctx,(iptr)&pedia_wnd.window,panel_layout.margin_x + col_x,row_rect.top + 1);
+    icon_sprite->draw((RECT *)icon_ctx,&pedia_wnd.window,panel_layout.margin_x + col_x,row_rect.top + 1);
   }
   else if (icon_mode == 0) {
     dim_a = icon_sprite->width();
@@ -2356,7 +2356,7 @@ void PediaWindow::draw_list_icon(int icon_mode,uint is_selected,int col_base,int
     }
     dim_b = row_y + row_height / 2;
     dim_a = icon_sprite->get_height();
-    icon_sprite->draw((iptr)icon_ctx2,(iptr)&pedia_wnd.window,col_x + icon_x2,dim_b - dim_a / 2);
+    icon_sprite->draw((RECT *)icon_ctx2,&pedia_wnd.window,col_x + icon_x2,dim_b - dim_a / 2);
   }
   else if (icon_mode == 2) {
     dim_a = icon_sprite->width();
@@ -2381,7 +2381,7 @@ void PediaWindow::draw_list_icon(int icon_mode,uint is_selected,int col_base,int
     }
     dim_b = row_y + row_height / 2;
     dim_a = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-    icon_sprite->draw((iptr)shield_ctx,(iptr)&pedia_wnd.window,col_x + shield_x,dim_b - dim_a / 2);
+    icon_sprite->draw((RECT *)shield_ctx,&pedia_wnd.window,col_x + shield_x,dim_b - dim_a / 2);
   }
   else if (icon_mode == -1) {
     dim_a = icon_sprite->width();
@@ -3642,7 +3642,7 @@ void PediaWindow::draw_improvement()
   gfx_set_scale_ratio(2,1);
   icon_width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->get_width();
   icon_width += panel_layout.margin_x * 2;
-  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((iptr)icon_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)icon_ctx,&pedia_wnd.window,x2,
              y2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
   gfx_set_text_color_index(dlg_style.list_text);
@@ -3682,7 +3682,7 @@ void PediaWindow::draw_improvement()
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
   measure = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((iptr)shield_ctx,(iptr)&pedia_wnd.window,x2,center_y - measure / 2);
+  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_ctx,&pedia_wnd.window,x2,center_y - measure / 2);
   x2 = content_left + 10;
   y2 += row_height;
   text_clear();
@@ -3921,7 +3921,7 @@ void PediaWindow::draw_advance_improvements(GameFont *font2,iptr advance,int lis
   x2 = list_x2;
   for (improvement = 1; improvement < 0x43; improvement++) {
     if (improvements[improvement].preq == advance) {
-      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((iptr)impr_ctx,(iptr)&pedia_wnd.window,
+      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)impr_ctx,&pedia_wnd.window,
                  x2,y2);
       measure = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->get_width()
       ;
@@ -3988,7 +3988,7 @@ void PediaWindow::draw_advance_units(GameFont *font2,iptr advance,int related_co
         measure = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->height();
         center_y = y2 + measure / 2;
         measure = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->get_height();
-        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((iptr)unit_ctx,(iptr)&pedia_wnd.window,
+        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)unit_ctx,&pedia_wnd.window,
                    x2,center_y - measure / 2);
         measure = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->width();
         x2 = x2 + measure + 5;
@@ -4202,7 +4202,7 @@ void PediaWindow::draw_advance_page()
   ((Sprite *)
              (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
              (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw(
-             (iptr)icon_ctx,(iptr)&pedia_wnd.window,panel_layout.margin_x + x2,y2);
+             (RECT *)icon_ctx,&pedia_wnd.window,panel_layout.margin_x + x2,y2);
   gfx_set_text_color_index(dlg_style.list_text);
   related_count = 0;
   for (advance2 = 0; advance2 < 100; advance2++) {
@@ -4361,7 +4361,7 @@ void PediaWindow::draw_advance_tree()
   x2 = (content_right - 3) - (icon_width + root_anchor_x[2]);
   measure = rect_height((RECT *)&content_left);
   y2 = (content_top + measure / 2) - line_height / 2;
-  icon_rect = (int *)icon->draw((iptr)root_ctx,(iptr)&pedia_wnd.window,x2,y2);
+  icon_rect = (int *)icon->draw((RECT *)root_ctx,&pedia_wnd.window,x2,y2);
   icon_box.left = *icon_rect;
   icon_box.top = icon_rect[1];
   icon_box.right = icon_rect[2];
@@ -4397,7 +4397,7 @@ void PediaWindow::draw_advance_tree()
       measure2 = rect_width((RECT *)&content_left);
       x2 = ((int)(measure * 2 + (measure * 2 >> 0x1f & 3U)) >> 2) +
                  ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
-      icon_rect = (int *)icon->draw((iptr)parent_ctx,(iptr)&pedia_wnd.window,x2,y2);
+      icon_rect = (int *)icon->draw((RECT *)parent_ctx,&pedia_wnd.window,x2,y2);
       icon_box.left = *icon_rect;
       icon_box.top = icon_rect[1];
       icon_box.right = icon_rect[2];
@@ -4447,7 +4447,7 @@ void PediaWindow::draw_advance_tree()
         measure2 = rect_width((RECT *)&content_left);
         x2 = ((int)(measure + (measure >> 0x1f & 3U)) >> 2) +
                    ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
-        icon_rect = (int *)icon->draw((iptr)grand_ctx,(iptr)&pedia_wnd.window,x2,y2);
+        icon_rect = (int *)icon->draw((RECT *)grand_ctx,&pedia_wnd.window,x2,y2);
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];
@@ -4497,7 +4497,7 @@ void PediaWindow::draw_advance_tree()
                    (char)advances[tier3_ids[i * 2 + j]].epoch * 0x3c);
         icon_width = icon->get_width();
         icon_width += 3;
-        icon_rect = (int *)icon->draw((iptr)gp_ctx,(iptr)&pedia_wnd.window,x2,y2);
+        icon_rect = (int *)icon->draw((RECT *)gp_ctx,&pedia_wnd.window,x2,y2);
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];
@@ -4686,7 +4686,7 @@ void PediaWindow::draw_improvement_page()
   gfx_set_scale_ratio(2,1);
   icon_width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->get_width();
   icon_width += panel_layout.margin_x * 2;
-  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((iptr)icon_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)icon_ctx,&pedia_wnd.window,x2,
              y2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
   gfx_set_text_color_index(dlg_style.list_text);
@@ -4726,7 +4726,7 @@ void PediaWindow::draw_improvement_page()
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
   measure = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((iptr)shield_ctx,(iptr)&pedia_wnd.window,x2,center_y - measure / 2);
+  ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_ctx,&pedia_wnd.window,x2,center_y - measure / 2);
   x2 = content_left + 10;
   y2 += row_height;
   text_clear();
@@ -4740,7 +4740,7 @@ void PediaWindow::draw_improvement_page()
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
   measure = ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->get_height();
-  ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((iptr)coin_ctx,(iptr)&pedia_wnd.window,x2,center_y - measure / 2);
+  ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)coin_ctx,&pedia_wnd.window,x2,center_y - measure / 2);
   x2 = content_left + 10;
   y2 += row_height * 2;
   load_improvement_text(improvement);
@@ -4957,7 +4957,7 @@ void PediaWindow::draw_unit_page()
   icon_width += panel_layout.margin_x * 2;
   center_y = y2 + slot_height / 2;
   measure = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->get_height();
-  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((iptr)unit_ctx,(iptr)&pedia_wnd.window,x2,
+  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)unit_ctx,&pedia_wnd.window,x2,
              center_y - measure / 2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
   text_color2 = dlg_style.list_text;
@@ -5005,7 +5005,7 @@ void PediaWindow::draw_unit_page()
     x2 = value_x + measure + 5;
     center_y = y2 + slot_height / 2;
     measure = ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->get_height();
-    ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((iptr)shield_ctx,(iptr)&pedia_wnd.window,x2,
+    ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_ctx,&pedia_wnd.window,x2,
                (center_y - 2) - measure / 2);
   }
   x2 = content_left + margin;

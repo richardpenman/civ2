@@ -93,11 +93,11 @@ static void bmp(const std::vector<unsigned char> &rle, int info_size = 40) {
 int main() {
     DibSurface surface{};
     bmp({0, 2, 1, 3, 2, 7, 0, 1}); // original decoder's vertical-first delta: (3,478)
-    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 1);
+    assert(gfx_load_bmp_640x480(&surface, "input", 0, 256, 0) == 1);
     assert(!last_error && surface.pixels[478][3] == 7 && surface.pixels[478][4] == 7);
     fclose(input);
     bmp({2, 9, 0, 1});
-    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 1);
+    assert(gfx_load_bmp_640x480(&surface, "input", 0, 256, 0) == 1);
     assert(surface.pixels[479][0] == 9 && surface.pixels[479][1] == 9);
     fclose(input);
     GamePalette palette;
@@ -105,7 +105,7 @@ int main() {
         input = tmpfile();
         assert(input);
         output.clear();
-        assert(gfx_save_bmp_640x480((iptr)&surface, "output", 0, 256,
+        assert(gfx_save_bmp_640x480(&surface, "output", 0, 256,
                                     custom ? (iptr)&palette : 0) == 1);
         assert(output.size() == 308278);
         for (int c = 0; c < 256; c++) {
@@ -120,7 +120,7 @@ int main() {
     }
     // BF-097: an info header too short for the compression read below.
     bmp({2, 9, 0, 1}, 16);
-    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 0);
+    assert(gfx_load_bmp_640x480(&surface, "input", 0, 256, 0) == 0);
     assert(last_error && strcmp(last_error, "str_error_reading_info_header") == 0);
     fclose(input);
     // BF-098: writes outside the image refused; an end of line past the last
@@ -130,7 +130,7 @@ int main() {
         lines.insert(lines.end(), {1, 4, 0, 0});
     lines.insert(lines.end(), {0, 1});
     bmp(lines);
-    assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 1 && !last_error);
+    assert(gfx_load_bmp_640x480(&surface, "input", 0, 256, 0) == 1 && !last_error);
     assert(surface.pixels[0][0] == 4 && surface.pixels[479][0] == 4);
     fclose(input);
     std::vector<std::vector<unsigned char>> bad = {
@@ -145,7 +145,7 @@ int main() {
     bad.push_back(past);
     for (auto &rle : bad) {
         bmp(rle);
-        assert(gfx_load_bmp_640x480((iptr)&surface, "input", 0, 256, 0) == 0);
+        assert(gfx_load_bmp_640x480(&surface, "input", 0, 256, 0) == 0);
         assert(last_error && strcmp(last_error, "str_error_reading_bitmap_image") == 0);
         fclose(input);
     }

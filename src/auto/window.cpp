@@ -832,7 +832,7 @@ void PictureWindow::open(uint resource_id,u32 report,u32 style,u32 img_width,u32
 void PictureWindow::blit_at(int x,int y,i32 width,i32 height)
 
 {
-  gfx_copy_rect_xywh((iptr)&surface_head,(iptr)this,x,y,client_x + x,
+  gfx_copy_rect_xywh((DibSurface *)&surface_head,this,x,y,client_x + x,
                      client_y + y,width,height);
   return;
 }
@@ -1882,7 +1882,7 @@ popup_city_sprite_draw_cb(i32 dlg,iptr sprite,int city,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_city(sprite,city,0,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8);
+  gfx_draw_city((DibSurface *)sprite,city,0,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8);
   return;
 }
 
@@ -1916,7 +1916,7 @@ popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,int unit,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_unit(sprite,unit,4,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8,0);
+  gfx_draw_unit((DibSurface *)sprite,unit,4,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8,0);
   return;
 }
 
@@ -4283,23 +4283,23 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
   }
   height2 = caption_h + ui_metrics.bevel_width * -2;
   width2 = rect_width((RECT *)&frame_rect);
-  gfx_tile_fill((iptr)this,ui_metrics.border_tile,0,bevel,width2,height2,0,bevel);
+  gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,0,bevel,width2,height2,0,bevel);
   height2 = border_width + bevel * -2;
   offset = rect_height((RECT *)&frame_rect);
   offset -= (bevel + height2);
-  gfx_tile_fill((iptr)this,ui_metrics.border_tile,0,offset,width2,height2,0,offset);
+  gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,0,offset,width2,height2,0,offset);
   width2 = border_width + bevel * -2;
   height2 = rect_height((RECT *)&frame_rect);
-  gfx_tile_fill((iptr)this,ui_metrics.border_tile,bevel,0,width2,height2,bevel,0);
+  gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,bevel,0,width2,height2,bevel,0);
   offset = rect_width((RECT *)&frame_rect);
   offset -= (bevel + width2);
-  gfx_tile_fill((iptr)this,ui_metrics.border_tile,offset,0,width2,height2,offset,0);
+  gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,offset,0,width2,height2,offset,0);
   rect2.left = frame_rect;
   rect2.top = frame_top_u;
   rect2.right = frame_right_u;
   rect2.bottom = frame_bottom;
   for (i = 0; i < bevel; i++) {
-    gfx_draw_bevel_rect((iptr)this,(RECT *)&rect2,highlight_color2,shadow_color2);
+    gfx_draw_bevel_rect(this,(RECT *)&rect2,highlight_color2,shadow_color2);
     rect_deflate((RECT *)&rect2,1,1);
   }
   rect_deflate((RECT *)&rect2,border_width + bevel * -2,0);
@@ -4312,7 +4312,7 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
   rect2.top = rect2.top + caption_h2 + bevel * -2;
   rect2.bottom -= (border_width + bevel * -2);
   for (i = 0; i < bevel; i++) {
-    gfx_draw_bevel_rect((iptr)this,(RECT *)&rect2,shadow_color2,highlight_color2);
+    gfx_draw_bevel_rect(this,(RECT *)&rect2,shadow_color2,highlight_color2);
     rect_deflate((RECT *)&rect2,1,1);
   }
   button_x = ui_metrics.border_width;
@@ -4322,8 +4322,8 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
     button_y2 = ((int)caption_height >> 1) - (height2 >> 1);
     rect_set_xywh((RECT *)&rect2,button_x,button_y2,width2,height2);
     gfx_set_scale_ratio(caption_height,0x18);
-    (*(Sprite **)(caption_button_area + i * 0x1c + 0x14))->draw((iptr)sprite_rect,
-               (iptr)this,button_x,button_y2);
+    (*(Sprite **)(caption_button_area + i * 0x1c + 0x14))->draw((RECT *)sprite_rect,
+               this,button_x,button_y2);
     gfx_reset_zoom_scale();
     button_x = button_x + width2 + ui_metrics.padding;
   }
@@ -4860,7 +4860,7 @@ void __cdecl frame_texture_load(void)
     else {
       sprite.grab_from_surface((iptr)&surface,2,1,1,0x40,0x20);
       ((DibSurface *)((i8 *)&frame_texture_surface_block.frame_texture_surface))->DibSurface::create(0x40,0x20);
-      sprite.draw((iptr)sprite_rect,(iptr)&frame_texture_surface_block.frame_texture_surface,0,0);
+      sprite.draw((RECT *)sprite_rect,(DibSurface *)&frame_texture_surface_block.frame_texture_surface,0,0);
       sprite.free();
       surface.release();
     }
@@ -5939,10 +5939,10 @@ dialog_set_list_colors(i32 bg_color,i32 text_color,i32 shadow_color,i32 sel_bg_c
 }
 
 /* 0059d59d auto */
-void __cdecl dialog_set_frame_tile_surface(iptr surface)
+void __cdecl dialog_set_frame_tile_surface(DibSurface *surface)
 
 {
-  dlg_style.frame_tile_surface = surface;
+  dlg_style.frame_tile_surface = (int)surface;
   return;
 }
 
@@ -7685,7 +7685,7 @@ void Dialog::draw_option_cell(const char *text,int x,int y,int selected,int disa
         if (icon != 0) {
           i8 icon_rect[16];
           int dy = ((int)list_row_height[cur_pane] - icon->get_height()) / 2;
-          icon->draw((iptr)icon_rect, surf_wnd, x, y + (dy > 0 ? dy : 0));
+          icon->draw((RECT *)icon_rect, (DibSurface *)surf_wnd, x, y + (dy > 0 ? dy : 0));
           x += icon->get_width() + 1;
         }
         text += 2;
@@ -7814,10 +7814,10 @@ uint Dialog::draw_option(DialogOption *option,int blit)
                              ,(i32)list_row_height[option->group]),
          group_index == 0)) {
         if (is_selected != 0) {
-          gfx_draw_bevel_rect(surf_wnd,&inner_rect,bevel_light_color,bevel_dark_color);
+          gfx_draw_bevel_rect((DibSurface *)surf_wnd,&inner_rect,bevel_light_color,bevel_dark_color);
           rect_deflate(&inner_rect,1,1);
         }
-        gfx_fill_rect(surf_wnd,&inner_rect,fill_color);
+        gfx_fill_rect((DibSurface *)surf_wnd,&inner_rect,fill_color);
         draw_option_text(option->text,cell_x + 2,cell_y,is_selected,
                    option->flags & 1);
       }
@@ -7861,10 +7861,10 @@ void Dialog::draw_option_list()
       clip_rect2.right = list_client_rect[pane].right;
       clip_rect2.bottom = list_client_rect[pane].bottom;
       if ((1 < (int)columns) || ((option_count == 0 || (on_draw_option != 0)))) {
-        gfx_fill_rect(surf_wnd,&list_client_rect[cur_pane],
+        gfx_fill_rect((DibSurface *)surf_wnd,&list_client_rect[cur_pane],
                            list_fill_color);
       }
-      gfx_draw_rect_frame(surf_wnd,&pane_rect[cur_pane],
+      gfx_draw_rect_frame((DibSurface *)surf_wnd,&pane_rect[cur_pane],
                          bevel_dark_color);
       ((DibSurface *)surf_wnd)->set_clip(&clip_rect2);
       if (option_count != 0) {
@@ -7889,7 +7889,7 @@ void Dialog::draw_option_list()
         }
         if (((columns == 1) && (on_draw_option == 0)) &&
            (first_index = rect_height(&clip_rect2), 0 < first_index)) {
-          gfx_fill_rect(surf_wnd,&clip_rect2,list_fill_color);
+          gfx_fill_rect((DibSurface *)surf_wnd,&clip_rect2,list_fill_color);
         }
       }
       ((DibSurface *)surf_wnd)->reset_clip();
@@ -9385,14 +9385,14 @@ void Dialog::fill_rect_bg(RECT *rect,int area)
   if (bg_surface == 0) {
     if ((dlg_style.frame_tile_surface == 0) || (area != 1)) {
       if ((dlg_style.client_tile_surface == 0) || (area != 2)) {
-        gfx_fill_rect(surf_wnd,rect,bg_color);
+        gfx_fill_rect((DibSurface *)surf_wnd,rect,bg_color);
       }
       else {
         src_y = 0;
         src_x = 0;
         height = rect_height(rect);
         width = rect_width(rect);
-        gfx_tile_fill(surf_wnd,dlg_style.client_tile_surface,rect->left,
+        gfx_tile_fill((DibSurface *)surf_wnd,(DibSurface *)dlg_style.client_tile_surface,rect->left,
                            rect->top,width,height,src_x,src_y);
       }
     }
@@ -9401,14 +9401,14 @@ void Dialog::fill_rect_bg(RECT *rect,int area)
       src_x = 0;
       height = rect_height(rect);
       width = rect_width(rect);
-      gfx_tile_fill(surf_wnd,dlg_style.frame_tile_surface,rect->left,
+      gfx_tile_fill((DibSurface *)surf_wnd,(DibSurface *)dlg_style.frame_tile_surface,rect->left,
                          rect->top,width,height,src_x,src_y);
     }
   }
   else {
     height = rect_height(rect);
     width = rect_width(rect);
-    gfx_copy_rect_same_pos(bg_surface,surf_wnd,rect->left,
+    gfx_copy_rect_same_pos((DibSurface *)bg_surface,(DibSurface *)surf_wnd,rect->left,
                        rect->top,width,height);
   }
   return;
@@ -9453,7 +9453,7 @@ void Dialog::render()
     rect_set_xywh(&rect,origin_x,origin_y,wnd_width,wnd_height);
     if (border_width != 0) {
       for (i = 0; i < (int)bevel_width; i++) {
-        gfx_draw_bevel_rect(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_light_color,bevel_dark_color);
+        gfx_draw_bevel_rect((DibSurface *)surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_light_color,bevel_dark_color);
         rect_deflate(&rect,1,1);
       }
       fill_rect_bg((RECT *)(iptr)((i8 *)&rect.left),1);
@@ -9461,7 +9461,7 @@ void Dialog::render()
       rect.top = rect.top + title_height + bevel_width * -2;
       rect.bottom -= ((chrome_height - title_height) + bevel_width * -2);
       for (i = 0; i < (int)bevel_width; i++) {
-        gfx_draw_bevel_rect(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_dark_color,bevel_light_color);
+        gfx_draw_bevel_rect((DibSurface *)surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_dark_color,bevel_light_color);
         rect_deflate(&rect,1,1);
       }
     }
@@ -9494,7 +9494,7 @@ void Dialog::render()
       size = sprite->sprite->height();
       sprite_h = gfx_zoom_scale(size,zoom);
       if (on_draw_sprite == 0) {
-        sprite->sprite->draw((iptr)sprite_rect,surf_wnd,sprite_x2,sprite_y2);
+        sprite->sprite->draw((RECT *)sprite_rect,(DibSurface *)surf_wnd,sprite_x2,sprite_y2);
       }
       else {
         on_draw_sprite((i32)sprite->sprite,surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
@@ -9502,7 +9502,7 @@ void Dialog::render()
       if (((style_flags & 0x20000) != 0) && ((i32 *)selected_sprite == ((i32 *)sprite))) {
         rect_set(&rect,sprite_x2 - 1,sprite_y2 - 1,sprite_w + sprite_x2,
                            sprite_h + sprite_y2);
-        gfx_draw_rect_frame(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),frame_color);
+        gfx_draw_rect_frame((DibSurface *)surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),frame_color);
       }
       tmp = sprite_h;
       if (sprite->label != 0) {

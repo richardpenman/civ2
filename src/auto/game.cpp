@@ -15749,8 +15749,8 @@ void EditorWindow::events_editor_draw()
   int x;
   
   this->FrameWindow::draw_caption();
-  gfx_fill_rect((iptr)this,(RECT *)&client_rect,0x1a);
-  text_set_surface((iptr)this);
+  gfx_fill_rect(this,(RECT *)&client_rect,0x1a);
+  text_set_surface(this);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   x = client_x + (int)client_width / 2;
@@ -15759,24 +15759,24 @@ void EditorWindow::events_editor_draw()
   text_clear();
   label = (iptr)label_string(label_table.string_ids[0x235]);
   text_append_str((const char *)label);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,x,(top - line_height) + 0x19,0);
+  text_draw_centered(this,textbuf.buf,x,(top - line_height) + 0x19,0);
   top = client_y;
   line_height = font_height_uptr;
   text_clear();
   label = (iptr)label_string(label_table.string_ids[0x236]);
   text_append_str((const char *)label);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,x,(top - line_height) + 0xc3,0);
+  text_draw_centered(this,textbuf.buf,x,(top - line_height) + 0xc3,0);
   top = client_x;
   x = top + 0x211;
   bar_y = client_y + 0x1a;
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&events_pool_free_fmt),(uint)unit_types_block.events_pool_bytes_free);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,top + 0x216,(bar_y - font_height_uptr) - 2,0);
+  text_draw_centered(this,textbuf.buf,top + 0x216,(bar_y - font_height_uptr) - 2,0);
   bar_height = ((uint)unit_types_block.events_pool_bytes_free * 0x13b) / (uint)unit_types_block.events_pool_size;
-  gfx_fill_rect_xywh((iptr)this,x,bar_y,10,bar_height,0x2a);
-  gfx_fill_rect_xywh((iptr)this,x,bar_height + bar_y,10,0x13b - bar_height,0x6a);
-  gfx_draw_frame_rect((iptr)this,x,bar_y,10,0x13b,10);
-  gfx_draw_frame_rect((iptr)this,x,bar_y,10,bar_height,10);
+  gfx_fill_rect_xywh(this,x,bar_y,10,bar_height,0x2a);
+  gfx_fill_rect_xywh(this,x,bar_height + bar_y,10,0x13b - bar_height,0x6a);
+  gfx_draw_frame_rect(this,x,bar_y,10,0x13b,10);
+  gfx_draw_frame_rect(this,x,bar_y,10,bar_height,10);
   wnd_blit_surface();
   return;
 }
@@ -17538,7 +17538,7 @@ void __cdecl setup_picwnd_load_image(i32 width,i32 height)
   surface.load_gif_resource(setup_picwnd_state.image_id + 900,10,0xc0,(iptr)&palette);
   win_flush_pending_msgs();
   ((DibSurface *)((i8 *)&setup_picwnd_state.surface))->DibSurface::create(width,height);
-  gfx_copy_rect_same_pos((iptr)&surface,(iptr)&setup_picwnd_state.surface,0,0,width,height);
+  gfx_copy_rect_same_pos(&surface,(DibSurface *)&setup_picwnd_state.surface,0,0,width,height);
   surface.release();
   return;
 }
@@ -17599,7 +17599,7 @@ void SetupPicWindow::blit_image_rect(int *rect)
   
   height = rect_height((RECT *)rect);
   width = rect_width((RECT *)rect);
-  gfx_copy_rect_xywh((iptr)&setup_picwnd_state.surface,(iptr)this,*rect - client_x,rect[1] - client_y,
+  gfx_copy_rect_xywh((DibSurface *)&setup_picwnd_state.surface,this,*rect - client_x,rect[1] - client_y,
                      *rect,rect[1],width,height);
   return;
 }
@@ -17608,8 +17608,8 @@ void SetupPicWindow::blit_image_rect(int *rect)
 void SetupPicWindow::draw_image(iptr rect)
 
 {
-  gfx_set_draw_target((iptr)this);
-  text_set_surface((iptr)this);
+  gfx_set_draw_target(this);
+  text_set_surface(this);
   blit_image_rect((int *)rect);
   return;
 }
@@ -17629,7 +17629,7 @@ void SetupPicWindow::redraw()
   layout();
   setup_picwnd_load_image(rates_civ,max_rate_value);
   setup_picwnd_client_rect((iptr)&sci_rate_sel,0,0,rates_civ,max_rate_value);
-  gfx_set_draw_target((iptr)this);
+  gfx_set_draw_target(this);
   draw_caption();
   draw_image((iptr)&sci_rate_sel);
   wnd_blit_surface();
@@ -18073,7 +18073,7 @@ void __cdecl status_draw_civ_color(int civ)
     rect.left = status_wnd.client_right - 8;
     rect.top = status_wnd.client_bottom - 6;
     color = civ_color_primary(civ);
-    gfx_fill_rect((iptr)&status_wnd.window,&rect,color);
+    gfx_fill_rect(&status_wnd.window,&rect,color);
     win_flush_pending_msgs();
     ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&rect.left);
     ((DibSurface *)((i8 *)&status_wnd.window))->reset_clip();
@@ -18096,13 +18096,13 @@ void __cdecl status_draw_end_of_turn(int blit)
   
   if ((((status_bar.wnd_hidden == '\0') && (blink.unit_active != '\0')) && (status_bar.end_turn_visible != '\0')) &&
      (((game.transient_flags & TRANSIENT_END_OF_TURN) != 0 && (text_y = rect_height((RECT *)&frame_texture_surface_block.status_end_turn_rect), 0 < text_y)))) {
-    text_set_surface((iptr)&status_wnd.window);
+    text_set_surface(&status_wnd.window);
     ((DibSurface *)((i8 *)&status_wnd.window))->set_clip((RECT *)&frame_texture_surface_block.status_end_turn_rect);
     src_y = 0;
     src_x = 0;
     height = rect_height((RECT *)&frame_texture_surface_block.status_end_turn_rect);
     width = rect_width((RECT *)&frame_texture_surface_block.status_end_turn_rect);
-    gfx_tile_fill((iptr)&status_wnd.window,(iptr)&panel_texture_surface,frame_texture_surface_block.status_end_turn_rect,frame_texture_surface_block.status_end_turn_rect_top,width,height,src_x,src_y);
+    gfx_tile_fill(&status_wnd.window,&panel_texture_surface,frame_texture_surface_block.status_end_turn_rect,frame_texture_surface_block.status_end_turn_rect_top,width,height,src_x,src_y);
     text_set_colors((-(uint)((moving_units_mode == 0) == (bool)blink.end_turn_phase) & 0xf) + 0x1a,10,1,0);
     text_set_font((iptr)&status_font_block.status_font);
     text_x = ((GameFont *)((i8 *)&status_font_block.status_font))->text_width((const char *)&str_x_4);
@@ -18225,22 +18225,22 @@ void __cdecl status_draw_info(int full_redraw)
   int year_end = 0;
   
   if (full_redraw != 0) {
-    gfx_set_draw_target((iptr)&status_wnd.window);
+    gfx_set_draw_target(&status_wnd.window);
     src_y = 0;
     src_x = 0;
     height = rect_height((RECT *)&frame_texture_surface_block.status_upper_rect);
     width = rect_width((RECT *)&frame_texture_surface_block.status_upper_rect);
-    gfx_tile_fill((iptr)&status_wnd.window,(iptr)&panel_texture_surface,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect_top,width,height,src_x,src_y);
+    gfx_tile_fill(&status_wnd.window,&panel_texture_surface,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect_top,width,height,src_x,src_y);
   }
-  text_set_surface((iptr)&status_wnd.window);
+  text_set_surface(&status_wnd.window);
   text_set_font((iptr)&status_wnd.info_font);
   panel_width2 = rect_width((RECT *)&frame_texture_surface_block.status_upper_rect);
   if (1 < game.peace_turns) {
     percent = int_clamp(game.peace_turns * 3,0,100);
     bar_width = (percent * panel_width2) / 100;
     if (bar_width != 0) {
-      gfx_draw_hline((iptr)&status_wnd.window,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect + bar_width - 1,frame_texture_surface_block.status_upper_rect_top,0x55);
-      gfx_draw_hline((iptr)&status_wnd.window,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect + bar_width - 1,frame_texture_surface_block.status_upper_rect_top + 1,0x55);
+      gfx_draw_hline(&status_wnd.window,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect + bar_width - 1,frame_texture_surface_block.status_upper_rect_top,0x55);
+      gfx_draw_hline(&status_wnd.window,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect + bar_width - 1,frame_texture_surface_block.status_upper_rect_top + 1,0x55);
     }
   }
   line_x = ((GameFont *)((i8 *)&status_wnd.info_font))->text_width((const char *)&str_x_5);
@@ -18306,12 +18306,12 @@ void __cdecl status_draw_info(int full_redraw)
   stage = civ_research_cost(human_civ[0]);
   stage = ((int)progress << 2) / stage;
   stage = int_clamp(stage,0,3);
-  ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.research_flask_sprites) + stage * 0x3c))->draw((iptr)flask_rect,(iptr)&status_wnd.window,icon_x,
+  ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.research_flask_sprites) + stage * 0x3c))->draw((RECT *)flask_rect,&status_wnd.window,icon_x,
              icon_y);
   icon_x += (icon_width * 3) / 2;
   if (game.warming_counter != '\0') {
     stage = int_clamp((int)game.warming_counter >> 2,0,3);
-    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.global_warming_sprites) + stage * 0x3c))->draw((iptr)warming_rect,(iptr)&status_wnd.window,icon_x,
+    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.global_warming_sprites) + stage * 0x3c))->draw((RECT *)warming_rect,&status_wnd.window,icon_x,
                icon_y);
   }
   gfx_reset_zoom_scale();
@@ -18513,7 +18513,7 @@ static void status_draw_active_unit(iptr unit2,int text_x,int *text_y2,int line_
   uint move_mult;
   int scaled;
 
-  gfx_draw_unit((iptr)&status_wnd.window,unit2,4,text_x,*text_y2,zoom - 8,0);
+  gfx_draw_unit(&status_wnd.window,unit2,4,text_x,*text_y2,zoom - 8,0);
   info_y = *text_y2 - 2;
   icon_width = gfx_zoom_scale(0x40,zoom - 8);
   row_pos = text_x + icon_width + 2;
@@ -18680,7 +18680,7 @@ void __cdecl status_draw_unit_panel(void)
             break;
           }
           shown_count++;
-          gfx_draw_unit((iptr)&status_wnd.window,unit,4,text_x,text_y2,zoom - 8,0);
+          gfx_draw_unit(&status_wnd.window,unit,4,text_x,text_y2,zoom - 8,0);
           row_pos = text_y2 - 2;
           scaled = gfx_zoom_scale(0x40,zoom - 8);
           info_x = text_x + scaled + 2;
@@ -18724,18 +18724,18 @@ void __cdecl status_redraw(int blit)
   
   if (status_bar.wnd_hidden == '\0') {
     old_bottom = frame_texture_surface_block.status_text_bottom;
-    gfx_set_draw_target((iptr)&status_wnd.window);
+    gfx_set_draw_target(&status_wnd.window);
     src_y = 0;
     src_x = 0;
     height = rect_height((RECT *)&frame_texture_surface_block.status_upper_rect);
     width = rect_width((RECT *)&frame_texture_surface_block.status_upper_rect);
-    gfx_tile_fill((iptr)&status_wnd.window,(iptr)&panel_texture_surface,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect_top,width,height,src_x,src_y);
+    gfx_tile_fill(&status_wnd.window,&panel_texture_surface,frame_texture_surface_block.status_upper_rect,frame_texture_surface_block.status_upper_rect_top,width,height,src_x,src_y);
     if (status_font_block.status_lower_panel_height != 0) {
       src_y = 0;
       src_x = 0;
       height = rect_height((RECT *)&status_wnd.lower_rect);
       width = rect_width((RECT *)&status_wnd.lower_rect);
-      gfx_tile_fill((iptr)&status_wnd.window,(iptr)&panel_texture_surface,status_wnd.lower_rect,status_wnd.lower_rect_top,width,height,src_x,src_y);
+      gfx_tile_fill(&status_wnd.window,&panel_texture_surface,status_wnd.lower_rect,status_wnd.lower_rect_top,width,height,src_x,src_y);
     }
     status_calc_font_sizes();
     status_draw_unit_panel();
@@ -18769,7 +18769,7 @@ void __cdecl status_wnd_repaint(void)
   if ((status_bar.wnd_hidden == '\0') && (turn_loop.active != '\0')) {
     ((FrameWindow *)((i8 *)&status_wnd.window))->layout();
     status_calc_font_sizes();
-    gfx_set_draw_target((iptr)&status_wnd.window);
+    gfx_set_draw_target(&status_wnd.window);
     rect_set_xywh((RECT *)&frame_texture_surface_block.status_upper_rect,(uint)(*(byte *)&status_font_block.status_panel_x),0,status_font_block.status_panel_width,status_wnd.upper_panel_height);
     rect_set_xywh((RECT *)&status_wnd.lower_rect,(uint)(*(byte *)&status_font_block.status_panel_x),0,status_font_block.status_panel_width,status_font_block.status_lower_panel_height);
     rect_offset((RECT *)&frame_texture_surface_block.status_upper_rect,status_wnd.client_x,status_wnd.client_y);
@@ -18789,12 +18789,12 @@ void __cdecl status_wnd_repaint(void)
       src_x = 0;
       height = rect_height(&inner_rect);
       width = rect_width(&inner_rect);
-      gfx_tile_fill((iptr)&status_wnd.window,(iptr)&window_border_tile_surface,inner_rect.left,inner_rect.top,width,height,src_x,src_y);
+      gfx_tile_fill(&status_wnd.window,&window_border_tile_surface,inner_rect.left,inner_rect.top,width,height,src_x,src_y);
       bevel_rect.bottom = bevel_rect.top + ui_metrics.bevel_width;
-      gfx_fill_rect((iptr)&status_wnd.window,&bevel_rect,ui_metrics.highlight_color);
+      gfx_fill_rect(&status_wnd.window,&bevel_rect,ui_metrics.highlight_color);
       inner_height = rect_height(&inner_rect);
       rect_offset(&bevel_rect,0,ui_metrics.bevel_width + inner_height);
-      gfx_fill_rect((iptr)&status_wnd.window,&bevel_rect,ui_metrics.shadow_color);
+      gfx_fill_rect(&status_wnd.window,&bevel_rect,ui_metrics.shadow_color);
     }
     ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface();
   }
@@ -18949,7 +18949,7 @@ void __cdecl status_draw_timer_bar(int percent,int color)
       ((DibSurface *)((i8 *)&status_wnd.timer_bg_surface))->alloc_dib8(&bar_rect);
       height = rect_height(&bar_rect);
       bar_width = rect_width(&bar_rect);
-      gfx_copy_rect_xywh((iptr)&status_wnd.window,(iptr)&status_wnd.timer_bg_surface,bar_rect.left,bar_rect.top,0,0,bar_width,height);
+      gfx_copy_rect_xywh(&status_wnd.window,&status_wnd.timer_bg_surface,bar_rect.left,bar_rect.top,0,0,bar_width,height);
     }
     if (((status_bar.timer_last_color != color) || (width = _memcmp(&bar_rect.left,((i32 *)&status_wnd.timer_last_rect),0x10), width != 0))
        || (status_bar.timer_last_percent != percent)) {
@@ -18961,12 +18961,12 @@ void __cdecl status_draw_timer_bar(int percent,int color)
       status_bar.timer_last_percent = percent;
       height = rect_height(&bar_rect);
       bar_width = rect_width(&bar_rect);
-      gfx_copy_rect_xywh((iptr)&status_wnd.timer_bg_surface,(iptr)&status_wnd.window,0,0,bar_rect.left,bar_rect.top,bar_width,height);
+      gfx_copy_rect_xywh(&status_wnd.timer_bg_surface,&status_wnd.window,0,0,bar_rect.left,bar_rect.top,bar_width,height);
       ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&bar_rect);
       if (-1 < color) {
         width = rect_width(&bar_rect);
         bar_rect.right = bar_rect.left + (percent * width) / 100;
-        gfx_fill_rect((iptr)&status_wnd.window,&bar_rect,color);
+        gfx_fill_rect(&status_wnd.window,&bar_rect,color);
         win_flush_pending_msgs();
         ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&bar_rect);
       }

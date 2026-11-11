@@ -1489,7 +1489,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
                    row->v[3],
                    row->v[4]);
     }
-    ((Sprite *)((iptr)this + 0x93c))->draw((iptr)sprite,(iptr)this + 0x8f4,
+    ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite,(DibSurface *)((iptr)this + 0x8f4),
                  row->v[1] + -0xaf,
                  row->v[2] + -99);
   }
@@ -1551,7 +1551,7 @@ i32 SpaceshipWindow::render_ship()
   ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_part,9,
                part_rows[struct_row].v[1],part_rows[struct_row].v[2],
                part_rows[struct_row].v[3],part_rows[struct_row].v[4]);
-  ((Sprite *)((iptr)this + 0x93c))->draw((iptr)sprite_struct,(iptr)this + 0x8f4,
+  ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite_struct,(DibSurface *)((iptr)this + 0x8f4),
                part_rows[struct_row].v[1] + -0xaf,
                part_rows[struct_row].v[2] + -99);
   for (row_i = 0x1f; row_i < 0x58; row_i = row_i + 1) {
@@ -1565,7 +1565,7 @@ i32 SpaceshipWindow::render_ship()
   if ((int)launch_state == 3) {
     ((DibSurface *)((iptr)this + 0xb8))->fill(0);
   }
-  ((Sprite *)((iptr)this + 0x93c))->draw((iptr)sprite_final,(iptr)this + 0xb8,0xaf,
+  ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite_final,(DibSurface *)((iptr)this + 0xb8),0xaf,
                99);
   spaceship_wnd_draw_title(ship_civ);
   render_ship_free_surfaces(sf,unwind_state);

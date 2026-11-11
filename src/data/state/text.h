@@ -57,7 +57,7 @@ extern RODATA i8 file_copy_write_mode[4];
 /* How text is drawn: target, font, colors, shadow. */
 #pragma pack(push, 1)
 typedef struct TextStyle {
-    iptr surface;  /* 006366a8 */
+    DibSurface *surface;  /* 006366a8 */
     GameFont *font;  /* 006366ac */
     i32 fg_color;  /* 006366b0 */
     int shadow_color;  /* 006366b4 */

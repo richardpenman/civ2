@@ -4710,7 +4710,7 @@ i32 DiploLeaderWindow::init_military()
       draw_y = 0x82;
       step_y = 0x1f;
       for (i = 0; i < icon_count; i++) {
-        sprite.draw((iptr)draw_ctx,(iptr)leader_surface,draw_x,draw_y);
+        sprite.draw((RECT *)draw_ctx,(DibSurface *)leader_surface,draw_x,draw_y);
         draw_y += step_y;
       }
       result = 1;
@@ -4778,7 +4778,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
   char char_pos;
   
   adv_category = (int)(char)advances[advance].category;
-  (category_sprites + adv_category)->draw((iptr)draw_ctx,(iptr)leader_surface,draw_x,draw_y);
+  (category_sprites + adv_category)->draw((RECT *)draw_ctx,(DibSurface *)leader_surface,draw_x,draw_y);
   for (j = 0; j < 5; j++) {
     str_clear((words + j * 0x32));
   }
@@ -5054,7 +5054,7 @@ i32 DiploLeaderWindow::init_portrait()
     ;
     surface.set_palette((iptr)(leader_palette));
     sprite.grab_from_surface((iptr)&surface,9,1,1,0xe1,0x113);
-    sprite.draw((iptr)draw_ctx,(iptr)leader_surface,0xd0,0x39);
+    sprite.draw((RECT *)draw_ctx,(DibSurface *)leader_surface,0xd0,0x39);
     result = 1;
   }
   return result;

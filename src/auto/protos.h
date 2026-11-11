@@ -65,7 +65,7 @@ Button * __thiscall button_ctor(Button *self); /* 0040f3e0 */
 i32 __thiscall ctrl_dtor(Button *self); /* 0040f570 */
 Checkbox * __thiscall checkbox_elem_ctor(Checkbox *self); /* 0040f8b0 */
 void __thiscall checkbox_dtor(Checkbox *self); /* 0040f930 */
-void __cdecl gfx_fill_rect(iptr surface,RECT *rect,i32 color); /* 0040fdb0 */
+void __cdecl gfx_fill_rect(DibSurface *surface,RECT *rect,i32 color); /* 0040fdb0 */
 void __cdecl text_append_space(void); /* 0040fe10 */
 void __cdecl text_append_colon(void); /* 0040fe40 */
 void __cdecl text_append_percent(void); /* 0040fe70 */
@@ -325,7 +325,7 @@ void __cdecl casualty_timeline_draw(void); /* 00437cea */
 void __cdecl casualty_timeline_show(int civ); /* 0043856b */
 void __cdecl casualty_timeline_on_dblclick(i32 click_x,int click_y); /* 004386b8 */
 void __cdecl rect_offset(RECT *rect,int dx,int dy); /* 0043c790 */
-void __cdecl gfx_draw_rect_frame(iptr surface,RECT *rect,i32 color); /* 0043c7c0 */
+void __cdecl gfx_draw_rect_frame(DibSurface *surface,RECT *rect,i32 color); /* 0043c7c0 */
 void __cdecl text_append_period(void); /* 0043c810 */
 void __cdecl str_append(char *dest,const char *src); /* 0043c840 */
 char * __cdecl str_copy_max(char *dest,const char *src,size_t size);
@@ -747,8 +747,8 @@ void __cdecl screen_fade_out(void); /* 0046efd6 */
 void __cdecl screen_fade_in(void); /* 0046f06f */
 void __cdecl palette_set_nocollapse_all(void); /* 0046f108 */
 void __cdecl ui_blit_all_windows(void); /* 0046f18f */
-int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046f460 */
-int __cdecl gfx_save_bmp_640x480(iptr surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046fbf3 */
+int __cdecl gfx_load_bmp_640x480(DibSurface *surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046f460 */
+int __cdecl gfx_save_bmp_640x480(DibSurface *surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046fbf3 */
 void __cdecl endgame_defeat_movie(int civ); /* 004702e0 */
 void __cdecl defeat_movie_on_video_end(void); /* 00470c1c */
 void __cdecl endgame_spaceship_arrival(int civ); /* 004710d0 */
@@ -1147,7 +1147,7 @@ void __cdecl editor_font_static_dtor(void); /* 004cca1b */
 i32 __cdecl memblock_alloc_checked(MemBlock *block,uint size); /* 004cca35 */
 void __cdecl rules_edit_set_section(iptr names,RulesSectionWriterFn writers); /* 004ccab9 */
 void __cdecl rules_edit_add_section(const char *name2,RulesSectionWriterFn writer); /* 004ccaed */
-void __cdecl gfx_draw_tiled_frame(iptr surface,int x,int y,int width,int height,int border); /* 004ccb6a */
+void __cdecl gfx_draw_tiled_frame(DibSurface *surface,int x,int y,int width,int height,int border); /* 004ccb6a */
 void __cdecl text_append_int_2d(i32 value); /* 004ccdb6 */
 void __cdecl text_append_advance_abbrev(int advance,int with_comma); /* 004ccdef */
 i32 __cdecl rules_write_sections(void); /* 004ccf2d */
@@ -1476,7 +1476,7 @@ i32 __cdecl ai_unit_choose_orders(void); /* 00538a29 */
 void __cdecl unit_continue_active_orders(void); /* 00543b80 */
 void __cdecl ai_process_civ_units(void); /* 00543cd6 */
 int __cdecl ui_calc_item_spacing(int count,int item_size,int total_size,int *out_count,int *out_remainder); /* 00548b70 */
-void __cdecl sprite_draw_spaced_row(iptr surface,iptr sprite,int x,i32 y,int count,int slots, int spacing,i32 item_width,int spread_extra); /* 00548c78 */
+void __cdecl sprite_draw_spaced_row(DibSurface *surface,iptr sprite,int x,i32 y,int count,int slots, int spacing,i32 item_width,int spread_extra); /* 00548c78 */
 void __cdecl events_editor_focus_redraw(void); /* 00548df0 */
 void __cdecl events_write_actions(iptr fp,ScenarioEvent *event); /* 00548e23 */
 void __cdecl events_write_list(iptr fp); /* 00549aee */
@@ -1558,7 +1558,7 @@ void __cdecl setup_picwnd_on_redraw(void); /* 0055a15e */
 void __cdecl setup_picwnd_on_restore(void); /* 0055a178 */
 int __cdecl setup_picwnd_position_coord(int position,int size); /* 0055a192 */
 i32 __cdecl setup_picwnd_image_size(int is_height,i32 image_id); /* 0055a329 */
-void __cdecl gfx_copy_rect_same_pos(iptr src,iptr dst,i32 x,i32 y,i32 width, i32 height); /* 0055a930 */
+void __cdecl gfx_copy_rect_same_pos(DibSurface *src,DibSurface *dst,i32 x,i32 y,i32 width, i32 height); /* 0055a930 */
 void __cdecl map_build_coarse_connectivity(void); /* 0055a980 */
 i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,int *out_x,int *out_y,int want_ocean); /* 0055ac37 */
 EXTERN_C i32 __stdcall win_main(i32 instance,i32 prev_instance,i32 cmd_line,i32 show_cmd); /* 0055add0 */
@@ -1607,7 +1607,7 @@ void __cdecl frame_texture_load(void); /* 005681c9 */
 void __cdecl frame_texture_free(void); /* 00568381 */
 void __cdecl frame_texture_load_hook_nop(void); /* 005683a5 */
 void __cdecl frame_texture_free_hook_nop(void); /* 005683b5 */
-i32 __cdecl gfx_dissolve_blit(iptr surface,RECT *rect,uint cell_size,int mode); /* 005683c5 */
+i32 __cdecl gfx_dissolve_blit(DibSurface *surface,RECT *rect,uint cell_size,int mode); /* 005683c5 */
 i32 __cdecl civ_city_art_era(int civ); /* 00568861 */
 void __cdecl status_window_global_init(void); /* 00568b00 */
 void __cdecl status_window_static_init(void); /* 00568b1a */
@@ -1648,10 +1648,10 @@ void __cdecl map_label_font_reg_atexit(void); /* 0056b8d4 */
 void __cdecl map_label_font_static_dtor(void); /* 0056b8f1 */
 void __cdecl gfx_select_zoom_font(i32 zoom); /* 0056b90b */
 iptr __cdecl unit_stack_pick_display_unit(int unit); /* 0056b96e */
-void __cdecl gfx_draw_unit(iptr surface,int unit,uint draw_flags,int px,int py,int zoom,int no_fortress); /* 0056baff */
-void __cdecl gfx_copy_rect_clipped(iptr src,iptr dst,int src_x,int src_y,int src_origin_x,int src_origin_y,int dst_x, int dst_y,int dst_origin_x,int dst_origin_y,int width,int height); /* 0056c5fc */
+void __cdecl gfx_draw_unit(DibSurface *surface,int unit,uint draw_flags,int px,int py,int zoom,int no_fortress); /* 0056baff */
+void __cdecl gfx_copy_rect_clipped(DibSurface *src,DibSurface *dst,int src_x,int src_y,int src_origin_x,int src_origin_y,int dst_x, int dst_y,int dst_origin_x,int dst_origin_y,int width,int height); /* 0056c5fc */
 void __cdecl map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int sound_arg); /* 0056c705 */
-void __cdecl gfx_draw_city(iptr surface,int city,uint draw_flags,int px,int py,int zoom); /* 0056d289 */
+void __cdecl gfx_draw_city(DibSurface *surface,int city,uint draw_flags,int px,int py,int zoom); /* 0056d289 */
 int __cdecl gfx_zoom_scale_round(int value,int zoom); /* 0056e1c0 */
 i32 __cdecl civ_color_mid(int civ); /* 0056e1f0 */
 void __cdecl lobby_wait_civs_chosen_idle(void); /* 0056ec92 */
@@ -1697,7 +1697,7 @@ void __cdecl sprite_editor_ok_clicked(void); /* 005722ab */
 void __cdecl sprite_editor_cancel_clicked(void); /* 00572364 */
 void __cdecl sprite_editor_rebuild_sprite(void); /* 00572389 */
 void __cdecl sprite_editor_draw_swatches(void); /* 005723ee */
-void __cdecl sprite_editor_draw_palette_cell(iptr surface,int origin_x,int origin_y,int color); /* 0057261a */
+void __cdecl sprite_editor_draw_palette_cell(DibSurface *surface,int origin_x,int origin_y,int color); /* 0057261a */
 int __cdecl sprite_editor_tool_hit_test(int x,int y); /* 00572740 */
 void __cdecl sprite_editor_draw_backdrop(void); /* 005727d8 */
 i8 * __cdecl sprite_editor_plot_pixel(int px,int py); /* 00572887 */
@@ -1868,7 +1868,7 @@ void __cdecl dialog_set_default_offset(i32 x,i32 y); /* 0059d3e1 */
 void __cdecl dialog_load_button_labels(void); /* 0059d401 */
 void __cdecl dialog_set_colors(i32 text_color,i32 text_shadow,i32 frame_color,i32 highlight_color, i32 bg_color,i32 bevel_light,i32 bevel_dark,i32 title_color, i32 title_shadow); /* 0059d487 */
 void __cdecl dialog_set_list_colors(i32 bg_color,i32 text_color,i32 shadow_color,i32 sel_bg_color, i32 sel_text_color,i32 sel_shadow_color,i32 default_color); /* 0059d4df */
-void __cdecl dialog_set_frame_tile_surface(iptr surface); /* 0059d59d */
+void __cdecl dialog_set_frame_tile_surface(DibSurface *surface); /* 0059d59d */
 int __cdecl int_clamp_b(int value,int lo,int hi); /* 005a1a44 */
 void __cdecl dialog_list_on_vscroll(i32 scroll_pos); /* 005a1da3 */
 void __cdecl dialog_on_redraw(void); /* 005a20f4 */
@@ -1889,17 +1889,17 @@ void __cdecl dialog_list2_on_vscroll(i32 scroll_pos); /* 005a552c */
 void __cdecl dialog_list2_on_hscroll(int scroll_pos); /* 005a55b1 */
 void __cdecl dlg_push_parent_window(iptr parent); /* 005a6c23 */
 void __cdecl dlg_pop_parent_window(void); /* 005a6c45 */
-void __cdecl gfx_set_draw_target(iptr surface); /* 005a9780 */
-void __cdecl gfx_draw_line_color(iptr surface,i32 x1,i32 y1,i32 x2, i32 y2,i32 color); /* 005a9798 */
-void __cdecl gfx_draw_hline(iptr surface,i32 x1,int x2,int y,i32 color); /* 005a97cc */
-void __cdecl gfx_draw_vline(iptr surface,int x,i32 y1,int y2,i32 color); /* 005a9858 */
-void __cdecl gfx_draw_box_ltrb(iptr surface,i32 left,i32 top,i32 right, i32 bottom,i32 color); /* 005a98e4 */
-void __cdecl gfx_draw_frame_rect(iptr surface,int x,int y,int width,int height,i32 color); /* 005a9964 */
-void __cdecl gfx_draw_bevel_rect(iptr surface,RECT *rect,i32 light_color,i32 dark_color); /* 005a99fc */
-void __cdecl gfx_fill_surface(iptr surface,i32 color); /* 005a9aa3 */
-void __cdecl gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,int width,int height, i32 color); /* 005a9abf */
-void __cdecl gfx_copy_rect_xywh(iptr src,iptr dest,i32 src_x,i32 src_y,i32 dest_x, i32 dest_y,int width,int height); /* 005a9afe */
-int __cdecl gfx_tile_fill(iptr dest,iptr tile,int x,int y,int width,int height,int origin_x, int origin_y); /* 005a9b5d */
+void __cdecl gfx_set_draw_target(DibSurface *surface); /* 005a9780 */
+void __cdecl gfx_draw_line_color(DibSurface *surface,i32 x1,i32 y1,i32 x2, i32 y2,i32 color); /* 005a9798 */
+void __cdecl gfx_draw_hline(DibSurface *surface,i32 x1,int x2,int y,i32 color); /* 005a97cc */
+void __cdecl gfx_draw_vline(DibSurface *surface,int x,i32 y1,int y2,i32 color); /* 005a9858 */
+void __cdecl gfx_draw_box_ltrb(DibSurface *surface,i32 left,i32 top,i32 right, i32 bottom,i32 color); /* 005a98e4 */
+void __cdecl gfx_draw_frame_rect(DibSurface *surface,int x,int y,int width,int height,i32 color); /* 005a9964 */
+void __cdecl gfx_draw_bevel_rect(DibSurface *surface,RECT *rect,i32 light_color,i32 dark_color); /* 005a99fc */
+void __cdecl gfx_fill_surface(DibSurface *surface,i32 color); /* 005a9aa3 */
+void __cdecl gfx_fill_rect_xywh(DibSurface *surface,i32 x,i32 y,int width,int height, i32 color); /* 005a9abf */
+void __cdecl gfx_copy_rect_xywh(DibSurface *src,DibSurface *dest,i32 src_x,i32 src_y,i32 dest_x, i32 dest_y,int width,int height); /* 005a9afe */
+int __cdecl gfx_tile_fill(DibSurface *dest,DibSurface *tile,int x,int y,int width,int height,int origin_x, int origin_y); /* 005a9b5d */
 void __cdecl net_host_wait_production_idle(void); /* 005a9f30 */
 void __cdecl net_host_wait_human_moves_idle(void); /* 005aa004 */
 void __cdecl net_host_turn_loop(void); /* 005aa0e5, hand-written */
@@ -2028,12 +2028,12 @@ void __cdecl net_batch_add(int record_type,i32 x,i32 y,i32 arg1,i32 arg2, i32 ar
 void __cdecl net_apply_tile_updates(iptr batch); /* 005ba206 */
 int __cdecl str_parse_binary(const char *text); /* 005bad40 */
 char * __cdecl path_join_upper(char *dest,const char *dir,const char *filename); /* 005badf0 */
-void __cdecl text_set_surface(iptr surface); /* 005baeb0 */
+void __cdecl text_set_surface(DibSurface *surface); /* 005baeb0 */
 void __cdecl text_set_font(iptr font); /* 005baec8 */
 void __cdecl text_set_colors(i32 fg_color,i32 shadow_color,int shadow_dx,int shadow_dy); /* 005baee0 */
-int __cdecl text_draw_shadowed(iptr surface,const char *text,int x,int y); /* 005baf57 */
-int __cdecl text_draw_centered(iptr surface,const char *text,int x,int y,int box_width); /* 005bb024 */
-int __cdecl text_draw_right_aligned(iptr surface,const char *text,int x,i32 y,int box_width); /* 005bb0af */
+int __cdecl text_draw_shadowed(DibSurface *surface,const char *text,int x,int y); /* 005baf57 */
+int __cdecl text_draw_centered(DibSurface *surface,const char *text,int x,int y,int box_width); /* 005bb024 */
+int __cdecl text_draw_right_aligned(DibSurface *surface,const char *text,int x,i32 y,int box_width); /* 005bb0af */
 bool __thiscall surfwnd_resize_dib(DibSurface *self,RECT *rect); /* 005bb5be */
 void __cdecl win_drain_input_msgs(void); /* 005bb9c0 */
 i32 __cdecl win_dispatch_one_message(void); /* 005bba4f */

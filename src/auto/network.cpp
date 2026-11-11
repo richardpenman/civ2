@@ -2443,7 +2443,7 @@ void __cdecl parley_draw_advance_list(int pane)
         }
         tmp2 = row_top + row_height / 2;
         tmp = icon_sprite->get_height();
-        icon_sprite->draw((iptr)sprite_rect,(iptr)&parley_wnd_block,list_left + icon_x,tmp2 - tmp / 2);
+        icon_sprite->draw((RECT *)sprite_rect,&parley_wnd_block,list_left + icon_x,tmp2 - tmp / 2);
         text_clear();
         name_label = (label_string(advances[advance].name));
         text_append(name_label);
@@ -2862,7 +2862,7 @@ void __cdecl parley_draw_unit_list(int pane)
           row_mid = row_top + row_height / 2;
           tmp = unit_sprite->get_height();
           tmp2 = font2->font_cached_height();
-          unit_sprite->draw((iptr)sprite_rect,(iptr)&parley_wnd_block,list_left + icon_x,
+          unit_sprite->draw((RECT *)sprite_rect,&parley_wnd_block,list_left + icon_x,
                      row_mid - (tmp * tmp2) / 0x30);
           gfx_set_scale_ratio(1,1);
           if (prefs_main_menu_choice_block.parley_units_by_city == 0) {
@@ -6799,7 +6799,7 @@ void __cdecl parley_draw_civ_capital(int civ,uint row,int x,int y,int row_height
       draw_x = x + icon_width + 2;
     }
     has_palace = gfx_zoom_scale(0x30,zoom2);
-    gfx_draw_city((iptr)&parley_wnd_block,city2,0,draw_x,y - (has_palace - row_height) / 2,zoom2);
+    gfx_draw_city(&parley_wnd_block,city2,0,draw_x,y - (has_palace - row_height) / 2,zoom2);
   }
   return;
 }
@@ -8416,7 +8416,7 @@ void __cdecl parley_wnd_redraw(void)
   if (wnd2->closed == 0) {
     wnd2->calc_layout();
     wnd2->build_title();
-    gfx_set_draw_target((iptr)wnd2);
+    gfx_set_draw_target(wnd2);
     wnd2->draw_frame();
     wnd2->sync_sides();
     wnd2->wnd_blit_surface();
@@ -8447,7 +8447,7 @@ void ParleyWindow::draw_frame()
   reset_clip();
   crt_memcpy(&rect,&client_left,0x10);
   for (i = 0; i < panel_layout.bevel_width; i++) {
-    gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_light_color,(uint)dlg_style.bevel_dark_color);
+    gfx_draw_bevel_rect(this,&rect,(uint)dlg_style.bevel_light_color,(uint)dlg_style.bevel_dark_color);
     rect_deflate(&rect,1,1);
   }
   fill_background(&rect,1);
@@ -8456,7 +8456,7 @@ void ParleyWindow::draw_frame()
   free_width = rect_height((RECT *)&client_left);
   rect.bottom = (free_width - caption_height) + panel_layout.bevel_width * -2;
   for (i = 0; i < panel_layout.bevel_width; i++) {
-    gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_dark_color,(uint)dlg_style.bevel_light_color);
+    gfx_draw_bevel_rect(this,&rect,(uint)dlg_style.bevel_dark_color,(uint)dlg_style.bevel_light_color);
     rect_deflate(&rect,1,1);
   }
   fill_background(&rect,2);
@@ -8467,8 +8467,8 @@ void ParleyWindow::draw_frame()
     y2 = ((int)caption_height >> 1) - (icon_height >> 1);
     SetRect(&rect,x2,y2,icon_width + x2,icon_height + y2);
     gfx_set_scale_ratio(caption_height,0x18);
-    caption_buttons[i].sprite->draw((iptr)sprite_rect,
-               (iptr)this,x2,y2);
+    caption_buttons[i].sprite->draw((RECT *)sprite_rect,
+               this,x2,y2);
     gfx_reset_zoom_scale();
     x2 = x2 + panel_layout.margin_x + icon_width;
   }
@@ -8503,14 +8503,14 @@ void ParleyWindow::fill_background(RECT *rect,int area_kind)
   
   if ((dlg_style.frame_tile_surface == 0) || (area_kind != 1)) {
     if ((dlg_style.client_tile_surface == 0) || (area_kind != 2)) {
-      gfx_fill_rect((iptr)this,rect,(uint)dlg_style.bg_color);
+      gfx_fill_rect(this,rect,(uint)dlg_style.bg_color);
     }
     else {
       tile_y = 0;
       tile_x = 0;
       height = rect_height(rect);
       width = rect_width(rect);
-      gfx_tile_fill((iptr)this,dlg_style.client_tile_surface,rect->left,rect->top
+      gfx_tile_fill(this,(DibSurface *)dlg_style.client_tile_surface,rect->left,rect->top
                          ,width,height,tile_x,tile_y);
     }
   }
@@ -8519,7 +8519,7 @@ void ParleyWindow::fill_background(RECT *rect,int area_kind)
     tile_x = 0;
     height = rect_height(rect);
     width = rect_width(rect);
-    gfx_tile_fill((iptr)this,dlg_style.frame_tile_surface,rect->left,rect->top,
+    gfx_tile_fill(this,(DibSurface *)dlg_style.frame_tile_surface,rect->left,rect->top,
                        width,height,tile_x,tile_y);
   }
   return;
@@ -12755,7 +12755,7 @@ void ParleyWindow::add_status_pane(int side,u32 side_x)
   block_height = panel_layout.margin_y * 2 + status_line_height * 4 + status_title_height;
   cur_y = panel_top + (int)((divider_y - panel_top) - block_height) / 2;
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,block_height + cur_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -13011,7 +13011,7 @@ void ParleyWindow::add_tech_pane(int side,u32 side_x,char is_exchange_side,char 
     cur_y = cur_y + panel_layout.margin_y + tech_side_height;
   }
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,divider_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -13120,7 +13120,7 @@ void ParleyWindow::add_gold_pane(int side,u32 side_x,char is_exchange_side,char 
                panel_top + panel_layout.margin_y,5);
   }
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,block_height + cur_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -13326,7 +13326,7 @@ void ParleyWindow::add_unit_pane(int side,u32 side_x,char is_exchange_side,char 
     cur_y = cur_y + panel_layout.margin_y + unit_side_height;
   }
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,divider_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -13716,7 +13716,7 @@ void ParleyWindow::add_civ_list_pane(int side,u32 side_x,char is_exchange_side,c
              civlist_title_height;
   cur_y += (int)((divider_y - cur_y) - block_height) / 2;
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,block_height + cur_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -13837,7 +13837,7 @@ void ParleyWindow::add_map_pane(int side,u32 side_x,char is_exchange_side)
   block_height = map_row_height * 3 + panel_layout.margin_y * 9 + map_title_height;
   cur_y += (int)((divider_y - cur_y) - block_height) / 2;
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,block_height + cur_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -14105,7 +14105,7 @@ void ParleyWindow::add_city_pane(int side,u32 side_x,char is_exchange_side,char 
     cur_y = cur_y + panel_layout.margin_y + city_side_height;
   }
   SetRect(&ctrl_rect,cur_x,cur_y,col_width + cur_x,divider_y);
-  gfx_set_draw_target((iptr)&parley_wnd_block);
+  gfx_set_draw_target(&parley_wnd_block);
   gfx_target_frame_rect(&ctrl_rect,10);
   rect_deflate(&ctrl_rect,1,1);
   gfx_target_frame_rect(&ctrl_rect,10);
@@ -16563,7 +16563,7 @@ parley_draw_city_sprite(int city,uint row_index,int x,int y,int row_height,i32 s
     draw_x = x + sprite_width2 + 2;
   }
   sprite_height2 = gfx_zoom_scale(0x30,zoom2);
-  gfx_draw_city((iptr)&parley_wnd_block,city,style,draw_x,y - (sprite_height2 - row_height) / 2,zoom2);
+  gfx_draw_city(&parley_wnd_block,city,style,draw_x,y - (sprite_height2 - row_height) / 2,zoom2);
   return;
 }
 

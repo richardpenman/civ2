@@ -43,7 +43,7 @@ extern i8 sprite_editor_default_title[4];  /* only sprite_editor_create_window u
 extern i8 sprite_picker_default_title[4];  /* only sprite_picker_create_window uses it */
 extern RODATA i8 sprite_import_bmp_ext_str[4];
 extern RODATA i8 sprite_import_gif_ext_str[132];
-extern iptr gfx_draw_target;
+extern DibSurface *gfx_draw_target;
 extern RODATA i8 gif_sig_file[4];
 extern RODATA i8 gif_sig_resource[4];
 /* The drawing scale (zoom) factors. */

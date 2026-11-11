@@ -1957,7 +1957,7 @@ int __cdecl str_parse_binary(const char *text)
 }
 
 /* 005baeb0 auto */
-void __cdecl text_set_surface(iptr surface)
+void __cdecl text_set_surface(DibSurface *surface)
 
 {
   text_style.surface = surface;
@@ -1988,29 +1988,29 @@ void __cdecl text_set_colors(i32 fg_color,i32 shadow_color,int shadow_dx,int sha
 }
 
 /* 005baf57 auto */
-int __cdecl text_draw_shadowed(iptr surface,const char *text,int x,int y)
+int __cdecl text_draw_shadowed(DibSurface *surface,const char *text,int x,int y)
 
 {
   int width;
   
   if (-1 < text_style.shadow_color) {
     gfx_set_text_color_index(text_style.shadow_color);
-    ((DibSurface *)surface)->draw_text((iptr)text_style.font,text,
+    (surface)->draw_text((iptr)text_style.font,text,
                text_style.shadow_dx + text_style.fake_bold + x,text_style.shadow_dy + y,5);
   }
   if (-1 < text_style.fg_color) {
     gfx_set_text_color_index(text_style.fg_color);
     if (text_style.fake_bold != 0) {
-      ((DibSurface *)surface)->draw_text((iptr)text_style.font,text,x + 1,y,5);
+      (surface)->draw_text((iptr)text_style.font,text,x + 1,y,5);
     }
-    ((DibSurface *)surface)->draw_text((iptr)text_style.font,text,x,y,5);
+    (surface)->draw_text((iptr)text_style.font,text,x,y,5);
   }
   width = text_style.font->text_width(text);
   return x + width;
 }
 
 /* 005bb024 auto */
-int __cdecl text_draw_centered(iptr surface,const char *text,int x,int y,int box_width)
+int __cdecl text_draw_centered(DibSurface *surface,const char *text,int x,int y,int box_width)
 
 {
   int total_width;
@@ -2031,7 +2031,7 @@ int __cdecl text_draw_centered(iptr surface,const char *text,int x,int y,int box
 }
 
 /* 005bb0af auto */
-int __cdecl text_draw_right_aligned(iptr surface,const char *text,int x,i32 y,int box_width)
+int __cdecl text_draw_right_aligned(DibSurface *surface,const char *text,int x,i32 y,int box_width)
 
 {
   int draw_x;

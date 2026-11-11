@@ -5542,8 +5542,8 @@ void __cdecl unit_sound_editor_redraw(void)
   i8 rect[16];
   
   ((FrameWindow *)((i8 *)&unit_sound_editor.window))->FrameWindow::draw_caption();
-  gfx_fill_rect((iptr)&unit_sound_editor.window,(RECT *)&unit_sound_editor.fill_rect,0x1d);
-  text_set_surface((iptr)&unit_sound_editor.window);
+  gfx_fill_rect(&unit_sound_editor.window,(RECT *)&unit_sound_editor.fill_rect,0x1d);
+  text_set_surface(&unit_sound_editor.window);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(10,10,0,0);
   row_height = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
@@ -5556,17 +5556,17 @@ void __cdecl unit_sound_editor_redraw(void)
     left = ((int)(left + (left >> 0x1f & 3U)) >> 2) + ((int)(col_width + (width_adj >> 0x1f & 3U)) >> 2)
             + unit_sound_editor.client_x;
     rect_set_xywh((RECT *)rect,left,top,col_width,row_height);
-    gfx_draw_bevel_rect((iptr)&unit_sound_editor.window,(RECT *)rect,10,10);
+    gfx_draw_bevel_rect(&unit_sound_editor.window,(RECT *)rect,10,10);
     if (-1 < main_frame_bg_surface_block.unit_sound_effects[slot]) {
       text_clear();
       text_append_str((const char *)(((char *)&str_aircombt) + main_frame_bg_surface_block.unit_sound_effects[slot] * 9));
       text_append_str((const char *)&str_wav_2);
-      text_draw_centered((iptr)&unit_sound_editor.window,(const char *)&textbuf.buf,left + col_width / 2,top + 4,0);
+      text_draw_centered(&unit_sound_editor.window,textbuf.buf,left + col_width / 2,top + 4,0);
     }
   }
   text_clear();
   text_append_label(0x25b);
-  text_draw_centered((iptr)&unit_sound_editor.window,(const char *)&textbuf.buf,unit_sound_editor.client_x + unit_sound_editor.client_width / 2,unit_sound_editor.client_y + 10,0);
+  text_draw_centered(&unit_sound_editor.window,textbuf.buf,unit_sound_editor.client_x + unit_sound_editor.client_width / 2,unit_sound_editor.client_y + 10,0);
   ((DibSurface *)((i8 *)&unit_sound_editor.window))->wnd_blit_surface();
   return;
 }
@@ -8935,88 +8935,88 @@ void EditorWindow::unit_editor_paint()
   
   this->FrameWindow::draw_caption();
   if (((*(int *)&editor_ui.bg_surface) == 0) || (editor_lists.running == 0)) {
-    gfx_fill_rect((iptr)this,(RECT *)&client_rect,0x1d);
+    gfx_fill_rect(this,(RECT *)&client_rect,0x1d);
   }
   else {
-    gfx_copy_rect_xywh((*(int *)&editor_ui.bg_surface),(iptr)this,0,0,client_x,client_y,wnd_width_u,
+    gfx_copy_rect_xywh(((DibSurface *)*(int *)&editor_ui.bg_surface),this,0,0,client_x,client_y,wnd_width_u,
                        wnd_height_u);
   }
   pic_x = client_x + 0x20;
   pic_y = client_y + 0x20;
   sprite = (Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + item_uptr * 0x3c);
   key_color = sprite->get_key_color();
-  gfx_fill_rect_xywh((iptr)this,pic_x,pic_y,0x40,0x40,(uint)key_color);
-  sprite->draw_keyed((iptr)sprite_rect,(iptr)this,0,pic_x,pic_y + 8);
-  gfx_draw_tiled_frame((iptr)this,pic_x,pic_y,0x40,0x40,6);
-  gfx_draw_tiled_frame((iptr)this,client_x + 0x79,client_y + 0x4f,0x14d,0x47,6);
-  text_set_surface((iptr)this);
+  gfx_fill_rect_xywh(this,pic_x,pic_y,0x40,0x40,(uint)key_color);
+  sprite->draw_keyed((RECT *)sprite_rect,this,0,pic_x,pic_y + 8);
+  gfx_draw_tiled_frame(this,pic_x,pic_y,0x40,0x40,6);
+  gfx_draw_tiled_frame(this,client_x + 0x79,client_y + 0x4f,0x14d,0x47,6);
+  text_set_surface(this);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   text_x2 = client_x + (int)wnd_width_u / 2 + 5;
   text_y2 = unit_editor_ctrl_positions_block.unit_editor_prereq_y + client_y + font_height_uptr * -2 - 2;
   text_clear();
   text_append_label(0x1e9);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_ctrl_positions_block.unit_editor_prereq_x + client_x + 0x32;
   text_y2 = ((unit_editor_ctrl_positions_block.unit_editor_prereq_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x7e);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_ctrl_positions_block.unit_editor_obsolete_x + client_x + 0x32;
   text_y2 = ((unit_editor_ctrl_positions_block.unit_editor_obsolete_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1de);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_ctrl_positions_block.unit_editor_role_x + client_x + 0x32;
   text_y2 = ((unit_editor_ctrl_positions_block.unit_editor_role_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1df);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_ctrl_positions_block.unit_editor_domain_x + client_x + 0x32;
   text_y2 = ((client_y + unit_editor_ctrl_positions_block.unit_editor_domain_y_i32) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e0);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit_x_table[0] + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit_y_table[0] + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e1);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_holds_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_holds_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e2);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_move_x + client_x + 0x18;
   text_y2 = ((client_y + unit_editor_edit_x_table_block.unit_editor_edit2_y_i32) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e3);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit3_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit3_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e4);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit4_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit4_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e5);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit5_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit5_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e6);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit6_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit6_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e7);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   text_x2 = unit_editor_edit_x_table_block.unit_editor_edit7_x + client_x + 0x18;
   text_y2 = ((unit_editor_edit_x_table_block.unit_editor_edit7_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1e8);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,text_x2,text_y2,0);
+  text_draw_centered(this,textbuf.buf,text_x2,text_y2,0);
   wnd_blit_surface();
   return;
 }
@@ -10709,7 +10709,7 @@ unit_dlg_draw_sprite_cb(i32 dlg,iptr sprite,int unit,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_unit(sprite,unit,4,x + 2,y,dlg_unit_sprite_zoom,0);
+  gfx_draw_unit((DibSurface *)sprite,unit,4,x + 2,y,dlg_unit_sprite_zoom,0);
   return;
 }
 

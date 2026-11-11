@@ -5479,10 +5479,10 @@ void EditorWindow::terrain_editor_draw()
   
   this->FrameWindow::draw_caption();
   if (((*(int *)&editor_ui.bg_surface) == 0) || (editor_lists.running == 0)) {
-    gfx_fill_rect((iptr)this,(RECT *)&client_rect,0x1d);
+    gfx_fill_rect(this,(RECT *)&client_rect,0x1d);
   }
   else {
-    gfx_copy_rect_xywh((*(int *)&editor_ui.bg_surface),(iptr)this,0,0,client_x,client_y,wnd_width_u,
+    gfx_copy_rect_xywh(((DibSurface *)*(int *)&editor_ui.bg_surface),this,0,0,client_x,client_y,wnd_width_u,
                        wnd_height_u);
   }
   icon_x = client_x + 0x20;
@@ -5501,14 +5501,14 @@ void EditorWindow::terrain_editor_draw()
   height = sprite->height();
   height = height * 2;
   width = sprite->width();
-  gfx_fill_rect_xywh((iptr)this,icon_x,icon_y,width,height,color);
+  gfx_fill_rect_xywh(this,icon_x,icon_y,width,height,color);
   height = sprite->height();
-  sprite->draw_keyed((iptr)base_rect,(iptr)this,0,icon_x,icon_y + height / 2);
+  sprite->draw_keyed((RECT *)base_rect,this,0,icon_x,icon_y + height / 2);
   frame_style = 6;
   height = sprite->height();
   height = height * 2;
   width = sprite->width();
-  gfx_draw_tiled_frame((iptr)this,icon_x,icon_y,width,height,frame_style);
+  gfx_draw_tiled_frame(this,icon_x,icon_y,width,height,frame_style);
   sprite = (Sprite *)0x0;
   if (item_uptr == 3) {
     sprite = (Sprite *)((i8 *)&forest_sprites);
@@ -5521,96 +5521,96 @@ void EditorWindow::terrain_editor_draw()
   }
   if (sprite != (Sprite *)0x0) {
     height = sprite->height();
-    sprite->draw((iptr)sprite_rect,(iptr)this,icon_x,icon_y + height / 2);
+    sprite->draw((RECT *)sprite_rect,this,icon_x,icon_y + height / 2);
   }
-  text_set_surface((iptr)this);
+  text_set_surface(this);
   text_set_font((iptr)&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
-  gfx_draw_tiled_frame((iptr)this,client_x + 0x1c,client_y + 0xc2,0x1e6,0x21,6);
-  gfx_draw_tiled_frame((iptr)this,client_x + 0x1c,client_y + 0xf9,0x1e6,0x21,6);
+  gfx_draw_tiled_frame(this,client_x + 0x1c,client_y + 0xc2,0x1e6,0x21,6);
+  gfx_draw_tiled_frame(this,client_x + 0x1c,client_y + 0xf9,0x1e6,0x21,6);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_field_pos_x[0] + client_x + 0x18;
   label_y = ((terrain_editor_field_pos_x_block.terrain_editor_field_pos_y[0] + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1d0);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_defense_field_x + client_x + 0x18;
   label_y = ((terrain_editor_field_pos_x_block.terrain_editor_defense_field_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1d1);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0x32);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0x32);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_food_field_x + client_x + 0x18;
   label_y = terrain_editor_field_pos_x_block.terrain_editor_food_field_y + client_y + font_height_uptr * -2 - 2;
   text_clear();
   text_append_label(0x1d2);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_shield_field_x + client_x + 0x18;
   label_y = terrain_editor_field_pos_x_block.terrain_editor_shield_field_y + client_y + font_height_uptr * -2;
   text_clear();
   text_append_label(0x1d3);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_trade_field_x + client_x + 0x18;
   label_y = terrain_editor_field_pos_x_block.terrain_editor_trade_field_y + client_y + font_height_uptr * -2;
   text_clear();
   text_append_label(0x1d4);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_food_field_x + client_x + 0x18;
   label_y = ((terrain_editor_field_pos_x_block.terrain_editor_food_field_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1d5);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_shield_field_x + client_x + 0x18;
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_trade_field_x + client_x + 0x18;
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_irrigate_bonus_x + client_x + 0x18;
   label_y = ((terrain_editor_field_pos_x_block.terrain_editor_irrigate_bonus_y + client_y) - font_height_uptr) - 10;
   text_clear();
   text_append_label(0x1d9);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_irrigate_turns_x + client_x + 0x18;
   label_y = ((terrain_editor_field_pos_x_block.terrain_editor_irrigate_turns_y + client_y) - font_height_uptr) - 10;
   text_clear();
   text_append_label(0x1da);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_combo_pos_x_block.terrain_editor_irrig_combo_x + client_x + 0x32;
   label_y = ((terrain_editor_combo_pos_x_block.terrain_editor_irrig_combo_y + client_y) - font_height_uptr) - 10;
   text_clear();
   text_append_label(0x1d8);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_combo_pos_x_block.terrain_editor_irrig_ai_combo_x + client_x + 0x32;
   label_y = ((terrain_editor_combo_pos_x_block.terrain_editor_irrig_ai_combo_y + client_y) - font_height_uptr) - 10;
   text_clear();
   text_append_label(0x1db);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_combo_pos_x_block.terrain_editor_transform_combo_x + client_x + 0x32;
   label_y = ((terrain_editor_combo_pos_x_block.terrain_editor_transform_combo_y + client_y) - font_height_uptr) - 2;
   text_clear();
   text_append_label(0x1dc);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,0);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,0);
   label_x = terrain_editor_combo_pos_x_block.terrain_editor_irrig_combo_x + client_x;
   label_y = terrain_editor_combo_pos_x_block.terrain_editor_irrig_combo_y + client_y + 4;
   text_clear();
   text_append_label(0x1d6);
   height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->text_width((const char *)&textbuf.buf);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,-10 - height);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,-10 - height);
   label_x = terrain_editor_combo_pos_x_block.terrain_editor_mine_combo_x + client_x;
   label_y = terrain_editor_combo_pos_x_block.terrain_editor_mine_combo_y + client_y + 4;
   text_clear();
   text_append_label(0x1d7);
   height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->text_width((const char *)&textbuf.buf);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,-10 - height);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,-10 - height);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_irrigate_bonus_x + client_x + 0x30;
   label_y = terrain_editor_field_pos_x_block.terrain_editor_irrigate_bonus_y + client_y + 4;
   text_clear();
   text_append_label(0x1d2);
   height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->text_width((const char *)&textbuf.buf);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,height + 10);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,height + 10);
   label_x = terrain_editor_field_pos_x_block.terrain_editor_mine_bonus_x + client_x + 0x30;
   label_y = terrain_editor_field_pos_x_block.terrain_editor_mine_bonus_y + client_y + 4;
   text_clear();
   text_append_label(0x1dd);
   height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->text_width((const char *)&textbuf.buf);
-  text_draw_centered((iptr)this,(const char *)&textbuf.buf,label_x,label_y,height + 10);
+  text_draw_centered(this,textbuf.buf,label_x,label_y,height + 10);
   wnd_blit_surface();
   return;
 }
@@ -6083,7 +6083,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
         step[view] = map_views_block.map_view_recs[view].tile_height / num_frames;
       }
       (saved_bg + view)->DibSurface::create(save_w[view],save_h[view]);
-      gfx_copy_rect_clipped((iptr)&map_views_block.map_view_recs[view],(iptr)(saved_bg + view),
+      gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],(saved_bg + view),
                          rect_left2[view],rect_top2[view],
                          (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,
                          save_w[view],save_h[view]);
@@ -6109,7 +6109,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
               sound_played = 1;
               snd_play_effect(sound_id,sound_arg,0,0);
             }
-            gfx_draw_unit((iptr)&map_views_block.map_view_recs[view],unit,5,
+            gfx_draw_unit(&map_views_block.map_view_recs[view],unit,5,
                                cur_sx[view],cur_sy[view],
                                (int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8],1);
             rect_set_xywh(&dirty_rect,cur_sx[view] + step[view] * -2,
@@ -6138,7 +6138,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
             }
             dirty_rect.bottom = tmp;
             map_views_block.map_view_recs[view].wnd_blit_surface_rect((iptr)&dirty_rect);
-            gfx_copy_rect_clipped((iptr)(saved_bg + view),(iptr)&map_views_block.map_view_recs[view]
+            gfx_copy_rect_clipped((saved_bg + view),&map_views_block.map_view_recs[view]
                                ,cur_sx[view] - rect_left2[view],
                                cur_sy[view] - rect_top2[view],0,0,
                                cur_sx[view],cur_sy[view],
@@ -6224,7 +6224,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                          screen_y[view],sprite_w[view],sprite_h[view]);
       (saved_bg + view)->DibSurface::create(map_views_block.map_view_recs[view].tile_width,
                  map_views_block.map_view_recs[view].tile_height);
-      gfx_copy_rect_clipped((iptr)&map_views_block.map_view_recs[view],(iptr)(saved_bg + view),
+      gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],(saved_bg + view),
                          screen_x[view],screen_y[view],
                          (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,
                          sprite_w[view],sprite_h[view]);
@@ -6267,15 +6267,15 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                                  screen_y[view],sprite_w[view],sprite_h[view]);
               (saved_bg + view)->DibSurface::create(map_views_block.map_view_recs[view].tile_width,
                          map_views_block.map_view_recs[view].tile_height);
-              gfx_copy_rect_clipped((iptr)&map_views_block.map_view_recs[view],
-                                 (iptr)(saved_bg + view),screen_x[view],
+              gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],
+                                 (saved_bg + view),screen_x[view],
                                  screen_y[view],(((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],
                                  (((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,sprite_w[view],
                                  sprite_h[view]);
             }
             gfx_set_zoom_scale((int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8]);
-            ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + frame2 * 0x3c))->draw((iptr)clip_rect,
-                       (iptr)&map_views_block.map_view_recs[view],screen_x[view],
+            ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + frame2 * 0x3c))->draw((RECT *)clip_rect,
+                       &map_views_block.map_view_recs[view],screen_x[view],
                        screen_y[view]);
             map_views_block.map_view_recs[view].wnd_blit_surface_rect(
                        (iptr)(view_rects + view * 0x10));
@@ -6292,7 +6292,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
       last_time = now;
       for (view = 0; view < 8; view++) {
         if (view_active[view] != 0) {
-          gfx_copy_rect_clipped((iptr)(saved_bg + view),(iptr)&map_views_block.map_view_recs[view],0
+          gfx_copy_rect_clipped((saved_bg + view),&map_views_block.map_view_recs[view],0
                              ,0,0,0,screen_x[view],screen_y[view],
                              (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],
                              sprite_w[view],sprite_h[view]);
@@ -6356,7 +6356,7 @@ void __cdecl map_animate_nuke(int x,int y)
     ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
     anim_x = (map_views_block.mapview_half_tile_width + screen_x) - (anim_w >> 1);
     anim_y = (map_views_block.mapview_half_tile_height[0] + screen_y) - (anim_h >> 1);
-    gfx_copy_rect_clipped((iptr)&map_views_block.map_views,(iptr)saved_bg,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],map_views_block.mapview_client_origin_y[0],0,0,0,0,
+    gfx_copy_rect_clipped(&map_views_block.map_views,saved_bg,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],map_views_block.mapview_client_origin_y[0],0,0,0,0,
                        anim_w,anim_h);
     rect_set_xywh(&dirty_rect,anim_x,anim_y,anim_w,anim_h);
     if (dirty_rect.left < 0) {
@@ -6370,7 +6370,7 @@ void __cdecl map_animate_nuke(int x,int y)
       last_time = timeGetTime();
       ((MapView *)((i8 *)&map_views_block.map_views))->apply_zoom();
       for (frame2 = 0; frame2 < 0xb; frame2++) {
-        ((Sprite *)(((i8 *)&hill_sprites_block.nuke_anim_sprites) + frame2 * 0x3c))->draw((iptr)clip_rect,(iptr)&map_views_block.map_views,
+        ((Sprite *)(((i8 *)&hill_sprites_block.nuke_anim_sprites) + frame2 * 0x3c))->draw((RECT *)clip_rect,&map_views_block.map_views,
                    anim_x,anim_y);
         ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&dirty_rect);
         do {
@@ -6381,7 +6381,7 @@ void __cdecl map_animate_nuke(int x,int y)
           now = timeGetTime();
         } while ((int)(now - last_time) < 100);
         last_time = now;
-        gfx_copy_rect_clipped((iptr)saved_bg,(iptr)&map_views_block.map_views,0,0,0,0,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],
+        gfx_copy_rect_clipped(saved_bg,&map_views_block.map_views,0,0,0,0,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],
                            map_views_block.mapview_client_origin_y[0],anim_w,anim_h);
       }
       gfx_reset_zoom_scale();

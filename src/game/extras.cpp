@@ -330,9 +330,9 @@ void extras_draw_food_trend(iptr surface, int city, int x, int y)
     i8 rect[16];
     int surplus = extras_city_food_surplus(city);
     if (surplus > 0)
-        war_icon_sprite_block.resource_icon_sprites.draw((iptr)rect, surface, x, y + 2);
+        war_icon_sprite_block.resource_icon_sprites.draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
     else if (surplus < 0)
-        ((Sprite *)war_icon_sprite_block.resource_shortage_icon_sprites)->draw((iptr)rect, surface, x, y + 2);
+        ((Sprite *)war_icon_sprite_block.resource_shortage_icon_sprites)->draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
 }
 
 /* ---- X30, X37: icons in the text of a dialog's list rows ---- */
@@ -444,7 +444,7 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
     u8 *keep;
     DibSurface *s = (DibSurface *)surface;
     grey_map_update();
-    sprite->draw((iptr)&r, surface, x, y);
+    sprite->draw(&r, (DibSurface *)surface, x, y);
     w = r.right - r.left;
     h = r.bottom - r.top;
     if (w <= 0 || h <= 0 || w > 1024 || h > 1024)
@@ -453,7 +453,7 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++)
             keep[py * w + px] = (u8)(s->in_clip(r.left + px, r.top + py) ? s->get_pixel(r.left + px, r.top + py) : 0);
-    sprite->draw_silhouette((iptr)&r, surface, x, y, MARK);
+    sprite->draw_silhouette(&r, (DibSurface *)surface, x, y, MARK);
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++) {
             int c = keep[py * w + px];
@@ -806,7 +806,7 @@ i32 extras_unit_list_draw(Dialog *dialog, iptr surface, i32 unit, i32 flags, i32
     int zoom = -4, h = gfx_zoom_scale(0x30, zoom);
     (void)dialog;
     (void)flags;
-    gfx_draw_unit(surface, unit, 4, x, y - (h - row_height) / 2, zoom, 0);
+    gfx_draw_unit((DibSurface *)surface, unit, 4, x, y - (h - row_height) / 2, zoom, 0);
     return 0;
 }
 
@@ -954,20 +954,20 @@ void extras_draw_supported_units(CityWindow *w, int blit)
         int j = order[i], u = list[j], k, col = (i - first) % cols, row = (i - first) / cols;
         int x = left + margin_x + col * cell_w, y = top + margin_y + row * cell_h, ix, sp;
         i8 r[16], hot[16];
-        gfx_draw_unit((iptr)w, u, 4, x, y, zoom, 0);
+        gfx_draw_unit(w, u, 4, x, y, zoom, 0);
         gfx_set_zoom_scale(w->view_scale * 4 - 8);
         sp = ui_calc_item_spacing(icons[j], w->scale(10), unit_size, 0, 0);
         ix = x;
         if (unit_types[units[u].type].role == ROLE_SETTLE)
             for (k = 0; k < city_calc.settler_food_cost; k++, ix += sp)
-                small_resource_icon_sprites_block.small_resource_icon_sprites.draw((iptr)r, (iptr)w, ix, y + icon_offset_y);
+                small_resource_icon_sprites_block.small_resource_icon_sprites.draw((RECT *)r, w, ix, y + icon_offset_y);
         if (units[u].flags & UNITF_COSTS_SHIELD) {
-            small_resource_icon_sprites_block.small_shield_icon_sprite.draw((iptr)r, (iptr)w, ix, y + icon_offset_y);
+            small_resource_icon_sprites_block.small_shield_icon_sprite.draw((RECT *)r, w, ix, y + icon_offset_y);
             ix += sp;
         }
         for (k = 0; kind[j] && k < cost[j]; k++, ix += sp)
             ((Sprite *)(kind[j] == 1 ? small_unhappy_icon_sprite : unhappy_suppressed_icon_sprite))
-                ->draw((iptr)r, (iptr)w, ix, y + icon_offset_y);
+                ->draw((RECT *)r, w, ix, y + icon_offset_y);
         gfx_reset_zoom_scale();
         rect_set_xywh((RECT *)hot, x, y, unit_size, unit_size);
         w->clickmap.hotspot_add_rect(u, 6, (RECT *)hot);
@@ -1043,15 +1043,15 @@ static void status_draw_production_icon(int city, int x, int y)
     int b = cities[city].building;
     if (b >= 0) {
         gfx_set_zoom_scale(-4);
-        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + b * 0x3c))->draw((iptr)r, (iptr)&advisor_state.window, x, y - 2);
+        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + b * 0x3c))->draw((RECT *)r, &advisor_state.window, x, y - 2);
         gfx_reset_zoom_scale();
     } else if (-b < 0x27)
         ((Sprite *)(caption_close_button_sprite_block.improvement_icon_sprites + -b * 0x3c))
-            ->draw((iptr)r, (iptr)&advisor_state.window, x, y);
+            ->draw((RECT *)r, &advisor_state.window, x, y);
     else {
         gfx_set_zoom_scale(-4);
         ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (-b * 4 - 0x9c) * 0xf))
-            ->draw((iptr)r, (iptr)&advisor_state.window, x, y);
+            ->draw((RECT *)r, &advisor_state.window, x, y);
         gfx_reset_zoom_scale();
     }
 }
@@ -1069,7 +1069,7 @@ void extras_city_status_draw(void)
     list_bottom = advisor_state.client_y + 0x174;
     line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
     status_collect(civ);
-    text_set_surface((iptr)&advisor_state.window);
+    text_set_surface(&advisor_state.window);
     text_set_font((iptr)&advisor_font_block.advisor_font);
     text_set_colors(0x25, 0x12, 2, 1);
     text_clear();
@@ -1108,7 +1108,7 @@ void extras_city_status_draw(void)
     gfx_draw_text(extras_text("name"), status_col_name, status_header_top);
     for (i = 0; i < 3; i++) {
         ((Sprite *)(((i8 *)&war_icon_sprite_block.resource_icon_sprites) + i * 0x78))
-            ->draw((iptr)sprite_rect, (iptr)&advisor_state.window, status_col_res + 0x10 + i * 0x26, status_header_top + 2);
+            ->draw((RECT *)sprite_rect, &advisor_state.window, status_col_res + 0x10 + i * 0x26, status_header_top + 2);
         if (status_sort == SORT_FOOD + i)
             gfx_draw_text("*", status_col_res + 0x10 + i * 0x26 + 0x10, status_header_top);
     }
@@ -1125,7 +1125,7 @@ void extras_city_status_draw(void)
     for (row = 0; row < rows_per_page && advisor_state.first_row + row < status_count; row++) {
         int city = status_cities[advisor_state.first_row + row], y = status_list_top + row * 0x18, ty = y + 9;
         uint cost;
-        gfx_draw_city((iptr)&advisor_state.window, city, 0, ((row + 1) & 1) * 0x40 + advisor_state.client_x + 2, y, 0);
+        gfx_draw_city(&advisor_state.window, city, 0, ((row + 1) & 1) * 0x40 + advisor_state.client_x + 2, y, 0);
         text_set_font((iptr)&advisor_bold_font);
         text_set_colors(0x25, 0x12, 1, 1);
         gfx_draw_text((const char *)&cities[city].name, status_col_name, ty);
@@ -1136,7 +1136,7 @@ void extras_city_status_draw(void)
                                                                             : (int)cities[city].trade);
             x = gfx_draw_text((const char *)&textbuf.buf, x, ty) + 2;
             ((Sprite *)(((i8 *)&war_icon_sprite_block.resource_icon_sprites) + i * 0x78))
-                ->draw((iptr)sprite_rect, (iptr)&advisor_state.window, x, ty);
+                ->draw((RECT *)sprite_rect, &advisor_state.window, x, ty);
             x += 0x12;
         }
         x = status_col_prod;
@@ -1319,9 +1319,9 @@ static void tip_show(int x, int y, POINT at)
     SetRect(&r, bx, by, bx + w + 8, by + n * lh + 6);
     SetRect(&clip, m->client_x, m->client_y, m->client_x + m->client_width, m->client_y + m->client_height);
     ((DibSurface *)m)->set_clip(&clip);
-    gfx_fill_rect((iptr)m, &r, 10);
-    gfx_draw_rect_frame((iptr)m, &r, 0x29);
-    text_set_surface((iptr)m);
+    gfx_fill_rect(m, &r, 10);
+    gfx_draw_rect_frame(m, &r, 0x29);
+    text_set_surface(m);
     text_set_font(font);
     for (i = 0; i < n; i++) {
         char part[96];
@@ -1339,7 +1339,7 @@ static void tip_show(int x, int y, POINT at)
                 Sprite *s = t[1] == 't' ? (Sprite *)&war_icon_sprite_block.trade_icon_sprite : extras_icon(t[1]);
                 i8 sr[16];
                 if (s) {
-                    s->draw((iptr)sr, (iptr)m, tx, ty + 1);
+                    s->draw((RECT *)sr, m, tx, ty + 1);
                     tx += s->get_width() + 1;
                 }
                 t += 2;
@@ -1461,7 +1461,7 @@ void extras_draw_map_messages(iptr surface, int blit)
     SetRect(&clip, m->client_x, m->client_y, m->client_x + m->client_width, m->client_y + m->client_height);
     SetRect(&r, m->client_x, y, m->client_x + m->client_width, y);
     ((DibSurface *)m)->set_clip(&clip);
-    text_set_surface(surface);
+    text_set_surface((DibSurface *)surface);
     text_set_font(font);
     for (i = 0; i < 4; i++) {
         if (!messages[i].text[0])
@@ -1627,8 +1627,8 @@ static void draw_path(const int *x, const int *y, int n, int color)
         tile_center(m, x[i + 1], y[i + 1], &x2, &y2);
         if (abs(x2 - x1) > m->client_width / 2)
             continue;               /* across the map's wrap */
-        gfx_draw_line_color((iptr)m, x1, y1, x2, y2, 10);
-        gfx_draw_line_color((iptr)m, x1, y1 - 1, x2, y2 - 1, color);
+        gfx_draw_line_color(m, x1, y1, x2, y2, 10);
+        gfx_draw_line_color(m, x1, y1 - 1, x2, y2 - 1, color);
     }
     ((DibSurface *)m)->reset_clip();
     ((DibSurface *)m)->wnd_blit_surface_rect((iptr)&clip);
