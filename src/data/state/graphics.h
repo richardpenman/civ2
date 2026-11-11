@@ -306,7 +306,7 @@ typedef struct SpriteEditorState {
     i8 plot_rect;  /* 006ac108 */
     u8 plot_rect_rest[15];
     int paint_tool;  /* 006ac118 */
-    int sprite_picker_dialog;  /* 006ac11c */
+    struct SpritePicker *sprite_picker_dialog;  /* 006ac11c */
     int tool;  /* 006ac120 */
     i32 brush_size;  /* 006ac124 */
     DibSurface surface;  /* 006ac128 */

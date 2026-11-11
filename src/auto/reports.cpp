@@ -4858,7 +4858,7 @@ i32 EndgameMovieWindow::defeat_movie_wnd_create(uint civ)
         media_wnd.fill(0);
         media_wnd.window.center();
         media_wnd.set_end_callback(defeat_movie_on_video_end);
-        SetRect((LPRECT)(movie_caption_rect),0x28,100,600,0x1e0);
+        SetRect(&movie_caption_rect,0x28,100,600,0x1e0);
         result = media_wnd.get_height();
         width = media_wnd.get_width();
         movie_frame_surface.DibSurface::create(width,result);
@@ -4922,16 +4922,16 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
       text_clear();
       text_expand_vars_max(((const char *)movie_caption_text),textbuf.buf,TEXTBUF_SIZE);
       movie_frame_surface.DibSurface::blit(&media_wnd,
-                 (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
-      OffsetRect((LPRECT)(movie_caption_rect),1,1);
+                 &movie_caption_rect,&movie_caption_rect);
+      OffsetRect(&movie_caption_rect,1,1);
       gfx_set_text_color_index(0);
       media_wnd.draw_text_rect((iptr)&movie_caption_font,(const char *)&textbuf.buf,
-                 (iptr)(movie_caption_rect),0);
-      OffsetRect((LPRECT)(movie_caption_rect),-1,-1);
+                 (iptr)&movie_caption_rect,0);
+      OffsetRect(&movie_caption_rect,-1,-1);
       gfx_set_text_color_index(0xff);
       media_wnd.draw_text_rect((iptr)&movie_caption_font,(const char *)&textbuf.buf,
-                 (iptr)(movie_caption_rect),0);
-      gfx_dissolve_blit(&media_wnd,((RECT *)movie_caption_rect),4,5);
+                 (iptr)&movie_caption_rect,0);
+      gfx_dissolve_blit(&media_wnd,&movie_caption_rect,4,5);
       text_close_file();
       ui_delay_ticks(0x168);
     }
@@ -5016,7 +5016,7 @@ void __cdecl endgame_spaceship_arrival(int civ)
     else {
       window = self->arrival_movie_wnd_construct();
     }
-    spaceship_arrival_window = (iptr)window;
+    spaceship_arrival_window = (EndgameMovieWindow *)window;
     if (window != (EndgameMovieWindow *)0x0) {
       created = window->arrival_movie_wnd_create(civ);
       if (created == 0) {
@@ -5041,10 +5041,10 @@ void __cdecl endgame_spaceship_arrival(int civ)
         dialog2.show_modal(0);
       }
       else {
-        ((EndgameMovieWindow *)spaceship_arrival_window)->arrival_movie_wnd_play();
+        spaceship_arrival_window->arrival_movie_wnd_play();
       }
       if (spaceship_arrival_window != 0) {
-        ((EndgameMovieWindow *)spaceship_arrival_window)->arrival_movie_wnd_scalar_destruct(1);
+        spaceship_arrival_window->arrival_movie_wnd_scalar_destruct(1);
       }
       spaceship_arrival_window = 0;
     }
@@ -5136,7 +5136,7 @@ i32 EndgameMovieWindow::arrival_movie_wnd_create(iptr civ)
         media_wnd.window.center();
         media_wnd.set_end_callback(arrival_movie_on_video_end);
         media_wnd.set_frame_callback(arrival_movie_on_frame,0x2ab);
-        SetRect((LPRECT)(movie_caption_rect),2,100,0x27e,0x1e0);
+        SetRect(&movie_caption_rect,2,100,0x27e,0x1e0);
         result = media_wnd.get_height();
         width = media_wnd.get_width();
         movie_frame_surface.DibSurface::create(width,result);
@@ -5204,16 +5204,16 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
       text_clear();
       text_expand_vars_max(((const char *)movie_caption_text),textbuf.buf,TEXTBUF_SIZE);
       movie_frame_surface.DibSurface::blit(&media_wnd,
-                 (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
-      OffsetRect((LPRECT)(movie_caption_rect),1,1);
+                 &movie_caption_rect,&movie_caption_rect);
+      OffsetRect(&movie_caption_rect,1,1);
       gfx_set_text_color_index(0);
       media_wnd.draw_text_rect((iptr)&movie_caption_font,(const char *)&textbuf.buf,
-                 (iptr)(movie_caption_rect),0);
-      OffsetRect((LPRECT)(movie_caption_rect),-1,-1);
+                 (iptr)&movie_caption_rect,0);
+      OffsetRect(&movie_caption_rect,-1,-1);
       gfx_set_text_color_index(0xf1);
       media_wnd.draw_text_rect((iptr)&movie_caption_font,(const char *)&textbuf.buf,
-                 (iptr)(movie_caption_rect),0);
-      gfx_dissolve_blit(&media_wnd,((RECT *)movie_caption_rect),4,5);
+                 (iptr)&movie_caption_rect,0);
+      gfx_dissolve_blit(&media_wnd,&movie_caption_rect,4,5);
       text_close_file();
       ui_delay_ticks(0x168);
     }
@@ -5243,32 +5243,32 @@ void __cdecl arrival_movie_on_frame(void)
   int text_y2;
   RECT dirty_rect;
   
-  *(i32 *)(spaceship_arrival_window + 0xa98) = 0;
-  str_clear((char *)(spaceship_arrival_window + 0xf24));
+  spaceship_arrival_window->media_wnd.paused = 0;
+  str_clear((char *)spaceship_arrival_window->movie_caption_text);
   text_clear();
   status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_centauri3);
   if (status == 0) {
     text_y2 = 0xc;
-    text_set_font((GameFont *)(spaceship_arrival_window + 0xf1c));
-    text_set_surface((DibSurface *)(spaceship_arrival_window + 0x4ec));
+    text_set_font(&spaceship_arrival_window->movie_caption_font);
+    text_set_surface(&spaceship_arrival_window->media_wnd);
     text_set_colors(0xff,0,1,1);
     while( true ) {
       line = text_read_line_or_end(1);
       if (*line == '@') break;
-      str_clear((char *)(spaceship_arrival_window + 0xf24));
+      str_clear((char *)spaceship_arrival_window->movie_caption_text);
       /* BF-062, BF-063 */
-      str_append_max((char *)(spaceship_arrival_window + 0xf24),(const char *)text_parse.line_cursor,0x400);
-      text_expand_vars_max((const char *)(spaceship_arrival_window + 0xf24),textbuf.buf,TEXTBUF_SIZE);
-      width = rect_width((RECT *)(spaceship_arrival_window + 0x136c));
-      gfx_draw_text_centered((const char *)&textbuf.buf,*(i32 *)(spaceship_arrival_window + 0x136c),text_y2,width);
-      status = ((GameFont *)(spaceship_arrival_window + 0xf1c))->line_spacing();
+      str_append_max((char *)spaceship_arrival_window->movie_caption_text,(const char *)text_parse.line_cursor,0x400);
+      text_expand_vars_max((const char *)spaceship_arrival_window->movie_caption_text,textbuf.buf,TEXTBUF_SIZE);
+      width = rect_width((RECT *)((iptr)spaceship_arrival_window + 0x136c));
+      gfx_draw_text_centered((const char *)&textbuf.buf,(i32)spaceship_arrival_window->movie_caption_rect.left,text_y2,width);
+      status = spaceship_arrival_window->movie_caption_font.line_spacing();
       text_y2 += status;
     }
-    dirty_rect.left = *(i32 *)(spaceship_arrival_window + 0x136c);
-    dirty_rect.right = *(i32 *)(spaceship_arrival_window + 0x1374);
+    dirty_rect.left = (i32)spaceship_arrival_window->movie_caption_rect.left;
+    dirty_rect.right = (i32)spaceship_arrival_window->movie_caption_rect.right;
     dirty_rect.top = 0xc;
     dirty_rect.bottom = text_y2;
-    gfx_dissolve_blit((DibSurface *)(spaceship_arrival_window + 0x4ec),&dirty_rect,4,5);
+    gfx_dissolve_blit(&spaceship_arrival_window->media_wnd,&dirty_rect,4,5);
     text_close_file();
   }
   return;
@@ -5278,7 +5278,7 @@ void __cdecl arrival_movie_on_frame(void)
 void __cdecl arrival_movie_on_video_end(void)
 
 {
-  ((ModalMenuWindow *)(spaceship_arrival_window + 0x534))->end_modal_loop();
+  spaceship_arrival_window->media_wnd.window.end_modal_loop();
   return;
 }
 
@@ -5985,7 +5985,7 @@ DestroyedCivsWindow *DestroyedCivsWindow::construct()
   sprite_init(&portrait_sprite);
   caption_font_2.init_empty();
   killer_civ = 0;
-  (*(DestroyedCivsWindow * *)&victory_screen_wnd) = this;
+  victory_screen_wnd = this;
   slide_y = 0;
   SetRect((LPRECT)&panel_clip_rect,0xd0,0x39,0x1b1,0x14c);
   caption_font_2.set_styled(0,0x18,1);
@@ -6319,7 +6319,7 @@ void DestroyedCivsWindow::slide_up()
 void __cdecl victory_screen_on_click(void)
 
 {
-  ((ModalMenuWindow *)(victory_screen_wnd + 0x534))->end_modal_loop();
+  victory_screen_wnd->surface_wnd.window.end_modal_loop();
   return;
 }
 
@@ -6328,7 +6328,7 @@ void __cdecl victory_screen_on_key(int key)
 
 {
   if ((0xcf < key) && (key < 0xd3)) {
-    ((ModalMenuWindow *)(victory_screen_wnd + 0x534))->end_modal_loop();
+    victory_screen_wnd->surface_wnd.window.end_modal_loop();
   }
   return;
 }
@@ -7070,7 +7070,7 @@ void __cdecl council_on_video_end(void)
   self = council_state.wnd;
   council_state.video_busy = 1;
   if (council_state.wnd->council_active_2 == 0) {
-    ((WndBase *)((iptr)council_state.wnd + 0x15c))->hide();
+    council_state.wnd->video.window.hide();
     if ((self->speech_advisor_index < 3) && (-1 < (int)self->speech_line_advisors[self->speech_advisor_index])
        ) {
       self->move_video_to_slot((iptr)self->speech_line_advisors[self->speech_advisor_index]);

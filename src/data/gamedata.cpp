@@ -769,7 +769,7 @@ GAMEDATA(16) char str_archaeologists[16] = "ARCHAEOLOGISTS";  /* 0062b840 */
 GAMEDATA(16) char str_empty_86[4] = " ";  /* 0062b850 */
 GAMEDATA(4) char str_archaeologists3[16] = "ARCHAEOLOGISTS3";  /* 0062b854 */
 GAMEDATA(4) char str_empty_87[24] = " ";  /* 0062b864 */
-GAMEDATA(4) iptr spaceship_arrival_window = {0};  /* 0062b87c */
+GAMEDATA(4) EndgameMovieWindow *spaceship_arrival_window = {0};  /* 0062b87c */
 GAMEDATA(16) char str_0_000_3[8] = "0,000";  /* 0062b880 */
 GAMEDATA(8) char str_centauri[12] = "CENTAURI";  /* 0062b888 */
 GAMEDATA(4) char str_civ2_civ2_exe[16] = "civ2\\civ2.exe";  /* 0062b894 */
@@ -1906,7 +1906,7 @@ GAMEDATA(8) char str_tail_400_tail_max_msgs_in_queue[40] = "tail >= 400 && tail 
 GAMEDATA(16) char str_d_ss_franklinton_netmessagequeue_cpp_6[40] = "D:\\Ss\\Franklinton\\NetMessageQueue.cpp";  /* 00631980 */
 GAMEDATA(8) char str_msgqueue_tail_pdata[24] = "msgQueue[tail].pData";  /* 006319a8 */
 GAMEDATA(16) char str_enqueuemessage_primary_failed_to_allocat[216] = "EnqueueMessage[Primary]: Failed to allocate memory. Message: %d. Size: %d";  /* 006319c0 */
-GAMEDATA(8) int victory_screen_wnd = {0};  /* 00631a98 */
+GAMEDATA(8) DestroyedCivsWindow *victory_screen_wnd = {0};  /* 00631a98 */
 GAMEDATA(4) i32 destroyed_civs_show_date = {0};  /* 00631a9c */
 GAMEDATA(16) char str_civ2_mk_dll_2[12] = "civ2\\mk.dll";  /* 00631aa0 */
 GAMEDATA(4) u8 str_empty_156[4] = {0};  /* 00631aac */

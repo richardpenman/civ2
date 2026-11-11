@@ -137,7 +137,7 @@ void __cdecl spaceship_wnd_draw_title(int civ)
   text_append((const char *)&str_empty_124);
   gfx_set_text_color_index(0xfa);
   SetRect(&rect,0,0,0x27f,0x28);
-  ((DibSurface *)((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0xb8))->draw_text_in_rect((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0x8c4,(const char *)&textbuf.buf,&rect,
+  spaceship_launch_sprite_xs_block.spaceship_wnd->surface_wnd.draw_text_in_rect((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0x8c4,(const char *)&textbuf.buf,&rect,
              0);
   win_flush_pending_msgs();
   return;
@@ -816,14 +816,14 @@ void SpaceshipWindow::play_launch_video()
   else {
     player = this_00->construct();
   }
-  launch_video_player = (u32)player;
+  launch_video_player = (AviPlayer *)player;
   str_clear((char *)video_path);
   str_append((char *)video_path,(const char *)&str_civ2_video_launch_avi);
   found = file_resolve_path((const char *)video_path);
   if (found != 0) {
-    ((AviPlayer *)launch_video_player)->create((iptr)&str_empty_136,0x800,0,0);
-    ((AviPlayer *)launch_video_player)->set_double_size(1);
-    open_result = ((AviPlayer *)launch_video_player)->open((const char *)video_path);
+    launch_video_player->create((iptr)&str_empty_136,0x800,0,0);
+    launch_video_player->set_double_size(1);
+    open_result = launch_video_player->open((const char *)video_path);
     if (open_result != 0) {
       if (open_result == -0x7ffbfeac) {
         popup_game((const char *)&str_vfwnotregistered_6);
@@ -833,27 +833,27 @@ void SpaceshipWindow::play_launch_video()
     surface_wnd.window.hide();
     wnd_flush_paint();
     ((DibSurface *)launch_video_player)->fill(0);
-    ((WndHandlers *)(launch_video_player + 0x58))->set_lbuttonup_handler(spaceship_video_on_lbuttonup);
-    ((WndHandlers *)(launch_video_player + 0x58))->set_keydown_handler(spaceship_wnd_on_key);
-    ((AviPlayer *)launch_video_player)->set_end_callback(spaceship_video_on_end);
-    ((WndBase *)(launch_video_player + 0x48))->center();
+    launch_video_player->window.wnd_handlers.set_lbuttonup_handler(spaceship_video_on_lbuttonup);
+    launch_video_player->window.wnd_handlers.set_keydown_handler(spaceship_wnd_on_key);
+    launch_video_player->set_end_callback(spaceship_video_on_end);
+    launch_video_player->window.center();
     ((DibSurface *)launch_video_player)->wnd_blit_surface();
     ((SurfaceWindow *)launch_video_player)->SurfaceWindow::show();
     wnd_flush_paint();
-    ((AviPlayer *)launch_video_player)->play();
+    launch_video_player->play();
     input_flush_events();
-    ((WndBase *)(launch_video_player + 0x48))->set_capture();
+    launch_video_player->window.set_capture();
     if (2 < game.multiplayer) {
-      ((ModalMenuWindow *)(launch_video_player + 0x48))->set_modal_idle_callback(net_modal_idle_poll);
+      launch_video_player->window.set_modal_idle_callback(net_modal_idle_poll);
     }
-    ((ModalMenuWindow *)(launch_video_player + 0x48))->run_modal_loop();
-    ((ModalMenuWindow *)(launch_video_player + 0x48))->set_modal_idle_callback(0);
-    ((WndBase *)(launch_video_player + 0x48))->release_capture();
-    ((WndBase *)(launch_video_player + 0x48))->hide();
+    launch_video_player->window.run_modal_loop();
+    launch_video_player->window.set_modal_idle_callback(0);
+    launch_video_player->window.release_capture();
+    launch_video_player->window.hide();
     wnd_flush_paint();
   }
-  if ((AviPlayer *)launch_video_player != (AviPlayer *)0x0) {
-    ((AviPlayer *)launch_video_player)->scalar_destruct(1);
+  if (launch_video_player != (AviPlayer *)0x0) {
+    launch_video_player->scalar_destruct(1);
   }
   launch_video_player = 0;
   snd_sync_music_option();
@@ -970,10 +970,10 @@ void __cdecl spaceship_video_on_lbuttonup(i32 x,i32 y)
   }
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
   if ((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_state == 2) {
-    ((ModalMenuWindow *)((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player + 0x48))->end_modal_loop();
+    spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player->window.end_modal_loop();
   }
   else {
-    hit = ((ClickMap *)((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0xae4))->hit_test(x,y,(iptr)&hotspot_id,0);
+    hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0);
     if (hit != -1) {
       if (hotspot_id == 0) {
         ship_wnd->draw_close_btn(1,0);
@@ -1116,7 +1116,7 @@ void __cdecl spaceship_wnd_on_key(int key)
   }
   if ((0xcf < key) && (key < 0xd3)) {
     if ((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_state == 2) {
-      ((ModalMenuWindow *)((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player + 0x48))->end_modal_loop();
+      spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player->window.end_modal_loop();
     }
     else {
       spaceship_launch_sprite_xs_block.spaceship_wnd->draw_close_btn(1,0);
@@ -1144,7 +1144,7 @@ void __cdecl spaceship_video_on_end(void)
 
 {
   if (spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player != 0) {
-    ((ModalMenuWindow *)((int)spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player + 0x48))->end_modal_loop();
+    spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player->window.end_modal_loop();
   }
   return;
 }
@@ -1159,7 +1159,7 @@ void __cdecl spaceship_wnd_on_lbuttondown(i32 x,i32 y)
   
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
   if (((spaceship_launch_sprite_xs_block.spaceship_wnd->launch_btn_pressed == 0) && (spaceship_launch_sprite_xs_block.spaceship_wnd->close_btn_pressed == 0)) &&
-     (hit = ((ClickMap *)((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0xae4))->hit_test(x,y,(iptr)&hotspot_id,0),
+     (hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0),
      hit != -1)) {
     if (hotspot_id == 0) {
       (ship_wnd)->close_btn_pressed = 1;
@@ -1202,7 +1202,7 @@ void __cdecl spaceship_wnd_on_lbuttonup(i32 x,i32 y)
     active_wnd -= 0x48;
   }
   if (ship_wnd->launch_state == 2) {
-    ((ModalMenuWindow *)((int)(ship_wnd)->launch_video_player + 0x48))->end_modal_loop();
+    ship_wnd->launch_video_player->window.end_modal_loop();
   }
   else if (((ship_wnd)->launch_btn_pressed != 0) ||
           ((ship_wnd)->close_btn_pressed != 0)) {
@@ -1264,7 +1264,7 @@ void __cdecl spaceship_wnd_on_mousemove(i32 x,i32 y)
   SpaceshipWindow *ship_wnd;
   
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
-  hit = ((ClickMap *)((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0xae4))->hit_test(x,y,(iptr)&hotspot_id,0);
+  hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0);
   if (hit == -1) {
     if ((((ship_wnd)->close_btn_pressed != 0) &&
         (ship_wnd->draw_close_btn(1,1), ship_wnd->launch_state == 1)) &&

@@ -197,7 +197,7 @@ def global_type(name):
         GLOBALS = {}
         for h in [os.path.join(ROOT, 'src/data/gamedata.h')] + glob.glob(os.path.join(ROOT, 'src/data/state/*.h')):
             for line in open(h):
-                m = re.match(r'\s*(?:extern\s+|inline\s+constexpr\s+)*((?:const\s+)?[A-Za-z_]\w*(?:\s+[A-Za-z_]\w*)*\s*[*&]*)\s*(\w+)\s*(?:\[[^\]]*\])?\s*(?:=|;)', line)
+                m = re.match(r'\s*(?:extern\s+|inline\s+constexpr\s+)*((?:const\s+)?[A-Za-z_]\w*(?:\s+[A-Za-z_]\w*)*(?:\s*[*&]+\s*|\s+))(\w+)\s*(?:\[[^\]]*\])?\s*(?:=|;)', line)
                 if m and ('extern' in line or 'constexpr' in line):
                     GLOBALS.setdefault(m.group(2), norm(m.group(1).replace('&', '')))
     return GLOBALS.get(name)

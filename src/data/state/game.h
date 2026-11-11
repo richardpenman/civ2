@@ -85,7 +85,7 @@ extern BlinkState blink;
 #pragma pack(push, 1)
 typedef struct IntroState {
     i32 theme_started;  /* 0062af10 */
-    int video_player;  /* 0062af14 */
+    struct AviPlayer *video_player;  /* 0062af14 */
 } IntroState;
 #pragma pack(pop)
 extern IntroState intro;

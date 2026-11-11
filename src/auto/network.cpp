@@ -605,7 +605,7 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
   self->list_dialog->set_default_choice(0);
   self->update_details();
   self->list_dialog->render();
-  ((ModalMenuWindow *)(self->list_dialog->surf_wnd + 0x48))->set_modal_idle_callback(net_gamelist_poll_idle);
+  self->list_dialog->surf_wnd->window.set_modal_idle_callback(net_gamelist_poll_idle);
   for (;;) {
     net.listing_games = 1;
     self->start_timer((TimerFn)net_gamelist_poll_tick);
@@ -1109,7 +1109,7 @@ void __cdecl net_join_wait_gamestate_idle(void)
   }
   else {
     (*(Dialog * *)&net.dialog_stack_top)->style_flags = (*(Dialog * *)&net.dialog_stack_top)->style_flags | 0x400;
-    ((ModalMenuWindow *)((*(Dialog * *)&net.dialog_stack_top)->surf_wnd + 0x48))->end_modal_loop();
+    (*(Dialog * *)&net.dialog_stack_top)->surf_wnd->window.end_modal_loop();
   }
   return;
 }
@@ -1355,7 +1355,7 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
   }
   else {
     for (; (found_game != 0 &&
-           (found_game->list_id != *(int *)((int)net.gamelist_view->list_dialog->selected_option + 4)));
+           (found_game->list_id != net.gamelist_view->list_dialog->selected_option->id));
         found_game = found_game->next) {
     }
     if (found_game != 0) {
@@ -1476,7 +1476,7 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
     }
   }
   scroll_pos = net.gamelist_view->list_dialog->option_group_index(net.gamelist_view->list_dialog->list_top_option[0]);
-  (*(Scrollbar **)((int)net.gamelist_view->list_dialog + 0x284))->set_pos(scroll_pos);
+  ((Scrollbar *)net.gamelist_view->list_dialog->list_vscroll[0])->set_pos(scroll_pos);
   net.gamelist_view->list_dialog->render();
   return 1;
 }
@@ -15547,7 +15547,7 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
     dialog->set_listbox(7,0x1b7,0);
     dialog->set_default_choice(next_id - 1);
     dialog->render();
-    ((ModalMenuWindow *)((int)dialog->surf_wnd + 0x48))->set_modal_idle_callback(lobby_dialog_idle);
+    dialog->surf_wnd->window.set_modal_idle_callback(lobby_dialog_idle);
     if (net.lobby_launch_mode == 2) {
       dbg_log((const char *)&str_igz_sending_dplsys_connectionsettingsrea);
       result = XD_LobbySendMessage(1);
@@ -15862,7 +15862,7 @@ void __cdecl lobby_refresh_player_list(void)
   uptr entry;
   
   if (net.net_lobby_list != (LobbyList *)0x0) {
-    selected_id = *(int *)((int)net.net_lobby_list->dialog->selected_option + 4);
+    selected_id = net.net_lobby_list->dialog->selected_option->id;
     net.net_lobby_list->clear_player_list();
     if (net.net_player_count[0] == 0) {
       net.net_lobby_list->add_waiting_entry();

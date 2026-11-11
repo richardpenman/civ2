@@ -2351,7 +2351,7 @@ void __cdecl intro_play_opening_video(void)
   dll.init();
   ON_SCOPE_EXIT(dll.free());
   gfx_get_screen_rect(&screen_rect2);
-  (*(i8 * *)&intro.video_player) = (i8 *)&player;
+  intro.video_player = &player;
   str_clear((char *)path);
   str_append((char *)path,(const char *)&str_civ2_civ2art_dll);
   found = file_resolve_path((const char *)path);
@@ -2363,7 +2363,7 @@ void __cdecl intro_play_opening_video(void)
     if (found != 0) {
       ((WndBase *)&host_wnd)->create_with_cmd_proc((const char *)&str_empty_82,0x800,0,0,screen_rect2.right,screen_rect2.bottom + 5,(iptr)&game_palette_block.game_palette);
       ((WndBase *)&host_wnd)->set_bg_color(0);
-      (*(i8 * *)&intro.video_player) = (i8 *)&player;
+      intro.video_player = &player;
       player.create((iptr)&str_empty_83,0x800,0,0);
       player.window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)intro_video_on_click);
       player.window.wnd_handlers.set_keydown_handler(intro_video_on_keydown);
@@ -2389,14 +2389,14 @@ void __cdecl intro_play_opening_video(void)
         ((WndBase *)&player.window)->hide();
         wnd_flush_paint();
         ((WndBase *)&host_wnd)->hide();
-        (*(i8 * *)&intro.video_player) = (i8 *)0x0;
+        intro.video_player = 0;
         dll.dll_handle_free();
       }
       else {
         if (open_rc == -0x7ffbfeac) {
           popup_game((const char *)&str_vfwnotregistered);
         }
-        (*(i8 * *)&intro.video_player) = (i8 *)0x0;
+        intro.video_player = 0;
       }
     }
   }
@@ -2408,7 +2408,7 @@ void __cdecl intro_video_on_end(void)
 
 {
   if (intro.video_player != 0) {
-    ((ModalMenuWindow *)(intro.video_player + 0x48))->end_modal_loop();
+    intro.video_player->window.end_modal_loop();
     intro.theme_started = 1;
     snd_play_effect(SND_MENULOOP,0,1,0);
   }
@@ -2423,7 +2423,7 @@ void __cdecl intro_video_on_keydown(int key)
     snd_play_effect(SND_MENULOOP,0,1,0);
     intro.theme_started = 1;
     if (intro.video_player != 0) {
-      ((ModalMenuWindow *)(intro.video_player + 0x48))->end_modal_loop();
+      intro.video_player->window.end_modal_loop();
     }
   }
   return;
@@ -2434,7 +2434,7 @@ void __cdecl intro_video_on_click(void)
 
 {
   if (intro.video_player != 0) {
-    ((ModalMenuWindow *)(intro.video_player + 0x48))->end_modal_loop();
+    intro.video_player->window.end_modal_loop();
   }
   return;
 }

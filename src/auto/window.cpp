@@ -6167,8 +6167,8 @@ void Dialog::close()
     list_hscroll[1] = 0;
   }
   if (((style_flags & 0x10) == 0) && (surf_wnd != 0)) {
-    if ((SurfaceWindow *)surf_wnd != (SurfaceWindow *)0x0) {
-      ((SurfaceWindow *)surf_wnd)->SurfaceWindow::scalar_destruct(1);
+    if (surf_wnd != (SurfaceWindow *)0x0) {
+      surf_wnd->SurfaceWindow::scalar_destruct(1);
     }
     surf_wnd = 0;
     style_flags = style_flags | 0x10;
@@ -6213,7 +6213,7 @@ void Dialog::init(iptr surface_wnd,iptr background,RECT *rect,u32 flags)
   set_font((iptr)dlg_style.default_text_font);
   set_title_font((iptr)(*(i8 * *)dlg_style.default_text_font_rest));
   set_list_font((iptr)(*(i8 * *)(dlg_style.default_text_font_rest + 4)));
-  surf_wnd = surface_wnd;
+  surf_wnd = (SurfaceWindow *)surface_wnd;
   bg_surface = background;
   result_id = 0;
   style_flags = flags;
@@ -7810,7 +7810,7 @@ uint Dialog::draw_option(DialogOption *option,int blit)
         inner_rect.left = cell_rect.left + (int)list_indents[option->group];
       }
       if ((on_draw_option == 0) ||
-         (group_index = on_draw_option(this,surf_wnd,option->id,group_index,cell_x,cell_y
+         (group_index = on_draw_option(this,(iptr)surf_wnd,option->id,group_index,cell_x,cell_y
                              ,(i32)list_row_height[option->group]),
          group_index == 0)) {
         if (is_selected != 0) {
@@ -8105,7 +8105,7 @@ i32 Dialog::create_window()
     else {
       surf_wnd2 = this_00->SurfaceWindow::construct();
     }
-    surf_wnd = (uptr)surf_wnd2;
+    surf_wnd = (SurfaceWindow *)surf_wnd2;
     empty_title[0] = 0;
     title = (i8 *)title_text;
     if (title == (i8 *)0x0) {
@@ -8143,7 +8143,7 @@ i32 Dialog::create_window()
                  window_y,wnd_width,wnd_height,(iptr)palette,(iptr)parent2);
     }
     if ((style_flags & 0x10000) == 0) {
-      ((WndBase *)(surf_wnd + 0x48))->set_caption_height(title_height);
+      surf_wnd->window.set_caption_height(title_height);
     }
     surf_width = ((DibSurface *)surf_wnd)->get_width();
     if ((int)wnd_width <= surf_width) {
@@ -8155,18 +8155,18 @@ i32 Dialog::create_window()
       new_size = ((DibSurface *)surf_wnd)->get_height();
       wnd_height = new_size;
     }
-    ((SurfaceWindow *)surf_wnd)->set_redraw_callback(dialog_on_redraw);
+    surf_wnd->set_redraw_callback(dialog_on_redraw);
     if (dlg_style.pending_idle_callback == 0) {
       if (dlg_style.default_idle_callback != 0) {
-        ((ModalMenuWindow *)(surf_wnd + 0x48))->set_modal_idle_callback(dlg_style.default_idle_callback);
+        surf_wnd->window.set_modal_idle_callback(dlg_style.default_idle_callback);
       }
     }
     else {
-      ((ModalMenuWindow *)(surf_wnd + 0x48))->set_modal_idle_callback(dlg_style.pending_idle_callback);
+      surf_wnd->window.set_modal_idle_callback(dlg_style.pending_idle_callback);
       dlg_style.pending_idle_callback = 0;
     }
     if (dlg_style.pending_move_handler != 0) {
-      ((WndHandlers *)(surf_wnd + 0x58))->set_move_handler(dlg_style.pending_move_handler);
+      surf_wnd->window.wnd_handlers.set_move_handler(dlg_style.pending_move_handler);
       dlg_style.pending_move_handler = 0;
     }
     result = 1;
@@ -8217,7 +8217,7 @@ void Dialog::create_radio_group(uint *labels)
     parent_18c = 0;
   }
   else {
-    parent_18c = surf_wnd + 0x48;
+    parent_18c = (uptr)&surf_wnd->window;
   }
   ((RadioGroup *)radio_group)->create(parent_18c,200,(iptr)rect,columns,
              option_count,(iptr)labels);
@@ -8273,7 +8273,7 @@ void Dialog::create_checkboxes()
       parent_188 = 0;
     }
     else {
-      parent_188 = surf_wnd + 0x48;
+      parent_188 = (uptr)&surf_wnd->window;
     }
     ((Checkbox *)(checkboxes + i * 0x3c))->create(parent_188,i + 200
                ,x,y2,(const char *)option->text);
@@ -8315,7 +8315,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
         parent = 0;
       }
       else {
-        parent = surf_wnd + 0x48;
+        parent = (uptr)&surf_wnd->window;
       }
       ((Scrollbar *)list_vscroll[cur_pane])->create(parent,
                  0xb,(iptr)&list_vscroll_rect[cur_pane],1);
@@ -8343,7 +8343,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
         parent = 0;
       }
       else {
-        parent = surf_wnd + 0x48;
+        parent = (uptr)&surf_wnd->window;
       }
       ((Scrollbar *)list_hscroll[cur_pane])->create(parent,0xc,
                  (iptr)&list_hscroll_rect[cur_pane],0);
@@ -8387,7 +8387,7 @@ void Dialog::create_list_listbox()
     parent = 0;
   }
   else {
-    parent = surf_wnd + 0x48;
+    parent = (uptr)&surf_wnd->window;
   }
   ((ListBox *)listbox[cur_pane])->create(parent,10,
              (iptr)rect);
@@ -8448,7 +8448,7 @@ void Dialog::create_sprite_hotspots()
         parent_190 = 0;
       }
       else {
-        parent_190 = surf_wnd + 0x48;
+        parent_190 = (uptr)&surf_wnd->window;
       }
       ((Hotspot *)(sprite_hotspots + i * 0x40))->create(parent_190,i + 300,
                  (iptr)rect);
@@ -8492,7 +8492,7 @@ void Dialog::create_edit_fields()
         parent_194 = 0;
       }
       else {
-        parent_194 = surf_wnd + 0x48;
+        parent_194 = (uptr)&surf_wnd->window;
       }
       value = (i32)edit_field->buffer;
       text = edit_field->width;
@@ -8553,7 +8553,7 @@ void Dialog::create_buttons()
       parent_198 = 0;
     }
     else {
-      parent_198 = surf_wnd + 0x48;
+      parent_198 = (uptr)&surf_wnd->window;
     }
     ((Button *)(button_controls + i * 0x3c))->create(parent_198,i + 100,
                (iptr)rect,(const char *)label);
@@ -8628,10 +8628,10 @@ void Dialog::create_controls()
         cur_pane = 0;
         if ((style_flags & 0x40000) == 0) {
           create_list_scrollbar(dialog_list_on_vscroll,dialog_list_on_hscroll);
-          ((WndHandlers *)(surf_wnd + 0x58))->set_lbuttondown_handler(dialog_list_on_lbuttondown);
-          ((WndHandlers *)(surf_wnd + 0x58))->set_lbuttonup_any_handler(dialog_list_on_lbuttonup);
-          ((WndHandlers *)(surf_wnd + 0x58))->set_mousemove_handler(dialog_list_on_mousemove);
-          ((WndHandlers *)(surf_wnd + 0x58))->set_dblclick_handler(dialog_list_on_dblclick);
+          surf_wnd->window.wnd_handlers.set_lbuttondown_handler(dialog_list_on_lbuttondown);
+          surf_wnd->window.wnd_handlers.set_lbuttonup_any_handler(dialog_list_on_lbuttonup);
+          surf_wnd->window.wnd_handlers.set_mousemove_handler(dialog_list_on_mousemove);
+          surf_wnd->window.wnd_handlers.set_dblclick_handler(dialog_list_on_dblclick);
         }
         else {
           create_list_listbox();
@@ -8651,8 +8651,8 @@ void Dialog::create_controls()
     create_sprite_hotspots();
     create_edit_fields();
     create_buttons();
-    ((WndHandlers *)(surf_wnd + 0x58))->set_keydown_handler(dialog_on_keydown);
-    ((WndHandlers *)(surf_wnd + 0x58))->set_char_handler((WndKeyFn)dialog_on_char);
+    surf_wnd->window.wnd_handlers.set_keydown_handler(dialog_on_keydown);
+    surf_wnd->window.wnd_handlers.set_char_handler((WndKeyFn)dialog_on_char);
     style_flags = style_flags | 0x200;
   }
   return;
@@ -8691,7 +8691,7 @@ void __cdecl dialog_end_current(void)
 
 {
   dialog_state.active->style_flags = dialog_state.active->style_flags | 0x400;
-  ((ModalMenuWindow *)((int)dialog_state.active->surf_wnd + 0x48))->end_modal_loop();
+  dialog_state.active->surf_wnd->window.end_modal_loop();
   return;
 }
 
@@ -9185,7 +9185,7 @@ void __cdecl dialog_list_on_lbuttondown(i32 x,i32 y)
        (hit_index = dialog_state.active->option_at_point(x,y),
        -1 < hit_index)) {
       dialog_state.active->list_left_col[dialog_state.active->cur_pane] = 1;
-      ((WndBase *)((int)dialog_state.active->surf_wnd + 0x48))->set_capture();
+      dialog_state.active->surf_wnd->window.set_capture();
       redraw = 1;
       option = dialog_state.active->option_at(hit_index);
       dialog_state.active->select_option(option,redraw);
@@ -9292,7 +9292,7 @@ void __cdecl dialog_list_on_lbuttonup(i32 x,i32 y)
   if (dialog_state.active != 0) {
     dialog_list_on_mousemove(x,y);
     dialog_state.active->list_left_col[dialog_state.active->cur_pane] = 0;
-    ((WndBase *)((int)dialog_state.active->surf_wnd + 0x48))->release_capture();
+    dialog_state.active->surf_wnd->window.release_capture();
   }
   return;
 }
@@ -9497,7 +9497,7 @@ void Dialog::render()
         sprite->sprite->draw((RECT *)sprite_rect,(DibSurface *)surf_wnd,sprite_x2,sprite_y2);
       }
       else {
-        on_draw_sprite((i32)sprite->sprite,surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
+        on_draw_sprite((i32)sprite->sprite,(iptr)surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
       }
       if (((style_flags & 0x20000) != 0) && ((i32 *)selected_sprite == ((i32 *)sprite))) {
         rect_set(&rect,sprite_x2 - 1,sprite_y2 - 1,sprite_w + sprite_x2,
@@ -9581,7 +9581,7 @@ void Dialog::render()
     }
   }
   else {
-    ((SurfaceWindow *)surf_wnd)->SurfaceWindow::show();
+    surf_wnd->SurfaceWindow::show();
   }
   style_flags = style_flags | 0x20;
   return;
@@ -9647,7 +9647,7 @@ u32 Dialog::run_modal(iptr out_text,iptr timeout_secs)
     render();
     if (((style_flags & 0x20) != 0) && ((style_flags & 8) == 0)) {
       if (on_modal_poll == 0) {
-        ((ModalMenuWindow *)(surf_wnd + 0x48))->run_modal_loop();
+        surf_wnd->window.run_modal_loop();
         while ((style_flags & 0x400) == 0) {
           win_pump_one_message();
         }

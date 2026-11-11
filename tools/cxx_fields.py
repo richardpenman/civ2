@@ -1004,23 +1004,35 @@ def retype_rows(rows, checks, stats, log):
 GLOBAL_TYPES = {}
 
 
+def global_headers():
+    return ['src/data/gamedata.h'] + sorted(os.path.relpath(p, ROOT) for p in
+                                            glob.glob(os.path.join(ROOT, 'src', 'data', 'state', '*.h')))
+
+
 def load_globals():
-    for line in open(os.path.join(ROOT, 'src', 'data', 'gamedata.h')):
-        m = re.match(r'extern\s+(%s?)\s*\b(\w+)\s*;' % TYPE, line)
-        if m:
-            GLOBAL_TYPES[m.group(2)] = m.group(1).strip()
+    for h in global_headers():
+        for line in open(os.path.join(ROOT, h)):
+            m = re.match(r'extern\s+(%s?)\s*\b(\w+)\s*;' % TYPE, line)
+            if m:
+                GLOBAL_TYPES[m.group(2)] = m.group(1).strip()
 
 
 def retype_global_decl(name, newtype, log):
     nt = cast_type(newtype)
-    for p, pat in (('src/data/gamedata.h', r'(?m)^(extern\s+)(%s?)\s*\b(%s\s*;)'),
-                   ('src/data/gamedata.cpp', r'(?m)^((?:GAMEDATA\(\d+\)\s+)?)(%s?)\s*\b(%s\s*=)')):
+    decl = r'(?m)^(extern\s+)(%s?)\s*\b(%s\s*;)'
+    found = False
+    for p, pat in [(h, decl) for h in global_headers()] + \
+            [('src/data/gamedata.cpp', r'(?m)^((?:GAMEDATA\(\d+\)\s+)?)(%s?)\s*\b(%s\s*=)')]:
         path = os.path.join(ROOT, p)
         text = open(path).read()
         new, n = re.subn(pat % (TYPE, re.escape(name)), lambda x: x.group(1) + nt + ('' if nt.endswith('*') else ' ') + x.group(3), text, count=1)
-        if not n:
-            log.append('%s: declaration of %s not found' % (p, name))
-        open(path, 'w').write(new)
+        if n:
+            open(path, 'w').write(new)
+            found = found or p.endswith('.h')
+        elif p.endswith('.cpp'):
+            log.append('%s: definition of %s not found' % (p, name))
+    if not found:
+        log.append('declaration of %s not found' % name)
 
 
 def member_spans(m, block, member):

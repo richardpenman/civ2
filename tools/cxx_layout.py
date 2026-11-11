@@ -27,22 +27,24 @@ def strip_comments(t):
 
 
 def structs():
-    """{name: [member names]} for `typedef struct X { ... } X;` and
-    `typedef struct X : B { ... } X;` (members at any depth of anonymous
+    """{name: [member names]} for `typedef struct X { ... } X;`,
+    `typedef struct X : B { ... } X;` and `struct X { ... };` (members at any depth of anonymous
     unions/structs: their names are the struct's; a derived struct lists its
     bases' members first, offsetof(X, base_member) is X's offset)."""
     out, bases = {}, {}
     for h in HEADERS:
         t = strip_comments(open(os.path.join(ROOT, h)).read())
-        for m in re.finditer(r'typedef\s+struct\s+(\w+)\s*(?::\s*(?:public\s+)?(\w+)\s*)?\{', t):
+        for m in re.finditer(r'^(typedef\s+)?struct\s+(\w+)\s*(?::\s*(?:public\s+)?(\w+)\s*)?\{', t, re.M):
             i, depth = m.end(), 1
             while depth:
                 depth += {'{': 1, '}': -1}.get(t[i], 0)
                 i += 1
             body = t[m.end():i - 1]
-            tail = re.match(r'\s*(\w+)\s*;', t[i:])
+            tail = re.match(r'\s*(\w+)\s*;', t[i:]) if m.group(1) else \
+                re.match(r'()\s*;', t[i:])      # struct X { ... }; (the state headers' blocks)
             if not tail:
                 continue
+            name = tail.group(1) or m.group(2)
             body = re.sub(r'\b(union|struct)\s*\{', ' ', body).replace('}', ' ')
             names = []
             for decl in body.split(';'):
@@ -52,13 +54,18 @@ def structs():
                 dm = re.search(r'(\w+)\s*$', decl)
                 if dm and len(decl.split()) > 1 or (dm and '*' in decl):
                     names.append(dm.group(1))
-            out[tail.group(1)] = names
-            if m.group(2):
-                bases[tail.group(1)] = m.group(2)
+            out[name] = names
+            if not m.group(1):
+                PLAIN.add(name)
+            if m.group(3):
+                bases[name] = m.group(3)
 
     def inherited(s):
         return (inherited(bases[s]) if s in bases else []) + out[s]
     return {s: inherited(s) for s in out}
+
+
+PLAIN = set()       # struct X { ... }; without a typedef
 
 
 # Win32 structs the game reads through raw offsets (platform/win32_types.h).
@@ -70,13 +77,14 @@ def main():
     ss.update(EXTRA)
     src = ['#include "auto_common.h"', '#include <stddef.h>',
            'template<class T> const char *tn() { return __PRETTY_FUNCTION__; }',
-           '#define M(S, m) printf(#S "\\t" #m "\\t%u\\t%u\\t%s\\n", (unsigned)offsetof(S, m), '
+           '#define M(N, S, m) printf(N "\\t" #m "\\t%u\\t%u\\t%s\\n", (unsigned)offsetof(S, m), '
            '(unsigned)sizeof(((S *)0)->m), tn<decltype(((S *)0)->m)>())',
            'int main() {']
     for s, names in ss.items():
-        src.append('printf("%s\\t\\t0\\t%%u\\t\\n", (unsigned)sizeof(%s));' % (s, s))
+        ty = 'struct ' + s if s in PLAIN else s     # the block variable of the same name hides the type
+        src.append('printf("%s\\t\\t0\\t%%u\\t\\n", (unsigned)sizeof(%s));' % (s, ty))
         for n in names:
-            src.append('M(%s, %s);' % (s, n))
+            src.append('M("%s", %s, %s);' % (s, ty, n))
     src.append('return 0; }')
     os.makedirs(os.path.join(ROOT, 'run'), exist_ok=True)
     cpp = os.path.join(ROOT, 'run', 'layout_gen.cpp')

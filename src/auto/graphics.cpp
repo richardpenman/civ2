@@ -5474,7 +5474,7 @@ void SpritePicker::draw()
 void __cdecl sprite_picker_redraw_cb(void)
 
 {
-  (*(SpritePicker * *)&sprite_editor.sprite_picker_dialog)->draw();
+  sprite_editor.sprite_picker_dialog->draw();
   return;
 }
 
@@ -5722,7 +5722,7 @@ void __cdecl sprite_picker_ok_clicked(void)
   rect_set_xywh((RECT *)grab_rect,0,0,width2,height2);
   ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->grab_surface_rect((iptr)&sprite_editor.surface,(iptr)grab_rect);
   sprite_editor.sprite_picker_running = 0;
-  ((ModalMenuWindow *)(sprite_editor.sprite_picker_dialog + 0x48))->end_modal_loop();
+  sprite_editor.sprite_picker_dialog->window.end_modal_loop();
   return;
 }
 
@@ -5947,7 +5947,7 @@ void __cdecl sprite_picker_import_all_clicked(void)
     ((Sprite *)((i8 *)&sprite_editor.result_sprite))->free();
     sprite_editor.target_sprite->merge_onto((iptr)&sprite_editor.result_sprite);
     sprite_editor.sprite_picker_running = 0;
-    ((ModalMenuWindow *)(sprite_editor.sprite_picker_dialog + 0x48))->end_modal_loop();
+    sprite_editor.sprite_picker_dialog->window.end_modal_loop();
     ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   }
   return;
@@ -5969,7 +5969,7 @@ void __cdecl sprite_picker_cancel_clicked(void)
 
 {
   sprite_editor.sprite_picker_running = 0;
-  ((ModalMenuWindow *)(sprite_editor.sprite_picker_dialog + 0x48))->end_modal_loop();
+  sprite_editor.sprite_picker_dialog->window.end_modal_loop();
   return;
 }
 
@@ -5998,7 +5998,7 @@ void SpritePicker::run()
   i8 rect[16];
   iptr scroll_height;
   
-  (*(SpritePicker * *)&sprite_editor.sprite_picker_dialog) = this;
+  sprite_editor.sprite_picker_dialog = this;
   rates_civ = 0xf0;
   max_rate_value = 0xf0;
   border_width = 0;

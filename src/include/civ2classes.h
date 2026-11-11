@@ -330,7 +330,7 @@ typedef i32 (*DialogPollFn)(struct Dialog *dialog);   /* polled while modal: non
 /* The dialog: dialog_ctor (0059db08) on stack objects; its views (DialogCore,
    DialogTextView, DialogOptionList, ...) are folded in. */
 typedef struct Dialog {
-    union { uptr field_0; uptr surf_wnd; };
+    union { uptr field_0; struct SurfaceWindow *surf_wnd; };
     union { u32 field_4; u32 bg_surface; };
     union { uptr field_8; uptr body_font; };
     union { uptr field_c; uptr title_font; };
@@ -3235,7 +3235,7 @@ typedef struct SpaceshipWindow : ModalMenuWindow {
     Sprite launch_btn_pressed_sprite;   /* 0xaa4 */
     union { u32 field_ae0; u32 launch_state; };
     ClickMap hotspot_map;           /* 0xae4 */
-    u32 launch_video_player;        /* 0x1da8 video window playing the launch (+0x48 its modal window) */
+    AviPlayer *launch_video_player; /* 0x1da8 the video window playing the launch */
     i32 close_btn_pressed;          /* 0x1dac */
     i32 launch_btn_pressed;         /* 0x1db0 */
     i32 typing_label_part;          /* 0x1db4 */
@@ -3469,7 +3469,7 @@ typedef struct EndgameMovieWindow : ModalMenuWindow {
     GameFont movie_caption_font;    /* 0xf1c */
     u8 movie_caption_text[1024];    /* 0xf24 */
     DibSurface movie_frame_surface; /* 0x1324 */
-    u8 movie_caption_rect[16];      /* 0x136c RECT */
+    RECT movie_caption_rect;        /* 0x136c */
     /* methods */
     EndgameMovieWindow *defeat_movie_wnd_construct();    /* 004703d4 */
     i32 defeat_movie_wnd_create(uint civ);    /* 004705d7 */

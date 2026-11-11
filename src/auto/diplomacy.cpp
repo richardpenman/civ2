@@ -5124,7 +5124,7 @@ void __cdecl diplo_leader_video_end_cb(void)
   wnd = diplo_leader.window;
   if (diplo_leader.video_active != '\0') {
     if ((char)diplo_leader.window->pending_flag_1088 == '\0') {
-      ((AviPlayer *)((iptr)diplo_leader.window + 0x65c))->loop_range(
+      diplo_leader.window->leader_video_wnd.loop_range(
                  leader_anim_frame_starts_block.leader_anim_frames[(uint)diplo_leader.window->leader_tribe][1][0],
                  leader_anim_frame_starts_block.leader_anim_frames[(uint)diplo_leader.window->leader_tribe][1][1]);
     }

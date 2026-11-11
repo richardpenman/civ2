@@ -311,7 +311,7 @@ struct font_size16_bold_block {
     u8 font_size16_bold[12];  /* 0069b030 */
     int chat_log_capacity;  /* 0069b03c */
     u8 chat_log_capacity_rest[26660];
-    int wonder_movie_wnd;  /* 006a1864 */
+    struct WonderMovieWindow *wonder_movie_wnd;  /* 006a1864 */
     u8 wonder_movie_wnd_rest[8];
     uptr net_bribe_answer;  /* 006a1870 */
     u8 net_bribe_answer_rest[12];

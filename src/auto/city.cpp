@@ -7346,7 +7346,7 @@ WonderMovieWindow *WonderMovieWindow::construct()
   surface_ctor(&frame_surface);
   palette.init();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 2);
-  (*(FrameWindow * *)&font_size16_bold_block.wonder_movie_wnd) = this;
+  font_size16_bold_block.wonder_movie_wnd = this;
   return this;
 }
 
@@ -7536,7 +7536,7 @@ void WonderMovieWindow::resize()
 void __cdecl wonder_movie_on_video_end(void)
 
 {
-  ((ModalMenuWindow *)(font_size16_bold_block.wonder_movie_wnd + 0x48))->end_modal_loop();
+  font_size16_bold_block.wonder_movie_wnd->window.end_modal_loop();
   return;
 }
 
@@ -7544,7 +7544,7 @@ void __cdecl wonder_movie_on_video_end(void)
 void __cdecl wonder_movie_on_lbuttonup(void)
 
 {
-  ((ModalMenuWindow *)(font_size16_bold_block.wonder_movie_wnd + 0x48))->end_modal_loop();
+  font_size16_bold_block.wonder_movie_wnd->window.end_modal_loop();
   return;
 }
 
@@ -7553,7 +7553,7 @@ void __cdecl wonder_movie_on_key(int key)
 
 {
   if ((0xcf < key) && (key < 0xd3)) {
-    ((ModalMenuWindow *)(font_size16_bold_block.wonder_movie_wnd + 0x48))->end_modal_loop();
+    font_size16_bold_block.wonder_movie_wnd->window.end_modal_loop();
   }
   return;
 }

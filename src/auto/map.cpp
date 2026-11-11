@@ -858,7 +858,7 @@ void __cdecl map_generate(int keep_map)
   dialog2.add_line((const char *)&textbuf.buf,0xffffffff,0xffffffff,0xffffffff,0);
   dialog2.add_line((const char *)&str_empty_8,0xffffffff,0xffffffff,0xffffffff,0);
   dialog2.show_modal(0);
-  ((WndBase *)(dialog2.surf_wnd + 0x48))->set_cursor(0x200);
+  dialog2.surf_wnd->window.set_cursor(0x200);
   main_frame_wnd_block.main_frame_wnd.set_cursor(0x200);
   ui_flush_input();
   if (keep_map == 0) {

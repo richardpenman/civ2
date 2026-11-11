@@ -51,12 +51,12 @@ extern int game_language;
 extern EndgameMovieWindow *endgame_movie_window;
 extern u8 str_empty_84[4];  /* only EndgameMovieWindow::defeat_movie_wnd_create uses it */
 extern u8 str_empty_85[4];  /* only EndgameMovieWindow::defeat_movie_wnd_create uses it */
-extern iptr spaceship_arrival_window;
+extern EndgameMovieWindow *spaceship_arrival_window;
 extern u8 str_empty_88[4];  /* only EndgameMovieWindow::arrival_movie_wnd_create uses it */
 extern u8 str_empty_89[4];  /* only EndgameMovieWindow::arrival_movie_wnd_create uses it */
 extern u8 str_empty_91[4];  /* only endgame_show_centauri_beaten uses it */
 extern u8 str_empty_92[4];  /* only endgame_show_centauri_beaten uses it */
-extern int victory_screen_wnd;
+extern DestroyedCivsWindow *victory_screen_wnd;
 extern i32 destroyed_civs_show_date;
 extern u8 str_empty_156[4];  /* only DestroyedCivsWindow::create uses it */
 extern u8 str_empty_157[4];  /* only DestroyedCivsWindow::create uses it */
