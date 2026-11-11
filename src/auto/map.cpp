@@ -2382,7 +2382,7 @@ i32 __cdecl map_load_dialog(void)
   path_buf = filename;
   filter = filter_str;
   title = (iptr)label_string(label_table.string_ids[0x103]);
-  ok = ui_file_name_dialog((iptr)&main_frame_wnd_block.main_frame_wnd,(const char *)title,(iptr)path_buf,filter_str,(iptr)default_ext,dlg_flag,dlg_arg);
+  ok = ui_file_name_dialog((iptr)&main_frame_wnd_block.main_frame_wnd,(const char *)title,path_buf,(const char *)filter_str,default_ext,dlg_flag,dlg_arg);
   if (ok != 0) {
     file = _fopen(filename,((i8 *)&map_load_open_mode_str));
     if (file == (FILE *)0x0) {
@@ -4907,7 +4907,7 @@ void __cdecl terrain_editor_on_rename(void)
       parent_wnd2 = (iptr)&editor_active.wnd->window;
     }
     dlg_set_parent_window(parent_wnd2);
-    result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_terrname,0xe,(iptr)old_name,(iptr)new_name);
+    result = dlg_text_input(str_debug_11,str_terrname,0xe,old_name,new_name);
     dlg_set_parent_window(0);
     if (result == -1) break;
     len = _strlen(new_name);

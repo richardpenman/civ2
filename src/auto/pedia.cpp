@@ -4139,7 +4139,7 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,iptr advance,int has_pe
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
-    str_append_space((iptr)line);
+    str_append_space(line);
     crt_strcpy(line_buf,line);
     if (line_buf[0] == '^') {
       rest_len = _strlen((line_buf + 1));
@@ -4772,7 +4772,7 @@ void PediaWindow::load_improvement_text(iptr improvement_id)
   ret_addr = 0x59a190;
   crt_strcpy(section_name,str_pediaimprove_2);
   ret_addr = 0x59a1a0;
-  str_append_int((iptr)section_name,improvement_id);
+  str_append_int(section_name,improvement_id);
   ret_addr = 0x59a1b1;
   status = text_open_section((const char *)&str_pedia_5,(const char *)section_name);
   if (status == 0) {

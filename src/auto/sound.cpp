@@ -49,7 +49,7 @@ void __cdecl snd_play_effect(int effect,int play_mode,int loop,SoundDoneFn done_
     result = _strcmp(wav_name,str_cheers);
     if (result == 0) {
       result = rand_range(0,2);
-      str_append_int((iptr)wav_name,result + 1);
+      str_append_int(wav_name,result + 1);
     }
     crt_strcat(wav_name,((i8 *)&snd_wav_ext_str));
     str_clear((char *)wav_path);

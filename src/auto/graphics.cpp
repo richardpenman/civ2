@@ -6163,7 +6163,7 @@ void __cdecl sprite_editor_import_sheet(void)
     str = sheet_name;
     label = (iptr)label_string(label_table.string_ids[0x257]);
     _sprintf(prompt,str_s_s_2,label,str);
-    ok = ui_file_name_dialog((iptr)&sprite_editor.wnd,(const char *)prompt,(iptr)file_path,(iptr)filter,(iptr)&str_bmp_gif,1,0
+    ok = ui_file_name_dialog((iptr)&sprite_editor.wnd,(const char *)prompt,file_path,filter,str_bmp_gif,1,0
                               );
     if (ok == 0) return;
     __strupr(file_path);
@@ -6792,7 +6792,7 @@ i32 DibSurface::load_gif_resource(iptr res_id,uint first_color,uint color_count,
   res_type[1] = 0x49;
   res_type[2] = 0x46;
   res_type[3] = 0x53;
-  res = res_load((iptr)res_type,res_id);
+  res = res_load(res_type,res_id);
   if (res == 0) {
     dbg_logf((const char *)&str_error_gif_resource_not_found_2,res_id);
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(3,(iptr)&str_err_resourcenotfound_2,(iptr)&str_d_ss_smeds32_port_cpp_6,0x3f4);
@@ -7747,7 +7747,7 @@ void GamePalette::load_ctab_res(i32 res_id)
   res_type[1] = 0x54;
   res_type[2] = 0x41;
   res_type[3] = 0x42;
-  res = res_load((iptr)res_type,res_id);
+  res = res_load(res_type,res_id);
   if (res == 0) {
     dbg_logf_noret((const char *)&str_error_color_resource_not_found,res_id);
   }

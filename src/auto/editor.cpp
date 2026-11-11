@@ -662,8 +662,8 @@ void __cdecl tribe_editor_rename_commodity(void)
   choice = dialog2.show_modal(0);
   if (-1 < choice) {
     do {
-      input_result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_commoname,9,(iptr)(((i8 *)&editor_lists.commodity_names) + choice * 10),
-                                    (iptr)input_buf);
+      input_result = dlg_text_input(str_debug_11,str_commoname,9,(((i8 *)&editor_lists.commodity_names) + choice * 10),
+                                    input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
@@ -706,8 +706,8 @@ void __cdecl tribe_editor_rename_govt(void)
   choice = dialog2.show_modal(0);
   if (-1 < choice) {
     do {
-      input_result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_govtname,0xe,(iptr)(((i8 *)&editor_lists.govt_names) + choice * 0xf),
-                                    (iptr)input_buf);
+      input_result = dlg_text_input(str_debug_11,str_govtname,0xe,(((i8 *)&editor_lists.govt_names) + choice * 0xf),
+                                    input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
@@ -778,7 +778,7 @@ void __cdecl tribe_editor_rename_title(void)
         title_slot = ((int)choice >> 1) * 3 + 0x2a;
       }
       current_title = ((i8 *)&editor_lists.govt_names) + title_slot * 5;
-      input_result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_titlename,0xe,(iptr)current_title,(iptr)input_buf);
+      input_result = dlg_text_input(str_debug_11,str_titlename,0xe,current_title,input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
@@ -1365,8 +1365,8 @@ i32 __cdecl tribe_editor_update_city_file(void)
       rc = file_exists((const char *)&str_city_tmp);
       if (((rc == 0) || (rc = crt_remove(str_city_tmp_2), rc == 0)) &&
          (rc = crt_rename(city_file_name,str_city_tmp_3), rc == 0)) {
-        in_file = file_open_path((const char *)&str_city_tmp_4,(iptr)&str_rt_5);
-        out_file = file_open_path((const char *)city_file_name,(iptr)&str_wt_4);
+        in_file = file_open_path(str_city_tmp_4,str_rt_5);
+        out_file = file_open_path((const char *)city_file_name,str_wt_4);
         if ((in_file != (FILE *)0x0) && (out_file != (FILE *)0x0)) {
           for (;;) {
             read_ptr = _fgets(line,0x100,in_file);
@@ -1772,7 +1772,7 @@ i32 __cdecl editor_input_long(const char *file_name,const char *section,int defa
   i32 result;
   
   __itoa(default_value,default_buf,10);
-  result = dlg_text_input((iptr)file_name,section,6,(iptr)default_buf,(iptr)input_buf);
+  result = dlg_text_input(file_name,section,6,default_buf,input_buf);
   value = _atol(input_buf);
   *out_value = value;
   return result;
@@ -1794,7 +1794,7 @@ i32 __cdecl editor_create_scenario_folder(void)
     do {
       retry = 0;
       do {
-        rc = dlg_text_input((iptr)&str_debug_11,(const char *)&str_newfolder,8,(iptr)&str_empty_168,(iptr)folder_name);
+        rc = dlg_text_input(str_debug_11,str_newfolder,8,(const char *)&str_empty_168,folder_name);
         if (rc < 0) {
           return 0;
         }

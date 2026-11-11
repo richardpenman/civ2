@@ -1169,10 +1169,10 @@ static void intel_draw_civ_facts(iptr civ,int left_x,int right_x,int line_height
   text_append_colon();
   str_clear((char *)buf);
   if (civs[civ].researching < 0) {
-    str_append_label((iptr)buf,0xe);
+    str_append_label(buf,0xe);
   }
   else {
-    str_append_string_id((iptr)buf,advances[civs[civ].researching].name);
+    str_append_string_id(buf,advances[civs[civ].researching].name);
   }
   text_append((const char *)buf);
   value = right_x;
@@ -1209,26 +1209,26 @@ static void intel_draw_contacts(iptr civ,int line_height,int &y2)
         if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
           if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) == 0) {
             if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CEASEFIRE) == 0) {
-              str_append_label((iptr)buf,0x9d);
+              str_append_label(buf,0x9d);
             }
             else {
-              str_append_label((iptr)buf,0x8f);
+              str_append_label(buf,0x8f);
             }
           }
           else {
             text_append_label(0x9c);
             text_append_space();
-            str_append_label((iptr)buf,0x8e);
+            str_append_label(buf,0x8e);
           }
         }
         else {
-          str_append_label((iptr)buf,0x8d);
+          str_append_label(buf,0x8d);
         }
       }
       else {
         text_append_label(0x9c);
         text_append_space();
-        str_append_label((iptr)buf,0x90);
+        str_append_label(buf,0x90);
       }
       __strupr(buf);
       text_append((const char *)buf);
@@ -2337,7 +2337,7 @@ void __cdecl top_cities_show(int report_civ)
 
 /* 004331d1 auto */
 void __cdecl
-demographics_draw_rank(i32 *values,int civ,uint y,iptr unit_suffix,int left_x,int right_x)
+demographics_draw_rank(i32 *values,int civ,uint y,const char *unit_suffix,int left_x,int right_x)
 
 {
   int has_wonder;
@@ -2392,7 +2392,7 @@ demographics_draw_rank(i32 *values,int civ,uint y,iptr unit_suffix,int left_x,in
     text_append((const char *)civ_name);
     text_append((const char *)&str_empty_42);
     text_append_long(best_value);
-    text_append((const char *)unit_suffix);
+    text_append(unit_suffix);
     text_append_rparen();
     shadow_color2 = 1;
     shadow_color = 1;
@@ -2590,7 +2590,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_43,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_empty_43,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x176);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2602,7 +2602,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_0000,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_0000,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x177);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2617,7 +2617,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_m,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_m,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x178);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2631,8 +2631,8 @@ void __cdecl demographics_draw(void)
     }
   }
   str_clear((char *)suffix_buf);
-  str_append_label((iptr)suffix_buf,0x182);
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)suffix_buf,rank_x,right_x);
+  str_append_label(suffix_buf,0x182);
+  demographics_draw_rank((i32 *)values,civ,row_y,suffix_buf,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x179);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2645,7 +2645,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_000_2,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_000_2,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17a);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2676,7 +2676,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_45,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_empty_45,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17b);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2698,7 +2698,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,-row_y,(iptr)&str_empty_46,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,-row_y,str_empty_46,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17c);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2715,8 +2715,8 @@ void __cdecl demographics_draw(void)
   }
   str_clear((char *)suffix_buf);
   str_append((char *)suffix_buf,(const char *)&str_0_2);
-  str_append_label((iptr)suffix_buf,0x184);
-  demographics_draw_rank((i32 *)values,civ,-row_y,(iptr)suffix_buf,rank_x,right_x);
+  str_append_label(suffix_buf,0x184);
+  demographics_draw_rank((i32 *)values,civ,-row_y,suffix_buf,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17d);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2731,8 +2731,8 @@ void __cdecl demographics_draw(void)
     }
   }
   str_clear((char *)suffix_buf);
-  str_append_label((iptr)suffix_buf,0x186);
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)suffix_buf,rank_x,right_x);
+  str_append_label(suffix_buf,0x186);
+  demographics_draw_rank((i32 *)values,civ,row_y,suffix_buf,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17e);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2748,7 +2748,7 @@ void __cdecl demographics_draw(void)
     }
     values[civ2] = values[civ2] / 10;
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_48,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,(const char *)&str_empty_48,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x17f);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2761,7 +2761,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)suffix_buf,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,suffix_buf,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x180);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2782,7 +2782,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_50,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,str_empty_50,rank_x,right_x);
   demographics_next_row(line_left,line_right,row_height,row_y);
   demographics_row_label(label_color,label_x,row_y,0x181);
   for (civ2 = 1; (int)civ2 < 8; civ2++) {
@@ -2793,7 +2793,7 @@ void __cdecl demographics_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,value_x,row_y);
     }
   }
-  demographics_draw_rank((i32 *)values,civ,row_y,(iptr)&str_empty_51,rank_x,right_x);
+  demographics_draw_rank((i32 *)values,civ,row_y,(const char *)&str_empty_51,rank_x,right_x);
   ((DibSurface *)((i8 *)&advisor_state.window))->wnd_blit_surface();
   return;
 }
@@ -2911,7 +2911,7 @@ void __cdecl hall_of_fame_draw(void)
           crt_strcpy(line_buf,str_error_3);
         }
         /* BF-199: a longer title is cut at 131 characters */
-        text_expand_vars_max((iptr)line_buf,(iptr)title_buf,sizeof title_buf);
+        text_expand_vars_max(line_buf,title_buf,sizeof title_buf);
       }
       text_clear();
       text_append_int(entry + 1);
@@ -2994,7 +2994,7 @@ void __cdecl hall_of_fame_draw(void)
          (advisor_window_block.hall_of_fame[entry].objective_score < 0)) {
         text_append_label(0x22);
         text_append_colon();
-        str_append_population((iptr)&textbuf.buf,0,(int)advisor_window_block.hall_of_fame[entry].population);
+        str_append_population(textbuf.buf,0,(int)advisor_window_block.hall_of_fame[entry].population);
       }
       else {
         text_append_label(0x1b2);
@@ -4920,7 +4920,7 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
         str_append_max((char *)movie_caption_text,(const char *)&str_empty_86,sizeof movie_caption_text);
       }
       text_clear();
-      text_expand_vars_max((iptr)(movie_caption_text),(iptr)&textbuf.buf,TEXTBUF_SIZE);
+      text_expand_vars_max(((const char *)movie_caption_text),textbuf.buf,TEXTBUF_SIZE);
       ((DibSurface *)movie_frame_surface)->DibSurface::blit((DibSurface *)(iptr)(media_wnd),
                  (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
       OffsetRect((LPRECT)(movie_caption_rect),1,1);
@@ -4969,7 +4969,7 @@ void __cdecl defeat_movie_on_video_end(void)
       str_append_max((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)text_parse.line_cursor,0x400);
       str_append_max((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)&str_empty_87,0x400);
     }
-    text_expand_vars_max((*(int *)&endgame_movie_window) + 0xf24,(iptr)&textbuf.buf,TEXTBUF_SIZE);
+    text_expand_vars_max((const char *)((*(int *)&endgame_movie_window) + 0xf24),textbuf.buf,TEXTBUF_SIZE);
     CharUpperA(((i8 *)&textbuf.buf));
     rect_set_xywh((RECT *)((*(int *)&endgame_movie_window) + 0x136c),0xe5,0x4c,200,0x85);
     gfx_set_text_color_index(0);
@@ -5202,7 +5202,7 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
         str_append_max((char *)movie_caption_text,(const char *)&str_empty_90,sizeof movie_caption_text);
       }
       text_clear();
-      text_expand_vars_max((iptr)(movie_caption_text),(iptr)&textbuf.buf,TEXTBUF_SIZE);
+      text_expand_vars_max(((const char *)movie_caption_text),textbuf.buf,TEXTBUF_SIZE);
       ((DibSurface *)movie_frame_surface)->DibSurface::blit((DibSurface *)(iptr)(media_wnd),
                  (RECT *)(iptr)(movie_caption_rect),(RECT *)(iptr)(movie_caption_rect));
       OffsetRect((LPRECT)(movie_caption_rect),1,1);
@@ -5258,7 +5258,7 @@ void __cdecl arrival_movie_on_frame(void)
       str_clear((char *)(spaceship_arrival_window + 0xf24));
       /* BF-062, BF-063 */
       str_append_max((char *)(spaceship_arrival_window + 0xf24),(const char *)text_parse.line_cursor,0x400);
-      text_expand_vars_max(spaceship_arrival_window + 0xf24,(iptr)&textbuf.buf,TEXTBUF_SIZE);
+      text_expand_vars_max((const char *)(spaceship_arrival_window + 0xf24),textbuf.buf,TEXTBUF_SIZE);
       width = rect_width((RECT *)(spaceship_arrival_window + 0x136c));
       gfx_draw_text_centered((const char *)&textbuf.buf,*(i32 *)(spaceship_arrival_window + 0x136c),text_y2,width);
       status = ((GameFont *)(spaceship_arrival_window + 0xf1c))->line_spacing();
@@ -5372,7 +5372,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
           str_append_max((char *)text_buf,(const char *)&str_empty_93,sizeof text_buf);
         }
         text_clear();
-        text_expand_vars_max((iptr)text_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
+        text_expand_vars_max(text_buf,textbuf.buf,TEXTBUF_SIZE);
         backup_surface.DibSurface::blit((DibSurface *)surface_wnd,&text_rect,&text_rect);
         OffsetRect(&text_rect,1,1);
         gfx_set_text_color_index(0);
@@ -6482,7 +6482,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
     str_append((char *)((int)&advisor_codes_part3 + 1),(const char *)&str_f);
     str_append((char *)&advisor_codes_part4,(const char *)&str_a_2);
     for (advisor = 0; advisor < 5; advisor++) {
-      str_append_int((iptr)(advisor_code_slots + advisor * 3 - 0x40),
+      str_append_int(((char *)(advisor_code_slots + advisor * 3 - 0x40)),
                          council_settings[advisor + 1]);
     }
   }

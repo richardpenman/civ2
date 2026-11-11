@@ -1800,7 +1800,7 @@ void __cdecl unit_set_fortified(int unit)
 }
 
 /* 004c4d1e auto */
-void __cdecl unit_found_city(int unit,int city,iptr city_name)
+void __cdecl unit_found_city(int unit,int city,const char *city_name)
 
 {
   int x;
@@ -1815,7 +1815,7 @@ void __cdecl unit_found_city(int unit,int city,iptr city_name)
   if ((-1 < city) ||
      (city = city_create(x,y,units[unit].owner), -1 < city)) {
     if (city_name != 0) {
-      crt_strcpy((char *)(&cities[city].name),(const char *)city_name);
+      crt_strcpy((char *)(&cities[city].name),city_name);
     }
     unit_delete(unit,1);
     tile_set_improvements(x,y,0x7c,0,1);
@@ -2248,19 +2248,19 @@ static int spy_city_mission_menu(Dialog &dlg,iptr unit,iptr city,uptr civ,uptr c
   if (((*(byte *)&civs[human_civ[0]].treaties[civ2] & TREATY_EMBASSY) == 0) &&
      (ret = civ_has_wonder(human_civ[0],WONDER_UNITED_NATIONS), ret == 0)) {
     if (is_spy != 0) {
-      str_append_space((iptr)&textbuf.buf);
-      str_append_lparen((iptr)&textbuf.buf);
+      str_append_space(textbuf.buf);
+      str_append_lparen(textbuf.buf);
       text_append_label(0xed);
-      str_append_rparen((iptr)&textbuf.buf);
+      str_append_rparen(textbuf.buf);
     }
     dlg.add_option((const char *)&textbuf.buf,0,0);
   }
   text_read_line(1);
   if (is_spy != 0) {
-    str_append_space((iptr)&textbuf.buf);
-    str_append_lparen((iptr)&textbuf.buf);
+    str_append_space(textbuf.buf);
+    str_append_lparen(textbuf.buf);
     text_append_label(0xed);
-    str_append_rparen((iptr)&textbuf.buf);
+    str_append_rparen(textbuf.buf);
   }
   dlg.add_option((const char *)&textbuf.buf,1,0);
   text_read_line(1);
@@ -2572,10 +2572,10 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
   if (ret != 0) return;
   str_clear((char *)build_name);
   if (cities[city].building < '\0') {
-    str_append_string_id((iptr)build_name,improvements[-(int)cities[city].building].name);
+    str_append_string_id(build_name,improvements[-(int)cities[city].building].name);
   }
   else {
-    str_append_string_id((iptr)build_name,unit_types[cities[city].building].name);
+    str_append_string_id(build_name,unit_types[cities[city].building].name);
   }
   improvement2 = 0;
   rand_start = crt_rand_at("spy_city_mission");
@@ -5480,7 +5480,7 @@ void __cdecl unit_sound_editor_pick_wav(int slot)
       filter = dest_path;
       file_buf = wav_path;
       title = (iptr)label_string(label_table.string_ids[0x223]);
-      ret = ui_file_name_dialog((iptr)&unit_sound_editor.wnd,(const char *)title,(iptr)file_buf,(iptr)filter,(iptr)default_ext,filter_arg,dlg_arg);
+      ret = ui_file_name_dialog((iptr)&unit_sound_editor.wnd,(const char *)title,file_buf,filter,default_ext,filter_arg,dlg_arg);
       if (ret == 0) {
         return;
       }
@@ -5504,7 +5504,7 @@ void __cdecl unit_sound_editor_pick_wav(int slot)
       crt_strcat(dest_path,((i8 *)&unit_sound_wav_suffix_str));
       ret = file_exists((const char *)dest_path);
       if ((ret == 0) || (ret = crt_remove(dest_path), ret == 0)) {
-        file_copy((iptr)wav_path,(iptr)dest_path);
+        file_copy(wav_path,dest_path);
       }
     }
   }
@@ -5865,9 +5865,9 @@ void __cdecl unit_cmd_build_city(void)
         }
         city = city_create(x2,y2,civ);
         if (-1 < (int)city) {
-          ret = dlg_game_text_input((const char *)&str_namecity,0xf,(char *)&cities[city].name,(iptr)city_name);
+          ret = dlg_game_text_input(str_namecity,0xf,cities[city].name,city_name);
           if (ret == 0) {
-            unit_found_city(unit,city,(iptr)city_name);
+            unit_found_city(unit,city,city_name);
             text_set_string_arg(0,(const char *)&cities[city].name);
             text_clear();
             text_append_year((int)game.year);
@@ -8492,7 +8492,7 @@ void __cdecl unit_editor_on_ok(void)
       if (cmp != 0) {
         edited_name = editor_text_dlg_wnd_block.editor_item_name_recs[unit_type];
         old_name = (iptr)label_string(unit_types[unit_type].name);
-        result = events_rename_unit_refs((char *)old_name,(iptr)edited_name);
+        result = events_rename_unit_refs((char *)old_name,edited_name);
         renamed_count += result;
       }
     }
@@ -8563,7 +8563,7 @@ void __cdecl unit_editor_on_rename(void)
       parent_wnd2 = (iptr)&editor_active.wnd->window;
     }
     dlg_push_parent_window(parent_wnd2);
-    result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_unitname,0xe,(iptr)old_name,(iptr)new_name);
+    result = dlg_text_input(str_debug_11,str_unitname,0xe,old_name,new_name);
     dlg_pop_parent_window();
     if (result == -1) break;
     input_len = _strlen(new_name);
@@ -10878,13 +10878,13 @@ void __cdecl nuclear_blast(int center_x,int center_y)
 }
 
 /* 005badf0 auto */
-char * __cdecl path_join_upper(char *dest,iptr dir,const char *filename)
+char * __cdecl path_join_upper(char *dest,const char *dir,const char *filename)
 
 {
   char *end;
   char buf[80];
   
-  crt_strcpy(buf,(const char *)dir);
+  crt_strcpy(buf,dir);
   for (end = buf; *end != '\0'; end++) {
   }
   if (end[-1] != '\\') {

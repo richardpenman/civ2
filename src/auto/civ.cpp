@@ -384,7 +384,7 @@ void __cdecl tech_editor_on_rename(void)
       parent_wnd2 = (iptr)&editor_active.wnd->window;
     }
     dlg_push_parent_window(parent_wnd2);
-    result = dlg_text_input((iptr)&str_debug_11,(const char *)&str_techname,0x13,(iptr)old_name,(iptr)new_name);
+    result = dlg_text_input(str_debug_11,str_techname,0x13,old_name,new_name);
     dlg_pop_parent_window();
     if (result == -1) break;
     len = _strlen(new_name);
@@ -996,7 +996,7 @@ void __cdecl rules_load_advances(int keep_names)
       preq_advance = rules_parse_advance_abbrev(token);
       advances[advance].preq[preq_index] = preq_advance;
       if (advances[advance].preq[preq_index] == -3) {
-        error_report(0xfffffffc,3,(iptr)&textbuf.buf,advance,preq_index);
+        error_report(0xfffffffc,3,textbuf.buf,advance,preq_index);
       }
     }
     value = text_next_int();
@@ -1007,7 +1007,7 @@ void __cdecl rules_load_advances(int keep_names)
        past the five is a bad line, as a bad prerequisite (the original took
        them, and the Civilopedia drew sprites past its 20) */
     if ((3 < advances[advance].epoch) || (4 < advances[advance].category)) {
-      error_report(0xfffffffc,3,(iptr)&textbuf.buf,advance,2);
+      error_report(0xfffffffc,3,textbuf.buf,advance,2);
     }
     if (advances[advance].preq[0] == -2) {
       advances[advance].enabled = '\0';
@@ -1109,7 +1109,7 @@ void __cdecl rules_load_improvements(int keep_names)
     preq_advance = rules_parse_advance_abbrev(token);
     improvements[improvement].preq = preq_advance;
     if (improvements[improvement].preq == -3) {
-      error_report(0xfffffffb,3,(iptr)&textbuf.buf,improvement,0);
+      error_report(0xfffffffb,3,textbuf.buf,improvement,0);
     }
     while ((-1 < improvements[improvement].preq &&
            (advances[improvements[improvement].preq].enabled == '\0'))) {
@@ -1123,7 +1123,7 @@ void __cdecl rules_load_improvements(int keep_names)
     preq_advance = rules_parse_advance_abbrev(token);
     wonder_expires[improvement] = preq_advance;
     if (wonder_expires[improvement] == -3) {
-      error_report(0xfffffffc,3,(iptr)&textbuf.buf,improvement,0);
+      error_report(0xfffffffc,3,textbuf.buf,improvement,0);
     }
   }
   return;
@@ -1218,7 +1218,7 @@ void __cdecl rules_load_units(int keep_names)
     flag_bits = text_next_binary();
     unit_types[unit_type].flags = (uint)flag_bits;
     if ((unit_types[unit_type].obsolete_by == -3) || (unit_types[unit_type].prerequisite == -3)) {
-      error_report(0xfffffffa,3,(iptr)&textbuf.buf,unit_type,0);
+      error_report(0xfffffffa,3,textbuf.buf,unit_type,0);
     }
   }
   for (; unit_type < 0x3e; unit_type++) {
@@ -1241,7 +1241,7 @@ void __cdecl rules_load_units(int keep_names)
     unit_types[unit_type].prerequisite = -2;
     unit_types[unit_type].flags = 0;
     if ((unit_types[unit_type].obsolete_by == -3) || (unit_types[unit_type].prerequisite == -3)) {
-      error_report(0xfffffffa,3,(iptr)&textbuf.buf,unit_type,0);
+      error_report(0xfffffffa,3,textbuf.buf,unit_type,0);
     }
   }
   return;
@@ -1307,14 +1307,14 @@ void __cdecl rules_load_terrain(void)
         value = text_next_int();
         terrain_types[terrain2].improve_ai_govt[slot] = (char)value;
         if (terrain_types[terrain2].improve_to[slot] == -3) {
-          error_report(0xfffffff9,3,(iptr)&textbuf.buf,terrain2,slot);
+          error_report(0xfffffff9,3,textbuf.buf,terrain2,slot);
         }
       }
       token = text_next_token();
       transform_terrain = rules_parse_terrain_abbrev(token);
       terrain_types[terrain2].transform_to = transform_terrain;
       if (terrain_types[terrain2].transform_to == -3) {
-        error_report(0xfffffff9,3,(iptr)&textbuf.buf,terrain2,99);
+        error_report(0xfffffff9,3,textbuf.buf,terrain2,99);
       }
     }
   }
@@ -2591,7 +2591,7 @@ void __cdecl civ_rating_window_draw(void)
       crt_strcpy(line_buf,str_error_2);
     }
     /* BF-064: expanded within the text buffer */
-    text_expand_vars_max((iptr)line_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
+    text_expand_vars_max(line_buf,textbuf.buf,TEXTBUF_SIZE);
     if (i < title_index) {
       text_set_font((iptr)&civ_rating_title_font_block.civ_rating_title_font);
       text_set_colors(0x1d,0x12,0xffffffff,0xffffffff);
@@ -6473,13 +6473,13 @@ i32 __cdecl rules_write_sections(void)
   cmp_result = _strcmp(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&game_dirs.home));
   if ((cmp_result == 0) || (exists = file_exists((const char *)rules_name), exists == 0)) {
     __chdir(((i8 *)&game_dirs.home));
-    in_file = file_open_path((const char *)rules_name,(iptr)&str_rt_4);
+    in_file = file_open_path((const char *)rules_name,str_rt_4);
     rc = _strcmp(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&game_dirs.home));
     if (rc == 0) {
       rc = file_exists((const char *)&str_rules_bak_5);
       if ((rc != 0) && (rc = crt_remove(str_rules_bak_6), rc != 0))
       return success;
-      out_file = file_open_path((const char *)&str_rules_bak_7,(iptr)&str_wt_2);
+      out_file = file_open_path(str_rules_bak_7,str_wt_2);
       uType = 0x40;
       lpCaption = str_warning_2;
       line_ptr = str_saving_changes_in_file_rules_bak;
@@ -6488,15 +6488,15 @@ i32 __cdecl rules_write_sections(void)
     }
     else {
       __chdir(((i8 *)&net_map_lock_slots_block.scenario_dir_path));
-      out_file = file_open_path((const char *)rules_name,(iptr)&str_wt_3);
+      out_file = file_open_path((const char *)rules_name,str_wt_3);
     }
   }
   else {
     rc = file_exists((const char *)&str_rules_bak);
     if (((rc != 0) && (rc = crt_remove(str_rules_bak_2), rc != 0)) ||
        (rc = crt_rename(rules_name,str_rules_bak_3), rc != 0)) return success;
-    in_file = file_open_path((const char *)&str_rules_bak_4,(iptr)&str_rt_3);
-    out_file = file_open_path((const char *)rules_name,(iptr)&str_wt);
+    in_file = file_open_path(str_rules_bak_4,str_rt_3);
+    out_file = file_open_path((const char *)rules_name,str_wt);
   }
   if ((in_file != (FILE *)0x0) && (out_file != (FILE *)0x0)) {
     for (; font_size16_bold_block.rules_edit_sections[section].name != 0; section++) {
@@ -7750,7 +7750,7 @@ void __cdecl cosmic_editor_edit_value(void)
   text_set_number_arg(1,*(i32 *)(((i8 *)&cosmic_edit_max_values) + sel * 4));
   out_buf = input;
   default_text = __itoa(editor_text_dlg_wnd_block.editor_item_recs[0].values[sel],num_buf,10);
-  rc = dlg_text_input((iptr)&str_debug_11,(const char *)&str_cpedit,3,(iptr)default_text,(iptr)out_buf);
+  rc = dlg_text_input(str_debug_11,str_cpedit,3,default_text,out_buf);
   if (-1 < rc) {
     max_value = *(i32 *)(((i8 *)&cosmic_edit_max_values) + sel * 4);
     min_value = *(i32 *)(((i8 *)&cosmic_edit_min_values) + sel * 4);

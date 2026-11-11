@@ -460,7 +460,7 @@ i32 __cdecl popup_game_with_sprite(const char *section,iptr sprite,i32 sprite_fl
 {
   i32 result;
   
-  result = popup_text_with_sprite((iptr)&str_game_7,section,0,sprite,sprite_flags);
+  result = popup_text_with_sprite(str_game_7,section,0,sprite,sprite_flags);
   return result;
 }
 
@@ -619,7 +619,7 @@ i32 __cdecl popup_text_ex(const char *filename,const char *section,i32 dlg_flags
 {
   i32 result;
   
-  result = popup_text_run((iptr)filename,section,dlg_flags,0,0,0,flags);
+  result = popup_text_run(filename,section,dlg_flags,0,0,0,flags);
   return result;
 }
 
@@ -700,12 +700,12 @@ i32 __cdecl popup_game(const char *section)
 }
 
 /* 00421ed0 auto */
-i32 __cdecl dlg_game_text_input(const char *section,i32 max_len,char *buf,iptr default_text)
+i32 __cdecl dlg_game_text_input(const char *section,i32 max_len,char *buf,const char *default_text)
 
 {
   i32 result;
   
-  result = dlg_text_input((iptr)&str_game_7,section,max_len,(iptr)buf,default_text);
+  result = dlg_text_input(str_game_7,section,max_len,buf,(char *)default_text);
   return result;
 }
 
@@ -734,7 +734,7 @@ i32 __cdecl popup_game_sprite_flags(const char *section,i32 dlg_flags,iptr sprit
 {
   i32 result;
   
-  result = popup_text_with_sprite((iptr)&str_game_7,section,dlg_flags,sprite,sprite_flags);
+  result = popup_text_with_sprite(str_game_7,section,dlg_flags,sprite,sprite_flags);
   return result;
 }
 
@@ -1669,7 +1669,7 @@ void __cdecl ui_blit_all_windows(void)
 
 /* 004731d2 auto */
 uint __cdecl
-ui_file_name_dialog(iptr parent,const char *title,iptr file_buf,iptr filter,iptr default_ext,int must_exist,
+ui_file_name_dialog(iptr parent,const char *title,char *file_buf,const char *filter,const char *default_ext,int must_exist,
             int is_save)
 
 {
@@ -1685,12 +1685,12 @@ ui_file_name_dialog(iptr parent,const char *title,iptr file_buf,iptr filter,iptr
     wnd = ((WndBase *)parent)->get_window();
     ofn.hwndOwner = wnd->hwnd;
   }
-  ofn.lpstrFilter = (LPCSTR)filter;
+  ofn.lpstrFilter = filter;
   ofn.nFilterIndex = 1;
-  ofn.lpstrFile = (LPSTR)file_buf;
+  ofn.lpstrFile = file_buf;
   ofn.nMaxFile = 0x100;
   ofn.lpstrTitle = title;
-  ofn.lpstrDefExt = (LPCSTR)default_ext;
+  ofn.lpstrDefExt = default_ext;
   if (must_exist == 0) {
     ofn.Flags = 0x80e;
   }
@@ -1790,7 +1790,7 @@ void __cdecl ui_focus_active_unit(int auto_next)
 void __cdecl popup_file_with_sprite(const char *filename,const char *section,iptr sprite,i32 sprite_flags)
 
 {
-  popup_text_with_sprite((iptr)filename,section,0,sprite,sprite_flags);
+  popup_text_with_sprite(filename,section,0,sprite,sprite_flags);
   return;
 }
 
@@ -1839,7 +1839,7 @@ void __cdecl
 popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,int advance,i32 sprite_flags)
 
 {
-  popup_text_with_sprite((iptr)filename,section,dlg_flags,
+  popup_text_with_sprite(filename,section,dlg_flags,
                      (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                            (char)advances[advance].category * 0xf0 +
                            (char)advances[advance].epoch * 0x3c),sprite_flags);
@@ -1860,7 +1860,7 @@ popup_text_with_improvement(const char *filename,const char *section,i32 dlg_fla
   else {
     sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf;
   }
-  result = popup_text_with_sprite((iptr)filename,section,dlg_flags,(iptr)sprite,sprite_flags);
+  result = popup_text_with_sprite(filename,section,dlg_flags,(iptr)sprite,sprite_flags);
   return result;
 }
 
@@ -1871,7 +1871,7 @@ popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_fla
 {
   i32 result;
   
-  result = popup_text_with_sprite((iptr)filename,section,dlg_flags,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),sprite_flags)
+  result = popup_text_with_sprite(filename,section,dlg_flags,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),sprite_flags)
   ;
   return result;
 }
@@ -2487,9 +2487,9 @@ void __cdecl menu_multiplayer_options(void)
         if ((2 < game.multiplayer) && (1 < net.net_player_count[0])) {
           crt_strcpy(((i8 *)&text_args.strings),((i8 *)&net.local_player_name));
           str_clear((char *)&text_args.string1);
-          str_append_label((iptr)&text_args.string1,0x350 - (uint)((*(ushort *)&menu_prefs.mp_double_production) == 0));
+          str_append_label(text_args.string1,0x350 - (uint)((*(ushort *)&menu_prefs.mp_double_production) == 0));
           crt_strcat(((i8 *)&text_args.string1),((i8 *)&mp_options_vote_sep_str));
-          str_append_label((iptr)&text_args.string1,0x352 - (uint)((*(ushort *)&menu_prefs.mp_double_moves) == 0));
+          str_append_label(text_args.string1,0x352 - (uint)((*(ushort *)&menu_prefs.mp_double_moves) == 0));
           net.vote_replies_pending = net.net_player_count[0] - 1;
           net.vote_status = 0;
           net_send_text_args(0x43,0xff,2,0,0,0);
@@ -3354,7 +3354,7 @@ void __cdecl menu_set_item_label(i32 item_id,i32 label_id,i32 enabled)
   /* BF-200 (Peter Johnson's ledger): a label is cut at 60 characters, the
      room its menu item was made with (lang.cpp menu_rows: the original
      expanded it whole into these 80 bytes and copied it into the item's) */
-  text_expand_vars_max((iptr)&textbuf.buf,(iptr)label_text,0x3d);
+  text_expand_vars_max(textbuf.buf,label_text,0x3d);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_text(item_id,(const char *)label_text);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_enabled(item_id,enabled);
   return;
@@ -3881,13 +3881,13 @@ i32 __cdecl dlg_input_number_game(const char *section,i32 initial,long *out_valu
 {
   i32 result;
   
-  result = dlg_input_number((iptr)&str_game_7,section,initial,out_value);
+  result = dlg_input_number(str_game_7,section,initial,out_value);
   return result;
 }
 
 /* 0051d3e0 auto */
 i32 __cdecl
-popup_text_run(iptr file,const char *section,i32 result,i32 arg4,i32 arg5,
+popup_text_run(const char *file,const char *section,i32 result,i32 arg4,i32 arg5,
             i32 arg6,i32 arg7)
 
 {
@@ -3898,7 +3898,7 @@ popup_text_run(iptr file,const char *section,i32 result,i32 arg4,i32 arg5,
   
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
-  status = dialog2.load_text_section((const char *)file,section,result,0,arg4,arg5,arg6,arg7);
+  status = dialog2.load_text_section(file,section,result,0,arg4,arg5,arg6,arg7);
   if (status == 0) {
     if (((byte)dialog2.style_flags & 4) != 0) {
       for (i = 0; i < (int)dialog2.option_count; i++) {
@@ -3923,7 +3923,7 @@ popup_text_run(iptr file,const char *section,i32 result,i32 arg4,i32 arg5,
 
 /* 0051d564 auto */
 i32 __cdecl
-popup_text_with_sprite(iptr file,const char *section,i32 flags,iptr sprite,i32 zoom)
+popup_text_with_sprite(const char *file,const char *section,i32 flags,iptr sprite,i32 zoom)
 
 {
   i32 result;
@@ -3932,7 +3932,7 @@ popup_text_with_sprite(iptr file,const char *section,i32 flags,iptr sprite,i32 z
   
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
-  dialog2.load_text((const char *)file,section,flags);
+  dialog2.load_text(file,section,flags);
   dialog2.add_sprite(sprite,0,0);
   dialog2.set_image_zoom(zoom);
   result = dialog2.show_modal(0);
@@ -3942,7 +3942,7 @@ popup_text_with_sprite(iptr file,const char *section,i32 flags,iptr sprite,i32 z
 
 /* 0051d63b auto */
 i32 __cdecl
-dlg_text_input(iptr file,const char *section,i32 max_len,iptr initial_text,iptr out_text)
+dlg_text_input(const char *file,const char *section,i32 max_len,const char *initial_text,char *out_text)
 
 {
   int status;
@@ -3954,11 +3954,11 @@ dlg_text_input(iptr file,const char *section,i32 max_len,iptr initial_text,iptr 
   result = 0;
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
-  str_clear((char *)out_text);
-  status = dialog2.load_text_section((const char *)file,section,max_len,initial_text,0,0,0,1);
+  str_clear(out_text);
+  status = dialog2.load_text_section(file,section,max_len,(iptr)initial_text,0,0,0,1);
   if (status == 0) {
-    result = dialog2.run_modal(out_text,0);
-    for (p = (char *)out_text;
+    result = dialog2.run_modal((iptr)out_text,0);
+    for (p = out_text;
         (*p != '\0' && ((*p == ' ' || (*p == '\t')))); p++)
     {
       *p = '_';
@@ -3968,7 +3968,7 @@ dlg_text_input(iptr file,const char *section,i32 max_len,iptr initial_text,iptr 
 }
 
 /* 0051d75d auto */
-i32 __cdecl dlg_input_number(iptr file,const char *section,int initial,long *out_value)
+i32 __cdecl dlg_input_number(const char *file,const char *section,int initial,long *out_value)
 
 {
   long value;
@@ -3977,7 +3977,7 @@ i32 __cdecl dlg_input_number(iptr file,const char *section,int initial,long *out
   i32 result;
   
   __itoa(initial,initial_text,10);
-  result = dlg_text_input(file,section,5,(iptr)initial_text,(iptr)input_text);
+  result = dlg_text_input(file,section,5,initial_text,input_text);
   value = _atol(input_text);
   *out_value = value;
   return result;
@@ -4022,7 +4022,7 @@ void __cdecl dialog_prepend_title_label(iptr dialog,i32 label_id)
                          title is cut */
   
   title[0] = '\0';
-  str_append_label((iptr)title,label_id);
+  str_append_label(title,label_id);
   if (*(int *)(dialog + 0x134) != 0) {
     str_append_max(title,((i8 *)&dialog_title_label_space_str),sizeof title);
     str_append_max((char *)((void *)title),(const char *)((void *)(*(i32 *)(dialog + 0x134))),sizeof title);
@@ -4397,7 +4397,7 @@ void FrameWindow::append_turn_status(char *caption)
           crt_strcat(caption,((i8 *)&caption_simul_ai_str));
         }
         crt_strcat(caption,((i8 *)&caption_simul_space_str));
-        str_append_label((iptr)caption,0x369);
+        str_append_label(caption,0x369);
         if (timer_text != '\0') {
           crt_strcat(caption,((i8 *)&caption_simul_timer_sep_str));
           crt_strcat(caption,(const char *)(&timer_text));
@@ -4439,7 +4439,7 @@ void FrameWindow::append_turn_status(char *caption)
       }
     }
     crt_strcat(caption,((i8 *)&caption_moves_space_str));
-    str_append_label((iptr)caption,0x369);
+    str_append_label(caption,0x369);
     if (timer_text != '\0') {
       crt_strcat(caption,((i8 *)&caption_timer_sep_str));
       crt_strcat(caption,(const char *)(&timer_text));
@@ -9752,7 +9752,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
         }
         /* BF-059 (Peter Johnson's ledger): expanded is load_text_section's
            256 bytes; a longer text is cut */
-        text_expand_vars_max((iptr)key2,(iptr)expanded,0x100);
+        text_expand_vars_max(key2,expanded,0x100);
         set_title((const char *)expanded);
       }
       else {
@@ -9763,7 +9763,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
           if (*key2 != '\0') {
             key2++;
           }
-          text_expand_vars_max((iptr)key2,(iptr)expanded,0x100);  /* BF-059 */
+          text_expand_vars_max(key2,expanded,0x100);  /* BF-059 */
           add_button((const char *)expanded);
         }
         else {
@@ -9956,11 +9956,11 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
           load_section_keyword(line,expanded,mode,default_value,has_edit,edit_default,edit_text);
         }
         else if (mode == 1) {
-          text_expand_vars_max((iptr)line,(iptr)expanded,sizeof expanded);  /* BF-059 */
+          text_expand_vars_max(line,expanded,sizeof expanded);  /* BF-059 */
           add_line((const char *)expanded,0xffffffff,0xffffffff,0xffffffff,0);
         }
         else if (mode == 2) {
-          text_expand_vars_max((iptr)line,(iptr)expanded,sizeof expanded);  /* BF-059 */
+          text_expand_vars_max(line,expanded,sizeof expanded);  /* BF-059 */
           if (has_edit == 0) {
             if ((style_flags & 4) == 0) {
               option = add_option((const char *)expanded,option_index,0);
@@ -11714,11 +11714,11 @@ void __cdecl dlg_radio_choice_button_cb(int button_id)
 /* 005e0863: written by hand in src/game/unwind.cpp */
 
 /* 005e0ce0 auto */
-iptr __cdecl menu_hmenu_parse_items(HMENU hmenu,iptr spec)
+char * __cdecl menu_hmenu_parse_items(HMENU hmenu,char *spec)
 
 {
   bool done;
-  iptr _Source;
+  char *_Source;
   size_t uBytes;
   HLOCAL hMem;
   char *_Dest;
@@ -11730,48 +11730,48 @@ iptr __cdecl menu_hmenu_parse_items(HMENU hmenu,iptr spec)
   
   done = false;
   item_count2 = 0;
-  uBytes = _strlen((char *)spec);
+  uBytes = _strlen(spec);
   hMem = LocalAlloc(2,uBytes);
   _Dest = (char *)LocalLock(hMem);
   *_Dest = '\0';
-  for (; *(char *)spec == ' '; spec++) {
+  for (; *spec == ' '; spec++) {
   }
   while (!done) {
-    if (*(char *)spec == '!') {
+    if (*spec == '!') {
       flags2 = 3;
       spec++;
     }
     else {
       flags2 = 0;
     }
-    if (*(char *)spec == '*') {
+    if (*spec == '*') {
       flags2 = flags2 | 8;
       spec++;
     }
     _Source = spec;
     label_len = 0;
-    for (; ((*(char *)spec != '}' && (*(char *)spec != '_')) && (*(char *)spec != '{'));
+    for (; ((*spec != '}' && (*spec != '_')) && (*spec != '{'));
         spec = spec + 1) {
       label_len++;
     }
-    _strncat(_Dest,(char *)_Source,label_len);
-    if ((*(char *)spec == '_') || (*(char *)spec == '}')) {
-      if (*(char *)spec == '}') {
+    _strncat(_Dest,_Source,label_len);
+    if ((*spec == '_') || (*spec == '}')) {
+      if (*spec == '}') {
         done = true;
       }
       item_id = menu_next_item_id;
       menu_next_item_id = (HMENU)((iptr)menu_next_item_id + 1);
       do {
         spec++;
-      } while (*(char *)spec == ' ');
+      } while (*spec == ' ');
     }
-    else if (*(char *)spec == '{') {
+    else if (*spec == '{') {
       item_id = CreateMenu();
       spec = menu_hmenu_parse_items(item_id,spec + 1);
       flags2 = flags2 | 0x10;
-      for (; *(char *)spec == ' '; spec++) {
+      for (; *spec == ' '; spec++) {
       }
-      if (*(char *)spec == '}') {
+      if (*spec == '}') {
         done = true;
         spec++;
       }
@@ -11834,7 +11834,7 @@ HMENU __cdecl menu_hmenu_build_from_spec(char *spec)
       cursor++;
     } while (*cursor == ' ');
     uIDNewItem = CreateMenu();
-    cursor = (char *)menu_hmenu_parse_items(uIDNewItem,(iptr)cursor);
+    cursor = menu_hmenu_parse_items(uIDNewItem,cursor);
     if (prefix_char != '!') {
       AppendMenuA(hMenu,0x10,uIDNewItem,_Dest);
     }

@@ -369,7 +369,7 @@ void __cdecl err_dump_text_file(const char *path)
   char line[80];
   int keep_going;
   
-  _File = file_open_path(path,(iptr)&str_rt_8);
+  _File = file_open_path(path,str_rt_8);
   if (_File != (FILE *)0x0) {
     keep_going = 1;
     while (((keep_going != 0 && ((CRT_FEOF(_File)) == 0)) &&
@@ -397,7 +397,7 @@ void __cdecl err_dump_text_file(const char *path)
 }
 
 /* 00589ef8 auto */
-void __cdecl error_report(uint error_code,int module_id,iptr context,i32 data1,i32 data2)
+void __cdecl error_report(uint error_code,int module_id,const char *context,i32 data1,i32 data2)
 
 {
   char data2_text[12];
@@ -415,14 +415,14 @@ void __cdecl error_report(uint error_code,int module_id,iptr context,i32 data1,i
   __itoa(module_id,module_text,10);
   __ltoa(data1,data1_text,10);
   __ltoa(data2,data2_text,10);
-  file_read_nth_line((iptr)error_text,(const char *)&str_errors_db,~error_code + 1);
-  file_read_nth_line((iptr)module_text,(const char *)&str_modules_db,module_id);
-  err_fatal_exit((iptr)error_text,(iptr)module_text,(iptr)data1_text,(iptr)data2_text,error_code);
+  file_read_nth_line(error_text,str_errors_db,~error_code + 1);
+  file_read_nth_line(module_text,str_modules_db,module_id);
+  err_fatal_exit(error_text,module_text,data1_text,data2_text,error_code);
   return;
 }
 
 /* 0058a0ee auto */
-void __cdecl err_fatal_exit(iptr error_text,iptr module_text,iptr data1_text,iptr data2_text,i32 error_code)
+void __cdecl err_fatal_exit(const char *error_text,const char *module_text,const char *data1_text,const char *data2_text,i32 error_code)
 
 {
   size_t len;

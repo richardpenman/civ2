@@ -41,7 +41,7 @@ static struct {
 #pragma pack(pop)
 static char file_path_mode, open_path_prefix[60];
 static std::string opened;
-static char *path_join_upper(char *, iptr, const char *) { abort(); }
+static char *path_join_upper(char *, const char *, const char *) { abort(); }
 #define crt_strcpy strcpy
 #define crt_strcat strcat
 #define crt_memcpy memcpy
@@ -181,7 +181,7 @@ static void open_paths() {
 static std::string expand(const char *text) {
     char src[256], dest[0x1000];
     strcpy(src, text);
-    text_expand_vars((iptr)src, (iptr)dest);
+    text_expand_vars(src, dest);
     return dest;
 }
 static void text_vars() {

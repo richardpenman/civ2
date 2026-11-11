@@ -832,7 +832,7 @@ static void diplo_exchange_compose_offer(iptr civ2,int mode,iptr advance2,Dialog
        expanded within the text buffer */
     label_buf[0] = '\0';
     str_append_max((char *)label_buf,label_string(label_table.string_ids[0x6b]),sizeof label_buf);
-    text_expand_vars_max((iptr)label_buf,(iptr)&textbuf.buf,TEXTBUF_SIZE);
+    text_expand_vars_max(label_buf,textbuf.buf,TEXTBUF_SIZE);
     dlg.add_option((const char *)&textbuf.buf,2,0);
   }
 }

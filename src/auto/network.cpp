@@ -587,7 +587,7 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
   }
   self->saved_button_label = dlg_style.button_labels[0];
   str_clear(self->button_label);
-  str_append_label((iptr)self->button_label,0x126);
+  str_append_label(self->button_label,0x126);
   dlg_style.button_labels[0] = (i8 *)self->button_label;
   self->list_dialog->Dialog::reset(0x1081801);
   self->list_dialog->set_width(0x276);
@@ -1360,23 +1360,23 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
     }
     if (found_game != 0) {
       str_clear((char *)text);
-      str_append_label((iptr)text,0x26f);
-      str_append_space((iptr)text);
+      str_append_label(text,0x26f);
+      str_append_space(text);
       crt_strcat(text,found_game->game_name);
-      str_append_space((iptr)text);
-      str_append_lparen((iptr)text);
-      str_append_label((iptr)text,(found_game->open_game == 0) + 0x277);
-      str_append_rparen((iptr)text);
+      str_append_space(text);
+      str_append_lparen(text);
+      str_append_label(text,(found_game->open_game == 0) + 0x277);
+      str_append_rparen(text);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[0],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,0x270);
-      str_append_space((iptr)text);
+      str_append_label(text,0x270);
+      str_append_space(text);
       crt_strcat(text,found_game->host_name);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[1],(const char *)text);
       str_clear((char *)text);
       text_len = _strlen(found_game->scenario_name);
       if (text_len == 0) {
-        str_append_label((iptr)text,0x34c);
+        str_append_label(text,0x34c);
       }
       else {
         crt_strcpy(text,found_game->scenario_name);
@@ -1385,60 +1385,60 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
       if (0x19 < text_len) {
         text[21] = 0;           /* a long scenario name cut */
       }
-      str_append_space((iptr)text);
-      str_append_lparen((iptr)text);
+      str_append_space(text);
+      str_append_lparen(text);
       game.game_flags = found_game->game_flags;
       game.first_launch_turn = found_game->first_launch_turn;
       scenario.year_increment[0] = found_game->year_increment;
       scenario.start_year = found_game->start_year;
       game.difficulty = found_game->difficulty;
       year = game_turn_to_year((int)found_game->turn);
-      str_append_year((iptr)text,year);
-      str_append_rparen((iptr)text);
+      str_append_year(text,year);
+      str_append_rparen(text);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[2],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,found_game->difficulty + 0x279);
-      str_append_space((iptr)text);
-      str_append_lparen((iptr)text);
-      str_append_label((iptr)text,0x34e - (uint)(found_game->simultaneous == 0));
-      str_append_rparen((iptr)text);
+      str_append_label(text,found_game->difficulty + 0x279);
+      str_append_space(text);
+      str_append_lparen(text);
+      str_append_label(text,0x34e - (uint)(found_game->simultaneous == 0));
+      str_append_rparen(text);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[3],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,0x36c);
-      str_append_space((iptr)text);
-      str_append_int((iptr)text,(int)found_game->map_width / 2);
+      str_append_label(text,0x36c);
+      str_append_space(text);
+      str_append_int(text,(int)found_game->map_width / 2);
       crt_strcat(text,((i8 *)&gamelist_map_size_sep_str));
-      str_append_int((iptr)text,(int)found_game->map_height);
+      str_append_int(text,(int)found_game->map_height);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[4],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,0x350 - (uint)(found_game->double_production == 0));
+      str_append_label(text,0x350 - (uint)(found_game->double_production == 0));
       crt_strcat(text,((i8 *)&gamelist_double_opts_sep_str));
-      str_append_label((iptr)text,0x352 - (uint)(found_game->double_moves == 0));
+      str_append_label(text,0x352 - (uint)(found_game->double_moves == 0));
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[5],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,0x273);
-      str_append_space((iptr)text);
-      str_append_label((iptr)text,found_game->barbarian_activity + 0x27f);
+      str_append_label(text,0x273);
+      str_append_space(text);
+      str_append_label(text,found_game->barbarian_activity + 0x27f);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[6],(const char *)text);
       str_clear((char *)text);
-      str_append_label((iptr)text,0x276);
-      str_append_space((iptr)text);
+      str_append_label(text,0x276);
+      str_append_space(text);
       if (found_game->turn_time_limit_ms == 0) {
-        str_append_label((iptr)text,0x285);
+        str_append_label(text,0x285);
       }
       else {
         seconds = found_game->turn_time_limit_ms / 1000;
         minutes = seconds / 0x3c;
         seconds = seconds % 0x3c;
         if (minutes < 10) {
-          str_append_int((iptr)text,0);
+          str_append_int(text,0);
         }
-        str_append_int((iptr)text,minutes);
+        str_append_int(text,minutes);
         crt_strcat(text,((i8 *)&gamelist_timer_colon_str));
         if (seconds < 10) {
-          str_append_int((iptr)text,0);
+          str_append_int(text,0);
         }
-        str_append_int((iptr)text,seconds);
+        str_append_int(text,seconds);
       }
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[7],(const char *)text);
       bit = 1;
@@ -1450,12 +1450,12 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
         }
       }
       str_clear((char *)text);
-      str_append_label((iptr)text,0x274);
-      str_append_space((iptr)text);
-      str_append_int((iptr)text,civ_count);
+      str_append_label(text,0x274);
+      str_append_space(text);
+      str_append_int(text,civ_count);
       crt_strcat(text,((i8 *)&gamelist_open_paren_str));
-      str_append_label((iptr)text,0x275);
-      str_append_space((iptr)text);
+      str_append_label(text,0x275);
+      str_append_space(text);
       bit = 0;
       civ_count = 0;
       civ_bits = (uint)found_game->player_mask;
@@ -1466,12 +1466,12 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
         civ_bits = (int)civ_bits >> 1;
       }
       if ((found_game->session_phase < 3) || (civ_count == 0)) {
-        str_append_label((iptr)text,0x353);
+        str_append_label(text,0x353);
       }
       else {
-        str_append_int((iptr)text,civ_count);
+        str_append_int(text,civ_count);
       }
-      str_append_rparen((iptr)text);
+      str_append_rparen(text);
       ((Dialog *)dialog)->set_item_text(net.gamelist_view->info_lines[8],(const char *)text);
     }
   }
@@ -9099,7 +9099,7 @@ void ParleyWindow::chat_receive_message(iptr civ,iptr civ2,iptr is_private,iptr 
                          civ,civ2,1,0,0,0,(const char *)message,0);
     }
   }
-  chat_log_append((iptr)&textbuf.buf);
+  chat_log_append(textbuf.buf);
   if (chat_wnd_block.closed != 0) {
     net.chat_unread_count++;
     net.chat_missed_message_count++;
@@ -9111,7 +9111,7 @@ void ParleyWindow::chat_receive_message(iptr civ,iptr civ2,iptr is_private,iptr 
 }
 
 /* 004b93a2 auto */
-void __cdecl chat_log_append(iptr line)
+void __cdecl chat_log_append(const char *line)
 
 {
   int capacity;
@@ -9275,7 +9275,7 @@ i32 __cdecl chat_input_on_key(i32 control,int key)
       text_append_year((int)game.year);
       crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_send_year_close_str));
       crt_strcat(((i8 *)&textbuf.buf),(*(char * *)&chat.input_buffer));
-      chat_log_append((iptr)&textbuf.buf);
+      chat_log_append(textbuf.buf);
       if ((int)wnd2->mode == 4) {
         for (civ = 1; civ < 8; civ++) {
           if ((((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) &&
@@ -11305,7 +11305,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     break;
   case 0x46:
     snd_play_effect(SND_LARGEXPL,1,0,0);
-    city_notify_dialog_ex((iptr)&str_manhattan_2,entry[4],1,(iptr)&caption_close_button_sprite_block.city_notify_sprite);
+    city_notify_dialog_ex(str_manhattan_2,entry[4],1,(iptr)&caption_close_button_sprite_block.city_notify_sprite);
     break;
   case 0x47:
     dlg.load_game_text((const char *)&str_built2_2);
@@ -14244,7 +14244,7 @@ void ParleyWindow::add_waiting_pane()
   text_clear();
   text_append_label(0x2e2);
   /* BF-200 (Peter Johnson's ledger): cut at 79 characters */
-  text_expand_vars_max((iptr)&textbuf.buf,(iptr)waiting_text,sizeof waiting_text);
+  text_expand_vars_max(textbuf.buf,waiting_text,sizeof waiting_text);
   gfx_set_text_color_index(10);
   if (large_layout == 0) {
     waiting_text_width = ((GameFont *)((i8 *)&font_size20))->text_width((const char *)waiting_text);
@@ -15530,7 +15530,7 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
     }
     saved_button_label = dlg_style.button_labels[0];
     str_clear(title);
-    str_append_label((iptr)title,0x28b);
+    str_append_label(title,0x28b);
     dlg_style.button_labels[0] = (i8 *)title;
     dialog->Dialog::reset(0x81801);
     text_clear();

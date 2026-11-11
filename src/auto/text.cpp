@@ -23,7 +23,7 @@ void __cdecl text_append(const char *str)
 void __cdecl text_append_label(i32 label_id)
 
 {
-  str_append_label((iptr)&textbuf.buf,label_id);
+  str_append_label(textbuf.buf,label_id);
   return;
 }
 
@@ -31,7 +31,7 @@ void __cdecl text_append_label(i32 label_id)
 void __cdecl text_append_space(void)
 
 {
-  str_append_space((iptr)&textbuf.buf);
+  str_append_space(textbuf.buf);
   return;
 }
 
@@ -47,7 +47,7 @@ void __cdecl text_append_colon(void)
 void __cdecl text_append_percent(void)
 
 {
-  str_append_percent((iptr)&textbuf.buf);
+  str_append_percent(textbuf.buf);
   return;
 }
 
@@ -55,7 +55,7 @@ void __cdecl text_append_percent(void)
 void __cdecl text_append_lparen(void)
 
 {
-  str_append_lparen((iptr)&textbuf.buf);
+  str_append_lparen(textbuf.buf);
   return;
 }
 
@@ -63,7 +63,7 @@ void __cdecl text_append_lparen(void)
 void __cdecl text_append_rparen(void)
 
 {
-  str_append_rparen((iptr)&textbuf.buf);
+  str_append_rparen(textbuf.buf);
   return;
 }
 
@@ -71,7 +71,7 @@ void __cdecl text_append_rparen(void)
 void __cdecl text_append_string_id(i32 string_id)
 
 {
-  str_append_string_id((iptr)&textbuf.buf,string_id);
+  str_append_string_id(textbuf.buf,string_id);
   return;
 }
 
@@ -79,7 +79,7 @@ void __cdecl text_append_string_id(i32 string_id)
 void __cdecl text_append_int(int value)
 
 {
-  str_append_int((iptr)&textbuf.buf,value);
+  str_append_int(textbuf.buf,value);
   return;
 }
 
@@ -97,25 +97,25 @@ i32 __cdecl text_set_string_arg(int index,const char *str)
 void __cdecl text_append_str(const char *str)
 
 {
-  str_concat((iptr)&textbuf.buf,(iptr)str);
+  str_concat(textbuf.buf,str);
   return;
 }
 
 /* 00415040 auto */
-iptr __cdecl file_build_open_path(iptr dest,const char *name2)
+char * __cdecl file_build_open_path(char *dest,const char *name2)
 
 {
   if (file_path_mode == '\0') {
     crt_strcpy((char *)((void *)dest),(const char *)((void *)name2));
   }
   else {
-    path_join_upper((char *)dest,(iptr)&open_path_prefix,name2);
+    path_join_upper(dest,(const char *)&open_path_prefix,name2);
   }
   return dest;
 }
 
 /* 0041508c auto */
-FILE * __cdecl file_open_path(const char *name2,iptr mode)
+FILE * __cdecl file_open_path(const char *name2,const char *mode)
 
 {
   FILE *file;
@@ -123,7 +123,7 @@ FILE * __cdecl file_open_path(const char *name2,iptr mode)
                         game's folder outside the game's is a longer path */
   size_t len;
   
-  file_build_open_path((iptr)path,name2);
+  file_build_open_path(path,name2);
   /* the original copied the whole path into its 80 bytes; the error message
      shows the first 79 characters of a longer one */
   len = _strlen(path);
@@ -144,7 +144,7 @@ uint __cdecl file_exists(const char *name2)
   FILE *_File;
   i32 exists;
   
-  _File = file_open_path(name2,(iptr)&str_rb);
+  _File = file_open_path(name2,str_rb);
   if (_File != (FILE *)0x0) {
     _fclose(_File);
   }
@@ -156,7 +156,7 @@ uint __cdecl file_exists(const char *name2)
 void __cdecl text_append_spaces(i32 count)
 
 {
-  str_append_spaces((iptr)&textbuf.buf,count);
+  str_append_spaces(textbuf.buf,count);
   return;
 }
 
@@ -221,7 +221,7 @@ void FileObject::write(iptr data,i32 size)
 void __cdecl text_append_comma(void)
 
 {
-  str_append_comma((iptr)&textbuf.buf);
+  str_append_comma(textbuf.buf);
   return;
 }
 
@@ -247,7 +247,7 @@ i32 __cdecl text_set_number_arg(int index,i32 value)
 void __cdecl text_append_year(i32 year)
 
 {
-  str_append_year((iptr)&textbuf.buf,year);
+  str_append_year(textbuf.buf,year);
   return;
 }
 
@@ -255,7 +255,7 @@ void __cdecl text_append_year(i32 year)
    199, 200 (Peter Johnson's ledger): the original expanded without a bound
    into its callers' fixed buffers (a line of a modified GAME.TXT, or string
    arguments from long names); the text is cut at the buffer's end */
-void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
+void __cdecl text_expand_vars_max(const char *src,char *dest,size_t size)
 
 {
   char *percent_pos;
@@ -268,7 +268,7 @@ void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
   if (size == 0) {
     return;
   }
-  *(i8 *)dest = 0;
+  *dest = 0;
   do {
     percent_pos = _strchr((char *)src,0x25);
     if (percent_pos != (char *)0x0) {
@@ -290,9 +290,9 @@ void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
            (arg_index < (int)((sizeof(TextArgs) - offsetof(TextArgs,strings)) / 0x104))) {
           str_append_max((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104,size);
         }
-        src = (iptr)(percent_pos + 8);
+        src = (percent_pos + 8);
         if (9 < arg_index) {
-          src = (iptr)(percent_pos + 9);
+          src = (percent_pos + 9);
         }
       }
       else {
@@ -303,7 +303,7 @@ void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
             __ltoa(text_args.numbers[arg_index],num_buf,10);
             str_append_max((char *)((void *)dest),(const char *)((void *)num_buf),size);
           }
-          src = (iptr)(percent_pos + 8);
+          src = (percent_pos + 8);
         }
         else {
           arg_index = _strncmp(tag,((i8 *)&text_var_hex_tag_str),3);
@@ -319,13 +319,13 @@ void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
               }
               str_append_max((char *)((void *)dest),(const char *)((void *)num_buf),size);
             }
-            src = (iptr)(percent_pos + 5);
+            src = (percent_pos + 5);
           }
           else {
-            src = (iptr)tag;
+            src = tag;
             if (*tag == '%') {
               str_append_max((char *)((void *)dest),((i8 *)&text_var_percent_str),size);
-              src = (iptr)(percent_pos + 2);
+              src = (percent_pos + 2);
             }
           }
         }
@@ -336,7 +336,7 @@ void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size)
 }
 
 /* 00426ff0 auto */
-void __cdecl text_expand_vars(iptr src,iptr dest)
+void __cdecl text_expand_vars(const char *src,char *dest)
 
 {
   text_expand_vars_max(src,dest,(size_t)-1);
@@ -482,7 +482,7 @@ void DllHandle::free()
 void __cdecl text_append_period(void)
 
 {
-  str_append_period((iptr)&textbuf.buf);
+  str_append_period(textbuf.buf);
   return;
 }
 
@@ -532,7 +532,7 @@ char * __cdecl str_append_max(char *dest,const char *src,size_t size)
 void __cdecl text_append_long(i32 value)
 
 {
-  str_append_long((iptr)&textbuf.buf,value);
+  str_append_long(textbuf.buf,value);
   return;
 }
 
@@ -540,7 +540,7 @@ void __cdecl text_append_long(i32 value)
 void __cdecl text_append_gold(i32 gold)
 
 {
-  str_append_gold((iptr)&textbuf.buf,gold);
+  str_append_gold(textbuf.buf,gold);
   return;
 }
 
@@ -548,7 +548,7 @@ void __cdecl text_append_gold(i32 gold)
 void __cdecl text_append_population(int civ,i32 population)
 
 {
-  str_append_population((iptr)&textbuf.buf,civ,population);
+  str_append_population(textbuf.buf,civ,population);
   return;
 }
 
@@ -556,12 +556,12 @@ void __cdecl text_append_population(int civ,i32 population)
 void __cdecl text_append_city_name(int city)
 
 {
-  str_append_city_name((iptr)&textbuf.buf,city);
+  str_append_city_name(textbuf.buf,city);
   return;
 }
 
 /* 0043cda6 auto */
-void __cdecl str_append_population(iptr dest,int civ,int population)
+void __cdecl str_append_population(char *dest,int civ,int population)
 
 {
   int pop;
@@ -603,7 +603,7 @@ void __cdecl str_append_population(iptr dest,int civ,int population)
 }
 
 /* 0043ce5a auto */
-void __cdecl str_append_city_population(iptr dest,int city)
+void __cdecl str_append_city_population(char *dest,int city)
 
 {
   int pop;
@@ -623,14 +623,14 @@ void __cdecl str_append_city_population(iptr dest,int city)
 }
 
 /* 0043f444 auto */
-void __cdecl str_append_city_name(iptr dest,int city)
+void __cdecl str_append_city_name(char *dest,int city)
 
 {
   if (city < 0) {
     str_append_label(dest,0xe);
   }
   else {
-    str_concat(dest,(iptr)&cities[city].name);
+    str_concat(dest,cities[city].name);
   }
   return;
 }
@@ -799,7 +799,7 @@ int __cdecl str_parse_hex(const char *text)
 }
 
 /* 00485208 auto */
-void __cdecl str_append_year(iptr dest,uint year)
+void __cdecl str_append_year(char *dest,uint year)
 
 {
   uint abs_year;
@@ -963,7 +963,7 @@ int __cdecl text_open_file_section(const char *filename,const char *section)
     path_default_extension(name2,(char *)(&lang_file_ext));
     __getcwd(saved_cwd,0x104);
     __chdir(((i8 *)&net_map_lock_slots_block.scenario_dir_path));
-    text_file_handle = file_open_path((const char *)name2,(iptr)&str_rt);
+    text_file_handle = file_open_path((const char *)name2,str_rt);
     /* (port) the scenario's copy of the file, which keeps its own text (lang.h) */
     text_file_in_scenario =
          text_file_handle != (FILE *)0x0 &&
@@ -973,7 +973,7 @@ int __cdecl text_open_file_section(const char *filename,const char *section)
     }
     __chdir(((i8 *)&game_dirs.home));
     if (((text_file_handle == (FILE *)0x0) &&
-        (text_file_handle = file_open_path((const char *)name2,(iptr)&str_rt_2),
+        (text_file_handle = file_open_path((const char *)name2,str_rt_2),
         text_file_handle != (FILE *)0x0)) && (len = _strlen(name2), len != 0)) {
       section_offset = text_section_index_lookup((const char *)name2,(const char *)section_tag);
     }
@@ -1202,7 +1202,7 @@ iptr __cdecl str_clear(char *str)
 }
 
 /* 004aef36 auto */
-void __cdecl str_append_space(iptr dest)
+void __cdecl str_append_space(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_space_str));
@@ -1210,7 +1210,7 @@ void __cdecl str_append_space(iptr dest)
 }
 
 /* 004aef57 auto */
-void __cdecl str_append_spaces(iptr dest,int count)
+void __cdecl str_append_spaces(char *dest,int count)
 
 {
   int i;
@@ -1222,7 +1222,7 @@ void __cdecl str_append_spaces(iptr dest,int count)
 }
 
 /* 004aef96 auto */
-void __cdecl str_append_comma(iptr dest)
+void __cdecl str_append_comma(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_comma_str));
@@ -1238,7 +1238,7 @@ void __cdecl str_append_colon(char *dest)
 }
 
 /* 004aefd8 auto */
-void __cdecl str_append_period(iptr dest)
+void __cdecl str_append_period(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_period_str));
@@ -1246,7 +1246,7 @@ void __cdecl str_append_period(iptr dest)
 }
 
 /* 004aeff9 auto */
-void __cdecl str_append_percent(iptr dest)
+void __cdecl str_append_percent(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_percent_str));
@@ -1254,7 +1254,7 @@ void __cdecl str_append_percent(iptr dest)
 }
 
 /* 004af01a auto */
-void __cdecl str_append_lparen(iptr dest)
+void __cdecl str_append_lparen(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_lparen_str));
@@ -1262,7 +1262,7 @@ void __cdecl str_append_lparen(iptr dest)
 }
 
 /* 004af03b auto */
-void __cdecl str_append_rparen(iptr dest)
+void __cdecl str_append_rparen(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_rparen_str));
@@ -1270,7 +1270,7 @@ void __cdecl str_append_rparen(iptr dest)
 }
 
 /* 004af09e auto */
-void __cdecl str_append_plus(iptr dest)
+void __cdecl str_append_plus(char *dest)
 
 {
   crt_strcat((char *)((void *)dest),((i8 *)&append_plus_str));
@@ -1278,7 +1278,7 @@ void __cdecl str_append_plus(iptr dest)
 }
 
 /* 004af122 auto */
-void __cdecl str_append_string_id(iptr dest,i32 string_id)
+void __cdecl str_append_string_id(char *dest,i32 string_id)
 
 {
   i32 text;
@@ -1289,7 +1289,7 @@ void __cdecl str_append_string_id(iptr dest,i32 string_id)
 }
 
 /* 004af14b auto */
-void __cdecl str_append_label(iptr dest,int label_id)
+void __cdecl str_append_label(char *dest,int label_id)
 
 {
   str_append_string_id(dest,label_table.string_ids[label_id]);
@@ -1297,7 +1297,7 @@ void __cdecl str_append_label(iptr dest,int label_id)
 }
 
 /* 004af174 auto */
-void __cdecl str_concat(iptr dest,iptr src)
+void __cdecl str_concat(char *dest,const char *src)
 
 {
   crt_strcat((char *)((void *)dest),(const char *)((void *)src));
@@ -1305,7 +1305,7 @@ void __cdecl str_concat(iptr dest,iptr src)
 }
 
 /* 004af1d5 auto */
-i32 __cdecl str_append_int(iptr dest,int value)
+i32 __cdecl str_append_int(char *dest,int value)
 
 {
   i32 result;
@@ -1317,7 +1317,7 @@ i32 __cdecl str_append_int(iptr dest,int value)
 }
 
 /* 004af284 auto */
-void __cdecl str_append_long(iptr dest,long value)
+void __cdecl str_append_long(char *dest,long value)
 
 {
   char num_buf[20];
@@ -1328,7 +1328,7 @@ void __cdecl str_append_long(iptr dest,long value)
 }
 
 /* 004af2b9 auto */
-void __cdecl str_append_gold(iptr dest,i32 gold)
+void __cdecl str_append_gold(char *dest,i32 gold)
 
 {
   str_append_long(dest,gold);
@@ -1492,7 +1492,7 @@ void __cdecl text_section_index_build(const char *filename,uint pool_size)
   crt_strcat(((i8 *)&text_index.path),((i8 *)&text_index_path_sep_str));
   crt_strcat(((i8 *)&text_index.path),(const char *)((void *)filename));
   path_default_extension((char *)(&text_index.path),lang_file_ext);
-  _File = file_open_path((const char *)&text_index.path,(iptr)&str_rt_6);
+  _File = file_open_path(text_index.path,str_rt_6);
   if (_File == (FILE *)0x0) {
     text_index.path[0] = 0;
   }
@@ -1623,7 +1623,7 @@ void __cdecl text_set_unit_info_args(int unit)
 void __cdecl text_append_plus(void)
 
 {
-  str_append_plus((iptr)&textbuf.buf);
+  str_append_plus(textbuf.buf);
   return;
 }
 
@@ -1631,7 +1631,7 @@ void __cdecl text_append_plus(void)
 void __cdecl text_append_city_population(i32 city)
 
 {
-  str_append_city_population((iptr)&textbuf.buf,city);
+  str_append_city_population(textbuf.buf,city);
   return;
 }
 
@@ -1872,7 +1872,7 @@ void __cdecl str_pipes_to_tabs(char *str)
 }
 
 /* 00589fc9 auto */
-i32 __cdecl file_read_nth_line(iptr dest,const char *filename,int line_num)
+i32 __cdecl file_read_nth_line(char *dest,const char *filename,int line_num)
 
 {
   char *line;
@@ -1882,7 +1882,7 @@ i32 __cdecl file_read_nth_line(iptr dest,const char *filename,int line_num)
   char line_buf[80];
   
   result = 1;
-  ScopedFile file(file_open_path(filename,(iptr)&str_rt_9));
+  ScopedFile file(file_open_path(filename,str_rt_9));
   if (file != (FILE *)0x0) {
     for (i = 1; i <= line_num; i++) {
       if (((CRT_FEOF(file)) != 0) ||
@@ -1902,7 +1902,7 @@ i32 __cdecl file_read_nth_line(iptr dest,const char *filename,int line_num)
 }
 
 /* 0058a80d auto */
-void __cdecl file_copy(iptr src_path,iptr dest_path)
+void __cdecl file_copy(const char *src_path,const char *dest_path)
 
 {
   int cmp;
@@ -2060,7 +2060,7 @@ void __cdecl res_free(i32 handle)
 }
 
 /* 005c5540 auto */
-i32 __cdecl res_load(iptr res_type,i32 res_name)
+i32 __cdecl res_load(const char *res_type,i32 res_name)
 
 {
   i32 handle;

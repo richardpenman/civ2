@@ -149,9 +149,9 @@ static struct {
 } error_state;
 #pragma pack(pop)
 static char str_errors_db[] = "ERRORS", str_modules_db[] = "MODULES";
-static void file_read_nth_line(iptr, const char *, int) {}
+static void file_read_nth_line(char *, const char *, int) {}
 static int fatal_exits;
-static void err_fatal_exit(iptr, iptr, iptr, iptr, i32) { fatal_exits++; }
+static void err_fatal_exit(const char *, const char *, const char *, const char *, i32) { fatal_exits++; }
 
 // cosmic_editor_write_section
 static struct {
@@ -194,7 +194,7 @@ static int _fclose(FILE *) { return 0; }
 
 // dialog_prepend_title_label: the title at +0x134, the pool at +0x254.
 static char dialog_title_label_space_str[] = " ";
-static void str_append_label(iptr dest, int label_id) { strcat((char *)dest, label_string(0x10000 + label_id)); }
+static void str_append_label(char *dest, int label_id) { strcat(dest, label_string(0x10000 + label_id)); }
 static i32 memblock_alloc(MemBlock *, int size) { return (i32)(iptr)malloc(size); }
 
 // save_file_filter
@@ -270,7 +270,7 @@ static struct {
 #pragma pack(pop)
 
 #define TEXTBUF_SIZE sizeof textbuf.buf
-static void error_report(uint error_code, int module_id, iptr context, iptr data1, iptr data2);
+static void error_report(uint error_code, int module_id, const char *context, i32 data1, i32 data2);
 static char *save_filter_add_entry(i32 kind, char *buf);
 #include "production.inc"
 
@@ -294,11 +294,11 @@ static void bounded_copies() {
     char line[256], dest[256 + 16];
     strcpy(line, src.c_str());
     memset(dest, GUARD, sizeof dest);
-    text_expand_vars_max((iptr)line, (iptr)dest, 256);
+    text_expand_vars_max(line, dest, 256);
     assert(strlen(dest) == 255 && guard_ok(dest + 256, 16));
     strcpy(line, "in %STRING0, 100%%");
     strcpy((char *)text_args.strings, "Rome");
-    text_expand_vars_max((iptr)line, (iptr)dest, 256);
+    text_expand_vars_max(line, dest, 256);
     assert(strcmp(dest, "in Rome, 100%") == 0);
 }
 static void labels() {
@@ -365,7 +365,7 @@ static void hall_of_fame() {
 static void error_context() {
     memset(&error_state, GUARD, sizeof error_state);
     std::string line(300, 'w'); // BF-057: a long line of RULES.TXT
-    error_report(0xfffffffc, 3, (iptr)line.c_str(), 1, 2);
+    error_report(0xfffffffc, 3, line.c_str(), 1, 2);
     assert(strlen(error_state.context_text) == 79 && guard_ok(error_state.last_open_path, 80) && fatal_exits == 1);
 }
 static void dialog_title() {
