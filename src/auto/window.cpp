@@ -393,14 +393,14 @@ void __cdecl menu_revolution(void)
         text = civ_get_adjective(human_civ[0]);
         text_set_string_arg(0,(const char *)text);
         text_set_label_arg(1,government_names[civs[civ].government]);
-        choice = popup_game_with_sprite((const char *)&str_revolution,(iptr)(((i8 *)&government_sprites_block.government_sprites) +
+        choice = popup_game_with_sprite(str_revolution,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) +
                                                   (uint)civs[civ].government * 0x3c),
                                    (ui_metrics.large_screen == 0) - 1 & 8);
         if (choice == 0) {
           snd_play_effect(SND_REVOLT,1,0,0);
           text = (iptr)(civ_name_plural(civ));
           text_set_string_arg(0,(const char *)text);
-          popup_game_with_sprite((const char *)&str_startrev,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_startrev,(Sprite *)&popup_info_icon_sprite,0);
           civ_set_government(civ,0);
           menu_update_states();
         }
@@ -455,7 +455,7 @@ i32 Dialog::load_text_ex(const char *filename,const char *section,i32 arg,i32 fl
 }
 
 /* 00410030 auto */
-i32 __cdecl popup_game_with_sprite(const char *section,iptr sprite,i32 sprite_flags)
+i32 __cdecl popup_game_with_sprite(const char *section,Sprite *sprite,i32 sprite_flags)
 
 {
   i32 result;
@@ -729,7 +729,7 @@ void WndBase::maximize()
 }
 
 /* 00426fb0 auto */
-i32 __cdecl popup_game_sprite_flags(const char *section,i32 dlg_flags,iptr sprite,i32 sprite_flags)
+i32 __cdecl popup_game_sprite_flags(const char *section,i32 dlg_flags,Sprite *sprite,i32 sprite_flags)
 
 {
   i32 result;
@@ -1513,7 +1513,7 @@ void Hotspot::create(iptr parent,iptr id,iptr rect)
   on_click = 0;
   on_press = 0;
   on_dblclick = 0;
-  new_hwnd = hotspot_create_hwnd((int *)rect,(iptr)this);
+  new_hwnd = hotspot_create_hwnd((int *)rect,this);
   hwnd = new_hwnd;
   return;
 }
@@ -1669,7 +1669,7 @@ void __cdecl ui_blit_all_windows(void)
 
 /* 004731d2 auto */
 uint __cdecl
-ui_file_name_dialog(iptr parent,const char *title,char *file_buf,const char *filter,const char *default_ext,int must_exist,
+ui_file_name_dialog(WndBase *parent,const char *title,char *file_buf,const char *filter,const char *default_ext,int must_exist,
             int is_save)
 
 {
@@ -1682,7 +1682,7 @@ ui_file_name_dialog(iptr parent,const char *title,char *file_buf,const char *fil
   ofn.lStructSize = 0x4c;
   ofn.hwndOwner = (HWND)0x0;
   if (parent != 0) {
-    wnd = ((WndBase *)parent)->get_window();
+    wnd = (parent)->get_window();
     ofn.hwndOwner = wnd->hwnd;
   }
   ofn.lpstrFilter = filter;
@@ -1787,7 +1787,7 @@ void __cdecl ui_focus_active_unit(int auto_next)
 }
 
 /* 004904c0 auto */
-void __cdecl popup_file_with_sprite(const char *filename,const char *section,iptr sprite,i32 sprite_flags)
+void __cdecl popup_file_with_sprite(const char *filename,const char *section,Sprite *sprite,i32 sprite_flags)
 
 {
   popup_text_with_sprite(filename,section,0,sprite,sprite_flags);
@@ -1840,7 +1840,7 @@ popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,i
 
 {
   popup_text_with_sprite(filename,section,dlg_flags,
-                     (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                     (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                            (char)advances[advance].category * 0xf0 +
                            (char)advances[advance].epoch * 0x3c),sprite_flags);
   return;
@@ -1860,7 +1860,7 @@ popup_text_with_improvement(const char *filename,const char *section,i32 dlg_fla
   else {
     sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf;
   }
-  result = popup_text_with_sprite(filename,section,dlg_flags,(iptr)sprite,sprite_flags);
+  result = popup_text_with_sprite(filename,section,dlg_flags,(Sprite *)sprite,sprite_flags);
   return result;
 }
 
@@ -1871,7 +1871,7 @@ popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_fla
 {
   i32 result;
   
-  result = popup_text_with_sprite(filename,section,dlg_flags,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),sprite_flags)
+  result = popup_text_with_sprite(filename,section,dlg_flags,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),sprite_flags)
   ;
   return result;
 }
@@ -2495,12 +2495,12 @@ void __cdecl menu_multiplayer_options(void)
           net_send_text_args(0x43,0xff,2,0,0,0);
           dlg_style.pending_idle_callback = net_vote_wait_idle_cb;
           dialog_state.timeout_start = timer_ticks();
-          result = popup_game_sprite_flags((const char *)&str_pmchangeserver,0x2000001,(iptr)&popup_info_icon_sprite,0);
+          result = popup_game_sprite_flags(str_pmchangeserver,0x2000001,(Sprite *)&popup_info_icon_sprite,0);
           if (((result < 0) || (net.vote_status == -1)) || (net.vote_replies_pending != 0)) {
             (*(ushort *)&menu_prefs.mp_double_production) = (*(ushort *)&mp_doubles.production);
             (*(ushort *)&menu_prefs.mp_double_moves) = (*(ushort *)&mp_doubles.moves);
             net_send_text_args(0x44,0xff,0,0,0,0);
-            popup_game_with_sprite((const char *)&str_pmchangeno,(iptr)&popup_info_icon_sprite,0);
+            popup_game_with_sprite(str_pmchangeno,(Sprite *)&popup_info_icon_sprite,0);
             return;
           }
         }
@@ -2512,7 +2512,7 @@ void __cdecl menu_multiplayer_options(void)
           net_send_message(NM_MULTIOPTIONS_CHANGE,0xff,(short)(*(ushort *)&mp_doubles.production),(short)(*(ushort *)&mp_doubles.moves),
                              mp_options.simultaneous_setting,0,0,0,0,0);
           net_send_text_args(0x45,0xff,0,0,0,0);
-          popup_game_with_sprite((const char *)&str_pmchangeyes,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_pmchangeyes,(Sprite *)&popup_info_icon_sprite,0);
         }
       }
     }
@@ -3003,7 +3003,7 @@ void __cdecl menu_command(i32 menu,int cmd)
             game_quit_or_retire(0);
           }
           else if ((cmd == 0x1f2) && (game.multiplayer == 1)) {
-            result = popup_game_with_sprite((const char *)&str_reallyquit_4,(iptr)&popup_info_icon_sprite,0);
+            result = popup_game_with_sprite(str_reallyquit_4,(Sprite *)&popup_info_icon_sprite,0);
             if (result == 0) {
               return;
             }
@@ -3923,7 +3923,7 @@ popup_text_run(const char *file,const char *section,i32 result,i32 arg4,i32 arg5
 
 /* 0051d564 auto */
 i32 __cdecl
-popup_text_with_sprite(const char *file,const char *section,i32 flags,iptr sprite,i32 zoom)
+popup_text_with_sprite(const char *file,const char *section,i32 flags,Sprite *sprite,i32 zoom)
 
 {
   i32 result;
@@ -3933,7 +3933,7 @@ popup_text_with_sprite(const char *file,const char *section,i32 flags,iptr sprit
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
   dialog2.load_text(file,section,flags);
-  dialog2.add_sprite(sprite,0,0);
+  dialog2.add_sprite((iptr)sprite,0,0);
   dialog2.set_image_zoom(zoom);
   result = dialog2.show_modal(0);
   (*(u32 *)&dlg_input.help_pressed) = dialog2.result_extra;
@@ -11117,7 +11117,7 @@ void Wnd::focus_first_control()
   while( true ) {
     if (ctrl == (Control *)0x0) {
       if ((control_list != 0) && ((char)keyboard_nav != '\0')) {
-        wnd_focus_control((iptr)this,control_list);
+        wnd_focus_control(this,(Control *)control_list);
       }
       return;
     }
@@ -11128,7 +11128,7 @@ void Wnd::focus_first_control()
   if ((char)keyboard_nav == '\0') {
     return;
   }
-  wnd_focus_control((iptr)this,(iptr)ctrl);
+  wnd_focus_control(this,ctrl);
   return;
 }
 
@@ -11340,7 +11340,7 @@ void __cdecl hwnd_hide(HWND hwnd)
 }
 
 /* 005c8be1 auto */
-HWND __cdecl hotspot_create_hwnd(int *rect,iptr ctrl)
+HWND __cdecl hotspot_create_hwnd(int *rect,Control *ctrl)
 
 {
   WndBase *self;
@@ -11355,14 +11355,14 @@ HWND __cdecl hotspot_create_hwnd(int *rect,iptr ctrl)
   lpParam = (LPVOID)0x0;
   hMenu = (HMENU)0x0;
   hInstance = err_report_ctx_block.app_hinstance;
-  self = (WndBase *)((Control *)ctrl)->get_parent();
+  self = (WndBase *)(ctrl)->get_parent();
   parent_wnd = self->get_window();
   hotspot_hwnd = parent_wnd->hwnd;
   height = rect_height((RECT *)rect);
   width = rect_width((RECT *)rect);
   hotspot_hwnd = CreateWindowExA(4,str_mscontrolclass,((i8 *)&hotspot_wnd_title),0x50000000,*rect,rect[1],
                            width,height,hotspot_hwnd,hMenu,hInstance,lpParam);
-  width = (int)ctrl_init_block(hotspot_hwnd,ctrl);
+  width = (int)ctrl_init_block(hotspot_hwnd,(int)ctrl);
   *(i32 *)(width + 0x2c) = 1;
   SetWindowLongA(hotspot_hwnd,-4,(iptr)hotspot_wndproc);
   return hotspot_hwnd;
@@ -12169,7 +12169,7 @@ HWND __cdecl hwnd_prev_sibling_wrap(HWND hwnd)
 }
 
 /* 005ea8d3 auto */
-void __cdecl wnd_cycle_control_focus(iptr wnd,HWND hwnd,int direction)
+void __cdecl wnd_cycle_control_focus(WndBase *wnd,HWND hwnd,int direction)
 
 {
   NativeWindow *frame_win;
@@ -12185,26 +12185,26 @@ void __cdecl wnd_cycle_control_focus(iptr wnd,HWND hwnd,int direction)
   if (hwnd == (HWND)0x0) {
     hwnd = GetFocus();
     start_hwnd = hwnd;
-    frame_win = ((WndBase *)wnd)->get_window();
+    frame_win = (wnd)->get_window();
     is_child = IsChild(frame_win->hwnd,start_hwnd);
     if (is_child == 0) {
       hwnd = (HWND)0x0;
     }
   }
   if (hwnd == (HWND)0x0) {
-    if (*(int *)(wnd + 0xb8) == 0) {
+    if (*(int *)((u8 *)wnd + 0xb8) == 0) {
       return;
     }
     if (direction == 2) {
       first_cmd = 5;
-      frame_win2 = ((WndBase *)wnd)->get_window();
+      frame_win2 = (wnd)->get_window();
       hwnd = GetWindow(frame_win2->hwnd,first_cmd);
       start_hwnd = hwnd;
     }
     else {
       uCmd = 1;
       first_cmd = 5;
-      result = (int)((WndBase *)wnd)->get_window();
+      result = (int)(wnd)->get_window();
       start_hwnd = GetWindow(((NativeWindow *)result)->hwnd,first_cmd);
       hwnd = GetWindow(start_hwnd,uCmd);
       start_hwnd = hwnd;
@@ -12259,7 +12259,7 @@ void __cdecl wnd_cycle_control_focus(iptr wnd,HWND hwnd,int direction)
         wnd_cycle_control_focus(wnd,group_hwnd,direction);
         return;
       }
-      self = (Checkbox *)ctrl_list_find_by_hwnd(hwnd,(Control *)*(i32 *)(wnd + 0xb8));
+      self = (Checkbox *)ctrl_list_find_by_hwnd(hwnd,(Control *)*(i32 *)((u8 *)wnd + 0xb8));
       if ((self != (Checkbox *)0x0) &&
          ((((result = self->get_type(), result == 6 &&
             (result = ((Button *)self)->ctrl_is_enabled(), result != 0)) ||
@@ -12285,7 +12285,7 @@ void __cdecl wnd_cycle_control_focus(iptr wnd,HWND hwnd,int direction)
 }
 
 /* 005eabcc auto */
-void __cdecl wnd_focus_control(iptr wnd,iptr control)
+void __cdecl wnd_focus_control(Wnd *wnd,Control *control)
 
 {
   char nav_enabled;
@@ -12293,16 +12293,16 @@ void __cdecl wnd_focus_control(iptr wnd,iptr control)
   i32 *items;
   i32 start_hwnd;
   
-  nav_enabled = ((Wnd *)wnd)->keyboard_nav_enabled();
+  nav_enabled = (wnd)->keyboard_nav_enabled();
   if (nav_enabled != '\0') {
-    ctrl_type = ((Control *)control)->get_type();
+    ctrl_type = (control)->get_type();
     if (ctrl_type == 3) {
       items = (i32 *)((RadioGroup *)control)->get_items();
       start_hwnd = hwnd_prev_sibling_wrap(*items);
       wnd_cycle_control_focus(wnd,start_hwnd,2);
     }
     else {
-      start_hwnd = ((Control *)control)->get_hwnd();
+      start_hwnd = (control)->get_hwnd();
       start_hwnd = hwnd_prev_sibling_wrap(start_hwnd);
       wnd_cycle_control_focus(wnd,start_hwnd,2);
     }

@@ -497,7 +497,7 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
     if (result < 0) {
       dbg_logf("ConnectToGame: Open connection failed! Err: %d.",result);
       crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-      popup_game_with_sprite("SERVERCONNECTTIME",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("SERVERCONNECTTIME",(Sprite *)&popup_info_icon_sprite,0);
       if ((conn_type == 2) || (conn_type == 3)) return 0;
       continue;
     }
@@ -516,7 +516,7 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
     net.wait_start_ticks = timer_ticks();
     dlg_style.pending_idle_callback = net_join_wait_idle_cb;
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-    popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(iptr)&popup_info_icon_sprite,0);
+    popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
     if (popup == -1) return 0;
     if (net.server_conn_id != -1) break;
     /* no id from the host: the lobby's game is tried again (3 times) */
@@ -524,7 +524,7 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
       XD_CloseConnection();
       continue;
     }
-    popup_game_with_sprite("SERVERCONNECTFAIL",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("SERVERCONNECTFAIL",(Sprite *)&popup_info_icon_sprite,0);
     return 0;
   }
   /* the host's version */
@@ -533,7 +533,7 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
   net_send_message(NM_SERVER_QUERY,0,0,0,0,0,0,0,0,0);
   dlg_style.pending_idle_callback = net_join_wait_answer_idle;
   crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-  popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(iptr)&popup_info_icon_sprite,0);
+  popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
   if (popup == -1) {
     net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
     XD_FlushSendBuffer(180000);
@@ -543,10 +543,10 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
     text_set_string_arg(1,self->server_game_name);
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
     if (net.nm_server_reject_count == 0) {
-      popup_game_with_sprite("SERVERQUIT",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("SERVERQUIT",(Sprite *)&popup_info_icon_sprite,0);
     }
     else {
-      popup_game_with_sprite("REJECTEDLAN",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("REJECTEDLAN",(Sprite *)&popup_info_icon_sprite,0);
     }
     return 0;
   }
@@ -555,7 +555,7 @@ static int net_join_by_address(NetGamelistView *self,int conn_type,int retries,D
   if ((len1 != len2) || (_strcmp(((i8 *)&net.net_server_version),str_ptr_5_4_0f_multiplayer_26_march_99) != 0)) {
     crt_strcpy(((i8 *)&text_args.strings),((i8 *)&net.net_server_version));
     crt_strcpy(((i8 *)&text_args.string1),str_ptr_5_4_0f_multiplayer_26_march_99);
-    popup_game_with_sprite("WRONGVERSION",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("WRONGVERSION",(Sprite *)&popup_info_icon_sprite,0);
     return 0;
   }
   return 1;
@@ -643,7 +643,7 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
     }
     if ((players_count >= net.net_max_players) || (players_count >= civs_count) || (found->open_game == 0)) {
       if ((net.net_max_players <= players_count) || (civs_count <= players_count)) {
-        popup_game_with_sprite("JOINEDMAX",(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite("JOINEDMAX",(Sprite *)&popup_info_icon_sprite,0);
       }
       continue;
     }
@@ -653,7 +653,7 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
       dlg_style.button_labels[0] = self->saved_button_label;
       crt_strcpy(((i8 *)&text_args.strings),found->version);
       crt_strcpy(((i8 *)&text_args.string1),str_ptr_5_4_0f_multiplayer_26_march_99);
-      popup_game_with_sprite("WRONGVERSION",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("WRONGVERSION",(Sprite *)&popup_info_icon_sprite,0);
       dlg_style.button_labels[0] = (i8 *)self->button_label;
       continue;
     }
@@ -680,7 +680,7 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
     if (-1 < result) break;
     dbg_logf("ConnectToGame: Open connection failed! Err: %d.",result);
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-    popup_game_with_sprite("SERVERCONNECTFAIL",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("SERVERCONNECTFAIL",(Sprite *)&popup_info_icon_sprite,0);
   }
   self->list_dialog->close();
   dlg_style.button_labels[0] = self->saved_button_label;
@@ -722,7 +722,7 @@ static NetJoinScenario net_join_load_scenario(Dialog &scen_dlg,GamePalette &scen
     XD_FlushSendBuffer(180000);
     text_set_string_arg(0,((i8 *)&game_dirs.home));
     text_set_string_arg(1,((i8 *)&net.loaded_file_subdir));
-    popup_game_with_sprite("DATAPATHFAIL",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("DATAPATHFAIL",(Sprite *)&popup_info_icon_sprite,0);
     return JOIN_FAIL;
   }
   crt_strcat(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&net.loaded_file_subdir));
@@ -883,7 +883,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
       if ((net.net_protocol != 2) && (net.net_protocol != 3)) {
         dbg_logf("ConnectToGame: Open connection failed! Err: %d.",result);
         crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-        popup_game_with_sprite("SERVERCONNECTTIME",(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite("SERVERCONNECTTIME",(Sprite *)&popup_info_icon_sprite,0);
       }
       return 0;
     }
@@ -903,7 +903,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
     net_reset_msg_counts();
   }
   crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-  popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(iptr)&popup_info_icon_sprite,0);
+  popup = popup_game_sprite_flags("WAITINGFORSERVER",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
   if (popup == -1) {
     net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
     XD_FlushSendBuffer(180000);
@@ -914,20 +914,20 @@ i32 NetGamelistView::net_session_init(int conn_type)
     text_set_string_arg(1,server_game_name);
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
     if (net.nm_server_reject_count != 0) {
-      popup_game_with_sprite("REJECTEDLAN",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("REJECTEDLAN",(Sprite *)&popup_info_icon_sprite,0);
     }
     else if (net.nm_server_canceled_count != 0) {
-      popup_game_with_sprite("SERVERQUIT",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("SERVERQUIT",(Sprite *)&popup_info_icon_sprite,0);
     }
     else {
-      popup_game_with_sprite("JOINEDMAX",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("JOINEDMAX",(Sprite *)&popup_info_icon_sprite,0);
     }
     return 0;
   }
   if (popup == -2) {
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
     crt_strcpy(((i8 *)&text_args.string1),((i8 *)&net.net_game_name));
-    popup_game_with_sprite("SERVERCONNECTTIME",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("SERVERCONNECTTIME",(Sprite *)&popup_info_icon_sprite,0);
     return 0;
   }
   /* the game's state */
@@ -938,7 +938,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
     net_reset_msg_counts();
   }
   crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-  popup = popup_game_sprite_flags("WAITTOJOIN",0x2000001,(iptr)&popup_info_icon_sprite,0);
+  popup = popup_game_sprite_flags("WAITTOJOIN",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
   if ((popup == -1) || (net.nm_server_canceled_count != 0)) {
     if (popup == -1) {
       net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
@@ -946,7 +946,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
     else {
       text_set_string_arg(1,server_game_name);
       crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-      popup_game_with_sprite("SERVERQUIT",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("SERVERQUIT",(Sprite *)&popup_info_icon_sprite,0);
     }
     XD_FlushSendBuffer(180000);
     return 0;
@@ -996,7 +996,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
   net.wait_start_ticks = timer_ticks();
   net_reset_msg_counts();
   crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-  popup = popup_game_sprite_flags("WAITINGONJOIN",0x2000001,(iptr)&popup_info_icon_sprite,0);
+  popup = popup_game_sprite_flags("WAITINGONJOIN",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
   if (popup == -1) {
     net_join_restore_backdrop(&palette);
     net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
@@ -1009,10 +1009,10 @@ i32 NetGamelistView::net_session_init(int conn_type)
     text_set_string_arg(1,server_game_name);
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
     if (net.nm_server_canceled_count == 0) {
-      popup_game_with_sprite("LOSTSERVER",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("LOSTSERVER",(Sprite *)&popup_info_icon_sprite,0);
     }
     else {
-      popup_game_with_sprite("SERVERQUIT",(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite("SERVERQUIT",(Sprite *)&popup_info_icon_sprite,0);
     }
     return 0;
   }
@@ -1020,7 +1020,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
   dlg_style.pending_idle_callback = net_join_wait_start_civ_idle;
   net.wait_start_ticks = timer_ticks();
   crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-  popup = popup_game_sprite_flags("WAITINGONJOIN",0x2000001,(iptr)&popup_info_icon_sprite,0);
+  popup = popup_game_sprite_flags("WAITINGONJOIN",0x2000001,(Sprite *)&popup_info_icon_sprite,0);
   if (popup == -1) {
     net_join_restore_backdrop(&palette);
     net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
@@ -1032,7 +1032,7 @@ i32 NetGamelistView::net_session_init(int conn_type)
     net_join_restore_backdrop(&palette);
     text_set_string_arg(1,server_game_name);
     crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
-    popup_game_with_sprite("SERVERQUIT",(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite("SERVERQUIT",(Sprite *)&popup_info_icon_sprite,0);
     return 0;
   }
   net_reset_msg_counts();
@@ -1935,7 +1935,7 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
         }
       } while (net.nm_lock_data_count != 0);
       if (net.nm_server_canceled_count != 0) {
-        popup_game_with_sprite((const char *)&str_gamecanceled,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_gamecanceled,(Sprite *)&popup_info_icon_sprite,0);
         ret = 1;
         return ret;
       }
@@ -1953,12 +1953,12 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
       }
       if ((net.nm_nation_accept_count == 0) && (net.nm_nation_reject_count == 0)) {
         dlg.close();
-        popup_game_with_sprite((const char *)&str_serverconnectfail,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnectfail,(Sprite *)&popup_info_icon_sprite,0);
         ret = 1;
         return ret;
       }
       if (net.nm_nation_reject_count == 0) break;
-      popup_game_with_sprite((const char *)&str_alreadychosen,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_alreadychosen,(Sprite *)&popup_info_icon_sprite,0);
     }
     dlg.close();
     (*((char *)&civ + 0)) = (byte)civ2;
@@ -3422,7 +3422,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     if (image_buf == (void *)0x0) {
       ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_address_null,(iptr)&str_d_ss_franklinton_netmgr_send_cpp_3,0x22c);
     }
-    image_buf = net_msg_build_packet(msg_type,(iptr)image_buf,image_result,0,0,0,0,0,0);
+    image_buf = net_msg_build_packet(msg_type,image_buf,image_result,0,0,0,0,0,0);
     sent = net.send_to(dest,(NetMsg *)image_buf);
     image_result = (uint)sent;
     operator_delete(image_buf);
@@ -3463,46 +3463,46 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     sent = net.send_to(dest,(NetMsg *)msg_16);
     return (int)sent;
   case NM_COSMIC:
-    packet = net_msg_build_packet(msg_type,(iptr)&cosmic,0,0,0,0,0,0,0x29);
+    packet = net_msg_build_packet(msg_type,&cosmic,0,0,0,0,0,0,0x29);
     break;
   case NM_CIVILIZE:
-    packet = net_msg_build_packet(msg_type,(iptr)&advances,0,0,0,0,0,0,0x640);
+    packet = net_msg_build_packet(msg_type,&advances,0,0,0,0,0,0,0x640);
     break;
   case NM_IMPROVE:
-    packet = net_msg_build_packet(msg_type,(iptr)&improvements,0,0,0,0,0,0,0x218);
+    packet = net_msg_build_packet(msg_type,&improvements,0,0,0,0,0,0,0x218);
     break;
   case NM_ENDWONDER:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)wonder_expires),0,0,0,0,0,0,0x1c);
+    packet = net_msg_build_packet(msg_type,((u8 *)wonder_expires),0,0,0,0,0,0,0x1c);
     break;
   case NM_UNITS:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)unit_types),0,0,0,0,0,0,0x4d8);
+    packet = net_msg_build_packet(msg_type,((u8 *)unit_types),0,0,0,0,0,0,0x4d8);
     break;
   case NM_TERRAIN:
-    packet = net_msg_build_packet(msg_type,(iptr)&terrain_types,0,0,0,0,0,0,0x318);
+    packet = net_msg_build_packet(msg_type,&terrain_types,0,0,0,0,0,0,0x318);
     break;
   case NM_GOVT:
-    packet = net_msg_build_packet(msg_type,(iptr)&government_names,0,0,0,0,0,0,0x1c);
+    packet = net_msg_build_packet(msg_type,&government_names,0,0,0,0,0,0,0x1c);
     break;
   case NM_GOVT_TITLE:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)government_titles),0,0,0,0,0,0,0x38);
+    packet = net_msg_build_packet(msg_type,((u8 *)government_titles),0,0,0,0,0,0,0x38);
     break;
   case NM_LEADERS:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)leaders),0,0,0,0,0,0,0x3f0);
+    packet = net_msg_build_packet(msg_type,((u8 *)leaders),0,0,0,0,0,0,0x3f0);
     break;
   case NM_KINGS:
-    packet = net_msg_build_packet(msg_type,(iptr)&civs,0,0,0,0,0,0,0x7524);
+    packet = net_msg_build_packet(msg_type,&civs,0,0,0,0,0,0,0x7524);
     break;
   case NM_CARAVAN:
-    packet = net_msg_build_packet(msg_type,(iptr)&commodity_names,0,0,0,0,0,0,0x40);
+    packet = net_msg_build_packet(msg_type,&commodity_names,0,0,0,0,0,0,0x40);
     break;
   case NM_ORDERS:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)order_names),0,0,0,0,0,0,0x68);
+    packet = net_msg_build_packet(msg_type,((u8 *)order_names),0,0,0,0,0,0,0x68);
     break;
   case NM_DIFFICULTY:
-    packet = net_msg_build_packet(msg_type,(iptr)((u8 *)difficulty_names),0,0,0,0,0,0,0x18);
+    packet = net_msg_build_packet(msg_type,((u8 *)difficulty_names),0,0,0,0,0,0,0x18);
     break;
   case NM_ATTITUDES:
-    packet = net_msg_build_packet(msg_type,(iptr)&attitude_names,0,0,0,0,0,0,0x24);
+    packet = net_msg_build_packet(msg_type,&attitude_names,0,0,0,0,0,0,0x24);
     break;
   case NM_EVENTSLOADED:
     packet = net_msg_build_packet(msg_type,0,arg1,arg2,0,0,0,0,0);
@@ -3575,14 +3575,14 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     packet = net_msg_build_packet(msg_type,0,arg1,0,0,0,0,0,0);
     break;
   case NM_UNIT_DELETED:
-    packet = net_msg_build_packet(msg_type,(iptr)(units + arg1),arg1,(int)game.num_units
+    packet = net_msg_build_packet(msg_type,(units + arg1),arg1,(int)game.num_units
                                          ,arg3,arg4,arg5,arg6,0x20);
     break;
   case NM_DELETE_CITY:
     packet = net_msg_build_packet(msg_type,0,arg1,0,0,0,0,0,0);
     break;
   case NM_CITY_DELETED:
-    packet = net_msg_build_packet(msg_type,(iptr)(cities + arg1),arg1,
+    packet = net_msg_build_packet(msg_type,(cities + arg1),arg1,
                                          (int)game.num_cities,arg3,arg4,arg5,arg6,0x58);
     break;
   case NM_CREATE_CITY:
@@ -3593,7 +3593,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
       packet = net_msg_build_packet(msg_type,0,0xffffffff,0,0,0,0,0,0);
     }
     else {
-      packet = net_msg_build_packet(msg_type,(iptr)(cities + arg1),arg1,
+      packet = net_msg_build_packet(msg_type,(cities + arg1),arg1,
                                            (int)game.num_cities,arg3,arg4,arg5,arg6,0x58
                                           );
     }
@@ -3606,7 +3606,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
       packet = net_msg_build_packet(msg_type,0,0xffffffff,0,0,0,0,0,0);
     }
     else {
-      packet = net_msg_build_packet(msg_type,(iptr)(units + arg1),arg1,
+      packet = net_msg_build_packet(msg_type,(units + arg1),arg1,
                                            (int)game.num_units,arg3,arg4,arg5,arg6,0x20)
       ;
     }
@@ -3681,7 +3681,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     sent = net.send_to(dest,(NetMsg *)msg_58);
     return (int)sent;
   case NM_MAP_PACKETS:
-    packet = net_msg_build_packet(msg_type,(iptr)&net_batch_buffer,0,0,0,0,0,0,net_batch.used_dwords << 2);
+    packet = net_msg_build_packet(msg_type,&net_batch_buffer,0,0,0,0,0,0,net_batch.used_dwords << 2);
     break;
   case NM_REALTIME_STACKER:
     packet = net_msg_build_packet(msg_type,0,arg1,arg2,arg3,arg4,arg5,arg6,0
@@ -3717,7 +3717,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     break;
   case NM_CHAT:
     text_len = _strlen((char *)text);
-    packet = net_msg_build_packet(msg_type,(iptr)text,arg1,arg2,arg3,0,0,0,text_len + 1);
+    packet = net_msg_build_packet(msg_type,text,arg1,arg2,arg3,0,0,0,text_len + 1);
     break;
   case NM_START_WHOSE_TURN:
     ((NetWhoseTurnMsg *)whose_turn_msg)->init(arg1);
@@ -3731,7 +3731,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     sent = net.send_to(dest,(NetMsg *)whose_turn_msg);
     return (int)sent;
   case NM_POPUP:
-    packet = net_msg_build_packet(msg_type,raw_msg,arg1,arg2,arg3,arg4,arg5,0,
+    packet = net_msg_build_packet(msg_type,(const void *)raw_msg,arg1,arg2,arg3,arg4,arg5,0,
                                          0);
     break;
   case NM_END_SEQUENCE:
@@ -3753,7 +3753,7 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     sent = net.send_to(dest,(NetMsg *)msg_6f);
     return (int)sent;
   case NM_SLIDE_PIECE:
-    packet = net_msg_build_packet(msg_type,(iptr)(units + arg1),arg1,arg2,arg3,
+    packet = net_msg_build_packet(msg_type,(units + arg1),arg1,arg2,arg3,
                                          arg4,arg5,arg6,0x20);
     break;
   case NM_POSSIBLY_CENTER:
@@ -4029,7 +4029,7 @@ NetMsgHeader *NetWhoseTurnMsg::init(u32 turn_civ)
 }
 
 /* 0047e0e5 auto */
-int __cdecl net_stacked_draw_push(int kind,iptr args,iptr unit_data)
+int __cdecl net_stacked_draw_push(int kind,i32 *args,const void *unit_data)
 
 {
   int result;
@@ -4046,8 +4046,8 @@ int __cdecl net_stacked_draw_push(int kind,iptr args,iptr unit_data)
       net.stacked_draw_last = 0;
     }
     net.stacked_draw_count = (uint)(net.unit_stack_check_enabled != 0);
-    net_stacked_draw_push(0xa3,(iptr)dummy_args,0);
-    result = net_stacked_draw_push(0x74,(iptr)dummy_args,0);
+    net_stacked_draw_push(0xa3,(i32 *)dummy_args,0);
+    result = net_stacked_draw_push(0x74,(i32 *)dummy_args,0);
   }
   else {
     if ((net.stacked_draw_first < 0) || (99 < net.stacked_draw_first)) {
@@ -4059,10 +4059,10 @@ int __cdecl net_stacked_draw_push(int kind,iptr args,iptr unit_data)
     net.stacked_draw[net.stacked_draw_last].kind = kind;
     for (i = 0; i < 7; i++) {
       *(i32 *)(((i8 *)&net.stacked_draw_args) + i * 4 + net.stacked_draw_last * 0x40) =
-           *(i32 *)(args + i * 4);
+           args[i];
     }
     if (kind == 0x70) {
-      crt_memcpy((void *)(net.stacked_draw_last * 0x40 + (iptr)(((u8 *)&net.stacked_draw_arg4 + 12))),(const void *)unit_data,0x20);
+      crt_memcpy((void *)(net.stacked_draw_last * 0x40 + (iptr)(((u8 *)&net.stacked_draw_arg4 + 12))),unit_data,0x20);
     }
     net.stacked_draw_count++;
     if ((int)net.stacked_draw_peak < (int)net.stacked_draw_count) {
@@ -4597,7 +4597,7 @@ void NetSession::recv_wait_game_xmit()
   mp_turn_timer_stop(0);
   net.nm_continue_after_join_count = 0;
   dlg_style.pending_idle_callback = net_game_xmit_wait_idle;
-  popup_game_sprite_flags((const char *)&str_waitongamexmit,0x2000000,(iptr)&popup_info_icon_sprite,0);
+  popup_game_sprite_flags(str_waitongamexmit,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
   wait_dialog.close();
   popup_in_progress = saved_busy;
   mp_turn_timer_resume(0);
@@ -4621,8 +4621,8 @@ void NetSession::recv_turn_civ(int *msg_hdr)
     net.stacked_draw_last = 0;
   }
   net.stacked_draw_count = (uint)had_pending;
-  net_stacked_draw_push(0xa3,(iptr)draw_args,0);
-  net_stacked_draw_push(0x74,(iptr)draw_args,0);
+  net_stacked_draw_push(0xa3,(i32 *)draw_args,0);
+  net_stacked_draw_push(0x74,(i32 *)draw_args,0);
   game.turn_civ = (i8)msg_hdr[4];
   net.mp_turn_civ = (int)game.turn_civ;
   mp_turn_timer_stop(1);
@@ -4704,14 +4704,14 @@ void NetSession::recv_war_pretext(int *msg,MsgArgs &a)
   ret_val = (iptr)(civ_name_plural(a.civ3));
   text_set_string_arg(1,(const char *)ret_val);
   if ((*(byte *)&civs[a.civ3].treaties[a.unit] & TREATY_ALLIANCE) == 0) {
-    city = popup_game_with_sprite((const char *)&str_pretext,(iptr)&war_icon_sprite_block.war_icon_sprite,0);
+    city = popup_game_with_sprite(str_pretext,(Sprite *)&war_icon_sprite_block.war_icon_sprite,0);
     if (city == 1) {
       diplo_set_treaty_flags(a.unit,a.civ3,0x2000);
       civs[a.civ3].last_contact_turn[a.unit] = game.turn;
     }
   }
   else {
-    city = popup_game_with_sprite((const char *)&str_pretextallied,(iptr)(((i8 *)&diplo_popup_portrait_sprite) +
+    city = popup_game_with_sprite(str_pretextallied,(Sprite *)(((i8 *)&diplo_popup_portrait_sprite) +
                                               ((game.advance_known_by[ADV_COMMUNISM] != '\0') - 1 &
                                               0xffff7c80)),0);
     if (city == 1) {
@@ -5344,41 +5344,41 @@ void NetSession::dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sende
         a.civ3 = a.unit3;
       }
     }
-    net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,(iptr)payload);
+    net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,payload);
     break;
   case NM_POSSIBLY_CENTER:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
-    net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+    net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     break;
   case NM_DRAW_SQUARE:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
     city = mapviews_tile_visible(a.unit,a.civ3);
     if (city != 0) {
-      net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+      net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     }
     break;
   case NM_DRAW_TWO:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
     city = mapviews_tile_visible(a.unit,a.civ3);
     if ((city != 0) || (city = mapviews_tile_visible(a.unit3,a.y2), city != 0)) {
-      net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+      net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     }
     break;
   case NM_DRAW_MAP:
-    net_stacked_draw_push(msg[1],(iptr)&a.unit,0);
+    net_stacked_draw_push(msg[1],(i32 *)&a.unit,0);
     break;
   case NM_DRAW_AREA:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
     city = mapviews_tile_visible(a.unit,a.civ3);
     if (city != 0) {
-      net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+      net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     }
     break;
   case NM_DRAW_MAP_REGION:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
     city = mapviews_tile_visible(a.unit,a.civ3);
     if (city != 0) {
-      net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+      net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     }
     break;
   case NM_CANESCAPE_REPLY:
@@ -5401,11 +5401,11 @@ void NetSession::dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sende
     break;
   case NM_KABOOM:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
-    net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+    net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     break;
   case NM_SHOW_NUKE:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
-    net_stacked_draw_push(msg_hdr[1],(iptr)&a.unit,0);
+    net_stacked_draw_push(msg_hdr[1],(i32 *)&a.unit,0);
     break;
   case NM_ASK_ALLY:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
@@ -5568,7 +5568,7 @@ void NetSession::dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sende
     net.civ_turn_ended[a.unit] = net.civ_turn_ended[a.unit] + 1;
     break;
   case NM_ABORT_KABOOM:
-    net_stacked_draw_push(msg[1],(iptr)&a.unit,0);
+    net_stacked_draw_push(msg[1],(i32 *)&a.unit,0);
     break;
   case NM_PRETEXT:
     recv_war_pretext(msg,a);
@@ -5760,7 +5760,7 @@ void __cdecl net_host_quit_handoff(void)
     net_send_message(NM_SERVER_QUIT_REQUEST,0xff,0,0,0,0,0,0,0,0);
     net_drop_flagged_players();
     dlg_style.pending_idle_callback = net_server_quit_wait_idle;
-    popup_game_sprite_flags((const char *)&str_serverquitwait,0x2000000,(iptr)&popup_info_icon_sprite,0);
+    popup_game_sprite_flags(str_serverquitwait,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
     human_count = bits_count8((uint)(game.human_players == '\0'));
     if (human_count == 0) {
       net_send_message(NM_SERVER_QUIT,0xff,0,0,0,0,0,0,0,0);
@@ -5873,15 +5873,15 @@ i32 __cdecl net_client_transfer_server(void)
   net.nm_player_list_count = 0;
   net_send_message(NM_SERVER_QUIT_ACK,0,0,0,0,0,0,0,0,0);
   dlg_style.pending_idle_callback = net_client_quit_wait_idle;
-  popup_game_sprite_flags((const char *)&str_clientquitwait,0x2000000,(iptr)&popup_info_icon_sprite,0);
+  popup_game_sprite_flags(str_clientquitwait,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
   net.host_handoff_stage = 0;
   dlg_style.pending_idle_callback = net_quit_wait_start_civ_idle;
   map_views_block.net_handoff_wait_ticks_i32 = timer_ticks();
-  popup_game_sprite_flags((const char *)&str_clientquitwait_2,0x2000000,(iptr)&popup_info_icon_sprite,0);
+  popup_game_sprite_flags(str_clientquitwait_2,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
   if (net.nm_start_civ_count == 0) {
     dbg_log((const char *)&str_clienttransferserver_waiting_for_nm_star);
     crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-    popup_game_with_sprite((const char *)&str_lanconnectfail_3,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_lanconnectfail_3,(Sprite *)&popup_info_icon_sprite,0);
     player_turn_active = 0;
     turn_loop.active = 0;
     result = 0;
@@ -5890,11 +5890,11 @@ i32 __cdecl net_client_transfer_server(void)
     turn_loop.resume_civ = saved_turn.civ;
     dlg_style.pending_idle_callback = net_quit_wait_player_list_idle;
     map_views_block.net_handoff_wait_ticks_i32 = timer_ticks();
-    popup_game_sprite_flags((const char *)&str_clientquitwait_3,0x2000000,(iptr)&popup_info_icon_sprite,0);
+    popup_game_sprite_flags(str_clientquitwait_3,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
     if (net.nm_player_list_count == 0) {
       dbg_log((const char *)&str_clienttransferserver_waiting_for_nm_play);
       crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-      popup_game_with_sprite((const char *)&str_lanconnectfail_4,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_lanconnectfail_4,(Sprite *)&popup_info_icon_sprite,0);
       player_turn_active = 0;
       turn_loop.active = 0;
       result = 0;
@@ -5910,7 +5910,7 @@ i32 __cdecl net_client_transfer_server(void)
         if (status == 0) {
           dbg_log((const char *)&str_clienttransferserver_could_not_reconnect);
           crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-          popup_game_with_sprite((const char *)&str_lanconnectfail_5,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_lanconnectfail_5,(Sprite *)&popup_info_icon_sprite,0);
           turn_loop.active = 0;
           player_turn_active = 0;
           return 0;
@@ -5932,17 +5932,17 @@ i32 __cdecl net_client_transfer_server(void)
         else {
           dlg_style.pending_idle_callback = net_quit_wait_players_idle;
           map_views_block.net_handoff_wait_ticks_i32 = timer_ticks();
-          popup_game_sprite_flags((const char *)&str_clientquitwait_4,0x2000000,(iptr)&popup_info_icon_sprite,0);
+          popup_game_sprite_flags(str_clientquitwait_4,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
           cmp = timer_ticks();
           if ((net.timeout_seconds * 0x3c < cmp - map_views_block.net_handoff_wait_ticks_i32) && (net.players_awaited != 0)) {
             crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
             if (net.players_awaited == net.players_awaited_initial) {
-              popup_game_with_sprite((const char *)&str_nooneshowed,(iptr)&popup_info_icon_sprite,0);
+              popup_game_with_sprite(str_nooneshowed,(Sprite *)&popup_info_icon_sprite,0);
               turn_loop.active = 0;
               player_turn_active = 0;
               return 0;
             }
-            popup_game_with_sprite((const char *)&str_someshowed,(iptr)&popup_info_icon_sprite,0);
+            popup_game_with_sprite(str_someshowed,(Sprite *)&popup_info_icon_sprite,0);
           }
           for (slot = 0; slot < 7; slot++) {
             if ((((i8 *)&net.slot_active_flags))[slot * 0x54] != '\0') {
@@ -5981,7 +5981,7 @@ i32 __cdecl net_client_transfer_server(void)
         net.nm_start_civ_count = 0;
         net.nm_player_list_count = 0;
         if (game_over_reason != 2) {
-          popup_game_with_sprite((const char *)&str_hostchangeserver,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_hostchangeserver,(Sprite *)&popup_info_icon_sprite,0);
         }
       }
       else {
@@ -5990,7 +5990,7 @@ i32 __cdecl net_client_transfer_server(void)
         if (status != 0) {
           dbg_logf_str_int((const char *)&str_clienttransferserver_disconnection_from,(const char *)&net.net_server_address,status);
           crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-          popup_game_with_sprite((const char *)&str_lanconnectfail_6,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_lanconnectfail_6,(Sprite *)&popup_info_icon_sprite,0);
           turn_loop.active = 0;
           player_turn_active = 0;
           return 0;
@@ -6005,7 +6005,7 @@ i32 __cdecl net_client_transfer_server(void)
         if (status < 0) {
           dbg_logf((const char *)&str_connecttogame_open_connection_failed_err,status);
           crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-          popup_game_with_sprite((const char *)&str_serverconnectfail_2,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_serverconnectfail_2,(Sprite *)&popup_info_icon_sprite,0);
           turn_loop.active = 0;
           player_turn_active = 0;
           return 0;
@@ -6015,11 +6015,11 @@ i32 __cdecl net_client_transfer_server(void)
         net.nm_start_civ_count = 0;
         dlg_style.pending_idle_callback = net_quit_wait_player_list_idle;
         map_views_block.net_handoff_wait_ticks_i32 = timer_ticks();
-        popup_game_sprite_flags((const char *)&str_clientquitwait_5,0x2000000,(iptr)&popup_info_icon_sprite,0);
+        popup_game_sprite_flags(str_clientquitwait_5,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
         if (net.nm_player_list_count == 0) {
           dbg_log((const char *)&str_clienttransferserver_client_timed_out_wa);
           crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
-          popup_game_with_sprite((const char *)&str_lanconnectfail_7,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_lanconnectfail_7,(Sprite *)&popup_info_icon_sprite,0);
           turn_loop.active = 0;
           player_turn_active = 0;
           return 0;
@@ -6027,7 +6027,7 @@ i32 __cdecl net_client_transfer_server(void)
         crt_strcpy(((i8 *)&text_args.strings),((i8 *)&net.slot_player_names));
         net_reset_error_counts();
         net.nm_player_list_count = 0;
-        popup_game_with_sprite((const char *)&str_hostchangeclient,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_hostchangeclient,(Sprite *)&popup_info_icon_sprite,0);
       }
       result = 1;
     }
@@ -6112,7 +6112,7 @@ i32 __cdecl net_check_lost_connections(void)
       turn_loop.active = 0;
       dbg_log((const char *)&str_we_lost_connection_to_the_server_heartbe);
       net.shutdown(1);
-      popup_game_with_sprite((const char *)&str_lostserver,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_lostserver,(Sprite *)&popup_info_icon_sprite,0);
       return 1;
     }
   }
@@ -6158,7 +6158,7 @@ i32 __cdecl net_check_lost_connections(void)
             net_send_message(NM_LOCK_DATA,0xff,(short)(*(ushort *)&civ_saved_cursor_x_block.net_claimed_civs_mask),0,0,0,0,0,0,0);
             net.nm_lock_nation_count++;
           }
-          popup_game_with_sprite((const char *)&str_lostclient,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_lostclient,(Sprite *)&popup_info_icon_sprite,0);
         }
       }
     }
@@ -8679,7 +8679,7 @@ void __cdecl parley_poll_net_replies(void)
           civ_name = (civ_name_plural(parley_wnd_block.other_civ));
           text_set_string_arg(0,civ_name);
           dlg_style.pending_idle_callback = parley_poll_net_replies;
-          popup_game_with_sprite((const char *)&str_parleycounteroffer,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_parleycounteroffer,(Sprite *)&popup_info_icon_sprite,0);
         }
       }
       else {
@@ -8690,7 +8690,7 @@ void __cdecl parley_poll_net_replies(void)
         civ_name = (civ_name_plural(parley_wnd_block.other_civ));
         text_set_string_arg(0,civ_name);
         dlg_style.pending_idle_callback = parley_poll_net_replies;
-        popup_game_with_sprite((const char *)&str_parleynothanks,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_parleynothanks,(Sprite *)&popup_info_icon_sprite,0);
       }
     }
     else {
@@ -8714,7 +8714,7 @@ void __cdecl parley_poll_net_replies(void)
       parley_wnd_block.add_side_dialog(parley_panes.mode2_left_kind,0);
       parley_wnd_block.add_side_dialog((i32)parley_wnd_block.right_kind,1);
       dlg_style.pending_idle_callback = parley_poll_net_replies;
-      popup_game_with_sprite((const char *)&str_parleyaccept,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_parleyaccept,(Sprite *)&popup_info_icon_sprite,0);
     }
   }
   else {
@@ -10877,7 +10877,7 @@ static int net_popup_parley_request(int *entry,Dialog &dlg)
     text = (iptr)(label_string(attitude_names[attitude_level]));
     text_set_string_arg(3,(const char *)text);
     dlg_style.pending_idle_callback = net_popup_idle_autoclose;
-    choice = popup_game_with_sprite((const char *)&str_parleyrequest,(iptr)&popup_info_icon_sprite,0);
+    choice = popup_game_with_sprite(str_parleyrequest,(Sprite *)&popup_info_icon_sprite,0);
     if (net.host_handoff_stage == '\0') {
       if (net.nm_parley_cancel_count == 0) {
         net_send_message(NM_PARLEYREQUEST_REPLY,net.net_slots[net.net_civ_slots[entry[4]]].id,choice,0,0,0,0,0,0,0);
@@ -10898,7 +10898,7 @@ static int net_popup_parley_request(int *entry,Dialog &dlg)
         text = (iptr)(civ_name_plural(entry[4]));
         text_set_string_arg(0,(const char *)text);
         dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-        popup_game_with_sprite((const char *)&str_parleycancel_4,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_parleycancel_4,(Sprite *)&popup_info_icon_sprite,0);
       }
       parley_wnd_block.other_civ = -1;
       diplo_meeting.mp_pending = 0;
@@ -11051,34 +11051,34 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_barbarians_2,entry[4]);
     break;
   case 3:
-    popup_game_with_sprite((const char *)&str_globalwarming_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_globalwarming_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 4:
-    popup_game_with_sprite((const char *)&str_fearwarming_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_fearwarming_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 5:
     historian_report_show();
     break;
   case 6:
-    popup_game_with_sprite((const char *)&str_eaglehaslanded_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_eaglehaslanded_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 7:
-    popup_game_with_sprite((const char *)&str_scenarioends_2,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+    popup_game_with_sprite(str_scenarioends_2,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     break;
   case 8:
-    popup_game_with_sprite((const char *)&str_scenarioend_2,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+    popup_game_with_sprite(str_scenarioend_2,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     break;
   case 9:
     text = civ_leader_title(human_civ[0]);
     text_set_string_arg(0,(const char *)text);
     text = (iptr)(civ_leader_name(human_civ[0]));
     text_set_string_arg(1,(const char *)text);
-    popup_game_with_sprite((const char *)&str_planretire_2,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+    popup_game_with_sprite(str_planretire_2,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     break;
   case 10:
     text = (iptr)(civ_leader_name(human_civ[0]));
     text_set_string_arg(1,(const char *)text);
-    popup_game_with_sprite((const char *)&str_doretire_2,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+    popup_game_with_sprite(str_doretire_2,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     break;
   case 0xb:
     popup_game((const char *)&str_launched);
@@ -11092,7 +11092,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     break;
   case 0xe:
     music_play_track(2,1);
-    popup_game_with_sprite((const char *)&str_destroyed_2,(iptr)(((i8 *)&road_sprites_block.civ_portrait_sprites) + entry[4] * 0x3c),0);
+    popup_game_with_sprite(str_destroyed_2,((Sprite *)(((i8 *)&road_sprites_block.civ_portrait_sprites) + entry[4] * 0x3c)),0);
     break;
   case 0xf:
     snd_play_effect((-(uint)(entry[5] == 0) & 0x14) + 0x16,1,0,0);
@@ -11130,7 +11130,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     popup_game((const char *)&str_schism_2);
     break;
   case 0x17:
-    text = popup_game_with_sprite((const char *)&str_canescape,(iptr)&popup_info_icon_sprite,0);
+    text = popup_game_with_sprite(str_canescape,(Sprite *)&popup_info_icon_sprite,0);
     net_send_message(NM_CANESCAPE_REPLY,net.net_slots[net.net_civ_slots[entry[4]]].id,
                        text,0,0,0,0,0,0,0);
     break;
@@ -11172,7 +11172,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_promoted,entry[4]);
     break;
   case 0x21:
-    popup_game_with_sprite((const char *)&str_incorruptible_2,(iptr)&government_sprites_block.government_sprite_democracy,0);
+    popup_game_with_sprite(str_incorruptible_2,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
     break;
   case 0x22:
     dlg_game_txt_with_unit((const char *)&str_deserted_2,entry[4]);
@@ -11191,13 +11191,13 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_blewitup_2,entry[4]);
     break;
   case 0x26:
-    popup_game_with_sprite((const char *)&str_bond007_2,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c),entry[5]);
+    popup_game_with_sprite(str_bond007_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
     break;
   case 0x27:
-    popup_game_with_sprite((const char *)&str_bond_2,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c),entry[5]);
+    popup_game_with_sprite(str_bond_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
     break;
   case 0x28:
-    popup_game_with_sprite((const char *)&str_bondglory_2,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c),entry[5]);
+    popup_game_with_sprite(str_bondglory_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
     break;
   case 0x29:
     popup_game_with_improvement((const char *)&str_useweapons,IMP_MANHATTAN,8);
@@ -11206,10 +11206,10 @@ static int net_popup_show(int *entry,Dialog &dlg)
     popup_game_with_improvement((const char *)&str_sdi,IMP_SDI_DEFENSE,8);
     break;
   case 0x2b:
-    popup_game_with_sprite((const char *)&str_changed,(iptr)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c),entry[5]);
+    popup_game_with_sprite(str_changed,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c)),entry[5]);
     break;
   case 0x2c:
-    popup_game_with_sprite((const char *)&str_overthrown,(iptr)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c),entry[5]);
+    popup_game_with_sprite(str_overthrown,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c)),entry[5]);
     break;
   case 0x2d:
     dlg_game_txt_with_unit((const char *)&str_breakcease_2,entry[4]);
@@ -11245,10 +11245,10 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit_flags((const char *)&str_ransom,entry[4],0);
     break;
   case 0x38:
-    popup_game_with_sprite((const char *)&str_activateally_2,(iptr)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite)),0);
+    popup_game_with_sprite(str_activateally_2,((Sprite *)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite))),0);
     break;
   case 0x39:
-    popup_game_with_sprite((const char *)&str_allyhelps_2,(iptr)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite)),0);
+    popup_game_with_sprite(str_allyhelps_2,((Sprite *)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite))),0);
     break;
   case 0x3a:
     popup_game((const char *)&str_cancelpeace_2);
@@ -11270,7 +11270,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
   case 0x3f:
     if (net.net_slots[net.net_civ_slots[human_civ[0]]].id != entry[4])
     {
-      popup_game_with_sprite((const char *)&str_newplayer_2,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_newplayer_2,(Sprite *)&popup_info_icon_sprite,0);
     }
     break;
   case 0x40:
@@ -11283,10 +11283,10 @@ static int net_popup_show(int *entry,Dialog &dlg)
     net_send_message(NM_NEWTURNTIMER_REPLY,0,dlg.result_extra,0,0,0,0,0,0,0);
     break;
   case 0x41:
-    popup_game_with_sprite((const char *)&str_newturntimerno,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_newturntimerno,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x42:
-    popup_game_with_sprite((const char *)&str_newturntimeryes,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_newturntimeryes,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x43:
     dlg.load_game_section((const char *)&str_pmchangeclient,0x2000000);
@@ -11298,14 +11298,14 @@ static int net_popup_show(int *entry,Dialog &dlg)
     net_send_message(NM_PMCHANGE_REPLY,0,dlg.result_extra,0,0,0,0,0,0,0);
     break;
   case 0x44:
-    popup_game_with_sprite((const char *)&str_pmchangeno_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_pmchangeno_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x45:
-    popup_game_with_sprite((const char *)&str_pmchangeyes_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_pmchangeyes_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x46:
     snd_play_effect(SND_LARGEXPL,1,0,0);
-    city_notify_dialog_ex(str_manhattan_2,entry[4],1,(iptr)&caption_close_button_sprite_block.city_notify_sprite);
+    city_notify_dialog_ex(str_manhattan_2,entry[4],1,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
     break;
   case 0x47:
     dlg.load_game_text((const char *)&str_built2_2);
@@ -11365,7 +11365,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg.show_modal(0);
     break;
   case 0x50:
-    popup_game_with_sprite((const char *)&str_warends,(iptr)&ceasefire_icon_sprite,0);
+    popup_game_with_sprite(str_warends,(Sprite *)&ceasefire_icon_sprite,0);
     break;
   case 0x51:
     dlg_game_txt_with_unit((const char *)&str_militaryaid1,entry[4]);
@@ -11374,18 +11374,18 @@ static int net_popup_show(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_militaryaid2,entry[4]);
     break;
   case 0x53:
-    popup_game_with_sprite((const char *)&str_lostclient_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_lostclient_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x54:
     popup_game_with_advance((const char *)&str_goldenage_2,ADV_PHILOSOPHY,8);
     break;
   case 0x55:
     snd_play_effect(SND_SPYSOUND,1,0,0);
-    popup_game_with_sprite((const char *)&str_enemyembassy_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_enemyembassy_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x56:
     snd_play_effect(SND_SPYSOUND,1,0,0);
-    popup_game_with_sprite((const char *)&str_enemyinvestigate_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_enemyinvestigate_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x57:
     choice = civ_has_advance(entry[4],ADV_GUNPOWDER);
@@ -11395,11 +11395,11 @@ static int net_popup_show(int *entry,Dialog &dlg)
     else {
       snd_play_effect(SND_MEDEXPL,1,0,0);
     }
-    popup_game_with_sprite((const char *)&str_steal_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_steal_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x58:
     snd_play_effect(SND_SPYSOUND,1,0,0);
-    popup_game_with_sprite((const char *)&str_foiledagain,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_foiledagain,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x59:
     choice = civ_has_advance(entry[5],ADV_GUNPOWDER);
@@ -11409,7 +11409,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     else {
       snd_play_effect(SND_MEDEXPL,1,0,0);
     }
-    popup_game_with_sprite((const char *)&str_sabotageone_2,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c),8);
+    popup_game_with_sprite(str_sabotageone_2,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),8);
     break;
   case 0x5a:
     choice = civ_has_advance(entry[4],ADV_GUNPOWDER);
@@ -11423,7 +11423,7 @@ static int net_popup_show(int *entry,Dialog &dlg)
     break;
   case 0x5b:
     snd_play_effect(SND_SPYSOUND,1,0,0);
-    popup_game_with_sprite((const char *)&str_watersupply_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_watersupply_2,(Sprite *)&popup_info_icon_sprite,0);
     break;
   case 0x5c:
     text_clear();
@@ -14780,7 +14780,7 @@ void __cdecl parley_on_check_intel(void)
     intel_report_show(human_civ[0],parley->other_civ);
   }
   else {
-    popup_game_with_sprite((const char *)&str_nointel_2,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_nointel_2,(Sprite *)&popup_info_icon_sprite,0);
   }
   return;
 }
@@ -14979,7 +14979,7 @@ void __cdecl parley_on_accept_offer(void)
   net_send_message(NM_PARLEY_ACCEPT_OFFER,net.net_slots[net.net_civ_slots[(int)parley_wnd_block.other_civ]].id,0,0,0
                      ,0,0,0,0,0);
   dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-  popup_game_with_sprite((const char *)&str_parleyaccept2,(iptr)&popup_info_icon_sprite,0);
+  popup_game_with_sprite(str_parleyaccept2,(Sprite *)&popup_info_icon_sprite,0);
   parley->mode = 3;
   parley->set_mode_sides(1);
   return;
@@ -15656,7 +15656,7 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
       crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
       dlg_style.pending_idle_callback = lobby_wait_civs_chosen_idle;
       net.wait_start_ticks = timer_ticks();
-      result = popup_game_sprite_flags((const char *)&str_waitingonjoin,0x2000001,(iptr)&popup_info_icon_sprite,0);
+      result = popup_game_sprite_flags(str_waitingonjoin,0x2000001,(Sprite *)&popup_info_icon_sprite,0);
       if (result == -1) {
         net_send_message(NM_SERVER_CANCELED_START,0xff,0,0,0,0,0,0,0,0);
         XD_StopConnections();
@@ -16684,7 +16684,7 @@ net_lock_map(int civ,int src_x,int src_y,int dst_x,int dst_y,int wait_reply)
       }
       if (net_map_lock_slots_block.net_map_locks[civ].replies == 0) {
         dbg_log((const char *)&str_lockmap_connection_to_server_timed_out);
-        popup_game_with_sprite((const char *)&str_serverconnecttime_8,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnecttime_8,(Sprite *)&popup_info_icon_sprite,0);
         turn_loop.active = 0;
         result = 0;
       }
@@ -16766,7 +16766,7 @@ void __cdecl net_unlock_map(int civ,int wait_reply)
       }
       if (net_map_lock_slots_block.net_map_locks[civ].state == 0) {
         dbg_log((const char *)&str_unlockmap_connection_to_server_timed_out);
-        popup_game_with_sprite((const char *)&str_serverconnecttime_9,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnecttime_9,(Sprite *)&popup_info_icon_sprite,0);
         turn_loop.active = 0;
       }
     }
@@ -17472,7 +17472,7 @@ void __cdecl net_on_oversized_message(unsigned long size)
 
 /* 0059c0e1 auto */
 void * __cdecl
-net_msg_build_packet(i32 msg_type,iptr payload,i32 arg1,i32 arg2,
+net_msg_build_packet(i32 msg_type,const void *payload,i32 arg1,i32 arg2,
             i32 arg3,i32 arg4,i32 arg5,i32 arg6,
             size_t payload_len)
 
@@ -17496,7 +17496,7 @@ net_msg_build_packet(i32 msg_type,iptr payload,i32 arg1,i32 arg2,
   else {
     payload_size = payload_len;
     packet = operator_new(payload_len + 0x2c);
-    crt_memcpy((void *)((int)packet + 0x2c),(const void *)payload,payload_size);
+    crt_memcpy((void *)((int)packet + 0x2c),payload,payload_size);
   }
   header.size = payload_size + 0x2c;
   crt_memcpy(packet,&header,0x10);
@@ -17756,7 +17756,7 @@ static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
   net_send_message(NM_PRODUCTION_COMPLETE,0,human_civ[0],0,0,0,0,0,0,0);
   net_heartbeat_send(net.slot_civs[0]);
   dlg_style.pending_idle_callback = net_client_wait_production_idle;
-  popup_game_with_sprite((const char *)&str_waitproduction_3,(iptr)&popup_info_icon_sprite,0);
+  popup_game_with_sprite(str_waitproduction_3,(Sprite *)&popup_info_icon_sprite,0);
   while (((net.nm_ai_movement_count == 0 && (net.nm_end_sequence_count == 0)) && (turn_loop.active != '\0'))) {
     net.process_messages(1,0);
     net_heartbeat_check(net.slot_civs[0]);
@@ -17771,7 +17771,7 @@ static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
     net.nm_ai_movement_count = 0;
     net_heartbeat_send(net.slot_civs[0]);
     dlg_style.pending_idle_callback = net_client_wait_ai_moves_idle;
-    popup_game_with_sprite((const char *)&str_waitaimoves,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_waitaimoves,(Sprite *)&popup_info_icon_sprite,0);
     while (((net.nm_human_movement_count == 0 && (net.nm_end_sequence_count == 0)) && (turn_loop.active != '\0'))) {
       net.process_messages(1,0);
       net_heartbeat_check(net.slot_civs[0]);
@@ -17856,7 +17856,7 @@ static int net_client_autoplay_turn(Dialog &dialog2,i8 &turn_ok)
   net_send_message(NM_PRODUCTION_COMPLETE,0,human_civ[0],0,0,0,0,0,0,0);
   net_heartbeat_send(net.slot_civs[0]);
   dlg_style.pending_idle_callback = net_client_wait_production_idle;
-  popup_game_with_sprite((const char *)&str_waitproduction_2,(iptr)&popup_info_icon_sprite,0);
+  popup_game_with_sprite(str_waitproduction_2,(Sprite *)&popup_info_icon_sprite,0);
   while (((net.nm_ai_movement_count == 0 && (net.nm_end_sequence_count == 0)) && (turn_loop.active != '\0'))) {
     net.process_messages(1,0);
     net_heartbeat_check(net.slot_civs[0]);
@@ -17955,7 +17955,7 @@ i32 __cdecl net_client_turn_loop(void)
   if ((1 << ((byte)human_civ[0] & 0x1f) & (uint)game.human_players) == 0) {
     net_heartbeat_send(net.slot_civs[0]);
     dlg_style.pending_idle_callback = net_client_hotwait_idle;
-    popup_game_sprite_flags((const char *)&str_clienthotwait_2,0x2000000,(iptr)&popup_info_icon_sprite,0);
+    popup_game_sprite_flags(str_clienthotwait_2,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
     resume_civ = turn_loop.resume_civ;
   }
   do {
@@ -17968,7 +17968,7 @@ i32 __cdecl net_client_turn_loop(void)
     if (is_first_turn == 0) {
       net_heartbeat_send(net.slot_civs[0]);
       dlg_style.pending_idle_callback = net_client_wait_human_moves_idle;
-      popup_game_with_sprite((const char *)&str_waithumanmoves_2,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_waithumanmoves_2,(Sprite *)&popup_info_icon_sprite,0);
     }
     net_heartbeat_send(net.slot_civs[0]);
     while ((((net.nm_production_begin_count == 0 && (net.host_handoff_stage == '\0')) && (net.nm_end_sequence_count == 0)) &&

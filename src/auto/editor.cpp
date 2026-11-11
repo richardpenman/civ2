@@ -1838,7 +1838,7 @@ void __cdecl editor_toggle_scenario_flag(void)
   int rc;
   
   if (((game.game_options & OPT_CHEAT_MODE) == 0) && ((game.game_flags & GAME_CHEATED) == 0)) {
-    rc = popup_game_with_sprite((const char *)&str_reallycheat,(iptr)&popup_info_icon_sprite,0);
+    rc = popup_game_with_sprite(str_reallycheat,(Sprite *)&popup_info_icon_sprite,0);
     if (rc == 0) {
       return;
     }

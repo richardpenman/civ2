@@ -2056,7 +2056,7 @@ static void map_key_game_command(int cmd)
       break;
     case 0x248:
       if ((game.multiplayer == 1) &&
-         (result = popup_game_with_sprite((const char *)&str_reallyquit,(iptr)&popup_info_icon_sprite,0), result != 0)) {
+         (result = popup_game_with_sprite(str_reallyquit,(Sprite *)&popup_info_icon_sprite,0), result != 0)) {
         snd_cd_stop();
         map_display_disable();
       }
@@ -2382,14 +2382,14 @@ i32 __cdecl map_load_dialog(void)
   path_buf = filename;
   filter = filter_str;
   title = (iptr)label_string(label_table.string_ids[0x103]);
-  ok = ui_file_name_dialog((iptr)&main_frame_wnd_block.main_frame_wnd,(const char *)title,path_buf,(const char *)filter_str,default_ext,dlg_flag,dlg_arg);
+  ok = ui_file_name_dialog(&main_frame_wnd_block.main_frame_wnd,(const char *)title,path_buf,(const char *)filter_str,default_ext,dlg_flag,dlg_arg);
   if (ok != 0) {
     file = _fopen(filename,((i8 *)&map_load_open_mode_str));
     if (file == (FILE *)0x0) {
       popup_game((const char *)&str_failedtoload);
     }
     else {
-      ok = map_read((iptr)file,1);
+      ok = map_read(file,1);
       if (ok == 0) {
         tile = map_data.tiles;
         for (i = 0; i < map.area; i++) {
@@ -3524,7 +3524,7 @@ void __cdecl map_apply_global_warming(uint severity)
     if (2 < game.multiplayer) {
       net_send_text_args(3,0xff,0,0,0,0);
     }
-    popup_game_with_sprite((const char *)&str_globalwarming,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite(str_globalwarming,(Sprite *)&popup_info_icon_sprite,0);
   }
   y2 = 0;
   x2 = 0;
@@ -5102,7 +5102,7 @@ void __cdecl terrain_editor_on_edit_icon(void)
   }
   if (sprites != (i8 *)0x0) {
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((iptr)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5151,7 +5151,7 @@ void __cdecl terrain_editor_on_edit_river(void)
     save_fn = sprite_sheet_save_terrain2;
     sheet_id = 8;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((iptr)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5199,7 +5199,7 @@ void __cdecl terrain_editor_on_edit_coast(void)
     save_fn = sprite_sheet_save_terrain2;
     sheet_id = 9;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((iptr)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5257,7 +5257,7 @@ void __cdecl terrain_editor_on_edit_misc(void)
     save_fn = sprite_sheet_save_terrain1;
     sheet_id = 10;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((iptr)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -6843,7 +6843,7 @@ void __cdecl map_new_seed(void)
 }
 
 /* 005b8635 auto */
-i32 __cdecl map_write(iptr file,int is_scenario)
+i32 __cdecl map_write(FILE *file,int is_scenario)
 
 {
   size_t written;
@@ -6851,27 +6851,27 @@ i32 __cdecl map_write(iptr file,int is_scenario)
   i32 result;
   
   result = 1;
-  written = _fwrite(&map,0xe,1,(FILE *)file);
+  written = _fwrite(&map,0xe,1,file);
   if (written != 0) {
     if (is_scenario == 0) {
       for (civ = 1; civ < 8; civ++) {
-        written = _fwrite(map_data.known[civ],(int)map.area,1,(FILE *)file);
+        written = _fwrite(map_data.known[civ],(int)map.area,1,file);
         if (written == 0) {
           return 1;
         }
       }
     }
     else {
-      written = _fwrite(start_positions.x,0x2a,1,(FILE *)file);
+      written = _fwrite(start_positions.x,0x2a,1,file);
       if (written == 0) {
         return 1;
       }
-      written = _fwrite(start_positions.y,0x2a,1,(FILE *)file);
+      written = _fwrite(start_positions.y,0x2a,1,file);
       if (written == 0) {
         return 1;
       }
     }
-    written = _fwrite(map_data.tiles,map.area * 6,1,(FILE *)file);
+    written = _fwrite(map_data.tiles,map.area * 6,1,file);
     if (written != 0) {
       result = 0;
     }
@@ -6908,7 +6908,7 @@ static int map_tiles_valid(void)
 }
 
 /* 005b8783 auto */
-i32 __cdecl map_read(iptr file,int is_scenario)
+i32 __cdecl map_read(FILE *file,int is_scenario)
 
 {
   size_t nread;
@@ -6917,7 +6917,7 @@ i32 __cdecl map_read(iptr file,int is_scenario)
   i8 header[36];
   
   result = 1;
-  nread = _fread(header,0xe,1,(FILE *)file);
+  nread = _fread(header,0xe,1,file);
   if (nread != 0) {
     if (is_scenario == 0) {
       for (civ = 0; civ < 0x15; civ++) {
@@ -6926,11 +6926,11 @@ i32 __cdecl map_read(iptr file,int is_scenario)
       }
     }
     else {
-      nread = _fread(start_positions.x,0x2a,1,(FILE *)file);
+      nread = _fread(start_positions.x,0x2a,1,file);
       if (nread == 0) {
         return 1;
       }
-      nread = _fread(start_positions.y,0x2a,1,(FILE *)file);
+      nread = _fread(start_positions.y,0x2a,1,file);
       if (nread == 0) {
         return 1;
       }
@@ -6943,13 +6943,13 @@ i32 __cdecl map_read(iptr file,int is_scenario)
     map_alloc();
     if (is_scenario == 0) {
       for (civ = 1; civ < 8; civ++) {
-        nread = _fread(map_data.known[civ],(int)map.area,1,(FILE *)file);
+        nread = _fread(map_data.known[civ],(int)map.area,1,file);
         if (nread == 0) {
           return 1;
         }
       }
     }
-    nread = _fread(map_data.tiles,map.area * 6,1,(FILE *)file);
+    nread = _fread(map_data.tiles,map.area * 6,1,file);
     if ((nread != 0) && (map_tiles_valid() != 0)) {
       result = 0;
     }

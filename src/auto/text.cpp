@@ -1346,7 +1346,7 @@ void FileObject::read(char *buf,i32 size)
 }
 
 /* 004befd1 auto */
-void __cdecl text_list_append_wrapped(iptr dialog,i32 string_id,int *item_count,int *line_count)
+void __cdecl text_list_append_wrapped(Dialog *dialog,i32 string_id,int *item_count,int *line_count)
 
 {
   if (*item_count == 0) {
@@ -1359,7 +1359,7 @@ void __cdecl text_list_append_wrapped(iptr dialog,i32 string_id,int *item_count,
     }
     else {
       *line_count = 0;
-      ((Dialog *)dialog)->add_line((const char *)&textbuf.buf,0xffffffff,0xffffffff,0xffffffff,0);
+      (dialog)->add_line(textbuf.buf,0xffffffff,0xffffffff,0xffffffff,0);
       text_clear();
     }
   }

@@ -2141,7 +2141,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
         if ((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) {
           if ((units[unit].flags & UNITF_VETERAN) == 0) {
             if (human_civ[0] == civ3) {
-              popup_game_with_sprite((const char *)&str_bond007,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),8
+              popup_game_with_sprite(str_bond007,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8
                                 );
             }
             else if (2 < game.multiplayer) {
@@ -2150,7 +2150,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
             }
           }
           else if (human_civ[0] == civ3) {
-            popup_game_with_sprite((const char *)&str_bond,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),8);
+            popup_game_with_sprite(str_bond,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8);
           }
           else if (2 < game.multiplayer) {
             net_send_text_args(0x27,net.net_slots[net.net_civ_slots[civ3]].id,2,
@@ -2164,7 +2164,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
     if (((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) &&
        (-1 < mission_mode)) {
       if (human_civ[0] == civ3) {
-        popup_game_with_sprite((const char *)&str_bondglory,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),8);
+        popup_game_with_sprite(str_bondglory,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8);
       }
       else if (game.multiplayer == 3) {
         net_send_text_args(0x28,net.net_slots[net.net_civ_slots[civ3]].id,0,0,
@@ -2196,7 +2196,7 @@ i32 __cdecl spy_check_caught(int unit,int civ)
   }
   else {
     if ((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) {
-      popup_game_with_sprite((const char *)&str_nailed,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)unit_type * 0x3c),8);
+      popup_game_with_sprite(str_nailed,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)unit_type * 0x3c)),8);
     }
     result = 1;
   }
@@ -2358,7 +2358,7 @@ static int spy_city_mission_embassy(iptr unit,uptr civ,uptr civ2,uint is_spy,uin
       unit2 = (iptr)(civ_name_plural(civ));
       text_set_string_arg(0,(const char *)unit2);
       if ((game.multiplayer < 3) || (human_civ[0] == civ2)) {
-        popup_game_with_sprite((const char *)&str_enemyembassy,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+        popup_game_with_sprite(str_enemyembassy,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
       }
       else {
         net_send_text_args(0x55,net.net_slots[net.net_civ_slots[civ2]].id,1
@@ -2397,7 +2397,7 @@ static void spy_city_mission_investigate(iptr unit,iptr city,uptr civ,uptr civ2,
     text_set_string_arg(0,(const char *)unit2);
     text_set_string_arg(1,(const char *)&cities[city].name);
     if ((game.multiplayer < 3) || (human_civ[0] == civ2)) {
-      popup_game_with_sprite((const char *)&str_enemyinvestigate,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+      popup_game_with_sprite(str_enemyinvestigate,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
     }
     else {
       net_send_text_args(0x56,net.net_slots[net.net_civ_slots[civ2]].id,2,0
@@ -2449,7 +2449,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
     if ((cities[city].flags & CITYF_TECH_STOLEN) == 0) {
       if (((autoplay.active == 0) && (is_spy != 0)) &&
          ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
-        choice = popup_game_sprite_flags((const char *)&str_stealspecific,1,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+        choice = popup_game_sprite_flags(str_stealspecific,1,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
         if (choice < 0) return 0;
         if (choice == 1) {
           ret = spy_check_caught(unit,civ2);
@@ -2507,7 +2507,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       }
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
-        popup_game_with_sprite((const char *)&str_steal,(iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+        popup_game_with_sprite(str_steal,(Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                                           (char)advances[advance].epoch * 0x3c +
                                           (char)advances[advance].category * 0xf0),8);
       }
@@ -2523,7 +2523,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       text_set_string_arg(2,(const char *)unit2);
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
-        popup_game_with_sprite((const char *)&str_curses,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),8);
+        popup_game_with_sprite(str_curses,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),8);
       }
       if ((((autoplay.active == 0) && ((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) != 0))
           && (2 < game.multiplayer)) && (human_civ[0] != civ2)) {
@@ -2537,7 +2537,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
     units[unit].moves_used += cosmic.road_move_mult;
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
-      popup_game_with_sprite((const char *)&str_nosteal,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+      popup_game_with_sprite(str_nosteal,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
     }
     return 0;
   }
@@ -2590,7 +2590,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
   }
   if ((((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) &&
       (is_spy != 0)) && (0 < improvement2)) {
-    choice = popup_game_sprite_flags((const char *)&str_sabotagespecific,1,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+    choice = popup_game_sprite_flags(str_sabotagespecific,1,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
     if (choice < 0) return;
     if (choice == 1) {
       dlg.load_game_section((const char *)&str_sabotage,1);
@@ -2622,7 +2622,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       }
       ret = city_has_improvement(city,IMP_PALACE);
       if (((((ret != 0) || (improvement2 == IMP_CITY_WALLS)) &&
-           (choice = popup_game_with_sprite((const char *)&str_sabotagehard,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8),
+           (choice = popup_game_with_sprite(str_sabotagehard,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8),
            choice != 1)) ||
           ((ret = spy_check_caught(unit,civ2), ret != 0 ||
            ((ret = city_has_improvement(city,IMP_PALACE), ret != 0 &&
@@ -2696,7 +2696,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
       {
         ((CityWindow *)((i8 *)&city_wnd.window))->refresh_if_city(city);
-        popup_game_with_sprite((const char *)&str_sabotageone,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c),8);
+        popup_game_with_sprite(str_sabotageone,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),8);
       }
     }
   }
@@ -2732,7 +2732,7 @@ static void spy_city_mission_poison_water(iptr unit,iptr city,uptr civ,uptr civ2
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
       snd_play_effect(SND_SPYSOUND,1,0,0);
-      popup_game_with_sprite((const char *)&str_watersupply,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+      popup_game_with_sprite(str_watersupply,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
     }
     civ4 = civ2;
     rnd = crt_rand_at("spy_city_mission");
@@ -2752,7 +2752,7 @@ static void spy_city_mission_plant_nuke(iptr unit,iptr city,uptr civ,uptr civ2,u
   uptr civ3;
   int odds;
   if (((((autoplay.active == 0) &&
-        (ret = popup_game_with_sprite((const char *)&str_majorincident,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8),
+        (ret = popup_game_with_sprite(str_majorincident,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8),
         ret == 1)) && (ret = spy_check_caught(unit,civ2), ret == 0)) &&
       ((ret = spy_check_caught(unit,civ2), ret == 0 &&
        (ret = spy_check_caught(unit,civ2), ret == 0)))) &&
@@ -2821,7 +2821,7 @@ static int spy_city_mission_incite_revolt(Dialog &dlg,iptr unit,iptr city,uptr c
   if (civs[civ2].government == GOV_DEMOCRACY) {
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
-      popup_game_with_sprite((const char *)&str_norevolt,(iptr)&government_sprites_block.government_sprite_democracy,0);
+      popup_game_with_sprite(str_norevolt,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
     }
     return 0;
   }
@@ -2976,7 +2976,7 @@ static void spy_city_mission_chat(iptr unit,uptr civ,uptr civ2,uint is_spy,uint 
   units[unit].flags = units[unit].flags | UNITF_SPY_ON_MISSION;
   treaty_ptr = (uint *)(civ * 0x594 + (iptr)((u8 *)&civs + 32) + civ2 * 4);
   *treaty_ptr = *treaty_ptr | 0x1000000;
-  popup_game_with_sprite((const char *)&str_chatspystart,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),8);
+  popup_game_with_sprite(str_chatspystart,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
 }
 
 /* 004c6bf5 auto */
@@ -3134,7 +3134,7 @@ static void unit_bribe_transfer(iptr unit,iptr civ,iptr civ2,int bribe_cost)
     }
     if (units[unit].owner != civ) {
       dbg_log((const char *)&str_pick_up_unit_connection_to_server_timed);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_5,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_5,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
   }
@@ -3170,7 +3170,7 @@ void __cdecl unit_bribe(int unit,int civ)
                          0);
       return;
     }
-    popup_game_with_sprite((const char *)&str_incorruptible,(iptr)&government_sprites_block.government_sprite_democracy,0);
+    popup_game_with_sprite(str_incorruptible,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
     return;
   }
   if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) &&
@@ -5480,7 +5480,7 @@ void __cdecl unit_sound_editor_pick_wav(int slot)
       filter = dest_path;
       file_buf = wav_path;
       title = (iptr)label_string(label_table.string_ids[0x223]);
-      ret = ui_file_name_dialog((iptr)&unit_sound_editor.wnd,(const char *)title,file_buf,filter,default_ext,filter_arg,dlg_arg);
+      ret = ui_file_name_dialog(&unit_sound_editor.wnd,(const char *)title,file_buf,filter,default_ext,filter_arg,dlg_arg);
       if (ret == 0) {
         return;
       }
@@ -5875,7 +5875,7 @@ void __cdecl unit_cmd_build_city(void)
             snd_play_effect(SND_BLDCITY,1,0,0);
             popup_city_picture_zoom((const char *)&str_founded,city,0x4c,1,civ);
             if ((((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) != 0) && (civs[civ].num_cities == 1)) {
-              popup_file_with_sprite((const char *)(*(i8 * *)str_ptr_labels_rest),(const char *)&str_firstproduct,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+              popup_file_with_sprite((const char *)(*(i8 * *)str_ptr_labels_rest),str_firstproduct,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
             }
             city_turn.processing = 1;
             ((CityWindow *)((i8 *)&city_wnd.window))->begin_notice();
@@ -6080,7 +6080,7 @@ void __cdecl unit_cmd_terraform(int order)
     if (order == 7) {
       tile_impr = tile_improvements(x,y);
       if (((byte)tile_impr & TILE_FARMLAND) == 8) {
-        popup_game_with_sprite((const char *)&str_alreadymining,(iptr)&land_improvement_sprites_block.mine_sprite,0);
+        popup_game_with_sprite(str_alreadymining,(Sprite *)&land_improvement_sprites_block.mine_sprite,0);
         return;
       }
     }
@@ -6114,7 +6114,7 @@ void __cdecl unit_cmd_terraform(int order)
     }
   }
   if ((order == 9) && (impr_bits = tile_improvements(x,y), (impr_bits & TILE_POLLUTION) == 0)) {
-    popup_game_with_sprite((const char *)&str_nopollution,(iptr)&pollution_sprite_block.pollution_sprite,8);
+    popup_game_with_sprite(str_nopollution,(Sprite *)&pollution_sprite_block.pollution_sprite,8);
   }
   else {
     map_redraw_tile_all_views(x,y);
@@ -6581,7 +6581,7 @@ void __cdecl unit_cmd_airlift(void)
     else {
       city2 = city_at((int)units[unit2].x,units[unit2].y);
       if (city2 < 0) {
-        popup_game_with_sprite((const char *)&str_noairport,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_noairport,(Sprite *)&popup_info_icon_sprite,0);
       }
       else {
         threat = city_has_improvement(city2,IMP_AIRPORT);
@@ -7311,7 +7311,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
     }
     if (net.nm_stacker_ack_count != 1) {
       dbg_log((const char *)&str_move_unit_nm_realtime_stacker_connection);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_7,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_7,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
   }
@@ -7567,7 +7567,7 @@ static int unit_move_dir_land_unit_checks(int &unit,iptr orig_unit,uptr dir,uptr
     if ((unit_sound_editor_window_block.unit_move_by_local_human != '\0') && ((unit_sound_editor_window_block.unit_move_flags & 1) != 0)) {
       snd_play_effect(SND_NEG1,1,0,0);
       if ((unit_sound_editor_window_block.unit_move_by_local_human != '\0') && (((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) != 0)) {
-        popup_game_with_sprite((const char *)&str_zoc,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+        popup_game_with_sprite(str_zoc,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
       }
       map_reveal_adjacent_units(x2,y2,civ);
     }
@@ -7620,7 +7620,7 @@ static int unit_move_dir_land_unit_checks(int &unit,iptr orig_unit,uptr dir,uptr
       unit3 = (iptr)(civ_name_plural(civ2));
       text_set_string_arg(1,(const char *)unit3);
       text_set_label_arg(2,unit_types[units[unit].type].name);
-      popup_game_with_sprite((const char *)&str_alliedrepair,(iptr)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite))
+      popup_game_with_sprite(str_alliedrepair,(Sprite *)((game.advance_known_by[ADV_COMMUNISM] != '\0') ? ((i8 *)&diplo_popup_portrait_sprite) : ((i8 *)&signal_allied_icon_sprite))
                          ,0);
     }
     unit = orig_unit;
@@ -7652,7 +7652,7 @@ static int unit_move_dir_expel(int &unit,iptr orig_unit,uptr dir,uptr civ,uptr c
         if (unit_types[units[unit2].type].role != ROLE_DIPLOMACY) {
           text_set_label_arg(1,label_table.string_ids[0x8d]);
         }
-        popup_game_with_sprite((const char *)&str_noexpel,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_noexpel,(Sprite *)&popup_info_icon_sprite,0);
       }
     }
     else {
@@ -7719,7 +7719,7 @@ static int unit_move_dir_attack_unit(int &unit,iptr orig_unit,uptr dir,uptr civ,
      ) {
     unit = orig_unit;
     if (((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
-      popup_game_with_sprite((const char *)&str_amphib,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_amphib,(Sprite *)&popup_info_icon_sprite,0);
     }
     return 0;
   }
@@ -7749,7 +7749,7 @@ static int unit_move_dir_attack_unit(int &unit,iptr orig_unit,uptr dir,uptr civ,
     if ((((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) &&
        ((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0)) {
       snd_play_effect(SND_NEG1,0,0,0);
-      popup_game_with_sprite((const char *)&str_noncombat,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_noncombat,(Sprite *)&popup_info_icon_sprite,0);
     }
     unit = orig_unit;
     if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
@@ -7762,7 +7762,7 @@ static int unit_move_dir_attack_unit(int &unit,iptr orig_unit,uptr dir,uptr civ,
       (((unit_types[units[unit].type].flags & UTYPE_ATTACK_AIR) == 0 &&
        (city3 = unit_stack_sum(unit2,9), city3 == 0)))))) {
     if (((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
-      popup_game_with_sprite((const char *)&str_fighter,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_fighter,(Sprite *)&popup_info_icon_sprite,0);
     }
     unit = orig_unit;
     if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
@@ -7876,7 +7876,7 @@ static int unit_move_dir_enemy_city(int &unit,iptr orig_unit,uptr civ,uptr &civ2
       if ((((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && ((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0))
          && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
         snd_play_effect(SND_NEG1,0,0,0);
-        popup_game_with_sprite((const char *)&str_occupy,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_occupy,(Sprite *)&popup_info_icon_sprite,0);
       }
     }
     else if ((unit_sound_editor_window_block.unit_move_flags & 2) == 0) {
@@ -8043,7 +8043,7 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
     in_bounds = map_in_bounds(x2,y2);
     if (in_bounds == 0) {
       if (((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
-        popup_game_with_sprite((const char *)&str_notonmap,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_notonmap,(Sprite *)&popup_info_icon_sprite,0);
       }
       unit = orig_unit;
       if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
@@ -8619,7 +8619,7 @@ void __cdecl unit_editor_edit_sprite(void)
   save_cb = sprite_sheet_save_units;
   count = 0xb;
   title = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + editor_active.wnd->item * 0x3c),(const char *)title,count,
+  sprite_editor_run(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + editor_active.wnd->item * 0x3c)),(const char *)title,count,
                      save_cb);
   unit_editor_redraw();
   return;
@@ -9553,7 +9553,7 @@ void __cdecl unit_stack_unlink(int unit,int sync)
     }
     if (net.nm_unit_picked_up_count == -2) {
       dbg_log((const char *)&str_pick_up_unit_connection_to_server_timed_2);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_10,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_10,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -9614,7 +9614,7 @@ void __cdecl unit_stack_link(int unit,int x,int y,int sync)
     }
     if (net.nm_unit_put_down_count == -2) {
       dbg_log((const char *)&str_put_down_unit_connection_to_server_timed);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_11,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_11,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -9652,7 +9652,7 @@ void __cdecl unit_relocate(int unit,int x,int y,int sync)
     }
     if (net.nm_unit_relocated_count == -2) {
       dbg_log((const char *)&str_relocate_unit_connection_to_server_timed);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_12,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_12,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -9716,7 +9716,7 @@ void __cdecl unit_move_to_stack_bottom(int unit,int sync)
       }
       if (net.nm_bottomed_count == -2) {
         dbg_log((const char *)&str_move_to_bottom_connection_to_server_time);
-        popup_game_with_sprite((const char *)&str_serverconnecttime_13,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnecttime_13,(Sprite *)&popup_info_icon_sprite,0);
         turn_loop.active = 0;
       }
       while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -9810,7 +9810,7 @@ iptr __cdecl unit_create(iptr unit_type,uptr civ,int x,int y)
           ))) {
         if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) &&
            (game.multiplayer < 3)) {
-          popup_game_with_sprite((const char *)&str_toomanyunits,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_toomanyunits,(Sprite *)&popup_info_icon_sprite,0);
         }
         net.unit_create_busy = 0;
         return 0xffffffff;
@@ -9910,7 +9910,7 @@ iptr __cdecl unit_create(iptr unit_type,uptr civ,int x,int y)
     }
     if ((*(int *)&net.nm_unit_created_result) == -2) {
       dbg_log((const char *)&str_create_unit_connection_to_server_timed_o);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_14,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_14,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (unit = (*(int *)&net.nm_unit_created_result), net.msgq_normal_count != 0))) {
@@ -10000,7 +10000,7 @@ void __cdecl unit_delete(int unit,int update_ui)
       }
       if (net.unit_deleted_ack == -2) {
         dbg_log((const char *)&str_delete_unit_connection_to_server_timed_o);
-        popup_game_with_sprite((const char *)&str_serverconnecttime_15,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnecttime_15,(Sprite *)&popup_info_icon_sprite,0);
         turn_loop.active = 0;
       }
       while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -10231,7 +10231,7 @@ static void unit_gather_cargo_via_host(iptr unit,iptr lift_off,int &capacity2)
     }
     if ((*(int *)&net.nm_ship_stacked_result) == -2) {
       dbg_log((const char *)&str_stack_ship_connection_to_server_timed_ou);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_16,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_16,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (capacity2 = (*(int *)&net.nm_ship_stacked_result), net.msgq_normal_count != 0))) {
@@ -10404,7 +10404,7 @@ void __cdecl unit_lift_off_map(int unit,int send_update)
       }
       if (net.nm_unit_stacked_count == -2) {
         dbg_log((const char *)&str_stack_unit_connection_to_server_timed_ou);
-        popup_game_with_sprite((const char *)&str_serverconnecttime_17,(iptr)&popup_info_icon_sprite,0);
+        popup_game_with_sprite(str_serverconnecttime_17,(Sprite *)&popup_info_icon_sprite,0);
         turn_loop.active = 0;
       }
       while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -10440,7 +10440,7 @@ void __cdecl unit_delete_with_cargo(int unit,int send_update)
     }
     if (net.nm_safely_deleted_count == -2) {
       dbg_log((const char *)&str_delete_safely_connection_to_server_timed);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_18,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_18,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -10518,7 +10518,7 @@ void __cdecl unit_destroy_redraw(int unit,int send_update)
     }
     if (net.nm_visibly_deleted_count == -2) {
       dbg_log((const char *)&str_delete_visible_connection_to_server_time);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_19,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_19,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {

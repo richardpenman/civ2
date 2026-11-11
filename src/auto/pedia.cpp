@@ -331,7 +331,7 @@ void Hyperlink::destruct()
 }
 
 /* 00452ae2 auto */
-HWND __cdecl hyperlink_create_hwnd(int *rect,iptr control)
+HWND __cdecl hyperlink_create_hwnd(int *rect,Control *control)
 
 {
   WndBase *self;
@@ -348,14 +348,14 @@ HWND __cdecl hyperlink_create_hwnd(int *rect,iptr control)
   lpParam = (LPVOID)0x0;
   hMenu = (HMENU)0x0;
   hInstance = err_report_ctx_block.app_hinstance;
-  self = (WndBase *)((Control *)control)->get_parent();
+  self = (WndBase *)(control)->get_parent();
   parent_wnd = self->get_window();
   link_hwnd = parent_wnd->hwnd;
   height = rect_height((RECT *)rect);
   width = rect_width((RECT *)rect);
   link_hwnd = CreateWindowExA(4,str_mshypertextclass_2,((i8 *)&hyperlink_window_title_str),0x50000000,*rect,
                            rect[1],width,height,link_hwnd,hMenu,hInstance,lpParam);
-  block = ctrl_init_block(link_hwnd,control);
+  block = ctrl_init_block(link_hwnd,(int)control);
   block->kind = 1;
   SetWindowLongA(link_hwnd,-4,(iptr)hotspot_wndproc);
   return link_hwnd;
@@ -376,7 +376,7 @@ void Hyperlink::create(iptr parent,i32 control_id,iptr rect)
   on_click = 0;
   on_press = 0;
   on_dblclick = 0;
-  hwnd = hyperlink_create_hwnd((int *)rect,(iptr)this);
+  hwnd = hyperlink_create_hwnd((int *)rect,this);
   this->hwnd = hwnd;
   return;
 }

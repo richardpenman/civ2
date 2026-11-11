@@ -1159,21 +1159,21 @@ void __cdecl snd_wave_stream_refill(WaveSource *source)
 }
 
 /* 005d63c5 auto */
-LPVOID __cdecl snd_global_alloc_lock(SIZE_T size,iptr handle_out)
+LPVOID __cdecl snd_global_alloc_lock(SIZE_T size,HGLOBAL *handle_out)
 
 {
   HGLOBAL handle;
   LPVOID ptr;
   
   handle = GlobalAlloc(0x2002,size);
-  *(HGLOBAL *)handle_out = handle;
+  *handle_out = handle;
   if (*(int *)handle_out == 0) {
     ptr = (LPVOID)0x0;
   }
   else {
-    ptr = GlobalLock(*(HGLOBAL *)handle_out);
+    ptr = GlobalLock(*handle_out);
     if (ptr == (LPVOID)0x0) {
-      GlobalFree(*(HGLOBAL *)handle_out);
+      GlobalFree(*handle_out);
       *(i32 *)handle_out = 0;
     }
   }
@@ -1214,7 +1214,7 @@ MMRESULT __cdecl snd_wave_alloc_buffers(uint total_bytes,HWAVEOUT wave_out,uint 
   else {
     for (i = 0; i < buffer_count; i++) {
       prev = buffer;
-      buffer = (WaveBuffer *)snd_global_alloc_lock(0x20,(iptr)&mem_handle2);
+      buffer = (WaveBuffer *)snd_global_alloc_lock(0x20,(HGLOBAL *)&mem_handle2);
       if (buffer == (WaveBuffer *)0x0) {
         if (i != 0) {
           snd_wave_reset_all(wave_out);
@@ -1227,7 +1227,7 @@ MMRESULT __cdecl snd_wave_alloc_buffers(uint total_bytes,HWAVEOUT wave_out,uint 
       }
       _memset(buffer,0,0x20);
       buffer->handle = mem_handle2;
-      data = (int)snd_global_alloc_lock(bytes_per_buffer + 0x20,(iptr)&mem_handle2);
+      data = (int)snd_global_alloc_lock(bytes_per_buffer + 0x20,(HGLOBAL *)&mem_handle2);
       buffer->hdr = (WaveHeader *)data;
       if (buffer->hdr == 0) {
         if (i != 0) {
@@ -2536,9 +2536,9 @@ int __cdecl avi_open_file(AviPlayer *player,const char *filename)
           result = 0;
         }
         else {
-          result = avi_ic_decompress_ex_query(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,
+          result = avi_ic_decompress_ex_query(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,
                                  player->src_format.width,player->src_format.height,
-                                 (iptr)&player->dst_format,0,0,0,player->src_format.width,
+                                 (BITMAPINFOHEADER *)&player->dst_format,0,0,0,player->src_format.width,
                                  player->src_format.height);
           if (result == 0) {
             ICSendMessage(avi_play.decompressor,0x401e,(iptr)&player->src_format,(iptr)&player->dst_format);
@@ -2549,9 +2549,9 @@ int __cdecl avi_open_file(AviPlayer *player,const char *filename)
             }
             player->palette.set_rgb(10,0xec,(iptr)palette_rgb);
             ICSendMessage(avi_play.decompressor,0x401d,(iptr)&player->dst_format,0);
-            result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,
+            result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,
                                    player->src_format.width,player->src_format.height
-                                   ,(iptr)&player->dst_format,0,0,0,player->src_format.width,
+                                   ,(BITMAPINFOHEADER *)&player->dst_format,0,0,0,player->src_format.width,
                                    player->src_format.height);
             if (result == 0) {
               avi_play.file_loaded = 1;
@@ -2593,9 +2593,8 @@ int __cdecl avi_open_file(AviPlayer *player,const char *filename)
 
 /* 005e250c auto */
 i32
-__stdcall avi_ic_decompress_ex_begin(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
-            i32 x_src,i32 y_src,i32 width_src,i32 height_src,iptr bi_dst
-            ,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
+__stdcall avi_ic_decompress_ex_begin(i32 hic,i32 flags,BITMAPINFOHEADER *bi_src,i32 src_bits,
+            i32 x_src,i32 y_src,i32 width_src,i32 height_src,BITMAPINFOHEADER *bi_dst,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
             i32 height_dst)
 
 {
@@ -2603,13 +2602,13 @@ __stdcall avi_ic_decompress_ex_begin(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
   ICDECOMPRESSEX ex;
   
   ex.dwFlags = flags;
-  ex.lpbiSrc = (BITMAPINFOHEADER *)bi_src;
+  ex.lpbiSrc = bi_src;
   ex.lpSrc = (void *)src_bits;
   ex.xSrc = x_src;
   ex.ySrc = y_src;
   ex.dxSrc = width_src;
   ex.dySrc = height_src;
-  ex.lpbiDst = (BITMAPINFOHEADER *)bi_dst;
+  ex.lpbiDst = bi_dst;
   ex.lpDst = (void *)dst_bits;
   ex.xDst = x_dst;
   ex.yDst = y_dst;
@@ -2621,9 +2620,8 @@ __stdcall avi_ic_decompress_ex_begin(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
 
 /* 005e2583 auto */
 i32
-__stdcall avi_ic_decompress_ex_query(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
-            i32 x_src,i32 y_src,i32 width_src,i32 height_src,iptr bi_dst
-            ,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
+__stdcall avi_ic_decompress_ex_query(i32 hic,i32 flags,BITMAPINFOHEADER *bi_src,i32 src_bits,
+            i32 x_src,i32 y_src,i32 width_src,i32 height_src,BITMAPINFOHEADER *bi_dst,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
             i32 height_dst)
 
 {
@@ -2631,13 +2629,13 @@ __stdcall avi_ic_decompress_ex_query(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
   ICDECOMPRESSEX ex;
   
   ex.dwFlags = flags;
-  ex.lpbiSrc = (BITMAPINFOHEADER *)bi_src;
+  ex.lpbiSrc = bi_src;
   ex.lpSrc = (void *)src_bits;
   ex.xSrc = x_src;
   ex.ySrc = y_src;
   ex.dxSrc = width_src;
   ex.dySrc = height_src;
-  ex.lpbiDst = (BITMAPINFOHEADER *)bi_dst;
+  ex.lpbiDst = bi_dst;
   ex.lpDst = (void *)dst_bits;
   ex.xDst = x_dst;
   ex.yDst = y_dst;
@@ -2771,8 +2769,8 @@ int __cdecl avi_decode_frame(AviPlayer *player,int decode_flags)
         dst_dim_b = avi_play.frame_width;
         dst_dim_a = avi_play.frame_height;
         dst_bits = player->get_bits();
-        result = avi_ic_decompress_ex(avi_play.decompressor,decode_flags,(iptr)&player->src_format,(*(i32 *)&avi_play.frame_buffer),0,0,avi_play.frame_width,
-                               avi_play.frame_height,(iptr)&player->dst_format,dst_bits,x_dst,y_dst,dst_dim_b,dst_dim_a);
+        result = avi_ic_decompress_ex(avi_play.decompressor,decode_flags,(BITMAPINFOHEADER *)&player->src_format,(*(i32 *)&avi_play.frame_buffer),0,0,avi_play.frame_width,
+                               avi_play.frame_height,(BITMAPINFOHEADER *)&player->dst_format,dst_bits,x_dst,y_dst,dst_dim_b,dst_dim_a);
       }
       else {
         player->dst_format.height = player->dst_format.height << 1;
@@ -2782,8 +2780,8 @@ int __cdecl avi_decode_frame(AviPlayer *player,int decode_flags)
         y_dst = 0;
         x_dst = 0;
         dst_bits = player->get_bits();
-        result = avi_ic_decompress_ex(avi_play.decompressor,decode_flags,(iptr)&player->src_format,(*(i32 *)&avi_play.frame_buffer),0,0,avi_play.frame_width,
-                               avi_play.frame_height,(iptr)&player->dst_format,dst_bits,x_dst,y_dst,dst_dim_a,dst_dim_b);
+        result = avi_ic_decompress_ex(avi_play.decompressor,decode_flags,(BITMAPINFOHEADER *)&player->src_format,(*(i32 *)&avi_play.frame_buffer),0,0,avi_play.frame_width,
+                               avi_play.frame_height,(BITMAPINFOHEADER *)&player->dst_format,dst_bits,x_dst,y_dst,dst_dim_a,dst_dim_b);
         player->dst_format.height = player->dst_format.height >> 1;
         player->dst_format.width = player->dst_format.width >> 1;
       }
@@ -2821,9 +2819,8 @@ int __cdecl avi_decode_frame(AviPlayer *player,int decode_flags)
 
 /* 005e2c5a auto */
 i32
-__stdcall avi_ic_decompress_ex(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
-            i32 x_src,i32 y_src,i32 width_src,i32 height_src,iptr bi_dst
-            ,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
+__stdcall avi_ic_decompress_ex(i32 hic,i32 flags,BITMAPINFOHEADER *bi_src,i32 src_bits,
+            i32 x_src,i32 y_src,i32 width_src,i32 height_src,BITMAPINFOHEADER *bi_dst,i32 dst_bits,i32 x_dst,i32 y_dst,i32 width_dst,
             i32 height_dst)
 
 {
@@ -2831,13 +2828,13 @@ __stdcall avi_ic_decompress_ex(i32 hic,i32 flags,iptr bi_src,i32 src_bits,
   ICDECOMPRESSEX ex;
   
   ex.dwFlags = flags;
-  ex.lpbiSrc = (BITMAPINFOHEADER *)bi_src;
+  ex.lpbiSrc = bi_src;
   ex.lpSrc = (void *)src_bits;
   ex.xSrc = x_src;
   ex.ySrc = y_src;
   ex.dxSrc = width_src;
   ex.dySrc = height_src;
-  ex.lpbiDst = (BITMAPINFOHEADER *)bi_dst;
+  ex.lpbiDst = bi_dst;
   ex.lpDst = (void *)dst_bits;
   ex.xDst = x_dst;
   ex.yDst = y_dst;
@@ -2978,15 +2975,15 @@ void __cdecl avi_apply_palette(AviPlayer *player,GamePalette *palette)
     }
     ICSendMessage(avi_play.decompressor,0x401d,(iptr)&player->dst_format,0);
     if (player->double_size == 0) {
-      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,player->src_format.width,
-                             player->src_format.height,(iptr)&player->dst_format,0,0,0,
+      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,player->src_format.width,
+                             player->src_format.height,(BITMAPINFOHEADER *)&player->dst_format,0,0,0,
                              player->src_format.width,player->src_format.height);
     }
     else {
       player->dst_format.height = player->dst_format.height << 1;
       player->dst_format.width = player->dst_format.width << 1;
-      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,player->src_format.width,
-                             player->src_format.height,(iptr)&player->dst_format,0,0,0,
+      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,player->src_format.width,
+                             player->src_format.height,(BITMAPINFOHEADER *)&player->dst_format,0,0,0,
                              player->src_format.width * 2,player->src_format.height * 2);
       player->dst_format.height = player->dst_format.height / 2;
       player->dst_format.width = player->dst_format.width / 2;
@@ -3023,14 +3020,14 @@ void __cdecl avi_restart_decompress(AviPlayer *player,int transparent)
     ICSendMessage(avi_play.decompressor,0x5001,(DWORD_PTR)((i8 *)&indeo.seq_opts),0x2c);
     ICSendMessage(avi_play.decompressor,0x5001,(DWORD_PTR)((i8 *)&indeo.frame_opts),0x70);
     if (player->double_size == 0) {
-      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,avi_play.frame_width,avi_play.frame_height,
-                             (iptr)&player->dst_format,0,0,0,avi_play.frame_width,avi_play.frame_height);
+      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,avi_play.frame_width,avi_play.frame_height,
+                             (BITMAPINFOHEADER *)&player->dst_format,0,0,0,avi_play.frame_width,avi_play.frame_height);
     }
     else {
       player->dst_format.height = player->dst_format.height << 1;
       player->dst_format.width = player->dst_format.width << 1;
-      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(iptr)&player->src_format,0,0,0,avi_play.frame_width,avi_play.frame_height,
-                             (iptr)&player->dst_format,0,0,0,avi_play.frame_width * 2,avi_play.frame_height * 2);
+      result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,avi_play.frame_width,avi_play.frame_height,
+                             (BITMAPINFOHEADER *)&player->dst_format,0,0,0,avi_play.frame_width * 2,avi_play.frame_height * 2);
       player->dst_format.height = player->dst_format.height >> 1;
       player->dst_format.width = player->dst_format.width >> 1;
     }

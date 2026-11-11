@@ -1698,7 +1698,7 @@ void __cdecl foreign_minister_show(int civ)
         if (dialog2.result_extra != 1) break;
         if ((((*(byte *)&civs[civ].treaties[civ2] & TREATY_EMBASSY) == 0) &&
             (has_embassy_wonder == 0)) && (game.reveal_map == '\0')) {
-          popup_game_with_sprite((const char *)&str_nointel,(iptr)&popup_info_icon_sprite,0);
+          popup_game_with_sprite(str_nointel,(Sprite *)&popup_info_icon_sprite,0);
         }
         else {
           intel_report_show(civ,civ2);
@@ -1778,7 +1778,7 @@ void __cdecl foreign_minister_show(int civ)
           text_set_string_arg(2,(const char *)text);
           dlg_style.pending_idle_callback = mp_meeting_wait_idle;
           civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
-          popup_result = popup_game_sprite_flags((const char *)&str_parleywaiting,0x2000001,(iptr)&popup_info_icon_sprite,0);
+          popup_result = popup_game_sprite_flags(str_parleywaiting,0x2000001,(Sprite *)&popup_info_icon_sprite,0);
           if (net.nm_parley_cancel_count == 0) {
             if (popup_result == -1) {
               net_send_message(NM_PARLEYREQUEST_CANCEL,net.net_slots[net.net_civ_slots[civ2]].id,0,0,0,0,0,0,0,
@@ -1788,7 +1788,7 @@ void __cdecl foreign_minister_show(int civ)
             }
             else if (advisor_window_block.mp_meeting_reply < 1) {
               dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-              popup_game_with_sprite((const char *)&str_parleygoaway,(iptr)&popup_info_icon_sprite,0);
+              popup_game_with_sprite(str_parleygoaway,(Sprite *)&popup_info_icon_sprite,0);
               diplo_meeting.mp_pending = 0;
             }
             else if (advisor_window_block.mp_meeting_reply == 1) {
@@ -1798,7 +1798,7 @@ void __cdecl foreign_minister_show(int civ)
               civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
               text = (iptr)(civ_name_plural(civ));
               text_set_string_arg(0,(const char *)text);
-              popup_game_with_sprite((const char *)&str_parleyok,(iptr)&popup_info_icon_sprite,0);
+              popup_game_with_sprite(str_parleyok,(Sprite *)&popup_info_icon_sprite,0);
               if (net.host_handoff_stage == '\0') {
                 if (net.nm_parley_cancel_count == 0) {
                   parley_wnd_block.open(civ2,3);
@@ -1809,20 +1809,20 @@ void __cdecl foreign_minister_show(int civ)
                   text = (iptr)(civ_name_plural(civ2));
                   text_set_string_arg(0,(const char *)text);
                   dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-                  popup_game_with_sprite((const char *)&str_parleycancel_2,(iptr)&popup_info_icon_sprite,0);
+                  popup_game_with_sprite(str_parleycancel_2,(Sprite *)&popup_info_icon_sprite,0);
                   diplo_meeting.mp_pending = 0;
                 }
               }
               else {
                 parley_wnd_block.other_civ = -1;
                 dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-                popup_game_with_sprite((const char *)&str_parleybusy,(iptr)&popup_info_icon_sprite,0);
+                popup_game_with_sprite(str_parleybusy,(Sprite *)&popup_info_icon_sprite,0);
                 diplo_meeting.mp_pending = 0;
               }
             }
             else {
               dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-              popup_game_with_sprite((const char *)&str_parleybusy_2,(iptr)&popup_info_icon_sprite,0);
+              popup_game_with_sprite(str_parleybusy_2,(Sprite *)&popup_info_icon_sprite,0);
               diplo_meeting.mp_pending = 0;
             }
           }
@@ -1831,7 +1831,7 @@ void __cdecl foreign_minister_show(int civ)
             text = (iptr)(civ_name_plural(civ2));
             text_set_string_arg(0,(const char *)text);
             dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-            popup_game_with_sprite((const char *)&str_parleycancel,(iptr)&popup_info_icon_sprite,0);
+            popup_game_with_sprite(str_parleycancel,(Sprite *)&popup_info_icon_sprite,0);
             parley_wnd_block.other_civ = -1;
             diplo_meeting.mp_pending = 0;
           }

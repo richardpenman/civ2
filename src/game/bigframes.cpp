@@ -1877,7 +1877,7 @@ void __cdecl net_host_turn_loop(void)
     net_send_state_diff(0xff,2,0,0,0);
     dialog_text_font_obj_block.net_civ_phase_done[human_civ[0]] = dialog_text_font_obj_block.net_civ_phase_done[human_civ[0]] + 1;
     dlg_style.pending_idle_callback = net_host_wait_production_idle;
-    popup_game_with_sprite((const char *)str_waitproduction,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_waitproduction,(Sprite *)&popup_info_icon_sprite,0);
     net_host_wait_phase_done(civ);
     net.nm_production_complete_count = 0;
     net_send_state_diff(0xff,2,0,0,0);
@@ -1914,7 +1914,7 @@ void __cdecl net_host_turn_loop(void)
     dialog_text_font_obj_block.net_civ_phase_done[human_civ[0]] = dialog_text_font_obj_block.net_civ_phase_done[human_civ[0]] + 1;
     XD_FlushSendBuffer(60000);
     dlg_style.pending_idle_callback = net_host_wait_human_moves_idle;
-    popup_game_with_sprite((const char *)str_waithumanmoves,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_waithumanmoves,(Sprite *)&popup_info_icon_sprite,0);
     net_host_wait_phase_done(civ);
     net.nm_human_move_complete_count = 0;
     net_check_lost_connections();

@@ -49,7 +49,7 @@ i32 Control::base_destruct()
     ((Wnd *)parent)->remove_control(ctrl_id);
   }
   next_ctrl = 0;
-  result = ctrl_destroy_hwnd((iptr)this);
+  result = ctrl_destroy_hwnd(this);
   return result;
 }
 
@@ -78,7 +78,7 @@ void Control::destroy()
       ((Wnd *)parent)->remove_control(ctrl_id);
     }
     next_ctrl = 0;
-    ctrl_destroy_hwnd((iptr)this);
+    ctrl_destroy_hwnd(this);
   }
   return;
 }
@@ -95,7 +95,7 @@ void Button::create(iptr parent,i32 ctrl_id,iptr rect,const char *label)
   font = (u32)(*(i8 * *)draw_target.font_rest);
   init(parent,6,ctrl_id,(RECT *)rect);
   on_click = 0;
-  new_hwnd = button_create_hwnd((int *)rect,(iptr)this,label,1,(GameFont *)font);
+  new_hwnd = button_create_hwnd((int *)rect,this,label,1,(GameFont *)font);
   hwnd = new_hwnd;
   is_enabled = 1;
   return;
@@ -196,7 +196,7 @@ void Checkbox::create(iptr parent,i32 ctrl_id,i32 x,i32 y ,const char *label)
   on_toggle = 0;
   is_enabled = 1;
   checked = 0;
-  new_hwnd = checkbox_create_hwnd((RECT *)rect,(iptr)this,(char *)label,1);
+  new_hwnd = checkbox_create_hwnd((RECT *)rect,this,(char *)label,1);
   hwnd = new_hwnd;
   return;
 }
@@ -254,7 +254,7 @@ void Scrollbar::create(iptr parent,iptr ctrl_id,iptr rect,i32 style)
     destroy();
   }
   init(parent,8,ctrl_id,(RECT *)rect);
-  new_hwnd = scrollbar_create_hwnd((int *)rect,(iptr)this,style,1);
+  new_hwnd = scrollbar_create_hwnd((int *)rect,this,style,1);
   hwnd = new_hwnd;
   scrollbar_hwnd_set_range(hwnd,1,100);
   field_38 = 1;
@@ -341,7 +341,7 @@ void EditControl::create(iptr parent,i32 ctrl_id,iptr rect,const char *text)
   }
   edit_font = (u32)(*(i8 * *)(draw_target.font_rest + 12));
   init(parent,4,ctrl_id,(RECT *)rect);
-  new_hwnd = edit_create_window((int *)rect,(iptr)this,1,1,(GameFont *)edit_font);
+  new_hwnd = edit_create_window((int *)rect,this,1,1,(GameFont *)edit_font);
   hwnd = new_hwnd;
   hwnd_send_settext(hwnd,(LPARAM)(text));
   return;
@@ -415,7 +415,7 @@ void ComboBox::create(iptr parent,i32 ctrl_id,iptr rect)
     destroy();
   }
   init(parent,10,ctrl_id,(RECT *)rect);
-  new_hwnd = combo_create_window((int *)rect,(iptr)this,1);
+  new_hwnd = combo_create_window((int *)rect,this,1);
   hwnd = new_hwnd;
   item_count = 0;
   return;
@@ -513,7 +513,7 @@ void ListBox::create(iptr parent,i32 ctrl_id,iptr rect)
   }
   font = (u32)(*(i8 * *)(draw_target.font_rest + 16));
   init(parent,7,ctrl_id,(RECT *)rect);
-  new_hwnd = listbox_create_hwnd((int *)rect,(iptr)this,1,0,(GameFont *)font);
+  new_hwnd = listbox_create_hwnd((int *)rect,this,1,0,(GameFont *)font);
   hwnd = new_hwnd;
   item_count = 0;
   return;
@@ -839,7 +839,7 @@ void EditControl::create_styled(iptr parent,i32 ctrl_id,iptr rect,const char *te
   }
   edit_font = (u32)(*(i8 * *)(draw_target.font_rest + 12));
   init(parent,4,ctrl_id,(RECT *)rect);
-  new_hwnd = edit_create_window((int *)rect,(iptr)this,multiline,style,(GameFont *)edit_font);
+  new_hwnd = edit_create_window((int *)rect,this,multiline,style,(GameFont *)edit_font);
   hwnd = new_hwnd;
   hwnd_send_settext(hwnd,(LPARAM)(text));
   return;
@@ -891,7 +891,7 @@ i32 EditControl::get_line(i32 line,char *buffer,i32 max_len)
 
 /* 005011b4 auto */
 void __cdecl
-spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr sprite,RECT *rect)
+spritebtn_create_icon_button(WndBase *parent,i32 ctrl_id,SpriteButton *button,Sprite *sprite,RECT *rect)
 
 {
   int *surf_rect;
@@ -910,8 +910,8 @@ spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr s
   
   width2 = rect_width(rect);
   height2 = rect_height(rect);
-  button->init_from_sprite((WndBase *)parent,ctrl_id,rect->left,rect->top,width2,
-             height2,sprite,0x17);
+  button->init_from_sprite(parent,ctrl_id,rect->left,rect->top,width2,
+             height2,(iptr)sprite,0x17);
   surf_rect = (int *)((DibSurface *)&button->on_select)->get_rect();
   rect2.left = *surf_rect;
   rect2.top = surf_rect[1];
@@ -919,14 +919,14 @@ spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr s
   rect2.bottom = surf_rect[3];
   size = rect_width(&rect2);
   center = rect2.left + size / 2;
-  size = ((Sprite *)sprite)->width();
+  size = (sprite)->width();
   icon_x = center - size / 2;
   size = rect_height(&rect2);
   center = rect2.top + size / 2;
-  size = ((Sprite *)sprite)->height();
+  size = (sprite)->height();
   icon_y = center - size / 2;
-  ((Sprite *)sprite)->draw((RECT *)draw_ctx,(DibSurface *)&button->on_select,icon_x,icon_y);
-  ((Sprite *)sprite)->draw((RECT *)shadow_ctx,((DibSurface *)button->button_surface),icon_x + 2,
+  (sprite)->draw((RECT *)draw_ctx,(DibSurface *)&button->on_select,icon_x,icon_y);
+  (sprite)->draw((RECT *)shadow_ctx,((DibSurface *)button->button_surface),icon_x + 2,
              icon_y + 2);
   gfx_draw_rect_frame((DibSurface *)&button->on_select,&rect2,10);
   gfx_draw_rect_frame(((DibSurface *)button->button_surface),&rect2,10);
@@ -1036,7 +1036,7 @@ void Checkbox::create_fixed(iptr parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const
   on_toggle = 0;
   is_enabled = 1;
   checked = 0;
-  hwnd = checkbox_create_hwnd((RECT *)rect,(iptr)this,(char *)label,1);
+  hwnd = checkbox_create_hwnd((RECT *)rect,this,(char *)label,1);
   this->hwnd = hwnd;
   return;
 }
@@ -1497,19 +1497,19 @@ LRESULT __stdcall ctrl_default_wndproc(HWND hwnd,uint msg,WPARAM wparam,LPARAM l
 }
 
 /* 005c944b auto */
-int __cdecl ctrl_destroy_hwnd(iptr ctrl)
+int __cdecl ctrl_destroy_hwnd(Control *ctrl)
 
 {
   int result;
   int hwnd_val;
   HWND hWnd;
   
-  result = ((Control *)ctrl)->get_type();
+  result = (ctrl)->get_type();
   if (result != 3) {
-    hwnd_val = ((Control *)ctrl)->get_hwnd();
+    hwnd_val = (ctrl)->get_hwnd();
     result = 0;
     if (hwnd_val != 0) {
-      hWnd = ((Control *)ctrl)->get_hwnd();
+      hWnd = (ctrl)->get_hwnd();
       result = DestroyWindow(hWnd);
     }
   }
@@ -1744,7 +1744,7 @@ static void button_underline_hotkey(HDC mem_dc,Button *button,char *label_text,t
 
 /* 005c9740 auto */
 HWND __cdecl
-button_create_hwnd(int *rect,iptr ctrl,const char *label,int visible,GameFont *font)
+button_create_hwnd(int *rect,Control *ctrl,const char *label,int visible,GameFont *font)
 
 {
   WndBase *self;
@@ -1799,7 +1799,7 @@ button_create_hwnd(int *rect,iptr ctrl,const char *label,int visible,GameFont *f
   lpParam = (LPVOID)0x0;
   hMenu = (HMENU)0x0;
   hInstance = err_report_ctx_block.app_hinstance;
-  self = (WndBase *)((Control *)ctrl)->get_parent();
+  self = (WndBase *)(ctrl)->get_parent();
   window = self->get_window();
   hWndParent = window->hwnd;
   height = rect_height((RECT *)rect);
@@ -1967,7 +1967,7 @@ button_create_hwnd(int *rect,iptr ctrl,const char *label,int visible,GameFont *f
         }
         DeleteObject(h_02);
         DeleteDC(mem_dc);
-        value = (iptr)ctrl_init_block(hwnd2,ctrl);
+        value = (iptr)ctrl_init_block(hwnd2,(int)ctrl);
         *(HBITMAP *)(value + 0xc) = h;
         *(HBITMAP *)(value + 0x10) = h_00;
         *(HBITMAP *)(value + 0x14) = bmp_disabled;
@@ -2011,7 +2011,7 @@ void __cdecl button_press_animated(HWND hwnd)
 /* 005cacd4: written by hand in src/game/fixups.cpp */
 
 /* 005cb601 auto */
-HWND __cdecl spritebtn_create_hwnd(int x,int y,int width,int height,iptr ctrl,int visible)
+HWND __cdecl spritebtn_create_hwnd(int x,int y,int width,int height,Control *ctrl,int visible)
 
 {
   WndBase *self;
@@ -2031,19 +2031,19 @@ HWND __cdecl spritebtn_create_hwnd(int x,int y,int width,int height,iptr ctrl,in
   if (visible != 0) {
     style2 = 0x50810000;
   }
-  owner2 = ctrl;
+  owner2 = (iptr)ctrl;
   SetRect(&rect,x,y,x + width,y + height);
   lpParam = (LPVOID)0x0;
   hMenu = (HMENU)0x0;
   hInstance = err_report_ctx_block.app_hinstance;
-  self = (WndBase *)((Control *)ctrl)->get_parent();
+  self = (WndBase *)(ctrl)->get_parent();
   window = self->get_window();
   hWndParent = window->hwnd;
   rect_h = rect_height(&rect);
   value = rect_width(&rect);
   hwnd2 = CreateWindowExA(4,str_mscontrolclass_3,((i8 *)&spritebtn_wnd_title),style2,x,y,value
                             ,rect_h,hWndParent,hMenu,hInstance,lpParam);
-  value = (iptr)ctrl_init_block(hwnd2,ctrl);
+  value = (iptr)ctrl_init_block(hwnd2,(int)ctrl);
   *(i32 *)(value + 0x2c) = 5;
   SetWindowLongA(hwnd2,-4,(iptr)spritebtn_wndproc);
   return hwnd2;
@@ -2158,7 +2158,7 @@ void __cdecl checkbox_calc_rect_fixed(int x,int y,int width,RECT *out_rect,GameF
 }
 
 /* 005cc0f0 auto */
-HWND __cdecl checkbox_create_hwnd(RECT *rect,iptr ctrl,char *label,int visible)
+HWND __cdecl checkbox_create_hwnd(RECT *rect,Control *ctrl,char *label,int visible)
 
 {
   size_t len;
@@ -2186,18 +2186,18 @@ HWND __cdecl checkbox_create_hwnd(RECT *rect,iptr ctrl,char *label,int visible)
   lpParam = (LPVOID)0x0;
   hMenu = (HMENU)0x0;
   hInstance = err_report_ctx_block.app_hinstance;
-  self = (WndBase *)((Control *)ctrl)->get_parent();
+  self = (WndBase *)(ctrl)->get_parent();
   window = self->get_window();
   check_hwnd = window->hwnd;
   height = rect_height(rect);
   value = rect_width(rect);
   check_hwnd = CreateWindowExA(4,str_mscontrolclass_4,((i8 *)&wnd_modal_stack_below_block.checkbox_wnd_title),style2,rect->left,
                            rect->top,value,height,check_hwnd,hMenu,hInstance,lpParam);
-  ctrl_parse_hotkey(ctrl,(const char *)label_copy);
+  ctrl_parse_hotkey((iptr)ctrl,(const char *)label_copy);
   bmp_unchecked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x132);
   bmp_checked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x131);
   bmp_focus = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x130);
-  value = (iptr)ctrl_init_block(check_hwnd,ctrl);
+  value = (iptr)ctrl_init_block(check_hwnd,(int)ctrl);
   *(HBITMAP *)(value + 0xc) = bmp_unchecked;
   *(HBITMAP *)(value + 0x10) = bmp_checked;
   *(HBITMAP *)(value + 0x14) = bmp_focus;
@@ -2619,7 +2619,7 @@ LRESULT __stdcall control_subclass_wndproc(HWND hwnd,int msg,i32 wparam,i32 lpar
 }
 
 /* 005ccf17 auto */
-HWND __cdecl scrollbar_create_hwnd(int *rect,iptr ctrl,uint style_flags,int visible)
+HWND __cdecl scrollbar_create_hwnd(int *rect,Control *ctrl,uint style_flags,int visible)
 
 {
   WndBase *parent_wnd;
@@ -2649,7 +2649,7 @@ HWND __cdecl scrollbar_create_hwnd(int *rect,iptr ctrl,uint style_flags,int visi
     create_param = (LPVOID)0x0;
     menu = (HMENU)0x0;
     hinst = err_report_ctx_block.app_hinstance;
-    parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+    parent_wnd = (WndBase *)(ctrl)->get_parent();
     window = parent_wnd->get_window();
     parent_hwnd = window->hwnd;
     height = rect_height((RECT *)rect);
@@ -2676,7 +2676,7 @@ HWND __cdecl scrollbar_create_hwnd(int *rect,iptr ctrl,uint style_flags,int visi
   create_param = (LPVOID)0x0;
   menu = (HMENU)0x0;
   hinst = err_report_ctx_block.app_hinstance;
-  parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+  parent_wnd = (WndBase *)(ctrl)->get_parent();
   value = (int)parent_wnd->get_window();
   parent_hwnd = ((NativeWindow *)value)->hwnd;
   value = rect_height((RECT *)rect);
@@ -2684,7 +2684,7 @@ HWND __cdecl scrollbar_create_hwnd(int *rect,iptr ctrl,uint style_flags,int visi
   hwnd2 = CreateWindowExA(4,str_msscrollbarclass_2,((i8 *)&scrollbar_wnd_title),style2,*rect,rect[1]
                             ,nWidth,value,parent_hwnd,menu,hinst,create_param);
   SetWindowLongA(hwnd2,-4,(iptr)control_subclass_wndproc);
-  SetWindowLongA(hwnd2,default_draw_font_obj_block.scrollbar_base_wnd_extra,ctrl);
+  SetWindowLongA(hwnd2,default_draw_font_obj_block.scrollbar_base_wnd_extra,(LONG_PTR)ctrl);
   SetWindowLongA(hwnd2,default_draw_font_obj_block.scrollbar_base_wnd_extra + 4,(LONG)default_draw_font_obj_block.scrollbar_base_wndproc);
   ShowScrollBar(hwnd2,2,1);
   scrollbar_hwnd_set_range(hwnd2,1,100);
@@ -2867,7 +2867,7 @@ void EditControl::create_at(iptr parent,i32 ctrl_id,int x,int y,int width, const
 }
 
 /* 005d2740 auto */
-HWND __cdecl edit_create_window(int *rect,iptr ctrl,uint flags,int visible,GameFont *font)
+HWND __cdecl edit_create_window(int *rect,Control *ctrl,uint flags,int visible,GameFont *font)
 
 {
   WndBase *parent_wnd;
@@ -2894,9 +2894,9 @@ HWND __cdecl edit_create_window(int *rect,iptr ctrl,uint flags,int visible,GameF
   }
   if (((flags & 2) != 0) || ((flags & 0x200) != 0)) {
     style2 = style2 | 4;
-    *(i8 *)(ctrl + 0x38) = 1;
+    *(i8 *)((u8 *)ctrl + 0x38) = 1;
     if ((flags & 0x200) != 0) {
-      *(i8 *)(ctrl + 0x39) = 1;
+      *(i8 *)((u8 *)ctrl + 0x39) = 1;
     }
   }
   if ((flags & 4) != 0) {
@@ -2920,12 +2920,12 @@ HWND __cdecl edit_create_window(int *rect,iptr ctrl,uint flags,int visible,GameF
   if ((flags & 0x100) != 0) {
     style2 = style2 | 0x800;
   }
-  *(uint *)(ctrl + 0x3c) = style2;
+  *(uint *)((u8 *)ctrl + 0x3c) = style2;
   if (editbox_class_registered == 0) {
     create_param = (LPVOID)0x0;
     menu = (HMENU)0x0;
     hinst = err_report_ctx_block.app_hinstance;
-    parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+    parent_wnd = (WndBase *)(ctrl)->get_parent();
     window = parent_wnd->get_window();
     parent_hwnd = window->hwnd;
     height = rect_height((RECT *)rect);
@@ -2951,7 +2951,7 @@ HWND __cdecl edit_create_window(int *rect,iptr ctrl,uint flags,int visible,GameF
   create_param = (LPVOID)0x0;
   menu = (HMENU)0x0;
   hinst = err_report_ctx_block.app_hinstance;
-  parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+  parent_wnd = (WndBase *)(ctrl)->get_parent();
   value = (int)parent_wnd->get_window();
   parent_hwnd = ((NativeWindow *)value)->hwnd;
   value = rect_height((RECT *)rect);
@@ -2965,7 +2965,7 @@ HWND __cdecl edit_create_window(int *rect,iptr ctrl,uint flags,int visible,GameF
   mem_handle_unlock(font_handle);
   SetWindowLongA(hwnd2,-4,(iptr)edit_subclass_wndproc);
   SetWindowLongA(hwnd2,default_draw_font_obj_block.edit_base_wnd_extra,(LONG)default_draw_font_obj_block.edit_base_wndproc);
-  SetWindowLongA(hwnd2,default_draw_font_obj_block.edit_base_wnd_extra + 4,ctrl);
+  SetWindowLongA(hwnd2,default_draw_font_obj_block.edit_base_wnd_extra + 4,(LONG_PTR)ctrl);
   return hwnd2;
 }
 
@@ -3180,7 +3180,7 @@ i32 EditControl::fire_key_callback(iptr key)
 }
 
 /* 005d3130 auto */
-HWND __cdecl combo_create_window(int *rect,iptr ctrl,int visible)
+HWND __cdecl combo_create_window(int *rect,Control *ctrl,int visible)
 
 {
   WndBase *parent_wnd;
@@ -3204,7 +3204,7 @@ HWND __cdecl combo_create_window(int *rect,iptr ctrl,int visible)
     create_param = (LPVOID)0x0;
     menu = (HMENU)0x0;
     hinst = err_report_ctx_block.app_hinstance;
-    parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+    parent_wnd = (WndBase *)(ctrl)->get_parent();
     window = parent_wnd->get_window();
     parent_hwnd = window->hwnd;
     height = rect_height((RECT *)rect);
@@ -3234,7 +3234,7 @@ HWND __cdecl combo_create_window(int *rect,iptr ctrl,int visible)
   create_param = (LPVOID)0x0;
   menu = (HMENU)0x0;
   hinst = err_report_ctx_block.app_hinstance;
-  parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+  parent_wnd = (WndBase *)(ctrl)->get_parent();
   value = (int)parent_wnd->get_window();
   parent_hwnd = ((NativeWindow *)value)->hwnd;
   value = rect_height((RECT *)rect);
@@ -3243,7 +3243,7 @@ HWND __cdecl combo_create_window(int *rect,iptr ctrl,int visible)
                             nWidth,value,parent_hwnd,menu,hinst,create_param);
   SetWindowLongA(hwnd2,-4,(iptr)combo_subclass_wndproc);
   SetWindowLongA(hwnd2,default_draw_font_obj_block.combo_base_wnd_extra,(LONG)default_draw_font_obj_block.combo_base_wndproc);
-  SetWindowLongA(hwnd2,default_draw_font_obj_block.combo_base_wnd_extra + 4,ctrl);
+  SetWindowLongA(hwnd2,default_draw_font_obj_block.combo_base_wnd_extra + 4,(LONG_PTR)ctrl);
   return hwnd2;
 }
 
@@ -3398,7 +3398,7 @@ void ComboBox::fire_selchange()
 }
 
 /* 005d37a0 auto */
-HWND __cdecl listbox_create_hwnd(int *rect,iptr ctrl,int visible,int multi_column,GameFont *font)
+HWND __cdecl listbox_create_hwnd(int *rect,Control *ctrl,int visible,int multi_column,GameFont *font)
 
 {
   uint style_bits;
@@ -3430,7 +3430,7 @@ HWND __cdecl listbox_create_hwnd(int *rect,iptr ctrl,int visible,int multi_colum
     create_param = (LPVOID)0x0;
     menu = (HMENU)0x0;
     hinst = err_report_ctx_block.app_hinstance;
-    parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+    parent_wnd = (WndBase *)(ctrl)->get_parent();
     window = parent_wnd->get_window();
     parent_hwnd = window->hwnd;
     height = rect_height((RECT *)rect);
@@ -3463,7 +3463,7 @@ HWND __cdecl listbox_create_hwnd(int *rect,iptr ctrl,int visible,int multi_colum
   create_param = (LPVOID)0x0;
   menu = (HMENU)0x0;
   hinst = err_report_ctx_block.app_hinstance;
-  parent_wnd = (WndBase *)((Control *)ctrl)->get_parent();
+  parent_wnd = (WndBase *)(ctrl)->get_parent();
   value = (int)parent_wnd->get_window();
   parent_hwnd = ((NativeWindow *)value)->hwnd;
   value = rect_height((RECT *)rect);
@@ -3477,7 +3477,7 @@ HWND __cdecl listbox_create_hwnd(int *rect,iptr ctrl,int visible,int multi_colum
   mem_handle_unlock(font_handle);
   SetWindowLongA(hwnd2,-4,(iptr)listbox_subclass_wndproc);
   SetWindowLongA(hwnd2,default_draw_font_obj_block.listbox_base_wnd_extra,(LONG)default_draw_font_obj_block.listbox_base_wndproc);
-  SetWindowLongA(hwnd2,default_draw_font_obj_block.listbox_base_wnd_extra + 4,ctrl);
+  SetWindowLongA(hwnd2,default_draw_font_obj_block.listbox_base_wnd_extra + 4,(LONG_PTR)ctrl);
   return hwnd2;
 }
 
@@ -3748,7 +3748,7 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   parent_wnd = (WndBase *)get_parent();
   palette = parent_wnd->get_palette();
   ((DibSurface *)&on_select)->apply_palette((GamePalette *)palette);
-  value = spritebtn_create_hwnd(x,y,width,height,(iptr)this,1);
+  value = spritebtn_create_hwnd(x,y,width,height,this,1);
   hwnd = value;
   return;
 }

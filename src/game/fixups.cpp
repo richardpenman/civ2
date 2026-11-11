@@ -505,9 +505,9 @@ void __cdecl avi_play_start(AviPlayer *avi)
         ICSendMessage((*(HIC *)&avi_play.decompressor), 0x5001, (DWORD_PTR)(iptr)&indeo.frame_opts, 0x70);
         avi->dst_format.height <<= 1;
         avi->dst_format.width <<= 1;
-        avi_ic_decompress_ex_begin((i32)(*(HIC *)&avi_play.decompressor), 0, (iptr)&avi->src_format, 0, 0, 0,
+        avi_ic_decompress_ex_begin((i32)(*(HIC *)&avi_play.decompressor), 0, (BITMAPINFOHEADER *)&avi->src_format, 0, 0, 0,
                      avi->src_format.width, avi->src_format.height,
-                     (iptr)&avi->dst_format, 0, 0, 0,
+                     (BITMAPINFOHEADER *)&avi->dst_format, 0, 0, 0,
                      avi->src_format.width * 2, avi->src_format.height * 2);
         avi->dst_format.height >>= 1;
         avi->dst_format.width >>= 1;

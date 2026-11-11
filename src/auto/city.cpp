@@ -811,7 +811,7 @@ void __cdecl city_editor_on_edit_icon(void)
   save_callback = sprite_sheet_save_cities;
   sprite_count = 1;
   title_text = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run((iptr)(((i8 *)&gfx_sheet_surface_block.city_sprites) +
+  sprite_editor_run((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) +
                            editor_active.wnd->item_3 * 0x3c +
                            editor_active.wnd->item * 0x1e0 +
                            editor_active.wnd->item_2 * 0x78),(const char *)title_text,sprite_count,save_callback);
@@ -867,7 +867,7 @@ void __cdecl city_editor_on_edit_misc(void)
     if (sprites != (i8 *)0x0) {
       save_callback = sprite_sheet_save_cities;
       title_text = (iptr)label_string(label_table.string_ids[0x1f6]);
-      sprite_editor_run((iptr)sprites,(const char *)title_text,sprite_count2,save_callback);
+      sprite_editor_run((Sprite *)sprites,(const char *)title_text,sprite_count2,save_callback);
     }
   }
   dlg_set_parent_window(0);
@@ -3227,7 +3227,7 @@ uptr __cdecl city_create(int x,int y,int civ)
     }
     if (net.nm_city_created_result == 0xfffffffe) {
       dbg_log((const char *)&str_create_city_connection_to_server_timed_o);
-      popup_game_with_sprite((const char *)&str_serverconnecttime,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (city = net.nm_city_created_result, net.msgq_normal_count != 0))) {
@@ -3468,7 +3468,7 @@ void __cdecl city_delete(uptr city,i32 from_network)
     }
     if (net.city_deleted_ack == -2) {
       dbg_log((const char *)&str_delete_city_connection_to_server_timed_o);
-      popup_game_with_sprite((const char *)&str_serverconnecttime_2,(iptr)&popup_info_icon_sprite,0);
+      popup_game_with_sprite(str_serverconnecttime_2,(Sprite *)&popup_info_icon_sprite,0);
       turn_loop.active = 0;
     }
     while ((net.msgq_priority_count != 0 || (net.msgq_normal_count != 0))) {
@@ -4174,8 +4174,8 @@ CityViewWindow *CityViewWindow::construct()
   ((GameFont *)title_font)->init_empty();
   gfx_get_screen_rect((RECT *)&tax_rate_icon_sprites_block.cityview_screen_rect);
   cityview.scroll_x = (0x500 - tax_rate_icon_sprites_block.screen_rect_right) / 2;
-  mem_copy_src_dst((iptr)&cityview_slot_x_table_block.cityview_slot_tables_init,(iptr)(improvement_slot_tables),0x174);
-  mem_copy_src_dst((iptr)&str_empty,(iptr)(wonder_slot_tables),0x120);
+  mem_copy_src_dst(&cityview_slot_x_table_block.cityview_slot_tables_init,(improvement_slot_tables),0x174);
+  mem_copy_src_dst(&str_empty,(wonder_slot_tables),0x120);
   cityview.wnd = this;
   for (i = 0; i < 0x3c; i++) {
     slot = slot_ptr_table_lead + i * 4 + 0xc;
@@ -8017,7 +8017,7 @@ void __cdecl impr_editor_edit_icon(void)
   save_callback = sprite_sheet_save_building_icons;
   sprite_count = 4;
   title = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + editor_active.wnd->item * 0x3c),(const char *)title,sprite_count,
+  sprite_editor_run(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + editor_active.wnd->item * 0x3c)),(const char *)title,sprite_count,
                      save_callback);
   impr_editor_redraw();
   return;
@@ -8056,7 +8056,7 @@ void __cdecl impr_editor_edit_misc_icon(void)
     if (sprites != (i8 *)0x0) {
       save_callback = sprite_sheet_save_building_icons;
       title = (iptr)label_string(label_table.string_ids[0x1f6]);
-      sprite_editor_run((iptr)sprites,(const char *)title,sprite_count2,save_callback);
+      sprite_editor_run((Sprite *)sprites,(const char *)title,sprite_count2,save_callback);
     }
   }
   dlg_set_parent_window(0);
@@ -10077,7 +10077,7 @@ void __cdecl city_calc_all_stats(int city)
 /* 004eb4ed: written by hand in src/game/retvals.cpp */
 
 /* 004eb571 auto */
-int __cdecl city_notify_dialog_ex(const char *msg_key,int city,int force,iptr sprite)
+int __cdecl city_notify_dialog_ex(const char *msg_key,int city,int force,Sprite *sprite)
 
 {
   int result;
@@ -10119,7 +10119,7 @@ int __cdecl city_notify_dialog_ex(const char *msg_key,int city,int force,iptr sp
         }
       }
       if (sprite != 0) {
-        dialog2.add_sprite(sprite,0,0);
+        dialog2.add_sprite((iptr)sprite,0,0);
         dialog2.set_image_zoom(8);
       }
       result = dialog2.show_modal(0);
@@ -10248,12 +10248,12 @@ i32 __cdecl city_process_food(uptr city)
         if (((((1 << (civ2 & 0x1f) & (uint)game.human_players) == 0) ||
              (((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) == 0)) || ((game.shown_event_flags & HINT_AQUEDUCT) != 0)) || (improvement != IMP_AQUEDUCT)) {
           if (((int)cities[city].building != -improvement) && ((game.message_options & MSGOFF_GROWTH_HALTED) == 0)) {
-            city_notify_dialog(str_furthergrowth,city,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c));
+            city_notify_dialog(str_furthergrowth,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
           }
         }
         else {
           text_set_number_arg_u8(0,(uint)CONCAT11((char)(game.shown_event_flags >> 8),cosmic.aqueduct_size));
-          city_notify_dialog(str_aqueduct,city,(iptr)(((u8 *)&caption_close_button_sprite_block.notify_sprites + 420)));
+          city_notify_dialog(str_aqueduct,city,(((Sprite *)((u8 *)&caption_close_button_sprite_block.notify_sprites + 420))));
           game.shown_event_flags = game.shown_event_flags | HINT_AQUEDUCT;
         }
       }
@@ -10361,7 +10361,7 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
       else {
         notify_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
       }
-      city_notify_dialog_ex(str_built_4,city,1,(iptr)notify_sprite);
+      city_notify_dialog_ex(str_built_4,city,1,(Sprite *)notify_sprite);
     }
   }
   else if (announce != 0) {
@@ -10429,7 +10429,7 @@ static void city_process_production_complete_improvement(uptr city,uptr civ,int 
               ((int)cities[city].owner == (civ2 & 0xff))))) {
             if (human_civ[0] == civ2) {
               snd_play_effect(SND_LARGEXPL,1,0,0);
-              city_notify_dialog(str_manhattan,city,(iptr)&caption_close_button_sprite_block.city_notify_sprite);
+              city_notify_dialog(str_manhattan,city,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
             }
             else if (2 < game.multiplayer) {
               net_send_text_args(0x46,net.net_slots[net.net_civ_slots[civ2]].id,1,0,
@@ -10459,7 +10459,7 @@ static void city_process_production_complete_improvement(uptr city,uptr civ,int 
       if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) &&
          ((result = civ_spaceship_launched(civ), result == 0 && (part < 0)))) {
         text_set_label_arg(1,improvements[improvement].name);
-        city_notify_dialog(str_badspace_2,city,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c));
+        city_notify_dialog(str_badspace_2,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
       }
     }
     if (improvement == IMP_PALACE) {
@@ -10694,7 +10694,7 @@ static int city_process_production_unit(uptr city,uptr civ)
         if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
           text_set_label_arg(1,unit_types[unit_type].name);
           text_set_label_arg(2,unit_types[unit_type2].name);
-          city_notify_dialog(str_upgraded,city,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type2 * 0x3c));
+          city_notify_dialog(str_upgraded,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type2 * 0x3c)));
         }
         unit_type = unit_type2;
         str = unit_type;
@@ -10817,7 +10817,7 @@ static int city_process_production_unit(uptr city,uptr civ)
               city3 = 0xbc;
             }
             text_set_label_arg(3,label_table.string_ids[city3]);
-            city_notify_dialog(str_built_3,city,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c));
+            city_notify_dialog(str_built_3,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)));
           }
         }
       }
@@ -11047,7 +11047,7 @@ void __cdecl city_process_production(uptr city)
       else {
         done_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
       }
-      city_notify_dialog(str_badbuild,city,(iptr)done_sprite);
+      city_notify_dialog(str_badbuild,city,(Sprite *)done_sprite);
     }
     if (((improvement < 0x23) || (0x25 < improvement)) ||
        (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0 ||
@@ -11120,7 +11120,7 @@ void __cdecl city_process_production(uptr city)
     }
     else {
       text_set_label_arg(1,improvements[improvement].name);
-      city_notify_dialog(str_badspace,city,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c));
+      city_notify_dialog(str_badspace,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
     }
   }
   else {
@@ -11212,7 +11212,7 @@ void __cdecl city_disband_unsupported_units(uptr city)
           if (-1 < max_dist) {
             if ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0) {
               text_set_label_arg(1,unit_types[units[unit2].type].name);
-              city_notify_dialog(str_support,city,(iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit2].type * 0x3c));
+              city_notify_dialog(str_support,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit2].type * 0x3c)));
             }
             unit_destroy_redraw(unit2,1);
             if (city_turn.window_shown != 0) {
@@ -11283,7 +11283,7 @@ void __cdecl city_process_disorder(int city)
         if ((((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0) &&
             (civs[civ].government == GOV_DEMOCRACY)) &&
            (((game.game_flags & GAME_SCENARIO) == 0 || ((scenario.flags[0] & 0x10) == 0)))) {
-          city_notify_dialog(str_revolt,city,(iptr)&government_sprites_block.government_sprite_democracy);
+          city_notify_dialog(str_revolt,city,(Sprite *)&government_sprites_block.government_sprite_democracy);
           civs[civ].flags = civs[civ].flags & ~CIVF_REVOLUTION;
           civ_change_government(civ,0);
           civs[civ].flags = civs[civ].flags | CIVF_REVOLUTION;
@@ -11408,7 +11408,7 @@ void __cdecl city_pay_improvement_upkeep(int city)
           if (autoplay.active == 0) {
             text_set_label_arg(1,improvements[improvement].name);
             text_set_number_arg(0,(uint)improvements[improvement].cost * city_calc.shield_rows);
-            city_notify_dialog(str_inhock,city,(iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c));
+            city_notify_dialog(str_inhock,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
           }
           civs[civ].gold += (uint)improvements[improvement].cost * city_calc.shield_rows;
         }
@@ -11731,7 +11731,7 @@ void *CityPicturePopup::scalar_destruct(uint flags)
 /* 004f3e70: written by hand in src/game/unwind.cpp */
 
 /* 004f3f30 auto */
-void __cdecl city_notify_dialog(const char *message,int city,iptr extra)
+void __cdecl city_notify_dialog(const char *message,int city,Sprite *extra)
 
 {
   city_notify_dialog_ex(message,city,0,extra);
@@ -13651,7 +13651,7 @@ void CityWindow::draw_food_box(int blit)
       width = 1;
       arg_y = rect_width(&box_rect);
       arg_x = scale(0x11);
-      city_window_draw_icon_row((iptr)&war_icon_sprite_block.resource_icon_sprites,icon_x,row_y,extent,
+      city_window_draw_icon_row(&war_icon_sprite_block.resource_icon_sprites,icon_x,row_y,extent,
                          cities[city_index].size + 1,arg_x,arg_y,width);
       food_left -= extent;
       row_y += row_spacing;
@@ -13816,7 +13816,7 @@ void CityWindow::draw_production(int blit)
         width = 1;
         arg_y = rect_width((RECT *)&box_rect.left);
         arg_x = scale(0x11);
-        city_window_draw_icon_row((iptr)&war_icon_sprite_block.shield_icon_sprite,row_x,row_y,row_icons,per_row,arg_x,arg_y,width);
+        city_window_draw_icon_row(&war_icon_sprite_block.shield_icon_sprite,row_x,row_y,row_icons,per_row,arg_x,arg_y,width);
         shields_left -= row_icons;
         row_y += row_spacing;
       }
@@ -14626,7 +14626,7 @@ void CityWindow::draw_units_present()
     row_y = scale(100);
     row_y = area_top + row_y;
     pad_x = scale(7);
-    city_window_draw_icon_row((iptr)&fortify_overlay_sprites_block.pollution_icon_sprite,area_left + pad_x,row_y,scaled,max_icons,width,row_width,flag);
+    city_window_draw_icon_row(&fortify_overlay_sprites_block.pollution_icon_sprite,area_left + pad_x,row_y,scaled,max_icons,width,row_width,flag);
     gfx_reset_zoom_scale();
   }
   cell_x = scale(7);
@@ -14955,7 +14955,7 @@ void CityWindow::happy_draw_unit_effects(iptr x_ptr,int row_top,int row_h,int ma
         text_x = 0;
         half_h = icons_width;
         scaled = scale(10);
-        city_window_draw_icon_row((iptr)&small_unhappy_icon_sprite,*(i32 *)x_ptr,(half_row_h + row_top) - (unit_w >> 1),icon_count
+        city_window_draw_icon_row((Sprite *)&small_unhappy_icon_sprite,*(i32 *)x_ptr,(half_row_h + row_top) - (unit_w >> 1),icon_count
                            ,icon_count,scaled + 1,half_h,text_x);
         gfx_reset_zoom_scale();
       }
@@ -17013,12 +17013,12 @@ void CityWindow::create_controls()
   rect_set_xywh((RECT *)rect,origin_x2 + left_offset,top,width,height);
   icon_char_end = 0;
   icon_char = 0x5e;
-  spritebtn_create_icon_button((iptr)&city_wnd.wnd,9,(SpriteButton *)prev_city_button,(iptr)&scroll_up_button_sprite,(RECT *)rect);
+  spritebtn_create_icon_button((WndBase *)&city_wnd.wnd,9,(SpriteButton *)prev_city_button,(Sprite *)&scroll_up_button_sprite,(RECT *)rect);
   ((SpriteButton *)prev_city_button)->set_click_handler(city_button_prev_city);
   offset = scale(0x19);
   rect_offset((RECT *)rect,0,offset);
   icon_char = 0x76;
-  spritebtn_create_icon_button((iptr)&city_wnd.wnd,10,(SpriteButton *)next_city_button,(iptr)&city_down_arrow_sprite_block.city_down_arrow_sprite,(RECT *)rect);
+  spritebtn_create_icon_button((WndBase *)&city_wnd.wnd,10,(SpriteButton *)next_city_button,(Sprite *)&city_down_arrow_sprite_block.city_down_arrow_sprite,(RECT *)rect);
   ((SpriteButton *)next_city_button)->set_click_handler(city_button_next_city);
   height = scale(0x18);
   width = scale(0x39);
@@ -17272,7 +17272,7 @@ void __cdecl city_draw_bevel_rect(RECT *rect,i32 light_color,i32 dark_color)
 
 /* 005114d0 auto */
 void __cdecl
-city_window_draw_icon_row(iptr sprite,i32 count,i32 x,i32 y,
+city_window_draw_icon_row(Sprite *sprite,i32 count,i32 x,i32 y,
             i32 width,i32 spacing,i32 max_width,i32 flags)
 
 {
@@ -17411,7 +17411,7 @@ static void city_capture_aftermath_palace_escape(uptr city,int x2,int y,iptr cit
       }
     }
     else {
-      save_palace = popup_game_with_sprite((const char *)&str_canescape_2,(iptr)&popup_info_icon_sprite,0);
+      save_palace = popup_game_with_sprite(str_canescape_2,(Sprite *)&popup_info_icon_sprite,0);
     }
   }
   if (save_palace == 1) {

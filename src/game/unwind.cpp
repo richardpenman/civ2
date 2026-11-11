@@ -107,11 +107,11 @@ void __cdecl civ_select_government_dialog(int civ2, int all_govs)
             text_arg = civ_get_adjective(civ2);
             text_set_string_arg(2, (const char *)text_arg);
             text_set_label_arg(3, government_names[choice2]);
-            popup_game_with_sprite((const char *)str_newgovt, (iptr)(((i8 *)&government_sprites_block.government_sprites) + choice2 * 0x3c), 0);
+            popup_game_with_sprite((const char *)str_newgovt, ((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + choice2 * 0x3c)), 0);
             if (((4 < choice2) && (((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) != 0)) &&
                 ((game.field_0c & 0x20) == 0)) {
                 text_set_label_arg(0, government_names[choice2]);
-                popup_file_with_sprite((const char *)(*(i8 * *)str_ptr_labels_rest), (const char *)str_democrats, (iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite, 0);
+                popup_file_with_sprite((const char *)(*(i8 * *)str_ptr_labels_rest), (const char *)str_democrats, (Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite, 0);
                 game.field_0c = game.field_0c | 0x20;
             }
         }

@@ -141,7 +141,7 @@ static int save_read_event_field(char **field,FILE *_File)
   i32 event_str;
 
   if (*field != (char *)0x0) {
-    event_str = save_read_event_str((iptr)_File);
+    event_str = save_read_event_str(_File);
     *field = (char *)event_str;
     if (*field == (char *)0x0) return 0;
   }
@@ -197,7 +197,7 @@ static int save_read_events(FILE *_File)
       if (save_read_event_field(&event_node->whom_name,_File) == 0) return 0;
       for (event_idx = 0; (event_idx < 0x14 && (event_node->text[event_idx] != (char *)0x0));
           event_idx = event_idx + 1) {
-        event_str = save_read_event_str((iptr)_File);
+        event_str = save_read_event_str(_File);
         event_node->text[event_idx] = (char *)event_str;
         if (event_node->text[event_idx] == (char *)0x0) return 0;
       }
@@ -427,7 +427,7 @@ int __cdecl save_read_game(char *path)
     crt_strcat(save_path,((i8 *)&grey_palette_block.save_file_path));
   }
   ScopedFile _File(_fopen(save_path,((i8 *)&save_read_mode)));
-  if ((_File == (FILE *)0x0) || (result = save_read_cstr((char *)header_str,(iptr)_File), result == 0))
+  if ((_File == (FILE *)0x0) || (result = save_read_cstr((char *)header_str,_File), result == 0))
   return status;
   result = _strcmp(str_ptr_civilize,header_str);
   if (result != 0) {
@@ -482,7 +482,7 @@ int __cdecl save_read_game(char *path)
   rules_load(1);
   status = 3;
   ui_flush_input();
-  result = save_load_gpk(version & 0xffff,(iptr)_File);
+  result = save_load_gpk(version & 0xffff,_File);
   if (result == 0) return status;
   if (game.multiplayer != 0) {
     game.game_options = game.game_options & ~OPT_CHEAT_MODE;
@@ -502,14 +502,14 @@ int __cdecl save_read_game(char *path)
     game.game_flags = game.game_flags & ~GAME_CHEATED;
   }
   game.game_flags = game.game_flags & ~GAME_SAVED_AS_SCENARIO;
-  result = map_read((iptr)_File,0);
+  result = map_read(_File,0);
   if (((result != 0) ||
       (count_read = _fread(map_data.coarse[0],(int)map.quarter_w * (int)map.quarter_h,1,_File), count_read == 0)) ||
      (count_read = _fread(map_data.coarse[1],(int)map.quarter_w * (int)map.quarter_h,1,_File), count_read == 0))
   return status;
   ui_flush_input();
   count_read = _fread(((i8 *)&landmass_table_block.landmass_table),0x400,1,_File);
-  if ((count_read == 0) || (result = save_read_units_cities(version & 0xffff,(iptr)_File), result == 0))
+  if ((count_read == 0) || (result = save_read_units_cities(version & 0xffff,_File), result == 0))
   return status;
   for (idx = 0; idx < 0x15; idx = idx + 1) {
     count_read = _fread(&leaders[idx].times_used,1,1,_File);
@@ -1087,13 +1087,13 @@ static void wnd_frame_on_keydown(Wnd *frame,uint wparam)
   if ((wparam == 9) && ((*((char *)&shift_flags + 1)) == '\0')) {
     nav_enabled = frame->keyboard_nav_enabled();
     if (nav_enabled != '\0') {
-      wnd_cycle_control_focus((iptr)frame,0,2);
+      wnd_cycle_control_focus(frame,0,2);
     }
   }
   else if ((wparam == 9) && ((*((char *)&shift_flags + 1)) != '\0')) {
     nav_enabled = frame->keyboard_nav_enabled();
     if (nav_enabled != '\0') {
-      wnd_cycle_control_focus((iptr)frame,0,3);
+      wnd_cycle_control_focus(frame,0,3);
     }
   }
   else if ((wparam == 0xd) && ((*((char *)&shift_flags + 1)) == '\0')) {
@@ -1330,20 +1330,20 @@ uint __cdecl game_turn_start_popups(void)
                          (int)cities[best_city].y);
     }
     text_set_string_arg(1,(const char *)&textbuf.buf);
-    ret = popup_game_with_sprite((const char *)str_counciltime,(iptr)&popup_info_icon_sprite,0);
+    ret = popup_game_with_sprite((const char *)str_counciltime,(Sprite *)&popup_info_icon_sprite,0);
     if (ret == 0) {
       council_show(human_civ[0],0);   /* void; result left in EAX is garbage */
     }
   }
   if (((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) != 0) {
     if (game.turn == 1) {
-      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_firstmove,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_firstmove,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     }
     if ((game.turn == 0x14) || (game.turn == 0x3c)) {
-      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_help1,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_help1,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     }
     if ((game.turn == 0x28) || (game.turn == 0x50)) {
-      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_help2,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+      popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_help2,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
     }
     if ((((civs[human_civ[0]].num_cities == 1) &&
          (2 < civs[human_civ[0]].total_city_size)) && (game.turn == 0x23)) &&
@@ -1363,7 +1363,7 @@ uint __cdecl game_turn_start_popups(void)
       if ((0x18 < (int)ret) &&
          ((ret = (uint)civs[human_civ[0]].num_cities, (int)ret < 6 &&
           (ret = human_civ[0] * 0x165, civs[human_civ[0]].units_active[UNIT_SETTLERS] == '\0')))) {
-        popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_expand0,(iptr)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
+        popup_file_with_sprite(((const char *)((iptr)*(i8 * *)str_ptr_labels_rest)),(const char *)str_expand0,(Sprite *)&tutorial_icon_sprite_block.tutorial_icon_sprite,0);
         ret = (uint)game.turn;
         civs[human_civ[0]].last_city_turn = game.turn;
       }
@@ -1490,7 +1490,7 @@ int __cdecl city_process_pollution(int city)
           if (roll == 0) {
             /* city_notify_dialog is declared void but returns city_notify_dialog_ex's int:
                it is city_notify_dialog_ex(a, b, 0, c) */
-            roll = city_notify_dialog_ex(str_chernobyl,city,0,(iptr)&caption_close_button_sprite_block.city_notify_sprite);
+            roll = city_notify_dialog_ex(str_chernobyl,city,0,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
           }
         }
       }
@@ -1512,7 +1512,7 @@ static uint hut_tribe_city(uint civ,int x,uint y)
   int check;
 
   if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-    popup_game_with_sprite((const char *)str_surprisetribe,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_surprisetribe,(Sprite *)&popup_info_icon_sprite,0);
   }
   tmp = city_create(x,y,civ);
   if (999 < game.year) {
@@ -1561,7 +1561,7 @@ static uint hut_mercenaries(uint civ,int x,uint y)
   i32 merc_type_b;
 
   if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-    popup_game_with_sprite((const char *)str_surprisemercs,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_surprisemercs,(Sprite *)&popup_info_icon_sprite,0);
   }
   merc_type_a = 0x13;
   if (game.advance_known_by[ADV_CHIVALRY] == '\0') {
@@ -1645,7 +1645,7 @@ static uint hut_gold(uint civ)
   civs[civ].gold = civs[civ].gold + gold2;
   text_set_number_arg(0,gold2);
   if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-    popup_game_with_sprite((const char *)str_surprisemetals,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_surprisemetals,(Sprite *)&popup_info_icon_sprite,0);
   }
   if ((*(uint *)&human_civ) != civ) {
     return civ;
@@ -1684,7 +1684,7 @@ static uint hut_barbarians(uint civ,int x,uint y)
       if (unit_sound_editor_window_block.unit_move_by_local_human == '\0') {
         return 0;
       }
-      civ = popup_game_with_sprite((const char *)str_surprisenothing,(iptr)&popup_info_icon_sprite,0);
+      civ = popup_game_with_sprite((const char *)str_surprisenothing,(Sprite *)&popup_info_icon_sprite,0);
       return civ;
     }
   }
@@ -1696,7 +1696,7 @@ static uint hut_barbarians(uint civ,int x,uint y)
   }
   rnd = 0;
   if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-    rnd = popup_game_with_sprite((const char *)str_surprisebarb,(iptr)&popup_info_icon_sprite,0);
+    rnd = popup_game_with_sprite((const char *)str_surprisebarb,(Sprite *)&popup_info_icon_sprite,0);
   }
   step = 0;
   do {
@@ -1757,7 +1757,7 @@ static uint hut_nomads(uint civ,int x,uint y)
   int tmp;
 
   if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-    popup_game_with_sprite((const char *)str_surprisenomads,(iptr)&popup_info_icon_sprite,0);
+    popup_game_with_sprite((const char *)str_surprisenomads,(Sprite *)&popup_info_icon_sprite,0);
   }
   tmp = unit_create(UNIT_SETTLERS,civ,x,y);
   if (-1 < tmp) {
@@ -1871,7 +1871,7 @@ uint __cdecl unit_enter_hut(int unit_id)
             }
             else {
               if (unit_sound_editor_window_block.unit_move_by_local_human != '\0') {
-                popup_game_with_sprite((const char *)str_surprisescrolls,(iptr)&popup_info_icon_sprite,0);
+                popup_game_with_sprite((const char *)str_surprisescrolls,(Sprite *)&popup_info_icon_sprite,0);
               }
               civ_give_advance(civ,tech_id,civ,0,0);   /* void */
               tech_id = -1;

@@ -226,7 +226,7 @@ static int popup_text_flags(const char *, const char *, int) { return next_choic
 static void popup_text(const char *, const char *) {}
 static void terrain_editor_redraw() {}
 static i8 *edited;
-static void sprite_editor_run(iptr sprites, const char *, int, SpriteSheetSaveFn) { edited = (i8 *)sprites; }
+static void sprite_editor_run(Sprite *sprites, const char *, int, SpriteSheetSaveFn) { edited = (i8 *)sprites; }
 static void sprite_sheet_save_terrain1() {}
 static void sprite_sheet_save_terrain2() {}
 static struct {

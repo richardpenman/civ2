@@ -106,7 +106,7 @@ int main() {
         assert(input);
         output.clear();
         assert(gfx_save_bmp_640x480(&surface, "output", 0, 256,
-                                    custom ? (iptr)&palette : 0) == 1);
+                                    custom ? &palette : 0) == 1);
         assert(output.size() == 308278);
         for (int c = 0; c < 256; c++) {
             assert(output[54 + c * 4 + 3] == 0);

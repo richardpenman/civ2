@@ -1034,7 +1034,7 @@ void ErrorContext::destruct()
 }
 
 /* 005dcb8c auto */
-void __cdecl mem_copy_src_dst(iptr src,iptr dst,i32 size)
+void __cdecl mem_copy_src_dst(const void *src,void *dst,i32 size)
 
 {
   mem_move_src_dst(src,dst,size);
@@ -1042,7 +1042,7 @@ void __cdecl mem_copy_src_dst(iptr src,iptr dst,i32 size)
 }
 
 /* 005dcd70 auto */
-void __cdecl mem_handle_clone(iptr handle_ptr)
+void __cdecl mem_handle_clone(HGLOBAL *handle_ptr)
 
 {
   SIZE_T mem_size;
@@ -1050,15 +1050,15 @@ void __cdecl mem_handle_clone(iptr handle_ptr)
   LPVOID dst;
   LPVOID src;
   
-  mem_size = GlobalSize(*(HGLOBAL *)handle_ptr);
+  mem_size = GlobalSize(*handle_ptr);
   hMem = mem_handle_alloc(mem_size);
   if (hMem != (HGLOBAL)0x0) {
     dst = GlobalLock(hMem);
-    src = GlobalLock(*(HGLOBAL *)handle_ptr);
+    src = GlobalLock(*handle_ptr);
     crt_memmove(dst,src,mem_size);
     GlobalUnlock(hMem);
-    GlobalUnlock(*(HGLOBAL *)handle_ptr);
-    *(HGLOBAL *)handle_ptr = hMem;
+    GlobalUnlock(*handle_ptr);
+    *handle_ptr = hMem;
   }
   return;
 }
@@ -1118,10 +1118,10 @@ HGLOBAL __cdecl mem_handle_free(HGLOBAL handle)
 }
 
 /* 005dced3 auto */
-void __cdecl mem_move_src_dst(iptr src,iptr dst,i32 size)
+void __cdecl mem_move_src_dst(const void *src,void *dst,i32 size)
 
 {
-  crt_memmove((void *)dst,(const void *)src,size);
+  crt_memmove(dst,src,size);
   return;
 }
 
@@ -1158,7 +1158,7 @@ iptr __cdecl mem_rle_decompress(iptr buf_ptr)
     out_size = 0;
   }
   else {
-    mem_move_src_dst(*(iptr *)buf_ptr,(iptr)src_copy,src_size);
+    mem_move_src_dst((const void *)*(iptr *)buf_ptr,src_copy,src_size);
     capacity2 = src_size * 2;
     out = (byte *)crt_realloc((void *)*(i32 *)buf_ptr,capacity2);
     if (out == (byte *)0x0) {
@@ -1327,7 +1327,7 @@ uint __cdecl mem_rle_compress(iptr buf_ptr,int size)
       operator_delete(*(void **)buf_ptr);
       new_buf = operator_new(out_size);
       *(void **)buf_ptr = new_buf;
-      mem_move_src_dst((iptr)out_buf,*(iptr *)buf_ptr,out_size);
+      mem_move_src_dst(out_buf,(void *)*(iptr *)buf_ptr,out_size);
       operator_delete(out_buf);
     }
   }
