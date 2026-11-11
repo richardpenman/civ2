@@ -1,9 +1,7 @@
 # OpenCiv2
 
 Goal: reconstruct the source of *Sid Meier's Civilization II: Multiplayer Gold Edition*
-(1998) as portable C++ that builds and runs natively on Linux, macOS and Windows,
-and prove it behaves exactly like the original binary: the same screens, pixel for pixel,
-and the same random numbers, call for call, on recorded games.
+(1998) as portable C++ that builds and runs natively on Linux, macOS and Windows.
 
 ## Download and play
 
@@ -28,9 +26,7 @@ together, higher limits for gold, population and the map ...). Set `CIV2_CLASSIC
 the original game instead: its bugs, its interface, and its menu bar and window caption drawn as
 the original's.
 
-The game opens in a window filling the screen; on a high-resolution screen it is drawn at
-2×, 3× or 4×, sharp, at about the original's 1024×768 (a MacBook Air: 980×594, a 4K screen:
-1280×720). To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
+The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 On Linux, the window uses the system's title bar with the game's menu bar inside it.
 `CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.
@@ -91,7 +87,7 @@ constants for units, cities, treaties, tiles) and its state grouped by subject (
 `prefs.difficulty` or `net.session_phase` where the original's variables lie together, a header
 per subject, the read-only texts and tables `const`), and releases bound to scope (a local
 dialog, surface or file released by a guard on every path out of the function instead of on each
-return). Its logic has recorded unit tests (`make test`: 10,481 calls of 836 of the game's
+return). Its logic has recorded unit tests (`make test`: 10,634 calls of 845 of the game's
 functions recorded from the replays, run again and compared in seconds, no game files needed).
 That completes step 6 of the clean-up.
 

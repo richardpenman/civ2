@@ -388,8 +388,8 @@ message by message and clock event by clock event.
   moviewnd_wndproc (2): two messages' handlers shared by other messages,
   whose MCI call passes a stale local by address (moving it into a helper
   would move that stack slot).
-* **Unit tests** (step 6, the last part).  `make test` runs 10,481 recorded
-  calls of 836 of the game's functions in 2.5 seconds, without the game's
+* **Unit tests** (step 6, the last part).  `make test` runs 10,634 recorded
+  calls of 845 of the game's functions in 2.5 seconds, without the game's
   files (docs/DEVELOPMENT.md "Unit tests"): each call recorded from the
   replays of 35 scenarios (all but `menu`, which runs none that qualify) by
   the recording build (tests/unit_record.c: -finstrument-functions, the
@@ -405,7 +405,7 @@ message by message and clock event by clock event.
   city food, shields, trade, happiness, workers and production choice, the
   AI's assessments and unit orders, research cost and choice, diplomacy's
   evaluations and treaties, map generation steps; 207 cases call `rand()`.
-  Of the 2,239 game functions these replays run, 836 have cases: the rest
+  Of the 2,239 game functions these replays run, 845 have cases: the rest
   draw, wait for input or read files, or are called only with pointers into
   the heap.  Not covered: rules parsing and the save/load round trip (they
   read and write files; the replays check them), and the top-level turn

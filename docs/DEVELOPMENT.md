@@ -124,7 +124,7 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
 ## Unit tests
 
 `make test` checks the game's logic in seconds (2.5 s for the cases, a few more to build):
-10,481 calls of 836 of the game's functions (combat odds and strengths, movement and paths,
+10,634 calls of 845 of the game's functions (combat odds and strengths, movement and paths,
 city food, shields, trade, happiness and
 production choice, the AI's assessments and unit orders, research, diplomacy, map generation steps
 ...), each recorded from a replay of the reference scenarios, called again with the same arguments
