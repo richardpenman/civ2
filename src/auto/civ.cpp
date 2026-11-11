@@ -5265,6 +5265,10 @@ static void civ_advance_announce(uptr civ,iptr advance,iptr civ2,Dialog &dialog2
 
   dialog2.init_default();
   dialog2.set_width(0x140);
+  if (plat_extras) {
+    /* X33: not from GAME.TXT; SuppressList names it ADVANCENEWS */
+    extras_note_dialog(&dialog2,"GAME","ADVANCENEWS");
+  }
   text_clear();
   civ_plural = (iptr)(civ_name_plural(civ));
   text_append((const char *)civ_plural);
