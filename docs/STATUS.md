@@ -145,23 +145,47 @@ message by message and clock event by clock event.
   arithmetic (byte buffers became u8 *, other offsets go through
   (u8 *)p or a member), and the suite after each batch.  The classes'
   member functions still take some `iptr`s (270 in civ2classes.h); the
-  classes, typed callbacks and the rest of the modernization come next.  Types and
-  fields are recovered per subsystem: raw offset accesses
-  (`*(T *)(p + 0x34)`) went from over 5,100 to 1,100, now struct members
-  (network sessions and messages, native windows, dialog lists, scenario
-  events, Civilopedia lists, ...).  These rewrites are checked by
-  construction instead of by identical machine code: every member's offset
-  and type are static_asserts (tools/cxx_layout.py, tools/cxx_fields.py,
-  tools/cxx_members.py), uses keep their integer meaning (arithmetic stays on
-  the old integer type, never pointer arithmetic), the compiler rejects any
-  implicit pointer/integer conversion, and the suite runs on every batch.
-  Two bugs of
-  the C version surfaced and are fixed: the parley window chose its
-  right-hand pane's callbacks by adding the distance between two functions in
-  the original executable to a function's address (a garbage pointer in any
-  other build; the eight handlers it meant are restored), and unit moves
-  compared the address of human_civ, not its value, so
-  unit_move_by_local_human was never set.
+  classes, typed callbacks and the rest of the modernization come next.  Types
+  and fields are recovered per subsystem: raw offset accesses
+  (`*(T *)(p + 0x34)`, `(T *)((int)this + 0x34)`) went from over 5,100 to
+  64 in src/auto and src/game (573 before the last pass, which counts a
+  byte offset from a pointer or an offset from an integer:
+  tools/cxx_subobjects.py lists them), now struct members (network sessions
+  and messages, native windows, dialog lists, scenario events, Civilopedia
+  lists; the surfaces, palettes, fonts, sprites, buttons, click maps and video
+  players the windows hold, each window class with its own layout from its
+  constructor and its destructor's unwind funclets; the windows, lobby
+  entries, tiles and packets the code kept in integers).  The 64 left: strings
+  skipped past their first character (11), byte streams read at offsets
+  (network message texts, the RLE, GIF and compressed-data decoders' cursors,
+  a palette's RGB triples: 16), the original's vtable addresses (3), the power
+  graph's stack window and font declared as a byte array (4), and pointers
+  kept as integers whose type is not certain (the MCI device, the menu and
+  control lists' nodes, the error report's choice dialog, the council's speech
+  text, a few tiles, rectangles and windows: 30).  The 529 casts in
+  gamedata.cpp's initializers point into the original's string pool and data
+  blocks: data addresses, not field accesses.  The decompiler's byte-joining
+  macros (CONCAT11, CONCAT12, CONCAT22, CONCAT31, CONCAT44: 73 uses on 57
+  lines) are gone: colours are RGB(), the power graph's slot a plain 32-bit
+  modulo, and a value's stale high bytes are dropped only where the callee
+  reads just the low byte or half (text_set_number_arg_u8, known_set, the text
+  colour index, the palette entries, the resampler's steps, the GIF code
+  size); dib_hline8 keeps its dword count's high half from the length
+  explicitly, as the original did. These rewrites are checked by construction:
+  every member's offset and type are static_asserts (tools/cxx_layout.py,
+  tools/cxx_fields.py, tools/cxx_members.py, tools/cxx_subobjects.py), uses
+  keep their integer meaning (arithmetic stays on the old integer type, never
+  pointer arithmetic), the compiler rejects any implicit pointer/integer
+  conversion, and the suite runs on every batch; the last pass also compared
+  every function's machine code with the previous commit's (the few that
+  differ compute the same addresses in another order or lay out a null test's
+  branches the other way, and those where a callee's ignored high bytes are no
+  longer computed).  Two bugs of the C version surfaced and are fixed: the
+  parley window chose its right-hand pane's callbacks by adding the distance
+  between two functions in the original executable to a function's address (a
+  garbage pointer in any other build; the eight handlers it meant are
+  restored), and unit moves compared the address of human_civ, not its value,
+  so unit_move_by_local_human was never set.
 * **Classes** (step 6).  The decompiler's partial views of each class
   (structs sized by how far one function reads) are folded into one struct
   per real class, with C++ inheritance for bases: Dialog (ScenarioEvents
