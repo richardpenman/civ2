@@ -857,6 +857,14 @@ WINBOOL WINAPI DestroyWindow(HWND h)
     if (!w || w == desktop)
         return FALSE;
     is_child = (w->style & WS_CHILD) != 0;
+    /* A hidden child can still have a focused descendant (the Trade Advisor's
+     * Close button). Windows returns focus to the parent before destroying
+     * that subtree; otherwise destroy_storage leaves keyboard input unfocused. */
+    if (is_child && (focus_wnd == h || IsChild(h, focus_wnd))) {
+        SetFocus(w->parent && w->parent != desktop ? w->parent->hwnd : 0);
+        if (!wnd_get(h))            /* a focus handler may destroy the window */
+            return TRUE;
+    }
     /* WM_PARENTNOTIFY up the chain of ancestors that want it */
     for (a = w; a && (a->style & WS_CHILD) && !(a->exstyle & WS_EX_NOPARENTNOTIFY) && a->parent && a->parent != desktop;
          a = a->parent)
