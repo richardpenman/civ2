@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <libunshield.h>
 #include "setup.h"
 #include "setup_os.h"
@@ -266,11 +267,44 @@ static int set_up(const char *game_dir, const char *source, const char *cd, cons
     return 1;
 }
 
+/* The command line as given (flags such as --CueSheetFuzzyMatch: read
+   where they take effect, setup_has_flag). */
+static int setup_argc;
+static char **setup_argv;
+
+static int same_flag(const char *a, const char *b)
+{
+    for (; *a && *b; a++, b++)
+        if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
+            return 0;
+    return *a == *b;
+}
+
+int setup_has_flag(const char *flag)
+{
+    int i;
+    for (i = 1; i < setup_argc; i++)
+        if (same_flag(setup_argv[i], flag))
+            return 1;
+    return 0;
+}
+
 int setup_choose_game(int argc, char **argv, char *game, size_t size)
 {
     char game_data[SETUP_PATH], done[SETUP_PATH], source[SETUP_PATH], cd[SETUP_PATH] = "", image[SETUP_PATH] = "";
     char text[3 * SETUP_PATH + 256], music[SETUP_PATH + 32] = "";
     int again, ok, cancelled, music_only, cd_music = 0;
+    static char *args[64];
+    int i, n = 0;
+
+    /* (the flags kept for later, left out of the arguments read here) */
+    setup_argc = argc;
+    setup_argv = argv;
+    for (i = 0; i < argc && n < 64; i++)
+        if (i == 0 || !same_flag(argv[i], "--CueSheetFuzzyMatch"))
+            args[n++] = argv[i];
+    argc = n;
+    argv = args;
 
 #ifdef __APPLE__
     /* (started from the Finder by an older macOS: its process serial number) */
