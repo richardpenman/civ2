@@ -223,7 +223,7 @@ def exe(cross_windows=False):
         objs.append(windows_resources(cc, obj))
         libs = ['-lole32', '-lshell32', '-luuid', '-lws2_32'] + libs
     if mac:
-        libs += ['-framework', 'Cocoa', '-framework', 'IOKit']   # (IOKit: the CD's ioctls, setup_unix.c)
+        libs += ['-framework', 'Cocoa', '-framework', 'IOKit', '-framework', 'UniformTypeIdentifiers']   # (IOKit: the CD's ioctls, setup_unix.c)
     run([cc, '-o', out] + cflags + os.environ.get('LDFLAGS', '').split() + objs + sdl_libs + libs)
     if sdl_dll and os.path.exists(sdl_dll):
         shutil.copy(sdl_dll, os.path.join(ROOT, 'build'))      # the game runs with SDL2.dll beside it

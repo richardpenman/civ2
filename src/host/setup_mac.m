@@ -3,6 +3,7 @@
  * the system's open panel (setup_unix.c).  Compiled with ARC.
  */
 #import <Cocoa/Cocoa.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #include <stdio.h>
 
 int setup_mac_ask_folder(const char *prompt, char *out, size_t size)
@@ -14,7 +15,7 @@ int setup_mac_ask_folder(const char *prompt, char *out, size_t size)
         [NSApp activateIgnoringOtherApps:YES];
         panel = [NSOpenPanel openPanel];
         panel.canChooseFiles = YES;
-        panel.allowedFileTypes = @[@"cue"];
+        panel.allowedContentTypes = @[[UTType typeWithFilenameExtension:@"cue"]];     /* macOS 11 */
         panel.canChooseDirectories = YES;
         panel.allowsMultipleSelection = NO;
         panel.message = [NSString stringWithUTF8String:prompt];
