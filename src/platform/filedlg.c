@@ -4,17 +4,28 @@
  * of the files the filter selects, a file name box, OK and Cancel).  Paths
  * are Windows paths, as the game uses them (files.c maps them to the host).
  * Replays answer from the script instead (replay.c).
+ *
+ * Two conveniences, kept in CIV.INI [OpenCiv2] (not in replays): the files
+ * can be sorted newest first (FileSort=Date), and the dialog opens in the
+ * folder of the last file loaded or saved (FileFolder=), as Windows' own
+ * dialog does.
  */
 #include "plat.h"
+#include <time.h>
 
 #define ID_LIST 10
 #define ID_NAME 11
 #define ID_DIR 12
+#define ID_SORT 13
+#define ID_DATE 14
+#define MAX_ITEMS 2048
 
 static struct {
     OPENFILENAMEA *ofn;
     int save, done, ok;
-    HWND dlg, list, name, dirlabel;
+    HWND dlg, list, name, dirlabel, sort, date;
+    int by_date;
+    time_t times[MAX_ITEMS];            /* the list's files' modified times, in its order */
     char dir[MAX_PATH];
     char pattern[MAX_PATH];             /* ;-separated wildcards */
 } fd;
@@ -65,18 +76,72 @@ static int kind_of(const char *path)
     return (f.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
+typedef struct {
+    char *text;
+    time_t time;
+} Item;
+
 static int by_name(const void *a, const void *b)
 {
-    const char *x = *(const char *const *)a, *y = *(const char *const *)b;
+    const char *x = ((const Item *)a)->text, *y = ((const Item *)b)->text;
     /* folders ("[...]") first */
     if ((*x == '[') != (*y == '['))
         return *x == '[' ? -1 : 1;
     return strcasecmp(x, y);
 }
 
+/* Folders first by name, then files newest first. */
+static int by_time(const void *a, const void *b)
+{
+    const Item *x = a, *y = b;
+    if (*x->text != '[' && *y->text != '[' && x->time != y->time)
+        return x->time > y->time ? -1 : 1;
+    return by_name(a, b);
+}
+
+static time_t file_time(const FILETIME *t)
+{
+    unsigned long long v = (unsigned long long)t->dwHighDateTime << 32 | t->dwLowDateTime;
+    return v ? (time_t)(v / 10000000ull - 11644473600ull) : 0;
+}
+
+/* (docs/EXTRAS.md) The remembered settings; none in replays. */
+static void setting_get(const char *key, char *out, int n)
+{
+    out[0] = 0;
+    if (!plat_replay)
+        plat_profile_string("CIV.INI", "OpenCiv2", key, out, n);
+}
+
+static void setting_set(const char *key, const char *value)
+{
+    if (!plat_replay)
+        WritePrivateProfileStringA("OpenCiv2", key, value, "CIV.INI");
+}
+
+/* A label's new text, drawn now (our controls don't repaint on WM_SETTEXT). */
+static void set_text(HWND h, const char *text)
+{
+    SetWindowTextA(h, text);
+    InvalidateRect(h, NULL, TRUE);
+}
+
+static void show_date(int i)
+{
+    char text[64] = "";
+    if (i >= 0 && i < MAX_ITEMS && fd.times[i]) {
+        time_t t = fd.times[i];
+        struct tm *tm = localtime(&t);
+        if (tm)
+            strftime(text, sizeof text, "Modified: %Y-%m-%d %H:%M", tm);
+    }
+    set_text(fd.date, text);
+}
+
 static void refill(void)
 {
-    char spec[MAX_PATH], label[MAX_PATH + 16], *items[2048];
+    char spec[MAX_PATH], label[MAX_PATH + 16];
+    static Item items[MAX_ITEMS];
     WIN32_FIND_DATAA f;
     HANDLE h;
     int n = 0, i;
@@ -91,16 +156,20 @@ static void refill(void)
             if (!is_dir && !matches(f.cFileName))
                 continue;
             snprintf(item, sizeof item, is_dir ? "[%s]" : "%s", f.cFileName);
-            if (n < 2048)
-                items[n++] = plat_strdup(item);
+            if (n < MAX_ITEMS) {
+                items[n].text = plat_strdup(item);
+                items[n++].time = is_dir ? 0 : file_time(&f.ftLastWriteTime);
+            }
         } while (FindNextFileA(h, &f));
         FindClose(h);
     }
-    qsort(items, (size_t)n, sizeof items[0], by_name);
+    qsort(items, (size_t)n, sizeof items[0], fd.by_date ? by_time : by_name);
     for (i = 0; i < n; i++) {
-        SendMessageA(fd.list, LB_ADDSTRING, 0, (LPARAM)items[i]);
-        free(items[i]);
+        SendMessageA(fd.list, LB_ADDSTRING, 0, (LPARAM)items[i].text);
+        fd.times[i] = items[i].time;
+        free(items[i].text);
     }
+    show_date(-1);
     snprintf(label, sizeof label, "Folder: %s", fd.dir);
     SetWindowTextA(fd.dirlabel, label);
 }
@@ -172,6 +241,14 @@ static void accept(void)
         ofn->nFileOffset = (WORD)(base ? base - ofn->lpstrFile + 1 : 0);
         ofn->nFileExtension = (WORD)(dot && dot > base ? dot - ofn->lpstrFile + 1 : 0);
     }
+    {   /* the next dialog opens in this file's folder */
+        char folder[MAX_PATH], *s;
+        snprintf(folder, sizeof folder, "%s", path);
+        if ((s = strrchr(folder, '\\')) != NULL) {
+            s[s == strchr(folder, '\\') ? 1 : 0] = 0;     /* "C:\" keeps its backslash */
+            setting_set("FileFolder", folder);
+        }
+    }
     if (!(ofn->Flags & OFN_NOCHANGEDIR))
         plat_chdir(fd.dir);
     fd.ok = fd.done = 1;
@@ -188,11 +265,18 @@ static LRESULT CALLBACK dlg_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         case IDCANCEL:
             fd.done = 1;
             return 0;
+        case ID_SORT:
+            fd.by_date = !fd.by_date;
+            set_text(fd.sort, fd.by_date ? "Sort: Date" : "Sort: Name");
+            setting_set("FileSort", fd.by_date ? "Date" : "Name");
+            refill();
+            return 0;
         case ID_LIST: {
             char item[MAX_PATH + 2];
             int i = (int)SendMessageA(fd.list, LB_GETCURSEL, 0, 0);
             if (i < 0 || SendMessageA(fd.list, LB_GETTEXT, (WPARAM)i, (LPARAM)item) <= 0)
                 return 0;
+            show_date(i);
             if (item[0] == '[') {
                 if (HIWORD(wp) == LBN_DBLCLK) {
                     item[strlen(item) - 1] = 0;
@@ -227,7 +311,7 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
     static int registered;
     const char *title = ofn->lpstrTitle ? ofn->lpstrTitle : save ? "Save As" : "Open";
     HWND owner = ofn->hwndOwner;
-    int w = 440, h = 370, owner_enabled = owner && IsWindowEnabled(owner);
+    int w = 440, h = 396, owner_enabled = owner && IsWindowEnabled(owner);
     MSG msg;
     if (!registered) {
         WNDCLASSA wc;
@@ -242,11 +326,22 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
     memset(&fd, 0, sizeof fd);
     fd.ofn = ofn;
     fd.save = save;
-    /* the starting folder and the filter */
+    /* the starting folder (the last one used, if it is still there) and the filter */
     if (ofn->lpstrInitialDir && *ofn->lpstrInitialDir)
         snprintf(fd.dir, sizeof fd.dir, "%s", ofn->lpstrInitialDir);
-    else
-        plat_getcwd(fd.dir, sizeof fd.dir);
+    else {
+        char last[MAX_PATH];
+        setting_get("FileFolder", last, sizeof last);
+        if (last[0] && kind_of(last) == 1)
+            snprintf(fd.dir, sizeof fd.dir, "%s", last);
+        else
+            plat_getcwd(fd.dir, sizeof fd.dir);
+    }
+    {
+        char sort[16];
+        setting_get("FileSort", sort, sizeof sort);
+        fd.by_date = !strcasecmp(sort, "Date");
+    }
     if (ofn->lpstrFilter) {
         const char *f = ofn->lpstrFilter;
         DWORD k = ofn->nFilterIndex ? ofn->nFilterIndex : 1;
@@ -263,8 +358,10 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
     fd.list = control("LISTBOX", "", WS_BORDER | WS_VSCROLL | LBS_NOTIFY, 10, 30, 410, 220, ID_LIST);
     control("STATIC", "File name:", SS_LEFT, 10, 264, 70, 20, -1);
     fd.name = control("EDIT", "", WS_BORDER | ES_AUTOHSCROLL, 85, 260, 335, 24, ID_NAME);
-    control("BUTTON", save ? "Save" : "Open", BS_DEFPUSHBUTTON, 240, 298, 85, 28, IDOK);
-    control("BUTTON", "Cancel", BS_PUSHBUTTON, 335, 298, 85, 28, IDCANCEL);
+    fd.date = control("STATIC", "", SS_LEFT, 85, 292, 335, 18, ID_DATE);
+    fd.sort = control("BUTTON", fd.by_date ? "Sort: Date" : "Sort: Name", BS_PUSHBUTTON, 10, 322, 100, 28, ID_SORT);
+    control("BUTTON", save ? "Save" : "Open", BS_DEFPUSHBUTTON, 240, 322, 85, 28, IDOK);
+    control("BUTTON", "Cancel", BS_PUSHBUTTON, 335, 322, 85, 28, IDCANCEL);
     if (ofn->lpstrFile && ofn->lpstrFile[0] && !strchr(ofn->lpstrFile, '*')) {
         const char *base = strrchr(ofn->lpstrFile, '\\');
         SetWindowTextA(fd.name, base ? base + 1 : ofn->lpstrFile);

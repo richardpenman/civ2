@@ -413,6 +413,11 @@ static int find_next(Find *f, LPWIN32_FIND_DATAA fd)
         memset(fd, 0, sizeof *fd);
         fd->dwFileAttributes = S_ISDIR(st.st_mode) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
         fd->nFileSizeLow = (DWORD)st.st_size;
+        {   /* 100 ns units since 1601 */
+            unsigned long long t = ((unsigned long long)st.st_mtime + 11644473600ull) * 10000000ull;
+            fd->ftLastWriteTime.dwLowDateTime = (DWORD)t;
+            fd->ftLastWriteTime.dwHighDateTime = (DWORD)(t >> 32);
+        }
         snprintf(fd->cFileName, sizeof fd->cFileName, "%s", e->d_name);
         return 1;
     }
