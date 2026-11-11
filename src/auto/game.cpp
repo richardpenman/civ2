@@ -6914,7 +6914,7 @@ int __cdecl diffeng_total_size(void)
 /* 004b153c auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-i32 __cdecl diffeng_build_civ_image(iptr out_buf)
+i32 __cdecl diffeng_build_civ_image(void **out_buf)
 
 {
   void *alloc;
@@ -6930,7 +6930,7 @@ i32 __cdecl diffeng_build_civ_image(iptr out_buf)
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_size_0,(iptr)&str_d_ss_franklinton_difference_engine_cpp_4,0x226);
   }
   alloc = operator_new(capacity2);
-  *(void **)out_buf = alloc;
+  *out_buf = alloc;
   buf = *(int *)out_buf;
   if (buf == 0) {
     dbg_log((const char *)&str_failed_to_allocated_buffer_for_game_stat);
@@ -6979,7 +6979,7 @@ void __cdecl diffeng_buf_append(char *buf,int *pos_ptr,int capacity,const void *
 /* 004b18e1 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-i32 __cdecl diffeng_build_map_header_image(iptr out_buf)
+i32 __cdecl diffeng_build_map_header_image(void **out_buf)
 
 {
   void *alloc;
@@ -6991,7 +6991,7 @@ i32 __cdecl diffeng_build_map_header_image(iptr out_buf)
   write_pos[0] = 0;
   capacity2 = diffeng_game_section_block.diffeng_game_section[0] + 0x28 + diffeng_map_header_section_block.diffeng_map_header_section[0];
   alloc = operator_new(capacity2);
-  *(void **)out_buf = alloc;
+  *out_buf = alloc;
   buf = *(int *)out_buf;
   if (buf == 0) {
     dbg_log((const char *)&str_failed_to_allocated_buffer_for_game_stat_2);
@@ -7010,7 +7010,7 @@ i32 __cdecl diffeng_build_map_header_image(iptr out_buf)
 }
 
 /* 004b1a15 auto */
-i32 __cdecl diffeng_build_full_image(iptr out_buf)
+i32 __cdecl diffeng_build_full_image(void **out_buf)
 
 {
   uint capacity;
@@ -7030,7 +7030,7 @@ i32 __cdecl diffeng_build_full_image(iptr out_buf)
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_sz_0,(iptr)&str_d_ss_franklinton_difference_engine_cpp_6,0x27f);
   }
   alloc = operator_new(capacity);
-  *(void **)out_buf = alloc;
+  *out_buf = alloc;
   buf = *(int *)out_buf;
   if (buf == 0) {
     dbg_log((const char *)&str_failed_to_allocated_buffer_for_game_stat_3);
@@ -7077,7 +7077,7 @@ i32 __cdecl diffeng_build_full_image(iptr out_buf)
 }
 
 /* 004b1c11 auto */
-i32 __cdecl diffeng_build_delta_image(iptr out_buf)
+i32 __cdecl diffeng_build_delta_image(void **out_buf)
 
 {
   uint capacity;
@@ -7094,7 +7094,7 @@ i32 __cdecl diffeng_build_delta_image(iptr out_buf)
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_sz_0_2,(iptr)&str_d_ss_franklinton_difference_engine_cpp_7,0x2c6);
   }
   alloc = operator_new(capacity);
-  *(void **)out_buf = alloc;
+  *out_buf = alloc;
   buf = *(int *)out_buf;
   if (buf == 0) {
     dbg_log((const char *)&str_failed_to_allocate_buffer_for_game_state);
@@ -7157,7 +7157,7 @@ void __cdecl diffeng_apply_image(int *image_buf,char compressed)
   }
   if (net.nm_full_gamestate_count == 0) {
     if (compressed != '\0') {
-      total_size = mem_rle_decompress((iptr)image_buf);
+      total_size = mem_rle_decompress((void **)image_buf);
     }
     cursor = (int *)*image_buf;
     total_size = __msize((void *)*image_buf);
@@ -7216,15 +7216,15 @@ void __cdecl diffeng_apply_map_header_image(int *image_buf,char compressed)
   saved_msg_options = game.message_options;
   saved_game_options = game.game_options;
   if (compressed != '\0') {
-    mem_rle_decompress((iptr)image_buf);
+    mem_rle_decompress((void **)image_buf);
   }
   cursor = *image_buf;
   map_free();
-  section_id = diffeng_read_block((iptr)&cursor);
+  section_id = diffeng_read_block((int **)&cursor);
   if (section_id != 1) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_blocktype_btgame,(iptr)&str_d_ss_franklinton_difference_engine_cpp_11,0x35a);
   }
-  section_id = diffeng_read_block((iptr)&cursor);
+  section_id = diffeng_read_block((int **)&cursor);
   if (section_id != 0xc) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_blocktype_btmapstruct,(iptr)&str_d_ss_franklinton_difference_engine_cpp_12,0x35d);
   }
@@ -7237,13 +7237,13 @@ void __cdecl diffeng_apply_map_header_image(int *image_buf,char compressed)
 }
 
 /* 004b2123 auto */
-int __cdecl diffeng_read_block(iptr cursor_ptr)
+int __cdecl diffeng_read_block(int **cursor_ptr)
 
 {
   int *header;
   i32 checksum;
   
-  header = *(int **)cursor_ptr;
+  header = *cursor_ptr;
   *(int *)cursor_ptr = *(int *)cursor_ptr + 0x14;
   if ((header[2] < 0) || (0x17 < header[2])) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_pnode_type_0_pnode_type_num_block_types_2,(iptr)&str_d_ss_franklinton_difference_engine_cpp_13,0x36d);

@@ -1136,7 +1136,7 @@ SIZE_T __cdecl mem_handle_size(HGLOBAL handle)
 }
 
 /* 005dfb61 auto */
-int __cdecl mem_rle_decompress(iptr buf_ptr)
+int __cdecl mem_rle_decompress(void **buf_ptr)
 
 {
   byte fill_byte;
@@ -1151,7 +1151,7 @@ int __cdecl mem_rle_decompress(iptr buf_ptr)
   int capacity2;
   iptr out_size;
   
-  src_size = __msize(*(void **)buf_ptr);
+  src_size = __msize(*buf_ptr);
   src_copy = (byte *)operator_new(src_size);
   if (src_copy == (byte *)0x0) {
     dbg_log((const char *)&str_rlldecode_could_not_allocate_decompressi);
@@ -1220,7 +1220,7 @@ int __cdecl mem_rle_decompress(iptr buf_ptr)
 }
 
 /* 005dfd8f auto */
-uint __cdecl mem_rle_compress(iptr buf_ptr,int size)
+uint __cdecl mem_rle_compress(void **buf_ptr,int size)
 
 {
   char *out_pos;
@@ -1324,9 +1324,9 @@ uint __cdecl mem_rle_compress(iptr buf_ptr,int size)
       out_size = 0xffffffff;
     }
     else {
-      operator_delete(*(void **)buf_ptr);
+      operator_delete(*buf_ptr);
       new_buf = operator_new(out_size);
-      *(void **)buf_ptr = new_buf;
+      *buf_ptr = new_buf;
       mem_move_src_dst(out_buf,(void *)*(iptr *)buf_ptr,out_size);
       operator_delete(out_buf);
     }

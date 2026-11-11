@@ -3407,16 +3407,16 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
   case NM_MAP_STRUCT:
     image_buf = (void *)0x0;
     if (msg_type == NM_FULL_GAMESTATE) {
-      image_result = diffeng_build_full_image((iptr)&image_buf);
+      image_result = diffeng_build_full_image(&image_buf);
     }
     else if (msg_type == NM_DIFF_GAMESTATE) {
-      image_result = diffeng_build_delta_image((iptr)&image_buf);
+      image_result = diffeng_build_delta_image(&image_buf);
     }
     else if (msg_type == NM_JOIN_GAMESTATE) {
-      image_result = diffeng_build_civ_image((iptr)&image_buf);
+      image_result = diffeng_build_civ_image(&image_buf);
     }
     else if (msg_type == NM_MAP_STRUCT) {
-      image_result = diffeng_build_map_header_image((iptr)&image_buf);
+      image_result = diffeng_build_map_header_image(&image_buf);
     }
     image_result = (uint)(image_result != -1);
     if (image_buf == (void *)0x0) {

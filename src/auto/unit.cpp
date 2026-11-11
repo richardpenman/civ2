@@ -5614,7 +5614,7 @@ void __cdecl unit_sound_editor_on_dblclick(int x,int y)
 /* 0058afb6 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl unit_sound_editor_set_slots(int unit_type,iptr buttons)
+void __cdecl unit_sound_editor_set_slots(int unit_type,Button *buttons)
 
 {
   int orders_effect;
@@ -5736,10 +5736,10 @@ void __cdecl unit_sound_editor_set_slots(int unit_type,iptr buttons)
   }
   for (i = 0; i < 6; i++) {
     if (main_frame_bg_surface_block.unit_sound_effects[i] < 0) {
-      ((Button *)(i * 0x3c + buttons))->disable();
+      buttons[i].disable();
     }
     else {
-      ((Button *)(i * 0x3c + buttons))->enable();
+      buttons[i].enable();
     }
   }
   return;
@@ -5787,7 +5787,7 @@ void __cdecl unit_sound_editor_run(const char *title,i32 unit_type)
     (slot_btns + i)->create((iptr)&unit_sound_editor.wnd,i + 0xc9,(iptr)rect,(const char *)label);
     (slot_btns + i)->set_callback(unit_sound_editor_pick_wav);
   }
-  unit_sound_editor_set_slots(unit_type,(iptr)slot_btns);
+  unit_sound_editor_set_slots(unit_type,slot_btns);
   btn_width = (unit_sound_editor.client_width - 6) / 2;
   btn_y = (unit_sound_editor.client_y + unit_sound_editor.client_height) - (btn_height + 2);
   btn_x = unit_sound_editor.client_x + 2;

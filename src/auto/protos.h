@@ -1004,14 +1004,14 @@ void __cdecl diffeng_invalidate_mirror(void); /* 004b0ad0 */
 int __cdecl net_send_state_diff(i32 dest,uint flags,int limit,i32 force,i32 alt_msg); /* 004b0b53 */
 int __cdecl mem_checksum(const void *data,uint size); /* 004b1396 */
 int __cdecl diffeng_total_size(void); /* 004b14a4 */
-i32 __cdecl diffeng_build_civ_image(iptr out_buf); /* 004b153c */
+i32 __cdecl diffeng_build_civ_image(void **out_buf); /* 004b153c */
 void __cdecl diffeng_buf_append(char *buf,int *pos_ptr,int capacity,const void *src,int len); /* 004b187f */
-i32 __cdecl diffeng_build_map_header_image(iptr out_buf); /* 004b18e1 */
-i32 __cdecl diffeng_build_full_image(iptr out_buf); /* 004b1a15 */
-i32 __cdecl diffeng_build_delta_image(iptr out_buf); /* 004b1c11 */
+i32 __cdecl diffeng_build_map_header_image(void **out_buf); /* 004b18e1 */
+i32 __cdecl diffeng_build_full_image(void **out_buf); /* 004b1a15 */
+i32 __cdecl diffeng_build_delta_image(void **out_buf); /* 004b1c11 */
 void __cdecl diffeng_apply_image(int *image_buf,char compressed); /* 004b1de3 */
 void __cdecl diffeng_apply_map_header_image(int *image_buf,char compressed); /* 004b2010 */
-int __cdecl diffeng_read_block(iptr cursor_ptr); /* 004b2123 */
+int __cdecl diffeng_read_block(int **cursor_ptr); /* 004b2123 */
 void __cdecl diffeng_register_blocks(void); /* 004b21d7 */
 int __cdecl diffeng_rle_decoded_size(RleStream *stream); /* 004b24a2 */
 i32 __cdecl diffeng_rle_decode(RleStream *stream); /* 004b251a */
@@ -1779,7 +1779,7 @@ void __cdecl unit_sound_editor_cancel_clicked(void); /* 0058ac13 */
 void __cdecl unit_sound_editor_redraw(void); /* 0058ac38 */
 i32 __cdecl point_in_rect_ltrb(int x,int y,int left,int top,int right,int bottom); /* 0058ae20 */
 void __cdecl unit_sound_editor_on_dblclick(int x,int y); /* 0058ae6c */
-void __cdecl unit_sound_editor_set_slots(int unit_type,iptr buttons); /* 0058afb6 */
+void __cdecl unit_sound_editor_set_slots(int unit_type,Button *buttons); /* 0058afb6 */
 void __cdecl unit_sound_editor_run(const char *title,i32 unit_type); /* 0058b47e */
 void __cdecl cmd_unit_skip_turn(void); /* 0058bd60 */
 void __cdecl cmd_end_player_turn(void); /* 0058bd84 */
@@ -2321,8 +2321,8 @@ HPALETTE __cdecl logpal_create_hpalette(GameLogPalette *logpal); /* 005dec4e */
 void __cdecl logpal_delete_hpalette(HGDIOBJ hpal); /* 005dec8a */
 void __cdecl logpal_apply_range(GameLogPalette *logpal,HPALETTE hpal,UINT first,UINT count); /* 005decb1 */
 void __cdecl palette_copy_rgb_range(GameLogPalette *logpal,u8 *dest,int first,int count); /* 005ded12 */
-int __cdecl mem_rle_decompress(iptr buf_ptr); /* 005dfb61 */
-uint __cdecl mem_rle_compress(iptr buf_ptr,int size); /* 005dfd8f */
+int __cdecl mem_rle_decompress(void **buf_ptr); /* 005dfb61 */
+uint __cdecl mem_rle_compress(void **buf_ptr,int size); /* 005dfd8f */
 void __cdecl dlg_radio_choice_button_cb(int button_id); /* 005e00bb */
 i32 __cdecl FUN_005e0863(void); /* 005e0863, hand-written */
 char * __cdecl menu_hmenu_parse_items(HMENU hmenu,char *spec); /* 005e0ce0 */
