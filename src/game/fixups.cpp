@@ -334,14 +334,14 @@ i32 __stdcall spritebtn_wndproc(HWND hwnd,uint msg,WPARAM wparam,uint lparam)
     tagPAINTSTRUCT ps;
     HDC hdc;
     tagRECT rect;
-    void *ctrl;
+    SpriteButton *ctrl;
     uint inside_flag;
     i32 key_word;
 
     wnd_obj = wnd_from_hwnd(hwnd);
     if (wnd_obj == (ControlBlock *)0x0)
         return 1;
-    ctrl = (void *)wnd_obj->owner;
+    ctrl = (SpriteButton *)wnd_obj->owner;
     switch (msg) {
     case 0x201:     /* WM_LBUTTONDOWN */
         wnd_obj->tracking = 1;
@@ -416,32 +416,32 @@ i32 __stdcall spritebtn_wndproc(HWND hwnd,uint msg,WPARAM wparam,uint lparam)
             SelectPalette(hdc, hPal, 0);
         }
         if (wnd_obj->pressed == 0) {
-            ((DibSurface *)((int)ctrl + 0x34))->lock();
+            ctrl->face_surface.lock();
             parent = (void *)((Control *)ctrl)->get_parent();
             ctrl_arg = ((WndBase *)parent)->get_palette();
-            ((DibSurface *)((int)ctrl + 0x34))->apply_palette( (GamePalette *)ctrl_arg);
+            ctrl->face_surface.apply_palette( (GamePalette *)ctrl_arg);
             if (display_palette.palettized == 1)
                 RealizePalette(hdc);
-            height = (int)((DibSurface *)((int)ctrl + 0x34))->get_dib();
+            height = (int)ctrl->face_surface.get_dib();
             hdcSrc = ((GdiDib *)height)->hdc;
-            height = ((DibSurface *)((int)ctrl + 0x34))->surface_height();
-            width = ((DibSurface *)((int)ctrl + 0x34))->surface_width();
+            height = ctrl->face_surface.surface_height();
+            width = ctrl->face_surface.surface_width();
             BitBlt(hdc, 0, 0, width, height, hdcSrc, 0, 0, 0xcc0020);
-            ((DibSurface *)((int)ctrl + 0x34))->unlock();
+            ctrl->face_surface.unlock();
         }
         if (wnd_obj->pressed == 1) {
-            ((DibSurface *)((int)ctrl + 0x7c))->lock();
+            ctrl->button_surface.lock();
             parent = (void *)((Control *)ctrl)->get_parent();
             ctrl_arg = ((WndBase *)parent)->get_palette();
-            ((DibSurface *)((int)ctrl + 0x7c))->apply_palette( (GamePalette *)ctrl_arg);
+            ctrl->button_surface.apply_palette( (GamePalette *)ctrl_arg);
             RealizePalette(hdc);
-            height = (int)((DibSurface *)((int)ctrl + 0x7c))->get_dib();
+            height = (int)ctrl->button_surface.get_dib();
             hdcSrc = ((GdiDib *)height)->hdc;
             /* The original uses the same accessor for both dimensions here. */
-            height = ((DibSurface *)((int)ctrl + 0x7c))->surface_width();
-            width = ((DibSurface *)((int)ctrl + 0x7c))->surface_width();
+            height = ctrl->button_surface.surface_width();
+            width = ctrl->button_surface.surface_width();
             BitBlt(hdc, 0, 0, width, height, hdcSrc, 0, 0, 0xcc0020);
-            ((DibSurface *)((int)ctrl + 0x7c))->unlock();
+            ctrl->button_surface.unlock();
         }
         EndPaint(hwnd, &ps);
         if (GetFocus() == hwnd)

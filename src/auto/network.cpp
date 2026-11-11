@@ -1485,14 +1485,14 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
 void NetGamelistView::clear()
 
 {
-  void *next;
-  void *option;
+  DialogOption *next;
+  DialogOption *option;
   
-  option = (void *)first_option_value;
+  option = (DialogOption *)first_option_value;
   update_details();
-  while (option != (void *)0x0) {
-    next = *(void **)((int)option + 0x10);
-    operator_delete(*(void **)((int)option + 8));
+  while (option != (DialogOption *)0x0) {
+    next = option->next;
+    operator_delete(option->text);
     operator_delete(option);
     option = next;
   }
@@ -15474,7 +15474,7 @@ LobbyList *LobbyList::construct()
   int i;
   
   next_id = 1;
-  entries = 0;
+  this->first_entry = 0;
   for (i = 0; i < 7; i++) {
     slot_ptr = (u8 *)&drop_counts[i];
     slot_ptr[0] = '\0';
@@ -15502,8 +15502,8 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
   uint *flags_ptr;
   Dialog *this_00;
   int result;
-  int entry;
-  int waiting_entry;
+  DialogOption *entry;
+  DialogOption *waiting_entry;
   i32 ret;
   uptr new_dialog;
   i32 seh_frame;
@@ -15574,9 +15574,8 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
         net_send_message(NM_SERVER_REJECT,net.net_slots[result].id,0,0,0,0,0,0,0,0);
         XD_FlushSendBuffer(180000);
         XD_ServerCloseConnection((ushort)net.net_slots[result].id);
-        ret = entry_neighbor(entry);
-        dialog->selected_option = (DialogOption *)ret;
-        remove_entry((void *)entry);
+        dialog->selected_option = entry_neighbor(entry);
+        remove_entry(entry);
         net.remove_player(net.net_slots[result].id);
         add_waiting_entry();
       }
@@ -15740,17 +15739,17 @@ void __cdecl lobby_dialog_idle(void)
 }
 
 /* 0056edd3 auto */
-iptr LobbyList::entry_neighbor(iptr entry)
+DialogOption *LobbyList::entry_neighbor(DialogOption *entry)
 
 {
-  iptr neighbor;
+  DialogOption *neighbor;
   
   neighbor = entry;
-  if (*(int *)(entry + 0x10) != 0) {
-    neighbor = *(iptr *)(entry + 0x10);
+  if (entry->next != 0) {
+    neighbor = entry->next;
   }
-  if ((neighbor == entry) && (*(int *)(entry + 0x14) != 0)) {
-    neighbor = *(iptr *)(entry + 0x14);
+  if ((neighbor == entry) && (entry->prev != 0)) {
+    neighbor = entry->prev;
   }
   return neighbor;
 }
@@ -15759,17 +15758,17 @@ iptr LobbyList::entry_neighbor(iptr entry)
 void LobbyList::clear_player_list()
 
 {
-  void *next;
-  void *entry;
+  DialogOption *next;
+  DialogOption *entry;
   
-  entry = (void *)entries;
-  while (entry != (void *)0x0) {
-    next = *(void **)((int)entry + 0x10);
-    operator_delete(*(void **)((int)entry + 8));
+  entry = this->first_entry;
+  while (entry != (DialogOption *)0x0) {
+    next = entry->next;
+    operator_delete(entry->text);
     operator_delete(entry);
     entry = next;
   }
-  entries = 0;
+  this->first_entry = 0;
   dialog->option_count = 0;
   dialog->option_list = 0;
   dialog->selected_option = 0;
@@ -15777,23 +15776,23 @@ void LobbyList::clear_player_list()
 }
 
 /* 0056eed7 auto */
-void LobbyList::remove_entry(void *entry)
+void LobbyList::remove_entry(DialogOption *entry)
 
 {
   int *count_ptr;
   
-  if (entry != (void *)0x0) {
-    if (*(int *)((int)entry + 0x14) == 0) {
-      dialog->option_list = (DialogOption *)*(i32 *)((int)entry + 0x10);
-      entries = (uptr)dialog->option_list;
+  if (entry != (DialogOption *)0x0) {
+    if (entry->prev == 0) {
+      dialog->option_list = entry->next;
+      this->first_entry = (DialogOption *)dialog->option_list;
     }
     else {
-      *(i32 *)(*(int *)((int)entry + 0x14) + 0x10) = *(i32 *)((int)entry + 0x10);
+      entry->prev->next = entry->next;
     }
-    if (*(int *)((int)entry + 0x10) != 0) {
-      *(i32 *)(*(int *)((int)entry + 0x10) + 0x14) = *(i32 *)((int)entry + 0x14);
+    if (entry->next != 0) {
+      entry->next->prev = entry->prev;
     }
-    operator_delete(*(void **)((int)entry + 8));
+    operator_delete(entry->text);
     operator_delete(entry);
     count_ptr = (int *)&dialog->option_count;
     *count_ptr = *count_ptr - 1;
@@ -15802,43 +15801,43 @@ void LobbyList::remove_entry(void *entry)
 }
 
 /* 0056ef93 auto */
-uint *LobbyList::add_player_entry(const char *name2,uint entry_id)
+DialogOption *LobbyList::add_player_entry(const char *name2,uint entry_id)
 
 {
   int *count_ptr;
-  uint *entry;
+  DialogOption *entry;
   size_t name_len;
   void *name_copy;
   int width;
   int max_width;
-  uptr tail2;
-  uptr node2;
+  DialogOption *tail2;
+  DialogOption *node2;
   
   tail2 = 0;
-  for (node2 = entries; node2 != 0; node2 = *(uptr *)(node2 + 0x10)) {
+  for (node2 = first_entry; node2 != 0; node2 = node2->next) {
     tail2 = node2;
   }
-  entry = (uint *)(operator_new(0x18));
-  entry[4] = 0;
-  entry[5] = tail2;
+  entry = (DialogOption *)(operator_new(0x18));
+  entry->next = 0;
+  entry->prev = tail2;
   if (tail2 == 0) {
-    entries = (uptr)entry;
-    *(uint **)&dialog->option_list = entry;
+    first_entry = entry;
+    dialog->option_list = entry;
   }
   else {
-    *(uint **)(tail2 + 0x10) = entry;
+    tail2->next = entry;
   }
-  *entry = 0;
+  entry->flags = 0;
   name_len = _strlen((char *)name2);
   name_copy = operator_new(name_len + 1);
-  entry[2] = (uint)name_copy;
-  crt_strcpy((char *)((void *)entry[2]),(const char *)((const void *)name2));
+  entry->text = (char *)name_copy;
+  crt_strcpy(entry->text,name2);
   if (*(char *)name2 == '\0') {
-    *entry = *entry | 1;
+    entry->flags = entry->flags | 1;
   }
-  entry[1] = entry_id;
-  entry[3] = 0;
-  width = ((GameFont *)dialog->body_font)->text_width((const char *)entry[2]);
+  entry->id = entry_id;
+  entry->group = 0;
+  width = ((GameFont *)dialog->body_font)->text_width(entry->text);
   max_width = dialog->option_icon_width();
   width = width + max_width + (int)dialog->option_extra_width + 5;
   max_width = (int)dialog->option_width;
@@ -15848,7 +15847,7 @@ uint *LobbyList::add_player_entry(const char *name2,uint entry_id)
   dialog->option_width = max_width;
   count_ptr = (int *)&dialog->option_count;
   *count_ptr = *count_ptr + 1;
-  dialog->option_list = (DialogOption *)entries;
+  dialog->option_list = first_entry;
   dialog->list_top_option[0] = dialog->option_list;
   return entry;
 }
@@ -15859,7 +15858,7 @@ void __cdecl lobby_refresh_player_list(void)
 {
   int selected_id;
   int slot;
-  uptr entry;
+  DialogOption *entry;
   
   if (net.net_lobby_list != (LobbyList *)0x0) {
     selected_id = net.net_lobby_list->dialog->selected_option->id;
@@ -15880,21 +15879,21 @@ void __cdecl lobby_refresh_player_list(void)
       }
       net.net_lobby_list->add_waiting_entry();
     }
-    for (entry = net.net_lobby_list->entries; (entry != 0 && (*(int *)(entry + 4) != selected_id));
-        entry = *(uptr *)(entry + 0x10)) {
+    for (entry = net.net_lobby_list->first_entry; (entry != 0 && (entry->id != selected_id));
+        entry = entry->next) {
     }
     if (entry == 0) {
-      for (entry = net.net_lobby_list->entries;
-          (*(int *)(entry + 0x10) != 0 && (*(int *)(entry + 4) < selected_id));
-          entry = *(uptr *)(entry + 0x10)) {
+      for (entry = net.net_lobby_list->first_entry;
+          (entry->next != 0 && (entry->id < selected_id));
+          entry = entry->next) {
       }
       if (entry == 0) {
-        entry = net.net_lobby_list->entries;
+        entry = net.net_lobby_list->first_entry;
       }
     }
-    net.net_lobby_list->dialog->option_list = (DialogOption *)net.net_lobby_list->entries;
+    net.net_lobby_list->dialog->option_list = net.net_lobby_list->first_entry;
     net.net_lobby_list->dialog->list_top_option[0] = net.net_lobby_list->dialog->option_list;
-    net.net_lobby_list->dialog->set_default_choice(*(iptr *)(entry + 4));
+    net.net_lobby_list->dialog->set_default_choice(entry->id);
     net.net_lobby_list->dialog->render();
   }
   return;
@@ -15906,42 +15905,42 @@ void LobbyList::add_waiting_entry()
 {
   i32 entry_id;
   
-  if (entries == 0) {
+  if (first_entry == 0) {
     text_clear();
     text_append_label(0x28c);
-    entry_id = (*(i32 * *)&net.net_lobby_list)[1];
-    (*(i32 * *)&net.net_lobby_list)[1]++;
+    entry_id = net.net_lobby_list->next_id;
+    net.net_lobby_list->next_id++;
     add_player_entry((const char *)&textbuf.buf,entry_id);
-    ((Dialog *)*(*(i32 * *)&net.net_lobby_list))->set_default_choice(*(iptr *)((*(i32 * *)&net.net_lobby_list)[10] + 4));
+    net.net_lobby_list->dialog->set_default_choice(net.net_lobby_list->first_entry->id);
   }
   return;
 }
 
 /* 0056f372 auto */
-i32 LobbyList::find_waiting_entry()
+DialogOption *LobbyList::find_waiting_entry()
 
 {
   int cmp;
-  uptr entry;
+  DialogOption *entry;
   
   text_clear();
   text_append_label(0x28c);
-  entry = entries;
-  if (((entry != 0) && (*(int *)(entry + 0x10) == 0)) &&
-     (cmp = _strcmp(((i8 *)&textbuf.buf),*(char **)(entry + 8)), cmp == 0)) {
+  entry = first_entry;
+  if (((entry != 0) && (entry->next == 0)) &&
+     (cmp = _strcmp(((i8 *)&textbuf.buf),entry->text), cmp == 0)) {
     return entry;
   }
   return 0;
 }
 
 /* 0056f3e0 auto */
-uptr LobbyList::find_entry_by_id(int entry_id)
+DialogOption *LobbyList::find_entry_by_id(int entry_id)
 
 {
-  uptr entry;
+  DialogOption *entry;
   
-  for (entry = entries; (entry != 0 && (*(int *)(entry + 4) != entry_id));
-      entry = *(uptr *)(entry + 0x10)) {
+  for (entry = first_entry; (entry != 0 && (entry->id != entry_id));
+      entry = entry->next) {
   }
   return entry;
 }
@@ -17477,7 +17476,7 @@ net_msg_build_packet(i32 msg_type,const void *payload,i32 arg1,i32 arg2,
             size_t payload_len)
 
 {
-  void *packet;
+  NetMsg *packet;
   NetMsg header;  /* only the 16-byte header is used */
   size_t payload_size;
   
@@ -17485,28 +17484,28 @@ net_msg_build_packet(i32 msg_type,const void *payload,i32 arg1,i32 arg2,
   if (payload_len == 0) {
     if (payload == 0) {
       payload_size = 0;
-      packet = operator_new(0x2c);
+      packet = (NetMsg *)operator_new(0x2c);
     }
     else {
       payload_size = __msize((void *)payload);
-      packet = crt_realloc((void *)payload,payload_size + 0x2c);
-      crt_memmove((void *)((int)packet + 0x2c),packet,payload_size);
+      packet = (NetMsg *)crt_realloc((void *)payload,payload_size + 0x2c);
+      crt_memmove((void *)(packet + 1),packet,payload_size);
     }
   }
   else {
     payload_size = payload_len;
-    packet = operator_new(payload_len + 0x2c);
-    crt_memcpy((void *)((int)packet + 0x2c),payload,payload_size);
+    packet = (NetMsg *)operator_new(payload_len + 0x2c);
+    crt_memcpy((void *)(packet + 1),payload,payload_size);
   }
   header.size = payload_size + 0x2c;
   crt_memcpy(packet,&header,0x10);
-  crt_memcpy((void *)((int)packet + 0x10),&arg1,4);
-  crt_memcpy((void *)((int)packet + 0x14),&arg2,4);
-  crt_memcpy((void *)((int)packet + 0x18),&arg3,4);
-  crt_memcpy((void *)((int)packet + 0x1c),&arg4,4);
-  crt_memcpy((void *)((int)packet + 0x20),&arg5,4);
-  crt_memcpy((void *)((int)packet + 0x24),&arg6,4);
-  crt_memcpy((void *)((int)packet + 0x28),&payload_size,4);
+  crt_memcpy(&packet->args[0],&arg1,4);
+  crt_memcpy(&packet->args[1],&arg2,4);
+  crt_memcpy(&packet->args[2],&arg3,4);
+  crt_memcpy(&packet->args[3],&arg4,4);
+  crt_memcpy(&packet->args[4],&arg5,4);
+  crt_memcpy(&packet->args[5],&arg6,4);
+  crt_memcpy(&packet->args[6],&payload_size,4);
   return packet;
 }
 

@@ -3740,9 +3740,9 @@ int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,in
   iptr option_text;
   iptr option_id;
   uint picture_id;
-  void *popup_new;
+  CityPicturePopup *popup_new;
   Sprite sprite;
-  void *popup;
+  CityPicturePopup *popup;
   GamePalette palette;
   i32 eh_prev;
   
@@ -3762,10 +3762,10 @@ int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,in
     }
     self = (CityPicturePopup *)operator_new(0x798);
     if (self == (CityPicturePopup *)0x0) {
-      popup_new = (void *)0x0;
+      popup_new = (CityPicturePopup *)0x0;
     }
     else {
-      popup_new = (void *)self->construct();
+      popup_new = self->construct();
     }
     popup = popup_new;
     result = civ_has_advance(civ,ADV_INDUSTRIALIZATION);
@@ -3778,34 +3778,34 @@ int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,in
     else {
       picture_id = picture;
     }
-    ((DibSurface *)((int)popup + 0x2d8))->load_gif_resource(picture_id,10,0xc0,(iptr)&palette);
-    height = ((DibSurface *)((int)popup + 0x2d8))->surface_height();
-    width = ((DibSurface *)((int)popup + 0x2d8))->surface_width();
-    sprite.grab_from_surface((int)popup + 0x2d8,7,0,0,width,height);
-    ((Dialog *)((int)popup + 0x4a4))->load_game_text(section);
-    ((Dialog *)((int)popup + 0x4a4))->add_sprite((iptr)&sprite,0,0);
+    popup->surface.load_gif_resource(picture_id,10,0xc0,(iptr)&palette);
+    height = popup->surface.surface_height();
+    width = popup->surface.surface_width();
+    sprite.grab_from_surface((int)&popup->surface,7,0,0,width,height);
+    popup->dialog.load_game_text(section);
+    popup->dialog.add_sprite((iptr)&sprite,0,0);
     if ((silent == 0) && (city_calc.zoom_requested == 0)) {
       height = 0;
       option_id = 1;
       option_text = (iptr)label_string(label_table.string_ids[0x20]);
-      ((Dialog *)((int)popup + 0x4a4))->add_option((const char *)option_text,option_id,height);
+      popup->dialog.add_option((const char *)option_text,option_id,height);
       height = 0;
       option_id = 0;
       option_text = (iptr)label_string(label_table.string_ids[0x21]);
-      ((Dialog *)((int)popup + 0x4a4))->add_option((const char *)option_text,option_id,height);
+      popup->dialog.add_option((const char *)option_text,option_id,height);
       if ((game.message_options & MSGOFF_NO_ZOOM_TO_CITY) == 0) {
-        ((Dialog *)((int)popup + 0x4a4))->set_default_choice(0);
+        popup->dialog.set_default_choice(0);
       }
       else {
-        ((Dialog *)((int)popup + 0x4a4))->set_default_choice(1);
+        popup->dialog.set_default_choice(1);
       }
     }
-    result = ((Dialog *)((int)popup + 0x4a4))->show_modal(0);
+    result = popup->dialog.show_modal(0);
     if ((silent == 0) && (0 < result)) {
       city_calc.zoom_requested = 1;
     }
-    if (popup != (void *)0x0) {
-      ((CityPicturePopup *)popup)->scalar_destruct(1);
+    if (popup != (CityPicturePopup *)0x0) {
+      popup->scalar_destruct(1);
     }
   }
   else {

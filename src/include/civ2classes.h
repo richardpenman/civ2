@@ -221,8 +221,8 @@ static_assert(sizeof(ModalMenuWindow) == 0xb8, "");
 
 typedef struct Wnd : ModalMenuWindow {
     union { uptr field_b8; uptr control_list; };
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; };
+    union { u32 field_bc; u32 handler_slot_bc; struct Button *default_button; };   /* Button::set_default_button */
+    union { u32 field_c0; u32 handler_slot_c0; struct Button *cancel_button; };   /* Button::set_cancel_button */
     union { u32 field_c4; u32 keyboard_nav; };
     /* methods */
     void show_focus_first();    /* 00408620 */
@@ -240,6 +240,7 @@ typedef struct Wnd : ModalMenuWindow {
     i32 is_ctrl_down();    /* 005dbab8 */
 } Wnd;
 static_assert(sizeof(Wnd) == 0xc8, "");
+static_assert(__builtin_offsetof(Wnd, default_button) == 0xbc && __builtin_offsetof(Wnd, cancel_button) == 0xc0, "");
 
 /* A drawing surface (surface_ctor 005bd630, 0x48 bytes): a DIB section and its
    clip rectangle. */
@@ -748,7 +749,7 @@ typedef struct EditControl : Control {
     union { u32 field_30; CtrlNotifyFn on_maxtext; };
     union { u32 field_34; EditKeyFn on_key; };
     union { u32 field_38; struct { u8 keep_sel; u8 field_39; }; };   /* keep_sel 0: focus selects all */
-    union { u32 field_3c; u32 scroll_pos; };
+    union { u32 field_3c; u32 scroll_pos; u32 edit_style; };   /* edit_style: the window style (edit_create_window) */
     union { u32 field_40; u32 edit_font; };
     u32 field_44;                               /* 0 (edit_ctor) */
     /* methods */
@@ -771,6 +772,7 @@ typedef struct EditControl : Control {
     void fire_change_callback();    /* 005eb330 */
 } EditControl;
 static_assert(sizeof(EditControl) == 0x48, "");
+static_assert(__builtin_offsetof(EditControl, keep_sel) == 0x38 && __builtin_offsetof(EditControl, field_39) == 0x39 && __builtin_offsetof(EditControl, edit_style) == 0x3c, "");
 
 /* A combo box (combo_ctor 00418ab0, 0x38 bytes: EditorWindow.combos; type 10). */
 typedef struct ComboBox : Control {
@@ -905,14 +907,8 @@ static_assert(sizeof(RadioGroup) == 0x50, "");
 typedef struct SpriteButton : Control {
     union { u32 field_2c; CtrlNotifyFn on_click; };
     union { u32 field_30; CtrlNotifyFn on_rclick; };
-    union { u32 field_34; u32 on_select; };
-    union { u32 field_38; u32 font; };
-    union { u32 field_3c; u32 scroll_pos; };
-    union { u32 field_40; u32 edit_font; };
-    union { u32 field_44; u32 items_handle; };
-    union { u32 field_48; u32 items_ptr; };
-    union { u32 field_4c; u32 radio_font; };
-    union { u8 pad_50[116]; struct { u8 gap_50[44]; u8 button_surface[72]; }; };
+    DibSurface face_surface;        /* 0x34 the button drawn up */
+    DibSurface button_surface;      /* 0x7c pressed */
     union { u32 field_c4; u32 ctrl_palette; };
     union { u8 field_c8; u8 pressed_state; };
     u8 pad_c9[3];
@@ -926,6 +922,9 @@ typedef struct SpriteButton : Control {
     void init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int width,int height,iptr sprite,uint bg_color);    /* 005d7cb0 */
 } SpriteButton;
 static_assert(sizeof(SpriteButton) == 0xcc, "");
+static_assert(__builtin_offsetof(SpriteButton, face_surface) == 0x34, "");
+static_assert(__builtin_offsetof(SpriteButton, button_surface) == 0x7c, "");
+static_assert(__builtin_offsetof(SpriteButton, ctrl_palette) == 0xc4, "");
 
 /* A Civilopedia list entry (operator_new(0xc)): an index topic's name, its
    position in the category's key/id arrays, the next entry (sorted by
@@ -1117,7 +1116,7 @@ typedef struct LobbyList {
     Dialog *dialog;                 /* 0x00 */
     u32 next_id;                    /* 0x04 */
     u8 pad_8[32];
-    uptr entries;                   /* 0x28 the dialog's option list */
+    DialogOption *first_entry;      /* 0x28 the dialog's option list */
     char title[32];                 /* 0x2c */
     i8 *saved_button_label;         /* 0x4c dlg_style.button_labels[0] while the dialog runs */
     u8 pad_50[4];
@@ -1126,13 +1125,13 @@ typedef struct LobbyList {
     LobbyList *scalar_destruct(uint flags);    /* 004471c0 */
     LobbyList *construct();    /* 0056e270 */
     i32 host_wait_players(i32 map_arg,int launch_mode);    /* 0056e2e9 */
-    iptr entry_neighbor(iptr entry);    /* 0056edd3 */
+    DialogOption *entry_neighbor(DialogOption *entry);    /* 0056edd3 */
     void clear_player_list();    /* 0056ee2c */
-    void remove_entry(void *entry);    /* 0056eed7 */
-    uint *add_player_entry(const char *name2,uint entry_id);    /* 0056ef93 */
+    void remove_entry(DialogOption *entry);    /* 0056eed7 */
+    DialogOption *add_player_entry(const char *name2,uint entry_id);    /* 0056ef93 */
     void add_waiting_entry();    /* 0056f301 */
-    i32 find_waiting_entry();    /* 0056f372 */
-    uptr find_entry_by_id(int entry_id);    /* 0056f3e0 */
+    DialogOption *find_waiting_entry();    /* 0056f372 */
+    DialogOption *find_entry_by_id(int entry_id);    /* 0056f3e0 */
     int slot_for_entry_id(int entry_id);    /* 0056f42b */
     void destruct();    /* 0056e2c9 */
 } LobbyList;

@@ -61,7 +61,7 @@ static void unit_reveal_surroundings_tiles(int x2,int y,uptr civ2,uint civ_bit,u
   iptr y4;
   iptr in_bounds;
   uint is_ocean;
-  iptr tile2;
+  Tile *tile2;
   char *known;
   iptr dir;
   for (dir = 0; dir < 0x19; dir++) {
@@ -73,11 +73,11 @@ static void unit_reveal_surroundings_tiles(int x2,int y,uptr civ2,uint civ_bit,u
         ((sees_two != 0 &&
          ((unit_domain == 1 || (is_ocean = tile_is_ocean(x,y4), is_ocean == (unit_domain == 2))))
          ))))) {
-      tile2 = (iptr)tile_at(x,y4);
+      tile2 = tile_at(x,y4);
       if (civ2 != 0) {
         known = (char *)known_at(x,y4,civ2);
         if (((is_human) && (!map_revealed)) &&
-           ((*(char *)(tile2 + 1) != *known || ((civ_bit & *(byte *)(tile2 + 4)) == 0)))) {
+           (((char)tile2->improvements != *known || ((civ_bit & tile2->visible) == 0)))) {
           if (dir < 8) {
             redraw_flags = redraw_flags | 5;
           }
@@ -85,7 +85,7 @@ static void unit_reveal_surroundings_tiles(int x2,int y,uptr civ2,uint civ_bit,u
             redraw_flags = redraw_flags | 10;
           }
         }
-        known_set(x,y4,*(u8 *)(tile2 + 1),
+        known_set(x,y4,tile2->improvements,
                   civ2,0,1);
       }
       tile_set_visible(x,y4,civ_bit,1,1);
@@ -7220,6 +7220,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
   i32 arg;
   iptr unit6;
   int city3;
+  Tile *tile;
   int value;
   uptr other_civ;
   int has_hut;
@@ -7235,12 +7236,12 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
   }
   else {
     snd_play_effect(SND_MOVPIECE,1,0,0);
-    city3 = (iptr)tile_at(x3,y3);
+    tile = tile_at(x3,y3);
     arg = 2;
     unit6 = tile_first_unit(x3,y3);
     value = unit_stack_sum(unit6,arg);
     if (value == 1) {
-      *(byte *)(city3 + 1) = *(byte *)(city3 + 1) & 0xfe;
+      tile->improvements = tile->improvements & 0xfe;
     }
     else if (1 < value) {
       combat_anim.origin_x = (int)units[unit].x;
@@ -7249,7 +7250,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
       if (value == 0) {
         if (units[unit].next_in_stack < 0) {
           if (units[unit].prev_in_stack < 0) {
-            *(byte *)(city3 + 1) = *(byte *)(city3 + 1) & 0xfe;
+            tile->improvements = tile->improvements & 0xfe;
           }
           else {
             combat_anim.origin_stack_unit = (iptr)units[unit].prev_in_stack;
@@ -7262,7 +7263,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
       else {
         value = unit_stack_sum(unit,5);
         if (value < 2) {
-          *(byte *)(city3 + 1) = *(byte *)(city3 + 1) & 0xfe;
+          tile->improvements = tile->improvements & 0xfe;
         }
         else {
           combat_anim.origin_stack_unit = unit_stack_first(unit);
@@ -7270,7 +7271,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
                  (unit_types[units[combat_anim.origin_stack_unit].type].domain != DOMAIN_SEA)) {
             combat_anim.origin_stack_unit = (iptr)units[combat_anim.origin_stack_unit].next_in_stack;
             if (combat_anim.origin_stack_unit < 0) {
-              *(byte *)(city3 + 1) = *(byte *)(city3 + 1) & 0xfe;
+              tile->improvements = tile->improvements & 0xfe;
               break;
             }
           }
@@ -7285,7 +7286,7 @@ static int unit_move_dir_relocate_via_host(iptr unit,uptr civ,uptr civ2,iptr x2,
     value = unit_stack_sum(unit3,arg);
     if (value != 0) {
       if (net.host_flag == '\0') {
-        *(byte *)(city3 + 1) = *(byte *)(city3 + 1) | 1;
+        tile->improvements = tile->improvements | 1;
       }
       else {
         tile_set_improvements(x3,y3,1,1,1);
@@ -8145,8 +8146,7 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
          ((int)units[unit].owner != ((*(i8 *)&human_civ) & 0xffU))) &&
         (city3 = city_find_nearest(x3,y3,-1,0xffffffff,-1), -1 < city3)))) &&
       (cities[city3].owner == (*(i8 *)&human_civ))))) {
-    city3 = (iptr)tile_at(x3,y3);
-    units[unit].visibility = *(byte *)(city3 + 4) | units[unit].visibility;
+    units[unit].visibility = tile_at(x3,y3)->visible | units[unit].visibility;
   }
   if ((((-1 < (int)city) && (civ2 != civ)) &&
       (city3 = tile_visible_to(x2,y2,(*(i8 *)&human_civ)), city3 != 0)) &&
@@ -8184,8 +8184,7 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
          ((int)units[unit].owner != (uint)civ3)) &&
         (city3 = city_find_nearest(x2,y2,-1,0xffffffff,-1), -1 < city3)) &&
        (cities[city3].owner == (*(i8 *)&human_civ))))))) {
-    city3 = (iptr)tile_at(x2,y2);
-    unit_stack_add_visibility(unit,(uint)*(byte *)(city3 + 4));
+    unit_stack_add_visibility(unit,(uint)tile_at(x2,y2)->visible);
   }
   if (((src_is_ocean != 0) && (-1 < (int)city)) &&
      (((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0 &&

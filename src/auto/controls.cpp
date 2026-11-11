@@ -126,7 +126,7 @@ void Button::set_default_button()
   iptr parent;
   
   parent = get_parent();
-  *(Button **)(parent + 0xbc) = this;
+  ((Wnd *)parent)->default_button = this;
   return;
 }
 
@@ -144,7 +144,7 @@ void Button::set_cancel_button()
   iptr parent;
   
   parent = get_parent();
-  *(Button **)(parent + 0xc0) = this;
+  ((Wnd *)parent)->cancel_button = this;
   return;
 }
 
@@ -912,7 +912,7 @@ spritebtn_create_icon_button(WndBase *parent,i32 ctrl_id,SpriteButton *button,Sp
   height2 = rect_height(rect);
   button->init_from_sprite(parent,ctrl_id,rect->left,rect->top,width2,
              height2,(iptr)sprite,0x17);
-  surf_rect = (int *)((DibSurface *)&button->on_select)->get_rect();
+  surf_rect = (int *)button->face_surface.get_rect();
   rect2.left = *surf_rect;
   rect2.top = surf_rect[1];
   rect2.right = surf_rect[2];
@@ -925,27 +925,27 @@ spritebtn_create_icon_button(WndBase *parent,i32 ctrl_id,SpriteButton *button,Sp
   center = rect2.top + size / 2;
   size = (sprite)->height();
   icon_y = center - size / 2;
-  (sprite)->draw((RECT *)draw_ctx,(DibSurface *)&button->on_select,icon_x,icon_y);
-  (sprite)->draw((RECT *)shadow_ctx,((DibSurface *)button->button_surface),icon_x + 2,
+  (sprite)->draw((RECT *)draw_ctx,&button->face_surface,icon_x,icon_y);
+  (sprite)->draw((RECT *)shadow_ctx,&button->button_surface,icon_x + 2,
              icon_y + 2);
-  gfx_draw_rect_frame((DibSurface *)&button->on_select,&rect2,10);
-  gfx_draw_rect_frame(((DibSurface *)button->button_surface),&rect2,10);
+  gfx_draw_rect_frame(&button->face_surface,&rect2,10);
+  gfx_draw_rect_frame(&button->button_surface,&rect2,10);
   inner_rect.left = rect2.left;
   inner_rect.top = rect2.top;
   inner_rect.right = rect2.right;
   inner_rect.bottom = rect2.bottom;
   rect_deflate(&inner_rect,1,1);
-  gfx_draw_bevel_rect((DibSurface *)&button->on_select,&inner_rect,0x1f,0xf);
-  gfx_draw_bevel_rect(((DibSurface *)button->button_surface),&inner_rect,0xf,10);
+  gfx_draw_bevel_rect(&button->face_surface,&inner_rect,0x1f,0xf);
+  gfx_draw_bevel_rect(&button->button_surface,&inner_rect,0xf,10);
   rect_deflate(&inner_rect,1,1);
-  gfx_draw_bevel_rect((DibSurface *)&button->on_select,&inner_rect,0x1f,0xf);
-  gfx_draw_bevel_rect(((DibSurface *)button->button_surface),&inner_rect,0xf,10);
+  gfx_draw_bevel_rect(&button->face_surface,&inner_rect,0x1f,0xf);
+  gfx_draw_bevel_rect(&button->button_surface,&inner_rect,0xf,10);
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
-  ((DibSurface *)button->button_surface)->set_palette(palette);
+  button->button_surface.set_palette(palette);
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
-  ((DibSurface *)&button->on_select)->set_palette(palette);
+  button->face_surface.set_palette(palette);
   return;
 }
 
@@ -972,9 +972,9 @@ void SpriteButton::destruct()
     spritebtn_hwnd_cleanup_stub(hwnd);
   }
   (*((char *)&seh_state + 0)) = 1;
-  /* inlined unwind funclet 00511624 */ { surface_dtor((DibSurface *)(((int)this) + 0x7c)); }
+  /* inlined unwind funclet 00511624 */ { surface_dtor(&button_surface); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 00511630 */ { surface_dtor((DibSurface *)(((int)this) + 0x34)); }
+  /* inlined unwind funclet 00511630 */ { surface_dtor(&face_surface); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 0051163c */ { base_destruct(); }
   return;
@@ -986,8 +986,8 @@ SpriteButton *SpriteButton::construct()
 {
   
   base_construct();
-  surface_ctor((DibSurface *)&on_select);
-  surface_ctor((DibSurface *)button_surface);
+  surface_ctor(&face_surface);
+  surface_ctor(&button_surface);
   pressed_state = '\0';
   return this;
 }
@@ -1751,6 +1751,7 @@ button_create_hwnd(int *rect,Control *ctrl,const char *label,int visible,GameFon
   NativeWindow *window;
   iptr height;
   int value;
+  ControlBlock *block;
   HDC hdc;
   int value2;
   HBITMAP h;
@@ -1967,11 +1968,11 @@ button_create_hwnd(int *rect,Control *ctrl,const char *label,int visible,GameFon
         }
         DeleteObject(h_02);
         DeleteDC(mem_dc);
-        value = (iptr)ctrl_init_block(hwnd2,(int)ctrl);
-        *(HBITMAP *)(value + 0xc) = h;
-        *(HBITMAP *)(value + 0x10) = h_00;
-        *(HBITMAP *)(value + 0x14) = bmp_disabled;
-        *(i32 *)(value + 0x2c) = 6;
+        block = ctrl_init_block(hwnd2,(int)ctrl);
+        block->bitmaps[0] = h;
+        block->bitmaps[1] = h_00;
+        block->bitmaps[2] = bmp_disabled;
+        block->kind = 6;
         SetWindowLongA(hwnd2,-4,(iptr)button_wndproc);
       }
     }
@@ -2043,8 +2044,7 @@ HWND __cdecl spritebtn_create_hwnd(int x,int y,int width,int height,Control *ctr
   value = rect_width(&rect);
   hwnd2 = CreateWindowExA(4,str_mscontrolclass_3,((i8 *)&spritebtn_wnd_title),style2,x,y,value
                             ,rect_h,hWndParent,hMenu,hInstance,lpParam);
-  value = (iptr)ctrl_init_block(hwnd2,(int)ctrl);
-  *(i32 *)(value + 0x2c) = 5;
+  ctrl_init_block(hwnd2,(int)ctrl)->kind = 5;
   SetWindowLongA(hwnd2,-4,(iptr)spritebtn_wndproc);
   return hwnd2;
 }
@@ -2167,6 +2167,7 @@ HWND __cdecl checkbox_create_hwnd(RECT *rect,Control *ctrl,char *label,int visib
   NativeWindow *window;
   iptr height;
   int value;
+  ControlBlock *block;
   HWND check_hwnd;
   HBITMAP bmp_unchecked;
   HBITMAP bmp_checked;
@@ -2197,12 +2198,12 @@ HWND __cdecl checkbox_create_hwnd(RECT *rect,Control *ctrl,char *label,int visib
   bmp_unchecked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x132);
   bmp_checked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x131);
   bmp_focus = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x130);
-  value = (iptr)ctrl_init_block(check_hwnd,(int)ctrl);
-  *(HBITMAP *)(value + 0xc) = bmp_unchecked;
-  *(HBITMAP *)(value + 0x10) = bmp_checked;
-  *(HBITMAP *)(value + 0x14) = bmp_focus;
-  *(i32 *)(value + 0x2c) = 2;
-  *(void **)(value + 0x24) = label_copy;
+  block = ctrl_init_block(check_hwnd,(int)ctrl);
+  block->bitmaps[0] = bmp_unchecked;
+  block->bitmaps[1] = bmp_checked;
+  block->bitmaps[2] = bmp_focus;
+  block->kind = 2;
+  block->data = (iptr)label_copy;
   SetWindowLongA(check_hwnd,-4,(iptr)checkbox_wndproc);
   return check_hwnd;
 }
@@ -2730,7 +2731,7 @@ void __cdecl scrollbar_hwnd_handle_msg(HWND hwnd,uint msg,uint wparam,int lparam
       value = input_lbutton_down();
       if (value == 0) {
         value = self->get_rect();
-        pos_lparam = *(LPARAM *)(value + 4);
+        pos_lparam = ((RECT *)value)->top;
         rect_ptr = (WPARAM *)self->get_rect();
         PostMessageA(hwnd,0x202,*rect_ptr,pos_lparam);
       }
@@ -2747,7 +2748,7 @@ void __cdecl scrollbar_hwnd_handle_msg(HWND hwnd,uint msg,uint wparam,int lparam
       value = input_lbutton_down();
       if (value == 0) {
         value = self->get_rect();
-        pos_lparam = *(LPARAM *)(value + 4);
+        pos_lparam = ((RECT *)value)->top;
         rect_ptr = (WPARAM *)self->get_rect();
         PostMessageA(hwnd,0x202,*rect_ptr,pos_lparam);
       }
@@ -2894,9 +2895,9 @@ HWND __cdecl edit_create_window(int *rect,Control *ctrl,uint flags,int visible,G
   }
   if (((flags & 2) != 0) || ((flags & 0x200) != 0)) {
     style2 = style2 | 4;
-    *(i8 *)((u8 *)ctrl + 0x38) = 1;
+    ((EditControl *)ctrl)->keep_sel = 1;
     if ((flags & 0x200) != 0) {
-      *(i8 *)((u8 *)ctrl + 0x39) = 1;
+      ((EditControl *)ctrl)->field_39 = 1;
     }
   }
   if ((flags & 4) != 0) {
@@ -2920,7 +2921,7 @@ HWND __cdecl edit_create_window(int *rect,Control *ctrl,uint flags,int visible,G
   if ((flags & 0x100) != 0) {
     style2 = style2 | 0x800;
   }
-  *(uint *)((u8 *)ctrl + 0x3c) = style2;
+  ((EditControl *)ctrl)->edit_style = style2;
   if (editbox_class_registered == 0) {
     create_param = (LPVOID)0x0;
     menu = (HMENU)0x0;
@@ -3708,10 +3709,10 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   on_rclick = 0;
   gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(1,1);
-  ((DibSurface *)button_surface)->DibSurface::create(width,height);
-  ((DibSurface *)&on_select)->DibSurface::create(width,height);
-  ((DibSurface *)button_surface)->fill(bg_color & 0xff);
-  ((DibSurface *)&on_select)->fill(bg_color & 0xff);
+  button_surface.DibSurface::create(width,height);
+  face_surface.DibSurface::create(width,height);
+  button_surface.fill(bg_color & 0xff);
+  face_surface.fill(bg_color & 0xff);
   center_x = width >> 1;
   center_y = height >> 1;
   ((Sprite *)sprite)->get_origin((iptr)&origin_x2,(iptr)&origin_y2);
@@ -3720,13 +3721,13 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   half_h = ((Sprite *)sprite)->get_height();
   half_h = half_h >> 1;
   ((Sprite *)sprite)->set_origin(-half_w,-half_h);
-  ((Sprite *)sprite)->draw((RECT *)draw_ctx_a,((DibSurface *)button_surface),center_x,center_y);
-  ((Sprite *)sprite)->draw((RECT *)draw_ctx_b,(DibSurface *)&on_select,center_x,center_y);
+  ((Sprite *)sprite)->draw((RECT *)draw_ctx_a,&button_surface,center_x,center_y);
+  ((Sprite *)sprite)->draw((RECT *)draw_ctx_b,&face_surface,center_x,center_y);
   ((Sprite *)sprite)->set_origin(origin_x2,origin_y2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
-  size = ((DibSurface *)button_surface)->surface_height();
+  size = button_surface.surface_height();
   yBottom = y + size - 1;
-  size = ((DibSurface *)button_surface)->surface_width();
+  size = button_surface.surface_width();
   SetRect(&rect,x,y,x + size - 1,yBottom);
   OffsetRect(&rect,-rect.left,-rect.top);
   dst_rect.left = rect.left;
@@ -3739,15 +3740,15 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   src_rect.right = dst_rect.right;
   src_rect.bottom = dst_rect.bottom;
   OffsetRect(&dst_rect,2,2);
-  ((DibSurface *)button_surface)->fill((uint)(*(byte *)&display_palette.black_index));
-  ((DibSurface *)&on_select)->DibSurface::blit((DibSurface *)(iptr)(button_surface),&src_rect,
+  button_surface.fill((uint)(*(byte *)&display_palette.black_index));
+  face_surface.DibSurface::blit(&button_surface,&src_rect,
              &dst_rect);
   parent_wnd = (WndBase *)get_parent();
   palette = parent_wnd->get_palette();
-  ((DibSurface *)button_surface)->apply_palette((GamePalette *)palette);
+  button_surface.apply_palette((GamePalette *)palette);
   parent_wnd = (WndBase *)get_parent();
   palette = parent_wnd->get_palette();
-  ((DibSurface *)&on_select)->apply_palette((GamePalette *)palette);
+  face_surface.apply_palette((GamePalette *)palette);
   value = spritebtn_create_hwnd(x,y,width,height,this,1);
   hwnd = value;
   return;
@@ -4472,7 +4473,7 @@ i32 __cdecl ctrl_hwnd_is_radio(HWND hwnd)
 {
   char *_Str1;
   iptr cmp;
-  iptr block;
+  ControlBlock *block;
   const char *_Str2;
   CHAR class_name[52];
   
@@ -4480,7 +4481,7 @@ i32 __cdecl ctrl_hwnd_is_radio(HWND hwnd)
   _Str2 = str_mscontrolclass_6;
   _Str1 = __strupr(class_name);
   cmp = _strcmp(_Str1,_Str2);
-  if ((cmp == 0) && (block = (iptr)wnd_from_hwnd(hwnd), *(int *)(block + 0x2c) == 3)) {
+  if ((cmp == 0) && (block = wnd_from_hwnd(hwnd), block->kind == 3)) {
     return 1;
   }
   return 0;
