@@ -5206,7 +5206,7 @@ i32 __cdecl diplo_wnd_close_active(void)
   }
   wnd2->closed = 1;
   wnd2->other_civ = 0xffffffff;
-  ((WndBase *)((i8 *)wnd2 + 0x48))->hide();
+  wnd2->window.hide();
   main_frame_wnd_block.main_frame_wnd.focus_and_raise();
   ui_flush_input();
   return 1;

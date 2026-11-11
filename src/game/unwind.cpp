@@ -22,7 +22,7 @@ i32 ModalMenuWindow::destruct()
     WndHandlers *member;
 
     /* funclet 0044caab */
-    member = (this != NULL) ? (WndHandlers *)((iptr)this + 0x10) : NULL;
+    member = (this != NULL) ? &wnd_handlers : NULL;
     member->destruct();
     /* funclet 0044cad3 */
     ((WndBase *)this)->destroy();
@@ -38,7 +38,7 @@ void SurfaceWindow::destruct()
     *(i8 ***)this = (i8 **)((pointer *)(ptr_fun_rest + 8));
     *(i32 *)((iptr)this + 0x110) = 0;
     /* funclet 0044cc01 */
-    member = (this != NULL) ? (Wnd *)((iptr)this + 0x48) : NULL;
+    member = (this != NULL) ? &window : NULL;
     member->destruct();
     /* funclet 0044cc29 */
     surface_dtor((DibSurface *)this);
@@ -50,7 +50,7 @@ void CityPicturePopup::destruct()
     Dialog *member;
 
     /* funclet 004f3ebb */
-    member = (this != NULL) ? (Dialog *)((iptr)this + 0x4a4) : NULL;
+    member = (this != NULL) ? &dialog : NULL;
     member->Dialog::destruct();
     /* funclet 004f3ee5 */
     PictureWindow::destruct();

@@ -2047,13 +2047,13 @@ void PortraitDialog::destruct()
   *(i8 ***)&vtable = (i8 **)&leader_anim_frame_starts_block.ptr_fun_3;
   eh_state = eh_state & 0xff;
   (*((char *)&eh_state + 0)) = 3;
-  /* inlined unwind funclet 004963a5 */ { ((DllHandle *)(((int)this) + 0x1d4))->free(); }
+  /* inlined unwind funclet 004963a5 */ { dll.free(); }
   (*((char *)&eh_state + 0)) = 2;
-  /* inlined unwind funclet 004963b4 */ { ctrl_dtor((Button *)(((int)this) + 0x198)); }
+  /* inlined unwind funclet 004963b4 */ { ctrl_dtor(&ok_button); }
   (*((char *)&eh_state + 0)) = 1;
-  /* inlined unwind funclet 004963c3 */ { ctrl_dtor((Button *)(((int)this) + 0x15c)); }
+  /* inlined unwind funclet 004963c3 */ { ctrl_dtor(&cancel_button); }
   eh_state = eh_state & 0xffffff00;
-  /* inlined unwind funclet 004963d2 */ { surface_dtor((DibSurface *)(((int)this) + 0x114)); }
+  /* inlined unwind funclet 004963d2 */ { surface_dtor(&surface); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 004963e1 */ { ((SurfaceWindow *)this)->SurfaceWindow::destruct(); }
   return;
@@ -2092,7 +2092,7 @@ void PortraitDialog::create_buttons()
   else {
     parent_a = (u8 *)this + 0x48;
   }
-  ((Button *)((u8 *)this + 0x198))->create_with_callback((iptr)parent_a,0x65,(iptr)&button_rect,0x21,(const char *)&str_ok);
+  ok_button.create_with_callback((iptr)parent_a,0x65,(iptr)&button_rect,0x21,(const char *)&str_ok);
   OffsetRect(&button_rect,((ui_metrics.border_width * 8 + 0x276 >> 1) + 2) - ui_metrics.border_width,0);
   if (this == (PortraitDialog *)0x0) {
     parent_b = (u8 *)0x0;
@@ -2100,9 +2100,9 @@ void PortraitDialog::create_buttons()
   else {
     parent_b = (u8 *)this + 0x48;
   }
-  ((Button *)((u8 *)this + 0x15c))->create_with_callback((iptr)parent_b,100,(iptr)&button_rect,0x21,(const char *)&str_cancel);
-  ((Button *)((u8 *)this + 0x15c))->set_callback(portrait_dlg_on_button);
-  ((Button *)((u8 *)this + 0x198))->set_callback(portrait_dlg_on_button);
+  cancel_button.create_with_callback((iptr)parent_b,100,(iptr)&button_rect,0x21,(const char *)&str_cancel);
+  cancel_button.set_callback(portrait_dlg_on_button);
+  ok_button.set_callback(portrait_dlg_on_button);
   return;
 }
 
@@ -6260,13 +6260,13 @@ void SpritePicker::destruct()
   
   seh_state = seh_state & 0xff;
   (*((char *)&seh_state + 0)) = 3;
-  /* inlined unwind funclet 00578402 */ { ctrl_dtor((Button *)(((int)this) + 0x3b0)); }
+  /* inlined unwind funclet 00578402 */ { ctrl_dtor(&button_3); }
   (*((char *)&seh_state + 0)) = 2;
-  /* inlined unwind funclet 00578411 */ { ctrl_dtor((Button *)(((int)this) + 0x374)); }
+  /* inlined unwind funclet 00578411 */ { ctrl_dtor(&button_2); }
   (*((char *)&seh_state + 0)) = 1;
-  /* inlined unwind funclet 00578420 */ { ctrl_dtor((Button *)(((int)this) + 0x338)); }
+  /* inlined unwind funclet 00578420 */ { ctrl_dtor(&button_1); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 0057842f */ { ((Scrollbar *)(((int)this) + 0x2f8))->destruct(); }
+  /* inlined unwind funclet 0057842f */ { scrollbar.destruct(); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 0057843e */ { FrameWindow::destruct(); }
   return;

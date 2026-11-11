@@ -250,7 +250,7 @@ void SurfaceWindow::set_redraw_callback(WndNotifyFn callback)
 void SurfaceWindow::show()
 
 {
-  ((Wnd *)((u8 *)this + 0x48))->show_focus_first();
+  window.show_focus_first();
   return;
 }
 
@@ -859,17 +859,17 @@ void PictureWindow::destruct()
   
   eh_state = eh_state & 0xff;
   (*((char *)&eh_state + 0)) = 5;
-  /* inlined unwind funclet 0043c19c */ { ((Scrollbar *)(((int)this) + 0x410))->destruct(); }
+  /* inlined unwind funclet 0043c19c */ { scrollbar.destruct(); }
   (*((char *)&eh_state + 0)) = 4;
-  /* inlined unwind funclet 0043c1ab */ { ctrl_dtor((Button *)(((int)this) + 0x3d4)); }
+  /* inlined unwind funclet 0043c1ab */ { ctrl_dtor(&button_4); }
   (*((char *)&eh_state + 0)) = 3;
-  /* inlined unwind funclet 0043c1ba */ { ctrl_dtor((Button *)(((int)this) + 0x398)); }
+  /* inlined unwind funclet 0043c1ba */ { ctrl_dtor(&button_3); }
   (*((char *)&eh_state + 0)) = 2;
-  /* inlined unwind funclet 0043c1c9 */ { ctrl_dtor((Button *)(((int)this) + 0x35c)); }
+  /* inlined unwind funclet 0043c1c9 */ { ctrl_dtor(&button_2); }
   (*((char *)&eh_state + 0)) = 1;
-  /* inlined unwind funclet 0043c1d8 */ { ctrl_dtor((Button *)(((int)this) + 800)); }
+  /* inlined unwind funclet 0043c1d8 */ { ctrl_dtor(&close_button); }
   eh_state = eh_state & 0xffffff00;
-  /* inlined unwind funclet 0043c1e7 */ { surface_dtor((DibSurface *)(((int)this) + 0x2d8)); }
+  /* inlined unwind funclet 0043c1e7 */ { surface_dtor(&surface); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 0043c1f6 */ { FrameWindow::destruct(); }
   return;
@@ -10154,8 +10154,8 @@ void SurfaceWindow::resize_clamped(int width,int height)
   int max_height2;
   int max_width2;
   
-  ((ModalMenuWindow *)((u8 *)this + 0x48))->get_min_size((iptr)&min_width2,(iptr)&min_height2);
-  ((ModalMenuWindow *)((u8 *)this + 0x48))->get_max_size((iptr)&max_width2,(iptr)&max_height2);
+  window.get_min_size((iptr)&min_width2,(iptr)&min_height2);
+  window.get_max_size((iptr)&max_width2,(iptr)&max_height2);
   if (width < min_width2) {
     width = min_width2;
   }
@@ -10168,7 +10168,7 @@ void SurfaceWindow::resize_clamped(int width,int height)
   if (max_height2 < height) {
     height = max_height2;
   }
-  ((WndBase *)((u8 *)this + 0x48))->set_client_size(width,height);
+  window.set_client_size(width,height);
   return;
 }
 

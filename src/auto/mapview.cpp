@@ -918,10 +918,10 @@ bool __cdecl mapview_on_close(void)
   }
   is_main = (int)view->map_view_index == 0;
   if (is_main) {
-    ((WndBase *)((iptr)view + 0x48))->minimize();
+    view->window.minimize();
   }
   else {
-    *(i16 *)((iptr)view + 0x2dc) = 0;
+    view->open = 0;
   }
   return !is_main;
 }
@@ -940,7 +940,7 @@ void __cdecl mapview_on_size(void)
   else {
     view = (MapView *)(child_wnd - 0x48);
   }
-  ((WndBase *)((iptr)view + 0x48))->get_rect_in_parent(
+  view->window.get_rect_in_parent(
              (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10));
   return;
 }
@@ -959,7 +959,7 @@ void __cdecl mapview_on_move(void)
   else {
     view = (MapView *)(child_wnd - 0x48);
   }
-  ((WndBase *)((iptr)view + 0x48))->get_rect_in_parent(
+  view->window.get_rect_in_parent(
              (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10));
   return;
 }

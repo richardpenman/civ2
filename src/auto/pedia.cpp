@@ -2849,7 +2849,7 @@ void PediaWindow::set_category_title(i32 category)
   default:
     text_append((const char *)&str_this_should_not_happen_3);
   }
-  crt_strcpy((char *)((u8 *)this + 0x618),((i8 *)&textbuf.buf));
+  crt_strcpy((char *)pedia_title_text_2,((i8 *)&textbuf.buf));
   return;
 }
 
@@ -3497,7 +3497,7 @@ void PediaLink::destruct()
   i32 eh_state;
   
   eh_state = 0xffffffff;
-  /* inlined unwind funclet 004fa17e */ { ((Hyperlink *)(((int)this) + 4))->destruct(); }
+  /* inlined unwind funclet 004fa17e */ { control.destruct(); }
   return;
 }
 

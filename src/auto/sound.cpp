@@ -1972,11 +1972,11 @@ i32 AviPlayer::destruct()
   avi_close(this);
   media_devices.avi_player = 0;
   (*((char *)&eh_state + 0)) = 2;
-  /* inlined unwind funclet 005dd230 */ { surface_dtor((DibSurface *)(((int)this) + 0x558)); }
+  /* inlined unwind funclet 005dd230 */ { surface_dtor(&backdrop); }
   (*((char *)&eh_state + 0)) = 1;
-  /* inlined unwind funclet 005dd23f */ { ((GamePalette *)(((int)this) + 0x124))->destroy(); }
+  /* inlined unwind funclet 005dd23f */ { palette.destroy(); }
   eh_state = eh_state & 0xffffff00;
-  /* inlined unwind funclet 005dd24e */ { ((AviAudio *)(((int)this) + 0x11c))->release(); }
+  /* inlined unwind funclet 005dd24e */ { audio.release(); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 005dd25d */ { ((SurfaceWindow *)this)->SurfaceWindow::destruct(); }
   return eh_next;

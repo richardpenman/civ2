@@ -17584,7 +17584,7 @@ void SetupPicWindow::destruct()
   seh_state = seh_state & 0xff;
   reset_fields();
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 00559f30 */ { ((DllHandle *)(((int)this) + 0x2f8))->free(); }
+  /* inlined unwind funclet 00559f30 */ { dll.free(); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 00559f3f */ { (((FrameWindow *)this))->FrameWindow::destruct(); }
   return;

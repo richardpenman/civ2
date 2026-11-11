@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """The game's struct layouts as the compiler sees them: every member of every
-struct in civ2types.h, civ2classes.h and gamedata.h, with its offset, size and
+struct in civ2types.h, civ2classes.h, gamedata.h and src/data/state, with its offset, size and
 type, from a generated program built with the linux32 flags (offsetof,
 sizeof, and the type's name from __PRETTY_FUNCTION__).  Output: run/layout.tsv
 (STRUCT, MEMBER, OFFSET, SIZE, TYPE) plus STRUCT, '', 0, SIZE rows.
 
     tools/dk python3 tools/cxx_layout.py
 """
+import glob
 import os
 import re
 import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HEADERS = ['src/include/civ2types.h', 'src/include/civ2classes.h', 'src/data/gamedata.h']
+HEADERS = ['src/include/civ2types.h', 'src/include/civ2classes.h', 'src/data/gamedata.h'] + \
+    sorted(os.path.relpath(p, ROOT) for p in glob.glob(os.path.join(ROOT, 'src/data/state/*.h')))
 FLAGS = ['-m32', '-std=gnu++17', '-w', '-include', 'native.h', '-I', 'src/include', '-I', 'src/auto',
          '-I', 'tools', '-I', 'build/native/gen', '-DCIV2_NATIVE', '-DCIV2_LOWMEM', '-fno-exceptions',
          '-fno-rtti', '-fno-pie', '-no-pie']
@@ -45,8 +47,8 @@ def structs():
             names = []
             for decl in body.split(';'):
                 decl = re.sub(r'\[[^\]]*\]', '', decl).strip()
-                if re.search(r'\(', decl):
-                    continue
+                if re.search(r'\(', decl) or re.match(r'(struct|union|class)\s+\w+$', decl):
+                    continue    # a method, a nested type's declaration
                 dm = re.search(r'(\w+)\s*$', decl)
                 if dm and len(decl.split()) > 1 or (dm and '*' in decl):
                     names.append(dm.group(1))

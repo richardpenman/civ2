@@ -70,18 +70,18 @@ void __cdecl taxrate_on_tax_scroll(int pos)
                      (int *)((iptr)taxrate_wnd.dlg + 0x350),(int *)((iptr)taxrate_wnd.dlg + 0x354));
   taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
   if (requested_rate != tax_rate2) {
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x358))->set_pos(tax_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x358))->show_and_redraw();
+    taxrate_wnd.dlg->tax_scrollbar_obj.set_pos(tax_rate2);
+    taxrate_wnd.dlg->tax_scrollbar_obj.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->sci_rate_sel != science_rate2) {
     taxrate_wnd.dlg->sci_rate_sel = science_rate2;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x3d8))->set_pos(science_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x3d8))->show_and_redraw();
+    taxrate_wnd.dlg->sci_scrollbar.set_pos(science_rate2);
+    taxrate_wnd.dlg->sci_scrollbar.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->lux_rate_sel != lux_rate) {
     taxrate_wnd.dlg->lux_rate_sel = lux_rate;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x398))->set_pos(lux_rate);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x398))->show_and_redraw();
+    taxrate_wnd.dlg->lux_scrollbar.set_pos(lux_rate);
+    taxrate_wnd.dlg->lux_scrollbar.show_and_redraw();
   }
   taxrate_wnd.dlg->calc_totals();
   taxrate_dialog_redraw();
@@ -109,18 +109,18 @@ void __cdecl taxrate_on_science_scroll(int pos)
                      (int *)((iptr)taxrate_wnd.dlg + 0x354),(int *)((iptr)taxrate_wnd.dlg + 0x34c));
   taxrate_wnd.dlg->sci_rate_sel = science_rate2;
   if (requested_rate != science_rate2) {
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x3d8))->set_pos(science_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x3d8))->show_and_redraw();
+    taxrate_wnd.dlg->sci_scrollbar.set_pos(science_rate2);
+    taxrate_wnd.dlg->sci_scrollbar.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->lux_rate_sel != lux_rate) {
     taxrate_wnd.dlg->lux_rate_sel = lux_rate;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x398))->set_pos(lux_rate);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x398))->show_and_redraw();
+    taxrate_wnd.dlg->lux_scrollbar.set_pos(lux_rate);
+    taxrate_wnd.dlg->lux_scrollbar.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->tax_rate_sel != tax_rate2) {
     taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x358))->set_pos(tax_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x358))->show_and_redraw();
+    taxrate_wnd.dlg->tax_scrollbar_obj.set_pos(tax_rate2);
+    taxrate_wnd.dlg->tax_scrollbar_obj.show_and_redraw();
   }
   taxrate_wnd.dlg->calc_totals();
   taxrate_dialog_redraw();
@@ -148,18 +148,18 @@ void __cdecl taxrate_on_lux_scroll(int pos)
                      (int *)((iptr)taxrate_wnd.dlg + 0x34c),(int *)((iptr)taxrate_wnd.dlg + 0x350));
   taxrate_wnd.dlg->lux_rate_sel = lux_rate;
   if (lux_rate != requested_rate) {
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x398))->set_pos(lux_rate);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x398))->show_and_redraw();
+    taxrate_wnd.dlg->lux_scrollbar.set_pos(lux_rate);
+    taxrate_wnd.dlg->lux_scrollbar.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->tax_rate_sel != tax_rate2) {
     taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x358))->set_pos(tax_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x358))->show_and_redraw();
+    taxrate_wnd.dlg->tax_scrollbar_obj.set_pos(tax_rate2);
+    taxrate_wnd.dlg->tax_scrollbar_obj.show_and_redraw();
   }
   if ((int)taxrate_wnd.dlg->sci_rate_sel != science_rate2) {
     taxrate_wnd.dlg->sci_rate_sel = science_rate2;
-    ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x3d8))->set_pos(science_rate2);
-    ((Control *)((iptr)taxrate_wnd.dlg + 0x3d8))->show_and_redraw();
+    taxrate_wnd.dlg->sci_scrollbar.set_pos(science_rate2);
+    taxrate_wnd.dlg->sci_scrollbar.show_and_redraw();
   }
   taxrate_wnd.dlg->calc_totals();
   taxrate_dialog_redraw();
@@ -171,7 +171,7 @@ void __cdecl taxrate_on_ok_clicked(void)
 
 {
   taxrate_wnd.active = 0;
-  ((ModalMenuWindow *)((iptr)taxrate_wnd.dlg + 0x48))->end_modal_loop();
+  taxrate_wnd.dlg->window.end_modal_loop();
   return;
 }
 
@@ -674,15 +674,15 @@ void TaxRateDialog::destruct()
   
   eh_state = eh_state & 0xff;
   (*((char *)&eh_state + 0)) = 4;
-  /* inlined unwind funclet 0040f25f */ { ctrl_dtor((Button *)(((int)this) + 0x4cc)); }
+  /* inlined unwind funclet 0040f25f */ { ctrl_dtor(&ok_button); }
   (*((char *)&eh_state + 0)) = 3;
-  /* inlined unwind funclet 0040f26e */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x418),0x3c,3,checkbox_dtor); }
+  /* inlined unwind funclet 0040f26e */ { crt_vector_dtor_iterator((void *)lock_checkboxes,0x3c,3,checkbox_dtor); }
   (*((char *)&eh_state + 0)) = 2;
-  /* inlined unwind funclet 0040f286 */ { ((Scrollbar *)(((int)this) + 0x3d8))->destruct(); }
+  /* inlined unwind funclet 0040f286 */ { sci_scrollbar.destruct(); }
   (*((char *)&eh_state + 0)) = 1;
-  /* inlined unwind funclet 0040f295 */ { ((Scrollbar *)(((int)this) + 0x398))->destruct(); }
+  /* inlined unwind funclet 0040f295 */ { lux_scrollbar.destruct(); }
   eh_state = eh_state & 0xffffff00;
-  /* inlined unwind funclet 0040f2a4 */ { ((Scrollbar *)(((int)this) + 0x358))->destruct(); }
+  /* inlined unwind funclet 0040f2a4 */ { tax_scrollbar_obj.destruct(); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 0040f2b3 */ { FrameWindow::destruct(); }
   return;
@@ -4204,13 +4204,13 @@ void CityViewWindow::destruct()
   (*((char *)&seh_state + 0)) = 0xb;
   /* inlined unwind funclet 004547a7 */ { surface_dtor((DibSurface *)(((int)this) + 0x199c)); }
   (*((char *)&seh_state + 0)) = 10;
-  /* inlined unwind funclet 004547b6 */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x18ac),0x3c,4,sprite_destroy); }
+  /* inlined unwind funclet 004547b6 */ { crt_vector_dtor_iterator((void *)large_building_sprites_b,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 9;
-  /* inlined unwind funclet 004547ce */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x17bc),0x3c,4,sprite_destroy); }
+  /* inlined unwind funclet 004547ce */ { crt_vector_dtor_iterator((void *)large_building_sprites_a,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 8;
-  /* inlined unwind funclet 004547e6 */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x16cc),0x3c,4,sprite_destroy); }
+  /* inlined unwind funclet 004547e6 */ { crt_vector_dtor_iterator((void *)small_building_sprites_b,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 7;
-  /* inlined unwind funclet 004547fe */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x15dc),0x3c,4,sprite_destroy); }
+  /* inlined unwind funclet 004547fe */ { crt_vector_dtor_iterator((void *)small_building_sprites_a,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 6;
   /* inlined unwind funclet 00454816 */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x6dc),0x3c,0x3c,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 5;
@@ -7360,11 +7360,11 @@ void WonderMovieWindow::destruct()
   seh_state = seh_state & 0xff;
   font_size16_bold_block.wonder_movie_wnd = 0;
   (*((char *)&seh_state + 0)) = 2;
-  /* inlined unwind funclet 004bbaf1 */ { ((GamePalette *)(((int)this) + 0xd4c))->destroy(); }
+  /* inlined unwind funclet 004bbaf1 */ { palette.destroy(); }
   (*((char *)&seh_state + 0)) = 1;
-  /* inlined unwind funclet 004bbb00 */ { surface_dtor((DibSurface *)(((int)this) + 0xd04)); }
+  /* inlined unwind funclet 004bbb00 */ { surface_dtor(&frame_surface); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 004bbb0f */ { ((AviPlayer *)(((int)this) + 0x2d8))->destruct(); }
+  /* inlined unwind funclet 004bbb0f */ { player.destruct(); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 004bbb1e */ { (((FrameWindow *)this))->FrameWindow::destruct(); }
   return;
@@ -12090,7 +12090,7 @@ void CityWindow::destruct()
   (*((char *)&seh_state + 0)) = 1;
   /* inlined unwind funclet 00501673 */ { ((GameFont *)(((int)this) + 0x16ac))->destroy(); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 00501682 */ { ((ClickMap *)(((int)this) + 0x2d8))->destruct(); }
+  /* inlined unwind funclet 00501682 */ { clickmap.destruct(); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 00501691 */ { (((FrameWindow *)this))->FrameWindow::destruct(); }
   return;
@@ -15370,7 +15370,7 @@ void CityWindow::bring_to_top()
   NativeWindow *window;
   
   if ((((u32)is_closed) == 0) && (((u32)redraw_suspended) == 0)) {
-    window = ((WndBase *)((u8 *)this + 0x48))->get_window();
+    window = this->window.get_window();
     BringWindowToTop(window->hwnd);
   }
   return;
@@ -16694,7 +16694,7 @@ void CityWindow::destroy_controls()
 {
   extras_city_window_controls_destroyed();   /* X11 */
   if (buy_button != 0) {
-    ((Wnd *)((u8 *)this + 0x48))->remove_all_controls();
+    window.remove_all_controls();
     if ((Button *)buy_button != (Button *)0x0) {
       ((Button *)buy_button)->scalar_destruct(1);
     }

@@ -310,7 +310,7 @@ void __cdecl advisor_on_close_clicked(void)
   else {
     window = (PictureWindow *)(active_child - 0x48);
   }
-  if (*(u32 *)((u8 *)window + 0x4a0) == 0) {
+  if ((u32)window->frame_style == 0) {
     window->close();
   }
   else {
@@ -6403,11 +6403,11 @@ void CouncilWindow::destruct()
   (*((char *)&try_level + 0)) = 3;
   /* inlined unwind funclet 005168ea */ { ctrl_dtor((Button *)(((int)this) + 0x11c0)); }
   (*((char *)&try_level + 0)) = 2;
-  /* inlined unwind funclet 005168f9 */ { ((DllHandle *)(((int)this) + 0xe30))->free(); }
+  /* inlined unwind funclet 005168f9 */ { dll.free(); }
   (*((char *)&try_level + 0)) = 1;
-  /* inlined unwind funclet 00516908 */ { ((Dialog *)(((int)this) + 0xb3c))->Dialog::destruct(); }
+  /* inlined unwind funclet 00516908 */ { dialog.Dialog::destruct(); }
   try_level = try_level & 0xffffff00;
-  /* inlined unwind funclet 00516917 */ { ((AviPlayer *)(((int)this) + 0x114))->destruct(); }
+  /* inlined unwind funclet 00516917 */ { video.destruct(); }
   try_level = 0xffffffff;
   /* inlined unwind funclet 00516926 */ { ((SurfaceWindow *)this)->SurfaceWindow::destruct(); }
   return;
@@ -6780,7 +6780,7 @@ i32 CouncilWindow::load_speech(uptr advisor)
   if (4 < (int)advisor) {
     return 0;
   }
-  status = text_open_section((const char *)((u8 *)this + 0xe34),(const char *)((int)&advisor_codes + advisor * 3));
+  status = text_open_section((const char *)council_text_file,(const char *)((int)&advisor_codes + advisor * 3));
   if (status != 0) {
     return 0;
   }
@@ -6981,11 +6981,11 @@ void __cdecl council_on_advisor_button(uptr button_id)
   self = council_state.wnd;
   council_state.video_busy = 1;
   snd_wave_stop_all();
-  ((AviPlayer *)((iptr)self + 0x114))->pause();
+  self->video.pause();
   if (button_id == 0xca) {
     self->draw_speech(0xffffffff);
     wnd_flush_paint();
-    ((ModalMenuWindow *)((iptr)self + 0x48))->end_modal_loop();
+    self->window.end_modal_loop();
   }
   else if (self->council_active_2 == 0) {
     self->draw_speech(0xffffffff);
@@ -6994,17 +6994,17 @@ void __cdecl council_on_advisor_button(uptr button_id)
     if (loaded == 0) {
       self->draw_speech(0xffffffff);
       wnd_flush_paint();
-      ((ModalMenuWindow *)((iptr)self + 0x48))->end_modal_loop();
+      self->window.end_modal_loop();
     }
     else {
-      ((WndBase *)((iptr)self + 0x15c))->hide();
+      self->video.window.hide();
       self->move_video_to_slot(button_id);
       if ((int)button_id < 5) {
         self->draw_speech(0);
-        ((AviPlayer *)((iptr)self + 0x114))->show_frame(
+        self->video.show_frame(
                      (i32)self->speech_line_values[self->speech_advisor_index]);
-        ((SurfaceWindow *)((iptr)self + 0x114))->SurfaceWindow::show();
-        ((AviPlayer *)((iptr)self + 0x114))->play_range(
+        self->video.SurfaceWindow::show();
+        self->video.play_range(
                    (i32)self->speech_line_values[self->speech_advisor_index],
                    (i32)self->speech_line_params[self->speech_advisor_index]);
         self->speech_advisor_index = self->speech_advisor_index + 1;
@@ -7020,7 +7020,7 @@ void CouncilWindow::move_video_to_slot(iptr slot)
 
 {
   if (slot < 5) {
-    ((WndBase *)((int)this + 0x15c))->move_xy((ui_metrics.border_width + 0x5a) * slot + ui_metrics.border_width + 1,
+    video.window.move_xy((ui_metrics.border_width + 0x5a) * slot + ui_metrics.border_width + 1,
                ui_metrics.caption_height + 1);
   }
   return;
@@ -7075,10 +7075,10 @@ void __cdecl council_on_video_end(void)
        ) {
       self->move_video_to_slot((iptr)self->speech_line_advisors[self->speech_advisor_index]);
       self->draw_speech(1);
-      ((AviPlayer *)((iptr)self + 0x114))->show_frame(
+      self->video.show_frame(
                    (i32)self->speech_line_values[self->speech_advisor_index]);
-      ((SurfaceWindow *)((iptr)self + 0x114))->SurfaceWindow::show();
-      ((AviPlayer *)((iptr)self + 0x114))->play_range(
+      self->video.SurfaceWindow::show();
+      self->video.play_range(
                  (i32)self->speech_line_values[self->speech_advisor_index],
                  (i32)self->speech_line_params[self->speech_advisor_index]);
       self->speech_advisor_index = self->speech_advisor_index + 1;
