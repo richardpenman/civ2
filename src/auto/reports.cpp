@@ -458,7 +458,7 @@ void __cdecl attitude_advisor_draw(void)
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x151]);
@@ -510,7 +510,7 @@ void __cdecl attitude_advisor_draw(void)
         city_recalc(city,1);
       }
       gfx_draw_city(&advisor_state.window,city,0,(next_row & 1) * 0x40 + advisor_state.client_x + 2,row_y,0);
-      text_set_font((iptr)&advisor_bold_font);
+      text_set_font(&advisor_bold_font);
       text_set_colors(0x25,0x12,1,1);
       if ((cities[city].unhappy == '\0') &&
          ((int)cities[city].size - (int)(char)cities[city].happy <=
@@ -808,7 +808,7 @@ void __cdecl defense_minister_draw(void)
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   unit = (iptr)label_string(label_table.string_ids[0x14f]);
@@ -868,7 +868,7 @@ void __cdecl defense_minister_draw(void)
           row_x = (next_row & 1) * 0x40 + advisor_state.client_x;
           unit = unit_make_dummy(unit_type,civ);
           gfx_draw_unit(&advisor_state.window,unit,0,row_x + 2,row_y,0,0);
-          text_set_font((iptr)&advisor_bold_font);
+          text_set_font(&advisor_bold_font);
           text_set_colors(0x25,0x12,1,1);
           row_x = advisor_state.client_x;
           name_y = row_y + 0x11;
@@ -1302,7 +1302,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
   row = 0;
   item_y = y2;
   first_item = advisor_state.first_row;
-  text_set_font((iptr)&advisor_bold_font);
+  text_set_font(&advisor_bold_font);
   for (advance = 0; advance < 100; advance++) {
     has_adv = civ_has_advance(civ,advance);
     value = item_index;
@@ -1375,7 +1375,7 @@ void __cdecl intel_report_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x150]);
@@ -1386,7 +1386,7 @@ void __cdecl intel_report_draw(void)
   y2 = y2 + line_height + 6;
   left_x = advisor_state.client_x + 2;
   right_x = advisor_state.client_width + advisor_state.client_x - 4;
-  text_set_font((iptr)&advisor_bold_font);
+  text_set_font(&advisor_bold_font);
   line_height = ((GameFont *)((i8 *)&advisor_bold_font))->line_spacing();
   intel_draw_civ_facts(civ,left_x,right_x,line_height,y2);
   y2 = y2 + line_height + 6;
@@ -1942,7 +1942,7 @@ void __cdecl powergraph_show(void)
   title = (iptr)label_string(label_table.string_ids[0xd6]);
   ((FrameWindow *)graph_wnd)->FrameWindow::create((const char *)title,wnd_style,wnd_x,wnd_y,wnd_width,wnd_height,wnd_arg6,wnd_arg7,wnd_arg8);
   text_set_surface((DibSurface *)graph_wnd);
-  text_set_font((iptr)(graph_wnd + 0x2d8));
+  text_set_font(((GameFont *)(graph_wnd + 0x2d8)));
   origin_x2 = (*(i32 *)((char *)&graph_wnd + 292));
   origin_y2 = (*(i32 *)((char *)&graph_wnd + 296));
   ((FrameWindow *)graph_wnd)->layout();
@@ -2018,7 +2018,7 @@ void __cdecl powergraph_show(void)
     }
   }
   ((DibSurface *)graph_wnd)->set_clip((RECT *)(iptr)(graph_wnd + 700));
-  text_set_font((iptr)&legend_font);
+  text_set_font(&legend_font);
   legend_row = 0;
   for (civ = 1; civ < 8; civ++) {
     if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
@@ -2250,7 +2250,7 @@ void __cdecl top_cities_draw(void)
   bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x155]);
@@ -2275,7 +2275,7 @@ void __cdecl top_cities_draw(void)
       text = civ_get_adjective(cities[city].owner);
       text_append((const char *)text);
       text_append_rparen();
-      text_set_font((iptr)&advisor_font_block.advisor_font);
+      text_set_font(&advisor_font_block.advisor_font);
       shadow_color2 = 1;
       shadow_color = 1;
       bg_color = 0x12;
@@ -2548,7 +2548,7 @@ void __cdecl demographics_draw(void)
   bottom = advisor_state.client_y + 0x174;
   row_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   if (game_language == 0) {
@@ -2870,14 +2870,14 @@ void __cdecl hall_of_fame_draw(void)
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   line_height -= 2;
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x1ba]);
   text_append((const char *)text);
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
-  text_set_font((iptr)&advisor_window_block.hall_of_fame_font);
+  text_set_font(&advisor_window_block.hall_of_fame_font);
   font_height = ((GameFont *)((i8 *)&advisor_window_block.hall_of_fame_font))->line_spacing();
   advisor_state.row_height = font_height - 3;
   advisor_state.list_top = y + 6;
@@ -3410,7 +3410,7 @@ void __cdecl credits_draw_scroll(int full_redraw)
   bottom = advisor_state.client_y + 0x176;
   line_height = ((GameFont *)((i8 *)&credits_font_block.credits_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&credits_font_block.credits_font);
+  text_set_font(&credits_font_block.credits_font);
   text_set_colors(0x25,0x12,2,1);
   advisor_state.row_height = line_height;
   advisor_state.list_top = top;
@@ -3680,7 +3680,7 @@ void __cdecl casualty_timeline_draw(void)
   bottom = casualty.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&casualty.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   unit = (iptr)label_string(label_table.string_ids[0x14f]);
@@ -3741,7 +3741,7 @@ void __cdecl casualty_timeline_draw(void)
       unit = unit_make_dummy(net.casualty_log[civ * 0x12c + log_index].unit_type,
                                  civ);
       gfx_draw_unit(&casualty.window,unit,0,row_x + 2,row_y,0,0);
-      text_set_font((iptr)&advisor_bold_font);
+      text_set_font(&advisor_bold_font);
       text_set_colors(0x25,0x12,1,1);
       row_x = casualty.client_x;
       text_y = row_y + 0x11;
@@ -5249,7 +5249,7 @@ void __cdecl arrival_movie_on_frame(void)
   status = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_centauri3);
   if (status == 0) {
     text_y2 = 0xc;
-    text_set_font(spaceship_arrival_window + 0xf1c);
+    text_set_font((GameFont *)(spaceship_arrival_window + 0xf1c));
     text_set_surface((DibSurface *)(spaceship_arrival_window + 0x4ec));
     text_set_colors(0xff,0,1,1);
     while( true ) {
@@ -6123,7 +6123,7 @@ void DestroyedCivsWindow::run()
   SetRect((LPRECT)slot_sprites,0,0,0x280,0x1e0);
   gfx_dissolve_blit(((DibSurface *)media_wnd),(RECT *)slot_sprites,4,4);
   ((DibSurface *)media_wnd)->load_gif_resource(0x2712,10,0xec,(iptr)&control_list);
-  text_set_font((iptr)caption_font_2);
+  text_set_font((GameFont *)caption_font_2);
   text_set_colors(0x7c,0x81,1,1);
   text_clear();
   str_clear((char *)text_buf);
@@ -6139,7 +6139,7 @@ void DestroyedCivsWindow::run()
   text_clear();
   text_append_label(0x1c8);
   font2.set_styled(0,0x10,3);
-  text_set_font((iptr)&font2);
+  text_set_font(&font2);
   width = 0x280;
   status = font2.line_spacing();
   text_draw_centered(((DibSurface *)media_wnd),textbuf.buf,0,0x1dc - status,width);
@@ -6432,7 +6432,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
   wnd_create_with_surface((const char *)&str_empty_159,0xc02,0,0,ui_metrics.border_width * 6 + 0x1c2,
              ui_metrics.caption_height * 2 + ui_metrics.bevel_width + 0xfc,(iptr)&art_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
   ((WndBase *)&window)->set_caption_height(ui_metrics.caption_height);
-  ui_set_button_font((iptr)&dialog_plain_font_obj_block.dialog_plain_font_obj);
+  ui_set_button_font(&dialog_plain_font_obj_block.dialog_plain_font_obj);
   create_buttons();
   draw_background();
   repaint();

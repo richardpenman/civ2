@@ -193,7 +193,7 @@ int __cdecl memblock_alloc(MemBlock *block,uint size)
 }
 
 /* 004b1396 auto */
-int __cdecl mem_checksum(iptr data,uint size)
+int __cdecl mem_checksum(const void *data,uint size)
 
 {
   uint sign;

@@ -982,7 +982,7 @@ void EditorWindow::tribe_editor_paint()
                      civ_primary_colors_block.civ_colors[leaders[item_uptr].color].primary);
   gfx_draw_tiled_frame(this,box_x,box_y,0x40,0x40,6);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(10,10,0,0);
   box_x = tribe_editor_combo_x_table_block.tribe_editor_edit_x_table[0] + client_x;
   box_y = tribe_editor_combo_x_table_block.tribe_editor_edit_y_table[0] + client_y;
@@ -1072,7 +1072,7 @@ void EditorWindow::tribe_editor_main()
   }
   editor_ui.bg_surface = bg_surface2;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
   wnd_width_u = 0x230;
   wnd_height_u = 0x17c;
   item_uptr = 0;
@@ -1624,7 +1624,7 @@ void __cdecl editor_text_dlg_redraw(void)
   ((FrameWindow *)((i8 *)&editor_text_dlg.wnd))->FrameWindow::draw_caption();
   gfx_fill_rect(&editor_text_dlg.wnd,(RECT *)&editor_text_dlg.fill_rect,0x1d);
   text_set_surface(&editor_text_dlg.wnd);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   ((DibSurface *)((i8 *)&editor_text_dlg.wnd))->wnd_blit_surface();
   return;

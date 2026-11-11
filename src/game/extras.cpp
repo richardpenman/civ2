@@ -1070,7 +1070,7 @@ void extras_city_status_draw(void)
     line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
     status_collect(civ);
     text_set_surface(&advisor_state.window);
-    text_set_font((iptr)&advisor_font_block.advisor_font);
+    text_set_font(&advisor_font_block.advisor_font);
     text_set_colors(0x25, 0x12, 2, 1);
     text_clear();
     text_append(label_string(label_table.string_ids[0x14e]));
@@ -1101,7 +1101,7 @@ void extras_city_status_draw(void)
     status_col_name = advisor_state.client_x + 0x8c;
     status_col_res = status_col_name + 0x69;
     status_col_prod = status_col_res + 0x78;
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(status_sort == SORT_SIZE ? 0x72 : 0x29, 0x12, 1, 1);
     gfx_draw_text(extras_text("size"), advisor_state.client_x + 0x2c, status_header_top);
     text_set_colors(status_sort == SORT_NAME ? 0x72 : 0x29, 0x12, 1, 1);
@@ -1126,7 +1126,7 @@ void extras_city_status_draw(void)
         int city = status_cities[advisor_state.first_row + row], y = status_list_top + row * 0x18, ty = y + 9;
         uint cost;
         gfx_draw_city(&advisor_state.window, city, 0, ((row + 1) & 1) * 0x40 + advisor_state.client_x + 2, y, 0);
-        text_set_font((iptr)&advisor_bold_font);
+        text_set_font(&advisor_bold_font);
         text_set_colors(0x25, 0x12, 1, 1);
         gfx_draw_text((const char *)&cities[city].name, status_col_name, ty);
         x = status_col_res;
@@ -1322,7 +1322,7 @@ static void tip_show(int x, int y, POINT at)
     gfx_fill_rect(m, &r, 10);
     gfx_draw_rect_frame(m, &r, 0x29);
     text_set_surface(m);
-    text_set_font(font);
+    text_set_font((GameFont *)font);
     for (i = 0; i < n; i++) {
         char part[96];
         const char *t = lines[i];
@@ -1462,7 +1462,7 @@ void extras_draw_map_messages(iptr surface, int blit)
     SetRect(&r, m->client_x, y, m->client_x + m->client_width, y);
     ((DibSurface *)m)->set_clip(&clip);
     text_set_surface((DibSurface *)surface);
-    text_set_font(font);
+    text_set_font((GameFont *)font);
     for (i = 0; i < 4; i++) {
         if (!messages[i].text[0])
             continue;

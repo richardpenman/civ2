@@ -5544,7 +5544,7 @@ void __cdecl unit_sound_editor_redraw(void)
   ((FrameWindow *)((i8 *)&unit_sound_editor.window))->FrameWindow::draw_caption();
   gfx_fill_rect(&unit_sound_editor.window,(RECT *)&unit_sound_editor.fill_rect,0x1d);
   text_set_surface(&unit_sound_editor.window);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(10,10,0,0);
   row_height = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   row_height += 8;
@@ -8950,7 +8950,7 @@ void EditorWindow::unit_editor_paint()
   gfx_draw_tiled_frame(this,pic_x,pic_y,0x40,0x40,6);
   gfx_draw_tiled_frame(this,client_x + 0x79,client_y + 0x4f,0x14d,0x47,6);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   text_x2 = client_x + (int)wnd_width_u / 2 + 5;
   text_y2 = unit_editor_ctrl_positions_block.unit_editor_prereq_y + client_y + font_height_uptr * -2 - 2;
@@ -9067,8 +9067,8 @@ void EditorWindow::unit_editor_window_run()
   }
   editor_ui.bg_surface = bg_surface2;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
-  ui_set_ctrl_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
+  ui_set_ctrl_font(&editor_font_block.editor_font);
   ui_set_ctrl_text_color(0x29);
   ui_set_ctrl_text_shadow(0x12,1,1);
   ui_set_ctrl_disabled_color(0x25);

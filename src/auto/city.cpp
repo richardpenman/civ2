@@ -258,7 +258,7 @@ void TaxRateDialog::paint()
                        dialog_h);
   }
   text_set_surface(this);
-  text_set_font((iptr)&ui_text_font);
+  text_set_font((GameFont *)&ui_text_font);
   if (rates_clamped == 0) {
     text_set_colors(0x25,0x12,1,1);
   }
@@ -977,7 +977,7 @@ void EditorWindow::city_editor_draw()
   sprite->draw_keyed((RECT *)draw_rect,this,0,icon_x,icon_y + 8);
   gfx_draw_tiled_frame(this,icon_x,icon_y,0x40,0x40,6);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   label_x = city_editor_combo_x_table_block.city_editor_combo_x_table[0] + client_x + 0x32;
   label_y = ((city_editor_combo_x_table_block.city_editor_combo_y_table[0] + client_y) - font_height_uptr) - 2;
@@ -1042,8 +1042,8 @@ void EditorWindow::city_editor_open_window()
   }
   editor_ui.bg_surface = bg_surface2;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
-  ui_set_ctrl_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
+  ui_set_ctrl_font(&editor_font_block.editor_font);
   ui_set_ctrl_text_color(0x29);
   ui_set_ctrl_text_shadow(0x12,1,1);
   ui_set_ctrl_disabled_color(0x25);
@@ -1315,7 +1315,7 @@ static void trade_advisor_draw_left_cell(iptr civ,int row_y,int total_science2,i
       city = city2;
       draw_x = (row & 1) * 0x40 + col_x;
       gfx_draw_city(&advisor_state.window,city2,0,draw_x,row_y,0);
-      text_set_font((iptr)&advisor_bold_font);
+      text_set_font(&advisor_bold_font);
       text_set_colors(0x25,0x12,1,1);
       col_x += 0x8a;
       gfx_draw_text((const char *)&cities[city].name,col_x,text_y2);
@@ -1346,7 +1346,7 @@ static void trade_advisor_draw_left_cell(iptr civ,int row_y,int total_science2,i
     }
   }
   else if (city_count + 1 == item) {
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(0x29,10,1,1);
     text_clear();
     text_append_label(0x87);
@@ -1360,7 +1360,7 @@ static void trade_advisor_draw_left_cell(iptr civ,int row_y,int total_science2,i
     text_append_label(0x88);
     text_append_colon();
     text_append_long(total_tax2);
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(0x29,10,1,1);
     draw_x = gfx_draw_text((const char *)&textbuf.buf,col_x + 0x8a,text_y2);
     ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)sprite_rect3,&advisor_state.window,draw_x,text_y2 + 2);
@@ -1370,7 +1370,7 @@ static void trade_advisor_draw_left_cell(iptr civ,int row_y,int total_science2,i
     text_append_label(0x16e);
     text_append_colon();
     text_append_int(total_science2);
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(0x29,10,1,1);
     draw_x = gfx_draw_text((const char *)&textbuf.buf,col_x + 0x8a,text_y2);
     ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.science_icon_sprite))->draw((RECT *)sprite_rect4,&advisor_state.window,draw_x,text_y2 + 2);
@@ -1389,7 +1389,7 @@ static void trade_advisor_draw_left_cell(iptr civ,int row_y,int total_science2,i
     text_append_int((total_science2 - 1 + upkeep2) / total_science2);
     text_append_space();
     text_append_label(0x2c);
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(0x29,10,1,1);
     gfx_draw_text((const char *)&textbuf.buf,col_x + 0x8a,text_y2);
   }
@@ -1420,7 +1420,7 @@ static void trade_advisor_draw_right_cell(iptr civ,int text_y2,int improvement_k
       }
     }
     if (-1 < city2) {
-      text_set_font((iptr)&advisor_bold_font);
+      text_set_font(&advisor_bold_font);
       improvement = city2;
       text_clear();
       text_append_int(improvement_counts[improvement]);
@@ -1443,7 +1443,7 @@ static void trade_advisor_draw_right_cell(iptr civ,int text_y2,int improvement_k
     }
   }
   else if (improvement_kinds + 1 == item) {
-    text_set_font((iptr)&advisor_bold_font);
+    text_set_font(&advisor_bold_font);
     text_set_colors(0x7a,10,1,1);
     text_clear();
     text_append_label(0x87);
@@ -1499,7 +1499,7 @@ void __cdecl trade_advisor_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = label_string(label_table.string_ids[0x152]);
@@ -1602,7 +1602,7 @@ void __cdecl trade_advisor_draw(void)
         text_clear();
         text = label_string(label_table.string_ids[0x16c]);
         text_append(text);
-        text_set_font((iptr)&advisor_font_block.advisor_font);
+        text_set_font(&advisor_font_block.advisor_font);
         text_set_colors(0x29,10,1,1);
         gfx_draw_text((const char *)&textbuf.buf,col_x + 0x8a,text_y2);
         text_clear();
@@ -1717,7 +1717,7 @@ void __cdecl city_status_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = label_string(label_table.string_ids[0x14e]);
@@ -1771,7 +1771,7 @@ void __cdecl city_status_draw(void)
       col_x = (next_row & 1) * 0x40 + advisor_state.client_x + 2;
       row = next_row;
       gfx_draw_city(&advisor_state.window,city,0,col_x,row_y,0);
-      text_set_font((iptr)&advisor_bold_font);
+      text_set_font(&advisor_bold_font);
       text_set_colors(0x25,0x12,1,1);
       text_y2 = row_y + 9;
       col_x = advisor_state.client_x + 0x8c;
@@ -1943,7 +1943,7 @@ void __cdecl wonders_report_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x29,0x12,2,1);
   for (era = 0; era < 4; era++) {
     era_counts[era] = 0;
@@ -2039,7 +2039,7 @@ void __cdecl wonders_report_draw(void)
           text_append_rparen();
           civ = (int)cities[city].owner;
         }
-        text_set_font((iptr)&advisor_font_block.advisor_font);
+        text_set_font(&advisor_font_block.advisor_font);
         shadow_dy = 1;
         shadow_dx = 1;
         shadow_color = 0x12;
@@ -8226,7 +8226,7 @@ void EditorWindow::impr_editor_paint()
   }
   gfx_draw_tiled_frame(this,icon_x,icon_y,0x48,0x28,6);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(10,10,0,0);
   gfx_fill_rect_xywh(this,client_x + 0x32,client_y + 0xe8,0x1cc,0x6e,0x29);
   gfx_draw_frame_rect(this,client_x + 0x32,client_y + 0xe8,0x1cc,0x6e,10);
@@ -8329,8 +8329,8 @@ void EditorWindow::impr_editor_window_run()
   }
   editor_ui.bg_surface = bg_surface2;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
-  ui_set_ctrl_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
+  ui_set_ctrl_font(&editor_font_block.editor_font);
   ui_set_ctrl_text_color(0x29);
   ui_set_ctrl_text_shadow(0x12,1,1);
   ui_set_ctrl_disabled_color(0x25);
@@ -12118,7 +12118,7 @@ void CityWindow::begin_draw(iptr rect)
 {
   gfx_set_draw_target(this);
   text_set_surface(this);
-  text_set_font((iptr)((u8 *)&city_font));
+  text_set_font(((GameFont *)(u8 *)&city_font));
   blit_bg_rect((int *)rect);
   return;
 }
@@ -13551,7 +13551,7 @@ void CityWindow::draw_resource_map(int blit)
     origin_y2 = half_tile_h * 4 + map_top;
     draw_resource_tiles(half_tile_w,half_tile_h,origin_x2,origin_y2);
     draw_resource_yields(tile_w,half_tile_w,half_tile_h,origin_x2,origin_y2);
-    text_set_font((iptr)&city_font);
+    text_set_font((GameFont *)&city_font);
     gfx_set_zoom_scale(view_scale * 4 - 8);
     text_clear();
     text_append_label(0x1c2);
@@ -14549,7 +14549,7 @@ void CityWindow::draw_units_present()
   cell_x = row_start_x;
   cell_y = area_top + offset_y;
   text_set_surface(this);
-  text_set_font((iptr)&city_font);
+  text_set_font((GameFont *)&city_font);
   saved_per_row = per_row;
   for (; -1 < unit; unit = unit_next_in_stack(unit)) {
     gfx_draw_unit(this,unit,4,cell_x,cell_y,zoom2,0);
@@ -16769,7 +16769,7 @@ void CityWindow::create_exit_button(int show)
     button = button_ctor(this_00);
   }
   exit_button = button;
-  ui_set_button_font((iptr)((u8 *)&city_font));
+  ui_set_button_font(((GameFont *)(u8 *)&city_font));
   height = scale(0x18);
   width = scale(0x39);
   scaled = scale(0x16c);
@@ -16832,7 +16832,7 @@ void CityWindow::create_change_button(int show)
       button = button_ctor(this_00);
     }
     change_button = button;
-    ui_set_button_font((iptr)((u8 *)&city_font));
+    ui_set_button_font(((GameFont *)(u8 *)&city_font));
     origin_x = margin_x_2;
     cx = client_x;
     cy = client_y;
@@ -16992,7 +16992,7 @@ void CityWindow::create_controls()
   improvements_scrollbar = scrollbar;
   origin_x2 = margin_x_2 + client_x;
   origin_y2 = client_y + content_offset_y;
-  ui_set_button_font((iptr)((u8 *)&city_font));
+  ui_set_button_font(((GameFont *)(u8 *)&city_font));
   create_exit_button(0);
   height = scale(0x18);
   width = scale(0x44);

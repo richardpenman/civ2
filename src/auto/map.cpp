@@ -5524,7 +5524,7 @@ void EditorWindow::terrain_editor_draw()
     sprite->draw((RECT *)sprite_rect,this,icon_x,icon_y + height / 2);
   }
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   gfx_draw_tiled_frame(this,client_x + 0x1c,client_y + 0xc2,0x1e6,0x21,6);
   gfx_draw_tiled_frame(this,client_x + 0x1c,client_y + 0xf9,0x1e6,0x21,6);
@@ -5659,7 +5659,7 @@ void EditorWindow::terrain_editor_run()
   }
   editor_ui.bg_surface = new_surface;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
   wnd_width_u = 0x230;
   wnd_height_u = 0x17c;
   item_uptr = 0;

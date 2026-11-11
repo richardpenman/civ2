@@ -636,7 +636,7 @@ void EditorWindow::tech_editor_paint()
   gfx_set_scale_ratio(1,1);
   gfx_draw_tiled_frame(this,icon_x,icon_y,0x48,0x28,6);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   label_x = tech_editor_combo_x_table_block.tech_editor_prereq1_ctrl_x + client_x + 0x32;
   label_y = ((tech_editor_combo_x_table_block.tech_editor_prereq1_ctrl_y + client_y) - font_height_uptr) - 2;
@@ -722,8 +722,8 @@ void EditorWindow::tech_editor_dialog_run()
   }
   editor_ui.bg_surface = surface;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
-  ui_set_ctrl_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
+  ui_set_ctrl_font(&editor_font_block.editor_font);
   ui_set_ctrl_text_color(0x29);
   ui_set_ctrl_text_shadow(0x12,1,1);
   ui_set_ctrl_disabled_color(0x25);
@@ -1783,7 +1783,7 @@ void __cdecl science_advisor_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x153]);
@@ -1895,7 +1895,7 @@ void __cdecl science_advisor_draw(void)
   row = 0;
   draw_y = cur_y;
   first_item = advisor_state.first_row;
-  text_set_font((iptr)&advisor_bold_font);
+  text_set_font(&advisor_bold_font);
   for (advance = 0; advance < 100; advance++) {
     has_advance = civ_has_advance(civ,advance);
     value = item_index;
@@ -2232,7 +2232,7 @@ static int civ_score_draw_objectives(iptr civ,int header_y,int line_height)
   }
   text_y3 += 6;
   text_set_colors(0x7a,0x12,1,1);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_clear();
   text = civ_get_adjective(civ2);
@@ -2261,7 +2261,7 @@ static void civ_score_draw_total(int left_x,int text_y3,int &draw_x)
     measure_pass = 1;
   }
   while( true ) {
-    text_set_font((iptr)&advisor_font_block.advisor_font);
+    text_set_font(&advisor_font_block.advisor_font);
     text_clear();
     if (civ_score.total < civ_score.conquest_bonus) {
       text_append_label(0x198);
@@ -2337,14 +2337,14 @@ void __cdecl civ_score_window_draw(void)
   list_bottom = advisor_state.client_y + 0x174;
   line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x157]);
   text_append((const char *)text);
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,header_y,advisor_state.client_width);
   header_y += line_height;
-  text_set_font((iptr)&advisor_bold_font);
+  text_set_font(&advisor_bold_font);
   line_height = ((GameFont *)((i8 *)&advisor_bold_font))->line_spacing();
   text_clear();
   text = civ_leader_title(civ);
@@ -2550,7 +2550,7 @@ void __cdecl civ_rating_window_draw(void)
   civ_rating_title_font_block.civ_rating_title_index = title_index;
   casualty_window_block.civ_rating_percent = rating_percent;
   text_set_surface(&advisor_state.window);
-  text_set_font((iptr)&advisor_font_block.advisor_font);
+  text_set_font(&advisor_font_block.advisor_font);
   text_set_colors(0x25,0x12,2,1);
   text_clear();
   text = (iptr)label_string(label_table.string_ids[0x19c]);
@@ -2593,13 +2593,13 @@ void __cdecl civ_rating_window_draw(void)
     /* BF-064: expanded within the text buffer */
     text_expand_vars_max(line_buf,textbuf.buf,TEXTBUF_SIZE);
     if (i < title_index) {
-      text_set_font((iptr)&civ_rating_title_font_block.civ_rating_title_font);
+      text_set_font(&civ_rating_title_font_block.civ_rating_title_font);
       text_set_colors(0x1d,0x12,0xffffffff,0xffffffff);
       line_height = ((GameFont *)((i8 *)&civ_rating_title_font_block.civ_rating_title_font))->line_spacing();
       line_height -= 3;
     }
     else {
-      text_set_font((iptr)&advisor_font_block.advisor_font);
+      text_set_font(&advisor_font_block.advisor_font);
       line_height = ((GameFont *)((i8 *)&advisor_font_block.advisor_font))->line_spacing();
       line_height -= 4;
       text_set_colors(0x25,0x12,0xffffffff,0xffffffff);
@@ -7853,7 +7853,7 @@ void EditorWindow::cosmic_editor_draw_bg()
   this->FrameWindow::draw_caption();
   gfx_fill_rect(this,(RECT *)&client_rect,0x1a);
   text_set_surface(this);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   wnd_blit_surface();
   return;
@@ -7899,8 +7899,8 @@ void EditorWindow::cosmic_editor_dialog()
   }
   editor_ui.bg_surface = surface;
   ((GameFont *)((i8 *)&editor_font_block.editor_font))->set(0,editor_font_size);
-  ui_set_default_font((iptr)&editor_font_block.editor_font);
-  ui_set_ctrl_font((iptr)&editor_font_block.editor_font);
+  ui_set_default_font(&editor_font_block.editor_font);
+  ui_set_ctrl_font(&editor_font_block.editor_font);
   ui_set_ctrl_text_color(0x29);
   ui_set_ctrl_text_shadow(0x12,1,1);
   ui_set_ctrl_disabled_color(0x25);

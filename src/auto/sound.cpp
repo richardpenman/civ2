@@ -944,7 +944,7 @@ void __cdecl snd_avi_stream_refill(WaveSource *source)
     source->stream_pos = source->stream_pos + bytes_read;
     shortfall = (int)source->buf_size - bytes_read;
     if (shortfall != 0) {
-      snd_fill_silence_u8(source->buf_next + bytes_read,shortfall);
+      snd_fill_silence_u8((u8 *)(source->buf_next + bytes_read),shortfall);
     }
   }
   return;
@@ -1427,7 +1427,7 @@ void __cdecl snd_wave_stop_all(void)
 }
 
 /* 005d6b4c auto */
-void __cdecl snd_fill_silence_u8(iptr dest,uint length)
+void __cdecl snd_fill_silence_u8(u8 *dest,uint length)
 
 {
   uptr i;
@@ -1525,7 +1525,7 @@ i32 __cdecl snd_wave_on_buffer_done(HWAVEOUT wave_out,WaveHeader *wave_hdr)
           source = source->next;
         }
         if (source == (WaveSource *)0x0) {
-          snd_fill_silence_u8(buffer->hdr->data,buffer->hdr->length);
+          snd_fill_silence_u8((u8 *)buffer->hdr->data,buffer->hdr->length);
           buffer->flags = buffer->flags & 0xffffffdf;
         }
         else {

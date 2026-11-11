@@ -1088,7 +1088,7 @@ void RadioGroup::create(iptr parent,i32 ctrl_id,iptr rect,u32 columns,u32 item_c
   this->item_count = item_count;
   this->columns = columns;
   selected = 0;
-  handle = radiogrp_create_items((int *)&this->item_count,(int *)rect,columns,(iptr)this,item_count,labels,1,
+  handle = radiogrp_create_items((int *)&this->item_count,(int *)rect,columns,this,item_count,(char **)labels,1,
                        radio_font);
   items_handle = handle;
   handle = (u32)mem_handle_lock(items_handle);
@@ -1372,7 +1372,7 @@ void __cdecl ctrl_hwnd_set_focus(HWND hwnd)
 }
 
 /* 005c90ca auto */
-void __cdecl ctrl_paint_parent_bkgnd(iptr paint,HWND hwnd)
+void __cdecl ctrl_paint_parent_bkgnd(PAINTSTRUCT *paint,HWND hwnd)
 
 {
   LONG own_data;
@@ -1394,7 +1394,7 @@ void __cdecl ctrl_paint_parent_bkgnd(iptr paint,HWND hwnd)
     parent_wnd = (WndBase *)GetWindowLongA(parent_hwnd,0);
     value = (int)parent_wnd->get_window();
     if ((int)((NativeWindow *)value)->bg_brush != 0) {
-      FillRect(*(HDC *)paint,(RECT *)(paint + 8),((NativeWindow *)value)->bg_brush);
+      FillRect(paint->hdc,&paint->rcPaint,((NativeWindow *)value)->bg_brush);
     }
   }
   else {
@@ -1402,27 +1402,27 @@ void __cdecl ctrl_paint_parent_bkgnd(iptr paint,HWND hwnd)
     parent_wnd = (WndBase *)GetWindowLongA(parent_hwnd,0);
     window = parent_wnd->get_window();
     dib2 = self->get_dib();
-    origin.x = *(int *)(paint + 8);
-    origin.y = *(int *)(paint + 0xc);
+    origin.x = paint->rcPaint.left;
+    origin.y = paint->rcPaint.top;
     MapWindowPoints(hwnd,window->hwnd,&origin,1);
     if ((window->palette != 0) && (display_palette.palettized == 1)) {
-      SelectPalette(*(HDC *)paint,window->palette,0);
-      RealizePalette(*(HDC *)paint);
+      SelectPalette(paint->hdc,window->palette,0);
+      RealizePalette(paint->hdc);
     }
     rop = 0xcc0020;
     hdcSrc = dib2->hdc;
     own_data = origin.x;
     y1 = origin.y;
-    height = rect_height((RECT *)(paint + 8));
-    value = rect_width((RECT *)(paint + 8));
-    BitBlt(*(HDC *)paint,*(int *)(paint + 8),*(int *)(paint + 0xc),value,height,hdcSrc,own_data,y1
+    height = rect_height(&paint->rcPaint);
+    value = rect_width(&paint->rcPaint);
+    BitBlt(paint->hdc,paint->rcPaint.left,paint->rcPaint.top,value,height,hdcSrc,own_data,y1
            ,rop);
   }
   return;
 }
 
 /* 005c9222 auto */
-void __cdecl ctrl_parse_hotkey(iptr ctrl,const char *text)
+void __cdecl ctrl_parse_hotkey(Control *ctrl,const char *text)
 
 {
   size_t len;
@@ -1431,27 +1431,27 @@ void __cdecl ctrl_parse_hotkey(iptr ctrl,const char *text)
   char hotkey[4];
   
   cursor = (char *)text;
-  *(i32 *)(ctrl + 0x28) = 0;
+  ctrl->hotkey_pos = 0;
   for (; *cursor != '\0'; cursor++) {
     if (*cursor == '~') {
       /* remove the '~' */
-      for (pos = *(uptr *)(ctrl + 0x28); len = _strlen((char *)text), pos < len;
+      for (pos = ctrl->hotkey_pos; len = _strlen((char *)text), pos < len;
           pos = pos + 1) {
         *(i8 *)(pos + text) = *(i8 *)(pos + 1 + text);
       }
       break;
     }
-    *(int *)(ctrl + 0x28) = *(int *)(ctrl + 0x28) + 1;
+    ctrl->hotkey_pos = ctrl->hotkey_pos + 1;
   }
   len = _strlen((char *)text);
-  if (*(uint *)(ctrl + 0x28) < len) {
-    hotkey[0] = *(char *)(*(int *)(ctrl + 0x28) + text);
+  if (ctrl->hotkey_pos < len) {
+    hotkey[0] = *(char *)((int)ctrl->hotkey_pos + text);
     hotkey[1] = 0;
     __strlwr(hotkey);
-    *(char *)(ctrl + 0x25) = hotkey[0];
+    *(char *)&ctrl->hotkey_char = hotkey[0];
   }
   else {
-    *(i32 *)(ctrl + 0x28) = 0xffffffff;
+    ctrl->hotkey_pos = 0xffffffff;
   }
   return;
 }
@@ -1468,7 +1468,7 @@ LRESULT __stdcall ctrl_default_wndproc(HWND hwnd,uint msg,WPARAM wparam,LPARAM l
   if (msg < 0x10) {
     if (msg == 0xf) {
       BeginPaint(hwnd,&ps);
-      ctrl_paint_parent_bkgnd((iptr)&ps,hwnd);
+      ctrl_paint_parent_bkgnd(&ps,hwnd);
       EndPaint(hwnd,&ps);
       return 0;
     }
@@ -1806,7 +1806,7 @@ button_create_hwnd(int *rect,Control *ctrl,const char *label,int visible,GameFon
   value = rect_width((RECT *)rect);
   hwnd2 = CreateWindowExA(4,str_mscontrolclass_2,((i8 *)&button_wnd_title),style2,*rect,
                               rect[1],value,height,hWndParent,hMenu,hInstance,lpParam);
-  ctrl_parse_hotkey((iptr)button,(const char *)label_text);
+  ctrl_parse_hotkey(button,(const char *)label_text);
   bounds.left = *rect;
   bounds.top = rect[1];
   bounds.right = rect[2];
@@ -2193,7 +2193,7 @@ HWND __cdecl checkbox_create_hwnd(RECT *rect,Control *ctrl,char *label,int visib
   value = rect_width(rect);
   check_hwnd = CreateWindowExA(4,str_mscontrolclass_4,((i8 *)&wnd_modal_stack_below_block.checkbox_wnd_title),style2,rect->left,
                            rect->top,value,height,check_hwnd,hMenu,hInstance,lpParam);
-  ctrl_parse_hotkey((iptr)ctrl,(const char *)label_copy);
+  ctrl_parse_hotkey(ctrl,(const char *)label_copy);
   bmp_unchecked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x132);
   bmp_checked = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x131);
   bmp_focus = LoadBitmapA(err_report_ctx_block.app_hinstance,(LPCSTR)0x130);
@@ -2448,7 +2448,7 @@ static void checkbox_paint(HWND hwnd,ControlBlock *block,Checkbox *checkbox)
   }
   OffsetRect(&rect,-rect.left,-rect.top);
   hdc = BeginPaint(hwnd,&ps);
-  ctrl_paint_parent_bkgnd((iptr)&ps,hwnd);
+  ctrl_paint_parent_bkgnd(&ps,hwnd);
   result = ((GameFont *)checkbox->font)->get_handle();
   font_data = (i32 *)mem_handle_lock(result);
   old_font = SelectObject(hdc,(HGDIOBJ)*font_data);
@@ -3669,7 +3669,7 @@ void RadioGroup::show_all()
 }
 
 /* 005d4167 auto */
-void __cdecl ctrl_set_pending_font(iptr font)
+void __cdecl ctrl_set_pending_font(GameFont *font)
 
 {
   (*(i8 * *)(draw_target.font_rest + 4)) = (i8 *)font;
@@ -3783,7 +3783,7 @@ int __cdecl radiogrp_item_height(GameFont *font)
 
 /* 005d8e3f auto */
 i32 __cdecl
-radiogrp_create_items(int *count_out,int *rect,int columns,iptr group,int item_count,iptr labels,int visible
+radiogrp_create_items(int *count_out,int *rect,int columns,RadioGroup *group,int item_count,char **labels,int visible
             ,i32 font)
 
 {
@@ -3848,7 +3848,7 @@ radiogrp_create_items(int *count_out,int *rect,int columns,iptr group,int item_c
                               (half_row - half_item) + item_y,col_width,nHeight,window->hwnd,hMenu,
                               hInstance,lpParam);
     ((RadioItem *)items)[index].hwnd = item_hwnd;
-    block = ctrl_init_block((i32)((RadioItem *)items)[index].hwnd,group);
+    block = ctrl_init_block((i32)((RadioItem *)items)[index].hwnd,(int)group);
     if (index == 0) {
       block->shared_bitmaps = 0;
     }
@@ -3864,14 +3864,14 @@ radiogrp_create_items(int *count_out,int *rect,int columns,iptr group,int item_c
     SetRect(&((RadioItem *)items)[index].rect,item_x,(half_row - half_item) + item_y,
             item_x + col_width,(half_row - half_item) + item_y + nHeight);
     ((RadioItem *)items)[index].index = index;
-    label = *(char **)(labels + index * 4);
+    label = labels[index];
     if (*label == '!') {
       ((RadioItem *)items)[index].enabled = 0;
       label++;
     }
     else if (*label == '^') {
       ((RadioItem *)items)[index].enabled = 1;
-      ((RadioGroup *)group)->set_selected(index);
+      (group)->set_selected(index);
       label++;
     }
     else {
@@ -4260,7 +4260,7 @@ static void radiogrp_item_paint(HWND hwnd,ControlBlock *block,RadioGroup *group,
   InvalidateRect(hwnd,(RECT *)0x0,1);
   OffsetRect(&rect,-rect.left,-rect.top);
   hdc = BeginPaint(hwnd,&ps);
-  ctrl_paint_parent_bkgnd((iptr)&ps,hwnd);
+  ctrl_paint_parent_bkgnd(&ps,hwnd);
   result = ((GameFont *)(group)->radio_font)->get_handle();
   font_data = (i32 *)mem_handle_lock(result);
   old_font = SelectObject(hdc,(HGDIOBJ)*font_data);

@@ -766,7 +766,7 @@ void PictureWindow::open(uint resource_id,u32 report,u32 style,u32 img_width,u32
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   ((PictureWindow *)((i8 *)&advisor_state.window))->close();
-  ui_set_button_font((iptr)&advisor_button_font_block.advisor_button_font);
+  ui_set_button_font(&advisor_button_font_block.advisor_button_font);
   controls_created = 0;
   frame_state = 0;
   page_count = 1;
@@ -4012,7 +4012,7 @@ uint __cdecl dlg_check_get(i32 index)
 }
 
 /* 0052182c auto */
-void __cdecl dialog_prepend_title_label(iptr dialog,i32 label_id)
+void __cdecl dialog_prepend_title_label(Dialog *dialog,i32 label_id)
 
 {
   size_t len;
@@ -4023,14 +4023,14 @@ void __cdecl dialog_prepend_title_label(iptr dialog,i32 label_id)
   
   title[0] = '\0';
   str_append_label(title,label_id);
-  if (*(int *)(dialog + 0x134) != 0) {
+  if (dialog->title_text != 0) {
     str_append_max(title,((i8 *)&dialog_title_label_space_str),sizeof title);
-    str_append_max((char *)((void *)title),(const char *)((void *)(*(i32 *)(dialog + 0x134))),sizeof title);
+    str_append_max((char *)((void *)title),(const char *)((void *)dialog->title_text),sizeof title);
   }
   len = _strlen(title);
-  buffer = memblock_alloc((MemBlock *)(dialog + 0x254),len + 1);
-  *(i32 *)(dialog + 0x134) = buffer;
-  crt_strcpy((char *)((void *)(*(i32 *)(dialog + 0x134))),(const char *)((void *)title));
+  buffer = memblock_alloc((MemBlock *)dialog->string_pool,len + 1);
+  dialog->title_text = buffer;
+  crt_strcpy((char *)((void *)dialog->title_text),(const char *)((void *)title));
   return;
 }
 
@@ -8591,10 +8591,10 @@ void Dialog::create_controls()
   }
   if ((style_flags & 0x200) == 0) {
     unused_flag = 0;
-    ctrl_set_pending_font((iptr)dialog_state.active->body_font);
-    ui_set_button_font((iptr)&dialog_plain_font_obj_block.dialog_plain_font_obj);
-    ui_set_ctrl_font((iptr)dialog_state.active->body_font);
-    ui_set_default_font((iptr)&dialog_plain_font_obj_block.dialog_plain_font_obj);
+    ctrl_set_pending_font((GameFont *)dialog_state.active->body_font);
+    ui_set_button_font(&dialog_plain_font_obj_block.dialog_plain_font_obj);
+    ui_set_ctrl_font((GameFont *)dialog_state.active->body_font);
+    ui_set_default_font(&dialog_plain_font_obj_block.dialog_plain_font_obj);
     is_checkbox = style_flags & 4;
     is_listbox = style_flags & 0x1000;
     if ((is_checkbox == 0) && (is_listbox == 0)) {
@@ -11528,7 +11528,7 @@ void __cdecl ui_set_ctrl_disabled_color(i32 color_index)
 }
 
 /* 005d25a8 auto */
-void __cdecl ui_set_ctrl_font(iptr font)
+void __cdecl ui_set_ctrl_font(GameFont *font)
 
 {
   (*(i8 * *)(draw_target.font_rest + 8)) = (i8 *)font;
@@ -11536,7 +11536,7 @@ void __cdecl ui_set_ctrl_font(iptr font)
 }
 
 /* 005d268e auto */
-void __cdecl ui_set_default_font(iptr font)
+void __cdecl ui_set_default_font(GameFont *font)
 
 {
   (*(i8 * *)(draw_target.font_rest + 12)) = (i8 *)font;
@@ -11589,7 +11589,7 @@ void __cdecl ui_set_radio_text_shadow(i32 color_index,i32 dx,i32 dy)
 }
 
 /* 005d8236 auto */
-void __cdecl ui_set_button_font(iptr font)
+void __cdecl ui_set_button_font(GameFont *font)
 
 {
   (*(i8 * *)draw_target.font_rest) = (i8 *)font;

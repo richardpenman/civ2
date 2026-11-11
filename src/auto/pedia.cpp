@@ -1875,9 +1875,9 @@ void PediaWindow::create()
   create_list_buttons(left_x,yTop,btn_height,avail_width);
   create_advance_buttons(left_x,yTop,btn_height,avail_width);
   create_detail_buttons(left_x,yTop,btn_height,avail_width);
-  ui_set_button_font((iptr)&font_size24);
+  ui_set_button_font(&font_size24);
   clear_links();
-  ui_set_default_font((iptr)&font_size21);
+  ui_set_default_font(&font_size21);
   if (this == (PediaWindow *)0x0) {
     edit_parent = (u8 *)0x0;
   }

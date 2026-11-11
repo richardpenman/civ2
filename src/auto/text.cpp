@@ -1965,10 +1965,10 @@ void __cdecl text_set_surface(DibSurface *surface)
 }
 
 /* 005baec8 auto */
-void __cdecl text_set_font(iptr font)
+void __cdecl text_set_font(GameFont *font)
 
 {
-  (*(iptr *)&text_style.font) = font;
+  (*(iptr *)&text_style.font) = (iptr)font;
   return;
 }
 

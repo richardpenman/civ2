@@ -162,8 +162,8 @@ i32 __cdecl FUN_005e0863(void)
     button_ctor((Button *)cancel_button);
     edit_ctor((EditControl *)edit);
     ((GameFont *)font2)->set( 0, 0x11);
-    ui_set_button_font((iptr)font2);
-    ui_set_default_font((iptr)font2);
+    ui_set_button_font((GameFont *)font2);
+    ui_set_default_font((GameFont *)font2);
     SetRect(&btn_rect, 0, 0, 0x3c, 0x19);
     btn_y = ((DibSurface *)(&surf_wnd2))->get_height();
     btn_y = btn_y + -0x23;

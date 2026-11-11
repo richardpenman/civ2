@@ -2254,7 +2254,7 @@ void MapView::draw_city_names(i32 center_x,i32 center_y,int radius)
     if (-1 < radius) {
       radius += 3;
     }
-    text_set_font((iptr)&tile_font_head);
+    text_set_font((GameFont *)&tile_font_head);
     for (city = 0; city < game.num_cities; city++) {
       if (cities[city].id != 0) {
         x2 = (int)cities[city].x;

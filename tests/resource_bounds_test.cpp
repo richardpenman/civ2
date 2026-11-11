@@ -372,15 +372,15 @@ static void dialog_title() {
     static unsigned char dialog[0x300];
     label_texts[0x25e] = std::string(254, 'p'); // BF-061: a long label before a long title
     *(i32 *)(dialog + 0x134) = (i32)(iptr)strdup(std::string(250, 't').c_str());
-    dialog_prepend_title_label((iptr)dialog, 0x25e);
+    dialog_prepend_title_label((Dialog *)dialog, 0x25e);
     std::string title = (char *)(iptr) * (i32 *)(dialog + 0x134);
     assert(title == std::string(254, 'p') + " " + std::string(250, 't'));
-    dialog_prepend_title_label((iptr)dialog, 0x25e);
+    dialog_prepend_title_label((Dialog *)dialog, 0x25e);
     title = (char *)(iptr) * (i32 *)(dialog + 0x134);
     assert(title.size() == 511 && title.compare(0, 255, std::string(254, 'p') + " ") == 0);
     label_texts[0x25e] = "Player 1"; // the game's
     *(i32 *)(dialog + 0x134) = (i32)(iptr)strdup("Choose");
-    dialog_prepend_title_label((iptr)dialog, 0x25e);
+    dialog_prepend_title_label((Dialog *)dialog, 0x25e);
     assert(strcmp((char *)(iptr) * (i32 *)(dialog + 0x134), "Player 1 Choose") == 0);
 }
 static std::vector<std::string> filters() {

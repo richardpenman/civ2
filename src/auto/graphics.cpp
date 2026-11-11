@@ -3395,7 +3395,7 @@ gfx_draw_city(DibSurface *surface,int city,uint draw_flags,int px,int py,int zoo
   if ((draw_flags & 1) == 0) {
     if ((cities[city].flags & CITYF_DISORDER) == 0) {
       gfx_select_zoom_font(zoom);
-      text_set_font((iptr)&status_window_block.map_label_font);
+      text_set_font((GameFont *)&status_window_block.map_label_font);
       text_set_surface(surface);
       __itoa(city_size,size_text,10);
       width2 = ((GameFont *)((i8 *)&status_window_block.map_label_font))->text_width((const char *)size_text);
@@ -5426,7 +5426,7 @@ void __cdecl sprite_editor_redraw(void)
   }
   sprite_editor_draw_swatches();
   text_set_surface(&sprite_editor.window);
-  text_set_font((iptr)&editor_font_block.editor_font);
+  text_set_font(&editor_font_block.editor_font);
   text_set_colors(0x29,0x12,1,1);
   ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface();
   return;
@@ -5448,7 +5448,7 @@ void SpritePicker::draw()
   draw_caption();
   gfx_fill_rect(this,(RECT *)&client_rect,0x1d);
   text_set_surface(this);
-  text_set_font((iptr)&ui_text_font);
+  text_set_font((GameFont *)&ui_text_font);
   key_color = ((Sprite *)((i8 *)&sprite_picker_sprite_block.sprite_picker_sprite))->get_key_color();
   sprite_editor.key_color = (uint)key_color;
   width2 = ((Sprite *)((i8 *)&sprite_picker_sprite_block.sprite_picker_sprite))->width();
@@ -6733,9 +6733,9 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
                 lzw_min_code = image_desc[9];
                 image_data = image_desc + 10;
                 win_flush_pending_msgs();
-                gif_lzw_decode((iptr)image_data,first_color,
+                gif_lzw_decode((byte *)image_data,first_color,
                              CONCAT22((short)(stride >> 0x10),(ushort)lzw_min_code),stride
-                             ,width2,height2,bits);
+                             ,width2,height2,(i8 *)bits);
                 win_flush_pending_msgs();
                 set_palette(palette);
                 result = dib_is_top_down(dib);
@@ -6842,8 +6842,8 @@ i32 DibSurface::load_gif_resource(iptr res_id,uint first_color,uint color_count,
         lzw_min_code = image_desc[9];
         image_data = image_desc + 10;
         win_flush_pending_msgs();
-        gif_lzw_decode((iptr)image_data,first_color,CONCAT22((short)(stride >> 0x10),(ushort)lzw_min_code)
-                     ,stride,width2,height2,bits);
+        gif_lzw_decode((byte *)image_data,first_color,CONCAT22((short)(stride >> 0x10),(ushort)lzw_min_code)
+                     ,stride,width2,height2,(i8 *)bits);
         win_flush_pending_msgs();
         set_palette(palette);
         result = dib_is_top_down(dib);
@@ -7007,7 +7007,7 @@ void DibSurface::fill_rect(iptr rect,i32 color)
     dib = get_dib();
     top_down = dib_is_top_down(dib);
     pitch = get_pitch();
-    dib_fill_rect8(bits,color,clipped.left,clipped.top,width2,height2,
+    dib_fill_rect8((u8 *)bits,color,clipped.left,clipped.top,width2,height2,
                  ((-(uint)(top_down == 0) & 0xfffffffe) + 1) * pitch,surf_height);
   }
   return;
@@ -7393,7 +7393,7 @@ void DibSurface::draw_line(u32 x1,u32 y1,u32 x2,u32 y2)
         top_down++;
         color = CONCAT31((int3)((uint)top_down >> 8),(*(i8 *)&ctrl_colors.gfx_text));
         handle = get_bits();
-        dib_hline8(handle,color,top_down,start,y1,height,pitch);
+        dib_hline8((u8 *)handle,color,top_down,start,y1,height,pitch);
       }
     }
     else if (x2 == x1) {
@@ -7423,7 +7423,7 @@ void DibSurface::draw_line(u32 x1,u32 y1,u32 x2,u32 y2)
         top_down++;
         color = CONCAT31((int3)((uint)top_down >> 8),(*(i8 *)&ctrl_colors.gfx_text));
         handle = get_bits();
-        dib_vline8(handle,color,top_down,x1,start,height,pitch);
+        dib_vline8((u8 *)handle,color,top_down,x1,start,height,pitch);
       }
     }
     else {
@@ -7789,7 +7789,7 @@ void GamePalette::reserve_range(i32 first,i32 count)
 void GamePalette::get_rgb(iptr dest,i32 first,i32 count)
 
 {
-  palette_copy_rgb_range((GameLogPalette *)this,dest,first,count);
+  palette_copy_rgb_range((GameLogPalette *)this,(u8 *)dest,first,count);
   return;
 }
 
@@ -7840,13 +7840,13 @@ void GamePalette::fade_begin(u32 first,u32 count,u32 steps,iptr target_pal)
   handle = mem_handle_alloc(count * 3);
   fade_dst_rgb = handle;
   dst_buf = (iptr)mem_handle_lock(fade_src_rgb);
-  palette_copy_rgb_range((GameLogPalette *)this,dst_buf,first,count);
+  palette_copy_rgb_range((GameLogPalette *)this,(u8 *)dst_buf,first,count);
   mem_handle_unlock(fade_src_rgb);
   dst_buf = (iptr)mem_handle_lock(fade_dst_rgb);
   handle = first;
   count_arg = count;
   target_logpal = ((GamePalette *)target_pal)->get_logpalette();
-  palette_copy_rgb_range((GameLogPalette *)target_logpal,dst_buf,handle,count_arg);
+  palette_copy_rgb_range((GameLogPalette *)target_logpal,(u8 *)dst_buf,handle,count_arg);
   mem_handle_unlock(fade_dst_rgb);
   reserve_range(first,count);
   return;
@@ -8810,7 +8810,7 @@ int *Sprite::blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x
       pitch = ((-(uint)(top_down == 0) & 0xfffffffe) + 1) * pitch;
       scale_tbl = (iptr)gfx_scale_tables.table;
       bits = surface->get_bits();
-      sprite_blit_rows_keyed(data_ptr,bits,scale_tbl,key2,dst_x,dst_y,pitch,surf_height,clip_w,clip_h
+      sprite_blit_rows_keyed((u8 *)data_ptr,bits,(u8 *)scale_tbl,key2,dst_x,dst_y,pitch,surf_height,clip_w,clip_h
                    ,skip_x,tmp,scaled_h,trim_y,scaled_trim_x,scaled_trim_y);
     }
     *out_rect = clip_rect.left;
@@ -8902,7 +8902,7 @@ int *Sprite::blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int ke
       pitch = ((-(uint)(top_down == 0) & 0xfffffffe) + 1) * pitch;
       scale_tbl = (iptr)gfx_scale_tables.table;
       bits = surface->get_bits();
-      sprite_blit_rows_solid(data_ptr,bits,scale_tbl,key2,dst_x,dst_y,pitch,surf_height,clip_w,clip_h
+      sprite_blit_rows_solid((u8 *)data_ptr,bits,(u8 *)scale_tbl,key2,dst_x,dst_y,pitch,surf_height,clip_w,clip_h
                    ,skip_x,tmp,scaled_h,trim_y,scaled_trim_x,scaled_trim_y,color);
     }
     *out_rect = clip_rect.left;
@@ -9305,7 +9305,7 @@ void __cdecl logpal_apply_range(GameLogPalette *logpal,HPALETTE hpal,UINT first,
 }
 
 /* 005ded12 auto */
-void __cdecl palette_copy_rgb_range(GameLogPalette *logpal,iptr dest,int first,int count)
+void __cdecl palette_copy_rgb_range(GameLogPalette *logpal,u8 *dest,int first,int count)
 
 {
   int index;
@@ -9900,8 +9900,8 @@ GdiDib * __cdecl dib_create32(RECT *rect)
 
 /* 005e4d60 auto */
 i32 __cdecl
-gif_lzw_decode(iptr src,uint code_base,i32 min_code_size,uint pitch,int width,uint height,
-            iptr dest)
+gif_lzw_decode(byte *src,uint code_base,i32 min_code_size,uint pitch,int width,uint height,
+            i8 *dest)
 
 {
   int table_handle;
@@ -9921,7 +9921,7 @@ gif_lzw_decode(iptr src,uint code_base,i32 min_code_size,uint pitch,int width,ui
       *(ushort *)(table + 0x2000 + code * 2) = (ushort)(byte)code_base + code;
       *(i16 *)(table + 0x4000 + code * 2) = 1;
     }
-    gif_lzw_decode_stream((byte *)src,(i8 *)dest,table,width,height,pitch,min_code_size);
+    gif_lzw_decode_stream(src,dest,(u8 *)table,width,height,pitch,min_code_size);
     mem_handle_unlock(table_handle);
     mem_handle_free(table_handle);
     result = 1;
@@ -9931,7 +9931,7 @@ gif_lzw_decode(iptr src,uint code_base,i32 min_code_size,uint pitch,int width,ui
 
 /* 005e4e60 auto */
 void __cdecl
-dib_fill_rect8(iptr bits,uint color,int x,int y,uint width,int height,int pitch,
+dib_fill_rect8(u8 *bits,uint color,int x,int y,uint width,int height,int pitch,
             int surf_height)
 
 {
@@ -10021,7 +10021,7 @@ gfx_copy_pixels(int src_bits,int dst_bits,int src_x,int src_y,int dst_x,int dst_
 /* WARNING: Unable to use type for symbol run_start */
 
 void __cdecl
-sprite_blit_rows_keyed(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int dst_x,int dst_y,
+sprite_blit_rows_keyed(u8 *sprite_data,int dst_bits,u8 *scale_tbl,i32 key,int dst_x,int dst_y,
             int pitch,int surf_height,int width,int height,int skip_x,int skip_y,
             i32 trim_x,int src_row,int scaled_trim_x,int scaled_trim_y)
 
@@ -10043,7 +10043,7 @@ sprite_blit_rows_keyed(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int 
   }
   dst_row = (char *)(dst_bits + dst_y * run_len + dst_x);
   row_map = (int *)((skip_y + scaled_trim_y) * 4 + scale_tbl);
-  row_data = sprite_data + 8;
+  row_data = (iptr)(sprite_data + 8);
   do {
     for (; src_row < *row_map; src_row++) {
       row_data = row_data + *(int *)(row_data - 4) + 8;
@@ -10084,7 +10084,7 @@ sprite_blit_rows_keyed(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int 
 /* WARNING: Unable to use type for symbol run_start */
 
 void __cdecl
-sprite_blit_rows_solid(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int dst_x,int dst_y,
+sprite_blit_rows_solid(u8 *sprite_data,int dst_bits,u8 *scale_tbl,i32 key,int dst_x,int dst_y,
             int pitch,int surf_height,int width,int height,int skip_x,int skip_y,
             i32 trim_x,int src_row,int scaled_trim_x,int scaled_trim_y,i32 color)
 
@@ -10106,7 +10106,7 @@ sprite_blit_rows_solid(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int 
   }
   dst_row = (i8 *)(dst_bits + dst_y * run_len + dst_x);
   row_map = (int *)((skip_y + scaled_trim_y) * 4 + scale_tbl);
-  row_data = sprite_data + 8;
+  row_data = (iptr)(sprite_data + 8);
   do {
     for (; src_row < *row_map; src_row++) {
       row_data = row_data + *(int *)(row_data - 4) + 8;
@@ -10145,7 +10145,7 @@ sprite_blit_rows_solid(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int 
 
 /* 005e53f3 auto */
 void __cdecl
-gif_lzw_decode_stream(byte *src,i8 *dest,iptr prefix_tbl,int pitch,uint width,uint height,
+gif_lzw_decode_stream(byte *src,i8 *dest,u8 *prefix_tbl,int pitch,uint width,uint height,
             i32 min_code_size)
 
 {
@@ -10177,8 +10177,8 @@ gif_lzw_decode_stream(byte *src,i8 *dest,iptr prefix_tbl,int pitch,uint width,ui
   ushort prev_code;
   byte *block_end;
   
-  suffix_tbl = prefix_tbl + 0x2000;
-  length_tbl = prefix_tbl + 0x4000;
+  suffix_tbl = (iptr)(prefix_tbl + 0x2000);
+  length_tbl = (iptr)(prefix_tbl + 0x4000);
   row_pos = 0;
   src_ptr = src;
   block_end = src;
@@ -10303,7 +10303,7 @@ gif_lzw_decode_stream(byte *src,i8 *dest,iptr prefix_tbl,int pitch,uint width,ui
 
 /* 005e5869 auto */
 void __cdecl
-dib_hline8(iptr bits,i32 color,uint length,int x,int y,int surf_height,
+dib_hline8(u8 *bits,i32 color,uint length,int x,int y,int surf_height,
             int pitch)
 
 {
@@ -10337,7 +10337,7 @@ dib_hline8(iptr bits,i32 color,uint length,int x,int y,int surf_height,
 
 /* 005e58e7 auto */
 void __cdecl
-dib_vline8(iptr bits,i32 color,int length,int x,int y,int surf_height,
+dib_vline8(u8 *bits,i32 color,int length,int x,int y,int surf_height,
             int pitch)
 
 {

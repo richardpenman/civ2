@@ -1849,7 +1849,7 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
   net.player_info_has_titles = 0;
   do {
     dlg.Dialog::reset(0x801);
-    dialog_prepend_title_label((iptr)&dlg,title_offset + 0x25e);
+    dialog_prepend_title_label(&dlg,title_offset + 0x25e);
     index = 0;
     for (civ = 1; civ < 8; civ++) {
       if ((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) {
@@ -1974,7 +1974,7 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
     }
     else {
       dlg.load_game_section((const char *)&str_gender_4,1);
-      dialog_prepend_title_label((iptr)&dlg,title_offset + 0x25e);
+      dialog_prepend_title_label(&dlg,title_offset + 0x25e);
       dlg.set_default_choice((uint)leaders[civs[game.player_civ].tribe].female);
       dlg.set_position(0xfffffc19,
                  -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
@@ -2006,7 +2006,7 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
         leader_str = (iptr)(civ_leader_name(game.player_civ));
         result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_4,0x17,leader_str,ret,arg6,arg7,arg8);
         if (result == 0) {
-          dialog_prepend_title_label((iptr)&dlg,title_offset + 0x25e);
+          dialog_prepend_title_label(&dlg,title_offset + 0x25e);
           dlg_style.pending_idle_callback = net_pump_idle_cb;
           result = dlg.run_modal((iptr)input,0);
           if (result == 0) {
@@ -5254,7 +5254,7 @@ void NetSession::dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sende
     wonder_apollo_reveal_map();
     break;
   case NM_MAP_PACKETS:
-    net_apply_tile_updates((iptr)payload);
+    net_apply_tile_updates((u8 *)payload);
     break;
   case NM_REALTIME_STACKER:
     recv_stack_relocate(msg,sender,a);
@@ -7850,7 +7850,7 @@ void ParleyWindow::create_close_button()
   else {
     button_font = ((i8 *)&font_size24);
   }
-  ui_set_button_font((iptr)button_font);
+  ui_set_button_font((GameFont *)button_font);
   new_ctrl = (Button *)(operator_new(0x3c));
   if (new_ctrl == (Button *)0x0) {
     close_btn = 0;
@@ -7978,7 +7978,7 @@ void ParleyWindow::create_chat_controls(int &ctrl_top,int &ctrl_height)
   else {
     history_font = ((i8 *)&font_size21);
   }
-  ui_set_default_font((iptr)history_font);
+  ui_set_default_font((GameFont *)history_font);
   if (this == (ParleyWindow *)0x0) {
     history_parent = (u8 *)0x0;
   }
@@ -8039,7 +8039,7 @@ void ParleyWindow::create_chat_controls(int &ctrl_top,int &ctrl_height)
   else {
     input_font = ((i8 *)&font_size21);
   }
-  ui_set_default_font((iptr)input_font);
+  ui_set_default_font((GameFont *)input_font);
   if (mode == 4) {
     input_style = 0x200;
   }
@@ -11967,7 +11967,7 @@ void ParleyWindow::show_description(int received)
   else {
     desc_font = ((i8 *)&font_size21);
   }
-  ui_set_default_font((iptr)desc_font);
+  ui_set_default_font((GameFont *)desc_font);
   if (this == (ParleyWindow *)0x0) {
     desc_parent = (u8 *)0x0;
   }
@@ -12043,7 +12043,7 @@ void ParleyWindow::add_chat_pane(u32 side_x)
   else {
     chat_font = ((i8 *)&font_size24_bold);
   }
-  ui_set_ctrl_font((iptr)chat_font);
+  ui_set_ctrl_font((GameFont *)chat_font);
   new_ctrl = (Button *)(operator_new(0x3c));
   if (new_ctrl == (Button *)0x0) {
     anon_checkbox = 0;
@@ -12302,7 +12302,7 @@ void ParleyWindow::add_mode_pane(int side)
   else {
     mode_radio_font = ((i8 *)&font_size30);
   }
-  ctrl_set_pending_font((iptr)mode_radio_font);
+  ctrl_set_pending_font((GameFont *)mode_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     mode_radio = 0;
@@ -12394,7 +12394,7 @@ void ParleyWindow::add_exchange_kind_pane_left(int side,u32 side_x)
   else {
     exch_radio_font_l = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)exch_radio_font_l);
+  ctrl_set_pending_font((GameFont *)exch_radio_font_l);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     exch_radio_l = 0;
@@ -12488,7 +12488,7 @@ void ParleyWindow::add_exchange_kind_pane_right(int side,u32 side_x)
   else {
     exch_radio_font_r = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)exch_radio_font_r);
+  ctrl_set_pending_font((GameFont *)exch_radio_font_r);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     exch_radio_r = 0;
@@ -12633,7 +12633,7 @@ void ParleyWindow::add_treaty_pane(int side,u32 side_x,char is_exchange_side,cha
   else {
     treaty_radio_font = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)treaty_radio_font);
+  ctrl_set_pending_font((GameFont *)treaty_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     treaty_radio = 0;
@@ -12900,7 +12900,7 @@ void ParleyWindow::add_gift_pane(int side,u32 side_x)
   else {
     gift_radio_font = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)gift_radio_font);
+  ctrl_set_pending_font((GameFont *)gift_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     gift_radio = 0;
@@ -13211,7 +13211,7 @@ void ParleyWindow::add_gold_pane(int side,u32 side_x,char is_exchange_side,char 
   else {
     gold_edit_font = ((i8 *)&font_size24_bold);
   }
-  ui_set_default_font((iptr)gold_edit_font);
+  ui_set_default_font((GameFont *)gold_edit_font);
   if (large_layout == 0) {
     tmp = ((GameFont *)((i8 *)&font_size16_bold_block.font_size16_bold))->text_width((const char *)&textbuf.buf);
     cur_x += tmp;
@@ -13577,7 +13577,7 @@ void ParleyWindow::add_proposal_pane(int side,u32 side_x)
   else {
     proposal_radio_font = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)proposal_radio_font);
+  ctrl_set_pending_font((GameFont *)proposal_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     proposal_radio = 0;
@@ -13876,7 +13876,7 @@ void ParleyWindow::add_map_pane(int side,u32 side_x,char is_exchange_side)
   else {
     map_radio_font = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)map_radio_font);
+  ctrl_set_pending_font((GameFont *)map_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     map_radio = 0;
@@ -13991,7 +13991,7 @@ void ParleyWindow::add_offer_pane(int side,u32 side_x)
   else {
     offer_radio_font = ((i8 *)&font_size24_bold);
   }
-  ctrl_set_pending_font((iptr)offer_radio_font);
+  ctrl_set_pending_font((GameFont *)offer_radio_font);
   new_input = (EditControl *)(operator_new(0x50));
   if (new_input == (EditControl *)0x0) {
     offer_radio = 0;
@@ -18168,7 +18168,7 @@ net_batch_add(int record_type,i32 x,i32 y,i32 arg1,i32 arg2,
 }
 
 /* 005ba206 auto */
-void __cdecl net_apply_tile_updates(iptr batch)
+void __cdecl net_apply_tile_updates(u8 *batch)
 
 {
   int record_type;
