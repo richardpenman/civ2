@@ -6192,7 +6192,7 @@ i32 Dialog::destruct()
   i32 result;
   
   close();
-  result = memblock_free((MemBlock *)string_pool);
+  result = (i32)memblock_free((MemBlock *)string_pool);
   return result;
 }
 

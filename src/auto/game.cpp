@@ -6009,7 +6009,7 @@ void __cdecl game_mp_host_turn_loop(i32 force_process)
 }
 
 /* 00497da0 auto */
-iptr __cdecl save_read_cstr(char *buf,FILE *file)
+char * __cdecl save_read_cstr(char *buf,FILE *file)
 
 {
   int ch;
@@ -6024,7 +6024,7 @@ iptr __cdecl save_read_cstr(char *buf,FILE *file)
     dst++;
   }
   _fgetc(file);
-  return (iptr)buf;
+  return buf;
 }
 
 /* 00497e0f auto */

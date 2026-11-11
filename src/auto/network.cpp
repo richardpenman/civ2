@@ -3325,7 +3325,7 @@ bool NetSession::send_to_all(NetMsg *msg)
 
 int __cdecl
 net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
-            i32 arg5,i32 arg6,const char *text,iptr raw_msg)
+            i32 arg5,i32 arg6,const char *text,NetMsg *raw_msg)
 
 {
   char sent;
@@ -3453,11 +3453,11 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     return (int)sent;
   case NM_DIFFERENCE_ENGINE:
   case NM_ALPHA_DIFFERENCE_ENGINE:
-    sent = net.send_to(dest,(NetMsg *)raw_msg);
+    sent = net.send_to(dest,raw_msg);
     if (sent == '\0') {
       return 0;
     }
-    return *(i32 *)(raw_msg + 8);
+    return raw_msg->size;
   case NM_START_CIVILIZATION:
     msg_16->header_init(msg_type);
     sent = net.send_to(dest,(NetMsg *)msg_16);
@@ -3808,11 +3808,11 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     packet = net_msg_build_packet(msg_type,0,arg1,0,0,0,0,0,0);
     break;
   case NM_PARLEY_TRANSACTION:
-    sent = net.send_to(dest,(NetMsg *)raw_msg);
+    sent = net.send_to(dest,raw_msg);
     if (sent == '\0') {
       return 0;
     }
-    return *(i32 *)(raw_msg + 8);
+    return raw_msg->size;
   case NM_PARLEY_ACCEPT_OFFER:
   case NM_PARLEY_NO_THANKS:
   case NM_PARLEY_COUNTER_OFFER:
@@ -3820,11 +3820,11 @@ net_send_message(int msg_type,i32 dest,i32 arg1,i32 arg2,i32 arg3,i32 arg4,
     sent = net.send_to(dest,(NetMsg *)msg_83);
     return (int)sent;
   case NM_PARLEY_EXECUTE:
-    sent = net.send_to(dest,(NetMsg *)raw_msg);
+    sent = net.send_to(dest,raw_msg);
     if (sent == '\0') {
       return 0;
     }
-    return *(i32 *)(raw_msg + 8);
+    return raw_msg->size;
   case NM_CITYWIN_CHECK_UNIT:
     packet = net_msg_build_packet(msg_type,0,arg1,arg2,arg3,0,0,0,0);
     break;
@@ -6986,7 +6986,7 @@ net_send_state_diff(i32 dest,uint flags,int limit,i32 force,i32 alt_msg)
         if (diffeng.packet_flush_size <= (int)((char *)out_ptr - (char *)&diffeng_scan.packet)) {
           diffeng_scan.packet_size = (i32)((char *)out_ptr - (char *)&diffeng_scan.packet);
           diffeng_scan.packet_record_count = record_count;
-          net_send_message(NM_ALPHA_DIFFERENCE_ENGINE,dest,0,0,0,0,0,0,0,(iptr)&diffeng_scan.packet);
+          net_send_message(NM_ALPHA_DIFFERENCE_ENGINE,dest,0,0,0,0,0,0,0,(NetMsg *)&diffeng_scan.packet);
           if ((flags & 1) != 0) {
             XD_FlushSendBuffer(5000);
           }
@@ -7000,7 +7000,7 @@ net_send_state_diff(i32 dest,uint flags,int limit,i32 force,i32 alt_msg)
     if (((uint *)&diffeng_scan.packet_payload) < out_ptr) {
       diffeng_scan.packet_size = (i32)((char *)out_ptr - (char *)&diffeng_scan.packet);
       diffeng_scan.packet_record_count = record_count;
-      net_send_message(NM_ALPHA_DIFFERENCE_ENGINE,dest,0,0,0,0,0,0,0,(iptr)&diffeng_scan.packet);
+      net_send_message(NM_ALPHA_DIFFERENCE_ENGINE,dest,0,0,0,0,0,0,0,(NetMsg *)&diffeng_scan.packet);
       if ((flags & 1) != 0) {
         XD_FlushSendBuffer(5000);
       }
@@ -8698,7 +8698,7 @@ void __cdecl parley_poll_net_replies(void)
       if ((void *)parley_wnd_block.received_offer != (void *)0x0) {
         parley_wnd_block.received_offer->hdr.msg_type = NM_PARLEY_EXECUTE;
         if (net.host_flag == '\0') {
-          net_send_message(NM_PARLEY_EXECUTE,0,0,0,0,0,0,0,0,(iptr)(void *)parley_wnd_block.received_offer);
+          net_send_message(NM_PARLEY_EXECUTE,0,0,0,0,0,0,0,0,(NetMsg *)(void *)parley_wnd_block.received_offer);
         }
         else {
           parley_execute_transaction(parley_wnd_block.received_offer);
@@ -9425,7 +9425,7 @@ i32 *ParleyWindow::send_offer(int mode)
       pack_offer_items((ParleyOfferItem *)left_items,side_kind[0],left_size,0);
     }
     net_send_message(NM_PARLEY_TRANSACTION,net.net_slots[net.net_civ_slots[(int)parley_wnd_block.other_civ]].id,0,0
-                       ,0,0,0,0,0,(iptr)msg);
+                       ,0,0,0,0,0,(NetMsg *)msg);
   }
   return msg;
 }
@@ -10769,7 +10769,7 @@ net_send_text_args(int popup_kind,i32 player_id,int string_count,int number_coun
         }
       }
     }
-    net_send_message(NM_POPUP,player_id,popup_kind,string_count,number_count,arg_a,arg_b,0,0,(iptr)payload);
+    net_send_message(NM_POPUP,player_id,popup_kind,string_count,number_count,arg_a,arg_b,0,0,(NetMsg *)payload);
   }
   return;
 }

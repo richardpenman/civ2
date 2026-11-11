@@ -427,7 +427,7 @@ int __cdecl save_read_game(char *path)
     crt_strcat(save_path,((i8 *)&grey_palette_block.save_file_path));
   }
   ScopedFile _File(_fopen(save_path,((i8 *)&save_read_mode)));
-  if ((_File == (FILE *)0x0) || (result = save_read_cstr((char *)header_str,_File), result == 0))
+  if ((_File == (FILE *)0x0) || (result = (int)save_read_cstr((char *)header_str,_File), result == 0))
   return status;
   result = _strcmp(str_ptr_civilize,header_str);
   if (result != 0) {

@@ -556,7 +556,7 @@ int __cdecl ai_unit_role(int unit)
 }
 
 /* 005312e4 auto */
-iptr __cdecl ai_ship_best_landing_dir(int unit)
+int __cdecl ai_ship_best_landing_dir(int unit)
 
 {
   short x3;

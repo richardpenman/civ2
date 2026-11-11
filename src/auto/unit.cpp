@@ -3674,7 +3674,7 @@ void __cdecl unit_continue_active_orders(void)
 }
 
 /* 0056b96e auto */
-iptr __cdecl unit_stack_pick_display_unit(int unit)
+int __cdecl unit_stack_pick_display_unit(int unit)
 
 {
   int x;
@@ -3811,7 +3811,7 @@ int __cdecl unit_defense_strength(int unit,int recalc_tile,int unit2)
 }
 
 /* 0057e6e2 auto */
-iptr __cdecl unit_stack_best_defender(int unit,int unit2)
+int __cdecl unit_stack_best_defender(int unit,int unit2)
 
 {
   short x;
@@ -9420,7 +9420,7 @@ int __cdecl unit_moves_left(int unit)
 }
 
 /* 005b2c82 auto */
-iptr __cdecl unit_next_in_stack(int unit)
+int __cdecl unit_next_in_stack(int unit)
 
 {
   if (-1 < unit) {
@@ -9431,7 +9431,7 @@ iptr __cdecl unit_next_in_stack(int unit)
 }
 
 /* 005b2cc3 auto */
-iptr __cdecl unit_stack_last(int unit)
+int __cdecl unit_stack_last(int unit)
 
 {
   if (-1 < unit) {
@@ -9444,7 +9444,7 @@ iptr __cdecl unit_stack_last(int unit)
 }
 
 /* 005b2d39 auto */
-iptr __cdecl unit_stack_first(int unit)
+int __cdecl unit_stack_first(int unit)
 
 {
   if (-1 < unit) {
@@ -9787,7 +9787,7 @@ void __cdecl unit_stack_ships_to_top(int unit,i32 sync)
 }
 
 /* 005b3d06 auto */
-iptr __cdecl unit_create(iptr unit_type,uptr civ,int x,int y)
+int __cdecl unit_create(int unit_type,uptr civ,int x,int y)
 
 {
   char *type_count;
@@ -10573,7 +10573,7 @@ i32 __cdecl unit_is_awake_with_moves(int unit)
 }
 
 /* 005b6512 auto */
-iptr __cdecl unit_find_nearest_selectable(int unit,int human_only)
+int __cdecl unit_find_nearest_selectable(int unit,int human_only)
 
 {
   int result;
@@ -10648,7 +10648,7 @@ void __cdecl unit_exhaust_moves(int unit)
 }
 
 /* 005b67af auto */
-iptr __cdecl unit_find_nearest(i32 target_x,i32 target_y,int owner_civ,int exclude_unit)
+int __cdecl unit_find_nearest(i32 target_x,i32 target_y,int owner_civ,int exclude_unit)
 
 {
   int dist;

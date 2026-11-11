@@ -3054,7 +3054,7 @@ void __cdecl hall_of_fame_on_clear_clicked(void)
 /* WARNING: Removing unreachable block (ram,0x00436d09) */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-iptr __cdecl hall_of_fame_show(int highlight)
+int __cdecl hall_of_fame_show(int highlight)
 
 {
   int client_y;

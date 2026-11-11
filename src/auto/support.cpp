@@ -54,7 +54,7 @@ MemBlock *MemBlock::construct()
 }
 
 /* 0046aaa0 auto */
-i32 __cdecl mem_free_handle(iptr handle)
+i32 __cdecl mem_free_handle(HGLOBAL handle)
 
 {
   i32 result;
@@ -64,7 +64,7 @@ i32 __cdecl mem_free_handle(iptr handle)
 }
 
 /* 0046aad0 auto */
-void * __cdecl mem_lock_handle(iptr handle)
+void * __cdecl mem_lock_handle(HGLOBAL handle)
 
 {
   void *ptr;
@@ -74,7 +74,7 @@ void * __cdecl mem_lock_handle(iptr handle)
 }
 
 /* 0046ab00 auto */
-i32 __cdecl mem_unlock_handle(iptr handle)
+i32 __cdecl mem_unlock_handle(HGLOBAL handle)
 
 {
   i32 result;
@@ -155,7 +155,7 @@ void __cdecl memblock_unlock(MemBlock *block)
 }
 
 /* 004980ec auto */
-iptr __cdecl memblock_free(MemBlock *block)
+MemBlock * __cdecl memblock_free(MemBlock *block)
 
 {
   if ((char)block->owns_handle != '\0') {
@@ -168,7 +168,7 @@ iptr __cdecl memblock_free(MemBlock *block)
   block->used = 0;
   block->available = 0;
   block->capacity = 0;
-  return (iptr)block;
+  return block;
 }
 
 /* 00498159 auto */
@@ -1136,7 +1136,7 @@ SIZE_T __cdecl mem_handle_size(HGLOBAL handle)
 }
 
 /* 005dfb61 auto */
-iptr __cdecl mem_rle_decompress(iptr buf_ptr)
+int __cdecl mem_rle_decompress(iptr buf_ptr)
 
 {
   byte fill_byte;

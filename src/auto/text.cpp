@@ -1194,11 +1194,11 @@ i32 __cdecl text_next_token_str_id(i32 min_size)
 }
 
 /* 004aef20 auto */
-iptr __cdecl str_clear(char *str)
+char * __cdecl str_clear(char *str)
 
 {
   *str = 0;
-  return (iptr)str;
+  return str;
 }
 
 /* 004aef36 auto */

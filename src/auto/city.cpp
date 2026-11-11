@@ -2177,7 +2177,7 @@ i32 __cdecl city_at(int x,int y)
 }
 
 /* 0043d07a auto */
-iptr __cdecl city_find_nearest(int x,int y,int owner_civ,int target_landmass,int civ)
+int __cdecl city_find_nearest(int x,int y,int owner_civ,int target_landmass,int civ)
 
 {
   short x2;
@@ -7114,7 +7114,7 @@ static iptr city_choose_production_final_choice(ChooseProdState *s,iptr city)
 /* 00498e8b auto */
 /* WARNING: Type propagation algorithm not settling */
 
-iptr __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_build)
+int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_build)
 
 {
   iptr behind;
@@ -8980,7 +8980,7 @@ void __cdecl city_calc_unit_support(uptr city)
 }
 
 /* 004e868f auto */
-int __cdecl city_tile_yield(int city,int tile_index,iptr yield_type)
+int __cdecl city_tile_yield(int city,int tile_index,int yield_type)
 
 {
   byte terrain_byte;
@@ -9130,7 +9130,7 @@ int __cdecl city_tile_yield(int city,int tile_index,iptr yield_type)
 
 /* 004e8c8c auto */
 void __cdecl
-city_note_terraform_job(int city,int civ,iptr job_type,i32 x,i32 y)
+city_note_terraform_job(int city,int civ,int job_type,i32 x,i32 y)
 
 {
   byte terrain_byte;

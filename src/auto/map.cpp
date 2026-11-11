@@ -18,26 +18,26 @@ i32 __cdecl map_in_bounds(int x,int y)
 }
 
 /* 00408830 auto */
-void __cdecl map_fill_tile_byte(iptr ptr,i32 value)
+void __cdecl map_fill_tile_byte(i8 *ptr,i32 value)
 
 {
   i32 i;
   
   for (i = 0; i < map.area; i++) {
-    *(i8 *)ptr = (i8)value;
+    *ptr = (i8)value;
     ptr += 6;
   }
   return;
 }
 
 /* 00408903 auto */
-void __cdecl map_copy_tile_byte(iptr dst,iptr src)
+void __cdecl map_copy_tile_byte(i8 *dst,i8 *src)
 
 {
   i32 i;
   
   for (i = 0; i < map.area; i++) {
-    *(i8 *)dst = *(i8 *)src;
+    *dst = *src;
     src += 6;
     dst += 6;
   }
@@ -181,8 +181,8 @@ static void mapgen_place_landmasses(void)
   map.flat = game.rules & RULE_FLAT_WORLD;
   map_alloc();
   mapgen_bounds.land_placed = 0;
-  map_fill_tile_byte((iptr)map_data.tiles,10);
-  map_fill_tile_byte((iptr)&map_data.tiles->improvements,0);
+  map_fill_tile_byte((i8 *)map_data.tiles,10);
+  map_fill_tile_byte((i8 *)&map_data.tiles->improvements,0);
   mapgen_bounds.min_y = 0;
   mapgen_bounds.max_y = map.height - 1;
   mapgen_bounds.min_x = 3;
@@ -892,7 +892,7 @@ void __cdecl map_generate(int keep_map)
   map_build_coarse_connectivity();
   mapgen_calc_fertility();
   mapgen_place_polar_caps(keep_map);
-  map_fill_tile_byte((iptr)&map_data.tiles->improvements,0);
+  map_fill_tile_byte((i8 *)&map_data.tiles->improvements,0);
   mapgen_hide_far_ocean_resources();
   crt_memcpy(&map_handles.offmap_tile,map_data.tiles,6);
   main_frame_wnd_block.main_frame_wnd.set_cursor(0x201);
@@ -913,7 +913,7 @@ void __cdecl mapgen_add_landmass(int islet)
   u8 *count_ptr;
   int i;
   
-  map_fill_tile_byte((iptr)&map_data.tiles->owner,0);
+  map_fill_tile_byte((i8 *)&map_data.tiles->owner,0);
   do {
     if (map.width == 0x11 || map.width - 0x11 < 0) {
       x2 = 0;
@@ -1220,7 +1220,7 @@ void __cdecl mapgen_place_rivers(void)
   rivers_placed = 0;
   attempts = 0;
   do {
-    map_copy_tile_byte((iptr)&map_data.tiles->owner,(iptr)map_data.tiles);
+    map_copy_tile_byte((i8 *)&map_data.tiles->owner,(i8 *)map_data.tiles);
     attempts++;
     river_len = 0;
     do {
@@ -1334,7 +1334,7 @@ void __cdecl mapgen_place_rivers(void)
       }
     }
     else {
-      map_copy_tile_byte((iptr)map_data.tiles,(iptr)&map_data.tiles->owner);
+      map_copy_tile_byte((i8 *)map_data.tiles,(i8 *)&map_data.tiles->owner);
     }
     ui_pump_messages_net();
   } while ((attempts < 0x400) && (rivers_placed < mapgen.land_mass * 2 + mapgen.climate * 2 + 0xc));
@@ -3703,7 +3703,7 @@ i32 __cdecl map_road_connection(int civ,int x,int y,int x2,int y2)
 }
 
 /* 004abea0 auto */
-iptr __cdecl map_dir_from_delta(int dx,int dy)
+int __cdecl map_dir_from_delta(int dx,int dy)
 
 {
   int sign_dy;
@@ -4145,7 +4145,7 @@ static void map_path_debug_show(int x,int y,int debug_mode)
 }
 
 /* 004abfe5 auto */
-iptr __cdecl map_path_next_dir(int x,int y,int max_cost)
+int __cdecl map_path_next_dir(int x,int y,int max_cost)
 
 {
   bool uses_terrain_cost;
@@ -4399,7 +4399,7 @@ uint __cdecl map_assign_landmass_ids(void)
       error_report(0xfffffff7,8,0,2,0);
     }
     else {
-      map_fill_tile_byte((iptr)&map_data.tiles->landmass,0);
+      map_fill_tile_byte((i8 *)&map_data.tiles->landmass,0);
       for (ocean_pass = 1; -1 < ocean_pass; ocean_pass--) {
         _memset(_Dst,0,0x20000);
         _memset(_Dst_00,0,(int)map.area << 2);
@@ -6470,7 +6470,7 @@ void __cdecl map_reveal_adjacent_units(int x,int y,int civ)
 }
 
 /* 005ae052 auto */
-iptr __cdecl map_wrap_x(int x)
+int __cdecl map_wrap_x(int x)
 
 {
   if ((game.rules & RULE_FLAT_WORLD) == 0) {

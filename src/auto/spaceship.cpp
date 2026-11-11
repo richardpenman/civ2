@@ -1317,7 +1317,7 @@ void __cdecl spaceship_wnd_on_mousemove(i32 x,i32 y)
 }
 
 /* 00596b00 auto */
-iptr __cdecl spaceship_part_limit(int civ,int part)
+int __cdecl spaceship_part_limit(int civ,int part)
 
 {
   int structurals;
@@ -1781,7 +1781,7 @@ void __cdecl spaceship_status_dialog(int civ,int allow_launch)
 }
 
 /* 00597d6f auto */
-iptr __cdecl spaceship_choose_part_group(int civ,int group)
+int __cdecl spaceship_choose_part_group(int civ,int group)
 
 {
   short earliest_arrival;

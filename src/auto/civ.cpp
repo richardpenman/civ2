@@ -5623,7 +5623,7 @@ i32 __cdecl civ_can_build_wonder(int civ,int wonder)
 }
 
 /* 004c09b0 auto */
-iptr __cdecl civ_pick_research_advance(int civ)
+int __cdecl civ_pick_research_advance(int civ)
 
 {
   int value;
@@ -6012,7 +6012,7 @@ void __cdecl civ_research_goal_dialog(int civ,int exclude_current,int civ2)
 }
 
 /* 004c195e auto */
-iptr __cdecl civ_choose_research_dialog(int civ,int forced)
+int __cdecl civ_choose_research_dialog(int civ,int forced)
 
 {
   iptr advance2;
@@ -6183,7 +6183,7 @@ void __cdecl civ_choose_research(int civ)
 }
 
 /* 004c21d5 auto */
-iptr __cdecl civ_research_complete(uptr civ,int civ2)
+int __cdecl civ_research_complete(uptr civ,int civ2)
 
 {
   short current_research;
@@ -7337,7 +7337,7 @@ void __cdecl civ_steal_advance(int civ,int civ2)
 }
 
 /* 0057a685 auto */
-iptr __cdecl civ_find_central_city(int civ)
+int __cdecl civ_find_central_city(int civ)
 
 {
   int dist;
