@@ -3060,14 +3060,14 @@ void __cdecl civ_update_power_ranks(void)
       if (game.turn < 600) {
         clamped = int_clamp(power[civ] >> 3,0,0xff);
         (((i8 *)&power_graph_history_block.power_graph_history))
-        [(int)(CONCAT44((int)game.turn >> 0x1f,(int)game.turn >> 2) % 0x96) * 8 + civ] =
+        [((int)game.turn >> 2) % 0x96 * 8 + civ] =
              (char)clamped;
       }
     }
     else if (game.turn < 0x4b) {
       clamped = int_clamp(power[civ],0,0xff);
       (((i8 *)&power_graph_history_block.power_graph_history))
-      [(int)(CONCAT44((int)game.turn >> 0x1f,(int)game.turn >> 1) % 0x96) * 8 + civ] =
+      [((int)game.turn >> 1) % 0x96 * 8 + civ] =
            (char)clamped;
     }
   }
@@ -6261,7 +6261,7 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
         dialog2.show_modal(0);
       }
       if (unit_types[UNIT_PARATROOPERS].prerequisite == advance) {
-        text_set_number_arg_u8(0,CONCAT31(unit_types[UNIT_PARATROOPERS].prerequisite >> 7,cosmic.paradrop_range));
+        text_set_number_arg_u8(0,cosmic.paradrop_range);
         popup_game_with_sprite(str_newparadrop,(Sprite *)&pollution_sprite_block.research_popup_sprite2,8);
       }
       if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) && (game.turn != 0)) {

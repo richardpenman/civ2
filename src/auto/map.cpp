@@ -7071,7 +7071,7 @@ void __cdecl tile_update_known(int x,int y,int civ)
     known_arg6 = 1;
     known_arg5 = 0;
     tile = tile_at(x,y);
-    known_set(x,y,CONCAT31((int3)((uint)tile >> 8),(i8)tile->improvements),civ,
+    known_set(x,y,(u8)tile->improvements,civ,
               known_arg5,known_arg6);
   }
   return;

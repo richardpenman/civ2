@@ -347,7 +347,7 @@ uint __cdecl snd_wave_open_device(DWORD_PTR callback,i32 *format,i32 *out_handle
     }
     if ((use_fallback) || (device != device_count)) {
       if (use_fallback) {
-        snd_wave.format[0] = CONCAT22(1,(i16)snd_wave.format[0]);
+        snd_wave.format[0] = 0x10000 | (ushort)snd_wave.format[0];   /* one channel, the format tag kept */
         snd_wave.avg_bytes_per_sec = 0x5622;
         (*(i32 *)&snd_wave.block_align) = ((*(i32 *)&snd_wave.block_align) & 0xffff0000 | (ushort)(1));
       }
@@ -1538,9 +1538,7 @@ i32 __cdecl snd_wave_on_buffer_done(HWAVEOUT wave_out,WaveHeader *wave_hdr)
               src = (buffer->flags >> 7 & 0xff) * source->buffer_bytes +
                       source->buf_start;
               snd_resample_8bit((byte *)buffer->data,(byte *)src,buffer->length / (int)(uint)(ushort)snd_wave.block_align,
-                           CONCAT22((short)((uint)source >> 0x10),
-                                    (i16)source->block_align),
-                           CONCAT22((short)((uint)src >> 0x10),(ushort)snd_wave.block_align));
+                           (ushort)source->block_align,(ushort)snd_wave.block_align);
               if ((buffer->flags >> 1 & 1) != 0) {
                 buffer->flags = buffer->flags | 0x10;
               }
@@ -1647,9 +1645,7 @@ i32 __cdecl snd_wave_mix_buffer(WaveHeader *hdr)
                   source->buf_start;
           snd_resample_8bit((byte *)buffer->data,(byte *)src,
                        buffer->length / (int)(uint)(ushort)snd_wave.block_align,
-                       CONCAT22((short)((uint)source >> 0x10),
-                                (i16)source->block_align),
-                       CONCAT22((short)((uint)src >> 0x10),(ushort)snd_wave.block_align));
+                       (ushort)source->block_align,(ushort)snd_wave.block_align);
         }
         else {
           src = snd_wave_copy_source(source,hdr->data,hdr->length);
@@ -1778,8 +1774,7 @@ i32 __cdecl snd_wave_copy_source(WaveSource *source,int dst,uint length)
   }
   if (count != 0) {
     consumed = snd_resample_8bit((byte *)dst,(byte *)source->buf_next,count,
-                         CONCAT22((short)((uint)source >> 0x10),(i16)source->block_align),
-                         CONCAT22((short)(want >> 0x10),(ushort)snd_wave.block_align));
+                         (ushort)source->block_align,(ushort)snd_wave.block_align);
     source->buf_next = source->buf_next + (uint)consumed;
     if ((source->kind == 4) && (source->buf_end == source->buf_next))
     {
@@ -1843,8 +1838,7 @@ i32 __cdecl snd_wave_mix_source(WaveSource *source,i32 dst,uint length)
   }
   if (count != 0) {
     consumed = snd_mix_8bit_resample((char *)dst,(byte *)source->buf_next,count,
-                         CONCAT22((short)((uptr)source >> 0x10),(i16)source->block_align),
-                         CONCAT22((short)(flags >> 0x10),(ushort)snd_wave.block_align));
+                         (ushort)source->block_align,(ushort)snd_wave.block_align);
     advance = (uint)consumed;
     source->buf_next = source->buf_next + advance;
   }

@@ -85,7 +85,7 @@ static void unit_reveal_surroundings_tiles(int x2,int y,uptr civ2,uint civ_bit,u
             redraw_flags = redraw_flags | 10;
           }
         }
-        known_set(x,y4,CONCAT31((int3)((uint)tile2 >> 8),*(i8 *)(tile2 + 1)),
+        known_set(x,y4,*(u8 *)(tile2 + 1),
                   civ2,0,1);
       }
       tile_set_visible(x,y4,civ_bit,1,1);
@@ -3516,7 +3516,7 @@ void __cdecl unit_paradrop(int unit,int x,int y)
   civ = (uptr)(char)civ3;
   x3 = units[unit].x;
   y3 = units[unit].y;
-  text_set_number_arg_u8(0,CONCAT31((int3)(char)((ushort)y3 >> 8),cosmic.paradrop_range));
+  text_set_number_arg_u8(0,cosmic.paradrop_range);
   ret = tile_is_ocean(x,y);
   if (ret == 0) {
     civ4 = tile_unit_owner(x,y);
@@ -5897,7 +5897,7 @@ void __cdecl unit_cmd_build_city(void)
         map_redraw_area_all_views(x2,y2,1,human_civ[0],1);
       }
       else {
-        text_set_number_arg_u8(0,CONCAT31(cities[city2].size >> 7,cosmic.aqueduct_size));
+        text_set_number_arg_u8(0,cosmic.aqueduct_size);
         popup_game_with_city((const char *)&str_only10,city2);
       }
     }
@@ -7782,7 +7782,7 @@ static int unit_move_dir_attack_unit(int &unit,iptr orig_unit,uptr dir,uptr civ,
     else {
       arg = unit_moves_left(unit);
       arg = text_set_number_arg(0,arg);
-      text_set_number_arg_u8(1,CONCAT31((int3)((uint)arg >> 8),cosmic.road_move_mult));
+      text_set_number_arg_u8(1,cosmic.road_move_mult);
       city3 = dlg_game_txt_with_unit((const char *)&str_fatigue,unit);
       unit = orig_unit;
       if (city3 != 0) return 0;

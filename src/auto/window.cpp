@@ -6203,7 +6203,7 @@ void Dialog::init(iptr surface_wnd,iptr background,RECT *rect,u32 flags)
   i32 size;
   
   if ((style_flags & 0x20) == 0) {
-    memblock_init((MemBlock *)string_pool,9,CONCAT22((short)((uint)this >> 0x10),pool_size));
+    memblock_init((MemBlock *)string_pool,9,(ushort)pool_size);
   }
   else {
     close();
@@ -10480,7 +10480,7 @@ void __cdecl wnd_obj_set_bg_color(NativeWindow *wnd,uint color_index)
     wnd_view = (WndBase *)GetWindowLongA(wnd->hwnd,0);
     self = (GamePalette *)wnd_view->get_palette();
     self->get_entry(color_index & 0xff,(iptr)red,(iptr)green,(iptr)blue);
-    brush = CreateSolidBrush(CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+    brush = CreateSolidBrush(RGB(red[0],green[0],blue[0]));
     wnd->bg_brush = brush;
   }
   else {

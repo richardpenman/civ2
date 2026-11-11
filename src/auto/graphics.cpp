@@ -1442,14 +1442,13 @@ void __cdecl gfx_build_grey_remap(void)
             ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb(full_rgb,10,0xec);
             for (offset = 0; offset < 0x2c4; offset += 3) {
               nearest_index = GetNearestPaletteIndex
-                                (h,CONCAT12(*(i8 *)(offset + 2 + full_rgb),
-                                                  CONCAT11(*(i8 *)(offset + 1 + full_rgb),
-                                                           *(i8 *)(offset + full_rgb))));
+                                (h,RGB(*(i8 *)(offset + full_rgb),*(i8 *)(offset + 1 + full_rgb),
+                                     *(i8 *)(offset + 2 + full_rgb)));
               *(char *)(remap_table + offset / 3) = (char)nearest_index + '\n';
               ((GamePalette *)((i8 *)&grey_palette_block.grey_palette))->set_entry(offset / 3 + 10,
-                         CONCAT31((int3)(nearest_index * 3 >> 8),*(i8 *)(nearest_index * 3 + rgb_data)),
-                         CONCAT31((int3)(nearest_index * 3 >> 8),*(i8 *)(nearest_index * 3 + 1 + rgb_data)),
-                         CONCAT31((int3)(nearest_index * 3 >> 8),*(i8 *)(nearest_index * 3 + 2 + rgb_data)));
+                         *(u8 *)(nearest_index * 3 + rgb_data),
+                         *(u8 *)(nearest_index * 3 + 1 + rgb_data),
+                         *(u8 *)(nearest_index * 3 + 2 + rgb_data));
             }
             DeleteObject(h);
             mem_handle_unlock(handle);
@@ -6734,7 +6733,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
                 image_data = image_desc + 10;
                 win_flush_pending_msgs();
                 gif_lzw_decode((byte *)image_data,first_color,
-                             CONCAT22((short)(stride >> 0x10),(ushort)lzw_min_code),stride
+                             (ushort)lzw_min_code,stride
                              ,width2,height2,(i8 *)bits);
                 win_flush_pending_msgs();
                 set_palette(palette);
@@ -6842,7 +6841,7 @@ i32 DibSurface::load_gif_resource(iptr res_id,uint first_color,uint color_count,
         lzw_min_code = image_desc[9];
         image_data = image_desc + 10;
         win_flush_pending_msgs();
-        gif_lzw_decode((byte *)image_data,first_color,CONCAT22((short)(stride >> 0x10),(ushort)lzw_min_code)
+        gif_lzw_decode((byte *)image_data,first_color,(ushort)lzw_min_code
                      ,stride,width2,height2,(i8 *)bits);
         win_flush_pending_msgs();
         set_palette(palette);
@@ -7273,7 +7272,7 @@ void DibSurface::draw_text_cur_font(const char *text,int x,int y,uint flags)
       font_height = font_measure_height(*(i32 *)draw_target.font);
       font_height += (font_height >> 0x1f & 7U);
       shadow_offset = font_height >> 3;
-      old_color = gfx_set_text_color_index(CONCAT31((font_height >> 0xb),display_palette.black_index));
+      old_color = gfx_set_text_color_index(display_palette.black_index);
       saved_color = (saved_color & 0xffffff00 | (byte)(old_color));
       dib_draw_text_at(dib,*(i32 *)draw_target.font,(char *)text,shadow_offset + x,
                    shadow_offset + y,(RECT *)&clip_left,flags);
@@ -7299,7 +7298,7 @@ void DibSurface::draw_text(iptr font,const char *text,iptr x,int y,uint flags)
       font_height = font_measure_height(*(i32 *)font);
       font_height += (font_height >> 0x1f & 7U);
       shadow_offset = font_height >> 3;
-      old_color = gfx_set_text_color_index(CONCAT31((font_height >> 0xb),display_palette.black_index));
+      old_color = gfx_set_text_color_index(display_palette.black_index);
       saved_color = (saved_color & 0xffffff00 | (byte)(old_color));
       dib_draw_text_at(dib,*(i32 *)font,(char *)text,x + shadow_offset,y + shadow_offset,
                    (RECT *)&clip_left,flags);
@@ -7330,7 +7329,7 @@ void DibSurface::draw_text_in_rect(iptr font,const char *text,RECT *rect,uint fl
       shadow_rect.right = rect->right;
       shadow_rect.bottom = rect->bottom;
       offset_ok = OffsetRect(&shadow_rect,shadow_offset,shadow_offset);
-      old_color = gfx_set_text_color_index(CONCAT31((int3)((uint)offset_ok >> 8),display_palette.black_index));
+      old_color = gfx_set_text_color_index(display_palette.black_index);
       saved_color = (saved_color & 0xffffff00 | (byte)(old_color));
       dib_draw_text_rect(dib,*(i32 *)font,(char *)text,&shadow_rect,flags);
       gfx_set_text_color_index(saved_color);
@@ -7391,7 +7390,7 @@ void DibSurface::draw_line(u32 x1,u32 y1,u32 x2,u32 y2)
         }
         top_down = crt_abs(x2 - x1);
         top_down++;
-        color = CONCAT31((int3)((uint)top_down >> 8),(*(i8 *)&ctrl_colors.gfx_text));
+        color = *(u8 *)&ctrl_colors.gfx_text;
         handle = get_bits();
         dib_hline8((u8 *)handle,color,top_down,start,y1,height,pitch);
       }
@@ -7421,7 +7420,7 @@ void DibSurface::draw_line(u32 x1,u32 y1,u32 x2,u32 y2)
         }
         top_down = crt_abs(y2 - y1);
         top_down++;
-        color = CONCAT31((int3)((uint)top_down >> 8),(*(i8 *)&ctrl_colors.gfx_text));
+        color = *(u8 *)&ctrl_colors.gfx_text;
         handle = get_bits();
         dib_vline8((u8 *)handle,color,top_down,x1,start,height,pitch);
       }
@@ -7814,9 +7813,7 @@ void GamePalette::set_rgb(int first,int count,iptr rgb)
   }
   for (index = first; index < count + first; index++) {
     hi_bits = (i32)((uint)rgb >> 8);
-    palette_set_entry_rgb((GameLogPalette *)this,index,CONCAT31(hi_bits,*(i8 *)rgb),
-                 CONCAT31(hi_bits,*(i8 *)(rgb + 1)),
-                 CONCAT31(hi_bits,*(i8 *)(rgb + 2)));
+    palette_set_entry_rgb((GameLogPalette *)this,index,*(u8 *)rgb,*(u8 *)(rgb + 1),*(u8 *)(rgb + 2));
     rgb += 3;
   }
   commit_range(first,count);
@@ -9545,7 +9542,7 @@ dib_draw_text_at(GdiDib *dib,int font,char *text,int x,int y,RECT *clip_rect,
     old_font = SelectObject(dib->hdc,(HGDIOBJ)*font_data);
     GetDIBColorTable(dib->hdc,(uint)ctrl_colors.gfx_text,1,&color2);
     SetTextColor(dib->hdc,
-                 CONCAT12(color2.rgbBlue,CONCAT11(color2.rgbGreen,color2.rgbRed)));
+                 RGB(color2.rgbRed,color2.rgbGreen,color2.rgbBlue));
     half_h = rect_height(&text_rect);
     half_h = half_h / 2;
     half_w = rect_width(&text_rect);
@@ -9596,7 +9593,7 @@ void __cdecl dib_draw_text_rect(GdiDib *dib,int font,char *text,RECT *rect,uint 
     old_font = SelectObject(dib->hdc,(HGDIOBJ)*font_data);
     GetDIBColorTable(dib->hdc,(uint)ctrl_colors.gfx_text,1,&color2);
     SetTextColor(dib->hdc,
-                 CONCAT12(color2.rgbBlue,CONCAT11(color2.rgbGreen,color2.rgbRed)));
+                 RGB(color2.rgbRed,color2.rgbGreen,color2.rgbBlue));
     format = 0;
     if (align == 0) {
       format = 0x25;
@@ -9635,7 +9632,7 @@ void __cdecl dib_draw_text_wrap(GdiDib *dib,int font,char *text,LPRECT rect,uint
     old_font = SelectObject(dib->hdc,(HGDIOBJ)*font_data);
     GetDIBColorTable(dib->hdc,(uint)ctrl_colors.gfx_text,1,&color2);
     SetTextColor(dib->hdc,
-                 CONCAT12(color2.rgbBlue,CONCAT11(color2.rgbGreen,color2.rgbRed)));
+                 RGB(color2.rgbRed,color2.rgbGreen,color2.rgbBlue));
     format = 0x10;
     if (align == 0) {
       format = 0x11;
@@ -9661,8 +9658,7 @@ void __cdecl dib_draw_line(GdiDib *dib,int x1,int y1,int x2,int y2)
   
   if (dib != 0) {
     GetDIBColorTable(dib->hdc,(uint)ctrl_colors.gfx_text,1,&color2);
-    pen = CreatePen(0,1,CONCAT12(color2.rgbBlue,
-                                           CONCAT11(color2.rgbGreen,color2.rgbRed)));
+    pen = CreatePen(0,1,RGB(color2.rgbRed,color2.rgbGreen,color2.rgbBlue));
     old_pen = SelectObject(dib->hdc,pen);
     MoveToEx(dib->hdc,x1,y1,(LPPOINT)0x0);
     LineTo(dib->hdc,x2,y2);
@@ -10317,16 +10313,15 @@ dib_hline8(u8 *bits,i32 color,uint length,int x,int y,int surf_height,
   }
   dst = (i32 *)(bits + y * pitch + x);
   dwords = (ushort)length >> 2;
-  count = CONCAT22((short)(length >> 0x10),dwords);
+  count = length & 0xffff0000 | dwords;   /* the original's count: length's high half kept */
   if (dwords != 0) {
     for (; count != 0; count--) {
-      *dst = CONCAT22(CONCAT11((i8)color,(i8)color),
-                         CONCAT11((i8)color,(i8)color));
+      *dst = (u8)color * 0x01010101;
       dst++;
     }
   }
   if ((length & 2) != 0) {
-    *(ushort *)dst = CONCAT11((i8)color,(i8)color);
+    *(ushort *)dst = (ushort)((u8)color * 0x0101);
     dst = (i32 *)((int)dst + 2);
   }
   if ((length & 1) != 0) {

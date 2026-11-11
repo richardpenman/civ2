@@ -10252,7 +10252,7 @@ i32 __cdecl city_process_food(uptr city)
           }
         }
         else {
-          text_set_number_arg_u8(0,(uint)CONCAT11((char)(game.shown_event_flags >> 8),cosmic.aqueduct_size));
+          text_set_number_arg_u8(0,cosmic.aqueduct_size);
           city_notify_dialog(str_aqueduct,city,(((Sprite *)((u8 *)&caption_close_button_sprite_block.notify_sprites + 420))));
           game.shown_event_flags = game.shown_event_flags | HINT_AQUEDUCT;
         }
@@ -11661,7 +11661,7 @@ void __cdecl wonder_apollo_reveal_map(void)
         arg_zero = 0;
         known_civ = civ_idx;
         tile = tile_at(x2,y2);
-        known_set(x2,y2,CONCAT31((int3)((uint)(iptr)tile >> 8),(i8)tile->improvements),
+        known_set(x2,y2,(u8)tile->improvements,
                   known_civ,arg_zero,arg_one);
       }
       x2 += 2;
@@ -16054,8 +16054,7 @@ void __cdecl city_button_change(i32 control_id)
             confirmed = 1;
             city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
             if ((new_shields < cities[city].shield_box) && ((game.message_options & MSGOFF_PRODUCTION_PENALTY) == 0)) {
-              text_set_number_arg_u8(0,(uint)CONCAT11((char)(game.message_options >> 8),
-                                                  cosmic.change_penalty));
+              text_set_number_arg_u8(0,cosmic.change_penalty);
               city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
               if (cities[city].building < '\0') {
                 city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();

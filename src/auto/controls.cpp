@@ -1638,7 +1638,7 @@ static HPEN button_face_pen(HDC mem_dc,Button *button)
     this_01 = (GamePalette *)parent_wnd->get_palette();
     logpal = this_01->get_logpalette();
     palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
-    bg_pen = CreatePen(0,1,CONCAT12(blue[0],CONCAT11(green[0],red[0])))
+    bg_pen = CreatePen(0,1,RGB(red[0],green[0],blue[0]))
     ;
   }
   return bg_pen;
@@ -2282,7 +2282,7 @@ static void checkbox_text_color(HDC hdc,Checkbox *checkbox)
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         logpal = (iptr)game_palette2->get_logpalette();
         palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
-        SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])))
+        SetTextColor(hdc,RGB(red[0],green[0],blue[0]))
         ;
       }
     }
@@ -2290,7 +2290,7 @@ static void checkbox_text_color(HDC hdc,Checkbox *checkbox)
       SetTextColor(hdc,0);
     }
     else {
-      SetTextColor(hdc,CONCAT12(ctrl_rgb.text_rgb_b,CONCAT11(ctrl_rgb.text_rgb_g,ctrl_rgb.text_rgb_r)));
+      SetTextColor(hdc,RGB(ctrl_rgb.text_rgb_r,ctrl_rgb.text_rgb_g,ctrl_rgb.text_rgb_b));
     }
   }
   else {
@@ -2312,14 +2312,14 @@ static void checkbox_text_color(HDC hdc,Checkbox *checkbox)
           logpal = (iptr)game_palette2->get_logpalette();
           palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
           SetTextColor(hdc,
-                       CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+                       RGB(red[0],green[0],blue[0]));
         }
       }
       else if (ctrl_rgb.disabled_rgb_set == '\0') {
         SetTextColor(hdc,0x404040);
       }
       else {
-        SetTextColor(hdc,CONCAT12(ctrl_rgb.disabled_rgb_b,CONCAT11(ctrl_rgb.disabled_rgb_g,ctrl_rgb.disabled_rgb_r)))
+        SetTextColor(hdc,RGB(ctrl_rgb.disabled_rgb_r,ctrl_rgb.disabled_rgb_g,ctrl_rgb.disabled_rgb_b))
         ;
       }
     }
@@ -2467,7 +2467,7 @@ static void checkbox_paint(HWND hwnd,ControlBlock *block,Checkbox *checkbox)
     parent_wnd = (WndBase *)checkbox->get_parent();
     game_palette2 = (GamePalette *)parent_wnd->get_palette();
     game_palette2->get_entry(color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
-    SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+    SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
     draw_flags = 0x24;
     draw_rect = &rect;
     len = _strlen(label);
@@ -4019,14 +4019,14 @@ static void radiogrp_item_text_color(HDC hdc,RadioGroup *group,RadioItem *item)
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         parent = (iptr)game_palette2->get_logpalette();
         palette_get_entry_rgb((GameLogPalette *)parent,color_index,red_out,green_out,blue_out);
-        SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+        SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
       }
     }
     else if (radio_state.text_set == '\0') {
       SetTextColor(hdc,0);
     }
     else {
-      SetTextColor(hdc,CONCAT12(radio_state.text_b,CONCAT11(radio_state.text_g,radio_state.text_r)));
+      SetTextColor(hdc,RGB(radio_state.text_r,radio_state.text_g,radio_state.text_b));
     }
   }
   else if (item->enabled == 0) {
@@ -4045,14 +4045,14 @@ static void radiogrp_item_text_color(HDC hdc,RadioGroup *group,RadioItem *item)
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         parent = (iptr)game_palette2->get_logpalette();
         palette_get_entry_rgb((GameLogPalette *)parent,color_index,red_out,green_out,blue_out);
-        SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+        SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
       }
     }
     else if (radio_state.disabled_set == '\0') {
       SetTextColor(hdc,0x404040);
     }
     else {
-      SetTextColor(hdc,CONCAT12(radio_state.disabled_b,CONCAT11(radio_state.disabled_g,radio_state.disabled_r)));
+      SetTextColor(hdc,RGB(radio_state.disabled_r,radio_state.disabled_g,radio_state.disabled_b));
     }
   }
 }
@@ -4278,7 +4278,7 @@ static void radiogrp_item_paint(HWND hwnd,ControlBlock *block,RadioGroup *group,
     parent_wnd = (WndBase *)group->get_parent();
     game_palette2 = (GamePalette *)parent_wnd->get_palette();
     game_palette2->get_entry(color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
-    SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
+    SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
     draw_flags = 0x24;
     draw_rect = &rect;
     len = _strlen(item->label);
