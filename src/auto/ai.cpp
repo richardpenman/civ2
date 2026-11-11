@@ -2437,10 +2437,10 @@ enum AiAirNext {
 struct AiAirOrders {
   int &unit;
   int &unit_type;
-  iptr &x;
-  iptr &y;
+  i32 *&x;
+  i32 *&y;
   int &mode;
-  iptr &out_flag;
+  i32 *&out_flag;
   int &may_go_home;
   int &landmass;
   int &set_flag;
@@ -2470,9 +2470,9 @@ struct AiAirOrders {
    its landmass, with its own units around. */
 static i32 ai_air_raid_city(AiAirOrders *o)
 {
-  int &unit_type = o->unit_type; int &set_flag = o->set_flag; iptr &x = o->x;
+  int &unit_type = o->unit_type; int &set_flag = o->set_flag; i32 *&x = o->x;
   int &mode = o->mode; int &landmass = o->landmass;
-  iptr &out_flag = o->out_flag; iptr &y = o->y; char &small_val = o->small_val;
+  i32 *&out_flag = o->out_flag; i32 *&y = o->y; char &small_val = o->small_val;
   int &civ = o->civ; int &value = o->value; int &y2 = o->y2; iptr &x2 = o->x2;
   iptr &unit2 = o->unit2; iptr &unit3 = o->unit3; iptr &city = o->city;
   uptr &dir = o->dir; int &best_score = o->best_score; int &score = o->score;
@@ -2480,8 +2480,8 @@ static i32 ai_air_raid_city(AiAirOrders *o)
      ((char)unit_types[unit_type].attack < 'c')) {
     if (units[unit2].orders == ORDER_GOTO) {
       if ((units[unit2].counter == '\0') && (set_flag != 0)) {
-        *(i32 *)out_flag = 1;
-        if (*(int *)out_flag != 0) {
+        *out_flag = 1;
+        if (*out_flag != 0) {
           return 0xfffffffe;
         }
         return 0xffffffff;
@@ -2495,9 +2495,9 @@ static i32 ai_air_raid_city(AiAirOrders *o)
           ((scenario.objective_civ == civ && (value = tile_unit_owner(0x2d,0x35), -1 < value)))))) {
         unit_set_goto(unit2,0x42,0x2d,0x35);
         if (set_flag != 0) {
-          *(i32 *)out_flag = 1;
+          *out_flag = 1;
         }
-        if (*(int *)out_flag != 0) {
+        if (*out_flag != 0) {
           return 0xfffffffe;
         }
         return 0xffffffff;
@@ -2505,7 +2505,7 @@ static i32 ai_air_raid_city(AiAirOrders *o)
       for (city = 0; city < game.num_cities; city++) {
         if (((cities[city].id != 0) && (cities[city].owner != civ)) &&
            ((*(byte *)&civs[civ].treaties[cities[city].owner] & (TREATY_CEASEFIRE | TREATY_PEACE)) == 0)) {
-          value = map_distance(*(i32 *)x,*(i32 *)y,
+          value = map_distance(*x,*y,
                                       (int)cities[city].x,(int)cities[city].y);
           y2 = unit_moves_left(unit2);
           if ((value <= y2 / (int)(uint)cosmic.road_move_mult) &&
@@ -2536,9 +2536,9 @@ static i32 ai_air_raid_city(AiAirOrders *o)
       if (-1 < unit3) {
         unit_set_goto(unit2,0x42,(int)cities[unit3].x,(int)cities[unit3].y);
         if (set_flag != 0) {
-          *(i32 *)out_flag = 1;
+          *out_flag = 1;
         }
-        if (*(int *)out_flag != 0) {
+        if (*out_flag != 0) {
           return 0xfffffffe;
         }
         return 0xffffffff;
@@ -2560,7 +2560,7 @@ static i32 ai_air_strike_target(AiAirOrders *o)
   int city_dist;
   iptr city2;
   iptr nearest_city;
-  int &may_go_home = o->may_go_home; iptr &x = o->x; iptr &y = o->y;
+  int &may_go_home = o->may_go_home; i32 *&x = o->x; i32 *&y = o->y;
   int &civ = o->civ; int &value = o->value; int &y2 = o->y2; iptr &x2 = o->x2;
   iptr &unit2 = o->unit2; iptr &unit3 = o->unit3;
   int &best_threat = o->best_threat; int &home_dist = o->home_dist;
@@ -2579,7 +2579,7 @@ static i32 ai_air_strike_target(AiAirOrders *o)
         y2 = map_in_bounds(x2,value);
         if ((((y2 != 0) && (y2 = tile_city_owner(x2,value), y2 < 0)) &&
             ((y2 = tile_unit_owner(x2,value), y2 < 0 || (civ == y2)))) &&
-           (y2 = map_distance(*(i32 *)x,*(i32 *)y,x2,
+           (y2 = map_distance(*x,*y,x2,
                                         value), y2 <= best_score - 1)) {
           advisor_window_block.nearest_city_dist = 9999;
           nearest_city = -1;
@@ -2629,7 +2629,7 @@ static i32 ai_air_strike_target(AiAirOrders *o)
     city2 = -1;
     for (city = 0; city < game.num_cities; city++) {
       if (((cities[city].id != 0) && (cities[city].owner == civ)) &&
-         ((value = map_distance(*(i32 *)x,*(i32 *)y,
+         ((value = map_distance(*x,*y,
                                        (int)cities[city].x,(int)cities[city].y),
           value <= range_left &&
           (value = map_distance(x3,y3,(int)cities[city].x,
@@ -2663,7 +2663,7 @@ static void ai_air_pick_target(AiAirOrders *o)
   byte terrain;
   int threat_score;
   int defense_power;
-  iptr &y = o->y; iptr &x = o->x; int &unit_type = o->unit_type;
+  i32 *&y = o->y; i32 *&x = o->x; int &unit_type = o->unit_type;
   int &unit = o->unit; byte &civ2 = o->civ2; u8 &stat_a = o->stat_a;
   u8 &stat_b = o->stat_b; int &civ = o->civ; int &value = o->value;
   int &y2 = o->y2; iptr &unit2 = o->unit2; iptr &unit3 = o->unit3;
@@ -2698,7 +2698,7 @@ static void ai_air_pick_target(AiAirOrders *o)
             (int)((3 - (uint)((own_flags & UNITF_VETERAN) == 0)) * (int)(char)stat_a * (int)(char)stat_b *
                   (int)(char)att_fp * 2)) continue;
       }
-      value = map_distance(*(i32 *)x,*(i32 *)y,
+      value = map_distance(*x,*y,
                                   (int)units[unit].x,(int)units[unit].y);
       threat_score = value * 2;
       if (((uint)game.human_players & 1 << (units[unit].owner & 0x1fU)) != 0) {
@@ -2735,8 +2735,8 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
   int target_dist;
   i32 tile_imps;
   uint move_mult;
-  iptr &y = o->y; int &unit = o->unit; int &unit_type = o->unit_type;
-  iptr &x = o->x; char &small_val = o->small_val; int &civ = o->civ;
+  i32 *&y = o->y; int &unit = o->unit; int &unit_type = o->unit_type;
+  i32 *&x = o->x; char &small_val = o->small_val; int &civ = o->civ;
   int &value = o->value; int &y2 = o->y2; iptr &x2 = o->x2;
   iptr &unit2 = o->unit2; iptr &unit3 = o->unit3; iptr &city = o->city;
   uptr &dir = o->dir; int &best_score = o->best_score; int &score = o->score;
@@ -2757,8 +2757,8 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
             if ((y2 != 0) && (y2 = tile_city_or_unit_owner(x2,value), y2 < 0)) {
               unit_relocate(unit2,x2,value,1);
               units[unit2].visibility = '\0';
-              *(iptr *)x = x2;
-              *(int *)y = value;
+              *x = x2;
+              *y = value;
               return dir ^ 4;
             }
           }
@@ -2770,14 +2770,14 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
               x2 = tile_first_unit((int)cities[city].x,(int)cities[city].y);
               y2 = unit_stack_sum(x2,8);
               if (y2 < value) {
-                y2 = map_distance(*(i32 *)x,*(i32 *)y,
+                y2 = map_distance(*x,*y,
                                             (int)cities[city].x,(int)cities[city].y);
                 check = unit_max_moves(unit2);
                 if (y2 <= check / (int)(uint)cosmic.road_move_mult) {
                   unit_relocate(unit2,cities[city].x,cities[city].y,1);
                   units[unit2].visibility = '\0';
-                  *(int *)x = (int)cities[city].x;
-                  *(int *)y = (int)cities[city].y;
+                  *x = (int)cities[city].x;
+                  *y = (int)cities[city].y;
                   return 8;
                 }
               }
@@ -2795,7 +2795,7 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
         if (check != 0) {
           check = unit_max_moves(unit2);
           move_mult = (uint)cosmic.road_move_mult;
-          target_dist = map_distance(*(i32 *)x,*(i32 *)y,value,y2);
+          target_dist = map_distance(*x,*y,value,y2);
           if (target_dist <= check / (int)move_mult) {
             score = (int)(char)unit_types[units[unit].type].cost;
             tile_imps = tile_improvements(value,y2);
@@ -2851,7 +2851,7 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
 
 /* 00537331 auto */
 i32 __cdecl
-ai_air_unit_orders(int unit,int unit_type,iptr x,iptr y,int mode,iptr out_flag,
+ai_air_unit_orders(int unit,int unit_type,i32 *x,i32 *y,int mode,i32 *out_flag,
             int may_go_home,int landmass,int set_flag)
 
 {
@@ -2896,7 +2896,7 @@ ai_air_unit_orders(int unit,int unit_type,iptr x,iptr y,int mode,iptr out_flag,
   home_dist = 9999;
   for (city = 0; city < game.num_cities; city++) {
     if (((cities[city].id != 0) && (cities[city].owner == civ)) &&
-       (value = map_distance(*(i32 *)x,*(i32 *)y,
+       (value = map_distance(*x,*y,
                                     (int)cities[city].x,(int)cities[city].y),
        value < home_dist)) {
       home_dist = value;
@@ -6259,8 +6259,8 @@ scenario_guard_check:
         }
         else {
           if (unit_domain == DOMAIN_AIR) {
-            unit4 = ai_air_unit_orders(unit,unit_type,(iptr)&x2,(iptr)&y3,ai_role,
-                                          (iptr)&has_orders,own_dist,landmass,in_enemy_zoc);
+            unit4 = ai_air_unit_orders(unit,unit_type,&x2,&y3,ai_role,
+                                          &has_orders,own_dist,landmass,in_enemy_zoc);
             if (unit4 == 0xfffffffe) goto plan_move;
             if (unit4 == 0xffffffff) goto finish_orders;
             city3 = unit4;

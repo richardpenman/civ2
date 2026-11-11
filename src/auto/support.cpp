@@ -548,14 +548,14 @@ int __cdecl int_clamp(int value,int lo,int hi)
 }
 
 /* 005adfd9 auto */
-void __cdecl int_swap(iptr a,iptr b)
+void __cdecl int_swap(i32 *a,i32 *b)
 
 {
   i32 tmp;
   
-  tmp = *(i32 *)a;
-  *(i32 *)a = *(i32 *)b;
-  *(i32 *)b = tmp;
+  tmp = *a;
+  *a = *b;
+  *b = tmp;
   return;
 }
 

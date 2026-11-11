@@ -64,7 +64,7 @@ struct GamePalette {
     void commit_range(int, int) {}
 };
 static void palette_set_entry_rgb(GameLogPalette *, int, int, int, int) {}
-static void palette_get_entry_rgb(GameLogPalette *, int color, iptr r, iptr g, iptr b) {
+static void palette_get_entry_rgb(GameLogPalette *, int color, i8 *r, i8 *g, i8 *b) {
     *(char *)r = (char)color;
     *(char *)g = (char)(color + 1);
     *(char *)b = (char)(color + 2);

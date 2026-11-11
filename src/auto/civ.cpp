@@ -5000,7 +5000,7 @@ i32 __cdecl civ_has_advance(int civ,int advance_id)
 
 {
   i32 result;
-  iptr advance;
+  int advance;
   byte bit_mask[4];
   
   if (advance_id == -2) {
@@ -5017,7 +5017,7 @@ i32 __cdecl civ_has_advance(int civ,int advance_id)
       result = 0;
     }
     else {
-      bit_index_split(advance_id,(iptr)&advance,(iptr)bit_mask);
+      bit_index_split(advance_id,&advance,(int *)bit_mask);
       if ((bit_mask[0] & civs[civ].advances[advance]) == 0) {
         result = 0;
       }
@@ -5314,14 +5314,14 @@ static void civ_advance_announce(uptr civ,iptr advance,iptr civ2,Dialog &dialog2
      ((1 << ((byte)(*(i8 *)&human_civ) & 0x1f) & (uint)game.human_players) == 0)) {
     for (improvement = 0; improvement < 0x43; improvement++) {
       if (improvements[improvement].preq == advance) {
-        text_list_append_wrapped((iptr)&dialog2,improvements[improvement].name,(iptr)&list_count,
-                           (iptr)&line_width);
+        text_list_append_wrapped((iptr)&dialog2,improvements[improvement].name,&list_count,
+                           &line_width);
       }
     }
     for (unit_type = 0; unit_type < 0x3e; unit_type++) {
       if (unit_types[unit_type].prerequisite == advance) {
-        text_list_append_wrapped((iptr)&dialog2,unit_types[unit_type].name,(iptr)&list_count,
-                           (iptr)&line_width);
+        text_list_append_wrapped((iptr)&dialog2,unit_types[unit_type].name,&list_count,
+                           &line_width);
       }
     }
     if (list_count != 0) {
@@ -5423,7 +5423,7 @@ void __cdecl civ_give_advance(uptr civ,int advance,int civ2,int skip_pedia,int f
   iptr civ_plural;
   int improvement2;
   uptr civ3;
-  iptr advance3;
+  int advance3;
   byte bit_mask[4];
   Dialog dialog2;
   iptr advance2;
@@ -5445,7 +5445,7 @@ void __cdecl civ_give_advance(uptr civ,int advance,int civ2,int skip_pedia,int f
       civs[civ].future_techs++;
     }
     else {
-      bit_index_split(advance,(iptr)&advance3,(iptr)bit_mask);
+      bit_index_split(advance,&advance3,(int *)bit_mask);
       civs[civ].advances[advance3] =
            civs[civ].advances[advance3] | bit_mask[0];
       *(i8 *)&civs[civ].advance_source[advance] = (i8)civ2;

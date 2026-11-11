@@ -282,7 +282,7 @@ int __cdecl snd_wave_open(i32 notify_hwnd,i32 buffer_bytes,i32 buffer_count)
   snd_wave.open_buffer_bytes = buffer_bytes;
   (*(i32 *)&snd_wave.max_buffers) = buffer_count;
   (*(i32 *)&snd_wave.buffer_count) = buffer_count;
-  result = snd_wave_open_device(notify_hwnd,0,(iptr)&snd_wave.out_handle);
+  result = snd_wave_open_device(notify_hwnd,0,&snd_wave.out_handle);
   if (result == 0) {
     snd_wave_alloc_buffers(buffer_bytes,snd_wave.out_handle,buffer_count);
     result = 0;
@@ -315,7 +315,7 @@ void __cdecl snd_show_error(int error_code)
 }
 
 /* 005d4a11 auto */
-uint __cdecl snd_wave_open_device(DWORD_PTR callback,i32 *format,iptr out_handle)
+uint __cdecl snd_wave_open_device(DWORD_PTR callback,i32 *format,i32 *out_handle)
 
 {
   bool use_fallback;
@@ -360,7 +360,7 @@ uint __cdecl snd_wave_open_device(DWORD_PTR callback,i32 *format,iptr out_handle
       }
       result = result & 0xffff;
       if ((result == 0) && (snd_wave.device_open = 1, out_handle != 0)) {
-        *(i32 *)out_handle = snd_wave.out_handle;
+        *out_handle = snd_wave.out_handle;
       }
     }
     else {

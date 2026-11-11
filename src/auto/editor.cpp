@@ -1763,7 +1763,7 @@ void __cdecl editor_wnd_on_move_close_dropdowns(void)
 }
 
 /* 004ce8a4 auto */
-i32 __cdecl editor_input_long(const char *file_name,const char *section,int default_value,iptr out_value)
+i32 __cdecl editor_input_long(const char *file_name,const char *section,int default_value,long *out_value)
 
 {
   long value;
@@ -1774,7 +1774,7 @@ i32 __cdecl editor_input_long(const char *file_name,const char *section,int defa
   __itoa(default_value,default_buf,10);
   result = dlg_text_input((iptr)file_name,section,6,(iptr)default_buf,(iptr)input_buf);
   value = _atol(input_buf);
-  *(long *)out_value = value;
+  *out_value = value;
   return result;
 }
 

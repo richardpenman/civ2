@@ -3876,7 +3876,7 @@ void WndBase::move_xy(i32 x,i32 y)
 }
 
 /* 00518ec0 auto */
-i32 __cdecl dlg_input_number_game(const char *section,i32 initial,iptr out_value)
+i32 __cdecl dlg_input_number_game(const char *section,i32 initial,long *out_value)
 
 {
   i32 result;
@@ -3968,7 +3968,7 @@ dlg_text_input(iptr file,const char *section,i32 max_len,iptr initial_text,iptr 
 }
 
 /* 0051d75d auto */
-i32 __cdecl dlg_input_number(iptr file,const char *section,int initial,iptr out_value)
+i32 __cdecl dlg_input_number(iptr file,const char *section,int initial,long *out_value)
 
 {
   long value;
@@ -3979,7 +3979,7 @@ i32 __cdecl dlg_input_number(iptr file,const char *section,int initial,iptr out_
   __itoa(initial,initial_text,10);
   result = dlg_text_input(file,section,5,(iptr)initial_text,(iptr)input_text);
   value = _atol(input_text);
-  *(long *)out_value = value;
+  *out_value = value;
   return result;
 }
 
@@ -4035,7 +4035,7 @@ void __cdecl dialog_prepend_title_label(iptr dialog,i32 label_id)
 }
 
 /* 00548b70 auto */
-int __cdecl ui_calc_item_spacing(int count,int item_size,int total_size,iptr out_count,iptr out_remainder)
+int __cdecl ui_calc_item_spacing(int count,int item_size,int total_size,int *out_count,int *out_remainder)
 
 {
   int free_space;
@@ -4051,27 +4051,27 @@ int __cdecl ui_calc_item_spacing(int count,int item_size,int total_size,iptr out
   result = item_size;
   if (count == 1) {
     if (out_remainder != 0) {
-      *(i32 *)out_remainder = 0;
+      *out_remainder = 0;
     }
     if (out_count != 0) {
-      *(i32 *)out_count = 1;
+      *out_count = 1;
     }
   }
   else {
     free_space = total_size - item_size;
     spacing = free_space / (count - 1);
     if (out_remainder != 0) {
-      *(int *)out_remainder = free_space % (count - 1);
+      *out_remainder = free_space % (count - 1);
     }
     if (out_count != 0) {
-      *(int *)out_count = count;
+      *out_count = count;
     }
     if ((spacing < item_size) && (result = spacing, spacing < 1)) {
       if (out_remainder != 0) {
-        *(i32 *)out_remainder = 0;
+        *out_remainder = 0;
       }
       if (out_count != 0) {
-        *(int *)out_count = (free_space - item_size) + 1;
+        *out_count = (free_space - item_size) + 1;
       }
       result = 1;
     }

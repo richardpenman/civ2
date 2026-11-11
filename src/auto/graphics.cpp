@@ -1863,7 +1863,7 @@ int __cdecl gfx_save_bmp_640x480(iptr surface,const char *filename,int first_col
       red_ptr = bmp_palette + dst_index * 4 + 2;
       tmp = i;
       logpal = ((GamePalette *)palette)->get_logpalette();
-      palette_get_entry_rgb((GameLogPalette *)logpal,tmp,(iptr)red_ptr,(iptr)green_ptr,(iptr)blue_ptr);
+      palette_get_entry_rgb((GameLogPalette *)logpal,tmp,red_ptr,green_ptr,blue_ptr);
       dst_index++;
     }
   }
@@ -2326,7 +2326,7 @@ void __cdecl portrait_dlg_on_button(int button_id)
 void GamePalette::get_entry(iptr index,iptr red,iptr green,iptr blue)
 
 {
-  palette_get_entry_rgb((GameLogPalette *)this,index,red,green,blue);
+  palette_get_entry_rgb((GameLogPalette *)this,index,(i8 *)red,(i8 *)green,(i8 *)blue);
   return;
 }
 
@@ -2751,7 +2751,7 @@ sprite_draw_spaced_row(iptr surface,iptr sprite,int x,i32 y,int count,int slots,
   
   error_acc = 0;
   orig_slots = slots;
-  spacing = ui_calc_item_spacing(slots,spacing,item_width,(iptr)&slots,(iptr)&remainder);
+  spacing = ui_calc_item_spacing(slots,spacing,item_width,&slots,&remainder);
   if (((orig_slots != 0) && (slots != orig_slots)) && (count != orig_slots)) {
     count = (slots * count) / orig_slots;
   }
@@ -5480,93 +5480,93 @@ void __cdecl sprite_picker_redraw_cb(void)
 }
 
 /* 005746a1 auto */
-i32 __cdecl sprite_editor_cell_rect(uint cell,iptr out_x,iptr out_y,iptr out_width,iptr out_height)
+i32 __cdecl sprite_editor_cell_rect(uint cell,int *out_x,int *out_y,i32 *out_width,i32 *out_height)
 
 {
   uint sign;
   i32 cell_count;
   
-  *(i32 *)out_height = 0;
-  *(i32 *)out_width = *(i32 *)out_height;
-  *(i32 *)out_y = *(i32 *)out_width;
-  *(i32 *)out_x = *(i32 *)out_y;
-  cell_count = *(i32 *)out_x;
+  *out_height = 0;
+  *out_width = *out_height;
+  *out_y = *out_width;
+  *out_x = *out_y;
+  cell_count = *out_x;
   if ((*(uint *)&sprite_picker_sprite_block.sprite_sheet_mode) < 0xc) {
     sign = (int)cell >> 0x1f;
     switch((*(uint *)&sprite_picker_sprite_block.sprite_sheet_mode)) {
     case 0:
       cell_count = 0x14;
-      *(int *)out_x = ((int)(cell + (sign & 3)) >> 2) * 0x25 + 0x157;
+      *out_x = ((int)(cell + (sign & 3)) >> 2) * 0x25 + 0x157;
       *(uint *)out_y = (((cell ^ sign) - sign & 3 ^ sign) - sign) * 0x15 + 0xd3;
-      *(i32 *)out_width = 0x24;
-      *(i32 *)out_height = 0x14;
+      *out_width = 0x24;
+      *out_height = 0x14;
       break;
     case 1:
       if ((int)cell < 0x18) {
-        *(i32 *)out_x = 1;
+        *out_x = 1;
       }
       else {
-        *(i32 *)out_x = 0x14e;
+        *out_x = 0x14e;
         cell -= 0x18;
       }
       sign = (int)cell >> 0x1f;
-      *(uint *)out_x = *(int *)out_x + (((cell ^ sign) - sign & 3 ^ sign) - sign) * 0x41;
-      *(int *)out_y = ((int)(cell + (sign & 3)) >> 2) * 0x31 + 0x27;
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x30;
+      *(uint *)out_x = *out_x + (((cell ^ sign) - sign & 3 ^ sign) - sign) * 0x41;
+      *out_y = ((int)(cell + (sign & 3)) >> 2) * 0x31 + 0x27;
+      *out_width = 0x40;
+      *out_height = 0x30;
       cell_count = 0x30;
       break;
     case 2:
       cell_count = 4;
       *(uint *)out_x = cell * 0x41 + 0x8f;
-      *(i32 *)out_y = 0x1a7;
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x30;
+      *out_y = 0x1a7;
+      *out_width = 0x40;
+      *out_height = 0x30;
       break;
     case 3:
       cell_count = 0x12;
-      *(i32 *)out_width = 0xe;
-      *(i32 *)out_height = 0x16;
-      *(int *)out_x = (((int)cell >> 1) % 9) * (*(int *)out_width + 1) + 1;
-      *(uint *)out_y = (*(int *)out_height + 1) * (cell & 1) + 0x1a9;
+      *out_width = 0xe;
+      *out_height = 0x16;
+      *out_x = (((int)cell >> 1) % 9) * (*out_width + 1) + 1;
+      *(uint *)out_y = (*out_height + 1) * (cell & 1) + 0x1a9;
       break;
     case 4:
       cell_count = 0x42;
-      *(i32 *)out_width = 0x24;
-      *(i32 *)out_height = 0x14;
+      *out_width = 0x24;
+      *out_height = 0x14;
       if ((int)cell < 0x26) {
         *(uint *)out_x = (((cell ^ sign) - sign & 7 ^ sign) - sign) * 0x25 + 0x157;
-        *(int *)out_y = ((int)(cell + (sign & 7)) >> 3) * 0x15 + 1;
+        *out_y = ((int)(cell + (sign & 7)) >> 3) * 0x15 + 1;
       }
       else {
-        *(int *)out_x = ((int)(cell - 0x26) % 7) * 0x25 + 0x157;
-        *(int *)out_y = ((int)(cell - 0x26) / 7) * 0x15 + 0x6a;
+        *out_x = ((int)(cell - 0x26) % 7) * 0x25 + 0x157;
+        *out_y = ((int)(cell - 0x26) / 7) * 0x15 + 0x6a;
       }
       break;
     case 5:
       cell_count = 1;
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x20;
-      *(i32 *)out_x = 199;
-      *(i32 *)out_y = 0x100;
+      *out_width = 0x40;
+      *out_height = 0x20;
+      *out_x = 199;
+      *out_y = 0x100;
       break;
     case 6:
       cell_count = 8;
-      *(i32 *)out_width = 0x20;
-      *(i32 *)out_height = 0x20;
-      *(uint *)out_x = (*(int *)out_width + 1) * cell + 1;
-      *(i32 *)out_y = 0x164;
+      *out_width = 0x20;
+      *out_height = 0x20;
+      *(uint *)out_x = (*out_width + 1) * cell + 1;
+      *out_y = 0x164;
       break;
     case 7:
       cell_count = 0x2c;
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x20;
-      *(int *)out_x = ((int)cell / 0xb) * 0x41 + 1;
-      *(int *)out_y = ((int)cell % 0xb) * 0x21 + 1;
+      *out_width = 0x40;
+      *out_height = 0x20;
+      *out_x = ((int)cell / 0xb) * 0x41 + 1;
+      *out_y = ((int)cell % 0xb) * 0x21 + 1;
       break;
     case 8:
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x20;
+      *out_width = 0x40;
+      *out_height = 0x20;
       if ((int)cell < 0x40) {
         *(uint *)out_x = (((cell ^ sign) - sign & 7 ^ sign) - sign) * 0x41 + 1;
         *(uint *)out_y =
@@ -5575,50 +5575,50 @@ i32 __cdecl sprite_editor_cell_rect(uint cell,iptr out_x,iptr out_y,iptr out_wid
       }
       else {
         *(uint *)out_x = (cell - 0x40) * 0x41 + 1;
-        *(i32 *)out_y = 0x14b;
+        *out_y = 0x14b;
       }
       cell_count = 0x44;
       break;
     case 9:
-      *(i32 *)out_width = 0x20;
-      *(i32 *)out_height = 0x10;
-      *(i32 *)out_x = 1;
-      *(i32 *)out_y = 0x1ad;
+      *out_width = 0x20;
+      *out_height = 0x10;
+      *out_x = 1;
+      *out_y = 0x1ad;
       switch(((cell ^ sign) - sign & 3 ^ sign) - sign) {
       case 0:
         break;
       case 1:
-        *(int *)out_y = *(int *)out_y + 0x22;
-        *(int *)out_x = *(int *)out_x + 0x21;
+        *out_y = *out_y + 0x22;
+        *out_x = *out_x + 0x21;
         break;
       case 2:
-        *(int *)out_y = *(int *)out_y + 0x11;
+        *out_y = *out_y + 0x11;
         break;
       case 3:
-        *(int *)out_y = *(int *)out_y + 0x22;
+        *out_y = *out_y + 0x22;
       }
-      *(int *)out_x = *(int *)out_x + ((int)(cell + (sign & 3)) >> 2) * 0x42;
+      *out_x = *out_x + ((int)(cell + (sign & 3)) >> 2) * 0x42;
       cell_count = 0x20;
       break;
     case 10:
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x20;
-      *(i32 *)out_x = 0x1c8;
+      *out_width = 0x40;
+      *out_height = 0x20;
+      *out_x = 0x1c8;
       if ((int)cell < 6) {
         *(uint *)out_y = cell * 0x21 + 100;
       }
       else {
-        *(int *)out_x = ((int)(cell - 6) % 9) * 0x41 + 1;
-        *(int *)out_y = ((int)(cell - 6) / 9) * 0x21 + 0x16c;
+        *out_x = ((int)(cell - 6) % 9) * 0x41 + 1;
+        *out_y = ((int)(cell - 6) / 9) * 0x21 + 0x16c;
       }
       cell_count = 0x18;
       break;
     case 0xb:
       cell_count = 0x3f;
-      *(int *)out_y = ((int)cell / 9) * 0x31 + 1;
-      *(int *)out_x = ((int)cell % 9) * 0x41 + 1;
-      *(i32 *)out_width = 0x40;
-      *(i32 *)out_height = 0x30;
+      *out_y = ((int)cell / 9) * 0x31 + 1;
+      *out_x = ((int)cell % 9) * 0x41 + 1;
+      *out_width = 0x40;
+      *out_height = 0x30;
     }
   }
   return cell_count;
@@ -5633,7 +5633,7 @@ void __cdecl sprite_picker_select_cell(i32 cell)
   i32 height2;
   i32 width2;
   
-  sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2);
+  sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2);
   ((Sprite *)((i8 *)&sprite_picker_sprite_block.sprite_picker_sprite))->free();
   ((Sprite *)((i8 *)&sprite_picker_sprite_block.sprite_picker_sprite))->grab_from_surface((iptr)&sprite_editor.sprite_sheet_surface,7,x2,y2,width2,height2);
   sprite_picker_redraw_cb();
@@ -5753,7 +5753,7 @@ void __cdecl sprite_picker_import_all_clicked(void)
     switch(sprite_picker_sprite_block.sprite_sheet_mode) {
     case 0:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         sign = (int)cell >> 0x1f;
         ((Sprite *)
@@ -5769,7 +5769,7 @@ void __cdecl sprite_picker_import_all_clicked(void)
       break;
     case 1:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         half_cell = (int)cell % 0x18;
         sign = (int)half_cell >> 0x1f;
@@ -5784,7 +5784,7 @@ void __cdecl sprite_picker_import_all_clicked(void)
       break;
     case 2:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         switch(cell) {
         case 0:
@@ -5807,19 +5807,19 @@ void __cdecl sprite_picker_import_all_clicked(void)
       break;
     case 3:
       for (cell = 0; (int)cell < 8; cell++) {
-        sprite_editor_cell_rect(cell * 2,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell * 2,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + cell * 0x78))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + cell * 0x78),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell * 2 + 1,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell * 2 + 1,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + cell * 0x78))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + cell * 0x78),x2,y2,width2,height2);
       }
       break;
     case 4:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         if ((int)cell < 0x26) {
           ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + (cell * 4 + 4) * 0xf))->free();
@@ -5837,7 +5837,7 @@ void __cdecl sprite_picker_import_all_clicked(void)
       break;
     case 6:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&government_sprites_block.explosion_sprites) + cell * 0x3c),x2,y2,width2,height2);
@@ -5845,96 +5845,96 @@ void __cdecl sprite_picker_import_all_clicked(void)
       break;
     case 7:
       for (cell = 0; (int)cell < 0xb; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + cell * 0x3c),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0x16,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x16,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + cell * 0x78))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + cell * 0x78),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0x21,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x21,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + cell * 0x78))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + cell * 0x78),x2,y2,width2,height2);
       }
       break;
     case 8:
       for (cell = 0; (int)cell < 0x10; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&icon_misc_sprites_block.river_sprites) + cell * 0x3c),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0x10,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x10,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&forest_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&forest_sprites) + cell * 0x3c),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0x20,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x20,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&mountain_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&mountain_sprites) + cell * 0x3c),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0x30,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x30,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&hill_sprites_block.hill_sprites) + cell * 0x3c),x2,y2,width2,height2);
       }
       for (cell = 0; (int)cell < 4; cell++) {
-        sprite_editor_cell_rect(cell + 0x40,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0x40,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + cell * 0x3c),x2,y2,width2,height2);
       }
       break;
     case 9:
       for (cell = 0; (int)cell < 8; cell++) {
-        sprite_editor_cell_rect(cell << 2,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell << 2,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + cell * 0xf0))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + cell * 0xf0),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell * 4 + 1,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell * 4 + 1,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + cell * 0xf0))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + cell * 0xf0),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell * 4 + 2,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell * 4 + 2,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + cell * 0xf0))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + cell * 0xf0),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell * 4 + 3,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell * 4 + 3,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + cell * 0xf0))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + cell * 0xf0),x2,y2,width2,height2);
       }
       break;
     case 10:
       for (cell = 0; (int)cell < 3; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + cell * 0x3c),x2,y2,width2,height2);
       }
-      sprite_editor_cell_rect(3,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2);
+      sprite_editor_cell_rect(3,&x2,&y2,&width2,&height2);
       ((Sprite *)((i8 *)&pollution_sprite_block.pollution_sprite))->free();
       sprite_editor_grab_from_sheet((iptr)&pollution_sprite_block.pollution_sprite,x2,y2,width2,height2);
-      sprite_editor_cell_rect(4,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2);
+      sprite_editor_cell_rect(4,&x2,&y2,&width2,&height2);
       ((Sprite *)((i8 *)&grassland_shield_sprite))->free();
       sprite_editor_grab_from_sheet((iptr)&grassland_shield_sprite,x2,y2,width2,height2);
-      sprite_editor_cell_rect(5,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2);
+      sprite_editor_cell_rect(5,&x2,&y2,&width2,&height2);
       ((Sprite *)((i8 *)&hut_sprite))->free();
       sprite_editor_grab_from_sheet((iptr)&hut_sprite,x2,y2,width2,height2);
       for (cell = 0; (int)cell < 9; cell++) {
-        sprite_editor_cell_rect(cell + 6,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 6,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&road_sprites_block.road_sprites) + cell * 0x3c),x2,y2,width2,height2);
-        sprite_editor_cell_rect(cell + 0xf,(iptr)&x2,(iptr)&y2,(iptr)&width2,
-                           (iptr)&height2);
+        sprite_editor_cell_rect(cell + 0xf,&x2,&y2,&width2,
+                           &height2);
         ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&road_sprites_block.railroad_sprites) + cell * 0x3c),x2,y2,width2,height2);
       }
       break;
     case 0xb:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
-        sprite_editor_cell_rect(cell,(iptr)&x2,(iptr)&y2,(iptr)&width2,(iptr)&height2)
+        sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + cell * 0x3c))->free();
         sprite_editor_grab_from_sheet((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + cell * 0x3c),x2,y2,width2,height2);
@@ -6020,7 +6020,7 @@ void SpritePicker::run()
   sci_rate_sel = client_width - 4;
   y2 = ((client_y + client_height) - (init_sci_rate + 2)) - (metric + 4);
   x2 = client_x + 2;
-  sprite_editor.sprite_sheet_cell_count = sprite_editor_cell_rect(0,(iptr)dummy_out,(iptr)dummy_out,(iptr)dummy_out,(iptr)dummy_out);
+  sprite_editor.sprite_sheet_cell_count = sprite_editor_cell_rect(0,(int *)dummy_out,(int *)dummy_out,(i32 *)dummy_out,(i32 *)dummy_out);
   rect_set_xywh((RECT *)rect,x2,y2,sci_rate_sel,scroll_height);
   if (this == (SpritePicker *)0x0) {
     scroll_parent = (u8 *)0x0;
@@ -6484,11 +6484,11 @@ int __cdecl bits_count8(uint bits)
 }
 
 /* 005ae3bf auto */
-void __cdecl bit_index_split(int bit_index,iptr out_byte,iptr out_mask)
+void __cdecl bit_index_split(int bit_index,int *out_byte,int *out_mask)
 
 {
-  *(iptr *)out_byte = bit_index >> 3;
-  *(int *)out_mask = 1 << ((byte)bit_index & 7);
+  *out_byte = bit_index >> 3;
+  *out_mask = 1 << ((byte)bit_index & 7);
   return;
 }
 
@@ -8171,11 +8171,11 @@ void __cdecl gfx_set_scale_ratio(int num,int den)
 }
 
 /* 005cda06 auto */
-void __cdecl gfx_get_scale_ratio(iptr out_num,iptr out_den)
+void __cdecl gfx_get_scale_ratio(i32 *out_num,i32 *out_den)
 
 {
-  *(i32 *)out_num = gfx_scale.num;
-  *(i32 *)out_den = gfx_scale.den;
+  *out_num = gfx_scale.num;
+  *out_den = gfx_scale.den;
   return;
 }
 
@@ -9221,12 +9221,12 @@ void __cdecl palette_animate(GameLogPalette *logpal,HPALETTE hpal,UINT first,UIN
 }
 
 /* 005dea9e auto */
-void __cdecl palette_get_entry_rgb(GameLogPalette *logpal,int index,iptr out_red,iptr out_green,iptr out_blue)
+void __cdecl palette_get_entry_rgb(GameLogPalette *logpal,int index,i8 *out_red,i8 *out_green,i8 *out_blue)
 
 {
-  *(i8 *)out_red = logpal->entries[index].red;
-  *(i8 *)out_green = logpal->entries[index].green;
-  *(i8 *)out_blue = logpal->entries[index].blue;
+  *out_red = logpal->entries[index].red;
+  *out_green = logpal->entries[index].green;
+  *out_blue = logpal->entries[index].blue;
   return;
 }
 

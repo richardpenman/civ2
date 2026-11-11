@@ -1346,25 +1346,25 @@ void FileObject::read(char *buf,i32 size)
 }
 
 /* 004befd1 auto */
-void __cdecl text_list_append_wrapped(iptr dialog,i32 string_id,iptr item_count,iptr line_count)
+void __cdecl text_list_append_wrapped(iptr dialog,i32 string_id,int *item_count,int *line_count)
 
 {
-  if (*(int *)item_count == 0) {
+  if (*item_count == 0) {
     text_append_lparen();
   }
   else {
     text_append((const char *)&str_empty_117);
-    if (*(int *)line_count < 4) {
+    if (*line_count < 4) {
       text_append((const char *)&str_empty_118);
     }
     else {
-      *(i32 *)line_count = 0;
+      *line_count = 0;
       ((Dialog *)dialog)->add_line((const char *)&textbuf.buf,0xffffffff,0xffffffff,0xffffffff,0);
       text_clear();
     }
   }
-  *(int *)line_count = *(int *)line_count + 1;
-  *(int *)item_count = *(int *)item_count + 1;
+  *line_count = *line_count + 1;
+  *item_count = *item_count + 1;
   text_append_string_id(string_id);
   return;
 }

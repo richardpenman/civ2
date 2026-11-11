@@ -1035,7 +1035,7 @@ diplo_tech_exchange(int civ2,int civ,i32 x,i32 y,int mode,int eval_only
         mode = 0;
         return mode;
       }
-      int_swap((iptr)&diplo_eval.offer_tech_best,(iptr)&diplo_eval.offer_tech_2nd);
+      int_swap(&diplo_eval.offer_tech_best,&diplo_eval.offer_tech_2nd);
       attitude_cost = offer2_value;
     }
     civ_give_advance(civ,diplo_eval.offer_tech_best,civ2,0,0);

@@ -4,38 +4,38 @@
 
 /* 0040bdac auto */
 void __cdecl
-taxrate_balance(iptr rate_adjust,iptr rate_first,iptr rate_second,iptr rate_first_cap,iptr lock_first,iptr lock_second)
+taxrate_balance(int *rate_adjust,int *rate_first,int *rate_second,int *rate_first_cap,int *lock_first,int *lock_second)
 
 {
   int max_rate;
   
   max_rate = (int)taxrate_wnd.dlg->max_rate_value;
-  while (*(int *)rate_second + *(int *)rate_first + *(int *)rate_adjust < 10) {
-    if (((*(int *)rate_first < max_rate) && (*(int *)rate_first < *(int *)rate_first_cap)) && (*(int *)lock_first == 0)
+  while (*rate_second + *rate_first + *rate_adjust < 10) {
+    if (((*rate_first < max_rate) && (*rate_first < *rate_first_cap)) && (*lock_first == 0)
        ) {
-      *(int *)rate_first = *(int *)rate_first + 1;
+      *rate_first = *rate_first + 1;
     }
-    else if ((*(int *)rate_second < max_rate) && (*(int *)lock_second == 0)) {
-      *(int *)rate_second = *(int *)rate_second + 1;
+    else if ((*rate_second < max_rate) && (*lock_second == 0)) {
+      *rate_second = *rate_second + 1;
     }
-    else if ((*(int *)rate_first < max_rate) && (*(int *)lock_first == 0)) {
-      *(int *)rate_first = *(int *)rate_first + 1;
+    else if ((*rate_first < max_rate) && (*lock_first == 0)) {
+      *rate_first = *rate_first + 1;
     }
     else {
-      *(int *)rate_adjust = *(int *)rate_adjust + 1;
+      *rate_adjust = *rate_adjust + 1;
     }
   }
-  while (10 < *(int *)rate_second + *(int *)rate_first + *(int *)rate_adjust) {
-    if ((*(int *)rate_first == 0) || (*(int *)lock_first != 0)) {
-      if ((*(int *)rate_second == 0) || (*(int *)lock_second != 0)) {
-        *(int *)rate_adjust = *(int *)rate_adjust - 1;
+  while (10 < *rate_second + *rate_first + *rate_adjust) {
+    if ((*rate_first == 0) || (*lock_first != 0)) {
+      if ((*rate_second == 0) || (*lock_second != 0)) {
+        *rate_adjust = *rate_adjust - 1;
       }
       else {
-        *(int *)rate_second = *(int *)rate_second - 1;
+        *rate_second = *rate_second - 1;
       }
     }
     else {
-      *(int *)rate_first = *(int *)rate_first - 1;
+      *rate_first = *rate_first - 1;
     }
   }
   return;
@@ -66,8 +66,8 @@ void __cdecl taxrate_on_tax_scroll(int pos)
   tax_rate2 = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
-  taxrate_balance((iptr)&tax_rate2,(iptr)&science_rate2,(iptr)&lux_rate,(iptr)taxrate_wnd.dlg + 0x2f4,
-                     (iptr)taxrate_wnd.dlg + 0x350,(iptr)taxrate_wnd.dlg + 0x354);
+  taxrate_balance(&tax_rate2,&science_rate2,&lux_rate,(int *)((iptr)taxrate_wnd.dlg + 0x2f4),
+                     (int *)((iptr)taxrate_wnd.dlg + 0x350),(int *)((iptr)taxrate_wnd.dlg + 0x354));
   taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
   if (requested_rate != tax_rate2) {
     ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x358))->set_pos(tax_rate2);
@@ -105,8 +105,8 @@ void __cdecl taxrate_on_science_scroll(int pos)
   science_rate2 = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
-  taxrate_balance((iptr)&science_rate2,(iptr)&lux_rate,(iptr)&tax_rate2,(iptr)taxrate_wnd.dlg + 0x2f0,
-                     (iptr)taxrate_wnd.dlg + 0x354,(iptr)taxrate_wnd.dlg + 0x34c);
+  taxrate_balance(&science_rate2,&lux_rate,&tax_rate2,(int *)((iptr)taxrate_wnd.dlg + 0x2f0),
+                     (int *)((iptr)taxrate_wnd.dlg + 0x354),(int *)((iptr)taxrate_wnd.dlg + 0x34c));
   taxrate_wnd.dlg->sci_rate_sel = science_rate2;
   if (requested_rate != science_rate2) {
     ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x3d8))->set_pos(science_rate2);
@@ -144,8 +144,8 @@ void __cdecl taxrate_on_lux_scroll(int pos)
   lux_rate = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
-  taxrate_balance((iptr)&lux_rate,(iptr)&tax_rate2,(iptr)&science_rate2,(iptr)taxrate_wnd.dlg + 0x2ec,
-                     (iptr)taxrate_wnd.dlg + 0x34c,(iptr)taxrate_wnd.dlg + 0x350);
+  taxrate_balance(&lux_rate,&tax_rate2,&science_rate2,(int *)((iptr)taxrate_wnd.dlg + 0x2ec),
+                     (int *)((iptr)taxrate_wnd.dlg + 0x34c),(int *)((iptr)taxrate_wnd.dlg + 0x350));
   taxrate_wnd.dlg->lux_rate_sel = lux_rate;
   if (lux_rate != requested_rate) {
     ((Scrollbar *)((iptr)taxrate_wnd.dlg + 0x398))->set_pos(lux_rate);
@@ -425,8 +425,8 @@ void TaxRateDialog::run(uptr civ)
   init_tax_rate = (uint)civs[civ].tax_rate;
   init_sci_rate = (uint)civs[civ].science_rate;
   init_lux_rate = 10 - ((uint)civs[civ].science_rate + (uint)civs[civ].tax_rate);
-  taxrate_balance((iptr)&init_tax_rate,(iptr)&init_sci_rate,(iptr)&init_lux_rate,
-                     (iptr)&init_sci_rate,(iptr)&rates_changed,(iptr)&rates_changed);
+  taxrate_balance((int *)&init_tax_rate,(int *)&init_sci_rate,(int *)&init_lux_rate,
+                     (int *)&init_sci_rate,&rates_changed,&rates_changed);
   tax_rate_sel = init_tax_rate;
   sci_rate_sel = init_sci_rate;
   lux_rate_sel = init_lux_rate;
@@ -2214,13 +2214,13 @@ iptr __cdecl city_find_nearest(int x,int y,int owner_civ,int target_landmass,int
 i32 __cdecl city_has_improvement(int city,int improvement_id)
 
 {
-  iptr improvement;
+  int improvement;
   byte bit_mask[4];
   i32 result;
   
   result = 0;
   if (((0 < improvement_id) && (improvement_id < 0x23)) &&
-     (bit_index_split(improvement_id,(iptr)&improvement,(iptr)bit_mask),
+     (bit_index_split(improvement_id,&improvement,(int *)bit_mask),
      (bit_mask[0] & cities[city].improvements[improvement]) != 0)) {
     result = 1;
   }
@@ -7114,7 +7114,7 @@ static iptr city_choose_production_final_choice(ChooseProdState *s,iptr city)
 /* 00498e8b auto */
 /* WARNING: Type propagation algorithm not settling */
 
-iptr __cdecl city_choose_production(int city,iptr out_best_unit,iptr out_best_build)
+iptr __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_build)
 
 {
   iptr behind;
@@ -7137,10 +7137,10 @@ iptr __cdecl city_choose_production(int city,iptr out_best_unit,iptr out_best_bu
   st.unit_counts = unit_counts;
   st.expand_bonus = 0;
   if (out_best_unit != 0) {
-    *(i32 *)out_best_unit = 999;
+    *out_best_unit = 999;
   }
   if (out_best_build != 0) {
-    *(i32 *)out_best_build = 999;
+    *out_best_build = 999;
   }
   city_recalc(city,0);
   st.civ5 = cities[city].owner;
@@ -7304,10 +7304,10 @@ iptr __cdecl city_choose_production(int city,iptr out_best_unit,iptr out_best_bu
     st.choice = -0x26;
   }
   if (out_best_build != 0) {
-    *(iptr *)out_best_build = st.best_build;
+    *out_best_build = st.best_build;
   }
   if (out_best_unit != 0) {
-    *(iptr *)out_best_unit = st.best_unit;
+    *out_best_unit = st.best_unit;
   }
   return city_choose_production_final_choice(&st,city);
 }
@@ -12219,7 +12219,7 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
   zero_b = 0;
   zero_a = 0;
   arg_y = scale(0x1b);
-  spacing = ui_calc_item_spacing((int)cities[((u32)city_index)].size,arg_y + 1,width,zero_a,zero_b)
+  spacing = ui_calc_item_spacing((int)cities[((u32)city_index)].size,arg_y + 1,width,(int *)zero_a,(int *)zero_b)
   ;
   citizen_num = 0;
   for (i = 0; i < happy; i++) {
@@ -12335,7 +12335,7 @@ int CityWindow::happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unha
   zero_b = 0;
   zero_a = 0;
   arg_x = scale(0xf);
-  spacing = ui_calc_item_spacing((int)cities[((u32)city_index)].size,arg_x + 1,width,zero_a,zero_b)
+  spacing = ui_calc_item_spacing((int)cities[((u32)city_index)].size,arg_x + 1,width,(int *)zero_a,(int *)zero_b)
   ;
   citizen_num = 0;
   for (i = 0; i < happy; i++) {
@@ -12682,7 +12682,7 @@ void CityWindow::draw_resource_yields(int tile_w,int half_tile_w,int half_tile_h
       scaled2 = scale(8);
       scaled += scaled2 * -2;
       scaled2 = scale(10);
-      spacing = ui_calc_item_spacing(per_row,scaled2 + 1,scaled,zero_a,zero_b);
+      spacing = ui_calc_item_spacing(per_row,scaled2 + 1,scaled,(int *)zero_a,(int *)zero_b);
       scaled = tile_w;
       scaled2 = scale(8);
       scaled3 = scale(10);
@@ -12779,7 +12779,7 @@ void CityWindow::draw_resource_food(int panel_left,int panel_top2,uint big_zoom)
     avail_width = (avail_width - scaled) - icon_w;
     icon_count--;
   }
-  spacing = ui_calc_item_spacing(icon_count,icon_w,avail_width,(iptr)&food_fit_count,0);
+  spacing = ui_calc_item_spacing(icon_count,icon_w,avail_width,&food_fit_count,0);
   while (food_fit_count < icon_count) {
     icon_count--;
     if (produced < food_need_shown) {
@@ -12981,7 +12981,7 @@ void CityWindow::draw_resource_shields(int panel_left,int panel_top2,uint big_zo
     avail_width = (avail_width - scaled) - icon_w;
     total_icons--;
   }
-  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,(iptr)&fit_count,0);
+  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,&fit_count,0);
   while (fit_count < total_icons) {
     total_icons--;
     if (produced - city_calc.shield_waste < support_shown) {
@@ -13212,7 +13212,7 @@ void CityWindow::draw_resource_trade(int panel_left,int panel_top2,uint big_zoom
     avail_width = (avail_width - scaled) - icon_w;
     total_icons--;
   }
-  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,(iptr)&fit_count,0);
+  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,&fit_count,0);
   for (; fit_count < total_icons; total_icons--) {
     produced--;
   }
@@ -13355,7 +13355,7 @@ void CityWindow::draw_resource_rates(int panel_left,int panel_top2,uint big_zoom
     avail_width -= (icon_w + scaled);
     total_icons--;
   }
-  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,(iptr)&fit_count,0);
+  spacing = ui_calc_item_spacing(total_icons,icon_w,avail_width,&fit_count,0);
   for (; fit_count < total_icons; fit_count++) {
     if ((lux_icons < tax_icons) && (sci_icons < tax_icons)) {
       tax_icons--;
@@ -13614,13 +13614,13 @@ void CityWindow::draw_food_box(int blit)
     box_w = 0;
     arg_y = rect_width(&box_rect);
     arg_x = scale(0x11);
-    icon_x = ui_calc_item_spacing(cities[city_index].size + 1,arg_x,arg_y,box_w
-                               ,box_h);
+    icon_x = ui_calc_item_spacing(cities[city_index].size + 1,arg_x,arg_y,(int *)box_w
+                               ,(int *)box_h);
     box_h = 0;
     box_w = 0;
     arg_y = rect_height(&box_rect);
     arg_x = scale(0xe);
-    row_spacing = ui_calc_item_spacing(city_calc.food_box_rows,arg_x,arg_y,box_w,box_h);
+    row_spacing = ui_calc_item_spacing(city_calc.food_box_rows,arg_x,arg_y,(int *)box_w,(int *)box_h);
     icon_x = (cities[city_index].size + 1) * icon_x;
     extent = rect_width(&box_rect);
     if (icon_x < extent) {
@@ -13781,7 +13781,7 @@ void CityWindow::draw_production(int blit)
       arg_w = 0;
       arg_y = rect_height((RECT *)&box_rect.left);
       arg_x = scale(0xe);
-      row_spacing = ui_calc_item_spacing(10,arg_x,arg_y,arg_w,arg_h);
+      row_spacing = ui_calc_item_spacing(10,arg_x,arg_y,(int *)arg_w,(int *)arg_h);
       per_row = build_cost;
       if ((int)build_cost < 10) {
         per_row = (*(uint *)&city_calc.shield_rows);
@@ -13791,7 +13791,7 @@ void CityWindow::draw_production(int blit)
       fit_out = &fit_count;
       arg_y = rect_width((RECT *)&box_rect.left);
       arg_x = scale(0x11);
-      col_spacing = ui_calc_item_spacing((*(uint *)&city_calc.shield_rows),arg_x,arg_y,(iptr)fit_out,arg_w);
+      col_spacing = ui_calc_item_spacing((*(uint *)&city_calc.shield_rows),arg_x,arg_y,fit_out,(int *)arg_w);
       row_width = col_spacing * (*(uint *)&city_calc.shield_rows) + fit_count;
       pad_x2 = 0;
       scaled = rect_width((RECT *)&box_rect.left);
@@ -13990,7 +13990,7 @@ void CityWindow::draw_supported_units(int blit)
         zero_a = 0;
         size_arg = unit_size;
         width = scale(10);
-        icon_spacing = ui_calc_item_spacing(upkeep_icons,width,size_arg,zero_a,zero_b);
+        icon_spacing = ui_calc_item_spacing(upkeep_icons,width,size_arg,(int *)zero_a,(int *)zero_b);
         icon_x = cell_x;
         if (unit_types[units[unit].type].role == ROLE_SETTLE) {
           for (i = 0; i < city_calc.settler_food_cost; i++) {
@@ -14947,7 +14947,7 @@ void CityWindow::happy_draw_unit_effects(iptr x_ptr,int row_top,int row_h,int ma
         count_out = &icon_count;
         icons_width = half_h;
         scaled = scale(10);
-        half_h = ui_calc_item_spacing(icon_count,scaled + 1,half_h,(iptr)count_out,text);
+        half_h = ui_calc_item_spacing(icon_count,scaled + 1,half_h,count_out,(int *)text);
         icons_width = scale(10);
         icons_width += (icon_count - 1) * half_h;
         *(int *)x_ptr = *(int *)x_ptr - icons_width;
@@ -15759,10 +15759,10 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
 {
   int city;
   iptr city6;
-  iptr *unit_out;
-  iptr *improvement_out;
-  iptr improvement;
-  iptr unit_type;
+  i32 *unit_out;
+  i32 *improvement_out;
+  i32 improvement;
+  i32 unit_type;
   i8 caption[80];  /* BF-051 (Peter Johnson's ledger): a longer name is cut
                       (and its advice section not found) */
 
@@ -15770,7 +15770,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
     improvement_out = &improvement;
     unit_out = &unit_type;
     city6 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
-    city_choose_production(city6,(iptr)unit_out,(iptr)improvement_out);
+    city_choose_production(city6,unit_out,improvement_out);
     if (unit_type != 999) {
       text_set_label_arg(0,unit_types[unit_type].name);
       unit_dialog.load_text((const char *)&str_advice_2,(const char *)&str_military,8);

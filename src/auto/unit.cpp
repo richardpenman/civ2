@@ -1189,7 +1189,7 @@ int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y)
         has_waypoint = 1;
         raw_wp_x = waypoint_x;
         raw_wp_y = waypoint_y;
-        map_diag_tile_by_ocean(waypoint_x,waypoint_y,(iptr)&waypoint_x,(iptr)&waypoint_y,is_sea);
+        map_diag_tile_by_ocean(waypoint_x,waypoint_y,&waypoint_x,&waypoint_y,is_sea);
       }
     }
     if (has_waypoint == 0) {
@@ -1238,7 +1238,7 @@ uint __cdecl path_coarse_snap_cell(int x,int y,int is_sea)
     }
   }
   if (best_dir == 8) {
-    nx = map_diag_tile_by_ocean(cx * 4 + 1,cy * 4 + 1,(iptr)&x2,(iptr)&y2,is_sea);
+    nx = map_diag_tile_by_ocean(cx * 4 + 1,cy * 4 + 1,&x2,&y2,is_sea);
     if (nx == 0) {
       best_dir = -1;
     }
@@ -1263,7 +1263,7 @@ uint __cdecl path_coarse_snap_cell(int x,int y,int is_sea)
         nx = map_in_bounds(x2,y2);
         if (((nx != 0) &&
             (nx = map_distance_diag(x,y,x2,y2), nx < best_dist)) &&
-           ((ny = map_diag_tile_by_ocean(x2,y2,(iptr)&x2,(iptr)&y2,is_sea),
+           ((ny = map_diag_tile_by_ocean(x2,y2,&x2,&y2,is_sea),
             ny != 0 &&
             (ny = map_path_length(x2,y2,x,y,is_sea,0x12), -1 < ny))
            )) {

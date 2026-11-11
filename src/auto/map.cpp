@@ -4251,7 +4251,7 @@ map_path_length(int x,int y,int goal_x,int goal_y,int by_sea,i32 max_cost)
 }
 
 /* 004ad784 auto */
-i32 __cdecl map_diag_tile_by_ocean(int base_x,int base_y,iptr out_x,iptr out_y,int want_ocean)
+i32 __cdecl map_diag_tile_by_ocean(int base_x,int base_y,int *out_x,int *out_y,int want_ocean)
 
 {
   iptr x;
@@ -4270,8 +4270,8 @@ i32 __cdecl map_diag_tile_by_ocean(int base_x,int base_y,iptr out_x,iptr out_y,i
     if ((check != 0) && (check = tile_is_ocean(x,y), check == want_ocean)) break;
     i++;
   }
-  *(iptr *)out_x = x;
-  *(int *)out_y = y;
+  *out_x = x;
+  *out_y = y;
   return 1;
 }
 
@@ -4300,10 +4300,10 @@ u8 * __cdecl map_coarse2_at(int x,int y)
 void __cdecl landmass_set_border_bit(int landmass,int bit)
 
 {
-  iptr byte_idx;
+  int byte_idx;
   byte bit_mask[4];
   
-  bit_index_split(bit,(iptr)&byte_idx,(iptr)bit_mask);
+  bit_index_split(bit,&byte_idx,(int *)bit_mask);
   landmass_table_block.landmass_recs[landmass].border_bits[byte_idx] = landmass_table_block.landmass_recs[landmass].border_bits[byte_idx] | bit_mask[0]
   ;
   return;
@@ -5858,14 +5858,14 @@ void __cdecl map_build_coarse_connectivity(void)
       for (cy = 0; cy < map.quarter_h; cy++) {
         tile_x = cx * 4 + 1;
         tile_y = cy * 4 + 1;
-        landmass2 = map_coarse_cell_landmass(tile_x,tile_y,(iptr)&x2,(iptr)&y2,want_ocean);
+        landmass2 = map_coarse_cell_landmass(tile_x,tile_y,&x2,&y2,want_ocean);
         if (-1 < landmass2) {
           for (dir = 0; dir < 4; dir++) {
             adj_x = map_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[dir] * 4 + tile_x);
             adj_y = (((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[dir] * 4 + tile_y;
             in_bounds = map_in_bounds(adj_x,adj_y);
             if ((((in_bounds != 0) &&
-                 (nbr_landmass = map_coarse_cell_landmass(adj_x,adj_y,(iptr)&nbr_x,(iptr)&nbr_y,want_ocean)
+                 (nbr_landmass = map_coarse_cell_landmass(adj_x,adj_y,&nbr_x,&nbr_y,want_ocean)
                  , nbr_landmass == landmass2)) &&
                 (path_len = map_path_length(x2,y2,nbr_x,nbr_y,want_ocean,5),
                 0 < path_len)) && (path_len < 5)) {
@@ -5892,7 +5892,7 @@ void __cdecl map_build_coarse_connectivity(void)
 }
 
 /* 0055ac37 auto */
-i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,iptr out_x,iptr out_y,int want_ocean)
+i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,int *out_x,int *out_y,int want_ocean)
 
 {
   iptr x;
@@ -5913,8 +5913,8 @@ i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,iptr out_x,iptr out_y
     offset++;
   }
   landmass = tile_landmass(x,y);
-  *(iptr *)out_x = x;
-  *(int *)out_y = y;
+  *out_x = x;
+  *out_y = y;
   return landmass;
 }
 
@@ -7311,10 +7311,10 @@ void __cdecl tile_add_pollution(int x,int y)
 uint __cdecl landmass_borders_body(int landmass,int other_body)
 
 {
-  iptr byte_idx;
+  int byte_idx;
   uint bit_mask;
   
-  bit_index_split(other_body,(iptr)&byte_idx,(iptr)&bit_mask);
+  bit_index_split(other_body,&byte_idx,(int *)&bit_mask);
   return (uint)((bit_mask & (byte)landmass_table_block.landmass_recs[landmass].border_bits[byte_idx]) != 0);
 }
 

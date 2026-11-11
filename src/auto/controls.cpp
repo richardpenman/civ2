@@ -1088,7 +1088,7 @@ void RadioGroup::create(iptr parent,i32 ctrl_id,iptr rect,u32 columns,u32 item_c
   this->item_count = item_count;
   this->columns = columns;
   selected = 0;
-  handle = radiogrp_create_items((iptr)&this->item_count,(int *)rect,columns,(iptr)this,item_count,labels,1,
+  handle = radiogrp_create_items((int *)&this->item_count,(int *)rect,columns,(iptr)this,item_count,labels,1,
                        radio_font);
   items_handle = handle;
   handle = (u32)mem_handle_lock(items_handle);
@@ -1637,7 +1637,7 @@ static HPEN button_face_pen(HDC mem_dc,Button *button)
     parent_wnd = (WndBase *)button->get_parent();
     this_01 = (GamePalette *)parent_wnd->get_palette();
     logpal = this_01->get_logpalette();
-    palette_get_entry_rgb((GameLogPalette *)logpal,color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+    palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
     bg_pen = CreatePen(0,1,CONCAT12(blue[0],CONCAT11(green[0],red[0])))
     ;
   }
@@ -2281,7 +2281,7 @@ static void checkbox_text_color(HDC hdc,Checkbox *checkbox)
         parent_wnd = (WndBase *)checkbox->get_parent();
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         logpal = (iptr)game_palette2->get_logpalette();
-        palette_get_entry_rgb((GameLogPalette *)logpal,color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+        palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
         SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])))
         ;
       }
@@ -2310,7 +2310,7 @@ static void checkbox_text_color(HDC hdc,Checkbox *checkbox)
           parent_wnd = (WndBase *)checkbox->get_parent();
           game_palette2 = (GamePalette *)parent_wnd->get_palette();
           logpal = (iptr)game_palette2->get_logpalette();
-          palette_get_entry_rgb((GameLogPalette *)logpal,color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+          palette_get_entry_rgb((GameLogPalette *)logpal,color_index,red_out,green_out,blue_out);
           SetTextColor(hdc,
                        CONCAT12(blue[0],CONCAT11(green[0],red[0])));
         }
@@ -3706,7 +3706,7 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   init((iptr)parent,6,ctrl_id,&rect);
   on_click = 0;
   on_rclick = 0;
-  gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+  gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(1,1);
   ((DibSurface *)button_surface)->DibSurface::create(width,height);
   ((DibSurface *)&on_select)->DibSurface::create(width,height);
@@ -3783,7 +3783,7 @@ int __cdecl radiogrp_item_height(GameFont *font)
 
 /* 005d8e3f auto */
 i32 __cdecl
-radiogrp_create_items(iptr count_out,int *rect,int columns,iptr group,int item_count,iptr labels,int visible
+radiogrp_create_items(int *count_out,int *rect,int columns,iptr group,int item_count,iptr labels,int visible
             ,i32 font)
 
 {
@@ -3833,7 +3833,7 @@ radiogrp_create_items(iptr count_out,int *rect,int columns,iptr group,int item_c
   index = 0;
   do {
     if (item_count <= (int)index) {
-      *(int *)count_out = item_count;
+      *count_out = item_count;
       mem_handle_unlock(handle);
       return handle;
     }
@@ -4018,7 +4018,7 @@ static void radiogrp_item_text_color(HDC hdc,RadioGroup *group,RadioItem *item)
         parent_wnd = (WndBase *)group->get_parent();
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         parent = (iptr)game_palette2->get_logpalette();
-        palette_get_entry_rgb((GameLogPalette *)parent,color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+        palette_get_entry_rgb((GameLogPalette *)parent,color_index,red_out,green_out,blue_out);
         SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
       }
     }
@@ -4044,7 +4044,7 @@ static void radiogrp_item_text_color(HDC hdc,RadioGroup *group,RadioItem *item)
         parent_wnd = (WndBase *)group->get_parent();
         game_palette2 = (GamePalette *)parent_wnd->get_palette();
         parent = (iptr)game_palette2->get_logpalette();
-        palette_get_entry_rgb((GameLogPalette *)parent,color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+        palette_get_entry_rgb((GameLogPalette *)parent,color_index,red_out,green_out,blue_out);
         SetTextColor(hdc,CONCAT12(blue[0],CONCAT11(green[0],red[0])));
       }
     }

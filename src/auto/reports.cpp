@@ -6451,7 +6451,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
       }
       valid = false;
       while (!valid) {
-        cancelled = dlg_input_number_game((const char *)&str_councilcheat1,0,(iptr)&number);
+        cancelled = dlg_input_number_game((const char *)&str_councilcheat1,0,&number);
         if (cancelled != 0) {
           return 0;
         }
@@ -6462,7 +6462,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
       }
     }
     valid = false;
-    while ((!valid && (choice = dlg_input_number_game((const char *)&str_councilcheat2,0,(iptr)&number), choice == 0))) {
+    while ((!valid && (choice = dlg_input_number_game((const char *)&str_councilcheat2,0,&number), choice == 0))) {
       if ((-1 < number) && (number < 3)) {
         council_era = number;
         valid = true;

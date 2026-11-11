@@ -6281,21 +6281,21 @@ void __cdecl chat_insert_macro_text(EditControl *edit,i32 macro_id)
     }
     break;
   case 0x2b2:
-    chat_read_macro_line((const char *)&str_chatmac1_txt,(iptr)&chat_macros.macro1_offset);
+    chat_read_macro_line((const char *)&str_chatmac1_txt,&chat_macros.macro1_offset);
     civ = chat_macros.macro1_offset;
     if (civ == 0) {
       return;
     }
     break;
   case 0x2b3:
-    chat_read_macro_line((const char *)&str_chatmac2_txt,(iptr)&chat_macros.macro2_offset);
+    chat_read_macro_line((const char *)&str_chatmac2_txt,&chat_macros.macro2_offset);
     civ = chat_macros.macro2_offset;
     if (civ == 0) {
       return;
     }
     break;
   case 0x2b4:
-    chat_read_macro_line((const char *)&str_chatmac3_txt,(iptr)&chat_macros.macro3_offset);
+    chat_read_macro_line((const char *)&str_chatmac3_txt,&chat_macros.macro3_offset);
     civ = chat_macros.macro3_offset;
     if (civ == 0) {
       return;
@@ -6310,7 +6310,7 @@ void __cdecl chat_insert_macro_text(EditControl *edit,i32 macro_id)
 }
 
 /* 0049275a auto */
-void __cdecl chat_read_macro_line(const char *path,iptr file_offset)
+void __cdecl chat_read_macro_line(const char *path,i32 *file_offset)
 
 {
   int ok;
@@ -6321,23 +6321,23 @@ void __cdecl chat_read_macro_line(const char *path,iptr file_offset)
   ON_SCOPE_EXIT(((FileObject *)&file)->close());
   ok = ((FileObject *)file)->open(path);
   if (ok == 0) {
-    *(i32 *)file_offset = 0;
+    *file_offset = 0;
   }
   else {
     ok = ((FileObject *)file)->get_size();
-    if (ok <= *(int *)file_offset) {
-      *(i32 *)file_offset = 0;
+    if (ok <= *file_offset) {
+      *file_offset = 0;
     }
-    ok = ((FileObject *)file)->seek_cur(*(i32 *)file_offset);
+    ok = ((FileObject *)file)->seek_cur(*file_offset);
     if (ok == 0) {
-      *(i32 *)file_offset = 0;
+      *file_offset = 0;
       ((FileObject *)file)->map_close();
     }
     else {
       ((FileObject *)file)->read_line((char *)&textbuf.buf,0x100);
       ((FileObject *)file)->map_close();
       line_len = _strlen(((i8 *)&textbuf.buf));
-      *(size_t *)file_offset = *(int *)file_offset + line_len + 2;
+      *(size_t *)file_offset = *file_offset + line_len + 2;
     }
   }
   return;
@@ -10544,16 +10544,16 @@ void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
   char *count_ptr;
   i32 unit_id;
   int result;
-  iptr x3;
+  int x3;
   iptr unit;
   iptr city;
   iptr unit2;
   int i;
-  iptr y2;
-  iptr x2;
+  int y2;
+  int x2;
   int count;
   iptr civ2;
-  iptr y3;
+  int y3;
   i32 *id_ptr;
   
   count = items->value;
@@ -10570,7 +10570,7 @@ void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
           if (unit2 == unit) {
             unit2 = unit_next_in_stack(unit2);
           }
-          result = parley_find_unit_drop_tile(unit2,(iptr)&x3,(iptr)&y3,
+          result = parley_find_unit_drop_tile(unit2,&x3,&y3,
                                      units[unit2].owner,1);
           if (result == 0) {
             unit_delete_with_cargo(unit2,1);
@@ -10580,7 +10580,7 @@ void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
           }
         }
       }
-      result = parley_find_unit_drop_tile(unit,(iptr)&x2,(iptr)&y2,civ,0);
+      result = parley_find_unit_drop_tile(unit,&x2,&y2,civ,0);
       if (result != 0) {
         count_ptr = (char *)(units[unit].type + (iptr)((u8 *)&civs + 216) + civ * 0x594);
         *count_ptr = *count_ptr + 1;
@@ -10617,7 +10617,7 @@ void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
 }
 
 /* 004ded07 auto */
-i32 __cdecl parley_find_unit_drop_tile(int unit,iptr x,iptr y,int civ,int must_move)
+i32 __cdecl parley_find_unit_drop_tile(int unit,i32 *x,i32 *y,int civ,int must_move)
 
 {
   iptr x2;
@@ -10627,29 +10627,29 @@ i32 __cdecl parley_find_unit_drop_tile(int unit,iptr x,iptr y,int civ,int must_m
   iptr i;
   i32 found;
   
-  *(int *)x = (int)units[unit].x;
-  x2 = *(iptr *)x;
-  *(int *)y = (int)units[unit].y;
-  y2 = *(int *)y;
+  *x = (int)units[unit].x;
+  x2 = *x;
+  *y = (int)units[unit].y;
+  y2 = *y;
   found = 1;
   if (((must_move != 0) || (result = tile_city_owner(x2,y2), result != -1)) ||
      (result = unit_stack_sum(unit,2), 1 < result)) {
     found = 0;
     for (i = 0; i < 0x2d; i++) {
       wrapped_x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
-      *(i32 *)x = wrapped_x;
-      *(int *)y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
-      if ((((((must_move == 0) || (*(int *)x != x2)) || (*(int *)y != y2)) &&
-           (result = map_in_bounds(*(iptr *)x,*(iptr *)y), result != 0)) &&
-          (((result = tile_city_owner(*(iptr *)x,*(i32 *)y), result == civ ||
-            (result = tile_unit_owner(*(i32 *)x,*(i32 *)y),
+      *x = wrapped_x;
+      *y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
+      if ((((((must_move == 0) || (*x != x2)) || (*y != y2)) &&
+           (result = map_in_bounds(*x,*y), result != 0)) &&
+          (((result = tile_city_owner(*x,*y), result == civ ||
+            (result = tile_unit_owner(*x,*y),
             result == civ)) ||
-           ((result = tile_city_owner(*(iptr *)x,*(i32 *)y), result == -1 &&
-            (result = tile_unit_owner(*(i32 *)x,*(i32 *)y), result == -1))))
+           ((result = tile_city_owner(*x,*y), result == -1 &&
+            (result = tile_unit_owner(*x,*y), result == -1))))
           )) && ((((unit_types[units[unit].type].domain == DOMAIN_LAND &&
-                   (result = tile_is_ocean(*(i32 *)x,*(i32 *)y), result == 0
+                   (result = tile_is_ocean(*x,*y), result == 0
                    )) || ((unit_types[units[unit].type].domain == DOMAIN_SEA &&
-                          (result = tile_is_ocean(*(i32 *)x,*(i32 *)y),
+                          (result = tile_is_ocean(*x,*y),
                           result != 0)))) || (unit_types[units[unit].type].domain == DOMAIN_AIR)))) {
         return 1;
       }

@@ -138,7 +138,7 @@ void __cdecl minimap_calc_layout(void)
 /* 00406db8 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl minimap_tile_to_screen(int x,uint y,iptr out_x,iptr out_y)
+void __cdecl minimap_tile_to_screen(int x,uint y,int *out_x,int *out_y)
 
 {
   int dx;
@@ -148,12 +148,12 @@ void __cdecl minimap_tile_to_screen(int x,uint y,iptr out_x,iptr out_y)
     dx += map.width;
   }
   *(uint *)out_y = (y - minimap_layout.origin_y) * minimap_layout.tile_height + minimap_state.margin_y;
-  *(int *)out_x = (dx >> 1) * minimap_layout.tile_width + minimap_state.margin_x;
+  *out_x = (dx >> 1) * minimap_layout.tile_width + minimap_state.margin_x;
   if ((y & 1) != 0) {
-    *(int *)out_x = *(int *)out_x + (minimap_layout.tile_width >> 1);
+    *out_x = *out_x + (minimap_layout.tile_width >> 1);
   }
-  *(int *)out_x = *(int *)out_x + minimap_state.client_x;
-  *(int *)out_y = *(int *)out_y + minimap_state.client_y;
+  *out_x = *out_x + minimap_state.client_x;
+  *out_y = *out_y + minimap_state.client_y;
   return;
 }
 
@@ -214,8 +214,8 @@ void __cdecl minimap_draw_view_rect(void)
   i8 rect[16];
   
   if ((map_views_block.mapview_margin_x == 0) && (map_views_block.mapview_margin_y == 0)) {
-    minimap_tile_to_screen(map_views_block.mapview_origin_x[0],map_views_block.mapview_origin_y[0],(iptr)&left,(iptr)&top);
-    minimap_tile_to_screen(map_views_block.mapview_end_x,map_views_block.mapview_end_y,(iptr)&right,(iptr)&bottom);
+    minimap_tile_to_screen(map_views_block.mapview_origin_x[0],map_views_block.mapview_origin_y[0],&left,&top);
+    minimap_tile_to_screen(map_views_block.mapview_end_x,map_views_block.mapview_end_y,&right,&bottom);
     if (left < right) {
       rect_set((RECT *)rect,left,top,right + 1,bottom + 1);
       gfx_target_frame_rect((RECT *)rect,0x29);

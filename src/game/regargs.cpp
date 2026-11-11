@@ -30,7 +30,7 @@ int __cdecl city_set_improvement(int city, int impr, int on)
 
     if (impr <= 0 || impr >= 0x23)
         return 0;
-    bit_index_split(impr, (iptr)&index, (iptr)&mask);
+    bit_index_split(impr, &index, &mask);
     if (on != 0)
         cities[city].improvements[index] |= (byte)mask;
     else

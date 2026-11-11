@@ -229,6 +229,23 @@ static inline void *ut_lookup(const char *name)
             r = (void *)(uintptr_t)ut_syms[i].addr;
             found++;
         }
+    if (!found && !strncmp(name, "_Z", 2) && name[2] != 'N') {
+        /* a free function whose parameter types changed (int -> RECT *: the
+           same argument words): its mangled name up to the parameters */
+        const char *p = name + 2 + (name[2] == 'L');
+        size_t len = 0;
+        while (*p >= '0' && *p <= '9')
+            len = len * 10 + (size_t)(*p++ - '0');
+        if (len && strlen(p) >= len) {
+            size_t pre = (size_t)(p - name) + len;
+            for (i = 0; i < ut_nsyms; i++)
+                if (!strncmp(ut_syms[i].name, name, pre) && ut_syms[i].name[pre]
+                        && !(ut_syms[i].name[pre] >= '0' && ut_syms[i].name[pre] <= '9')) {
+                    r = (void *)(uintptr_t)ut_syms[i].addr;
+                    found++;
+                }
+        }
+    }
     return found == 1 ? r : 0;
 }
 

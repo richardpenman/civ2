@@ -1043,7 +1043,7 @@ void PediaWindow::draw_terrain_page()
   line_height = font2->font_cached_height();
   y2 = content_top + 8;
   terrain2 = pedia_terrain_ids[resize_border];
-  gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+  gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(scale_num2 * 2,scale_den2);
   sprite_height2 = ((Sprite *)((i8 *)&terrain_base_sprites_block.terrain_base_sprites))->get_height();
   sprite_width2 = ((Sprite *)((i8 *)&terrain_base_sprites_block.terrain_base_sprites))->get_width();
@@ -2513,7 +2513,7 @@ void PediaWindow::draw_item_list()
           text_color2 = dlg_style.sel_text_color;
           shadow_color2 = dlg_style.sel_text_shadow_color;
         }
-        gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+        gfx_get_scale_ratio(&scale_num2,&scale_den2);
         switch(category) {
         case 1:
           icon_sprite = (Sprite *)
@@ -3638,7 +3638,7 @@ void PediaWindow::draw_improvement()
   y2 = content_top + 8;
   value_x = content_width2 / 2 - 100;
   improvement = pedia_wonder_ids[resize_border];
-  gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+  gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(2,1);
   icon_width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->get_width();
   icon_width += panel_layout.margin_x * 2;
@@ -4682,7 +4682,7 @@ void PediaWindow::draw_improvement_page()
   y2 = content_top + 8;
   value_x = content_width2 / 2 - 100;
   improvement = pedia_improve_ids[resize_border];
-  gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+  gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(2,1);
   icon_width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->get_width();
   icon_width += panel_layout.margin_x * 2;
@@ -4950,7 +4950,7 @@ void PediaWindow::draw_unit_page()
   y2 = content_top + 0xf;
   unit_type = pedia_unit_ids[resize_border];
   x2 += margin;
-  gfx_get_scale_ratio((iptr)&scale_num2,(iptr)&scale_den2);
+  gfx_get_scale_ratio(&scale_num2,&scale_den2);
   gfx_set_scale_ratio(2,1);
   icon_width = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->get_width()
   ;
