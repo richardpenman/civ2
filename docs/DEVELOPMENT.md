@@ -164,5 +164,6 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
   cases by file (`tests/unit/cases.tsv`).
 * **When the code changes**.  Renamed functions are skipped (named in the report); a change of the
   game data's size or layout needs a new recording (`make unit-record`, about an hour), as does a
-  function whose signature changes.  A failing case after an intended change of behaviour: check it
+  function whose arguments change (a free function whose parameter types change but whose argument
+  words mean the same, `int` -> `RECT *`, is still found by its name).  A failing case after an intended change of behaviour: check it
   against the replays (which compare with the original), then record again.

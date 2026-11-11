@@ -128,9 +128,24 @@ message by message and clock event by clock event.
   function: the machine code of each one is identical to that of the same
   source compiled with g++ -fpermissive (C's integer/pointer conversions;
   CIV2_CXX=permissive, tools/cxx_compare.py), which passes the suite as the C
-  build did.  Many conversions are still explicit casts where headers give
-  the wrong type (`iptr` for pointers, `void *` for strings); the classes,
-  typed callbacks and the rest of the modernization come next.  Types and
+  build did.  The parameters and return values the decompiler left as
+  `iptr` (an integer the size of a pointer) have their real types: of the
+  1,021 in src/auto/protos.h, 20 remain (indexes and coordinates are int,
+  rectangles RECT *, surfaces DibSurface *, sprites Sprite *, strings
+  char *, files FILE *, controls Control *, out-parameters int * ...; the
+  call sites lost 2,870 casts net).  The 20 left: the eight dialog drawing
+  callbacks, whose signature DialogSpriteDrawFn / DialogOptionDrawFn fixes,
+  the two debug-log format arguments (a number or a string), and ten values
+  the game keeps as integers (window longs, the dialog parent and palette
+  globals, the rules editor's section table, the DDControl message target).
+  Checked function by function: the machine code is the same but for about
+  150 functions that differ in register choice and stack slots (the address
+  of a stack buffer computed before or after the other arguments), sources
+  that differ only in casts, every retyped parameter scanned for pointer
+  arithmetic (byte buffers became u8 *, other offsets go through
+  (u8 *)p or a member), and the suite after each batch.  The classes'
+  member functions still take some `iptr`s (270 in civ2classes.h); the
+  classes, typed callbacks and the rest of the modernization come next.  Types and
   fields are recovered per subsystem: raw offset accesses
   (`*(T *)(p + 0x34)`) went from over 5,100 to 1,100, now struct members
   (network sessions and messages, native windows, dialog lists, scenario
