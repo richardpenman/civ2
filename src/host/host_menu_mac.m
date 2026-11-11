@@ -95,6 +95,18 @@ static void make_target(void)
                                                  name:NSWindowDidExitFullScreenNotification object:w];
 }
 
+/* The window over the screen less the menu bar and the Dock, title bar
+   included: SDL's maximize is AppKit's zoom, which toggles (zoomed twice,
+   the window was back at its first size), so it is not used here. */
+void host_mac_fill_screen(SDL_Window *window)
+{
+    NSWindow *w;
+    menu_window = window;
+    w = cocoa_window();
+    if (w && w.screen)
+        [w setFrame:w.screen.visibleFrame display:YES];
+}
+
 void host_mac_full_screen(SDL_Window *window)
 {
     menu_window = window;

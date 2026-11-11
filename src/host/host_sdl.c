@@ -184,8 +184,7 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
     if (mode == 0 && SDL_GetDisplayUsableBounds(0, &r) == 0)
         window = SDL_CreateWindow("Civilization II", r.x, r.y, r.w, r.h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALLOW_HIGHDPI);
     else
-        window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
-                                  flags | (mode == 1 ? 0 : SDL_WINDOW_MAXIMIZED));
+        window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, flags);
 #else
     /* Full screen (also the default): the window without its title bar
        and frame over the whole display, its menu bar at the top
@@ -205,6 +204,8 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
     }
     if (mode == 1)
         host_mac_full_screen(window);
+    else if (mode == 2)
+        host_mac_fill_screen(window);
 #endif
 #ifdef _WIN32
     SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);     /* WM_COMMAND from the menu bar */
@@ -216,8 +217,10 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
 #endif
     if (SDL_GetDisplayBounds(0, &full))
         full.w = full.h = 0;
+#ifndef __APPLE__
     if (mode == 2)
         SDL_MaximizeWindow(window);
+#endif
     /* The size once the window manager is done (maximizing, the full
        screen animation): full screen, the display's (or, where it is not
        quite that, as with a camera notch, changed and then steady);

@@ -26,5 +26,7 @@ void host_mac_activate(void);
 /* macOS: the window to the system's full screen and back (as View > Full
    Screen, ctrl-cmd-F). */
 void host_mac_full_screen(SDL_Window *window);
+/* macOS: the window over the screen but the menu bar and the Dock (maximized). */
+void host_mac_fill_screen(SDL_Window *window);
 
 #endif
