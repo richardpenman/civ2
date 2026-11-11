@@ -217,11 +217,11 @@ void __cdecl minimap_draw_view_rect(void)
     minimap_tile_to_screen(map_views_block.mapview_origin_x[0],map_views_block.mapview_origin_y[0],(iptr)&left,(iptr)&top);
     minimap_tile_to_screen(map_views_block.mapview_end_x,map_views_block.mapview_end_y,(iptr)&right,(iptr)&bottom);
     if (left < right) {
-      rect_set((iptr)rect,left,top,right + 1,bottom + 1);
+      rect_set((RECT *)rect,left,top,right + 1,bottom + 1);
       gfx_target_frame_rect((RECT *)rect,0x29);
     }
     else {
-      rect_set((iptr)rect,right,top,left + 1,bottom + 1);
+      rect_set((RECT *)rect,right,top,left + 1,bottom + 1);
       gfx_target_frame_rect((RECT *)rect,0x29);
     }
   }
@@ -415,7 +415,7 @@ void __cdecl minimap_calc_rect(void)
   if (map_layout_wide != 0) {
     top = minimap_margin + 1;
   }
-  rect_set_xywh((iptr)&minimap_wnd_rect_block.minimap_wnd_rect,client_w - (ui_metrics.dlgframe_w2 + width2),top,width2 + ui_metrics.dlgframe_w2,
+  rect_set_xywh((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect,client_w - (ui_metrics.dlgframe_w2 + width2),top,width2 + ui_metrics.dlgframe_w2,
                      height2 + ui_metrics.border_width + ui_metrics.caption_height + ui_metrics.dlgframe_h2);
   return;
 }
@@ -897,7 +897,7 @@ void __cdecl mapview_calc_rect(void)
     top = minimap_margin + 1;
     height2 -= (minimap_margin + 1);
   }
-  rect_set_xywh((iptr)&map_view_saved_rects_block.map_view_saved_rects,0,top,client_w - minimap_w,height2);
+  rect_set_xywh((RECT *)&map_view_saved_rects_block.map_view_saved_rects,0,top,client_w - minimap_w,height2);
   return;
 }
 
@@ -1095,7 +1095,7 @@ void MapView::create()
     top = map_view_index * 0x28;
     width2 = 500;
     height2 = 300;
-    rect_set_xywh((iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10),left,top,
+    rect_set_xywh(((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10)),left,top,
                        ui_metrics.dlgframe_w2 + 500,ui_metrics.dlgframe_h2 + 300);
   }
   *(i16 *)&open_u = 1;
@@ -1258,7 +1258,7 @@ u32 ClickMap::add(iptr id,i32 value,i32 x,i32 y, iptr width,iptr height)
   if ((int)entry_count < 200) {
     index = entry_count;
     entry_count++;
-    rect_set_xywh((iptr)&hit_regions[index],x,y,width,height);
+    rect_set_xywh((RECT *)&hit_regions[index],x,y,width,height);
     hit_regions[index].id = id;
     hit_regions[index].value = value;
   }
@@ -1310,14 +1310,14 @@ void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color)
     ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
     width = gfx_zoom_scale(0x40,(int)map_views_block.mapview_zoom[0]);
     height = gfx_zoom_scale(0x20,(int)map_views_block.mapview_zoom[0]);
-    rect_set_xywh((iptr)rect,screen_x,screen_y,width,height);
+    rect_set_xywh((RECT *)rect,screen_x,screen_y,width,height);
     __itoa(number,num_text,10);
     gfx_set_text_color_index(10);
-    rect_offset((iptr)rect,0xffffffff,0xffffffff);
+    rect_offset((RECT *)rect,0xffffffff,0xffffffff);
     ((DibSurface *)((i8 *)&map_views_block.map_views))->draw_text_in_rect((iptr)&map_views_block.tile_number_font,(const char *)num_text,(RECT *)rect,0);
-    rect_offset((iptr)rect,3,3);
+    rect_offset((RECT *)rect,3,3);
     ((DibSurface *)((i8 *)&map_views_block.map_views))->draw_text_in_rect((iptr)&map_views_block.tile_number_font,(const char *)num_text,(RECT *)rect,0);
-    rect_offset((iptr)rect,0xfffffffe,0xfffffffe);
+    rect_offset((RECT *)rect,0xfffffffe,0xfffffffe);
     gfx_set_text_color_index(color);
     ((DibSurface *)((i8 *)&map_views_block.map_views))->draw_text_in_rect((iptr)&map_views_block.tile_number_font,(const char *)num_text,(RECT *)rect,0);
     ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)rect);
@@ -1797,7 +1797,7 @@ void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,iptr x,i
     }
     ((Sprite *)(((i8 *)&airbase_sprites_block.airbase_sprites) + variant * 0x3c))->draw((iptr)airbase_rect,surface,screen_x,
                screen_y - half_h);
-    rect_set_xywh((iptr)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
+    rect_set_xywh((RECT *)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
     civ = tile_owner(x,y);
     color = civ_color_primary(civ);
     ((DibSurface *)surface)->replace_color((iptr)airbase_area,0x106,color);
@@ -2327,8 +2327,8 @@ void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
   top -= (radius * 2 + 1) * half_tile_height_u;
   left += half_tile_width_u * radius * -2;
   width2 = (radius * 2 + 1) * tile_width_u;
-  rect_set_xywh((iptr)rect,left,top,width2,(radius * 4 + 3) * half_tile_height_u);
-  rect_intersect_into((LPRECT)out_rect,(iptr)rect,(iptr)&client_rect);
+  rect_set_xywh((RECT *)rect,left,top,width2,(radius * 4 + 3) * half_tile_height_u);
+  rect_intersect_into((LPRECT)out_rect,(RECT *)rect,(RECT *)&client_rect);
   return;
 }
 

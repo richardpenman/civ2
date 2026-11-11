@@ -2133,7 +2133,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
         if (2 < game.multiplayer) {
           net_send_state_diff(0xff,2,0,0,0);
           net_send_message(NM_DRAW_SQUARE,0xff,x,y,0,0,0,0,0,0);
-          net_send_message(NM_DRAW_SQUARE,0xff,(int)cities[city].x,(int)cities[city].y,0,0,0,0,0,0);
+          net_send_message(NM_DRAW_SQUARE,0xff,cities[city].x,cities[city].y,0,0,0,0,0,0);
         }
         text_set_string_arg(1,(const char *)&cities[city].name);
       }
@@ -2146,7 +2146,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
             }
             else if (2 < game.multiplayer) {
               net_send_text_args(0x26,net.net_slots[net.net_civ_slots[civ3]].id,
-                                 2,0,(uint)units[unit].type,8);
+                                 2,0,units[unit].type,8);
             }
           }
           else if (human_civ[0] == civ3) {
@@ -2154,7 +2154,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
           }
           else if (2 < game.multiplayer) {
             net_send_text_args(0x27,net.net_slots[net.net_civ_slots[civ3]].id,2,
-                               0,(uint)units[unit].type,8);
+                               0,units[unit].type,8);
           }
         }
         units[unit].flags = units[unit].flags | UNITF_VETERAN;
@@ -2168,7 +2168,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
       }
       else if (game.multiplayer == 3) {
         net_send_text_args(0x28,net.net_slots[net.net_civ_slots[civ3]].id,0,0,
-                           (uint)units[unit].type,8);
+                           units[unit].type,8);
       }
     }
   }
@@ -2687,7 +2687,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       if ((((autoplay.active == 0) && ((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) != 0))
           && (2 < game.multiplayer)) && (human_civ[0] != civ2)) {
         net_send_message(NM_DRAW_SQUARE,net.net_slots[net.net_civ_slots[civ2]].id,
-                           (int)cities[city].x,(int)cities[city].y,0,0,0,0,0,0);
+                           cities[city].x,cities[city].y,0,0,0,0,0,0);
         net_send_message(NM_CITYWIN_REDRAW,net.net_slots[net.net_civ_slots[civ2]].id,0,0
                            ,0,0,0,0,0,0);
         net_send_text_args(0x59,net.net_slots[net.net_civ_slots[civ2]].id,1,0
@@ -3225,7 +3225,7 @@ void __cdecl unit_bribe(int unit,int civ)
     else if ((2 < game.multiplayer) && (human_civ[0] != civ2)) {
       net_send_state_diff(0xff,2,0,0,0);
       net_send_message(NM_POSSIBLY_CENTER,net.net_slots[net.net_civ_slots[civ2]].id,
-                         (int)units[unit].x,(int)units[unit].y,civ2,0,0,0,0,0);
+                         units[unit].x,units[unit].y,civ2,0,0,0,0,0);
       net_send_text_args(0x22,net.net_slots[net.net_civ_slots[civ2]].id,3,0,
                          unit,0);
     }
@@ -3233,7 +3233,7 @@ void __cdecl unit_bribe(int unit,int civ)
   map_redraw_tile_all_views((int)units[unit].x,(int)units[unit].y);
   if (2 < game.multiplayer) {
     net_send_state_diff(0xff,2,0,0,0);
-    net_send_message(NM_DRAW_SQUARE,0xff,(int)units[unit].x,(int)units[unit].y,0,0,0,0,0,0);
+    net_send_message(NM_DRAW_SQUARE,0xff,units[unit].x,units[unit].y,0,0,0,0,0,0);
   }
   if (((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0) && (human_civ[0] == civ2)) {
     ui_delay_ticks(0x1e);
@@ -3899,7 +3899,7 @@ void __cdecl unit_kill_in_combat(int unit,int unit2,int x,int y)
   else if ((2 < game.multiplayer) &&
           (((uint)game.human_players & 1 << (units[unit].owner & 0x1fU)) != 0)) {
     net_send_message(NM_DEATH_STACK,net.net_slots[net.net_civ_slots[units[unit].owner]].id,unit,
-                       unit2,(int)game.year,x,y,0,0,0);
+                       unit2,game.year,x,y,0,0,0);
   }
   sprite_picker_sprite_block.combat_kill_count++;
   if (scenario_events_loaded != 0) {
@@ -5555,7 +5555,7 @@ void __cdecl unit_sound_editor_redraw(void)
     left = (slot % 3) * col_width * 5;
     left = ((int)(left + (left >> 0x1f & 3U)) >> 2) + ((int)(col_width + (width_adj >> 0x1f & 3U)) >> 2)
             + unit_sound_editor.client_x;
-    rect_set_xywh((iptr)rect,left,top,col_width,row_height);
+    rect_set_xywh((RECT *)rect,left,top,col_width,row_height);
     gfx_draw_bevel_rect((iptr)&unit_sound_editor.window,(RECT *)rect,10,10);
     if (-1 < main_frame_bg_surface_block.unit_sound_effects[slot]) {
       text_clear();
@@ -5595,7 +5595,7 @@ void __cdecl unit_sound_editor_on_dblclick(int x,int y)
       return;
     }
     hit = (slot % 3) * col_width * 5;
-    rect_set_xywh((iptr)&rect2,
+    rect_set_xywh(&rect2,
                        ((int)(hit + (hit >> 0x1f & 3U)) >> 2) +
                        ((int)(col_width + (width_adj >> 0x1f & 3U)) >> 2),
                        (row_height * 3) / 2 + (slot / 3) * row_height * 4,col_width,row_height);
@@ -5782,7 +5782,7 @@ void __cdecl unit_sound_editor_run(const char *title,i32 unit_type)
     col_offset = (i % 3) * btn_width * 5;
     btn_x = ((int)(col_offset + (col_offset >> 0x1f & 3U)) >> 2) +
                ((int)(btn_width + (btn_width >> 0x1f & 3U)) >> 2) + unit_sound_editor.client_x;
-    rect_set_xywh((iptr)rect,btn_x,btn_y,btn_width,btn_height);
+    rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
     label = (iptr)label_string(label_table.string_ids[unit_sound_button_label_ids[i]]);
     (slot_btns + i)->create((iptr)&unit_sound_editor.wnd,i + 0xc9,(iptr)rect,(const char *)label);
     (slot_btns + i)->set_callback(unit_sound_editor_pick_wav);
@@ -5791,12 +5791,12 @@ void __cdecl unit_sound_editor_run(const char *title,i32 unit_type)
   btn_width = (unit_sound_editor.client_width - 6) / 2;
   btn_y = (unit_sound_editor.client_y + unit_sound_editor.client_height) - (btn_height + 2);
   btn_x = unit_sound_editor.client_x + 2;
-  rect_set_xywh((iptr)rect,btn_x,btn_y,btn_width,btn_height);
+  rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
   label = (iptr)label_string(label_table.string_ids[0xfe]);
   ok_btn.create((iptr)&unit_sound_editor.wnd,0x65,(iptr)rect,(const char *)label);
   ok_btn.set_callback((CtrlNotifyFn)unit_sound_editor_ok_clicked);
   btn_x = btn_x + btn_width + 2;
-  rect_set_xywh((iptr)rect,btn_x,btn_y,btn_width,btn_height);
+  rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
   label = (iptr)label_string(label_table.string_ids[0xff]);
   cancel_btn.create((iptr)&unit_sound_editor.wnd,0x66,(iptr)rect,(const char *)label);
   cancel_btn.set_callback((CtrlNotifyFn)unit_sound_editor_cancel_clicked);
@@ -8830,10 +8830,10 @@ void EditorWindow::unit_editor_create_combo(int index)
   x = unit_editor_ctrl_positions_block.unit_editor_combo_pos[index].x + client_x;
   y = unit_editor_ctrl_positions_block.unit_editor_combo_pos[index].y + client_y;
   if (index == 0) {
-    rect_set_xywh((iptr)rect,x - 0xf,y,0x82,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,x - 0xf,y,0x82,font_height_uptr << 3);
   }
   else {
-    rect_set_xywh((iptr)rect,x - 0x1e,y,0xa0,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,x - 0x1e,y,0xa0,font_height_uptr << 3);
   }
   x = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -8902,7 +8902,7 @@ void EditorWindow::unit_editor_create_edit(int index)
   u8 *parent2;
   i8 rect[16];
   
-  rect_set_xywh((iptr)rect,(((i32 *)&unit_editor_edit_x_table_block.unit_editor_edit_x_table))[index * 2] + client_x,
+  rect_set_xywh((RECT *)rect,(((i32 *)&unit_editor_edit_x_table_block.unit_editor_edit_x_table))[index * 2] + client_x,
                      (((i32 *)&unit_editor_edit_x_table_block.unit_editor_edit_y_table))[index * 2] + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -9103,7 +9103,7 @@ void EditorWindow::unit_editor_window_run()
   button_width_u = (int)(btn_x + (btn_x >> 0x1f & 3U)) >> 2;
   btn_y = (client_y + client_height) - (button_height_u + 2);
   btn_x = client_x + 2;
-  rect_set_xywh((iptr)rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     ok_parent = (u8 *)0x0;
   }
@@ -9114,7 +9114,7 @@ void EditorWindow::unit_editor_window_run()
   ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)unit_editor_on_ok);
   btn_x = btn_x + button_width_u + 2;
-  rect_set_xywh((iptr)rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     rename_parent = (u8 *)0x0;
   }
@@ -9125,7 +9125,7 @@ void EditorWindow::unit_editor_window_run()
   rename_button.create((iptr)rename_parent,0x66,(iptr)rect,(const char *)label);
   rename_button.set_callback((CtrlNotifyFn)unit_editor_on_rename);
   btn_x = btn_x + button_width_u + 2;
-  rect_set_xywh((iptr)rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     help_parent = (u8 *)0x0;
   }
@@ -9135,7 +9135,7 @@ void EditorWindow::unit_editor_window_run()
   label = (iptr)label_string(label_table.string_ids[0x23b]);
   help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)unit_editor_on_help);
-  rect_set_xywh((iptr)rect,btn_x + button_width_u + 2,btn_y,button_width_u,
+  rect_set_xywh((RECT *)rect,btn_x + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     cancel_parent = (u8 *)0x0;
@@ -9154,7 +9154,7 @@ void EditorWindow::unit_editor_window_run()
   btn_y = client_x + 0x19;
   btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->height();
   btn_x = btn_x * 2 + client_y + 0x28;
-  rect_set_xywh((iptr)rect,btn_y,btn_x,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,btn_y,btn_x,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     sprite_parent = (u8 *)0x0;
   }
@@ -9165,7 +9165,7 @@ void EditorWindow::unit_editor_window_run()
   icon_button.create((iptr)sprite_parent,0x65,(iptr)rect,(const char *)label);
   icon_button.set_callback((CtrlNotifyFn)unit_editor_edit_sprite);
   btn_x = btn_x + button_height_u + 2;
-  rect_set_xywh((iptr)rect,btn_y,btn_x,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,btn_y,btn_x,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     sound_parent = (u8 *)0x0;
   }
@@ -9175,7 +9175,7 @@ void EditorWindow::unit_editor_window_run()
   label = (iptr)label_string(label_table.string_ids[500]);
   unit_sound_button.create((iptr)sound_parent,0x65,(iptr)rect,(const char *)label);
   unit_sound_button.set_callback((CtrlNotifyFn)unit_editor_edit_sound);
-  rect_set_xywh((iptr)rect,btn_y,btn_x + button_height_u + 2,button_width_u,
+  rect_set_xywh((RECT *)rect,btn_y,btn_x + button_height_u + 2,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     flags_parent = (u8 *)0x0;
@@ -9982,7 +9982,7 @@ void __cdecl unit_delete(int unit,int update_ui)
       }
       if ((2 < game.multiplayer) && (update_ui != 0)) {
         net_send_state_diff(0xff,2,0,0,0);
-        net_send_message(NM_CITYWIN_CHECK_UNIT,0xff,-1,(int)x,(int)y,0,0,0,0,0);
+        net_send_message(NM_CITYWIN_CHECK_UNIT,0xff,-1,x,y,0,0,0,0,0);
         if (0 < (int)home) {
           net_send_message(NM_CITYWIN_CHECK_CITY,0xff,home,0,0,0,0,0,0,0);
         }

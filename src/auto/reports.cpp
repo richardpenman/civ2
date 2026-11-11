@@ -329,10 +329,10 @@ void PictureWindow::advisor_add_close_button()
   u8 *parent_wnd2;
   i8 button_rect[16];
   
-  rect_set_xywh((iptr)button_rect,2,0,0x254,0x18);
+  rect_set_xywh((RECT *)button_rect,2,0,0x254,0x18);
   top_y = client_y;
   rect_h = rect_height((RECT *)button_rect);
-  rect_offset((iptr)button_rect,client_x,(top_y - rect_h) + 0x18e);
+  rect_offset((RECT *)button_rect,client_x,(top_y - rect_h) + 0x18e);
   if (this == (PictureWindow *)0x0) {
     parent_wnd2 = (u8 *)0x0;
   }
@@ -539,7 +539,7 @@ void __cdecl attitude_advisor_draw(void)
     row_index = next_row;
   }
   if (advisor_state.controls_created == 0) {
-    rect_set((iptr)scroll_rect,(advisor_state.client_right - advisor_state.vscroll_width) - 2,y,advisor_state.client_right - 2,
+    rect_set((RECT *)scroll_rect,(advisor_state.client_right - advisor_state.vscroll_width) - 2,y,advisor_state.client_right - 2,
                        bottom);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(iptr)scroll_rect,1);
     max_row = int_clamp(city_count - 1,0,999);
@@ -889,12 +889,12 @@ void __cdecl defense_minister_draw(void)
         row_index = next_row;
       }
       if ((advisor_state.report_param != 0) && (!bugfix_ui() || (lost_x != -0x8000))) {
-        rect_set((iptr)frame_rect2,lost_x - 8,list_top,lost_x + 0x10,bottom);
+        rect_set((RECT *)frame_rect2,lost_x - 8,list_top,lost_x + 0x10,bottom);
         value = civ_color_primary(civ);
         gfx_draw_rect_frame((iptr)&advisor_state.window,(RECT *)frame_rect2,value);
       }
       if (advisor_state.controls_created == 0) {
-        rect_set((iptr)frame_rect2,(advisor_state.client_right - advisor_state.vscroll_width) - 2,list_top,advisor_state.client_right - 2
+        rect_set((RECT *)frame_rect2,(advisor_state.client_right - advisor_state.vscroll_width) - 2,list_top,advisor_state.client_right - 2
                            ,bottom);
         ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(iptr)frame_rect2,1);
         ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_callback(defense_minister_on_scroll);
@@ -984,17 +984,17 @@ void __cdecl defense_minister_show(int report_civ)
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(2,2,0,600,400,0,0);
   advisor_state.report_civ = report_civ;
   advisor_state.report_param = 0;
-  rect_set_xywh((iptr)button_rect,2,0,0x129,0x18);
+  rect_set_xywh((RECT *)button_rect,2,0,0x129,0x18);
   client_y = advisor_state.client_y;
   rect_h = rect_height((RECT *)button_rect);
-  rect_offset((iptr)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
-  rect_offset((iptr)button_rect,299,0);
+  rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
+  rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
   ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
-  rect_offset((iptr)button_rect,0xfffffed5,0);
+  rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0x159]);
   ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)defense_minister_on_toggle_view);
@@ -1335,7 +1335,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
     item_index = value;
   }
   if (advisor_state.controls_created == 0) {
-    rect_set((iptr)scroll_rect,left_x,list_bottom,right_x,list_bottom + scroll_height);
+    rect_set((RECT *)scroll_rect,left_x,list_bottom,right_x,list_bottom + scroll_height);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(iptr)scroll_rect,0);
     color = int_clamp((rows_per_page - 1 + advance_count) / rows_per_page - 1,0,999);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_range(0,color);
@@ -1518,17 +1518,17 @@ void __cdecl intel_report_show(int report_civ,int target_civ)
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(3,3,1,600,400,0,0);
   advisor_state.report_civ = report_civ;
   advisor_state.report_param = target_civ;
-  rect_set_xywh((iptr)button_rect,2,0,0x129,0x18);
+  rect_set_xywh((RECT *)button_rect,2,0,0x129,0x18);
   client_y = advisor_state.client_y;
   rect_h = rect_height((RECT *)button_rect);
-  rect_offset((iptr)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
-  rect_offset((iptr)button_rect,299,0);
+  rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
+  rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
   ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
-  rect_offset((iptr)button_rect,0xfffffed5,0);
+  rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0xc5]);
   ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)intel_report_on_cities_clicked);
@@ -1750,7 +1750,7 @@ void __cdecl foreign_minister_show(int civ)
           attitude_values[7] = 0x5f;
           attitude_values[8] = 100;
           civs[civ].attitude[civ2] = attitude_values[choice];
-          net_send_message(NM_SET_ATTITUDE,0xff,civ,civ2,(uint)attitude_values[choice],0,0,0,0,0);
+          net_send_message(NM_SET_ATTITUDE,0xff,civ,civ2,attitude_values[choice],0,0,0,0,0);
         }
       }
     }
@@ -1959,7 +1959,7 @@ void __cdecl powergraph_show(void)
   ((u8 *)&rect2.bottom)[3] = graph_wnd[0x2cb];
   rect2.top = (*(i32 *)((char *)&graph_wnd + 704)) + 400;
   gfx_fill_rect((iptr)graph_wnd,(RECT *)&rect2,0x14);
-  rect_set_xywh((iptr)&rect2,origin_x2 + 8,origin_y2 + 2,0x248,0x16e);
+  rect_set_xywh((RECT *)&rect2,origin_x2 + 8,origin_y2 + 2,0x248,0x16e);
   gfx_draw_rect_frame((iptr)graph_wnd,(RECT *)&rect2,10);
   if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
     sample_count = (int)((int)game.turn + ((int)game.turn >> 0x1f & 3U)) >> 2;
@@ -2302,7 +2302,7 @@ void __cdecl top_cities_draw(void)
       }
       box_bottom = y2 + 0x20;
       y2 = box_bottom;
-      rect_set((iptr)box_rect,advisor_state.client_x + 3,box_top,
+      rect_set((RECT *)box_rect,advisor_state.client_x + 3,box_top,
                          advisor_state.client_width + advisor_state.client_x - 3,box_bottom);
       color = civ_color_primary(cities[city].owner);
       gfx_draw_rect_frame((iptr)&advisor_state.window,(RECT *)box_rect,color);
@@ -3070,17 +3070,17 @@ iptr __cdecl hall_of_fame_show(int highlight)
     ((PictureWindow *)((i8 *)&advisor_state.window))->advisor_add_close_button();
   }
   else {
-    rect_set_xywh((iptr)button_rect,2,0,0x129,0x18);
+    rect_set_xywh((RECT *)button_rect,2,0,0x129,0x18);
     client_y = advisor_state.client_y;
     rect_h = rect_height((RECT *)button_rect);
-    rect_offset((iptr)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
-    rect_offset((iptr)button_rect,299,0);
+    rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
+    rect_offset((RECT *)button_rect,299,0);
     label = (iptr)label_string(label_table.string_ids[0x147]);
     ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(iptr)button_rect,(const char *)label);
     ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
     ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
     ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
-    rect_offset((iptr)button_rect,0xfffffed5,0);
+    rect_offset((RECT *)button_rect,0xfffffed5,0);
     label = (iptr)label_string(label_table.string_ids[0x1be]);
     ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(iptr)button_rect,(const char *)label);
     ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)hall_of_fame_on_clear_clicked);
@@ -3512,7 +3512,7 @@ void __cdecl credits_draw_scroll(int full_redraw)
     center_x = (advisor_state.client_width >> 1) + advisor_state.client_x;
     drawn_left = center_x - (max_width2 >> 1);
     drawn_right = max_width2 + drawn_left;
-    rect_set((iptr)&rect2,drawn_left,top,drawn_right,bottom);
+    rect_set(&rect2,drawn_left,top,drawn_right,bottom);
     advisor_button_font_block.credits_drawn_rect = rect2.left;
     advisor_button_font_block.credits_drawn_rect_top = rect2.top;
     advisor_button_font_block.credits_drawn_rect_right = rect2.right;
@@ -3804,7 +3804,7 @@ void __cdecl casualty_timeline_draw(void)
     }
   }
   if (casualty.controls_created == 0) {
-    rect_set((iptr)scroll_rect,(casualty.client_right - casualty.vscroll_width) - 2,line_height,casualty.client_right - 2,
+    rect_set((RECT *)scroll_rect,(casualty.client_right - casualty.vscroll_width) - 2,line_height,casualty.client_right - 2,
                        bottom);
     ((Scrollbar *)((i8 *)&casualty.scrollbar))->create((iptr)&casualty.parent_wnd,200,(iptr)scroll_rect,1);
     ((Scrollbar *)((i8 *)&casualty.scrollbar))->set_callback(casualty_scrollbar_on_scroll);
@@ -3838,10 +3838,10 @@ void __cdecl casualty_timeline_show(int civ)
     ((PictureWindow *)((i8 *)&casualty.window))->open(2,0xc,0,600,400,0,0);
     casualty.civ = civ;
     casualty.report_param = 0;
-    rect_set_xywh((iptr)button_rect,2,0,0x254,0x18);
+    rect_set_xywh((RECT *)button_rect,2,0,0x254,0x18);
     client_y = casualty.client_y;
     rect_h = rect_height((RECT *)button_rect);
-    rect_offset((iptr)button_rect,casualty.client_x,(client_y - rect_h) + 0x18e);
+    rect_offset((RECT *)button_rect,casualty.client_x,(client_y - rect_h) + 0x18e);
     label = (iptr)label_string(label_table.string_ids[0x147]);
     ((Button *)((i8 *)&casualty.close_button))->create((iptr)&casualty.parent_wnd,100,(iptr)button_rect,(const char *)label);
     ((Button *)((i8 *)&casualty.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
@@ -3896,7 +3896,7 @@ ThroneRoomWindow *ThroneRoomWindow::construct(iptr civ)
   ((ClickMap *)choice_clickmap)->construct();
   ((Dialog *)choice_dialog_2)->Dialog::construct(0x4000);
   ((GameFont *)((u8 *)&click_prompt_font))->init_empty();
-  gfx_get_screen_rect((iptr)(media_wnd));
+  gfx_get_screen_rect(((RECT *)media_wnd));
   throne_civ = civ;
   throneroom_wnd = this;
   throne_complete = 1;
@@ -4035,7 +4035,7 @@ void ThroneRoomWindow::run_upgrade()
       draw_click_prompt();
       choosing_item = 1;
       SetRect(&rect,0,0,0x280,0x1e0);
-      gfx_dissolve_blit((iptr)throne_surface_wnd,(iptr)&rect,8,4);
+      gfx_dissolve_blit((iptr)throne_surface_wnd,&rect,8,4);
       ((DibSurface *)throne_surface_wnd)->wnd_blit_surface();
       input_flush_events();
       ((WndBase *)throne_wnd_base)->set_capture();
@@ -4050,7 +4050,7 @@ void ThroneRoomWindow::run_upgrade()
       ((DibSurface *)throne_backbuffer)->DibSurface::blit((DibSurface *)throne_surface_wnd,&rect,
                  &rect);
       win_flush_pending_msgs();
-      gfx_dissolve_blit((iptr)throne_surface_wnd,(iptr)&rect,8,3);
+      gfx_dissolve_blit((iptr)throne_surface_wnd,&rect,8,3);
       ((DibSurface *)throne_surface_wnd)->wnd_blit_surface();
       wnd_flush_paint();
       if (throne_complete == 0) {
@@ -4065,7 +4065,7 @@ void ThroneRoomWindow::run_upgrade()
       if (result != 0) {
         snd_play_effect(SND_CHEERS_13,1,0,0);
         SetRect(&rect,0,0,0x280,0x1e0);
-        gfx_dissolve_blit((iptr)throne_surface_wnd,(iptr)&rect,4,1);
+        gfx_dissolve_blit((iptr)throne_surface_wnd,&rect,4,1);
         draw_click_prompt();
         ((DibSurface *)throne_surface_wnd)->wnd_blit_surface();
         choosing_item = 0;
@@ -4823,7 +4823,7 @@ i32 EndgameMovieWindow::defeat_movie_wnd_create(uint civ)
   int open_err;
   CHAR avi_path[128];
   
-  gfx_get_screen_rect((iptr)&screen_bounds);
+  gfx_get_screen_rect(&screen_bounds);
   str_clear((char *)avi_path);
   str_append((char *)avi_path,(const char *)&game_dirs.home);
   str_append((char *)avi_path,(const char *)&str_loser_avi);
@@ -4931,7 +4931,7 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
       gfx_set_text_color_index(0xff);
       ((DibSurface *)media_wnd)->draw_text_rect((iptr)movie_caption_font,(const char *)&textbuf.buf,
                  (iptr)(movie_caption_rect),0);
-      gfx_dissolve_blit((iptr)(media_wnd),(iptr)(movie_caption_rect),4,5);
+      gfx_dissolve_blit((iptr)(media_wnd),((RECT *)movie_caption_rect),4,5);
       text_close_file();
       ui_delay_ticks(0x168);
     }
@@ -4971,11 +4971,11 @@ void __cdecl defeat_movie_on_video_end(void)
     }
     text_expand_vars_max((*(int *)&endgame_movie_window) + 0xf24,(iptr)&textbuf.buf,TEXTBUF_SIZE);
     CharUpperA(((i8 *)&textbuf.buf));
-    rect_set_xywh((*(int *)&endgame_movie_window) + 0x136c,0xe5,0x4c,200,0x85);
+    rect_set_xywh((RECT *)((*(int *)&endgame_movie_window) + 0x136c),0xe5,0x4c,200,0x85);
     gfx_set_text_color_index(0);
     ((DibSurface *)((*(int *)&endgame_movie_window) + 0x4ec))->draw_text_rect((*(int *)&endgame_movie_window) + 0xf1c,(const char *)&textbuf.buf,
                (*(int *)&endgame_movie_window) + 0x136c,0);
-    gfx_dissolve_blit((*(int *)&endgame_movie_window) + 0x4ec,(*(int *)&endgame_movie_window) + 0x136c,4,5);
+    gfx_dissolve_blit((*(int *)&endgame_movie_window) + 0x4ec,(RECT *)((*(int *)&endgame_movie_window) + 0x136c),4,5);
     text_close_file();
   }
   ui_delay_ticks(0x168);
@@ -5107,7 +5107,7 @@ i32 EndgameMovieWindow::arrival_movie_wnd_create(iptr civ)
   else {
     advance_civ = civ;
   }
-  gfx_get_screen_rect((iptr)&screen_bounds);
+  gfx_get_screen_rect(&screen_bounds);
   file_require_cdrom((const char *)&str_civ2_civ2_exe);
   str_clear((char *)avi_path);
   str_append((char *)avi_path,(const char *)&str_civ2_video_winwin_avi);
@@ -5213,7 +5213,7 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
       gfx_set_text_color_index(0xf1);
       ((DibSurface *)media_wnd)->draw_text_rect((iptr)movie_caption_font,(const char *)&textbuf.buf,
                  (iptr)(movie_caption_rect),0);
-      gfx_dissolve_blit((iptr)(media_wnd),(iptr)(movie_caption_rect),4,5);
+      gfx_dissolve_blit((iptr)(media_wnd),((RECT *)movie_caption_rect),4,5);
       text_close_file();
       ui_delay_ticks(0x168);
     }
@@ -5268,7 +5268,7 @@ void __cdecl arrival_movie_on_frame(void)
     dirty_rect.right = *(i32 *)(spaceship_arrival_window + 0x1374);
     dirty_rect.top = 0xc;
     dirty_rect.bottom = text_y2;
-    gfx_dissolve_blit(spaceship_arrival_window + 0x4ec,(iptr)&dirty_rect,4,5);
+    gfx_dissolve_blit(spaceship_arrival_window + 0x4ec,&dirty_rect,4,5);
     text_close_file();
   }
   return;
@@ -5322,7 +5322,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
   status = file_resolve_path((const char *)dll_path);
   if (status != 0) {
     dll.load((const char *)dll_path);
-    gfx_get_screen_rect((iptr)&screen_bounds);
+    gfx_get_screen_rect(&screen_bounds);
     SetRect(&text_rect,0,0,0x280,0xf0);
     InflateRect(&text_rect,-10,0);
     ((WndBase *)&frame_wnd)->create_with_handlers((const char *)&str_empty_91,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
@@ -5380,7 +5380,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
         OffsetRect(&text_rect,-1,-1);
         gfx_set_text_color_index(0xff);
         ((DibSurface *)surface_wnd)->draw_text_rect((iptr)&font2,(const char *)&textbuf.buf,(iptr)&text_rect,0);
-        gfx_dissolve_blit((iptr)surface_wnd,(iptr)&text_rect,4,5);
+        gfx_dissolve_blit((iptr)surface_wnd,&text_rect,4,5);
         text_close_file();
         ui_delay_ticks(0x168);
       }
@@ -6033,7 +6033,7 @@ i32 DestroyedCivsWindow::create(uint killer)
   RECT screen_bounds;
   tagRECT rect;
   
-  gfx_get_screen_rect((iptr)&screen_bounds);
+  gfx_get_screen_rect(&screen_bounds);
   str_clear((char *)dll_path);
   str_append((char *)dll_path,(const char *)&str_civ2_mk_dll_2);
   found = file_resolve_path((const char *)dll_path);
@@ -6121,7 +6121,7 @@ void DestroyedCivsWindow::run()
   ui_delay_ticks(0x3c);
   ((DibSurface *)media_wnd)->fill(0);
   SetRect((LPRECT)slot_sprites,0,0,0x280,0x1e0);
-  gfx_dissolve_blit((iptr)(media_wnd),(iptr)slot_sprites,4,4);
+  gfx_dissolve_blit((iptr)(media_wnd),(RECT *)slot_sprites,4,4);
   ((DibSurface *)media_wnd)->load_gif_resource(0x2712,10,0xec,(iptr)&control_list);
   text_set_font((iptr)caption_font_2);
   text_set_colors(0x7c,0x81,1,1);
@@ -6135,7 +6135,7 @@ void DestroyedCivsWindow::run()
     }
     text_draw_centered((iptr)(media_wnd),(const char *)text_buf,0,0x48,0x280);
   }
-  gfx_dissolve_blit((iptr)(media_wnd),(iptr)slot_sprites,4,3);
+  gfx_dissolve_blit((iptr)(media_wnd),(RECT *)slot_sprites,4,3);
   text_clear();
   text_append_label(0x1c8);
   font2.set_styled(0,0x10,3);

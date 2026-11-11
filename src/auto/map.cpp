@@ -5375,13 +5375,13 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
   left = terrain_editor_combo_pos_x_block.terrain_editor_combo_pos[combo_idx].x + client_x;
   top = terrain_editor_combo_pos_x_block.terrain_editor_combo_pos[combo_idx].y + client_y;
   if (combo_idx == 0) {
-    rect_set_xywh((iptr)rect,left - 0x1e,top,0xa0,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,left - 0x1e,top,0xa0,font_height_uptr << 3);
   }
   else if ((combo_idx == 2) || (combo_idx == 4)) {
-    rect_set_xywh((iptr)rect,left - 0x1e,top,0x82,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,left - 0x1e,top,0x82,font_height_uptr << 3);
   }
   else {
-    rect_set_xywh((iptr)rect,left,top,100,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,left,top,100,font_height_uptr << 3);
   }
   left = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -5443,7 +5443,7 @@ void EditorWindow::terrain_editor_create_edit(int field_idx)
   u8 *parent2;
   i8 rect[16];
   
-  rect_set_xywh((iptr)rect,(((i32 *)&terrain_editor_field_pos_x_block.terrain_editor_field_pos_x))[field_idx * 2] + client_x,
+  rect_set_xywh((RECT *)rect,(((i32 *)&terrain_editor_field_pos_x_block.terrain_editor_field_pos_x))[field_idx * 2] + client_x,
                      (((i32 *)&terrain_editor_field_pos_x_block.terrain_editor_field_pos_y))[field_idx * 2] + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -5691,7 +5691,7 @@ void EditorWindow::terrain_editor_run()
   button_width_u = (int)(btn_x + (btn_x >> 0x1f & 3U)) >> 2;
   btn_y = (client_y + client_height) - (button_height_u + 2);
   btn_x = client_x + 2;
-  rect_set_xywh((iptr)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     ok_parent = (u8 *)0x0;
   }
@@ -5702,7 +5702,7 @@ void EditorWindow::terrain_editor_run()
   ok_button.create((iptr)ok_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
   ok_button.set_callback((CtrlNotifyFn)terrain_editor_on_ok);
   btn_x = btn_x + button_width_u + 2;
-  rect_set_xywh((iptr)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     rename_parent = (u8 *)0x0;
   }
@@ -5713,7 +5713,7 @@ void EditorWindow::terrain_editor_run()
   rename_button.create((iptr)rename_parent,0x66,(iptr)btn_rect,(const char *)btn_label);
   rename_button.set_callback((CtrlNotifyFn)terrain_editor_on_rename);
   btn_x = btn_x + button_width_u + 2;
-  rect_set_xywh((iptr)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     help_parent = (u8 *)0x0;
   }
@@ -5723,7 +5723,7 @@ void EditorWindow::terrain_editor_run()
   btn_label = (iptr)label_string(label_table.string_ids[0x23b]);
   help_button.create((iptr)help_parent,0x66,(iptr)btn_rect,(const char *)btn_label);
   help_button.set_callback((CtrlNotifyFn)terrain_editor_on_help);
-  rect_set_xywh((iptr)btn_rect,btn_x + button_width_u + 2,btn_y,button_width_u,
+  rect_set_xywh((RECT *)btn_rect,btn_x + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     cancel_parent = (u8 *)0x0;
@@ -5741,7 +5741,7 @@ void EditorWindow::terrain_editor_run()
   button_height_u = btn_x + 8;
   wnd_height = client_x;
   btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->height();
-  rect_set_xywh((iptr)btn_rect,wnd_height + 0x19,btn_x * 2 + client_y + 0x28,
+  rect_set_xywh((RECT *)btn_rect,wnd_height + 0x19,btn_x * 2 + client_y + 0x28,
                      button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     icon_parent = (u8 *)0x0;
@@ -5754,7 +5754,7 @@ void EditorWindow::terrain_editor_run()
   icon_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_icon);
   btn_y = (client_width + client_x - 0x19) - button_width_u;
   btn_x = client_y + 0x28;
-  rect_set_xywh((iptr)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     river_parent = (u8 *)0x0;
   }
@@ -5765,7 +5765,7 @@ void EditorWindow::terrain_editor_run()
   misc_button.create((iptr)river_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
   misc_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_river);
   btn_x = btn_x + button_height_u + 2;
-  rect_set_xywh((iptr)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     coast_parent = (u8 *)0x0;
   }
@@ -5775,7 +5775,7 @@ void EditorWindow::terrain_editor_run()
   btn_label = (iptr)label_string(label_table.string_ids[0x23e]);
   coast_button.create((iptr)coast_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
   coast_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_coast);
-  rect_set_xywh((iptr)btn_rect,btn_y,btn_x + button_height_u + 2,button_width_u,
+  rect_set_xywh((RECT *)btn_rect,btn_y,btn_x + button_height_u + 2,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     misc_parent = (u8 *)0x0;
@@ -6052,7 +6052,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
       rect_bottom2[view] = map_views_block.map_view_recs[view].unit_sprite_height + tmp - 1;
       cur_sx[view] = from_sx;
       cur_sy[view] = from_sy;
-      rect_set((iptr)rect,rect_left2[view],rect_top2[view],
+      rect_set((RECT *)rect,rect_left2[view],rect_top2[view],
                          rect_right2[view] + 1,rect_bottom2[view] + 1);
       dim = rect_width((RECT *)rect);
       save_w[view] = dim;
@@ -6112,7 +6112,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
             gfx_draw_unit((iptr)&map_views_block.map_view_recs[view],unit,5,
                                cur_sx[view],cur_sy[view],
                                (int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8],1);
-            rect_set_xywh((iptr)&dirty_rect,cur_sx[view] + step[view] * -2,
+            rect_set_xywh(&dirty_rect,cur_sx[view] + step[view] * -2,
                                cur_sy[view] + step[view] * -2,
                                step[view] * 4 + map_views_block.map_view_recs[view].tile_width
                                ,step[view] * 4 +
@@ -6220,7 +6220,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
       map_views_block.map_view_recs[view].tile_to_screen((iptr)(screen_x + view)
                  ,(iptr)(screen_y + view),x,y);
       screen_x[view] += map_views_block.map_view_recs[view].quarter_tile_width;
-      rect_set_xywh((iptr)(view_rects + view * 0x10),screen_x[view],
+      rect_set_xywh(((RECT *)(view_rects + view * 0x10)),screen_x[view],
                          screen_y[view],sprite_w[view],sprite_h[view]);
       (saved_bg + view)->DibSurface::create(map_views_block.map_view_recs[view].tile_width,
                  map_views_block.map_view_recs[view].tile_height);
@@ -6263,7 +6263,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                          y);
               screen_x[view] =
                    screen_x[view] + map_views_block.map_view_recs[view].quarter_tile_width;
-              rect_set_xywh((iptr)(view_rects + view * 0x10),screen_x[view],
+              rect_set_xywh(((RECT *)(view_rects + view * 0x10)),screen_x[view],
                                  screen_y[view],sprite_w[view],sprite_h[view]);
               (saved_bg + view)->DibSurface::create(map_views_block.map_view_recs[view].tile_width,
                          map_views_block.map_view_recs[view].tile_height);
@@ -6358,7 +6358,7 @@ void __cdecl map_animate_nuke(int x,int y)
     anim_y = (map_views_block.mapview_half_tile_height[0] + screen_y) - (anim_h >> 1);
     gfx_copy_rect_clipped((iptr)&map_views_block.map_views,(iptr)saved_bg,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],map_views_block.mapview_client_origin_y[0],0,0,0,0,
                        anim_w,anim_h);
-    rect_set_xywh((iptr)&dirty_rect,anim_x,anim_y,anim_w,anim_h);
+    rect_set_xywh(&dirty_rect,anim_x,anim_y,anim_w,anim_h);
     if (dirty_rect.left < 0) {
       dirty_rect.left = 0;
     }
@@ -6701,11 +6701,11 @@ void __cdecl map_alloc(void)
   }
   map_handles.tiles = (void *)mem_handle_alloc_tracked(alloc_size);
   if (map_handles.tiles == (void *)0x0) {
-    error_report(0xfffffff7,5,0,(int)map.width,(int)map.height);
+    error_report(0xfffffff7,5,0,map.width,map.height);
   }
   map_data.tiles = (Tile *)mem_lock_handle((iptr)map_handles.tiles);
   if (map_data.tiles == (Tile *)0x0) {
-    error_report(0xfffffff6,5,0,(int)map.width,(int)map.height);
+    error_report(0xfffffff6,5,0,map.width,map.height);
   }
   tile = map_data.tiles;
   for (i = 0; i < map.area; i++) {
@@ -6740,35 +6740,35 @@ void __cdecl map_alloc(void)
   }
   map_handles.coarse[0] = (void *)mem_handle_alloc_tracked(alloc_size);
   if (map_handles.coarse[0] == (void *)0x0) {
-    error_report(0xfffffff7,5,0,(int)map.quarter_w,0);
+    error_report(0xfffffff7,5,0,map.quarter_w,0);
   }
   map_data.coarse[0] = (u8 *)mem_lock_handle((iptr)map_handles.coarse[0]);
   if (map_data.coarse[0] == (u8 *)0x0) {
-    error_report(0xfffffff6,5,0,(int)map.quarter_w,0);
+    error_report(0xfffffff6,5,0,map.quarter_w,0);
   }
   map_handles.coarse[1] = (void *)mem_handle_alloc_tracked(alloc_size);
   if (map_handles.coarse[1] == (void *)0x0) {
-    error_report(0xfffffff7,5,0,(int)map.quarter_w,1);
+    error_report(0xfffffff7,5,0,map.quarter_w,1);
   }
   map_data.coarse[1] = (u8 *)mem_lock_handle((iptr)map_handles.coarse[1]);
   if (map_data.coarse[1] == (u8 *)0x0) {
-    error_report(0xfffffff6,5,0,(int)map.quarter_w,1);
+    error_report(0xfffffff6,5,0,map.quarter_w,1);
   }
   map_handles.coarse[2] = (void *)mem_handle_alloc_tracked(alloc_size);
   if (map_handles.coarse[2] == (void *)0x0) {
-    error_report(0xfffffff7,5,0,(int)map.quarter_w,2);
+    error_report(0xfffffff7,5,0,map.quarter_w,2);
   }
   map_data.coarse[2] = (u8 *)mem_lock_handle((iptr)map_handles.coarse[2]);
   if (map_data.coarse[2] == (u8 *)0x0) {
-    error_report(0xfffffff6,5,0,(int)map.quarter_w,2);
+    error_report(0xfffffff6,5,0,map.quarter_w,2);
   }
   map_handles.coarse[3] = (void *)mem_handle_alloc_tracked(alloc_size);
   if (map_handles.coarse[3] == (void *)0x0) {
-    error_report(0xfffffff7,5,0,(int)map.quarter_w,3);
+    error_report(0xfffffff7,5,0,map.quarter_w,3);
   }
   map_data.coarse[3] = (u8 *)mem_lock_handle((iptr)map_handles.coarse[3]);
   if (map_data.coarse[3] == (u8 *)0x0) {
-    error_report(0xfffffff6,5,0,(int)map.quarter_w,3);
+    error_report(0xfffffff6,5,0,map.quarter_w,3);
   }
   map_data.allocated = 1;
   return;
@@ -7347,7 +7347,7 @@ uint __cdecl tile_improvements(int x,int y)
 }
 
 /* 005b94fc auto */
-void __cdecl tile_set_improvements(int x,int y,iptr bits,iptr set,int sync)
+void __cdecl tile_set_improvements(int x,int y,int bits,int set,int sync)
 
 {
   char old_value;
@@ -7378,7 +7378,7 @@ void __cdecl tile_set_improvements(int x,int y,iptr bits,iptr set,int sync)
 }
 
 /* 005b9646 auto */
-void __cdecl tile_set_terrain(int x,int y,int terrain,iptr sync)
+void __cdecl tile_set_terrain(int x,int y,int terrain,int sync)
 
 {
   byte old_value;
@@ -7405,7 +7405,7 @@ void __cdecl tile_set_terrain(int x,int y,int terrain,iptr sync)
 }
 
 /* 005b976d auto */
-void __cdecl tile_set_visible(int x,int y,iptr bits,iptr set,int sync)
+void __cdecl tile_set_visible(int x,int y,int bits,int set,int sync)
 
 {
   char old_value;
@@ -7436,7 +7436,7 @@ void __cdecl tile_set_visible(int x,int y,iptr bits,iptr set,int sync)
 }
 
 /* 005b98b7 auto */
-void __cdecl tile_set_fertility(int x,int y,int fertility,iptr sync)
+void __cdecl tile_set_fertility(int x,int y,int fertility,int sync)
 
 {
   char old_value;
@@ -7463,7 +7463,7 @@ void __cdecl tile_set_fertility(int x,int y,int fertility,iptr sync)
 }
 
 /* 005b99e8 auto */
-void __cdecl tile_set_owner(int x,int y,int owner,iptr sync)
+void __cdecl tile_set_owner(int x,int y,int owner,int sync)
 
 {
   char old_value;
@@ -7493,7 +7493,7 @@ void __cdecl tile_set_owner(int x,int y,int owner,iptr sync)
 }
 
 /* 005b9b35 auto */
-void __cdecl tile_set_landmass(int x,int y,int landmass,iptr sync)
+void __cdecl tile_set_landmass(int x,int y,int landmass,int sync)
 
 {
   char old_value;
@@ -7519,7 +7519,7 @@ void __cdecl tile_set_landmass(int x,int y,int landmass,iptr sync)
 }
 
 /* 005b9c49 auto */
-void __cdecl tile_set_radius_civ(int x,int y,int radius_civ,iptr sync)
+void __cdecl tile_set_radius_civ(int x,int y,int radius_civ,int sync)
 
 {
   char old_value;

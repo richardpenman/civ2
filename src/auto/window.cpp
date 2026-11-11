@@ -2509,8 +2509,8 @@ void __cdecl menu_multiplayer_options(void)
         rules_apply_double_moves();
         if ((2 < game.multiplayer) && (1 < net.net_player_count[0])) {
           net_send_message(NM_UNITS,0xff,0,0,0,0,0,0,0,0);
-          net_send_message(NM_MULTIOPTIONS_CHANGE,0xff,(int)(short)(*(ushort *)&mp_doubles.production),(int)(short)(*(ushort *)&mp_doubles.moves),
-                             (int)mp_options.simultaneous_setting,0,0,0,0,0);
+          net_send_message(NM_MULTIOPTIONS_CHANGE,0xff,(short)(*(ushort *)&mp_doubles.production),(short)(*(ushort *)&mp_doubles.moves),
+                             mp_options.simultaneous_setting,0,0,0,0,0);
           net_send_text_args(0x45,0xff,0,0,0,0);
           popup_game_with_sprite((const char *)&str_pmchangeyes,(iptr)&popup_info_icon_sprite,0);
         }
@@ -4231,7 +4231,7 @@ void __cdecl ui_init_screen_metrics(void)
 {
   int metric;
   
-  gfx_get_screen_rect((iptr)&caption_small_font_block.screen_rect);
+  gfx_get_screen_rect((RECT *)&caption_small_font_block.screen_rect);
   caption_font_block.screen_width = rect_width((RECT *)&caption_small_font_block.screen_rect);
   caption_font_block.screen_height = rect_height((RECT *)&caption_small_font_block.screen_rect);
   ui_metrics.font_height = 0x10;
@@ -4300,9 +4300,9 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
   rect2.bottom = frame_bottom;
   for (i = 0; i < bevel; i++) {
     gfx_draw_bevel_rect((iptr)this,(RECT *)&rect2,highlight_color2,shadow_color2);
-    rect_deflate((iptr)&rect2,1,1);
+    rect_deflate((RECT *)&rect2,1,1);
   }
-  rect_deflate((iptr)&rect2,border_width + bevel * -2,0);
+  rect_deflate((RECT *)&rect2,border_width + bevel * -2,0);
   if (caption_height == 0) {
     caption_h2 = border_width;
   }
@@ -4313,14 +4313,14 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
   rect2.bottom -= (border_width + bevel * -2);
   for (i = 0; i < bevel; i++) {
     gfx_draw_bevel_rect((iptr)this,(RECT *)&rect2,shadow_color2,highlight_color2);
-    rect_deflate((iptr)&rect2,1,1);
+    rect_deflate((RECT *)&rect2,1,1);
   }
   button_x = ui_metrics.border_width;
   for (i = 0; i < (int)caption_button_count; i++) {
     width2 = (int)(*(int *)(caption_button_area + i * 0x1c + 0xc) * caption_height) / 0x18;
     height2 = (int)(*(int *)(caption_button_area + i * 0x1c + 0x10) * caption_height) / 0x18;
     button_y2 = ((int)caption_height >> 1) - (height2 >> 1);
-    rect_set_xywh((iptr)&rect2,button_x,button_y2,width2,height2);
+    rect_set_xywh((RECT *)&rect2,button_x,button_y2,width2,height2);
     gfx_set_scale_ratio(caption_height,0x18);
     (*(Sprite **)(caption_button_area + i * 0x1c + 0x14))->draw((iptr)sprite_rect,
                (iptr)this,button_x,button_y2);
@@ -4551,10 +4551,10 @@ void FrameWindow::layout()
   
   width = get_width();
   height = get_height();
-  rect_set_xywh((iptr)&frame_rect,0,0,width,height);
-  rect_set_xywh((iptr)&client_rect,0,0,width + border_width * -2,
+  rect_set_xywh((RECT *)&frame_rect,0,0,width,height);
+  rect_set_xywh((RECT *)&client_rect,0,0,width + border_width * -2,
                      height - (caption_height + border_width));
-  rect_offset((iptr)&client_rect,border_width,caption_height);
+  rect_offset((RECT *)&client_rect,border_width,caption_height);
   client_x = client_rect;
   client_y = client_top_u;
   size = rect_width((RECT *)&client_rect);
@@ -4566,7 +4566,7 @@ void FrameWindow::layout()
   for (i = 0; i < (int)caption_button_count; i++) {
     width = (int)(*(int *)(caption_button_area + i * 0x1c + 0xc) * caption_height) / 0x18;
     height = (int)(*(int *)(caption_button_area + i * 0x1c + 0x10) * caption_height) / 0x18;
-    rect_set_xywh((iptr)button_rect,button_x,((int)caption_height >> 1) - (height >> 1),width,
+    rect_set_xywh((RECT *)button_rect,button_x,((int)caption_height >> 1) - (height >> 1),width,
                        height);
     this_00 = (Hotspot *)operator_new(0x40);
     if (this_00 == (Hotspot *)0x0) {
@@ -7277,7 +7277,7 @@ void Dialog::layout_list_pane(int pane,u32 &lists_height)
     list_vscroll_width[pane] = tmp;
     tmp = GetSystemMetrics(3);
     list_hscroll_height[pane] = tmp;
-    rect_set_xywh((iptr)&pane_rect[pane].left,list_x_offset[pane] + list_x,
+    rect_set_xywh(&pane_rect[pane],list_x_offset[pane] + list_x,
                        list_y,list_width[pane],list_height[pane]);
     list_client_rect[pane].left = pane_rect[pane].left;
     list_client_rect[pane].top = pane_rect[pane].top;
@@ -7286,7 +7286,7 @@ void Dialog::layout_list_pane(int pane,u32 &lists_height)
     if (((int)(list_rows[pane] * columns) < (int)option_count) ||
        ((style_flags & 0x1000000) != 0)) {
       if (columns == 1) {
-        rect_set_xywh((iptr)&list_vscroll_rect[pane],pane_rect[pane].right - list_vscroll_width[pane],
+        rect_set_xywh(&list_vscroll_rect[pane],pane_rect[pane].right - list_vscroll_width[pane],
                            list_y,list_vscroll_width[pane],list_height[pane]);
         list_client_rect[pane].right -= list_vscroll_width[pane];
       }
@@ -7300,16 +7300,16 @@ void Dialog::layout_list_pane(int pane,u32 &lists_height)
         else if ((int)lists_height < (int)list_height[1]) {
           lists_height = list_height[1];
         }
-        rect_set_xywh((iptr)&list_hscroll_rect[pane],list_x_offset[pane] + list_x,
+        rect_set_xywh(&list_hscroll_rect[pane],list_x_offset[pane] + list_x,
                            pane_rect[pane].bottom - list_hscroll_height[pane],list_width[pane],list_hscroll_height[pane])
         ;
         list_client_rect[pane].bottom -= list_hscroll_height[pane];
       }
     }
-    rect_deflate((iptr)&list_client_rect[pane].left,1,1);
+    rect_deflate(&list_client_rect[pane],1,1);
     list_origin_x[pane] = list_client_rect[pane].left;
     list_origin_y[pane] = list_client_rect[pane].top;
-    value = rect_width((RECT *)&list_client_rect[pane].left);
+    value = rect_width(&list_client_rect[pane]);
     list_column_width[pane] = value / (int)columns;
     tmp = dialog_list_row_height();
     list_row_height[pane] = tmp;
@@ -7430,7 +7430,7 @@ void Dialog::layout_place_window()
   RECT screen_rect2;
 
   if ((style_flags & 0x100000) == 0) {
-    gfx_get_screen_rect((iptr)((i8 *)&screen_rect2.left));
+    gfx_get_screen_rect(&screen_rect2);
     main_frame_wnd_block.main_frame_wnd.get_screen_rect((iptr)((i8 *)&frame_rect2.left));
     if (window_x == 0xfffffc19) {
       value = rect_width((RECT *)(iptr)((i8 *)&screen_rect2.left));
@@ -7792,7 +7792,7 @@ uint Dialog::draw_option(DialogOption *option,int blit)
                  (int)list_origin_x[option->group];
       cell_y = (int)list_row_height[option->group] * row +
                  (int)list_origin_y[option->group];
-      rect_set_xywh((iptr)&cell_rect,cell_x,cell_y,
+      rect_set_xywh(&cell_rect,cell_x,cell_y,
                          list_column_width[option->group],
                          list_row_height[option->group]);
       is_selected = (uint)((uptr)selected_option == (iptr)option);
@@ -7815,7 +7815,7 @@ uint Dialog::draw_option(DialogOption *option,int blit)
          group_index == 0)) {
         if (is_selected != 0) {
           gfx_draw_bevel_rect(surf_wnd,&inner_rect,bevel_light_color,bevel_dark_color);
-          rect_deflate((iptr)&inner_rect,1,1);
+          rect_deflate(&inner_rect,1,1);
         }
         gfx_fill_rect(surf_wnd,&inner_rect,fill_color);
         draw_option_text(option->text,cell_x + 2,cell_y,is_selected,
@@ -8210,7 +8210,7 @@ void Dialog::create_radio_group(uint *labels)
   if ((int)x < 2) {
     x = 1;
   }
-  rect_set_xywh((iptr)rect,list_x,list_y,option_width,
+  rect_set_xywh((RECT *)rect,list_x,list_y,option_width,
                      option_row_height *
                      ((int)((columns - 1) + option_count) / (int)x));
   if (surf_wnd == 0) {
@@ -8381,7 +8381,7 @@ void Dialog::create_list_listbox()
     new_listbox = ((ListBox *)ctrl_mem)->construct();
   }
   listbox[cur_pane] = (i32)new_listbox;
-  rect_set_xywh((iptr)rect,list_x,list_y,
+  rect_set_xywh((RECT *)rect,list_x,list_y,
                      list_width[cur_pane],list_height[cur_pane]);
   if (surf_wnd == 0) {
     parent = 0;
@@ -8443,7 +8443,7 @@ void Dialog::create_sprite_hotspots()
       zoom = sprite_zoom;
       value = sprite->sprite->height();
       count = gfx_zoom_scale(value,zoom);
-      rect_set_xywh((iptr)rect,x,y2,width2,count);
+      rect_set_xywh((RECT *)rect,x,y2,width2,count);
       if (surf_wnd == 0) {
         parent_190 = 0;
       }
@@ -8547,7 +8547,7 @@ void Dialog::create_buttons()
       label = *(i8 **)((int)this + (i - std_button_count) * 4 + 0x294);
     }
     pos = line_height();
-    rect_set_xywh((iptr)rect,*(i32 *)((u8 *)&extra_button_labels + i * 8 + 0x1c),
+    rect_set_xywh((RECT *)rect,*(i32 *)((u8 *)&extra_button_labels + i * 8 + 0x1c),
                        button_y,button_width,pos);
     if (surf_wnd == 0) {
       parent_198 = 0;
@@ -9450,19 +9450,19 @@ void Dialog::render()
     create_controls();
   }
   if ((style_flags & 0x4000) == 0) {
-    rect_set_xywh((iptr)((i8 *)&rect.left),origin_x,origin_y,wnd_width,wnd_height);
+    rect_set_xywh(&rect,origin_x,origin_y,wnd_width,wnd_height);
     if (border_width != 0) {
       for (i = 0; i < (int)bevel_width; i++) {
         gfx_draw_bevel_rect(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_light_color,bevel_dark_color);
-        rect_deflate((iptr)((i8 *)&rect.left),1,1);
+        rect_deflate(&rect,1,1);
       }
       fill_rect_bg((RECT *)(iptr)((i8 *)&rect.left),1);
-      rect_deflate((iptr)((i8 *)&rect.left),border_width + bevel_width * -2,0);
+      rect_deflate(&rect,border_width + bevel_width * -2,0);
       rect.top = rect.top + title_height + bevel_width * -2;
       rect.bottom -= ((chrome_height - title_height) + bevel_width * -2);
       for (i = 0; i < (int)bevel_width; i++) {
         gfx_draw_bevel_rect(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),bevel_dark_color,bevel_light_color);
-        rect_deflate((iptr)((i8 *)&rect.left),1,1);
+        rect_deflate(&rect,1,1);
       }
     }
     fill_rect_bg((RECT *)(iptr)((i8 *)&rect.left),2);
@@ -9500,7 +9500,7 @@ void Dialog::render()
         on_draw_sprite((i32)sprite->sprite,surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
       }
       if (((style_flags & 0x20000) != 0) && ((i32 *)selected_sprite == ((i32 *)sprite))) {
-        rect_set((iptr)((i8 *)&rect.left),sprite_x2 - 1,sprite_y2 - 1,sprite_w + sprite_x2,
+        rect_set(&rect,sprite_x2 - 1,sprite_y2 - 1,sprite_w + sprite_x2,
                            sprite_h + sprite_y2);
         gfx_draw_rect_frame(surf_wnd,(RECT *)(iptr)((i8 *)&rect.left),frame_color);
       }
@@ -9963,10 +9963,10 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
           text_expand_vars_max((iptr)line,(iptr)expanded,sizeof expanded);  /* BF-059 */
           if (has_edit == 0) {
             if ((style_flags & 4) == 0) {
-              option = (DialogOption *)((uptr)add_option((const char *)expanded,option_index,0));
+              option = add_option((const char *)expanded,option_index,0);
             }
             else {
-              option = (DialogOption *)((uptr)add_checkbox_option((const char *)expanded,option_index,0));
+              option = add_checkbox_option((const char *)expanded,option_index,0);
             }
             if (default_value == option_index) {
               selected_option = option;
@@ -10101,7 +10101,7 @@ void SurfaceWindow::repaint()
 }
 
 /* 005bb5be auto */
-bool __thiscall surfwnd_resize_dib(DibSurface *self,iptr rect)
+bool __thiscall surfwnd_resize_dib(DibSurface *self,RECT *rect)
 
 {
   int result;
@@ -10110,8 +10110,8 @@ bool __thiscall surfwnd_resize_dib(DibSurface *self,iptr rect)
   
   result = surface_alloc_dib_by_bpp(self,rect);
   if (result == 1) {
-    height = rect_height((RECT *)rect);
-    width = rect_width((RECT *)rect);
+    height = rect_height(rect);
+    width = rect_width(rect);
     ((WndBase *)(self + 1))->set_client_size(width,height);
   }
   return result == 1;

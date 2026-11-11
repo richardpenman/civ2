@@ -2125,17 +2125,17 @@ void PediaWindow::draw_frame()
   crt_memcpy(&rect,pedia_frame_rect,0x10);
   for (i = 0; i < panel_layout.bevel_width; i++) {
     gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_light_color,(uint)dlg_style.bevel_dark_color);
-    rect_deflate((iptr)&rect,1,1);
+    rect_deflate(&rect,1,1);
   }
   fill_background(&rect,1);
-  rect_deflate((iptr)&rect,panel_layout.padding_x + panel_layout.bevel_width * -2,0);
+  rect_deflate(&rect,panel_layout.padding_x + panel_layout.bevel_width * -2,0);
   rect.top = rect.top + header_height + panel_layout.bevel_width * -2;
   tmp_a = rect_height((RECT *)pedia_frame_rect);
   tmp_b = ((GameFont *)((i8 *)&font_size24))->line_spacing();
   rect.bottom = tmp_a + ((panel_layout.margin_y * -3 + panel_layout.padding_y * -2) - tmp_b);
   for (i = 0; i < panel_layout.bevel_width; i++) {
     gfx_draw_bevel_rect((iptr)this,&rect,(uint)dlg_style.bevel_dark_color,(uint)dlg_style.bevel_light_color);
-    rect_deflate((iptr)&rect,1,1);
+    rect_deflate(&rect,1,1);
   }
   fill_background(&rect,2);
   tmp_a = panel_layout.padding_x;

@@ -181,7 +181,7 @@ int __cdecl memblock_alloc(MemBlock *block,uint size)
   ptr = 0;
   if ((uint)block->available < (size & 0xffff)) {
     error_report(0xfffffffd,(uint)block->block_id,0,size & 0xffff,
-                       (uint)block->available);
+                       block->available);
   }
   lock_err = memblock_ensure_locked(block);
   if (lock_err == 0) {
@@ -397,7 +397,7 @@ void __cdecl err_dump_text_file(const char *path)
 }
 
 /* 00589ef8 auto */
-void __cdecl error_report(uint error_code,int module_id,iptr context,iptr data1,iptr data2)
+void __cdecl error_report(uint error_code,int module_id,iptr context,i32 data1,i32 data2)
 
 {
   char data2_text[12];

@@ -518,7 +518,7 @@ void EditorWindow::tech_editor_create_combo(int slot)
   iptr advance;
   i8 rect[16];
   
-  rect_set_xywh((iptr)rect,tech_editor_combo_x_table_block.tech_editor_combo_pos[slot].x + client_x - 0x1e,
+  rect_set_xywh((RECT *)rect,tech_editor_combo_x_table_block.tech_editor_combo_pos[slot].x + client_x - 0x1e,
                      tech_editor_combo_x_table_block.tech_editor_combo_pos[slot].y + client_y,0xa0,
                      font_height_uptr << 3);
   ctrl_id = editor_lists.next_ctrl_id;
@@ -584,7 +584,7 @@ void EditorWindow::tech_editor_create_edit(int slot)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((iptr)rect,(((i32 *)&tech_editor_edit_x_table_block.tech_editor_edit_x_table))[slot * 2] + client_x,
+  rect_set_xywh((RECT *)rect,(((i32 *)&tech_editor_edit_x_table_block.tech_editor_edit_x_table))[slot * 2] + client_x,
                      (((i32 *)&tech_editor_edit_x_table_block.tech_editor_edit_y_table))[slot * 2] + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -752,7 +752,7 @@ void EditorWindow::tech_editor_dialog_run()
       tech_editor_create_combo(tech_editor_ctrl_kinds_block.tech_editor_ctrl_rows[row].slot);
     }
   }
-  rect_set_xywh((iptr)rect,client_x + 0x32,client_y + 0xe7,0x1cb,0x6e);
+  rect_set_xywh((RECT *)rect,client_x + 0x32,client_y + 0xe7,0x1cb,0x6e);
   pos = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {
@@ -769,7 +769,7 @@ void EditorWindow::tech_editor_dialog_run()
   button_width_u = (int)(pos + (pos >> 0x1f & 3U)) >> 2;
   btn_y = (client_y + client_height) - (button_height_u + 2);
   pos = client_x + 2;
-  rect_set_xywh((iptr)rect,pos,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,pos,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     ok_parent = (u8 *)0x0;
   }
@@ -780,7 +780,7 @@ void EditorWindow::tech_editor_dialog_run()
   ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)tech_editor_on_ok);
   pos = pos + button_width_u + 2;
-  rect_set_xywh((iptr)rect,pos,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,pos,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     rename_parent = (u8 *)0x0;
   }
@@ -791,7 +791,7 @@ void EditorWindow::tech_editor_dialog_run()
   rename_button.create((iptr)rename_parent,0x65,(iptr)rect,(const char *)label);
   rename_button.set_callback((CtrlNotifyFn)tech_editor_on_rename);
   pos = pos + button_width_u + 2;
-  rect_set_xywh((iptr)rect,pos,btn_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,pos,btn_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     help_parent = (u8 *)0x0;
   }
@@ -801,7 +801,7 @@ void EditorWindow::tech_editor_dialog_run()
   label = (iptr)label_string(label_table.string_ids[0x23b]);
   help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)tech_editor_on_help);
-  rect_set_xywh((iptr)rect,pos + button_width_u + 2,btn_y,button_width_u,
+  rect_set_xywh((RECT *)rect,pos + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     cancel_parent = (u8 *)0x0;
@@ -816,7 +816,7 @@ void EditorWindow::tech_editor_dialog_run()
   button_width_u = 0x55;
   pos = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = pos + 8;
-  rect_set_xywh((iptr)rect,client_x + 0x19,client_y + 0x50,button_width_u,
+  rect_set_xywh((RECT *)rect,client_x + 0x19,client_y + 0x50,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     icon_parent = (u8 *)0x0;
@@ -1845,7 +1845,7 @@ void __cdecl science_advisor_draw(void)
                        (int)civs[civ].research_progress,max_value,bar_height,value,bar_flag);
     box_bottom = cur_y + 0x20;
     cur_y = box_bottom;
-    rect_set((iptr)frame_rect2,advisor_state.client_rect + 2,box_top,advisor_state.client_right - 2,box_bottom);
+    rect_set((RECT *)frame_rect2,advisor_state.client_rect + 2,box_top,advisor_state.client_right - 2,box_bottom);
     gfx_draw_rect_frame((iptr)&advisor_state.window,(RECT *)frame_rect2,0x29);
     cur_y += 6;
   }
@@ -1926,7 +1926,7 @@ void __cdecl science_advisor_draw(void)
     item_index = value;
   }
   if (advisor_state.controls_created == 0) {
-    rect_set((iptr)frame_rect2,list_left,list_bottom,list_right,list_bottom + scrollbar_height);
+    rect_set((RECT *)frame_rect2,list_left,list_bottom,list_right,list_bottom + scrollbar_height);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(iptr)frame_rect2,0);
     max_value = int_clamp((rows_per_page - 1 + known_count) / rows_per_page - 1,0,999);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_range(0,max_value);
@@ -2001,17 +2001,17 @@ void __cdecl science_advisor_show(int civ)
   
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(6,6,0,600,400,0,0);
   advisor_state.report_civ = civ;
-  rect_set_xywh((iptr)button_rect,2,0,0x129,0x18);
+  rect_set_xywh((RECT *)button_rect,2,0,0x129,0x18);
   client_y = advisor_state.client_y;
   rect_h = rect_height((RECT *)button_rect);
-  rect_offset((iptr)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
-  rect_offset((iptr)button_rect,299,0);
+  rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
+  rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
   ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
-  rect_offset((iptr)button_rect,0xfffffed5,0);
+  rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0x173]);
   ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(iptr)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)science_advisor_on_goal_clicked);
@@ -4871,7 +4871,7 @@ int __cdecl civ_check_destroyed(int civ,int civ2)
         }
         else if ((2 < game.multiplayer) && ((*(i8 *)&human_civ) != civ)) {
           net_send_message(NM_END_SEQUENCE,net.net_slots[net.net_civ_slots[civ]].id,
-                             (uint)game.game_flags,4,0,0,0,0,0,0);
+                             game.game_flags,4,0,0,0,0,0,0);
         }
         passwords_unscramble();
         (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[civ * 0x20] = 0;
@@ -5119,7 +5119,7 @@ void __cdecl civ_leonardo_upgrade(int civ)
             map_redraw_tile_all_views((int)units[unit].x,(int)units[unit].y);
             if (2 < game.multiplayer) {
               net_send_state_diff(0xff,2,0,0,0);
-              net_send_message(NM_DRAW_SQUARE,0xff,(int)units[unit].x,(int)units[unit].y,0,0,0,0,0,0
+              net_send_message(NM_DRAW_SQUARE,0xff,units[unit].x,units[unit].y,0,0,0,0,0,0
                                 );
             }
           }
@@ -6880,8 +6880,8 @@ void __cdecl civ_set_government(int civ,int new_gov)
 /* 0055c277 auto */
 i32 __cdecl
 civ_can_choose_government(int civ,int government,i32 unused_3,i32 unused_4,i32 unused_5,
-            iptr unused_6,iptr unused_7,i32 unused_8,iptr unused_9,iptr unused_10,iptr unused_11,
-            i32 unused_12,iptr unused_13,i32 unused_14,i32 unused_15,
+            int unused_6,int unused_7,i32 unused_8,int unused_9,int unused_10,int unused_11,
+            i32 unused_12,int unused_13,i32 unused_14,i32 unused_15,
             i32 unused_16,i32 unused_17,i32 unused_18,i32 unused_19,
             i32 unused_20,i32 unused_21)
 
@@ -7479,7 +7479,7 @@ i32 __cdecl civ_civil_war(int civ)
           for (advance = 0; advance < map.area; advance++) {
             map_tile = tile_at(x2,y2);
             if ((civ_bit & map_tile->visible) != 0) {
-              tile_set_visible(x2,y2,(uint)rebel_bit,1,1);
+              tile_set_visible(x2,y2,rebel_bit,1,1);
             }
             x2 += 2;
             if ((int)map.width <= (int)x2) {
@@ -7920,7 +7920,7 @@ void EditorWindow::cosmic_editor_dialog()
   style = 0xd;
   title = (iptr)label_string(label_table.string_ids[0x253]);
   this->FrameWindow::create((const char *)title,style,pos_x,pos_y,width,height,reserved_1,reserved_2,reserved_3);
-  rect_set_xywh((iptr)rect,client_x + 2,client_y + 2,client_width - 5,
+  rect_set_xywh((RECT *)rect,client_x + 2,client_y + 2,client_width - 5,
                      client_height - 0x14);
   x_pos = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -7942,7 +7942,7 @@ void EditorWindow::cosmic_editor_dialog()
   button_width_u = (int)(x_pos + (x_pos >> 0x1f & 3U)) >> 2;
   y_pos = (client_y + client_height) - (button_height_u + 2);
   x_pos = client_x + 2;
-  rect_set_xywh((iptr)rect,x_pos,y_pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,x_pos,y_pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     ok_parent = (u8 *)0x0;
   }
@@ -7953,7 +7953,7 @@ void EditorWindow::cosmic_editor_dialog()
   ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)cosmic_editor_ok_clicked);
   x_pos = x_pos + button_width_u + 2;
-  rect_set_xywh((iptr)rect,x_pos,y_pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,x_pos,y_pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     edit_parent = (u8 *)0x0;
   }
@@ -7965,7 +7965,7 @@ void EditorWindow::cosmic_editor_dialog()
   rename_button.set_callback((CtrlNotifyFn)cosmic_editor_edit_value);
   rename_button.set_default_button();
   x_pos = x_pos + button_width_u + 2;
-  rect_set_xywh((iptr)rect,x_pos,y_pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,x_pos,y_pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     help_parent = (u8 *)0x0;
   }
@@ -7975,7 +7975,7 @@ void EditorWindow::cosmic_editor_dialog()
   label = (iptr)label_string(label_table.string_ids[0x23b]);
   help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)cosmic_editor_help_clicked);
-  rect_set_xywh((iptr)rect,x_pos + button_width_u + 2,y_pos,button_width_u,
+  rect_set_xywh((RECT *)rect,x_pos + button_width_u + 2,y_pos,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     cancel_parent = (u8 *)0x0;

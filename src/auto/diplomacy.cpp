@@ -515,7 +515,7 @@ void __cdecl diplo_greet_emissary(int civ2,int civ)
   ON_SCOPE_EXIT(dlg.Dialog::destruct());
   diplo_meeting.session_active = 1;
   if (((*((char *)&game.game_options + 2)) & (OPT_DIPLOMACY_SCREEN >> 16)) != 0) {
-    gfx_get_screen_rect((iptr)((i8 *)&screen_rect2.left));
+    gfx_get_screen_rect(&screen_rect2);
     offset_x = int_clamp((screen_rect2.right - 0x280) / 3,1,9999);
     offset_y = int_clamp((screen_rect2.bottom - 0x1e0) / 3,1,9999);
     dialog_set_default_offset(-offset_x,-offset_y);
@@ -4458,7 +4458,7 @@ DiploLeaderWindow *DiploLeaderWindow::construct()
   ((GamePalette *)leader_palette)->init();
   ((DllHandle *)leader_dll)->init();
   ((AviPlayer *)leader_video_wnd)->construct();
-  gfx_get_screen_rect((iptr)&control_list);
+  gfx_get_screen_rect((RECT *)&control_list);
   pending_flag_1088 = '\0';
   return this;
 }

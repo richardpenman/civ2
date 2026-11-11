@@ -188,7 +188,7 @@ void Checkbox::create(iptr parent,i32 ctrl_id,i32 x,i32 y ,const char *label)
   i8 rect[16];
   
   font = (u32)(*(i8 * *)(draw_target.font_rest + 8));
-  checkbox_calc_rect((char *)label,x,y,(iptr)rect,(GameFont *)font);
+  checkbox_calc_rect((char *)label,x,y,(RECT *)rect,(GameFont *)font);
   if (hwnd != 0) {
     destroy();
   }
@@ -934,10 +934,10 @@ spritebtn_create_icon_button(iptr parent,i32 ctrl_id,SpriteButton *button,iptr s
   inner_rect.top = rect2.top;
   inner_rect.right = rect2.right;
   inner_rect.bottom = rect2.bottom;
-  rect_deflate((iptr)&inner_rect,1,1);
+  rect_deflate(&inner_rect,1,1);
   gfx_draw_bevel_rect((iptr)&button->on_select,&inner_rect,0x1f,0xf);
   gfx_draw_bevel_rect((iptr)(button->button_surface),&inner_rect,0xf,10);
-  rect_deflate((iptr)&inner_rect,1,1);
+  rect_deflate(&inner_rect,1,1);
   gfx_draw_bevel_rect((iptr)&button->on_select,&inner_rect,0x1f,0xf);
   gfx_draw_bevel_rect((iptr)(button->button_surface),&inner_rect,0xf,10);
   parent_wnd = (WndBase *)button->get_parent();
@@ -1028,7 +1028,7 @@ void Checkbox::create_fixed(iptr parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const
   i8 rect[16];
   
   font = (u32)(*(i8 * *)(draw_target.font_rest + 8));
-  checkbox_calc_rect_fixed(x,y,width,(iptr)rect,(GameFont *)font);
+  checkbox_calc_rect_fixed(x,y,width,(RECT *)rect,(GameFont *)font);
   if (this->hwnd != 0) {
     destroy();
   }
@@ -2089,7 +2089,7 @@ void SpriteButton::fire_rclick(i32 ctrl_id)
 }
 
 /* 005cbf40 auto */
-void __cdecl checkbox_calc_rect(char *label,int x,int y,iptr out_rect,GameFont *font)
+void __cdecl checkbox_calc_rect(char *label,int x,int y,RECT *out_rect,GameFont *font)
 
 {
   HDC hdc;
@@ -2124,12 +2124,12 @@ void __cdecl checkbox_calc_rect(char *label,int x,int y,iptr out_rect,GameFont *
   if (metrics.tmHeight < 0x14) {
     height2 = 0x14;
   }
-  SetRect((LPRECT)out_rect,x,y,width2 + x,height2 + y);
+  SetRect(out_rect,x,y,width2 + x,height2 + y);
   return;
 }
 
 /* 005cc035 auto */
-void __cdecl checkbox_calc_rect_fixed(int x,int y,int width,iptr out_rect,GameFont *font)
+void __cdecl checkbox_calc_rect_fixed(int x,int y,int width,RECT *out_rect,GameFont *font)
 
 {
   HDC hdc;
@@ -2153,7 +2153,7 @@ void __cdecl checkbox_calc_rect_fixed(int x,int y,int width,iptr out_rect,GameFo
   if (metrics.tmHeight < 0x14) {
     height2 = 0x14;
   }
-  SetRect((LPRECT)out_rect,x,y,width + x,height2 + y);
+  SetRect(out_rect,x,y,width + x,height2 + y);
   return;
 }
 

@@ -166,7 +166,7 @@ SpaceshipWindow *SpaceshipWindow::construct(u32 civ)
   ((ClickMap *)hotspot_map)->construct();
   ship_civ = civ;
   anim_timer = 0;
-  gfx_get_screen_rect((iptr)&frame_left);
+  gfx_get_screen_rect((RECT *)&frame_left);
   type_index = 0;
   spaceship_launch_sprite_xs_block.spaceship_wnd = this;
   ((GameFont *)large_font)->set_styled(0,0x18,1);
@@ -467,7 +467,7 @@ void SpaceshipWindow::present()
         draw_close_btn(1,0);
         draw_launch_btn(0,1);
         SetRect(&screen_rect2,0,0,0x280,0x1e0);
-        gfx_dissolve_blit((iptr)&control_list,(iptr)&screen_rect2,5,1);
+        gfx_dissolve_blit((iptr)&control_list,&screen_rect2,5,1);
         draw_close_btn(1,1);
         value = game_timer_create((TimerFn)spaceship_wnd_type_tick,10,0xffffffff);
         anim_timer = value;
@@ -682,11 +682,11 @@ uint SpaceshipWindow::type_char(int allow_skip)
       }
       if (launch_state != 3) {
         SetRect((LPRECT)(status_line_rect),0,0x1c1,0x27f,0x1df);
-        rect_offset((iptr)(status_line_rect),1,1);
+        rect_offset(((RECT *)status_line_rect),1,1);
         gfx_set_text_color_index(10);
         ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(medium_font),
                    (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
-        rect_offset((iptr)(status_line_rect),0xffffffff,0xffffffff);
+        rect_offset(((RECT *)status_line_rect),0xffffffff,0xffffffff);
         if (spaceship_stats.success_pct < 0x28) {
           gfx_set_text_color_index(0xf9);
         }
@@ -782,11 +782,11 @@ void SpaceshipWindow::init_starfield()
     str_copy_max((char *)success_text,text,sizeof success_text);
   }
   SetRect((LPRECT)(status_line_rect),0,0x1c1,0x27f,0x1df);
-  rect_offset((iptr)(status_line_rect),1,1);
+  rect_offset(((RECT *)status_line_rect),1,1);
   gfx_set_text_color_index(10);
   ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(medium_font),
              (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
-  rect_offset((iptr)(status_line_rect),0xffffffff,0xffffffff);
+  rect_offset(((RECT *)status_line_rect),0xffffffff,0xffffffff);
   gfx_set_text_color_index(0xfa);
   ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(medium_font),
              (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
@@ -1398,7 +1398,7 @@ int __cdecl spaceship_group_max(int group)
 }
 
 /* 00596d3c auto */
-int __cdecl spaceship_group_count(int civ,iptr group)
+int __cdecl spaceship_group_count(int civ,int group)
 
 {
   int count;
@@ -1781,7 +1781,7 @@ void __cdecl spaceship_status_dialog(int civ,int allow_launch)
 }
 
 /* 00597d6f auto */
-iptr __cdecl spaceship_choose_part_group(int civ,iptr group)
+iptr __cdecl spaceship_choose_part_group(int civ,int group)
 
 {
   short earliest_arrival;
@@ -1872,7 +1872,7 @@ iptr __cdecl spaceship_choose_part_group(int civ,iptr group)
 }
 
 /* 00598197 auto */
-int __cdecl spaceship_add_part(int civ,iptr group)
+int __cdecl spaceship_add_part(int civ,int group)
 
 {
   short *part_ptr;
@@ -2029,7 +2029,7 @@ int __cdecl spaceship_add_part(int civ,iptr group)
 }
 
 /* 00598b4e auto */
-void __cdecl spaceship_select_view_dialog(iptr unused)
+void __cdecl spaceship_select_view_dialog(int unused)
 
 {
   bool any_ship;
@@ -2093,7 +2093,7 @@ i32 __cdecl spaceship_race_active(void)
 }
 
 /* 005998b0 auto */
-uint __cdecl spaceship_group_full(int civ,iptr group)
+uint __cdecl spaceship_group_full(int civ,int group)
 
 {
   int max_count;
@@ -2105,7 +2105,7 @@ uint __cdecl spaceship_group_full(int civ,iptr group)
 }
 
 /* 00599910 auto */
-i32 __cdecl spaceship_group_can_build(int civ,iptr group)
+i32 __cdecl spaceship_group_can_build(int civ,int group)
 
 {
   int result;
@@ -2120,7 +2120,7 @@ i32 __cdecl spaceship_group_can_build(int civ,iptr group)
 }
 
 /* 005999c0 auto */
-uint __cdecl spaceship_group_at_limit(int civ,iptr group)
+uint __cdecl spaceship_group_at_limit(int civ,int group)
 
 {
   int count;

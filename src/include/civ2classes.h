@@ -695,7 +695,7 @@ typedef struct DibSurface {
     void wnd_create(iptr parent,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette);    /* 005bb3f0 */
     void wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette,iptr parent);    /* 005bb4ae */
     void create(int width,int height);    /* 005bd65c */
-    i32 alloc_dib8(iptr rect);    /* 005bd696 */
+    i32 alloc_dib8(RECT *rect);    /* 005bd696 */
     void set_dims(int *rect);    /* 005bd813 */
     i32 load_gif_file(const char *filename,uint first_color,uint color_count,iptr palette);    /* 005bf071 */
     i32 load_gif_resource(iptr res_id,uint first_color,uint color_count,iptr palette);    /* 005bf5e1 */
@@ -722,9 +722,9 @@ typedef struct DibSurface {
     int pixel_ptr(int x,int y);    /* 005c19d3 */
     i8 in_clip(int x,int y);    /* 005c1a00 */
     void remap_colors(iptr remap_table,iptr base_index,i32 unused);    /* 005c1a62 */
-    i32 alloc_dib16(iptr rect);    /* 005c1b47 */
-    i32 alloc_dib24(iptr rect);    /* 005c1cf7 */
-    i32 alloc_dib32(iptr rect);    /* 005c1ea7 */
+    i32 alloc_dib16(RECT *rect);    /* 005c1b47 */
+    i32 alloc_dib24(RECT *rect);    /* 005c1cf7 */
+    i32 alloc_dib32(RECT *rect);    /* 005c1ea7 */
     bool is_locked();    /* 005c54f0 */
     u32 get_pitch();    /* 005c55d0 */
     GdiDib *get_dib();    /* 005c55f0 */

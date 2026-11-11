@@ -858,13 +858,13 @@ void EditorWindow::tribe_editor_create_combo(int slot)
   ctrl_x = tribe_editor_combo_x_table_block.tribe_editor_combo_pos[slot].x + client_x;
   ctrl_y = tribe_editor_combo_x_table_block.tribe_editor_combo_pos[slot].y + client_y;
   if (slot == 0) {
-    rect_set_xywh((iptr)rect,ctrl_x - 0x32,ctrl_y,200,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,ctrl_x - 0x32,ctrl_y,200,font_height_uptr << 3);
   }
   else if (slot < 2) {
-    rect_set_xywh((iptr)rect,ctrl_x - 0xf,ctrl_y,0x82,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,ctrl_x - 0xf,ctrl_y,0x82,font_height_uptr << 3);
   }
   else {
-    rect_set_xywh((iptr)rect,ctrl_x,ctrl_y,100,font_height_uptr << 3);
+    rect_set_xywh((RECT *)rect,ctrl_x,ctrl_y,100,font_height_uptr << 3);
   }
   ctrl_x = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -930,7 +930,7 @@ void EditorWindow::tribe_editor_create_edit(int slot)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((iptr)rect,(((i32 *)&tribe_editor_combo_x_table_block.tribe_editor_edit_x_table))[slot * 2] + client_x,
+  rect_set_xywh((RECT *)rect,(((i32 *)&tribe_editor_combo_x_table_block.tribe_editor_edit_x_table))[slot * 2] + client_x,
                      (((i32 *)&tribe_editor_combo_x_table_block.tribe_editor_edit_y_table))[slot * 2] + client_y,100,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
@@ -1105,7 +1105,7 @@ void EditorWindow::tribe_editor_main()
   button_height_u = pos + 8;
   pos = client_y + (int)(button_height_u * 3) / 2 + 0x101;
   height = client_x;
-  rect_set_xywh((iptr)rect,height + 0x69,pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,height + 0x69,pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd1 = (u8 *)0x0;
   }
@@ -1115,7 +1115,7 @@ void EditorWindow::tribe_editor_main()
   label = (iptr)(label_string(label_table.string_ids[0x250]));
   add_trigger_button.create((iptr)parent_wnd1,0x65,(iptr)rect,(const char *)label);
   add_trigger_button.set_callback((CtrlNotifyFn)tribe_editor_rename_commodity);
-  rect_set_xywh((iptr)rect,height + 0xe1,pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,height + 0xe1,pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd2 = (u8 *)0x0;
   }
@@ -1125,7 +1125,7 @@ void EditorWindow::tribe_editor_main()
   label = (iptr)(label_string(label_table.string_ids[0x251]));
   edit_trigger_button.create((iptr)parent_wnd2,0x65,(iptr)rect,(const char *)label);
   edit_trigger_button.set_callback((CtrlNotifyFn)tribe_editor_rename_govt);
-  rect_set_xywh((iptr)rect,height + 0x159,pos,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,height + 0x159,pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd3 = (u8 *)0x0;
   }
@@ -1140,7 +1140,7 @@ void EditorWindow::tribe_editor_main()
   button_width_u = (int)(client_width - 8) / 3;
   button_y = (client_y + client_height) - (button_height_u + 2);
   pos = client_x + 2;
-  rect_set_xywh((iptr)rect,pos,button_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,pos,button_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd4 = (u8 *)0x0;
   }
@@ -1151,7 +1151,7 @@ void EditorWindow::tribe_editor_main()
   ok_button.create((iptr)parent_wnd4,0x65,(iptr)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)tribe_editor_on_ok);
   pos = pos + button_width_u + 2;
-  rect_set_xywh((iptr)rect,pos,button_y,button_width_u,button_height_u);
+  rect_set_xywh((RECT *)rect,pos,button_y,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd5 = (u8 *)0x0;
   }
@@ -1161,7 +1161,7 @@ void EditorWindow::tribe_editor_main()
   label = (iptr)(label_string(label_table.string_ids[0x23b]));
   help_button.create((iptr)parent_wnd5,0x66,(iptr)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)tribe_editor_on_help);
-  rect_set_xywh((iptr)rect,pos + button_width_u + 2,button_y,button_width_u,
+  rect_set_xywh((RECT *)rect,pos + button_width_u + 2,button_y,button_width_u,
                      button_height_u);
   if (this == (EditorWindow *)0x0) {
     parent_wnd6 = (u8 *)0x0;
@@ -1662,7 +1662,7 @@ i32 __cdecl editor_text_edit_dialog(i32 *lines,const char *title)
   button_height = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height += 8;
   button_width2 = (editor_text_dlg.client_width - 6) / 2;
-  rect_set_xywh((iptr)rect,editor_text_dlg.client_x + 4,editor_text_dlg.client_y + 4,editor_text_dlg.client_width - 9,
+  rect_set_xywh((RECT *)rect,editor_text_dlg.client_x + 4,editor_text_dlg.client_y + 4,editor_text_dlg.client_width - 9,
                      (editor_text_dlg.client_height - button_height) - 9);
   ((EditControl *)((i8 *)&editor_text_edit_block.editor_text_edit))->create_styled((iptr)&editor_text_dlg.inner,0xc9,(iptr)rect,0,2,1);
   for (line_idx = 0; (line_idx < 0x14 && (lines[line_idx] != 0));
@@ -1674,12 +1674,12 @@ i32 __cdecl editor_text_edit_dialog(i32 *lines,const char *title)
   }
   button_y = (editor_text_dlg.client_y + editor_text_dlg.client_height) - (button_height + 2);
   button_x = editor_text_dlg.client_x + 2;
-  rect_set_xywh((iptr)rect,button_x,button_y,button_width2,button_height);
+  rect_set_xywh((RECT *)rect,button_x,button_y,button_width2,button_height);
   label = (iptr)(label_string(label_table.string_ids[0xfe]));
   ok_btn.create((iptr)&editor_text_dlg.inner,0x65,(iptr)rect,(const char *)label);
   ok_btn.set_callback((CtrlNotifyFn)editor_text_dlg_on_ok);
   button_x = button_x + button_width2 + 2;
-  rect_set_xywh((iptr)rect,button_x,button_y,button_width2,button_height);
+  rect_set_xywh((RECT *)rect,button_x,button_y,button_width2,button_height);
   label = (iptr)(label_string(label_table.string_ids[0xff]));
   cancel_btn.create((iptr)&editor_text_dlg.inner,0x66,(iptr)rect,(const char *)label);
   cancel_btn.set_callback((CtrlNotifyFn)editor_text_dlg_on_cancel);

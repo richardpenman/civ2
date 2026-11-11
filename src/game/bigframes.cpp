@@ -1306,29 +1306,29 @@ void SpaceshipWindow::render_ship_init_rows(ShipPartRow *part_rows)
 void SpaceshipWindow::render_ship_free_surfaces(ShipSurfaces &sf,int &unwind_state)
 {
   (*((char *)&unwind_state + 0)) = 10;
-  /* inlined unwind funclet 004d49d5 */ { surface_dtor((DibSurface *)(sf.surf_1d7)); }
+  /* inlined unwind funclet 004d49d5 */ { surface_dtor((DibSurface *)sf.surf_1d7); }
   (*((char *)&unwind_state + 0)) = 9;
-  /* inlined unwind funclet 004d49e1 */ { surface_dtor((DibSurface *)(sf.surf_1e9)); }
+  /* inlined unwind funclet 004d49e1 */ { surface_dtor((DibSurface *)sf.surf_1e9); }
   (*((char *)&unwind_state + 0)) = 8;
-  /* inlined unwind funclet 004d49ed */ { surface_dtor((DibSurface *)(sf.surf_1c8)); }
+  /* inlined unwind funclet 004d49ed */ { surface_dtor((DibSurface *)sf.surf_1c8); }
   (*((char *)&unwind_state + 0)) = 7;
-  /* inlined unwind funclet 004d49f9 */ { surface_dtor((DibSurface *)(sf.surf_1e1)); }
+  /* inlined unwind funclet 004d49f9 */ { surface_dtor((DibSurface *)sf.surf_1e1); }
   (*((char *)&unwind_state + 0)) = 6;
-  /* inlined unwind funclet 004d4a05 */ { surface_dtor((DibSurface *)(sf.surf_1ba)); }
+  /* inlined unwind funclet 004d4a05 */ { surface_dtor((DibSurface *)sf.surf_1ba); }
   (*((char *)&unwind_state + 0)) = 5;
-  /* inlined unwind funclet 004d4a11 */ { surface_dtor((DibSurface *)(sf.surf_1eb)); }
+  /* inlined unwind funclet 004d4a11 */ { surface_dtor((DibSurface *)sf.surf_1eb); }
   (*((char *)&unwind_state + 0)) = 4;
-  /* inlined unwind funclet 004d4a1d */ { surface_dtor((DibSurface *)(sf.surf_1d6)); }
+  /* inlined unwind funclet 004d4a1d */ { surface_dtor((DibSurface *)sf.surf_1d6); }
   (*((char *)&unwind_state + 0)) = 3;
-  /* inlined unwind funclet 004d4a29 */ { surface_dtor((DibSurface *)(sf.surf_1ea)); }
+  /* inlined unwind funclet 004d4a29 */ { surface_dtor((DibSurface *)sf.surf_1ea); }
   (*((char *)&unwind_state + 0)) = 2;
-  /* inlined unwind funclet 004d4a35 */ { surface_dtor((DibSurface *)(sf.surf_1c7)); }
+  /* inlined unwind funclet 004d4a35 */ { surface_dtor((DibSurface *)sf.surf_1c7); }
   (*((char *)&unwind_state + 0)) = 1;
-  /* inlined unwind funclet 004d4a3e */ { surface_dtor((DibSurface *)(sf.surf_1e0)); }
+  /* inlined unwind funclet 004d4a3e */ { surface_dtor((DibSurface *)sf.surf_1e0); }
   unwind_state = unwind_state & 0xffffff00;
-  /* inlined unwind funclet 004d4a4a */ { surface_dtor((DibSurface *)(sf.surf_1b9)); }
+  /* inlined unwind funclet 004d4a4a */ { surface_dtor((DibSurface *)sf.surf_1b9); }
   unwind_state = 0xffffffff;
-  /* inlined unwind funclet 004d4a56 */ { surface_dtor((DibSurface *)(sf.surf_part)); }
+  /* inlined unwind funclet 004d4a56 */ { surface_dtor((DibSurface *)sf.surf_part); }
 }
 
 /* Part of SpaceshipWindow::render_ship (004d17bf): loads the part GIFs; 0 when

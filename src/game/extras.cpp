@@ -969,7 +969,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
             ((Sprite *)(kind[j] == 1 ? small_unhappy_icon_sprite : unhappy_suppressed_icon_sprite))
                 ->draw((iptr)r, (iptr)w, ix, y + icon_offset_y);
         gfx_reset_zoom_scale();
-        rect_set_xywh((iptr)hot, x, y, unit_size, unit_size);
+        rect_set_xywh((RECT *)hot, x, y, unit_size, unit_size);
         w->clickmap.hotspot_add_rect(u, 6, (RECT *)hot);
     }
     /* the scroll bar (X11) */
@@ -981,7 +981,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
             support_bar->construct();
         }
         if (!support_bar->hwnd) {
-            rect_set_xywh((iptr)rect, left + area_w - sw - 1, top + label_h + 1, sw, area_h - label_h - 2);
+            rect_set_xywh((RECT *)rect, left + area_w - sw - 1, top + label_h + 1, sw, area_h - label_h - 2);
             support_bar->create((iptr)&city_wnd.wnd, 98, (iptr)rect, 1);
             support_bar->set_callback(support_on_scroll);
         }
@@ -1166,7 +1166,7 @@ void extras_city_status_draw(void)
         gfx_draw_text((const char *)&textbuf.buf, x, ty);
     }
     if (advisor_state.controls_created == 0) {
-        rect_set((iptr)scroll_rect, (advisor_state.client_right - advisor_state.vscroll_width) - 2, status_list_top,
+        rect_set((RECT *)scroll_rect, (advisor_state.client_right - advisor_state.vscroll_width) - 2, status_list_top,
                  advisor_state.client_right - 2, list_bottom);
         advisor_state.scrollbar.create((iptr)&advisor_state.wnd, 200, (iptr)scroll_rect, 1);
         advisor_state.scrollbar.set_range(0, max_row);
