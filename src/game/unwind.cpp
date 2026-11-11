@@ -36,7 +36,7 @@ void SurfaceWindow::destruct()
     Wnd *member;
 
     *(i8 ***)this = (i8 **)((pointer *)(ptr_fun_rest + 8));
-    *(i32 *)((iptr)this + 0x110) = 0;
+    *(i32 *)&on_paint = 0;
     /* funclet 0044cc01 */
     member = (this != NULL) ? &window : NULL;
     member->destruct();
@@ -205,13 +205,13 @@ void SpaceshipWindow::make_button_sprites()
         SetRect(&rect, 0, 0, 0x34, 0x24);
         OffsetRect(&rect, 1, 1);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0x978))->grab_from_surface( (i32)surface, 9, 1, 1, 0x34, 0x24);
+        close_btn_disabled_sprite.grab_from_surface( (i32)surface, 9, 1, 1, 0x34, 0x24);
         OffsetRect(&rect, 0x35, 0);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0x9f0))->grab_from_surface( (i32)surface, 9, 0x36, 1, 0x34, 0x24);
+        close_btn_pressed_sprite.grab_from_surface( (i32)surface, 9, 0x36, 1, 0x34, 0x24);
         OffsetRect(&rect, 0x35, 0);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0x9b4))->grab_from_surface( (i32)surface, 9, 0x6b, 1, 0x34, 0x24);
+        close_btn_normal_sprite.grab_from_surface( (i32)surface, 9, 0x6b, 1, 0x34, 0x24);
         gfx_set_text_color_index(0xc6);
         text_clear();
         if (game_language == 0) {
@@ -227,13 +227,13 @@ void SpaceshipWindow::make_button_sprites()
         SetRect(&rect, 0, 0, 0x43, 0x24);
         OffsetRect(&rect, 1, 0x26);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0xa2c))->grab_from_surface( (i32)surface, 9, 1, 0x26, 0x43, 0x24);
+        launch_btn_disabled_sprite.grab_from_surface( (i32)surface, 9, 1, 0x26, 0x43, 0x24);
         OffsetRect(&rect, 0x44, 0);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0xaa4))->grab_from_surface( (i32)surface, 9, 0x45, 0x26, 0x43, 0x24);
+        launch_btn_pressed_sprite.grab_from_surface( (i32)surface, 9, 0x45, 0x26, 0x43, 0x24);
         OffsetRect(&rect, 0x44, 0);
         ((DibSurface *)surface)->draw_text_in_rect( (iptr)this + 0x8d4, (const char *)((i8 *)&textbuf.buf), &rect, 0);
-        ((Sprite *)((iptr)this + 0xa68))->grab_from_surface( (i32)surface, 9, 0x89, 0x26, 0x43, 0x24);
+        launch_btn_normal_sprite.grab_from_surface( (i32)surface, 9, 0x89, 0x26, 0x43, 0x24);
     }
     /* funclet 004d56ea: lea ecx,[ebp-0x64] */
     surface_dtor((DibSurface *)surface);

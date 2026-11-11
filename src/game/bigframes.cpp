@@ -1407,13 +1407,13 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       part_count = row->count;
       load_ok = spaceship_part_count(ship_civ,1);
       if (load_ok < (int)(uint)part_count) {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1ba,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1ba,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
       else {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1b9,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1b9,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
@@ -1423,13 +1423,13 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       part_count = row->count;
       load_ok = spaceship_part_count(ship_civ,4);
       if (load_ok < (int)(uint)part_count) {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1e1,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1e1,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
       else {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1e0,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1e0,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
@@ -1439,13 +1439,13 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       part_count = row->count;
       load_ok = spaceship_part_count(ship_civ,2);
       if (load_ok < (int)(uint)part_count) {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1c8,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1c8,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
       else {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1c7,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1c7,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
@@ -1455,13 +1455,13 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       part_count = row->count;
       load_ok = spaceship_part_count(ship_civ,5);
       if (load_ok < (int)(uint)part_count) {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1e9,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1e9,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
       else {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1ea,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1ea,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
@@ -1471,25 +1471,25 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       part_count = row->count;
       load_ok = spaceship_part_count(ship_civ,3);
       if (load_ok < (int)(uint)part_count) {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1d7,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1d7,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
       else {
-        ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1d6,9,
+        ship_image_sprite.grab_from_surface((iptr)sf.surf_1d6,9,
                      row->v[5],1,
                      row->v[3],
                      row->v[4]);
       }
     }
     else {
-      ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1eb,9,
+      ship_image_sprite.grab_from_surface((iptr)sf.surf_1eb,9,
                    row->v[5],1,
                    row->v[3],
                    row->v[4]);
     }
-    ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite,(DibSurface *)((iptr)this + 0x8f4),
+    ship_image_sprite.draw((RECT *)sprite,&ship_view_surface,
                  row->v[1] + -0xaf,
                  row->v[2] + -99);
   }
@@ -1548,10 +1548,10 @@ i32 SpaceshipWindow::render_ship()
     return 0;
   }
   win_flush_pending_msgs();
-  ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_part,9,
+  ship_image_sprite.grab_from_surface((iptr)sf.surf_part,9,
                part_rows[struct_row].v[1],part_rows[struct_row].v[2],
                part_rows[struct_row].v[3],part_rows[struct_row].v[4]);
-  ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite_struct,(DibSurface *)((iptr)this + 0x8f4),
+  ship_image_sprite.draw((RECT *)sprite_struct,&ship_view_surface,
                part_rows[struct_row].v[1] + -0xaf,
                part_rows[struct_row].v[2] + -99);
   for (row_i = 0x1f; row_i < 0x58; row_i = row_i + 1) {
@@ -1559,13 +1559,13 @@ i32 SpaceshipWindow::render_ship()
     win_flush_pending_msgs();
     render_ship_draw_part(sf,&part_rows[row_i],sprite_part);
   }
-  ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)this + 0x8f4,9,0,0,0x1c9,
+  ship_image_sprite.grab_from_surface((iptr)this + 0x8f4,9,0,0,0x1c9,
                0x130);
   win_flush_pending_msgs();
   if ((int)launch_state == 3) {
-    ((DibSurface *)((iptr)this + 0xb8))->fill(0);
+    surface_wnd.fill(0);
   }
-  ((Sprite *)((iptr)this + 0x93c))->draw((RECT *)sprite_final,(DibSurface *)((iptr)this + 0xb8),0xaf,
+  ship_image_sprite.draw((RECT *)sprite_final,&surface_wnd,0xaf,
                99);
   spaceship_wnd_draw_title(ship_civ);
   render_ship_free_surfaces(sf,unwind_state);

@@ -43,24 +43,24 @@ void PediaWindow::update_controls()
   struct { u32 left; u32 top; u32 right; u32 bottom; } rect2;
   i32 seh_frame;
   
-  ((Control *)list_describe_button)->hide();
-  ((Control *)((u8 *)&list_close_button))->hide();
-  ((Control *)((u8 *)&detail_back_button))->hide();
-  ((Control *)detail_describe_button)->hide();
-  ((Control *)&detail_close_button)->hide();
-  ((Control *)text_back_button)->hide();
-  ((Control *)&text_close_button)->hide();
-  ((Control *)&list_scrollbar)->hide();
+  list_describe_button.hide();
+  list_close_button.hide();
+  detail_back_button.hide();
+  detail_describe_button.hide();
+  detail_close_button.hide();
+  text_back_button.hide();
+  text_close_button.hide();
+  list_scrollbar.hide();
   ((Control *)(u8 *)&concept_list_back_button)->hide();
-  ((Control *)advance_list_describe_button)->hide();
-  ((Control *)advance_list_tech_tree_button)->hide();
-  ((Control *)advance_list_close_button)->hide();
-  ((Control *)&advance_detail_back_button)->hide();
-  ((Control *)((u8 *)&advance_detail_tech_tree_button))->hide();
-  ((Control *)advance_detail_describe_button)->hide();
-  ((Control *)&advance_detail_close_button)->hide();
-  ((Control *)&description_edit)->hide();
-  ((Control *)&description_edit)->set_text((const char *)&str_empty_73);
+  advance_list_describe_button.hide();
+  advance_list_tech_tree_button.hide();
+  advance_list_close_button.hide();
+  advance_detail_back_button.hide();
+  advance_detail_tech_tree_button.hide();
+  advance_detail_describe_button.hide();
+  advance_detail_close_button.hide();
+  description_edit.hide();
+  description_edit.set_text((const char *)&str_empty_73);
   if (list_hotspot != 0) {
     if ((Hotspot *)list_hotspot != (Hotspot *)0x0) {
       ((Hotspot *)list_hotspot)->scalar_destruct(1);
@@ -77,13 +77,13 @@ void PediaWindow::update_controls()
     list_rect_bottom -= scroll_height;
     if (category == 8) {
       ((Control *)(u8 *)&concept_list_back_button)->show_and_redraw();
-      ((Control *)((u8 *)&list_close_button))->show_and_redraw();
+      list_close_button.show_and_redraw();
     }
     else if (category == 1) {
-      ((Control *)advance_list_describe_button)->show_and_redraw();
-      ((Control *)advance_list_tech_tree_button)->show_and_redraw();
-      ((Control *)advance_list_close_button)->show_and_redraw();
-      ((Control *)&list_scrollbar)->show_and_redraw();
+      advance_list_describe_button.show_and_redraw();
+      advance_list_tech_tree_button.show_and_redraw();
+      advance_list_close_button.show_and_redraw();
+      list_scrollbar.show_and_redraw();
       if (list_hotspot == 0) {
         rect2.left = content_left;
         rect2.top = content_top;
@@ -112,9 +112,9 @@ void PediaWindow::update_controls()
       }
     }
     else {
-      ((Control *)list_describe_button)->show_and_redraw();
-      ((Control *)&list_scrollbar)->show_and_redraw();
-      ((Control *)((u8 *)&list_close_button))->show_and_redraw();
+      list_describe_button.show_and_redraw();
+      list_scrollbar.show_and_redraw();
+      list_close_button.show_and_redraw();
       if (list_hotspot == 0) {
         rect2.left = content_left;
         rect2.top = content_top;
@@ -145,24 +145,24 @@ void PediaWindow::update_controls()
   }
   else if (view_mode == 1) {
     if ((category == 6) || (category == 7)) {
-      ((Control *)text_back_button)->show_and_redraw();
-      ((Control *)&text_close_button)->show_and_redraw();
+      text_back_button.show_and_redraw();
+      text_close_button.show_and_redraw();
     }
     else if (category == 1) {
-      ((Control *)&advance_detail_back_button)->show_and_redraw();
-      ((Control *)((u8 *)&advance_detail_tech_tree_button))->show_and_redraw();
-      ((Control *)advance_detail_describe_button)->show_and_redraw();
-      ((Control *)&advance_detail_close_button)->show_and_redraw();
+      advance_detail_back_button.show_and_redraw();
+      advance_detail_tech_tree_button.show_and_redraw();
+      advance_detail_describe_button.show_and_redraw();
+      advance_detail_close_button.show_and_redraw();
     }
     else {
-      ((Control *)((u8 *)&detail_back_button))->show_and_redraw();
-      ((Control *)detail_describe_button)->show_and_redraw();
-      ((Control *)&detail_close_button)->show_and_redraw();
+      detail_back_button.show_and_redraw();
+      detail_describe_button.show_and_redraw();
+      detail_close_button.show_and_redraw();
     }
   }
   else if (view_mode == 2) {
-    ((Control *)text_back_button)->show_and_redraw();
-    ((Control *)&text_close_button)->show_and_redraw();
+    text_back_button.show_and_redraw();
+    text_close_button.show_and_redraw();
   }
   ui_pump_messages();
   return;
@@ -246,7 +246,7 @@ void PediaWindow::update_describe_button(int list_index)
     crt_strcat(path,((i8 *)&lang_file_ext));
     result = file_exists((const char *)path);
     if (result == 0) {
-      ((Button *)detail_describe_button)->disable();
+      detail_describe_button.disable();
       __chdir(((i8 *)&game_dirs.home));
       return;
     }
@@ -276,17 +276,17 @@ void PediaWindow::update_describe_button(int list_index)
   }
   if (topic_id < 0) {
     if (category == 1) {
-      ((Button *)advance_detail_describe_button)->disable();
+      advance_detail_describe_button.disable();
     }
     else {
-      ((Button *)detail_describe_button)->disable();
+      detail_describe_button.disable();
     }
   }
   else if (category == 1) {
-    ((Button *)advance_detail_describe_button)->enable();
+    advance_detail_describe_button.enable();
   }
   else {
-    ((Button *)detail_describe_button)->enable();
+    detail_describe_button.enable();
   }
   return;
 }
@@ -688,8 +688,8 @@ void PediaWindow::init_terrain_list(iptr rect)
     list_items[i] =
          pedia_terrain_ids[i];
   }
-  ((Scrollbar *)&list_scrollbar)->set_range(0,list_count / 9);
-  ((Scrollbar *)&list_scrollbar)->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -1289,8 +1289,8 @@ void PediaWindow::init_concept_list(iptr unused_arg)
     list_items[i] =
          pedia_concept_ids[i];
   }
-  ((Scrollbar *)&list_scrollbar)->set_range(0,list_count / 9);
-  ((Scrollbar *)&list_scrollbar)->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -1351,23 +1351,23 @@ PediaWindow *PediaWindow::construct()
   i32 exc_link;
   
   this->SurfaceWindow::construct();
-  button_ctor((Button *)list_describe_button);
-  button_ctor((Button *)((u8 *)&list_close_button));
-  button_ctor((Button *)&detail_back_button);
-  button_ctor((Button *)detail_describe_button);
-  button_ctor((Button *)((u8 *)&detail_close_button));
-  button_ctor((Button *)text_back_button);
-  button_ctor((Button *)((u8 *)&text_close_button));
-  button_ctor((Button *)&concept_list_back_button);
-  button_ctor((Button *)advance_list_describe_button);
-  button_ctor((Button *)advance_list_tech_tree_button);
-  button_ctor((Button *)advance_list_close_button);
-  button_ctor((Button *)((u8 *)&advance_detail_back_button));
-  button_ctor((Button *)&advance_detail_tech_tree_button);
-  button_ctor((Button *)advance_detail_describe_button);
-  button_ctor((Button *)((u8 *)&advance_detail_close_button));
-  edit_ctor((EditControl *)((u8 *)&description_edit));
-  ((Scrollbar *)&list_scrollbar)->construct();
+  button_ctor(&list_describe_button);
+  button_ctor(&list_close_button);
+  button_ctor(&detail_back_button);
+  button_ctor(&detail_describe_button);
+  button_ctor(&detail_close_button);
+  button_ctor(&text_back_button);
+  button_ctor(&text_close_button);
+  button_ctor(&concept_list_back_button);
+  button_ctor(&advance_list_describe_button);
+  button_ctor(&advance_list_tech_tree_button);
+  button_ctor(&advance_list_close_button);
+  button_ctor(&advance_detail_back_button);
+  button_ctor(&advance_detail_tech_tree_button);
+  button_ctor(&advance_detail_describe_button);
+  button_ctor(&advance_detail_close_button);
+  edit_ctor(&description_edit);
+  list_scrollbar.construct();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 4);
   closed = 1;
   border_width = 0;
@@ -1462,39 +1462,39 @@ void PediaWindow::destruct()
   }
   wnd_destroy_with_surface();
   (*((char *)&eh_state + 0)) = 0x10;
-  /* inlined unwind funclet 004f4673 */ { ((Scrollbar *)(((int)this) + 0x1ae0))->destruct(); }
+  /* inlined unwind funclet 004f4673 */ { list_scrollbar.destruct(); }
   (*((char *)&eh_state + 0)) = 0xf;
-  /* inlined unwind funclet 004f4682 */ { edit_dtor((EditControl *)(((int)this) + 0x1a98)); }
+  /* inlined unwind funclet 004f4682 */ { edit_dtor(&description_edit); }
   (*((char *)&eh_state + 0)) = 0xe;
-  /* inlined unwind funclet 004f4691 */ { ctrl_dtor((Button *)(((int)this) + 0x1a5c)); }
+  /* inlined unwind funclet 004f4691 */ { ctrl_dtor(&advance_detail_close_button); }
   (*((char *)&eh_state + 0)) = 0xd;
-  /* inlined unwind funclet 004f46a0 */ { ctrl_dtor((Button *)(((int)this) + 0x1a20)); }
+  /* inlined unwind funclet 004f46a0 */ { ctrl_dtor(&advance_detail_describe_button); }
   (*((char *)&eh_state + 0)) = 0xc;
-  /* inlined unwind funclet 004f46af */ { ctrl_dtor((Button *)(((int)this) + 0x19e4)); }
+  /* inlined unwind funclet 004f46af */ { ctrl_dtor(&advance_detail_tech_tree_button); }
   (*((char *)&eh_state + 0)) = 0xb;
-  /* inlined unwind funclet 004f46be */ { ctrl_dtor((Button *)(((int)this) + 0x19a8)); }
+  /* inlined unwind funclet 004f46be */ { ctrl_dtor(&advance_detail_back_button); }
   (*((char *)&eh_state + 0)) = 10;
-  /* inlined unwind funclet 004f46cd */ { ctrl_dtor((Button *)(((int)this) + 0x196c)); }
+  /* inlined unwind funclet 004f46cd */ { ctrl_dtor(&advance_list_close_button); }
   (*((char *)&eh_state + 0)) = 9;
-  /* inlined unwind funclet 004f46dc */ { ctrl_dtor((Button *)(((int)this) + 0x1930)); }
+  /* inlined unwind funclet 004f46dc */ { ctrl_dtor(&advance_list_tech_tree_button); }
   (*((char *)&eh_state + 0)) = 8;
-  /* inlined unwind funclet 004f46eb */ { ctrl_dtor((Button *)(((int)this) + 0x18f4)); }
+  /* inlined unwind funclet 004f46eb */ { ctrl_dtor(&advance_list_describe_button); }
   (*((char *)&eh_state + 0)) = 7;
-  /* inlined unwind funclet 004f46fa */ { ctrl_dtor((Button *)(((int)this) + 0x18b8)); }
+  /* inlined unwind funclet 004f46fa */ { ctrl_dtor(&concept_list_back_button); }
   (*((char *)&eh_state + 0)) = 6;
-  /* inlined unwind funclet 004f4709 */ { ctrl_dtor((Button *)(((int)this) + 0x187c)); }
+  /* inlined unwind funclet 004f4709 */ { ctrl_dtor(&text_close_button); }
   (*((char *)&eh_state + 0)) = 5;
-  /* inlined unwind funclet 004f4718 */ { ctrl_dtor((Button *)(((int)this) + 0x1840)); }
+  /* inlined unwind funclet 004f4718 */ { ctrl_dtor(&text_back_button); }
   (*((char *)&eh_state + 0)) = 4;
-  /* inlined unwind funclet 004f4727 */ { ctrl_dtor((Button *)(((int)this) + 0x1804)); }
+  /* inlined unwind funclet 004f4727 */ { ctrl_dtor(&detail_close_button); }
   (*((char *)&eh_state + 0)) = 3;
-  /* inlined unwind funclet 004f4736 */ { ctrl_dtor((Button *)(((int)this) + 0x17c8)); }
+  /* inlined unwind funclet 004f4736 */ { ctrl_dtor(&detail_describe_button); }
   (*((char *)&eh_state + 0)) = 2;
-  /* inlined unwind funclet 004f4745 */ { ctrl_dtor((Button *)(((int)this) + 0x178c)); }
+  /* inlined unwind funclet 004f4745 */ { ctrl_dtor(&detail_back_button); }
   (*((char *)&eh_state + 0)) = 1;
-  /* inlined unwind funclet 004f4754 */ { ctrl_dtor((Button *)(((int)this) + 0x1750)); }
+  /* inlined unwind funclet 004f4754 */ { ctrl_dtor(&list_close_button); }
   eh_state = eh_state & 0xffffff00;
-  /* inlined unwind funclet 004f4763 */ { ctrl_dtor((Button *)(((int)this) + 0x1714)); }
+  /* inlined unwind funclet 004f4763 */ { ctrl_dtor(&list_describe_button); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 004f4772 */ { ((SurfaceWindow *)this)->SurfaceWindow::destruct(); }
   return;
@@ -1602,8 +1602,8 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_2 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x27]);
-  ((Button *)list_describe_button)->create((iptr)parent_2,0xfa1,(iptr)&rect,(const char *)label);
-  ((Button *)list_describe_button)->set_callback(pedia_toggle_describe);
+  list_describe_button.create((iptr)parent_2,0xfa1,(iptr)&rect,(const char *)label);
+  list_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_3 = (u8 *)0x0;
@@ -1612,10 +1612,10 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_3 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)&list_close_button)->create((iptr)parent_3,0xfa2,(iptr)&rect,(const char *)label);
-  ((Button *)&list_close_button)->set_default_button();
-  ((Button *)&list_close_button)->set_cancel_button();
-  ((Button *)&list_close_button)->set_callback((CtrlNotifyFn)pedia_on_close);
+  list_close_button.create((iptr)parent_3,0xfa2,(iptr)&rect,(const char *)label);
+  list_close_button.set_default_button();
+  list_close_button.set_cancel_button();
+  list_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
   SetRect(&rect,left_x,yTop,avail_width / 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_4 = (u8 *)0x0;
@@ -1624,8 +1624,8 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_4 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  ((Button *)((u8 *)&concept_list_back_button))->create((iptr)parent_4,0xfb2,(iptr)&rect,(const char *)label);
-  ((Button *)((u8 *)&concept_list_back_button))->set_callback((CtrlNotifyFn)pedia_on_back);
+  concept_list_back_button.create((iptr)parent_4,0xfb2,(iptr)&rect,(const char *)label);
+  concept_list_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
 }
 
 /* Part of PediaWindow::create (004f4b9f): the buttons of the
@@ -1653,8 +1653,8 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_5 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x27]);
-  ((Button *)advance_list_describe_button)->create((iptr)parent_5,0xfab,(iptr)&rect,(const char *)label);
-  ((Button *)advance_list_describe_button)->set_callback(pedia_toggle_describe);
+  advance_list_describe_button.create((iptr)parent_5,0xfab,(iptr)&rect,(const char *)label);
+  advance_list_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_6 = (u8 *)0x0;
@@ -1663,8 +1663,8 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_6 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x360]);
-  ((Button *)advance_list_tech_tree_button)->create((iptr)parent_6,0xfac,(iptr)&rect,(const char *)label);
-  ((Button *)advance_list_tech_tree_button)->set_callback((CtrlNotifyFn)pedia_show_tech_tree);
+  advance_list_tech_tree_button.create((iptr)parent_6,0xfac,(iptr)&rect,(const char *)label);
+  advance_list_tech_tree_button.set_callback((CtrlNotifyFn)pedia_show_tech_tree);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_7 = (u8 *)0x0;
@@ -1673,10 +1673,10 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_7 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)advance_list_close_button)->create((iptr)parent_7,0xfad,(iptr)&rect,(const char *)label);
-  ((Button *)advance_list_close_button)->set_default_button();
-  ((Button *)advance_list_close_button)->set_cancel_button();
-  ((Button *)advance_list_close_button)->set_callback((CtrlNotifyFn)pedia_on_close);
+  advance_list_close_button.create((iptr)parent_7,0xfad,(iptr)&rect,(const char *)label);
+  advance_list_close_button.set_default_button();
+  advance_list_close_button.set_cancel_button();
+  advance_list_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
   col_width = (int)(avail_width + (avail_width >> 0x1f & 3U)) >> 2;
   SetRect(&rect,left_x,yTop,col_width + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1686,8 +1686,8 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_8 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  ((Button *)((u8 *)&advance_detail_back_button))->create((iptr)parent_8,0xfae,(iptr)&rect,(const char *)label);
-  ((Button *)((u8 *)&advance_detail_back_button))->set_callback((CtrlNotifyFn)pedia_on_back);
+  advance_detail_back_button.create((iptr)parent_8,0xfae,(iptr)&rect,(const char *)label);
+  advance_detail_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_9 = (u8 *)0x0;
@@ -1696,8 +1696,8 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_9 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x360]);
-  ((Button *)((u8 *)&advance_detail_tech_tree_button))->create((iptr)parent_9,0xfaf,(iptr)&rect,(const char *)label);
-  ((Button *)((u8 *)&advance_detail_tech_tree_button))->set_callback((CtrlNotifyFn)pedia_show_tech_tree);
+  advance_detail_tech_tree_button.create((iptr)parent_9,0xfaf,(iptr)&rect,(const char *)label);
+  advance_detail_tech_tree_button.set_callback((CtrlNotifyFn)pedia_show_tech_tree);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_10 = (u8 *)0x0;
@@ -1706,8 +1706,8 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_10 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2c1]);
-  ((Button *)advance_detail_describe_button)->create((iptr)parent_10,0xfb0,(iptr)&rect,(const char *)label);
-  ((Button *)advance_detail_describe_button)->set_callback(pedia_toggle_describe);
+  advance_detail_describe_button.create((iptr)parent_10,0xfb0,(iptr)&rect,(const char *)label);
+  advance_detail_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width * 3 + left_x,yTop,col_width * 4 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_11 = (u8 *)0x0;
@@ -1716,10 +1716,10 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_11 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)((u8 *)&advance_detail_close_button))->create((iptr)parent_11,0xfb1,(iptr)&rect,(const char *)label);
-  ((Button *)((u8 *)&advance_detail_close_button))->set_default_button();
-  ((Button *)((u8 *)&advance_detail_close_button))->set_cancel_button();
-  ((Button *)((u8 *)&advance_detail_close_button))->set_callback((CtrlNotifyFn)pedia_on_close);
+  advance_detail_close_button.create((iptr)parent_11,0xfb1,(iptr)&rect,(const char *)label);
+  advance_detail_close_button.set_default_button();
+  advance_detail_close_button.set_cancel_button();
+  advance_detail_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
 }
 
 /* Part of PediaWindow::create (004f4b9f): the buttons of the other
@@ -1744,8 +1744,8 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_12 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  ((Button *)&detail_back_button)->create((iptr)parent_12,0xfa3,(iptr)&rect,(const char *)label);
-  ((Button *)&detail_back_button)->set_callback((CtrlNotifyFn)pedia_on_back);
+  detail_back_button.create((iptr)parent_12,0xfa3,(iptr)&rect,(const char *)label);
+  detail_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_13 = (u8 *)0x0;
@@ -1754,8 +1754,8 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_13 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2c1]);
-  ((Button *)detail_describe_button)->create((iptr)parent_13,0xfa4,(iptr)&rect,(const char *)label);
-  ((Button *)detail_describe_button)->set_callback(pedia_toggle_describe);
+  detail_describe_button.create((iptr)parent_13,0xfa4,(iptr)&rect,(const char *)label);
+  detail_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_14 = (u8 *)0x0;
@@ -1764,8 +1764,8 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_14 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)&detail_close_button)->create((iptr)parent_14,0xfa5,(iptr)&rect,(const char *)label);
-  ((Button *)&detail_close_button)->set_callback((CtrlNotifyFn)pedia_on_close);
+  detail_close_button.create((iptr)parent_14,0xfa5,(iptr)&rect,(const char *)label);
+  detail_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
   avail_width = avail_width / 2;
   SetRect(&rect,left_x,yTop,avail_width + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1775,8 +1775,8 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_15 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  ((Button *)text_back_button)->create((iptr)parent_15,0xfa6,(iptr)&rect,(const char *)label);
-  ((Button *)text_back_button)->set_callback((CtrlNotifyFn)pedia_on_back);
+  text_back_button.create((iptr)parent_15,0xfa6,(iptr)&rect,(const char *)label);
+  text_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,avail_width + left_x,yTop,avail_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
     parent_16 = (u8 *)0x0;
@@ -1785,8 +1785,8 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_16 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)((u8 *)&text_close_button))->create((iptr)parent_16,0xfa7,(iptr)&rect,(const char *)label);
-  ((Button *)((u8 *)&text_close_button))->set_callback((CtrlNotifyFn)pedia_on_close);
+  text_close_button.create((iptr)parent_16,0xfa7,(iptr)&rect,(const char *)label);
+  text_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
 }
 
 /* 004f4b9f auto */
@@ -1884,7 +1884,7 @@ void PediaWindow::create()
   else {
     edit_parent = (u8 *)&window;
   }
-  ((EditControl *)((u8 *)&description_edit))->create_styled((iptr)edit_parent,0xfaa,(iptr)&content_left,
+  description_edit.create_styled((iptr)edit_parent,0xfaa,(iptr)&content_left,
              (const char *)&str_empty_143,0x122,0);
   rect.left = content_left;
   rect.top = content_top;
@@ -1899,10 +1899,10 @@ void PediaWindow::create()
   else {
     scroll_parent = (u8 *)&window;
   }
-  ((Scrollbar *)((u8 *)&list_scrollbar))->create((iptr)scroll_parent,0xfa8,(iptr)&rect,0);
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_callback(pedia_list_on_scroll);
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_track_callback(pedia_list_on_scroll);
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_page_size(2);
+  list_scrollbar.create((iptr)scroll_parent,0xfa8,(iptr)&rect,0);
+  list_scrollbar.set_callback(pedia_list_on_scroll);
+  list_scrollbar.set_track_callback(pedia_list_on_scroll);
+  list_scrollbar.set_page_size(2);
   load_indexes();
   return;
 }
@@ -3520,8 +3520,8 @@ void PediaWindow::init_government_list(iptr unused_arg)
     list_items[i] =
          pedia_government_ids[i];
   }
-  ((Scrollbar *)&list_scrollbar)->set_range(0,list_count / 9);
-  ((Scrollbar *)&list_scrollbar)->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -3584,8 +3584,8 @@ void PediaWindow::init_wonder_list(iptr unused_arg)
     list_items[i] =
          pedia_wonder_ids[i];
   }
-  ((Scrollbar *)&list_scrollbar)->set_range(0,list_count / 9);
-  ((Scrollbar *)&list_scrollbar)->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -3776,8 +3776,8 @@ void PediaWindow::init_advance_list(iptr unused_arg)
     list_items[i] =
          pedia_advance_ids[i];
   }
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_range(0,list_count / 9);
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -4243,7 +4243,7 @@ void PediaWindow::draw_advance_page()
     crt_strcat(line_buf,((i8 *)&lang_file_ext));
     measure = file_exists((const char *)line_buf);
     if (measure == 0) {
-      ((Button *)advance_detail_describe_button)->disable();
+      advance_detail_describe_button.disable();
       __chdir(((i8 *)&game_dirs.home));
       return;
     }
@@ -4627,8 +4627,8 @@ void PediaWindow::init_improvement_list(iptr unused_arg)
     list_items[i] =
          pedia_improve_ids[i];
   }
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_range(0,list_count / 9);
-  ((Scrollbar *)((u8 *)&list_scrollbar))->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }
@@ -4864,8 +4864,8 @@ void PediaWindow::show_unit_list(iptr unused_arg)
     list_items[i] =
          pedia_unit_ids[i];
   }
-  ((Scrollbar *)&list_scrollbar)->set_range(0,list_count / 9);
-  ((Scrollbar *)&list_scrollbar)->set_pos(list_top_index / 9);
+  list_scrollbar.set_range(0,list_count / 9);
+  list_scrollbar.set_pos(list_top_index / 9);
   if (list_count < 1) {
     list_top_index = -1;
   }

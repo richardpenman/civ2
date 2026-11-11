@@ -1183,7 +1183,7 @@ void NetGamelistView::restore_selection()
   iptr scroll_pos;
   
   option_count = list_dialog->count_group_options(0);
-  (*(Scrollbar **)((iptr)list_dialog + 0x284))->set_range(0,option_count - 1);
+  ((Scrollbar *)list_dialog->list_vscroll[0])->set_range(0,option_count - 1);
   option = find_option((iptr)&selected_game_name,(iptr)&selected_host_name);
   list_dialog->selected_option = option;
   if (option_count < 0xb) {
@@ -1210,7 +1210,7 @@ void NetGamelistView::restore_selection()
     }
   }
   scroll_pos = list_dialog->option_group_index(list_dialog->list_top_option[0]);
-  (*(Scrollbar **)((iptr)list_dialog + 0x284))->set_pos(scroll_pos);
+  ((Scrollbar *)list_dialog->list_vscroll[0])->set_pos(scroll_pos);
   return;
 }
 
@@ -1548,7 +1548,7 @@ DialogOption *NetGamelistView::add_entry(const char *name2,uint id)
     max_width = entry_width;
   }
   list_dialog->option_width = max_width;
-  count_ptr = (int *)((iptr)list_dialog + 0x28);
+  count_ptr = (int *)&list_dialog->option_count;
   *count_ptr = *count_ptr + 1;
   return entry;
 }
@@ -9708,7 +9708,7 @@ void ParleyWindow::build_description(ParleyOfferMsg *offer,int received)
   if (offer != 0) {
     first_items = &offer->item.type;
     second_offer = (ParleyOfferMsg *)(offer->item.size + (iptr)offer);
-    second_items = (i32 *)((iptr)second_offer + 0x20);
+    second_items = (i32 *)&second_offer->item.type;
     str_clear((char *)&text_section_index_pool_block.parley_description);
     desc_len = _strlen(((i8 *)&text_section_index_pool_block.parley_description));
     if (desc_len != 0) {
@@ -10050,9 +10050,9 @@ void __cdecl parley_execute_transaction(ParleyOfferMsg *offer)
     dbg_logf((const char *)&str_start_executeparleytransaction_message_d,net_send_sequence);
     civ = offer->civ;
     civ2 = offer->other_civ;
-    first_items = (i32 *)((iptr)offer + 0x20);
+    first_items = (i32 *)&offer->item.type;
     second_offer = (ParleyOfferMsg *)(offer->item.size + (iptr)offer);
-    second_items = (i32 *)((iptr)second_offer + 0x20);
+    second_items = (i32 *)&second_offer->item.type;
     switch(offer->mode) {
     case 6:
       parley_apply_treaty(offer->item.value,civ,civ2);
@@ -15562,7 +15562,7 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
     }
     while( true ) {
       net_send_message(NM_SERVER_INFO,0,0,0,0,0,0,0,0,0);
-      flags_ptr = (uint *)((iptr)dialog + 0x3c);
+      flags_ptr = (uint *)&dialog->style_flags;
       *flags_ptr = *flags_ptr & 0xfffffbff;
       dialog->result_id = 0;
       dialog->result_extra = (i32)dialog->result_id;
@@ -15795,7 +15795,7 @@ void LobbyList::remove_entry(void *entry)
     }
     operator_delete(*(void **)((int)entry + 8));
     operator_delete(entry);
-    count_ptr = (int *)((iptr)dialog + 0x28);
+    count_ptr = (int *)&dialog->option_count;
     *count_ptr = *count_ptr - 1;
   }
   return;
@@ -15823,7 +15823,7 @@ uint *LobbyList::add_player_entry(const char *name2,uint entry_id)
   entry[5] = tail2;
   if (tail2 == 0) {
     entries = (uptr)entry;
-    *(uint **)((iptr)dialog + 0x228) = entry;
+    *(uint **)&dialog->option_list = entry;
   }
   else {
     *(uint **)(tail2 + 0x10) = entry;
@@ -15846,7 +15846,7 @@ uint *LobbyList::add_player_entry(const char *name2,uint entry_id)
     max_width = width;
   }
   dialog->option_width = max_width;
-  count_ptr = (int *)((iptr)dialog + 0x28);
+  count_ptr = (int *)&dialog->option_count;
   *count_ptr = *count_ptr + 1;
   dialog->option_list = (DialogOption *)entries;
   dialog->list_top_option[0] = dialog->option_list;

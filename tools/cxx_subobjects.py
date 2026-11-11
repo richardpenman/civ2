@@ -15,6 +15,9 @@ Rewrites:
     (T *)(B + N)         -> &P           (T the member's type or a base of it)
                             (T *)&P, (T *)P (void, char ...: any member,
                                             with --generic; else a member array)
+                            (T *)&P      (a scalar member of T's size)
+    *(T *)(B + N)        -> *(T *)&P     (the same)
+    (I)(B + N)           -> (I)&P        (an address as an integer)
 P is p->path (`path` alone for this in a member function).  Without
 --apply: what would change (run/subobjects.tsv) and what stays (with the
 reason).  Every rewrite's offset is listed as a static_assert in
@@ -41,11 +44,13 @@ EXPR = r'[A-Za-z_]\w*(?:\s*(?:\.|->)\s*[A-Za-z_]\w*)*'
 NUM = r'(?:0x[0-9a-fA-F]+|\d+)'
 TYPE = r'(?:const\s+)?[A-Za-z_]\w*(?:\s+[A-Za-z_]\w*)*'
 # (T *)( BASE + N ): BASE = ((int)E) | (int)E | (u8 *)E | E
-RAW = re.compile(r'\(\s*(?P<T>%s)\s*(?P<stars>\*+)\s*\)\s*\(\s*(?P<base>'
+# (T *)(I)(BASE + N), (I)(BASE + N): an address, its integer value
+RAW = re.compile(r'(?:\(\s*(?P<T>%s)\s*(?P<stars>\*+)\s*\)\s*(?:\(\s*%s\s*\)\s*)?|(?P<it>\(\s*%s\s*\))\s*)'
+                 r'\(\s*(?P<base>'
                  r'\(\s*\(\s*%s\s*\)\s*(?P<e1>%s)\s*\)'
                  r'|\(\s*(?P<c2>%s|%s)\s*\)\s*(?P<e2>%s)'
                  r'|(?P<e3>%s))\s*\+\s*(?P<n>%s)\s*\)'
-                 % (TYPE, INT_CASTS, EXPR, INT_CASTS, BYTE_PTRS, EXPR, EXPR, NUM))
+                 % (TYPE, INT_CASTS, INT_CASTS, INT_CASTS, EXPR, INT_CASTS, BYTE_PTRS, EXPR, EXPR, NUM))
 GENERIC = {'void', 'char', 'u8', 'i8', 'byte', 'uchar', 'unsigned char', 'signed char', 'undefined'}
 INTS = set(cxx_fields.SIGNED) | set(cxx_fields.UNSIGNED)
 
@@ -120,7 +125,7 @@ def find(s, n, t, deref, depth=0):
                 kd = match(et, t, deref)
                 if kd:
                     out.append((kd, p, et, unnamed(m)))
-                if idx == 0 and not deref and t in GENERIC:
+                if idx == 0 and not deref and (t in GENERIC or t is None):
                     out.append(('array', m, mt, unnamed(m)))
             if et in LAY and depth < 5:
                 for kd, pp, tt, un in find(et, rem, t, deref, depth + 1):
@@ -136,22 +141,32 @@ def find(s, n, t, deref, depth=0):
     return out
 
 
+def scalar_size(t):
+    if t.endswith('*') or t.endswith(')'):
+        return 4
+    c = canon(t)
+    return c[1] if c[0] in 'su' else None
+
+
 def match(mt, t, deref):
+    if t is None:
+        return 'addr'
     if mt == t:
         return 'exact'
     if deref:
         a, b = canon(mt), canon(t)
         if a[0] in 'su' and b[0] in 'su' and a[1] == b[1]:
             return 'sign'
-        return None
-    if is_base(t, mt):
+    if not deref and is_base(t, mt):
         return 'base'
-    if t in GENERIC:
+    if not deref and t in GENERIC:
         return 'generic'
+    if scalar_size(mt) and scalar_size(mt) == scalar_size(t):
+        return 'alias'      # the same bytes as another scalar type: *(T *)&P
     return None
 
 
-RANK = {'exact': 0, 'base': 1, 'sign': 2, 'array': 3, 'generic': 4}
+RANK = {'exact': 0, 'base': 1, 'sign': 2, 'addr': 2, 'array': 3, 'alias': 4, 'generic': 5}
 
 
 def best(cands):
@@ -226,8 +241,11 @@ def process(path, apply, rows, checks):
         header = text[hs:bs]
         cls = class_of(header)
         for m in RAW.finditer(mt, bs, be):
-            t = norm(m.group('T'))
-            stars = m.group('stars')
+            it = m.group('it')
+            if it and not (m.group('e1') or m.group('e2')):
+                continue        # integer arithmetic
+            t = norm(m.group('T')) if not it else None
+            stars = m.group('stars') or ''
             e = m.group('e1') or m.group('e2') or m.group('e3')
             n = int(m.group('n'), 0)
             line = text.count('\n', 0, m.start()) + 1
@@ -277,7 +295,13 @@ def process(path, apply, rows, checks):
             else:
                 obj = re.sub(r'\s+', '', e) + '->'
             P = obj + mpath
-            if arrow:
+            if it:
+                if deref or arrow:
+                    rows.append((where, 'stay', src, 'integer address used as a pointer'))
+                    continue
+                new = '%s&%s' % (it, P)
+                edits.append((a, b, new))
+            elif arrow:
                 if kind not in ('exact', 'base'):
                     rows.append((where, 'stay', src, 'arrow on %s member %s' % (kind, mpath)))
                     continue
@@ -298,6 +322,20 @@ def process(path, apply, rows, checks):
                         new = P
                     else:
                         new = '(%s)%s' % (m.group('T').strip(), P)
+                elif kind == 'alias':
+                    p0, _ = prev_tok(mt, pj)
+                    store = nt_ in STORE_OK or nt_ in ('++', '--', '=') or p0 in ('&', '++', '--')
+                    vt = cxx_fields.cast_type(m.group('T').strip() + ' ' + stars[1:]) if len(stars) > 1 \
+                        else m.group('T').strip()
+                    if store:
+                        new = '*(%s%s)&%s' % (m.group('T').strip(), ' ' + stars, P)
+                        edits.append((a, b, '(%s%s)&%s' % (m.group('T').strip(), ' ' + stars, P)))
+                    else:
+                        new = '(%s)%s' % (vt, P)
+                        edits.append((pj, b, new))
+                    rows.append((where, kind, src, new))
+                    checks.append((s, mpath, n))
+                    continue
                 else:
                     continue
                 edits.append((pj, b, new))
@@ -308,6 +346,8 @@ def process(path, apply, rows, checks):
                     continue
                 if kind in ('exact', 'base'):
                     new = '&' + P
+                elif kind == 'alias':
+                    new = '(%s%s)&%s' % (m.group('T').strip(), ' ' + stars, P)
                 elif kind == 'array':
                     new = '(%s%s)%s' % (m.group('T').strip(), ' ' + stars, P)
                 else:

@@ -5074,7 +5074,7 @@ int GameMenu::item_visible_index(MenuNode *item)
   iptr cur;
   
   index = 1;
-  for (cur = *(iptr *)((int)item->link + 0x18); (cur != 0 && ((iptr)item != cur));
+  for (cur = (iptr)item->link->link; (cur != 0 && ((iptr)item != cur));
       cur = *(iptr *)(cur + 0x10)) {
     if ((*(byte *)(cur + 8) & 2) == 0) {
       index++;
@@ -5401,7 +5401,7 @@ void GameMenu::remove_item(i32 item_id)
     item_index = item_visible_index(item);
     menu_index = visible_index(item->link);
     native_delete(menu_index,item_index);
-    *(i32 *)((int)item->prev + 0x10) = (i32)item->next;
+    *(i32 *)&item->prev->next = (i32)item->next;
   }
   return;
 }
@@ -6813,7 +6813,7 @@ DialogOption *Dialog::add_option(const char *text,iptr option_id,uint data)
       option_tail = option;
     }
     else {
-      *(uint **)((uint)option->next + 0x14) = (uint *)option;
+      *(uint **)&option->next->prev = (uint *)option;
     }
     prev->next = (DialogOption *)((uint *)option);
   }
@@ -8859,7 +8859,7 @@ void __cdecl dialog_on_keydown(i32 key)
     case 0xa2:
     case 0xc1:
       dialog_state.active->selected_sprite =
-           (DialogSprite *)*(i32 *)((int)dialog_state.active->selected_sprite + 0x10);
+           (DialogSprite *)*(i32 *)&dialog_state.active->selected_sprite->next;
       if (dialog_state.active->selected_sprite == 0) {
         dialog_state.active->selected_sprite = dialog_state.active->sprite_list;
       }

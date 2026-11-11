@@ -127,8 +127,8 @@ void PediaWindow::load_description(int topic2)
       text_append_label(0xe);
       crt_strcpy(desc_text,((i8 *)&textbuf.buf));
     }
-    ((Control *)((iptr)this + 0x1a98))->set_text((const char *)desc_text);
-    ((Control *)((iptr)this + 0x1a98))->show_and_redraw();
+    description_edit.set_text((const char *)desc_text);
+    description_edit.show_and_redraw();
   }
   return;
 }

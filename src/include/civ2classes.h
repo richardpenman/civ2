@@ -241,423 +241,6 @@ typedef struct Wnd : ModalMenuWindow {
 } Wnd;
 static_assert(sizeof(Wnd) == 0xc8, "");
 
-/* The destroyed civilizations window (destroyed_civs_wnd_ctor 00514f16, 0x710
-   bytes on destroyed_civs_show's stack). */
-typedef struct DestroyedCivsWindow : ModalMenuWindow {
-    union { uptr field_b8; uptr control_list; };
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; };
-    union { u32 field_c4; u32 keyboard_nav; };
-    u8 pad_c8[260];
-    union { u32 field_1cc; u32 ship_civ; };
-    u8 pad_1d0[4];
-    union { u32 field_1d4; u32 frame_left; };
-    union { u32 field_1d8; u32 frame_top; };
-    union { u32 field_1dc; u32 frame_right; };
-    union { u32 field_1e0; u32 frame_bottom; };
-    union { u8 pad_1e4[784]; struct { u8 gap_1e4[776]; u8 media_wnd[8]; }; };
-    union { u32 field_4f4; u32 throne_width; };
-    union { u32 field_4f8; u32 throne_height; };
-    u8 pad_4fc[4];
-    union { u32 field_500; u32 throne_civ; };
-    union { u8 pad_504[296]; struct { u8 gap_504[48]; u8 movie_wnd_base[16]; u8 destroyed_civs_handlers[188]; u8 civs_art_surface[44]; }; };
-    union { u32 field_62c; u32 anim_timer; };
-    union { u32 field_630; u32 blink_timer; };
-    union { u32 field_634; u32 flight_timer; };
-    union { u8 pad_638[140]; struct { u8 gap_638[16]; u8 improvement_art_surface[4]; u8 panel_sprite[60]; u8 portrait_sprite[60]; }; };
-    union { u32 field_6c4; u32 killer_civ; };
-    u8 pad_6c8[4];
-    union { u32 field_6cc; u32 slide_rect; };
-    union { u32 field_6d0; u32 slide_top; };
-    union { u32 field_6d4; u32 slide_right; };
-    union { u32 field_6d8; u32 resource_dll; };
-    union { u8 pad_6dc[16]; struct { u8 slot_sprites[16]; }; };
-    union { u32 field_6ec; u32 panel_clip_rect; };
-    u8 pad_6f0[4];
-    union { u32 field_6f4; u32 panel_clip_right; };
-    u8 pad_6f8[4];
-    union { u32 field_6fc; u32 slide_y; };
-    union { u8 pad_700[16]; struct { u8 caption_font_2[16]; }; };
-    /* methods */
-    DestroyedCivsWindow *construct();    /* 00514f16 */
-    void destruct();    /* 005150b9 */
-    i32 create(uint killer);    /* 005151f4 */
-    void run();    /* 00515516 */
-    void draw_entry(iptr entry);    /* 00515999 */
-    void draw_portrait(iptr entry);    /* 00515c15 */
-    void slide_step(int delta);    /* 00515dc8 */
-    void slide_down();    /* 00515f3c */
-    void slide_up();    /* 00516005 */
-} DestroyedCivsWindow;
-static_assert(sizeof(DestroyedCivsWindow) == 0x710, "");
-
-/* A star of the launch starfield (perspective: screen = x / depth + centre). */
-typedef struct SpaceshipStar {
-    i32 x;                          /* 0x0 */
-    i32 y;                          /* 0x4 */
-    i32 depth;                      /* 0x8 1..100 */
-} SpaceshipStar;
-
-/* The spaceship window (spaceship_wnd_ctor 004d0517, 0x2180 bytes:
-   spaceship_launch_sprite_xs_block.spaceship_wnd); the launch state past 0xfb8. */
-typedef struct SpaceshipWindow : ModalMenuWindow {
-    union { uptr field_b8; uptr control_list; };
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; };
-    union { u32 field_c4; u32 keyboard_nav; };
-    union { u8 pad_c8[260]; struct { u8 gap_c8[56]; union { u8 frame_wnd_base[204]; struct { u8 gap_100[16]; u8 frame_handlers[188]; }; }; }; };
-    union { u32 field_1cc; u32 ship_civ; };
-    u8 pad_1d0[4];
-    union { u32 field_1d4; u32 frame_left; };
-    union { u32 field_1d8; u32 frame_top; };
-    union { u32 field_1dc; u32 frame_right; };
-    union { u32 field_1e0; u32 frame_bottom; };
-    union { u8 pad_1e4[784]; struct { u8 ship_panel_rect[16]; u8 ship_dll[4]; u8 ship_palette[756]; u8 media_wnd[8]; }; };
-    union { u32 field_4f4; u32 throne_width; };
-    union { u32 field_4f8; u32 throne_height; };
-    u8 pad_4fc[4];
-    union { u32 field_500; u32 throne_civ; };
-    union { u8 pad_504[296]; struct { u8 gap_504[48]; u8 movie_wnd_base[248]; }; };
-    union { u32 field_62c; u32 anim_timer; };
-    union { u32 field_630; u32 blink_timer; };
-    union { u32 field_634; u32 flight_timer; };
-    union { u8 pad_638[140]; struct { u8 stats_text[140]; }; };
-    union { u32 field_6c4; u32 killer_civ; };
-    u8 pad_6c8[4];
-    union { u32 field_6cc; u32 slide_rect; };
-    union { u32 field_6d0; u32 slide_top; };
-    union { u32 field_6d4; u32 slide_right; };
-    union { u32 field_6d8; u32 resource_dll; };
-    u8 pad_6dc[16];
-    union { u32 field_6ec; u32 panel_clip_rect; };
-    u8 pad_6f0[4];
-    union { u32 field_6f4; u32 panel_clip_right; };
-    u8 pad_6f8[4];
-    union { u32 field_6fc; u32 slide_y; };
-    union { u8 pad_700[440]; struct { u8 gap_700[312]; u8 success_text[128]; }; };
-    union { u32 field_8b8; u32 type_x; };
-    union { u32 field_8bc; u32 type_y; };
-    union { u32 field_8c0; u32 type_index; };
-    union { u8 pad_8c4[40]; struct { u8 large_font[8]; u8 medium_font[8]; u8 typing_font[8]; u8 status_line_rect[16]; }; };
-    union { u32 field_8ec; u32 spaceship_state; };
-    union { u32 field_8f0; u32 launched; };
-    union { u8 pad_8f4[492]; struct { u8 ship_view_surface[72]; u8 ship_image_sprite[60]; u8 close_btn_disabled_sprite[60]; u8 close_btn_normal_sprite[60]; u8 close_btn_pressed_sprite[60]; u8 launch_btn_disabled_sprite[60]; u8 launch_btn_normal_sprite[60]; u8 launch_btn_pressed_sprite[60]; }; };
-    union { u32 field_ae0; u32 launch_state; };
-    union { u8 pad_ae4[1076]; struct { u8 hotspot_map[1072]; u8 movie_dll[4]; }; };
-    union { u32 field_f18; u32 advance_civ; };
-    union { u8 pad_f1c[156]; struct { u8 movie_caption_font[8]; u8 movie_caption_text[148]; }; };
-    u8 pad_fb8[3568];
-    u32 launch_video_player;        /* 0x1da8 video window playing the launch (+0x48 its modal window) */
-    i32 close_btn_pressed;          /* 0x1dac */
-    i32 launch_btn_pressed;         /* 0x1db0 */
-    i32 typing_label_part;          /* 0x1db4 */
-    SpaceshipStar stars[80];        /* 0x1db8 */
-    u8 pad_2178[8];
-    /* methods */
-    SpaceshipWindow *construct(u32 civ);    /* 004d0517 */
-    i32 destruct();    /* 004d08b0 */
-    i32 init();    /* 004d0b58 */
-    uint create();    /* 004d0d64 */
-    void run_modal();    /* 004d0ea6 */
-    void present();    /* 004d13b8 */
-    void launch_sequence();    /* 004d1725 */
-    void build_stats_text();    /* 004d4a7b */
-    uint type_char(int allow_skip);    /* 004d4fd1 */
-    void init_starfield();    /* 004d570b */
-    void play_launch_video();    /* 004d5b21 */
-    void setup_hotspots();    /* 004d5e41 */
-    void draw_buttons();    /* 004d5ef9 */
-    void draw_close_btn(int enabled,int raised);    /* 004d5f79 */
-    void draw_launch_btn(int enabled,int raised);    /* 004d60a5 */
-    i32 render_ship();
-    struct ShipPartRow;    /* part of render_ship */
-    struct ShipSurfaces;    /* part of render_ship */
-    void render_ship_construct_surfaces(ShipSurfaces &sf,int &unwind_state);    /* part of render_ship */
-    void render_ship_init_rows(ShipPartRow *part_rows);    /* part of render_ship */
-    int render_ship_load_surfaces(ShipSurfaces &sf);    /* part of render_ship */
-    void render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8 *sprite);    /* part of render_ship */
-    void render_ship_free_surfaces(ShipSurfaces &sf,int &unwind_state);    /* part of render_ship */
-    void make_button_sprites();
-} SpaceshipWindow;
-static_assert(sizeof(SpaceshipWindow) == 0x2180, "");
-
-/* A leader's diplomacy window (diplo_leader_wnd_ctor 004942a3, operator_new(0x108c):
-   diplo_leader.window). */
-typedef struct DiploLeaderWindow : ModalMenuWindow {
-    union { uptr field_b8; uptr control_list; };   /* 0xb8 the screen rect (gfx_get_screen_rect) */
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; u32 screen_width_value; };
-    union { u32 field_c4; u32 keyboard_nav; u32 screen_height_value; };
-    union {
-        u8 leader_surface[276];     /* 0xc8 SurfaceWindow (surfwnd_ctor) */
-        struct {
-        union { u8 pad_c8[260]; struct { u8 leader_surface_window[260]; }; };
-        union { u32 field_1cc; u32 ship_civ; };
-        u8 pad_1d0[4];
-        union { u32 field_1d4; u32 frame_left; };
-        union { u32 field_1d8; u32 frame_top; };
-        };
-    };
-    union { u32 field_1dc; u32 frame_right; u32 bg_tile_surface; };   /* DibSurface (surface_ctor) */
-    union { u32 field_1e0; u32 frame_bottom; };
-    union { u8 pad_1e4[784]; struct { u8 gap_1e4[64]; u8 leader_palette[720]; }; };
-    union { u32 field_4f4; u32 throne_width; };
-    union { u32 field_4f8; u32 throne_height; };
-    u8 pad_4fc[4];
-    union { u32 field_500; u32 throne_civ; };
-    u8 pad_504[296];
-    union { u32 field_62c; u32 anim_timer; };
-    union { u32 field_630; u32 blink_timer; };
-    union { u32 field_634; u32 flight_timer; };
-    union { u8 pad_638[140]; struct { u8 gap_638[32]; u8 leader_dll[4]; union { u8 leader_video_wnd[104]; struct { u8 video_player[72]; u8 video_window[32]; }; };   /* 0x65c DocumentWindow (mmwnd_ctor), its window at 0x6a4 */ }; };
-    union { u32 field_6c4; u32 killer_civ; };
-    u8 pad_6c8[4];
-    union { u32 field_6cc; u32 slide_rect; };
-    union { u32 field_6d0; u32 slide_top; };
-    union { u32 field_6d4; u32 slide_right; };
-    union { u32 field_6d8; u32 resource_dll; };
-    u8 pad_6dc[16];
-    union { u32 field_6ec; u32 panel_clip_rect; };
-    u8 pad_6f0[4];
-    union { u32 field_6f4; u32 panel_clip_right; };
-    u8 pad_6f8[4];
-    union { u32 field_6fc; u32 slide_y; };
-    u8 pad_700[440];
-    union { u32 field_8b8; u32 type_x; };
-    union { u32 field_8bc; u32 type_y; };
-    union { u32 field_8c0; u32 type_index; };
-    u8 pad_8c4[40];
-    union { u32 field_8ec; u32 spaceship_state; };
-    union { u32 field_8f0; u32 launched; };
-    u8 pad_8f4[492];
-    union { u32 field_ae0; u32 launch_state; };
-    u8 pad_ae4[1076];
-    union { u32 field_f18; u32 advance_civ; };
-    u8 pad_f1c[344];
-    union { i32 field_1074; i32 video_cur_frame; };   /* 0x1074 the leader video player's (at 0x65c) current frame */
-    u8 pad_1078[12];
-    union { u8 field_1084; u8 leader_tribe; };
-    union { u8 field_1085; u8 leader_civ; };
-    union { u8 field_1086; u8 viewer_civ; };
-    union { u8 field_1087; u8 style_era; };
-    union { u8 field_1088; u8 pending_flag_1088; };
-    u8 pad_1089[3];
-    /* methods */
-    DiploLeaderWindow *construct();    /* 004942a3 */
-    i32 init(i32 viewer_civ,iptr leader_civ);    /* 004944bb */
-    void show();    /* 00494704 */
-    void teardown();    /* 004947f0 */
-    uint init_tile();    /* 0049488e */
-    i32 init_background();    /* 004948e6 */
-    uint init_main_art();    /* 00494949 */
-    i32 init_military();    /* 00494b5f */
-    i32 init_science();    /* 00494e2a */
-    void science_rank_top_techs(int (&top_techs)[13],int &tech_count);    /* part of init_science */
-    void science_draw_tech(iptr advance,struct GameFont &font2,Sprite (&category_sprites)[5],i8 (&draw_ctx)[16],i32 draw_x,int draw_y,tagRECT &text_rect,int text_width,int (&top_techs)[13],i8 (&text_colors)[4],CHAR (&words)[252],CHAR (&aCStack_641)[53],CHAR (&line2_buf)[51]);    /* part of init_science */
-    i32 init_portrait();    /* 00495c35 */
-    i8 init_video();    /* 00495e0c */
-    void wnd_set_bg_tile(DibSurface *tile);    /* 00497cc0 */
-    void destruct();    /* 004943c9 */
-    void *scalar_destruct(uint flags);    /* 00497bf0 */
-} DiploLeaderWindow;
-static_assert(sizeof(DiploLeaderWindow) == 0x108c, "");
-
-/* The throne room (throneroom_ctor 0044ce16, 0x1c44 bytes on the stack of
-   throneroom_show / throneroom_show_upgrade). */
-typedef struct ThroneRoomWindow : ModalMenuWindow {
-    union { uptr field_b8; uptr control_list; };
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; };
-    union { u32 field_c4; u32 keyboard_nav; };
-    u8 pad_c8[260];
-    union { u32 field_1cc; u32 ship_civ; };
-    u8 pad_1d0[4];
-    union { u32 field_1d4; u32 frame_left; };
-    union { u32 field_1d8; u32 frame_top; };
-    union { u32 field_1dc; u32 frame_right; };
-    union { u32 field_1e0; u32 frame_bottom; };
-    union { u8 pad_1e4[784]; struct { u8 gap_1e4[776]; u8 media_wnd[8]; }; };
-    union { u32 field_4f4; u32 throne_width; };
-    union { u32 field_4f8; u32 throne_height; };
-    union { u8 pad_4fc[4]; struct { u8 throne_dll[4]; }; };
-    union { u32 field_500; u32 throne_civ; };
-    union { u8 pad_504[296]; struct { u8 throne_surface_wnd[72]; union { u8 throne_wnd_base[204]; struct { u8 gap_54c[16]; u8 throne_handlers[188]; }; }; u8 throne_backbuffer[20]; }; };
-    union { u32 field_62c; u32 anim_timer; };
-    union { u32 field_630; u32 blink_timer; };
-    union { u32 field_634; u32 flight_timer; };
-    union { u8 pad_638[140]; struct { u8 gap_638[40]; u8 choice_clickmap[100]; }; };
-    union { u32 field_6c4; u32 killer_civ; };
-    u8 pad_6c8[4];
-    union { u32 field_6cc; u32 slide_rect; };
-    union { u32 field_6d0; u32 slide_top; };
-    union { u32 field_6d4; u32 slide_right; };
-    union { u32 field_6d8; u32 resource_dll; };
-    u8 pad_6dc[16];
-    union { u32 field_6ec; u32 panel_clip_rect; };
-    u8 pad_6f0[4];
-    union { u32 field_6f4; u32 panel_clip_right; };
-    u8 pad_6f8[4];
-    union { u32 field_6fc; u32 slide_y; };
-    u8 pad_700[440];
-    union { u32 field_8b8; u32 type_x; };
-    union { u32 field_8bc; u32 type_y; };
-    union { u32 field_8c0; u32 type_index; };
-    u8 pad_8c4[40];
-    union { u32 field_8ec; u32 spaceship_state; };
-    union { u32 field_8f0; u32 launched; };
-    u8 pad_8f4[492];
-    union { u32 field_ae0; u32 launch_state; };
-    u8 pad_ae4[1076];
-    union { u32 field_f18; u32 advance_civ; };
-    u8 pad_f1c[360];
-    union { u8 field_1084; u8 leader_tribe; };
-    u8 pad_1085[3];
-    union { u8 field_1088; u8 pending_flag_1088; };
-    union { u8 pad_1089[2203]; struct { u8 gap_1089[667]; u8 movie_frame_surface[72]; u8 movie_caption_rect[372]; u8 slot_ptr_table_lead[12]; u32 slot_sprite_ptrs; u8 gap_14f0[236]; u8 small_building_sprites_a[240]; u8 small_building_sprites_b[240]; u8 large_building_sprites_a[240]; u8 large_building_sprites_b[120]; }; };
-    union { u32 field_1924; u32 choosing_item; };
-    union { u32 field_1928; u32 throne_complete; };
-    union { u32 field_192c; u32 chosen_item; };
-    union { u8 pad_1930[180]; struct { u8 choice_dialog_2[108]; u32 icon_surface; u8 gap_19a0[68]; }; };
-    union { u32 field_19e4; u32 terrain_kind; };
-    union { u32 field_19e8; u32 slot_count; };
-    union { u32 field_19ec; u32 wonder_slots_left; };
-    union { u32 field_19f0; u32 improvement_slots_left; };
-    union { u32 field_19f4; u32 houses_left; };
-    union { u8 pad_19f8[588]; struct { u8 improvement_slot_tables[164]; u8 starfield_stars[208]; u8 wonder_slot_tables[184]; u32 click_prompt_rect; u8 gap_1c28[12]; u32 click_prompt_font; u8 gap_1c38[12]; }; };
-    /* methods */
-    ThroneRoomWindow *construct(iptr civ);    /* 0044ce16 */
-    void destruct();    /* 0044d027 */
-    uint create_windows();    /* 0044d162 */
-    void run_upgrade();    /* 0044d296 */
-    void run_view();    /* 0044d9c1 */
-    void draw_click_prompt();    /* 0044dab5 */
-    i32 render();    /* 0044db92 */
-    i32 render_choices();    /* 0044e790 */
-    void add_choice_regions();    /* part of render_choices */
-} ThroneRoomWindow;
-static_assert(sizeof(ThroneRoomWindow) == 0x1c44, "");
-
-/* The city view (cityview_ctor 00454354, operator_new(0x1cb4): cityview.wnd). */
-typedef struct CityViewWindow : ModalMenuWindow {
-    union { uptr field_b8; uptr control_list; };
-    union { u32 field_bc; u32 handler_slot_bc; };
-    union { u32 field_c0; u32 handler_slot_c0; };
-    union { u32 field_c4; u32 keyboard_nav; };
-    union { u8 pad_c8[260]; struct { u8 gap_c8[56]; u8 frame_wnd_base[16]; u8 frame_handlers[188]; }; };
-    union { u32 field_1cc; u32 ship_civ; };
-    u8 pad_1d0[4];
-    union { u32 field_1d4; u32 frame_left; };
-    union { u32 field_1d8; u32 frame_top; };
-    union { u32 field_1dc; u32 frame_right; };
-    union { u32 field_1e0; u32 frame_bottom; };
-    union { u8 pad_1e4[784]; struct { u8 gap_1e4[48]; u8 cityview_palette[736]; }; };
-    union { u32 field_4f4; u32 throne_width; };
-    union { u32 field_4f8; u32 throne_height; };
-    u8 pad_4fc[4];
-    union { u32 field_500; u32 throne_civ; };
-    u8 pad_504[296];
-    union { u32 field_62c; u32 anim_timer; };
-    union { u32 field_630; u32 blink_timer; };
-    union { u32 field_634; u32 flight_timer; };
-    union { u8 pad_638[140]; struct { u8 gap_638[16]; u8 improvement_art_surface[72]; u8 wonder_art_surface[52]; }; };
-    union { u32 field_6c4; u32 killer_civ; };
-    u8 pad_6c8[4];
-    union { u32 field_6cc; u32 slide_rect; };
-    union { u32 field_6d0; u32 slide_top; };
-    union { u32 field_6d4; u32 slide_right; };
-    union { u32 field_6d8; u32 resource_dll; };
-    union { u8 pad_6dc[16]; struct { u32 slot_sprites; u8 gap_6e0[12]; }; };   /* 0x3c Sprites from here (crt_vector_ctor_iterator) */
-    union { u32 field_6ec; u32 panel_clip_rect; };
-    u8 pad_6f0[4];
-    union { u32 field_6f4; u32 panel_clip_right; };
-    u8 pad_6f8[4];
-    union { u32 field_6fc; u32 slide_y; };
-    u8 pad_700[440];
-    union { u32 field_8b8; u32 type_x; };
-    union { u32 field_8bc; u32 type_y; };
-    union { u32 field_8c0; u32 type_index; };
-    u8 pad_8c4[40];
-    union { u32 field_8ec; u32 spaceship_state; };
-    union { u32 field_8f0; u32 launched; };
-    u8 pad_8f4[492];
-    union { u32 field_ae0; u32 launch_state; };
-    u8 pad_ae4[1076];
-    union { u32 field_f18; u32 advance_civ; };
-    u8 pad_f1c[360];
-    union { u8 field_1084; u8 leader_tribe; };
-    u8 pad_1085[3];
-    union { u8 field_1088; u8 pending_flag_1088; };
-    union { u8 pad_1089[2203]; struct { u8 building_art_block[2203]; }; struct { u8 gap_1089[1111]; u8 slot_ptr_table_lead[12]; u32 slot_sprite_ptrs; u8 gap_14f0[236]; u8 small_building_sprites_a[240]; u8 small_building_sprites_b[240]; u8 large_building_sprites_a[240]; u8 large_building_sprites_b[120]; }; };
-    union { u32 field_1924; u32 choosing_item; };
-    union { u32 field_1928; u32 throne_complete; };
-    union { u32 field_192c; u32 chosen_item; };
-    union { u8 pad_1930[180]; struct { u8 gap_1930[108]; u32 icon_surface; u8 gap_19a0[68]; }; };
-    union { u32 field_19e4; u32 terrain_kind; };
-    union { u32 field_19e8; u32 slot_count; };
-    union { u32 field_19ec; u32 wonder_slots_left; };
-    union { u32 field_19f0; u32 improvement_slots_left; };
-    union { u32 field_19f4; u32 houses_left; };
-    union { u8 pad_19f8[660]; struct { u8 improvement_slot_tables[372]; u8 wonder_slot_tables[288]; }; };
-    union { u32 field_1c8c; u32 fixed_slot_used; };
-    union { u32 field_1c90; u32 city_id; };
-    union { u32 field_1c94; u32 art_era; };
-    union { u8 pad_1c98[28]; struct { u8 title_rect[16]; u8 title_font[12]; }; };
-    /* methods */
-    CityViewWindow *construct();    /* 00454354 */
-    i32 load(uptr city);    /* 004548a9 */
-    void run_modal();    /* 00454eb2 */
-    void classify_site();    /* 00454f83 */
-    uint load_icon_surface();    /* 0045512b */
-    uint create_windows();    /* 00455183 */
-    i32 layout_buildings();    /* 00455314 */
-    void draw_buildings();    /* 00455add */
-    i32 take_wonder_slot();    /* 00455b8e */
-    i32 take_improvement_slot();    /* 00455c5d */
-    void place_improvement(iptr slot,iptr improvement);    /* 00455d38 */
-    void place_wonder(iptr slot,iptr wonder);    /* 00455dfd */
-    void place_large_house(iptr slot);    /* 00455ebe */
-    void place_small_house(iptr slot);    /* 00455f2e */
-    void place_large_empty_lot(iptr slot);    /* 00455f9e */
-    void place_empty_lot(iptr slot);    /* 00456005 */
-    void redraw_scrolled();    /* 0045606c */
-    void draw_title();    /* 004560f8 */
-    void scroll_right();    /* 0045638b */
-    void scroll_left();    /* 004564a8 */
-    void destruct();    /* 00454699 */
-    void *scalar_destruct(uint flags);    /* 00456e90 */
-} CityViewWindow;
-static_assert(sizeof(CityViewWindow) == 0x1cb4, "");
-
-/* The end-of-game movie windows (defeat_movie_wnd_ctor 004703d4 and
-   arrival_movie_wnd_ctor 00471362 construct the same layout,
-   operator_new(0x137c): endgame_movie_window, spaceship_arrival_window): a
-   video player with a caption. */
-typedef struct EndgameMovieWindow : ModalMenuWindow {
-    u8 palette[1076];               /* 0x0b8 GamePalette (palette_init) */
-    union {                         /* 0x4ec the video player (mmwnd_ctor) */
-        u8 media_wnd[2600];
-        struct { u8 gap_4ec[72]; u8 movie_wnd_base[184]; };   /* 0x534 its window */
-    };
-    u8 movie_dll[4];                /* 0xf14 DllHandle */
-    union { u32 field_f18; u32 advance_civ; };
-    u8 movie_caption_font[8];       /* 0xf1c GameFont */
-    u8 movie_caption_text[1024];    /* 0xf24 */
-    u8 movie_frame_surface[72];     /* 0x1324 DibSurface (surface_ctor) */
-    u8 movie_caption_rect[16];      /* 0x136c RECT */
-    /* methods */
-    EndgameMovieWindow *defeat_movie_wnd_construct();    /* 004703d4 */
-    i32 defeat_movie_wnd_create(uint civ);    /* 004705d7 */
-    void defeat_movie_wnd_play();    /* 004708db */
-    EndgameMovieWindow *defeat_movie_wnd_scalar_destruct(uint flags);    /* 00471020 */
-    EndgameMovieWindow *arrival_movie_wnd_construct();    /* 00471362 */
-    i32 arrival_movie_wnd_create(iptr civ);    /* 00471565 */
-    void arrival_movie_wnd_play();    /* 00471856 */
-    void defeat_movie_wnd_destruct();    /* 004704ec */
-    void arrival_movie_wnd_destruct();    /* 0047147a */
-    void *arrival_movie_wnd_scalar_destruct(uint flags);    /* 004728c0 */
-} EndgameMovieWindow;
-static_assert(sizeof(EndgameMovieWindow) == 0x137c, "");
-
 /* A drawing surface (surface_ctor 005bd630, 0x48 bytes): a DIB section and its
    clip rectangle. */
 typedef struct DibSurface {
@@ -2937,33 +2520,23 @@ typedef struct PediaWindow : SurfaceWindow {
     u32 close_box_height;
     u32 close_box_sprite;
     struct Hotspot *close_box_hotspot;
-    u8 list_describe_button[60];
-    u32 list_close_button;
-    u8 pad_1754[56];
-    u32 detail_back_button;
-    u8 pad_1790[56];
-    u8 detail_describe_button[60];
-    u32 detail_close_button;
-    u8 pad_1808[56];
-    u8 text_back_button[60];
-    u32 text_close_button;
-    u8 pad_1880[56];
-    u32 concept_list_back_button;
-    u8 pad_18bc[56];
-    u8 advance_list_describe_button[60];
-    u8 advance_list_tech_tree_button[60];
-    u8 advance_list_close_button[60];
-    u32 advance_detail_back_button;
-    u8 pad_19ac[56];
-    u32 advance_detail_tech_tree_button;
-    u8 pad_19e8[56];
-    u8 advance_detail_describe_button[60];
-    u32 advance_detail_close_button;
-    u8 pad_1a60[56];
-    u32 description_edit;
-    u8 pad_1a9c[68];
-    u32 list_scrollbar;
-    u8 pad_1ae4[60];
+    Button list_describe_button;
+    Button list_close_button;
+    Button detail_back_button;
+    Button detail_describe_button;
+    Button detail_close_button;
+    Button text_back_button;
+    Button text_close_button;
+    Button concept_list_back_button;
+    Button advance_list_describe_button;
+    Button advance_list_tech_tree_button;
+    Button advance_list_close_button;
+    Button advance_detail_back_button;
+    Button advance_detail_tech_tree_button;
+    Button advance_detail_describe_button;
+    Button advance_detail_close_button;
+    EditControl description_edit;
+    Scrollbar list_scrollbar;
     u32 list_hotspot;
     u32 list_rect;
     u32 list_rect_top;
@@ -3041,6 +2614,24 @@ typedef struct PediaWindow : SurfaceWindow {
     void load_description(int topic2);
 } PediaWindow;
 static_assert(sizeof(PediaWindow) == 0x1f44, "");
+static_assert(__builtin_offsetof(PediaWindow, list_describe_button) == 0x1714, "");
+static_assert(__builtin_offsetof(PediaWindow, list_close_button) == 0x1750, "");
+static_assert(__builtin_offsetof(PediaWindow, detail_back_button) == 0x178c, "");
+static_assert(__builtin_offsetof(PediaWindow, detail_describe_button) == 0x17c8, "");
+static_assert(__builtin_offsetof(PediaWindow, detail_close_button) == 0x1804, "");
+static_assert(__builtin_offsetof(PediaWindow, text_back_button) == 0x1840, "");
+static_assert(__builtin_offsetof(PediaWindow, text_close_button) == 0x187c, "");
+static_assert(__builtin_offsetof(PediaWindow, concept_list_back_button) == 0x18b8, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_list_describe_button) == 0x18f4, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_list_tech_tree_button) == 0x1930, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_list_close_button) == 0x196c, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_detail_back_button) == 0x19a8, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_detail_tech_tree_button) == 0x19e4, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_detail_describe_button) == 0x1a20, "");
+static_assert(__builtin_offsetof(PediaWindow, advance_detail_close_button) == 0x1a5c, "");
+static_assert(__builtin_offsetof(PediaWindow, description_edit) == 0x1a98, "");
+static_assert(__builtin_offsetof(PediaWindow, list_scrollbar) == 0x1ae0, "");
+static_assert(__builtin_offsetof(PediaWindow, list_hotspot) == 0x1b20, "");
 
 /* The high council (council_wnd_ctor 0051661a, 0x1330 bytes on
    council_show's stack): a video player for the advisors, a dialog, the
@@ -3070,18 +2661,13 @@ typedef struct CouncilWindow : SurfaceWindow {
     i32 speech_rect_top;
     i32 speech_rect_right;
     i32 speech_rect_bottom;
-    u32 advisor_button_1;
-    u8 pad_11c4[56];
-    u32 advisor_button_4;
-    u8 pad_1200[56];
-    uptr advisor_button_3;
-    u8 pad_123c[56];
-    u32 advisor_button_2;
-    u8 pad_1278[56];
-    u32 advisor_button_0;
-    u8 pad_12b4[56];
-    u32 council_close_button;
-    u8 pad_12f0[64];
+    Button advisor_button_1;        /* 0x11c0 */
+    Button advisor_button_4;        /* 0x11fc */
+    Button advisor_button_3;        /* 0x1238 */
+    Button advisor_button_2;        /* 0x1274 */
+    Button advisor_button_0;        /* 0x12b0 */
+    Button council_close_button;    /* 0x12ec */
+    u8 pad_1328[8];
     /* methods */
     CouncilWindow *construct();    /* 0051661a */
     void destruct();    /* 005167d9 */
@@ -3096,6 +2682,12 @@ typedef struct CouncilWindow : SurfaceWindow {
     i32 advisor_from_letter(i8 *token);    /* 00518392 */
 } CouncilWindow;
 static_assert(sizeof(CouncilWindow) == 0x1330, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_button_1) == 0x11c0, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_button_4) == 0x11fc, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_button_3) == 0x1238, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_button_2) == 0x1274, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_button_0) == 0x12b0, "");
+static_assert(__builtin_offsetof(CouncilWindow, council_close_button) == 0x12ec, "");
 
 /* The tax rate dialog (taxrate_dialog_ctor 0040f060, 0x510 bytes on
    taxrate_dialog_show's stack): three rate scrollbars, three lock checkboxes
@@ -3539,6 +3131,366 @@ typedef struct SpritePicker : FrameWindow {
     void destruct();    /* 00578390 */
 } SpritePicker;
 static_assert(sizeof(SpritePicker) == 0x3ec, "");
+
+/* The windows on ModalMenuWindow that hold surfaces, palettes, fonts and
+   sprites as members (defined after those classes). */
+
+/* The destroyed civilizations window (destroyed_civs_wnd_ctor 00514f16, 0x710
+   bytes on destroyed_civs_show's stack). */
+typedef struct DestroyedCivsWindow : ModalMenuWindow {
+    GamePalette palette;            /* 0xb8 */
+    SurfaceWindow surface_wnd;      /* 0x4ec */
+    DibSurface civs_art_surface;    /* 0x600 */
+    DllHandle art_dll;              /* 0x648 */
+    Sprite panel_sprite;            /* 0x64c */
+    Sprite portrait_sprite;         /* 0x688 */
+    union { u32 field_6c4; u32 killer_civ; };
+    u8 pad_6c8[4];
+    union { u32 field_6cc; u32 slide_rect; };
+    union { u32 field_6d0; u32 slide_top; };
+    union { u32 field_6d4; u32 slide_right; };
+    union { u32 field_6d8; u32 resource_dll; };
+    union { u8 pad_6dc[16]; struct { u8 slot_sprites[16]; }; };
+    union { u32 field_6ec; u32 panel_clip_rect; };
+    u8 pad_6f0[4];
+    union { u32 field_6f4; u32 panel_clip_right; };
+    u8 pad_6f8[4];
+    union { u32 field_6fc; u32 slide_y; };
+    GameFont caption_font_2;        /* 0x700 */
+    u8 pad_708[8];
+    /* methods */
+    DestroyedCivsWindow *construct();    /* 00514f16 */
+    void destruct();    /* 005150b9 */
+    i32 create(uint killer);    /* 005151f4 */
+    void run();    /* 00515516 */
+    void draw_entry(iptr entry);    /* 00515999 */
+    void draw_portrait(iptr entry);    /* 00515c15 */
+    void slide_step(int delta);    /* 00515dc8 */
+    void slide_down();    /* 00515f3c */
+    void slide_up();    /* 00516005 */
+} DestroyedCivsWindow;
+static_assert(sizeof(DestroyedCivsWindow) == 0x710, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, palette) == 0xb8, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, surface_wnd) == 0x4ec, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, civs_art_surface) == 0x600, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, art_dll) == 0x648, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, panel_sprite) == 0x64c, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, portrait_sprite) == 0x688, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, killer_civ) == 0x6c4, "");
+static_assert(__builtin_offsetof(DestroyedCivsWindow, caption_font_2) == 0x700, "");
+
+/* A star of the launch starfield (perspective: screen = x / depth + centre). */
+typedef struct SpaceshipStar {
+    i32 x;                          /* 0x0 */
+    i32 y;                          /* 0x4 */
+    i32 depth;                      /* 0x8 1..100 */
+} SpaceshipStar;
+
+/* The spaceship window (spaceship_wnd_ctor 004d0517, 0x2180 bytes:
+   spaceship_launch_sprite_xs_block.spaceship_wnd); the launch state past 0xfb8. */
+typedef struct SpaceshipWindow : ModalMenuWindow {
+    SurfaceWindow surface_wnd;      /* 0xb8 */
+    union { u32 field_1cc; u32 ship_civ; };
+    u8 pad_1d0[4];
+    union { u32 field_1d4; u32 frame_left; };
+    union { u32 field_1d8; u32 frame_top; };
+    union { u32 field_1dc; u32 frame_right; };
+    union { u32 field_1e0; u32 frame_bottom; };
+    u8 ship_panel_rect[16];         /* 0x1e4 */
+    DllHandle ship_dll;             /* 0x1f4 */
+    GamePalette ship_palette;       /* 0x1f8 */
+    union { u32 field_62c; u32 anim_timer; };
+    union { u32 field_630; u32 blink_timer; };
+    union { u32 field_634; u32 flight_timer; };
+    union { u8 pad_638[140]; struct { u8 stats_text[140]; }; };
+    union { u32 field_6c4; u32 killer_civ; };
+    u8 pad_6c8[4];
+    union { u32 field_6cc; u32 slide_rect; };
+    union { u32 field_6d0; u32 slide_top; };
+    union { u32 field_6d4; u32 slide_right; };
+    union { u32 field_6d8; u32 resource_dll; };
+    u8 pad_6dc[16];
+    union { u32 field_6ec; u32 panel_clip_rect; };
+    u8 pad_6f0[4];
+    union { u32 field_6f4; u32 panel_clip_right; };
+    u8 pad_6f8[4];
+    union { u32 field_6fc; u32 slide_y; };
+    union { u8 pad_700[440]; struct { u8 gap_700[312]; u8 success_text[128]; }; };
+    union { u32 field_8b8; u32 type_x; };
+    union { u32 field_8bc; u32 type_y; };
+    union { u32 field_8c0; u32 type_index; };
+    GameFont large_font;            /* 0x8c4 */
+    GameFont medium_font;           /* 0x8cc */
+    GameFont typing_font;           /* 0x8d4 */
+    u8 status_line_rect[16];        /* 0x8dc */
+    union { u32 field_8ec; u32 spaceship_state; };
+    union { u32 field_8f0; u32 launched; };
+    DibSurface ship_view_surface;   /* 0x8f4 */
+    Sprite ship_image_sprite;       /* 0x93c */
+    Sprite close_btn_disabled_sprite;   /* 0x978 */
+    Sprite close_btn_normal_sprite;     /* 0x9b4 */
+    Sprite close_btn_pressed_sprite;    /* 0x9f0 */
+    Sprite launch_btn_disabled_sprite;  /* 0xa2c */
+    Sprite launch_btn_normal_sprite;    /* 0xa68 */
+    Sprite launch_btn_pressed_sprite;   /* 0xaa4 */
+    union { u32 field_ae0; u32 launch_state; };
+    ClickMap hotspot_map;           /* 0xae4 */
+    u32 launch_video_player;        /* 0x1da8 video window playing the launch (+0x48 its modal window) */
+    i32 close_btn_pressed;          /* 0x1dac */
+    i32 launch_btn_pressed;         /* 0x1db0 */
+    i32 typing_label_part;          /* 0x1db4 */
+    SpaceshipStar stars[80];        /* 0x1db8 */
+    u8 pad_2178[8];
+    /* methods */
+    SpaceshipWindow *construct(u32 civ);    /* 004d0517 */
+    i32 destruct();    /* 004d08b0 */
+    i32 init();    /* 004d0b58 */
+    uint create();    /* 004d0d64 */
+    void run_modal();    /* 004d0ea6 */
+    void present();    /* 004d13b8 */
+    void launch_sequence();    /* 004d1725 */
+    void build_stats_text();    /* 004d4a7b */
+    uint type_char(int allow_skip);    /* 004d4fd1 */
+    void init_starfield();    /* 004d570b */
+    void play_launch_video();    /* 004d5b21 */
+    void setup_hotspots();    /* 004d5e41 */
+    void draw_buttons();    /* 004d5ef9 */
+    void draw_close_btn(int enabled,int raised);    /* 004d5f79 */
+    void draw_launch_btn(int enabled,int raised);    /* 004d60a5 */
+    i32 render_ship();
+    struct ShipPartRow;    /* part of render_ship */
+    struct ShipSurfaces;    /* part of render_ship */
+    void render_ship_construct_surfaces(ShipSurfaces &sf,int &unwind_state);    /* part of render_ship */
+    void render_ship_init_rows(ShipPartRow *part_rows);    /* part of render_ship */
+    int render_ship_load_surfaces(ShipSurfaces &sf);    /* part of render_ship */
+    void render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8 *sprite);    /* part of render_ship */
+    void render_ship_free_surfaces(ShipSurfaces &sf,int &unwind_state);    /* part of render_ship */
+    void make_button_sprites();
+} SpaceshipWindow;
+static_assert(sizeof(SpaceshipWindow) == 0x2180, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, surface_wnd) == 0xb8, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_civ) == 0x1cc, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, frame_left) == 0x1d4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_panel_rect) == 0x1e4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_dll) == 0x1f4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_palette) == 0x1f8, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, anim_timer) == 0x62c, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, stats_text) == 0x638, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, type_x) == 0x8b8, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, large_font) == 0x8c4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, medium_font) == 0x8cc, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, typing_font) == 0x8d4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, status_line_rect) == 0x8dc, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, spaceship_state) == 0x8ec, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_view_surface) == 0x8f4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, ship_image_sprite) == 0x93c, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, close_btn_disabled_sprite) == 0x978, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, close_btn_normal_sprite) == 0x9b4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, close_btn_pressed_sprite) == 0x9f0, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, launch_btn_disabled_sprite) == 0xa2c, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, launch_btn_normal_sprite) == 0xa68, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, launch_btn_pressed_sprite) == 0xaa4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, launch_state) == 0xae0, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, hotspot_map) == 0xae4, "");
+static_assert(__builtin_offsetof(SpaceshipWindow, launch_video_player) == 0x1da8, "");
+
+/* A leader's diplomacy window (diplo_leader_wnd_ctor 004942a3, operator_new(0x108c):
+   diplo_leader.window). */
+typedef struct DiploLeaderWindow : ModalMenuWindow {
+    union { uptr field_b8; uptr control_list; };   /* 0xb8 the screen rect (gfx_get_screen_rect) */
+    union { u32 field_bc; u32 handler_slot_bc; };
+    union { u32 field_c0; u32 handler_slot_c0; u32 screen_width_value; };
+    union { u32 field_c4; u32 keyboard_nav; u32 screen_height_value; };
+    SurfaceWindow leader_surface;   /* 0xc8 */
+    DibSurface bg_tile_surface;     /* 0x1dc */
+    GamePalette leader_palette;     /* 0x224 */
+    DllHandle leader_dll;           /* 0x658 */
+    AviPlayer leader_video_wnd;     /* 0x65c */
+    union { u8 field_1084; u8 leader_tribe; };
+    union { u8 field_1085; u8 leader_civ; };
+    union { u8 field_1086; u8 viewer_civ; };
+    union { u8 field_1087; u8 style_era; };
+    union { u8 field_1088; u8 pending_flag_1088; };
+    u8 pad_1089[3];
+    /* methods */
+    DiploLeaderWindow *construct();    /* 004942a3 */
+    i32 init(i32 viewer_civ,iptr leader_civ);    /* 004944bb */
+    void show();    /* 00494704 */
+    void teardown();    /* 004947f0 */
+    uint init_tile();    /* 0049488e */
+    i32 init_background();    /* 004948e6 */
+    uint init_main_art();    /* 00494949 */
+    i32 init_military();    /* 00494b5f */
+    i32 init_science();    /* 00494e2a */
+    void science_rank_top_techs(int (&top_techs)[13],int &tech_count);    /* part of init_science */
+    void science_draw_tech(iptr advance,struct GameFont &font2,Sprite (&category_sprites)[5],i8 (&draw_ctx)[16],i32 draw_x,int draw_y,tagRECT &text_rect,int text_width,int (&top_techs)[13],i8 (&text_colors)[4],CHAR (&words)[252],CHAR (&aCStack_641)[53],CHAR (&line2_buf)[51]);    /* part of init_science */
+    i32 init_portrait();    /* 00495c35 */
+    i8 init_video();    /* 00495e0c */
+    void wnd_set_bg_tile(DibSurface *tile);    /* 00497cc0 */
+    void destruct();    /* 004943c9 */
+    void *scalar_destruct(uint flags);    /* 00497bf0 */
+} DiploLeaderWindow;
+static_assert(sizeof(DiploLeaderWindow) == 0x108c, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, leader_surface) == 0xc8, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, bg_tile_surface) == 0x1dc, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, leader_palette) == 0x224, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, leader_dll) == 0x658, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, leader_video_wnd) == 0x65c, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, leader_tribe) == 0x1084, "");
+static_assert(__builtin_offsetof(DiploLeaderWindow, pending_flag_1088) == 0x1088, "");
+
+/* The throne room (throneroom_ctor 0044ce16, 0x1c44 bytes on the stack of
+   throneroom_show / throneroom_show_upgrade). */
+typedef struct ThroneRoomWindow : ModalMenuWindow {
+    GamePalette palette;            /* 0xb8 */
+    u8 media_wnd[8];                /* 0x4ec the screen rectangle (gfx_get_screen_rect) */
+    union { u32 field_4f4; u32 throne_width; };
+    union { u32 field_4f8; u32 throne_height; };
+    DllHandle throne_dll;           /* 0x4fc */
+    union { u32 field_500; u32 throne_civ; };
+    SurfaceWindow throne_surface_wnd;   /* 0x504 */
+    DibSurface throne_backbuffer;   /* 0x618 */
+    ClickMap choice_clickmap;       /* 0x660 */
+    union { u32 field_1924; u32 choosing_item; };
+    union { u32 field_1928; u32 throne_complete; };
+    union { u32 field_192c; u32 chosen_item; };
+    Dialog choice_dialog_2;         /* 0x1930 */
+    u32 click_prompt_rect;          /* 0x1c24 RECT */
+    u8 gap_1c28[12];
+    GameFont click_prompt_font;     /* 0x1c34 */
+    u8 gap_1c3c[8];
+    /* methods */
+    ThroneRoomWindow *construct(iptr civ);    /* 0044ce16 */
+    void destruct();    /* 0044d027 */
+    uint create_windows();    /* 0044d162 */
+    void run_upgrade();    /* 0044d296 */
+    void run_view();    /* 0044d9c1 */
+    void draw_click_prompt();    /* 0044dab5 */
+    i32 render();    /* 0044db92 */
+    i32 render_choices();    /* 0044e790 */
+    void add_choice_regions();    /* part of render_choices */
+} ThroneRoomWindow;
+static_assert(sizeof(ThroneRoomWindow) == 0x1c44, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, palette) == 0xb8, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, media_wnd) == 0x4ec, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, throne_width) == 0x4f4, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, throne_dll) == 0x4fc, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, throne_civ) == 0x500, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, throne_surface_wnd) == 0x504, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, throne_backbuffer) == 0x618, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, choice_clickmap) == 0x660, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, choosing_item) == 0x1924, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, choice_dialog_2) == 0x1930, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, click_prompt_rect) == 0x1c24, "");
+static_assert(__builtin_offsetof(ThroneRoomWindow, click_prompt_font) == 0x1c34, "");
+
+/* The city view (cityview_ctor 00454354, operator_new(0x1cb4): cityview.wnd). */
+typedef struct CityViewWindow : ModalMenuWindow {
+    SurfaceWindow surface_wnd;      /* 0xb8 */
+    DibSurface backbuffer;          /* 0x1cc */
+    GamePalette cityview_palette;   /* 0x214 */
+    DibSurface improvement_art_surface;  /* 0x648 */
+    DibSurface wonder_art_surface;  /* 0x690 */
+    DllHandle resource_dll;         /* 0x6d8 */
+    Sprite slot_sprites[60];        /* 0x6dc */
+    Sprite *slot_sprite_ptrs[60];   /* 0x14ec the sprite drawn on each slot */
+    Sprite small_building_sprites_a[4];  /* 0x15dc */
+    Sprite small_building_sprites_b[4];  /* 0x16cc */
+    Sprite large_building_sprites_a[4];  /* 0x17bc */
+    Sprite large_building_sprites_b[4];  /* 0x18ac */
+    DibSurface icon_surface;        /* 0x199c */
+    union { u32 field_19e4; u32 terrain_kind; };
+    union { u32 field_19e8; u32 slot_count; };
+    union { u32 field_19ec; u32 wonder_slots_left; };
+    union { u32 field_19f0; u32 improvement_slots_left; };
+    union { u32 field_19f4; u32 houses_left; };
+    u8 improvement_slot_tables[372];    /* 0x19f8 */
+    u8 wonder_slot_tables[288];     /* 0x1b6c */
+    union { u32 field_1c8c; u32 fixed_slot_used; };
+    union { u32 field_1c90; u32 city_id; };
+    union { u32 field_1c94; u32 art_era; };
+    u8 title_rect[16];              /* 0x1c98 */
+    GameFont title_font;            /* 0x1ca8 */
+    u8 pad_1cb0[4];
+    /* methods */
+    CityViewWindow *construct();    /* 00454354 */
+    i32 load(uptr city);    /* 004548a9 */
+    void run_modal();    /* 00454eb2 */
+    void classify_site();    /* 00454f83 */
+    uint load_icon_surface();    /* 0045512b */
+    uint create_windows();    /* 00455183 */
+    i32 layout_buildings();    /* 00455314 */
+    void draw_buildings();    /* 00455add */
+    i32 take_wonder_slot();    /* 00455b8e */
+    i32 take_improvement_slot();    /* 00455c5d */
+    void place_improvement(iptr slot,iptr improvement);    /* 00455d38 */
+    void place_wonder(iptr slot,iptr wonder);    /* 00455dfd */
+    void place_large_house(iptr slot);    /* 00455ebe */
+    void place_small_house(iptr slot);    /* 00455f2e */
+    void place_large_empty_lot(iptr slot);    /* 00455f9e */
+    void place_empty_lot(iptr slot);    /* 00456005 */
+    void redraw_scrolled();    /* 0045606c */
+    void draw_title();    /* 004560f8 */
+    void scroll_right();    /* 0045638b */
+    void scroll_left();    /* 004564a8 */
+    void destruct();    /* 00454699 */
+    void *scalar_destruct(uint flags);    /* 00456e90 */
+} CityViewWindow;
+static_assert(sizeof(CityViewWindow) == 0x1cb4, "");
+static_assert(__builtin_offsetof(CityViewWindow, surface_wnd) == 0xb8, "");
+static_assert(__builtin_offsetof(CityViewWindow, backbuffer) == 0x1cc, "");
+static_assert(__builtin_offsetof(CityViewWindow, cityview_palette) == 0x214, "");
+static_assert(__builtin_offsetof(CityViewWindow, improvement_art_surface) == 0x648, "");
+static_assert(__builtin_offsetof(CityViewWindow, wonder_art_surface) == 0x690, "");
+static_assert(__builtin_offsetof(CityViewWindow, resource_dll) == 0x6d8, "");
+static_assert(__builtin_offsetof(CityViewWindow, slot_sprites) == 0x6dc, "");
+static_assert(__builtin_offsetof(CityViewWindow, slot_sprite_ptrs) == 0x14ec, "");
+static_assert(__builtin_offsetof(CityViewWindow, small_building_sprites_a) == 0x15dc, "");
+static_assert(__builtin_offsetof(CityViewWindow, small_building_sprites_b) == 0x16cc, "");
+static_assert(__builtin_offsetof(CityViewWindow, large_building_sprites_a) == 0x17bc, "");
+static_assert(__builtin_offsetof(CityViewWindow, large_building_sprites_b) == 0x18ac, "");
+static_assert(__builtin_offsetof(CityViewWindow, icon_surface) == 0x199c, "");
+static_assert(__builtin_offsetof(CityViewWindow, terrain_kind) == 0x19e4, "");
+static_assert(__builtin_offsetof(CityViewWindow, improvement_slot_tables) == 0x19f8, "");
+static_assert(__builtin_offsetof(CityViewWindow, wonder_slot_tables) == 0x1b6c, "");
+static_assert(__builtin_offsetof(CityViewWindow, fixed_slot_used) == 0x1c8c, "");
+static_assert(__builtin_offsetof(CityViewWindow, title_rect) == 0x1c98, "");
+static_assert(__builtin_offsetof(CityViewWindow, title_font) == 0x1ca8, "");
+
+/* The end-of-game movie windows (defeat_movie_wnd_ctor 004703d4 and
+   arrival_movie_wnd_ctor 00471362 construct the same layout,
+   operator_new(0x137c): endgame_movie_window, spaceship_arrival_window): a
+   video player with a caption. */
+typedef struct EndgameMovieWindow : ModalMenuWindow {
+    GamePalette palette;            /* 0x0b8 */
+    AviPlayer media_wnd;            /* 0x4ec the video player (mmwnd_ctor) */
+    DllHandle movie_dll;            /* 0xf14 */
+    union { u32 field_f18; u32 advance_civ; };
+    GameFont movie_caption_font;    /* 0xf1c */
+    u8 movie_caption_text[1024];    /* 0xf24 */
+    DibSurface movie_frame_surface; /* 0x1324 */
+    u8 movie_caption_rect[16];      /* 0x136c RECT */
+    /* methods */
+    EndgameMovieWindow *defeat_movie_wnd_construct();    /* 004703d4 */
+    i32 defeat_movie_wnd_create(uint civ);    /* 004705d7 */
+    void defeat_movie_wnd_play();    /* 004708db */
+    EndgameMovieWindow *defeat_movie_wnd_scalar_destruct(uint flags);    /* 00471020 */
+    EndgameMovieWindow *arrival_movie_wnd_construct();    /* 00471362 */
+    i32 arrival_movie_wnd_create(iptr civ);    /* 00471565 */
+    void arrival_movie_wnd_play();    /* 00471856 */
+    void defeat_movie_wnd_destruct();    /* 004704ec */
+    void arrival_movie_wnd_destruct();    /* 0047147a */
+    void *arrival_movie_wnd_scalar_destruct(uint flags);    /* 004728c0 */
+} EndgameMovieWindow;
+static_assert(sizeof(EndgameMovieWindow) == 0x137c, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, palette) == 0xb8, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, media_wnd) == 0x4ec, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, movie_dll) == 0xf14, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, advance_civ) == 0xf18, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, movie_caption_font) == 0xf1c, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, movie_caption_text) == 0xf24, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, movie_frame_surface) == 0x1324, "");
+static_assert(__builtin_offsetof(EndgameMovieWindow, movie_caption_rect) == 0x136c, "");
 
 /* Callbacks kept in globals. */
 typedef void (*CleanupFn)(void);                /* err_register_cleanup_fn: called on a fatal error */

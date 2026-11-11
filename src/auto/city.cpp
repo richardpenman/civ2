@@ -66,7 +66,7 @@ void __cdecl taxrate_on_tax_scroll(int pos)
   tax_rate2 = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
-  taxrate_balance(&tax_rate2,&science_rate2,&lux_rate,(int *)((iptr)taxrate_wnd.dlg + 0x2f4),
+  taxrate_balance(&tax_rate2,&science_rate2,&lux_rate,(int *)&taxrate_wnd.dlg->init_sci_rate,
                      (int *)((iptr)taxrate_wnd.dlg + 0x350),(int *)((iptr)taxrate_wnd.dlg + 0x354));
   taxrate_wnd.dlg->tax_rate_sel = tax_rate2;
   if (requested_rate != tax_rate2) {
@@ -105,7 +105,7 @@ void __cdecl taxrate_on_science_scroll(int pos)
   science_rate2 = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   lux_rate = (int)taxrate_wnd.dlg->lux_rate_sel;
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
-  taxrate_balance(&science_rate2,&lux_rate,&tax_rate2,(int *)((iptr)taxrate_wnd.dlg + 0x2f0),
+  taxrate_balance(&science_rate2,&lux_rate,&tax_rate2,(int *)&taxrate_wnd.dlg->init_lux_rate,
                      (int *)((iptr)taxrate_wnd.dlg + 0x354),(int *)((iptr)taxrate_wnd.dlg + 0x34c));
   taxrate_wnd.dlg->sci_rate_sel = science_rate2;
   if (requested_rate != science_rate2) {
@@ -144,7 +144,7 @@ void __cdecl taxrate_on_lux_scroll(int pos)
   lux_rate = int_clamp(pos,0,(i32)taxrate_wnd.dlg->max_rate_value);
   tax_rate2 = (int)taxrate_wnd.dlg->tax_rate_sel;
   science_rate2 = (int)taxrate_wnd.dlg->sci_rate_sel;
-  taxrate_balance(&lux_rate,&tax_rate2,&science_rate2,(int *)((iptr)taxrate_wnd.dlg + 0x2ec),
+  taxrate_balance(&lux_rate,&tax_rate2,&science_rate2,(int *)&taxrate_wnd.dlg->init_tax_rate,
                      (int *)((iptr)taxrate_wnd.dlg + 0x34c),(int *)((iptr)taxrate_wnd.dlg + 0x350));
   taxrate_wnd.dlg->lux_rate_sel = lux_rate;
   if (lux_rate != requested_rate) {
@@ -4155,12 +4155,12 @@ CityViewWindow *CityViewWindow::construct()
   int i;
   
   this->ModalMenuWindow::construct();
-  ((SurfaceWindow *)&control_list)->SurfaceWindow::construct();
-  surface_ctor((DibSurface *)&ship_civ);
-  ((GamePalette *)((u8 *)&cityview_palette))->init();
-  surface_ctor((DibSurface *)((u8 *)&improvement_art_surface));
-  surface_ctor((DibSurface *)wonder_art_surface);
-  ((DllHandle *)&resource_dll)->init();
+  surface_wnd.SurfaceWindow::construct();
+  surface_ctor(&backbuffer);
+  cityview_palette.init();
+  surface_ctor(&improvement_art_surface);
+  surface_ctor(&wonder_art_surface);
+  resource_dll.init();
   crt_vector_ctor_iterator((u8 *)&slot_sprites,0x3c,0x3c,sprite_init,sprite_destroy);
   crt_vector_ctor_iterator(small_building_sprites_a,0x3c,4,sprite_init,sprite_destroy)
   ;
@@ -4170,21 +4170,21 @@ CityViewWindow *CityViewWindow::construct()
                sprite_destroy);
   crt_vector_ctor_iterator(large_building_sprites_b,0x3c,4,sprite_init,
                sprite_destroy);
-  surface_ctor((DibSurface *)((u8 *)&icon_surface));
-  ((GameFont *)title_font)->init_empty();
+  surface_ctor(&icon_surface);
+  title_font.init_empty();
   gfx_get_screen_rect((RECT *)&tax_rate_icon_sprites_block.cityview_screen_rect);
   cityview.scroll_x = (0x500 - tax_rate_icon_sprites_block.screen_rect_right) / 2;
   mem_copy_src_dst(&cityview_slot_x_table_block.cityview_slot_tables_init,(improvement_slot_tables),0x174);
   mem_copy_src_dst(&str_empty,(wonder_slot_tables),0x120);
   cityview.wnd = this;
   for (i = 0; i < 0x3c; i++) {
-    slot = slot_ptr_table_lead + i * 4 + 0xc;
+    slot = (u8 *)&slot_sprite_ptrs[i];
     slot[0] = '\0';
     slot[1] = '\0';
     slot[2] = '\0';
     slot[3] = '\0';
   }
-  ((GameFont *)title_font)->set_styled(0,0x24,1);
+  title_font.set_styled(0,0x24,1);
   SetRect((LPRECT)(title_rect),0,0,tax_rate_icon_sprites_block.screen_rect_right,0x28);
   return this;
 }
@@ -4198,11 +4198,11 @@ void CityViewWindow::destruct()
   seh_state = seh_state & 0xff;
   (*((char *)&seh_state + 0)) = 0xd;
   (*(i32 *)&cityview.wnd) = 0;
-  ((DllHandle *)((int)this + 0x6d8))->dll_handle_free();
+  resource_dll.dll_handle_free();
   (*((char *)&seh_state + 0)) = 0xc;
-  /* inlined unwind funclet 00454798 */ { ((GameFont *)(((int)this) + 0x1ca8))->destroy(); }
+  /* inlined unwind funclet 00454798 */ { title_font.destroy(); }
   (*((char *)&seh_state + 0)) = 0xb;
-  /* inlined unwind funclet 004547a7 */ { surface_dtor((DibSurface *)(((int)this) + 0x199c)); }
+  /* inlined unwind funclet 004547a7 */ { surface_dtor(&icon_surface); }
   (*((char *)&seh_state + 0)) = 10;
   /* inlined unwind funclet 004547b6 */ { crt_vector_dtor_iterator((void *)large_building_sprites_b,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 9;
@@ -4212,19 +4212,19 @@ void CityViewWindow::destruct()
   (*((char *)&seh_state + 0)) = 7;
   /* inlined unwind funclet 004547fe */ { crt_vector_dtor_iterator((void *)small_building_sprites_a,0x3c,4,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 6;
-  /* inlined unwind funclet 00454816 */ { crt_vector_dtor_iterator((void *)(((int)this) + 0x6dc),0x3c,0x3c,sprite_destroy); }
+  /* inlined unwind funclet 00454816 */ { crt_vector_dtor_iterator((void *)slot_sprites,0x3c,0x3c,sprite_destroy); }
   (*((char *)&seh_state + 0)) = 5;
-  /* inlined unwind funclet 0045482e */ { ((DllHandle *)(((int)this) + 0x6d8))->free(); }
+  /* inlined unwind funclet 0045482e */ { resource_dll.free(); }
   (*((char *)&seh_state + 0)) = 4;
-  /* inlined unwind funclet 0045483d */ { surface_dtor((DibSurface *)(((int)this) + 0x690)); }
+  /* inlined unwind funclet 0045483d */ { surface_dtor(&wonder_art_surface); }
   (*((char *)&seh_state + 0)) = 3;
-  /* inlined unwind funclet 0045484c */ { surface_dtor((DibSurface *)(((int)this) + 0x648)); }
+  /* inlined unwind funclet 0045484c */ { surface_dtor(&improvement_art_surface); }
   (*((char *)&seh_state + 0)) = 2;
-  /* inlined unwind funclet 0045485b */ { ((GamePalette *)(((int)this) + 0x214))->destroy(); }
+  /* inlined unwind funclet 0045485b */ { cityview_palette.destroy(); }
   (*((char *)&seh_state + 0)) = 1;
-  /* inlined unwind funclet 0045486a */ { surface_dtor((DibSurface *)(((int)this) + 0x1cc)); }
+  /* inlined unwind funclet 0045486a */ { surface_dtor(&backbuffer); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 00454879 */ { ((SurfaceWindow *)(((int)this) + 0xb8))->SurfaceWindow::destruct(); }
+  /* inlined unwind funclet 00454879 */ { surface_wnd.SurfaceWindow::destruct(); }
   seh_state = 0xffffffff;
   /* inlined unwind funclet 00454888 */ { ModalMenuWindow::destruct(); }
   return;
@@ -4253,29 +4253,29 @@ i32 CityViewWindow::load(uptr city)
     result = 0;
   }
   else {
-    ((DllHandle *)&resource_dll)->load((const char *)path);
+    resource_dll.load((const char *)path);
     classify_site();
     art_era = civ_city_art_era(cities[city].owner);
     this->art_era = art_era;
     if (tax_rate_icon_sprites_block.screen_rect_right < 0x500) {
-      ((DibSurface *)&ship_civ)->DibSurface::create(tax_rate_icon_sprites_block.screen_rect_right,0x1e0);
+      (&backbuffer)->DibSurface::create(tax_rate_icon_sprites_block.screen_rect_right,0x1e0);
     }
     else {
-      ((DibSurface *)&ship_civ)->DibSurface::create(0x500,0x1e0);
+      (&backbuffer)->DibSurface::create(0x500,0x1e0);
     }
-    ok = ((DibSurface *)improvement_art_surface)->load_gif_resource(300,10,0xec,
-                       (iptr)(cityview_palette));
+    ok = improvement_art_surface.load_gif_resource(300,10,0xec,
+                       (iptr)&cityview_palette);
     if (ok == 0) {
       result = 0;
     }
     else {
-      ok = ((DibSurface *)wonder_art_surface)->load_gif_resource(0x131,10,0xec,
-                         (iptr)(cityview_palette));
+      ok = wonder_art_surface.load_gif_resource(0x131,10,0xec,
+                         (iptr)&cityview_palette);
       if (ok == 0) {
         result = 0;
       }
       else {
-        ok = art_surface.load_gif_resource(0x136,10,0xec,(iptr)(cityview_palette));
+        ok = art_surface.load_gif_resource(0x136,10,0xec,(iptr)&cityview_palette);
         if (ok == 0) {
           result = 0;
         }
@@ -4283,9 +4283,9 @@ i32 CityViewWindow::load(uptr city)
           src_x = 1;
           src_y = 1;
           for (i = 0; i < 4; i++) {
-            ((Sprite *)(building_art_block + i * 0x3c + 0x733))->grab_from_surface((iptr)&art_surface,9
+            large_building_sprites_a[i].grab_from_surface((iptr)&art_surface,9
                        ,src_x,src_y,0x9e,0x72);
-            ((Sprite *)(building_art_block + i * 0x3c + 0x733))->replace_color(7,9);
+            large_building_sprites_a[i].replace_color(7,9);
             src_x += 0x9f;
           }
           src_x = 1;
@@ -4295,17 +4295,17 @@ i32 CityViewWindow::load(uptr city)
             src_y += 0x73;
           }
           for (i = 0; i < 4; i++) {
-            ((Sprite *)(building_art_block + i * 0x3c + 0x823))->grab_from_surface((iptr)&art_surface,9
+            large_building_sprites_b[i].grab_from_surface((iptr)&art_surface,9
                        ,src_x,src_y,0x9e,0x72);
-            ((Sprite *)(building_art_block + i * 0x3c + 0x823))->replace_color(7,9);
+            large_building_sprites_b[i].replace_color(7,9);
             src_x += 0x9f;
           }
           src_x = 1;
           src_y = 0x15a;
           for (i = 0; i < 4; i++) {
-            ((Sprite *)(building_art_block + i * 0x3c + 0x553))->grab_from_surface((iptr)&art_surface,9
+            small_building_sprites_a[i].grab_from_surface((iptr)&art_surface,9
                        ,src_x,src_y,0x7b,0x52);
-            ((Sprite *)(building_art_block + i * 0x3c + 0x553))->replace_color(7,9);
+            small_building_sprites_a[i].replace_color(7,9);
             src_x += 0x7c;
           }
           src_x = 1;
@@ -4315,9 +4315,9 @@ i32 CityViewWindow::load(uptr city)
             src_y += 0x53;
           }
           for (i = 0; i < 4; i++) {
-            ((Sprite *)(building_art_block + i * 0x3c + 0x643))->grab_from_surface((iptr)&art_surface,9
+            small_building_sprites_b[i].grab_from_surface((iptr)&art_surface,9
                        ,src_x,src_y,0x7b,0x52);
-            ((Sprite *)(building_art_block + i * 0x3c + 0x643))->replace_color(7,9);
+            small_building_sprites_b[i].replace_color(7,9);
             src_x += 0x7c;
           }
           ok = load_icon_surface();
@@ -4354,16 +4354,16 @@ void CityViewWindow::run_modal()
   handle_show_raise();
   wnd_flush_paint();
   set_palette((iptr)&cityview_palette);
-  ((SurfaceWindow *)&control_list)->SurfaceWindow::show();
+  surface_wnd.SurfaceWindow::show();
   wnd_flush_paint();
-  ((WndBase *)frame_wnd_base)->set_capture();
+  surface_wnd.window.set_capture();
   if (2 < game.multiplayer) {
-    ((ModalMenuWindow *)frame_wnd_base)->set_modal_idle_callback(net_modal_idle_poll);
+    surface_wnd.window.set_modal_idle_callback(net_modal_idle_poll);
   }
-  ((ModalMenuWindow *)frame_wnd_base)->run_modal_loop();
-  ((ModalMenuWindow *)frame_wnd_base)->set_modal_idle_callback(0);
-  ((WndBase *)frame_wnd_base)->release_capture();
-  ((WndBase *)frame_wnd_base)->hide();
+  surface_wnd.window.run_modal_loop();
+  surface_wnd.window.set_modal_idle_callback(0);
+  surface_wnd.window.release_capture();
+  surface_wnd.window.hide();
   wnd_flush_paint();
   set_palette((iptr)&game_palette_block.game_palette);
   hide();
@@ -4418,8 +4418,8 @@ uint CityViewWindow::load_icon_surface()
 {
   int loaded;
   
-  ((DibSurface *)&icon_surface)->DibSurface::create(0x20,0x20);
-  loaded = ((DibSurface *)&icon_surface)->load_gif_resource(399,10,0x20,(iptr)&game_palette_block.game_palette);
+  icon_surface.DibSurface::create(0x20,0x20);
+  loaded = icon_surface.load_gif_resource(399,10,0x20,(iptr)&game_palette_block.game_palette);
   return (uint)(loaded != 0);
 }
 
@@ -4433,8 +4433,8 @@ uint CityViewWindow::create_windows()
   create_with_handlers((const char *)&str_empty_74,0x800,tax_rate_icon_sprites_block.cityview_screen_rect,tax_rate_icon_sprites_block.cityview_screen_rect_top,
              tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,(tax_rate_icon_sprites_block.cityview_screen_rect_bottom - tax_rate_icon_sprites_block.cityview_screen_rect_top) + 5,(iptr)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
   set_bg_color(0);
-  ((DibSurface *)&control_list)->wnd_create_with_surface((const char *)&str_empty_75,0x800,0,tax_rate_icon_sprites_block.cityview_screen_rect_bottom - 0x1e0 >> 1,
-             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,0x1e0,(iptr)(cityview_palette),(iptr)this);
+  surface_wnd.wnd_create_with_surface((const char *)&str_empty_75,0x800,0,tax_rate_icon_sprites_block.cityview_screen_rect_bottom - 0x1e0 >> 1,
+             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,0x1e0,(iptr)&cityview_palette,(iptr)this);
   ok = city_has_improvement(city_id,IMP_SUPERHIGHWAYS);
   if (ok == 0) {
     art_era2 = civ_city_art_era(cities[city_id].owner);
@@ -4442,13 +4442,13 @@ uint CityViewWindow::create_windows()
   else {
     art_era2 = 3;
   }
-  ok = ((DibSurface *)&ship_civ)->load_gif_resource(terrain_kind * 5 + art_era2 + 0x154,10,
-                     0xec,(iptr)(cityview_palette));
+  ok = (&backbuffer)->load_gif_resource(terrain_kind * 5 + art_era2 + 0x154,10,
+                     0xec,(iptr)&cityview_palette);
   if (ok != 0) {
-    ((WndHandlers *)frame_handlers)->set_keydown_handler(cityview_on_key);
-    ((WndHandlers *)frame_handlers)->set_lbuttonup_handler((WndMouseFn)cityview_on_lbuttonup);
-    ((WndHandlers *)frame_handlers)->set_keydown_pre_handler(cityview_on_key_pre);
-    ((WndHandlers *)frame_handlers)->set_mousemove_handler((WndMouseFn)cityview_on_mousemove);
+    surface_wnd.window.wnd_handlers.set_keydown_handler(cityview_on_key);
+    surface_wnd.window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)cityview_on_lbuttonup);
+    surface_wnd.window.wnd_handlers.set_keydown_pre_handler(cityview_on_key_pre);
+    surface_wnd.window.wnd_handlers.set_mousemove_handler((WndMouseFn)cityview_on_mousemove);
     redraw_scrolled();
   }
   return (uint)(ok != 0);
@@ -4645,8 +4645,8 @@ i32 CityViewWindow::layout_buildings()
       place_large_house(spare_slot);
     }
   }
-  ((DibSurface *)wonder_art_surface)->release();
-  ((DibSurface *)improvement_art_surface)->release();
+  wonder_art_surface.release();
+  improvement_art_surface.release();
   return 1;
 }
 
@@ -4658,9 +4658,9 @@ void CityViewWindow::draw_buildings()
   int i;
   
   for (i = 0; i < (int)slot_count; i++) {
-    if (*(int *)(building_art_block + i * 4 + 0x463) != 0) {
-      (*(Sprite **)(building_art_block + i * 4 + 0x463))->draw((RECT *)draw_rect,
-                 (DibSurface *)&ship_civ,
+    if (slot_sprite_ptrs[i] != 0) {
+      slot_sprite_ptrs[i]->draw((RECT *)draw_rect,
+                 &backbuffer,
                  *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_x_table) + i * 8 + terrain_kind * 0x1e0),
                  *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_y_table) + i * 8 + terrain_kind * 0x1e0));
     }
@@ -4716,13 +4716,13 @@ void CityViewWindow::place_improvement(iptr slot,iptr improvement)
 
 {
   if (-1 < slot) {
-    ((Sprite *)(slot * 0x3c + 0x6dc + (int)this))->grab_from_surface((iptr)&improvement_art_surface,9,
+    slot_sprites[slot].grab_from_surface((iptr)&improvement_art_surface,9,
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_x) + (improvement - 1) * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_y) + (improvement - 1) * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_w) + (improvement - 1) * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_h) + (improvement - 1) * 0x10));
-    ((Sprite *)(slot * 0x3c + 0x6dc + (int)this))->replace_color(7,9);
-    (&slot_sprite_ptrs)[slot] = (int)this + slot * 0x3c + 0x6dc;
+    slot_sprites[slot].replace_color(7,9);
+    slot_sprite_ptrs[slot] = &slot_sprites[slot];
   }
   return;
 }
@@ -4732,13 +4732,13 @@ void CityViewWindow::place_wonder(iptr slot,iptr wonder)
 
 {
   if (-1 < slot) {
-    ((Sprite *)(slot * 0x3c + 0x6dc + (int)this))->grab_from_surface((iptr)((u8 *)this + 0x690),9,
+    slot_sprites[slot].grab_from_surface((iptr)&wonder_art_surface,9,
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_x) + wonder * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_y) + wonder * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_w) + wonder * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_h) + wonder * 0x10));
-    ((Sprite *)(slot * 0x3c + 0x6dc + (int)this))->replace_color(7,9);
-    (&slot_sprite_ptrs)[slot] = (int)this + slot * 0x3c + 0x6dc;
+    slot_sprites[slot].replace_color(7,9);
+    slot_sprite_ptrs[slot] = &slot_sprites[slot];
   }
   return;
 }
@@ -4751,7 +4751,7 @@ void CityViewWindow::place_large_house(iptr slot)
   
   variant = rand_range(0,3);
   if ((fixed_slot_used == 0) && (houses_left = houses_left - 1, slot != -1)) {
-    *(u8 **)(building_art_block + slot * 4 + 0x463) = building_art_block + variant * 0x3c + 0x823;
+    slot_sprite_ptrs[slot] = &large_building_sprites_b[variant];
   }
   return;
 }
@@ -4764,7 +4764,7 @@ void CityViewWindow::place_small_house(iptr slot)
   
   variant = rand_range(0,3);
   if ((fixed_slot_used == 0) && (houses_left = houses_left - 1, slot != -1)) {
-    *(u8 **)(building_art_block + slot * 4 + 0x463) = building_art_block + variant * 0x3c + 0x643;
+    slot_sprite_ptrs[slot] = &small_building_sprites_b[variant];
   }
   return;
 }
@@ -4777,7 +4777,7 @@ void CityViewWindow::place_large_empty_lot(iptr slot)
   
   variant = rand_range(0,3);
   if ((fixed_slot_used == 0) && (slot != -1)) {
-    *(u8 **)(building_art_block + slot * 4 + 0x463) = building_art_block + variant * 0x3c + 0x733;
+    slot_sprite_ptrs[slot] = &large_building_sprites_a[variant];
   }
   return;
 }
@@ -4790,7 +4790,7 @@ void CityViewWindow::place_empty_lot(iptr slot)
   
   variant = rand_range(0,3);
   if ((fixed_slot_used == 0) && (slot != -1)) {
-    *(u8 **)(building_art_block + slot * 4 + 0x463) = building_art_block + variant * 0x3c + 0x553;
+    slot_sprite_ptrs[slot] = &small_building_sprites_a[variant];
   }
   return;
 }
@@ -4804,10 +4804,10 @@ void CityViewWindow::redraw_scrolled()
   
   SetRect(&dst_rect,0,0,tax_rate_icon_sprites_block.screen_rect_right,0x1e0);
   SetRect(&src_rect,cityview.scroll_x,0,tax_rate_icon_sprites_block.screen_rect_right + cityview.scroll_x,0x1e0);
-  ((DibSurface *)&ship_civ)->DibSurface::blit((DibSurface *)&control_list,&src_rect,&dst_rect
+  (&backbuffer)->DibSurface::blit(&surface_wnd,&src_rect,&dst_rect
             );
   draw_title();
-  ((SurfaceWindow *)&control_list)->repaint();
+  surface_wnd.repaint();
   wnd_flush_paint();
   return;
 }
@@ -4823,11 +4823,11 @@ void CityViewWindow::draw_title()
   text_append_year((int)game.year);
   gfx_set_text_color_index(10);
   OffsetRect((LPRECT)title_rect,1,1);
-  ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(title_font),(const char *)&textbuf.buf,
+  surface_wnd.draw_text_in_rect((iptr)&title_font,(const char *)&textbuf.buf,
              (RECT *)title_rect,0);
   gfx_set_text_color_index(0x1a);
   OffsetRect((LPRECT)title_rect,-1,-1);
-  ((DibSurface *)&control_list)->draw_text_in_rect((iptr)(title_font),(const char *)&textbuf.buf,
+  surface_wnd.draw_text_in_rect((iptr)&title_font,(const char *)&textbuf.buf,
              (RECT *)title_rect,0);
   return;
 }
@@ -4886,7 +4886,7 @@ void __cdecl cityview_on_key_pre(i32 key)
   case 0xd1:
   case 0xd2:
     if (cityview.wnd != (CityViewWindow *)0x0) {
-      ((ModalMenuWindow *)cityview.wnd->frame_wnd_base)->end_modal_loop();
+      cityview.wnd->surface_wnd.window.end_modal_loop();
     }
   }
   return;
@@ -4914,10 +4914,10 @@ void CityViewWindow::scroll_right()
     if ((((char)((ushort)key_state >> 8) == '\0') &&
         (key_state = GetAsyncKeyState(0x27), (char)((ushort)key_state >> 8) == '\0')) &&
        (cursor.x <= tax_rate_icon_sprites_block.screen_rect_right * 7 >> 3)) break;
-    ((DibSurface *)&ship_civ)->DibSurface::blit((DibSurface *)&control_list,&src_rect,
+    (&backbuffer)->DibSurface::blit(&surface_wnd,&src_rect,
                &dst_rect);
     draw_title();
-    ((DibSurface *)&control_list)->wnd_blit_surface();
+    surface_wnd.wnd_blit_surface();
     cityview.scroll_x += step;
     OffsetRect(&src_rect,step,0);
     GetCursorPos(&cursor);
@@ -4947,10 +4947,10 @@ void CityViewWindow::scroll_left()
     if ((((char)((ushort)key_state >> 8) == '\0') &&
         (key_state = GetAsyncKeyState(0x25), (char)((ushort)key_state >> 8) == '\0')) &&
        (tax_rate_icon_sprites_block.screen_rect_right >> 3 <= cursor.x)) break;
-    ((DibSurface *)&ship_civ)->DibSurface::blit((DibSurface *)&control_list,&src_rect,
+    (&backbuffer)->DibSurface::blit(&surface_wnd,&src_rect,
                &dst_rect);
     draw_title();
-    ((DibSurface *)&control_list)->wnd_blit_surface();
+    surface_wnd.wnd_blit_surface();
     cityview.scroll_x -= step;
     OffsetRect(&src_rect,-step,0);
     GetCursorPos(&cursor);
