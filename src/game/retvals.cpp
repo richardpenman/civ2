@@ -1462,7 +1462,7 @@ int __cdecl city_process_pollution(int city)
     check = city_has_improvement(city,IMP_NUCLEAR_PLANT);
     roll = 0;
     if (check != 0) {
-      roll = civ_has_advance((int)owner,ADV_FUSION_POWER);
+      roll = civ_has_advance(owner,ADV_FUSION_POWER);
       if (roll == 0) {
         roll = 5 - (uint)game.difficulty;
         if (roll < 1) {
@@ -1474,16 +1474,16 @@ int __cdecl city_process_pollution(int city)
           meltdown_roll = meltdown_roll % (int)(6 - (uint)game.difficulty);
         }
         if (meltdown_roll == 0) {
-          roll = tile_visible_to((int)cities[city].x,
-                                     (int)cities[city].y,human_civ[0]);
+          roll = tile_visible_to(cities[city].x,
+                                     cities[city].y,human_civ[0]);
           if (roll != 0) {
             mapviews_ensure_visible((int)cities[city].x,
                                (int)cities[city].y,
-                               (int)cities[city].owner);
+                               cities[city].owner);
           }
-          map_animate_nuke((int)cities[city].x,
-                             (int)cities[city].y);
-          nuclear_blast((int)cities[city].x,
+          map_animate_nuke(cities[city].x,
+                             cities[city].y);
+          nuclear_blast(cities[city].x,
                              (int)cities[city].y);
           city_set_improvement(city,0x15,0);
           roll = (int)autoplay.active;

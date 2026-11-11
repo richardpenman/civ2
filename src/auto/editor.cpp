@@ -506,9 +506,9 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
     text_append_spaces(0x14 - female_len);
     text_append_int(female_flag);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_female_flag_sep_str));
-    text_append_int((int)leaders[leader].color);
+    text_append_int(leaders[leader].color);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_color_sep_str));
-    text_append_int((int)leaders[leader].city_style);
+    text_append_int(leaders[leader].city_style);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_city_style_sep_str));
     if (leaders[leader].plural < 1) {
       plural_id = ~(int)leaders[leader].plural + 1;

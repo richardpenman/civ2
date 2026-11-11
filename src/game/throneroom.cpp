@@ -14,7 +14,7 @@ typedef union {
 /* 0x0044cc80: after the civilization earns a throne-room improvement:
  * show the throne room to place it, unless every piece is complete
  * (pieces 0-6 at level 4, and all the bits of piece 8). */
-void __cdecl throneroom_show_upgrade(iptr civ)
+void __cdecl throneroom_show_upgrade(int civ)
 {
     ThroneRoom t;
     int i, incomplete = 0;
@@ -30,7 +30,7 @@ void __cdecl throneroom_show_upgrade(iptr civ)
 }
 
 /* 0x0044cd9b: show the throne room (to look at it). */
-void __cdecl throneroom_show(iptr civ)
+void __cdecl throneroom_show(int civ)
 {
     ThroneRoom t;
     t.room.construct( civ);

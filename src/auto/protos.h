@@ -25,11 +25,11 @@ int __cdecl rect_width(RECT *rect); /* 00407f90 */
 int __cdecl rect_height(RECT *rect); /* 00407fc0 */
 void __cdecl win_flush_pending_msgs(void); /* 00407ff0 */
 void __cdecl rect_set(iptr rect,int left,int top,int right,int bottom); /* 00408680 */
-void __cdecl rect_set_xywh(iptr rect,int x,int y,iptr width,iptr height); /* 004086c0 */
+void __cdecl rect_set_xywh(iptr rect,int x,int y,int width,int height); /* 004086c0 */
 void __cdecl gfx_target_frame_rect(RECT *rect,i32 color); /* 00408700 */
 void __cdecl gfx_fill_draw_target(i32 color); /* 00408750 */
-void __cdecl gfx_target_fill_rect(i32 x,i32 y,i32 width,iptr height, i32 color); /* 00408780 */
-i32 __cdecl map_in_bounds(iptr x,iptr y); /* 004087c0 */
+void __cdecl gfx_target_fill_rect(i32 x,i32 y,i32 width,int height, i32 color); /* 00408780 */
+i32 __cdecl map_in_bounds(int x,int y); /* 004087c0 */
 void __cdecl map_fill_tile_byte(iptr ptr,i32 value); /* 00408830 */
 void __cdecl map_copy_tile_byte(iptr dst,iptr src); /* 00408903 */
 void __cdecl ui_pump_messages_net(void); /* 0040894c */
@@ -39,7 +39,7 @@ void __cdecl mapgen_add_landmass(int islet); /* 0040a572 */
 void __cdecl mapgen_land_walk(int x,int y); /* 0040a763 */
 i32 __cdecl mapgen_in_bounds(int x,int y); /* 0040a824 */
 void __cdecl mapgen_mark_tile_cluster(int x,int y); /* 0040a892 */
-void __cdecl mapgen_mark_tile(iptr raw_x,iptr y); /* 0040a8db */
+void __cdecl mapgen_mark_tile(int raw_x,int y); /* 0040a8db */
 void __cdecl mapgen_land_walk_wide(int x,int y); /* 0040a92f */
 void __cdecl mapgen_islet_walk(int x,int y); /* 0040aaa4 */
 i32 __cdecl mapgen_try_place_lake(int x,int y); /* 0040ab41 */
@@ -48,7 +48,7 @@ void __cdecl text_clear(void); /* 0040bbb0 */
 void __cdecl text_append(const char *str); /* 0040bbe0 */
 void __cdecl text_append_label(i32 label_id); /* 0040bc10 */
 uint __cdecl tile_grassland_has_shield(int x,int y); /* 0040bcb0 */
-i32 __cdecl civ_max_tax_rate(iptr civ); /* 0040bd10 */
+i32 __cdecl civ_max_tax_rate(int civ); /* 0040bd10 */
 void __cdecl taxrate_balance(iptr rate_adjust,iptr rate_first,iptr rate_second,iptr rate_first_cap,iptr lock_first,iptr lock_second); /* 0040bdac */
 void __cdecl taxrate_dialog_redraw(void); /* 0040bed1 */
 void __cdecl taxrate_on_tax_scroll(int pos); /* 0040beec */
@@ -56,8 +56,8 @@ void __cdecl taxrate_on_science_scroll(int pos); /* 0040c07f */
 void __cdecl taxrate_on_lux_scroll(int pos); /* 0040c212 */
 void __cdecl taxrate_on_ok_clicked(void); /* 0040c3a5 */
 void __cdecl taxrate_on_lock_toggled(int control_id,int checked); /* 0040c3cd */
-void __cdecl taxrate_dialog_show(iptr civ); /* 0040ddc6 */
-void __cdecl taxrate_enforce_max_rate(iptr civ); /* 0040decc */
+void __cdecl taxrate_dialog_show(int civ); /* 0040ddc6 */
+void __cdecl taxrate_enforce_max_rate(int civ); /* 0040decc */
 void __cdecl menu_find_city(void); /* 0040e017 */
 void __cdecl menu_revolution(void); /* 0040e3b1 */
 void __cdecl win_pump_one_message(void); /* 0040ef50 */
@@ -72,20 +72,20 @@ void __cdecl text_append_percent(void); /* 0040fe70 */
 void __cdecl text_append_lparen(void); /* 0040fea0 */
 void __cdecl text_append_rparen(void); /* 0040fed0 */
 void __cdecl text_append_string_id(i32 string_id); /* 0040ff00 */
-void __cdecl text_append_int(iptr value); /* 0040ff30 */
-i32 __cdecl text_set_string_arg(iptr index,const char *str); /* 0040ff60 */
+void __cdecl text_append_int(int value); /* 0040ff30 */
+i32 __cdecl text_set_string_arg(int index,const char *str); /* 0040ff60 */
 i32 __cdecl popup_game_with_sprite(const char *section,iptr sprite,i32 sprite_flags); /* 00410030 */
-i32 __cdecl civ_get_adjective(iptr civ); /* 00410070 */
-void __cdecl city_info_popup(iptr city); /* 004100cf */
+i32 __cdecl civ_get_adjective(int civ); /* 00410070 */
+void __cdecl city_info_popup(int city); /* 004100cf */
 void __cdecl mapviews_redraw_cursor(void); /* 0041033a */
 void __cdecl mapview_on_redraw(void); /* 004103ae */
-uint __cdecl mapviews_ensure_visible(i32 x,i32 y,iptr civ); /* 004105f8 */
+uint __cdecl mapviews_ensure_visible(i32 x,i32 y,int civ); /* 004105f8 */
 void __cdecl mapview_on_mousemove(int mouse_x,int mouse_y); /* 00410835 */
 void __cdecl mapview_cancel_drag(void); /* 00410a64 */
 void __cdecl mapview_drag_hold_expired(void); /* 00410b23 */
 void __cdecl mapview_on_lbuttondown(void); /* 00410bc3 */
 void __cdecl mapview_on_lbuttonup_any(void); /* 00410cfa */
-uint __cdecl map_set_cursor_pos(iptr x,iptr y); /* 00410d98 */
+uint __cdecl map_set_cursor_pos(int x,int y); /* 00410d98 */
 i32 __cdecl ui_paradrop_cursor_active(void); /* 00410e0a */
 void __cdecl mapviews_set_paradrop_cursor(void); /* 00410e46 */
 void __cdecl mapviews_reset_cursor(void); /* 00410ed8 */
@@ -93,7 +93,7 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click); /* 00410
 void __cdecl mapview_on_lbuttonup(i32 x,i32 y); /* 004116c1 */
 void __cdecl mapview_on_rbuttonup(i32 x,i32 y); /* 004116e3 */
 void __cdecl map_window_double_click(i32 screen_x,i32 screen_y); /* 00411705 */
-void __cdecl map_cursor_step_dir(iptr dir); /* 00411a13 */
+void __cdecl map_cursor_step_dir(int dir); /* 00411a13 */
 void __cdecl map_ascii_view_mode(int key); /* 00411a85 */
 void __cdecl cheat_throneroom_upgrade(void); /* 00411bd7 */
 void __cdecl map_ascii_unit_cmd(int key,int raw_key); /* 00411bf5 */
@@ -109,7 +109,7 @@ void __cdecl mapview_on_caption_button(i32 button); /* 004135ab */
 void __cdecl mapviews_create_all(void); /* 00413a90 */
 void __cdecl mapviews_destroy_all(void); /* 00413bd1 */
 void __cdecl text_append_str(const char *str); /* 00414d70 */
-i32 __cdecl popup_game_with_city(const char *section,iptr city); /* 00414dd0 */
+i32 __cdecl popup_game_with_city(const char *section,int city); /* 00414dd0 */
 void __cdecl int_pairs_bubble_sort(int count,i32 *values,i32 *keys); /* 00414f02 */
 iptr __cdecl file_build_open_path(iptr dest,const char *name2); /* 00415040 */
 FILE * __cdecl file_open_path(const char *name2,iptr mode); /* 0041508c */
@@ -157,7 +157,7 @@ void __cdecl rules_parse_sections(i32 load_civ_data); /* 0041b00e */
 void __cdecl app_fatal_cleanup(void); /* 0041b48f */
 i32 __cdecl app_startup_init(void); /* 0041b4c0 */
 void __cdecl app_shutdown_cleanup(void); /* 0041b8b0 */
-void __cdecl civ_intro_popup(iptr civ); /* 0041b8ff */
+void __cdecl civ_intro_popup(int civ); /* 0041b8ff */
 i32 __cdecl setup_new_game_dialogs(int setup_mode); /* 0041ba52, hand-written */
 i32 __cdecl setup_choose_map_size(void); /* 0041d417 */
 int __cdecl setup_custom_world(void); /* 0041d7ea */
@@ -197,10 +197,10 @@ i32 __cdecl popup_game_sprite_flags(const char *section,i32 dlg_flags,iptr sprit
 void __cdecl text_expand_vars(iptr src,iptr dest); /* 00426ff0 */
 void __cdecl text_expand_vars_max(iptr src,iptr dest,size_t size);
 i32 __cdecl text_set_label_arg(i32 index,i32 label_id); /* 004271e8 */
-void __cdecl tile_reveal_to_civ(iptr x,iptr y,int civ); /* 004272d0 */
-void __cdecl unit_cancel_goto_on_contact(iptr unit); /* 0042738c */
-void __cdecl unit_stack_wake_sentries(iptr unit); /* 004273e6 */
-void __cdecl unit_reveal_surroundings(iptr unit,int allow_contact); /* 004274a6 */
+void __cdecl tile_reveal_to_civ(int x,int y,int civ); /* 004272d0 */
+void __cdecl unit_cancel_goto_on_contact(int unit); /* 0042738c */
+void __cdecl unit_stack_wake_sentries(int unit); /* 004273e6 */
+void __cdecl unit_reveal_surroundings(int unit,int allow_contact); /* 004274a6 */
 void __cdecl strpool_block_global_init(void); /* 004289e0 */
 void __cdecl strpool_block_static_init(void); /* 004289f5 */
 void __cdecl strpool_init(uint pool_size); /* 00428a0f */
@@ -257,56 +257,56 @@ void __cdecl science_advisor_draw(void); /* 0042ad8f */
 void __cdecl science_advisor_on_scroll(int scroll_pos); /* 0042b540 */
 void __cdecl science_advisor_on_click(int click_x,int click_y); /* 0042b563 */
 void __cdecl science_advisor_on_goal_clicked(void); /* 0042b65b */
-void __cdecl science_advisor_show(iptr civ); /* 0042b67d */
-i32 __cdecl trade_commodity_cities_dialog(iptr civ,iptr commodity); /* 0042b824 */
-void __cdecl trade_supply_search_dialog(iptr civ); /* 0042bc47 */
+void __cdecl science_advisor_show(int civ); /* 0042b67d */
+i32 __cdecl trade_commodity_cities_dialog(int civ,int commodity); /* 0042b824 */
+void __cdecl trade_supply_search_dialog(int civ); /* 0042bc47 */
 void __cdecl trade_advisor_draw(void); /* 0042bd8f */
 void __cdecl trade_advisor_on_scroll(i32 pos); /* 0042ccf4 */
 void __cdecl trade_advisor_on_supply_clicked(void); /* 0042cd11 */
-void __cdecl trade_advisor_show(iptr civ); /* 0042cd2f */
+void __cdecl trade_advisor_show(int civ); /* 0042cd2f */
 void __cdecl city_status_draw(void); /* 0042ced6 */
 void __cdecl city_status_on_scroll(i32 pos); /* 0042d618 */
 void __cdecl city_status_on_click(i32 mouse_x,int mouse_y); /* 0042d635 */
-void __cdecl city_status_show(iptr civ); /* 0042d71e */
-int __cdecl advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int unhappy_count, int angry_count); /* 0042d781 */
+void __cdecl city_status_show(int civ); /* 0042d71e */
+int __cdecl advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int unhappy_count, int angry_count); /* 0042d781 */
 void __cdecl attitude_advisor_draw(void); /* 0042da1d */
 void __cdecl attitude_advisor_on_scroll(i32 scroll_pos); /* 0042e07f */
 void __cdecl attitude_advisor_on_click(i32 click_x,int click_y); /* 0042e09c */
-void __cdecl attitude_advisor_show(iptr report_civ); /* 0042e185 */
+void __cdecl attitude_advisor_show(int report_civ); /* 0042e185 */
 void __cdecl defense_append_ability_label(i32 label_id); /* 0042e1e8 */
 void __cdecl defense_minister_draw(void); /* 0042e220 */
 void __cdecl defense_minister_on_scroll(i32 scroll_pos); /* 0042efe3 */
 void __cdecl defense_minister_on_toggle_view(void); /* 0042f000 */
-void __cdecl defense_minister_show(iptr report_civ); /* 0042f079 */
+void __cdecl defense_minister_show(int report_civ); /* 0042f079 */
 void __cdecl intel_report_draw(void); /* 0042f293 */
 void __cdecl intel_report_on_scroll(int scroll_pos); /* 00430267 */
 void __cdecl intel_report_on_click(int click_x,int click_y); /* 0043028a */
 void __cdecl intel_report_on_cities_clicked(void); /* 0043039d */
-void __cdecl intel_report_show(iptr report_civ,iptr target_civ); /* 0043060b */
+void __cdecl intel_report_show(int report_civ,int target_civ); /* 0043060b */
 void __cdecl mp_meeting_wait_idle(void); /* 00430822 */
-void __cdecl foreign_minister_show(iptr civ); /* 004308ae */
+void __cdecl foreign_minister_show(int civ); /* 004308ae */
 void __cdecl wonders_report_draw(void); /* 00431573 */
 void __cdecl wonders_report_on_scroll(i32 pos); /* 00431c56 */
-void __cdecl wonders_report_show(iptr civ); /* 00431c73 */
+void __cdecl wonders_report_show(int civ); /* 00431c73 */
 void __cdecl powergraph_show(void); /* 00431d22 */
 void __cdecl historian_report_show(void); /* 00432611 */
 void __cdecl top_cities_draw(void); /* 00432c1c */
-void __cdecl top_cities_show(iptr report_civ); /* 00433122 */
-void __cdecl demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,int right_x); /* 004331d1 */
+void __cdecl top_cities_show(int report_civ); /* 00433122 */
+void __cdecl demographics_draw_rank(i32 *values,int civ,uint y,iptr unit_suffix,int left_x,int right_x); /* 004331d1 */
 void __cdecl demographics_draw(void); /* 00433434 */
-void __cdecl demographics_show(iptr report_civ); /* 00434d8a */
+void __cdecl demographics_show(int report_civ); /* 00434d8a */
 void __cdecl civ_score_window_draw(void); /* 00434e39 */
-void __cdecl civ_score_window_show(iptr civ); /* 00435d15 */
+void __cdecl civ_score_window_show(int civ); /* 00435d15 */
 void __cdecl civ_rating_window_draw(void); /* 00435dc4 */
-void __cdecl civ_rating_window_show(iptr civ); /* 004361cc */
-void __cdecl advisor_refresh_if_open(iptr report_id); /* 00436287 */
+void __cdecl civ_rating_window_show(int civ); /* 004361cc */
+void __cdecl advisor_refresh_if_open(int report_id); /* 00436287 */
 void __cdecl hall_of_fame_draw(void); /* 004362e2 */
 void __cdecl hall_of_fame_on_clear_clicked(void); /* 00436b92 */
 iptr __cdecl hall_of_fame_show(int highlight); /* 00436bb7 */
 void __cdecl hall_of_fame_clear(void); /* 00436dd7 */
 void __cdecl hall_of_fame_load(void); /* 00436e28 */
 void __cdecl hall_of_fame_save(void); /* 00436ed2 */
-void __cdecl hall_of_fame_add_entry(iptr civ); /* 00436f5a */
+void __cdecl hall_of_fame_add_entry(int civ); /* 00436f5a */
 void __cdecl credits_text_global_init(void); /* 004371b3 */
 void __cdecl credits_text_static_init(void); /* 004371c8 */
 void __cdecl credits_text_init(uint capacity); /* 004371e2 */
@@ -322,7 +322,7 @@ void __cdecl intel_report_end_modal(void); /* 00437c6f */
 void __cdecl advisor_mp_idle(void); /* 00437c8a */
 void __cdecl casualty_scrollbar_on_scroll(i32 scroll_pos); /* 00437ccd */
 void __cdecl casualty_timeline_draw(void); /* 00437cea */
-void __cdecl casualty_timeline_show(iptr civ); /* 0043856b */
+void __cdecl casualty_timeline_show(int civ); /* 0043856b */
 void __cdecl casualty_timeline_on_dblclick(i32 click_x,int click_y); /* 004386b8 */
 void __cdecl rect_offset(iptr rect,int dx,int dy); /* 0043c790 */
 void __cdecl gfx_draw_rect_frame(iptr surface,RECT *rect,i32 color); /* 0043c7c0 */
@@ -332,43 +332,43 @@ char * __cdecl str_copy_max(char *dest,const char *src,size_t size);
 char * __cdecl str_append_max(char *dest,const char *src,size_t size);
 void __cdecl text_append_long(i32 value); /* 0043c870 */
 void __cdecl text_append_gold(i32 gold); /* 0043c8a0 */
-i32 __cdecl gfx_draw_text(const char *text,i32 x,iptr y); /* 0043c8d0 */
-void __cdecl gfx_draw_text_centered(const char *text,i32 x,iptr y,i32 width); /* 0043c910 */
+i32 __cdecl gfx_draw_text(const char *text,i32 x,int y); /* 0043c8d0 */
+void __cdecl gfx_draw_text_centered(const char *text,i32 x,int y,i32 width); /* 0043c910 */
 i32 __cdecl gfx_draw_text_right(const char *text,i32 right_x,i32 y,i32 flags); /* 0043c950 */
-void __cdecl text_append_population(iptr civ,i32 population); /* 0043ca50 */
-void __cdecl text_append_city_name(iptr city); /* 0043ca80 */
-i32 __cdecl civ_color_primary(iptr civ); /* 0043cab0 */
-i32 __cdecl civ_color_secondary(iptr civ); /* 0043cb30 */
-void __cdecl city_reveal_to_civ(iptr city,iptr civ); /* 0043cc00 */
-int __cdecl city_population_units(iptr city); /* 0043cc7e */
-int __cdecl civ_total_population(iptr civ); /* 0043cce5 */
-void __cdecl str_append_population(iptr dest,iptr civ,int population); /* 0043cda6 */
-void __cdecl str_append_city_population(iptr dest,iptr city); /* 0043ce5a */
-uint __cdecl city_objective_value(iptr city); /* 0043cef9 */
-i32 __cdecl city_at(int x,iptr y); /* 0043cf76 */
-iptr __cdecl city_find_nearest(iptr x,iptr y,iptr owner_civ,int target_landmass,iptr civ); /* 0043d07a */
-i32 __cdecl city_has_improvement(iptr city,iptr improvement_id); /* 0043d20a */
+void __cdecl text_append_population(int civ,i32 population); /* 0043ca50 */
+void __cdecl text_append_city_name(int city); /* 0043ca80 */
+i32 __cdecl civ_color_primary(int civ); /* 0043cab0 */
+i32 __cdecl civ_color_secondary(int civ); /* 0043cb30 */
+void __cdecl city_reveal_to_civ(int city,int civ); /* 0043cc00 */
+int __cdecl city_population_units(int city); /* 0043cc7e */
+int __cdecl civ_total_population(int civ); /* 0043cce5 */
+void __cdecl str_append_population(iptr dest,int civ,int population); /* 0043cda6 */
+void __cdecl str_append_city_population(iptr dest,int city); /* 0043ce5a */
+uint __cdecl city_objective_value(int city); /* 0043cef9 */
+i32 __cdecl city_at(int x,int y); /* 0043cf76 */
+iptr __cdecl city_find_nearest(int x,int y,int owner_civ,int target_landmass,int civ); /* 0043d07a */
+i32 __cdecl city_has_improvement(int city,int improvement_id); /* 0043d20a */
 int __cdecl city_set_improvement(int city, int impr, int on); /* 0043d289, hand-written */
 void __cdecl city_calc_commodity_demand(uptr city); /* 0043d400 */
 void __cdecl str_append_city_name(iptr dest,int city); /* 0043f444 */
-void __cdecl city_assign_default_name(iptr city); /* 0043f493 */
-void __cdecl city_refresh_area_tiles(iptr city); /* 0043f7a7 */
-uptr __cdecl city_create(iptr x,iptr y,iptr civ); /* 0043f8b0 */
-void __cdecl city_remove_trade_route(iptr city,iptr route_index); /* 00440325 */
-void __cdecl city_set_trade_route_slot(iptr city,iptr slot,iptr partner,iptr commodity); /* 004403ec */
-void __cdecl city_add_trade_route(uptr city,uptr city2,iptr commodity); /* 00440453 */
-void __cdecl unit_caravan_establish_trade(iptr unit,uptr city); /* 00440750 */
+void __cdecl city_assign_default_name(int city); /* 0043f493 */
+void __cdecl city_refresh_area_tiles(int city); /* 0043f7a7 */
+uptr __cdecl city_create(int x,int y,int civ); /* 0043f8b0 */
+void __cdecl city_remove_trade_route(int city,int route_index); /* 00440325 */
+void __cdecl city_set_trade_route_slot(int city,int slot,int partner,int commodity); /* 004403ec */
+void __cdecl city_add_trade_route(uptr city,uptr city2,int commodity); /* 00440453 */
+void __cdecl unit_caravan_establish_trade(int unit,uptr city); /* 00440750 */
 void __cdecl city_delete(uptr city,i32 from_network); /* 004413d1 */
-i32 __cdecl city_needed_size_improvement(iptr city); /* 00441a79 */
-void __cdecl city_set_production(iptr city,int production); /* 00441b11 */
-void __cdecl civ_reset_city_production(uptr civ,iptr landmass); /* 00442541 */
-i32 __cdecl city_adjacent_to_body(iptr city,iptr landmass); /* 0044263f */
-int __cdecl city_adjacent_sea_info(iptr city,int *out_max_size,uptr *out_dir); /* 0044272d */
-i32 __cdecl ai_city_touches_landmass(iptr city,int landmass); /* 00442885 */
-i32 __cdecl cities_share_ocean(iptr city,iptr city2); /* 004429af */
+i32 __cdecl city_needed_size_improvement(int city); /* 00441a79 */
+void __cdecl city_set_production(int city,int production); /* 00441b11 */
+void __cdecl civ_reset_city_production(uptr civ,int landmass); /* 00442541 */
+i32 __cdecl city_adjacent_to_body(int city,int landmass); /* 0044263f */
+int __cdecl city_adjacent_sea_info(int city,int *out_max_size,uptr *out_dir); /* 0044272d */
+i32 __cdecl ai_city_touches_landmass(int city,int landmass); /* 00442885 */
+i32 __cdecl cities_share_ocean(int city,int city2); /* 004429af */
 i32 __cdecl popup_debug_text(const char *section); /* 00444270 */
-i32 __cdecl dlg_game_txt_with_unit_flags(const char *section,iptr unit,i32 flags); /* 004442a0 */
-i32 __cdecl dlg_game_txt_with_unit(const char *section,iptr unit); /* 004442e0 */
+i32 __cdecl dlg_game_txt_with_unit_flags(const char *section,int unit,i32 flags); /* 004442a0 */
+i32 __cdecl dlg_game_txt_with_unit(const char *section,int unit); /* 004442e0 */
 i32 __cdecl setup_network_game(int conn_type); /* 00444310 */
 i32 __cdecl net_prompt_ip_address(void); /* 0044528e */
 i32 __cdecl net_prompt_player_name(void); /* 0044542c */
@@ -615,7 +615,7 @@ void __cdecl gfx_sheet_surface_global_init(void); /* 00448f27 */
 void __cdecl gfx_sheet_surface_static_init(void); /* 00448f41 */
 void __cdecl gfx_sheet_surface_reg_atexit(void); /* 00448f5b */
 void __cdecl gfx_sheet_surface_static_dtor(void); /* 00448f78 */
-i32 __cdecl civ_city_style_era(iptr civ); /* 00448f92 */
+i32 __cdecl civ_city_style_era(int civ); /* 00448f92 */
 void __cdecl gfx_load_terrain_sprites(void); /* 00449030 */
 void __cdecl sprite_grab_tile_cell(iptr sprite,i32 x,i32 y); /* 0044999c */
 void __cdecl sprite_grab_from_sheet(iptr sprite,i32 x,i32 y,i32 width, i32 height); /* 004499d3 */
@@ -630,8 +630,8 @@ void __cdecl gfx_load_city_sprites(void); /* 0044ae4c */
 void __cdecl unit_sprite_scan_shield_offset(int unit_type,int x,int y); /* 0044b239 */
 void __cdecl gfx_load_unit_sprites(void); /* 0044b30e */
 void __cdecl gfx_load_game_sprites(void); /* 0044b49e */
-void __cdecl throneroom_show_upgrade(iptr civ); /* 0044cc80 */
-void __cdecl throneroom_show(iptr civ); /* 0044cd9b */
+void __cdecl throneroom_show_upgrade(int civ); /* 0044cc80 */
+void __cdecl throneroom_show(int civ); /* 0044cd9b */
 void __cdecl throneroom_on_click(i32 x,i32 y); /* 0044f4c9 */
 void __cdecl throneroom_on_key(int key); /* 0044f717 */
 void __cdecl throneroom_close(void); /* 0044f799 */
@@ -650,10 +650,10 @@ void __cdecl pedia_link_on_click_unit(int control_id); /* 0045333e */
 void __cdecl pedia_link_on_click_terrain(int control_id); /* 004533c0 */
 void __cdecl ui_pump_messages(void); /* 00453af0 */
 void __thiscall hotspot_dtor(Hotspot *self); /* 00453ba0 */
-i32 __cdecl wonder_is_expired(iptr wonder); /* 00453da0 */
-int __cdecl wonder_get_city(iptr wonder); /* 00453e18 */
-i32 __cdecl civ_has_wonder(iptr civ,iptr wonder); /* 00453e51 */
-int __cdecl wonder_get_owner(iptr wonder); /* 00453edf */
+i32 __cdecl wonder_is_expired(int wonder); /* 00453da0 */
+int __cdecl wonder_get_city(int wonder); /* 00453e18 */
+i32 __cdecl civ_has_wonder(int civ,int wonder); /* 00453e51 */
+int __cdecl wonder_get_owner(int wonder); /* 00453edf */
 void __cdecl registry_load_default_language(void); /* 00453f90 */
 bool __cdecl registry_write_value(iptr key_path,iptr value_name,iptr data,DWORD data_size,DWORD value_type); /* 0045406c */
 i8 * __cdecl registry_read_value(iptr key_path,iptr value_name,iptr out_size,iptr out_type); /* 00454103 */
@@ -662,28 +662,28 @@ void __cdecl cityview_on_mousemove(int mouse_x); /* 004561d9 */
 void __cdecl cityview_on_key(int key); /* 00456228 */
 void __cdecl cityview_on_lbuttonup(void); /* 0045626d */
 void __cdecl cityview_on_key_pre(i32 key); /* 0045629b */
-void __cdecl civ_adjust_attitude(iptr civ,iptr other_civ,int delta); /* 00456f20 */
-int __cdecl diplo_patience_limit(iptr civ2,iptr civ); /* 00456f8b */
-void __cdecl diplo_eval_ai_stance(iptr civ2,iptr civ); /* 0045705e */
-void __cdecl diplo_set_attitude_arg(iptr civ2,iptr civ); /* 00458a3b */
-void __cdecl diplo_greet_emissary(iptr civ2,iptr civ); /* 00458ab1 */
-uint __cdecl diplo_ask_receive_emissary(iptr civ2,iptr civ,iptr x,iptr y); /* 00458df9 */
+void __cdecl civ_adjust_attitude(int civ,int other_civ,int delta); /* 00456f20 */
+int __cdecl diplo_patience_limit(int civ2,int civ); /* 00456f8b */
+void __cdecl diplo_eval_ai_stance(int civ2,int civ); /* 0045705e */
+void __cdecl diplo_set_attitude_arg(int civ2,int civ); /* 00458a3b */
+void __cdecl diplo_greet_emissary(int civ2,int civ); /* 00458ab1 */
+uint __cdecl diplo_ask_receive_emissary(int civ2,int civ,int x,int y); /* 00458df9 */
 void __cdecl diplo_session_reset(void); /* 0045918e */
-i32 __cdecl diplo_offer_sell_tech(iptr civ,iptr civ2,int mode); /* 004591cb */
-int __cdecl diplo_tech_exchange(iptr civ2,iptr civ,i32 x,i32 y,int mode,int eval_only); /* 0045950b */
-void __cdecl diplo_form_alliance(iptr civ2,iptr civ); /* 0045a535 */
-void __cdecl diplo_sign_peace_treaty(iptr civ2,iptr civ); /* 0045a6ab */
-void __cdecl diplo_agree_ceasefire(iptr civ2,iptr civ); /* 0045a7a8 */
-void __cdecl diplo_allies_join_war(iptr civ,iptr civ2); /* 0045a8e3 */
-void __cdecl diplo_declare_war(iptr civ,iptr civ3,iptr civ2); /* 0045ac71 */
-void __cdecl diplo_ally_demand_help(iptr civ,iptr civ2); /* 0045b0d6 */
+i32 __cdecl diplo_offer_sell_tech(int civ,int civ2,int mode); /* 004591cb */
+int __cdecl diplo_tech_exchange(int civ2,int civ,i32 x,i32 y,int mode,int eval_only); /* 0045950b */
+void __cdecl diplo_form_alliance(int civ2,int civ); /* 0045a535 */
+void __cdecl diplo_sign_peace_treaty(int civ2,int civ); /* 0045a6ab */
+void __cdecl diplo_agree_ceasefire(int civ2,int civ); /* 0045a7a8 */
+void __cdecl diplo_allies_join_war(int civ,int civ2); /* 0045a8e3 */
+void __cdecl diplo_declare_war(int civ,int civ3,int civ2); /* 0045ac71 */
+void __cdecl diplo_ally_demand_help(int civ,int civ2); /* 0045b0d6 */
 int __cdecl diplo_gold_attitude_value(int gold); /* 0045b472 */
-i32 __cdecl diplo_ai_answer_proposal(iptr civ2,iptr civ,int proposal); /* 0045b4da */
-void __cdecl diplo_favor_menu(iptr civ2,iptr civ); /* 0045dd7f */
-void __cdecl diplo_gift_menu(iptr civ2,iptr civ); /* 0045f0b1 */
-void __cdecl diplo_ai_senate_hawks_notice(iptr civ,iptr civ2); /* 0045fd67 */
-i32 __cdecl diplo_proposal_menu(iptr civ2,iptr civ); /* 0045fe19 */
-void __cdecl diplo_ai_meet_player(iptr civ2,iptr civ,i32 x,i32 y,int player_initiated); /* 00460129 */
+i32 __cdecl diplo_ai_answer_proposal(int civ2,int civ,int proposal); /* 0045b4da */
+void __cdecl diplo_favor_menu(int civ2,int civ); /* 0045dd7f */
+void __cdecl diplo_gift_menu(int civ2,int civ); /* 0045f0b1 */
+void __cdecl diplo_ai_senate_hawks_notice(int civ,int civ2); /* 0045fd67 */
+i32 __cdecl diplo_proposal_menu(int civ2,int civ); /* 0045fe19 */
+void __cdecl diplo_ai_meet_player(int civ2,int civ,i32 x,i32 y,int player_initiated); /* 00460129 */
 void __cdecl text_set_number_arg_v(int index,i32 value); /* 00467580 */
 void __cdecl scenario_events_global_init(void); /* 004675b0 */
 void __cdecl scenario_events_static_init(void); /* 004675ca */
@@ -697,14 +697,14 @@ void __cdecl menu_handle_654fd4_global_init(void); /* 0046768b */
 void __cdecl menu_handle_654fd4_static_init(void); /* 004676a5 */
 void __cdecl menu_handle_654fd4_reg_atexit(void); /* 004676bf */
 void __cdecl menu_handle_654fd4_atexit_dtor(void); /* 004676dc */
-void __cdecl diplo_clear_treaty_flags(iptr civ,iptr civ2,uint flags); /* 00467750 */
-void __cdecl diplo_set_treaty_flags(iptr civ,iptr civ2,uint flags); /* 00467825 */
-uint __cdecl civ_get_attitude(iptr civ,iptr other_civ); /* 00467904 */
-void __cdecl civ_set_attitude(iptr civ,iptr other_civ,iptr attitude); /* 00467933 */
+void __cdecl diplo_clear_treaty_flags(int civ,int civ2,uint flags); /* 00467750 */
+void __cdecl diplo_set_treaty_flags(int civ,int civ2,uint flags); /* 00467825 */
+uint __cdecl civ_get_attitude(int civ,int other_civ); /* 00467904 */
+void __cdecl civ_set_attitude(int civ,int other_civ,int attitude); /* 00467933 */
 i32 __cdecl diplo_attitude_level(int attitude); /* 004679ab */
-uint __cdecl diplo_is_hostile(iptr civ,iptr civ2); /* 00467af0 */
+uint __cdecl diplo_is_hostile(int civ,int civ2); /* 00467af0 */
 void __cdecl diplo_expel_units(int civ2,int civ); /* 00467baf */
-void __cdecl diplo_cancel_alliance(iptr civ,iptr civ2); /* 00467ef2 */
+void __cdecl diplo_cancel_alliance(int civ,int civ2); /* 00467ef2 */
 void __cdecl parley_unit_list_scroll_left(i32 pos); /* 00468797 */
 void __cdecl parley_unit_list_on_scroll(int pane,i32 pos); /* 004687d3 */
 void __cdecl parley_unit_list_on_click(int control_id); /* 00468834 */
@@ -726,7 +726,7 @@ void __cdecl intro_play_opening_video(void); /* 0046da40 */
 void __cdecl intro_video_on_end(void); /* 0046dde0 */
 void __cdecl intro_video_on_keydown(int key); /* 0046de25 */
 void __cdecl intro_video_on_click(void); /* 0046dea1 */
-void __cdecl snd_play_effect(iptr effect,iptr play_mode,int loop,SoundDoneFn done_callback); /* 0046e020 */
+void __cdecl snd_play_effect(int effect,int play_mode,int loop,SoundDoneFn done_callback); /* 0046e020 */
 void __cdecl ui_delay_ticks(int ticks); /* 0046e287 */
 void __cdecl snd_cd_on_notify(void); /* 0046e2f4 */
 void __cdecl snd_cd_play_random_track(void); /* 0046e320 */
@@ -749,9 +749,9 @@ void __cdecl palette_set_nocollapse_all(void); /* 0046f108 */
 void __cdecl ui_blit_all_windows(void); /* 0046f18f */
 int __cdecl gfx_load_bmp_640x480(iptr surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046f460 */
 int __cdecl gfx_save_bmp_640x480(iptr surface,const char *filename,int first_color,int num_colors,iptr palette); /* 0046fbf3 */
-void __cdecl endgame_defeat_movie(iptr civ); /* 004702e0 */
+void __cdecl endgame_defeat_movie(int civ); /* 004702e0 */
 void __cdecl defeat_movie_on_video_end(void); /* 00470c1c */
-void __cdecl endgame_spaceship_arrival(iptr civ); /* 004710d0 */
+void __cdecl endgame_spaceship_arrival(int civ); /* 004710d0 */
 void __cdecl arrival_movie_on_frame(void); /* 00471c2a */
 void __cdecl arrival_movie_on_video_end(void); /* 00471db7 */
 void __cdecl endgame_show_centauri_beaten(uptr civ); /* 00471dd8 */
@@ -759,7 +759,7 @@ void __cdecl path_default_extension(char *name, char *ext); /* 00472950, hand-wr
 void __cdecl path_set_extension(char *dst, char *src, char *ext); /* 004729ab, hand-written */
 void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color); /* 00472b0a */
 int __cdecl gfx_zoom_scale(int value,int zoom); /* 00472cf0 */
-i32 __cdecl unit_make_dummy(iptr unit_type,iptr owner); /* 00472d20 */
+i32 __cdecl unit_make_dummy(int unit_type,int owner); /* 00472d20 */
 void __cdecl scenario_title_surface_global_init(void); /* 00472f10 */
 void __cdecl scenario_title_surface_static_init(void); /* 00472f2a */
 void __cdecl scenario_title_surface_reg_atexit(void); /* 00472f44 */
@@ -792,19 +792,19 @@ void __cdecl scrollbar_66c768_global_init(void); /* 00479e13 */
 void __cdecl scrollbar_66c768_static_init(void); /* 00479e2d */
 void __cdecl scrollbar_66c768_reg_atexit(void); /* 00479e47 */
 void __cdecl scrollbar_66c768_atexit_dtor(void); /* 00479e64 */
-int __cdecl tile_calc_coast_masks(iptr base_x,int base_y); /* 0047a747 */
+int __cdecl tile_calc_coast_masks(int base_x,int base_y); /* 0047a747 */
 i32 __cdecl map_x_in_span(int x,int left,int width); /* 0047c2f2 */
-i32 __cdecl map_tile_in_box(i32 x,int y,iptr left,iptr top,i32 width,int height); /* 0047c37f */
-void __cdecl map_redraw_area_all_views(i32 x,i32 y,i32 radius,iptr civ, i32 full_redraw); /* 0047ce1e */
+i32 __cdecl map_tile_in_box(i32 x,int y,int left,int top,i32 width,int height); /* 0047c37f */
+void __cdecl map_redraw_area_all_views(i32 x,i32 y,i32 radius,int civ, i32 full_redraw); /* 0047ce1e */
 void __cdecl map_redraw_tile_all_views(i32 x,i32 y); /* 0047cea6 */
-void __cdecl map_redraw_neighbors_all_views(i32 x,iptr y); /* 0047cf22 */
-void __cdecl map_redraw_all_views(iptr civ,i32 full_redraw); /* 0047cf9e */
+void __cdecl map_redraw_neighbors_all_views(i32 x,int y); /* 0047cf22 */
+void __cdecl map_redraw_all_views(int civ,i32 full_redraw); /* 0047cf9e */
 MapView * __thiscall mapview_ctor(MapView *self); /* 0047dce0 */
 void __thiscall mapview_dtor(MapView *self); /* 0047de10 */
 void __cdecl gfx_set_zoom_scale(int zoom); /* 0047df20 */
 void __cdecl gfx_reset_zoom_scale(void); /* 0047df50 */
 void __cdecl rect_intersect_into(LPRECT dest,iptr rect_a,iptr rect_b); /* 0047df80 */
-i32 __cdecl mapviews_tile_visible(iptr x,iptr y); /* 0047e030 */
+i32 __cdecl mapviews_tile_visible(int x,int y); /* 0047e030 */
 int __cdecl net_stacked_draw_push(int kind,iptr args,iptr unit_data); /* 0047e0e5 */
 int __cdecl net_stacked_draw_run_next(void); /* 0047e2b3 */
 void __cdecl net_game_xmit_wait_idle(void); /* 00482337 */
@@ -831,19 +831,19 @@ void __cdecl game_update_global_warming(void); /* 00486c2e */
 int __cdecl civ_throne_upgrade_threshold(int level); /* 00486e15 */
 void __cdecl civ_check_throne_room_upgrade(void); /* 00486e6f */
 void __cdecl map_rebuild_unit_flags(void); /* 00487007 */
-void __cdecl units_reset_for_turn(iptr civ); /* 0048710a */
-void __cdecl game_advance_turn(iptr civ); /* 00487371 */
+void __cdecl units_reset_for_turn(int civ); /* 0048710a */
+void __cdecl game_advance_turn(int civ); /* 00487371 */
 void __cdecl civ_process_cities_turn(uptr civ); /* 00487a41 */
-void __cdecl game_autosave(iptr civ); /* 00488937 */
-i32 __cdecl map_road_connection(iptr civ,int x,int y,int x2,int y2); /* 00488a45 */
-void __cdecl civ_heal_units(iptr civ); /* 00488cef */
-void __cdecl civ_check_pop_and_funds(iptr civ,int prev_gold); /* 00489292 */
+void __cdecl game_autosave(int civ); /* 00488937 */
+i32 __cdecl map_road_connection(int civ,int x,int y,int x2,int y2); /* 00488a45 */
+void __cdecl civ_heal_units(int civ); /* 00488cef */
+void __cdecl civ_check_pop_and_funds(int civ,int prev_gold); /* 00489292 */
 void __cdecl civ_process_turn(uptr civ); /* 00489553 */
 void __cdecl ui_redraw_all_maps(int force); /* 004897fa */
 void __cdecl unit_activate_next(i32 search_mode); /* 00489859 */
 void __cdecl ui_focus_active_unit(int auto_next); /* 00489a0d */
 void __cdecl mapview_center_if_moved(int center_x,int center_y); /* 00489b9b */
-void __cdecl tutorial_settler_hints(iptr unit); /* 00489be2 */
+void __cdecl tutorial_settler_hints(int unit); /* 00489be2 */
 i32 __cdecl game_run_active_unit(void); /* 0048a004 */
 void __cdecl game_wait_for_player_input(void); /* 0048a374 */
 void __cdecl game_player_move_loop(void); /* 0048a416 */
@@ -855,35 +855,35 @@ void __cdecl game_play_loop(void); /* 0048b340 */
 void __cdecl net_client_hot_wait_idle(void); /* 0048bf51 */
 i32 __cdecl game_mp_client_turn_loop(void); /* 0048bfec */
 void __cdecl game_mp_host_turn_loop(i32 force_process); /* 0048c9f3 */
-void __cdecl net_heartbeat_send(iptr civ); /* 0048d9ad */
-void __cdecl net_heartbeat_check(iptr civ); /* 0048da51 */
+void __cdecl net_heartbeat_send(int civ); /* 0048d9ad */
+void __cdecl net_heartbeat_check(int civ); /* 0048da51 */
 i32 __cdecl net_check_lost_connections(void); /* 0048dab9 */
 int __cdecl net_drop_flagged_players(void); /* 0048de75 */
 void __cdecl popup_file_with_sprite(const char *filename,const char *section,iptr sprite,i32 sprite_flags); /* 004904c0 */
 void __cdecl popup_text_with_city_noflags(const char *filename,const char *section,i32 city); /* 00490500 */
-void __cdecl popup_text_with_unit_noflags(const char *filename,const char *section,iptr unit); /* 00490530 */
-i32 __cdecl pedia_find_terrain_index(iptr terrain_id); /* 00491d61 */
+void __cdecl popup_text_with_unit_noflags(const char *filename,const char *section,int unit); /* 00490530 */
+i32 __cdecl pedia_find_terrain_index(int terrain_id); /* 00491d61 */
 void __cdecl chat_insert_macro_text(EditControl *edit,i32 macro_id); /* 004923f0 */
 void __cdecl chat_read_macro_line(const char *path,iptr file_offset); /* 0049275a */
 void __cdecl civ_ai_goal_negate_priority(int civ,int goal); /* 00492b60 */
-void __cdecl civ_clear_standing_goals_near(iptr civ,i32 role,i32 x,i32 y,int max_dist); /* 00492c15 */
-void __cdecl civ_ai_goal_insert_gap(iptr civ,iptr goal); /* 00492d18 */
-void __cdecl civ_standing_goal_insert_gap(iptr civ,int start); /* 00492dd0 */
-int __cdecl civ_ai_goal_get_priority(iptr civ,int x,int y,i32 role); /* 00492e60 */
-void __cdecl civ_add_ai_goal(iptr civ,int x,int y,int role,int priority); /* 0049301b */
-void __cdecl civ_add_standing_goal(iptr civ,int x,int y,i32 role,int priority); /* 004933f2 */
-void __cdecl civ_refresh_ai_goals(iptr civ); /* 00493602 */
-void __cdecl civ_reset_standing_goals(iptr civ); /* 0049376f */
-char * __cdecl civ_leader_name(iptr civ); /* 00493b10 */
-int __cdecl civ_leader_title(iptr civ); /* 00493ba6 */
-char * __cdecl civ_name_plural(iptr civ); /* 00493c7d */
-int __cdecl civ_adjective(iptr civ); /* 00493d13 */
+void __cdecl civ_clear_standing_goals_near(int civ,i32 role,i32 x,i32 y,int max_dist); /* 00492c15 */
+void __cdecl civ_ai_goal_insert_gap(int civ,int goal); /* 00492d18 */
+void __cdecl civ_standing_goal_insert_gap(int civ,int start); /* 00492dd0 */
+int __cdecl civ_ai_goal_get_priority(int civ,int x,int y,i32 role); /* 00492e60 */
+void __cdecl civ_add_ai_goal(int civ,int x,int y,int role,int priority); /* 0049301b */
+void __cdecl civ_add_standing_goal(int civ,int x,int y,i32 role,int priority); /* 004933f2 */
+void __cdecl civ_refresh_ai_goals(int civ); /* 00493602 */
+void __cdecl civ_reset_standing_goals(int civ); /* 0049376f */
+char * __cdecl civ_leader_name(int civ); /* 00493b10 */
+int __cdecl civ_leader_title(int civ); /* 00493ba6 */
+char * __cdecl civ_name_plural(int civ); /* 00493c7d */
+int __cdecl civ_adjective(int civ); /* 00493d13 */
 void __cdecl diplo_greeting_sound_done_cb(void); /* 00493e50 */
 void __cdecl portrait_dlg_show(i32 civ); /* 00493e83, hand-written */
-void __cdecl diplo_leader_wnd_launch(iptr civ2,iptr civ); /* 00493f0f */
+void __cdecl diplo_leader_wnd_launch(int civ2,int civ); /* 00493f0f */
 void __cdecl diplo_leader_wnd_close(void); /* 00494148 */
 void __cdecl diplo_leader_play_reaction(int reaction); /* 004941ee */
-void __cdecl advance_count_prereq_depth(iptr advance); /* 00494dae */
+void __cdecl advance_count_prereq_depth(int advance); /* 00494dae */
 void __cdecl diplo_leader_video_end_cb(void); /* 00496125 */
 void __cdecl portrait_dlg_on_click(int x,int y); /* 00496c3c */
 void __cdecl portrait_dlg_on_dblclick(i32 x,int y); /* 00496e5d */
@@ -897,16 +897,16 @@ void __cdecl memblock_unlock(MemBlock *block); /* 004980a9 */
 iptr __cdecl memblock_free(MemBlock *block); /* 004980ec */
 int __cdecl memblock_alloc(MemBlock *block,uint size); /* 00498159 */
 void __cdecl civ_password_ensure_set(int civ); /* 00498310 */
-void __cdecl civ_change_password_dialog(iptr civ); /* 0049836a */
+void __cdecl civ_change_password_dialog(int civ); /* 0049836a */
 i32 __cdecl civ_password_prompt(int civ); /* 004985f4 */
 void __cdecl passwords_reset(void); /* 00498784 */
 void __cdecl passwords_refresh_flags(void); /* 0049882b */
 void __cdecl passwords_scramble(void); /* 004988b8 */
 void __cdecl passwords_unscramble(void); /* 00498943 */
 void __cdecl password_dialog_set_title(Dialog *dialog,int civ,i32 label_id); /* 004989d3 */
-i32 __cdecl civ_check_password(iptr civ); /* 00498a5c */
+i32 __cdecl civ_check_password(int civ); /* 00498a5c */
 void __cdecl city_load_citypref(void); /* 00498d40 */
-iptr __cdecl city_choose_production(iptr city,iptr out_best_unit,iptr out_best_build); /* 00498e8b */
+iptr __cdecl city_choose_production(int city,iptr out_best_unit,iptr out_best_build); /* 00498e8b */
 void __cdecl text_close_file(void); /* 004a2020 */
 int __cdecl text_open_file_section(const char *filename,const char *section); /* 004a2055 */
 int __cdecl text_open_section(const char *filename,const char *section); /* 004a2379 */
@@ -917,9 +917,9 @@ i32 __cdecl text_next_int(void); /* 004a2534 */
 i32 __cdecl text_read_line_pooled(void); /* 004a257a */
 i32 __cdecl text_next_token_pooled(void); /* 004a25aa */
 short __cdecl text_next_binary(void); /* 004a25d5 */
-i32 __cdecl text_read_section_line(const char *filename,const char *section,iptr line_index); /* 004a2645 */
+i32 __cdecl text_read_section_line(const char *filename,const char *section,int line_index); /* 004a2645 */
 i32 __cdecl text_next_token_str_id(i32 min_size); /* 004a26bf */
-int __cdecl civ_calc_score(iptr civ); /* 004a28b0 */
+int __cdecl civ_calc_score(int civ); /* 004a28b0 */
 void __cdecl tribe_editor_load_tables(void); /* 004a3060 */
 void __cdecl tribe_editor_apply_tables(void); /* 004a3426 */
 void __cdecl tribe_editor_load_controls(void); /* 004a3640 */
@@ -936,28 +936,28 @@ void __cdecl tribe_editor_on_help(void); /* 004a496c */
 void __cdecl tribe_editor_on_cancel(void); /* 004a49cb */
 void __cdecl tribe_editor_on_combo(int ctrl_id); /* 004a49f3 */
 void __cdecl tribe_editor_run(void); /* 004a5d92 */
-void __cdecl popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,iptr advance,i32 sprite_flags); /* 004a6b80 */
+void __cdecl popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,int advance,i32 sprite_flags); /* 004a6b80 */
 i32 __cdecl popup_text_with_improvement(const char *filename,const char *section,i32 dlg_flags,int improvement,i32 sprite_flags); /* 004a6bdc */
 i32 __cdecl popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_flags,int unit_type,i32 sprite_flags); /* 004a6c4b */
-void __cdecl popup_city_sprite_draw_cb(i32 dlg,iptr sprite,iptr city,i32 left,int x, i32 y); /* 004a6c85 */
-i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dlg_flags,iptr city); /* 004a6cc5 */
-void __cdecl popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,iptr unit,i32 left,int x, i32 y); /* 004a6df7 */
-i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dlg_flags,iptr unit); /* 004a6e39 */
+void __cdecl popup_city_sprite_draw_cb(i32 dlg,iptr sprite,int city,i32 left,int x, i32 y); /* 004a6c85 */
+i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dlg_flags,int city); /* 004a6cc5 */
+void __cdecl popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,int unit,i32 left,int x, i32 y); /* 004a6df7 */
+i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dlg_flags,int unit); /* 004a6e39 */
 void __cdecl prefs_set_defaults(void); /* 004a70b0 */
 void __cdecl prefs_set_mp_defaults(void); /* 004a71bb */
 void __cdecl prefs_load_civ2dat(void); /* 004a733d */
 int __cdecl prefs_save_civ2dat(void); /* 004a73d9 */
-void __cdecl civ_reset_spaceship(iptr civ); /* 004a74bc */
-uint __cdecl civ_spaceship_launched(iptr civ); /* 004a7577 */
-uint __cdecl civ_spaceship_exists(iptr civ); /* 004a75a6 */
-i32 __cdecl civ_spaceship_arrived(iptr civ); /* 004a75d5 */
-void __cdecl civ_spaceship_lost_notify(iptr civ); /* 004a762d */
+void __cdecl civ_reset_spaceship(int civ); /* 004a74bc */
+uint __cdecl civ_spaceship_launched(int civ); /* 004a7577 */
+uint __cdecl civ_spaceship_exists(int civ); /* 004a75a6 */
+i32 __cdecl civ_spaceship_arrived(int civ); /* 004a75d5 */
+void __cdecl civ_spaceship_lost_notify(int civ); /* 004a762d */
 void __cdecl destroyed_civs_clear(void); /* 004a76f5 */
 void __cdecl game_balance_start_positions(void); /* 004a7754 */
-int __cdecl civ_create(iptr civ); /* 004a7ce9 */
-void __cdecl accel_start_develop_city(iptr city,int num_tiles); /* 004a93b3 */
+int __cdecl civ_create(int civ); /* 004a7ce9 */
+void __cdecl accel_start_develop_city(int city,int num_tiles); /* 004a93b3 */
 void __cdecl game_accelerated_start(int extra_level); /* 004a9785 */
-int __cdecl civ_check_destroyed(iptr civ,iptr civ2); /* 004aa378 */
+int __cdecl civ_check_destroyed(int civ,int civ2); /* 004aa378 */
 void __cdecl game_init_new(void); /* 004aa9c0 */
 iptr __cdecl map_dir_from_delta(int dx,int dy); /* 004abea0 */
 iptr __cdecl map_path_next_dir(int x,int y,int max_cost); /* 004abfe5 */
@@ -967,7 +967,7 @@ int __cdecl map_path_length(int x,int y,int goal_x,int goal_y,int by_sea,i32 max
 int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y); /* 004ad20f */
 i32 __cdecl map_diag_tile_by_ocean(int base_x,int base_y,iptr out_x,iptr out_y,int want_ocean); /* 004ad784 */
 uint __cdecl path_coarse_snap_cell(int x,int y,int is_sea); /* 004ad822 */
-uptr __cdecl unit_goto_next_dir(iptr unit); /* 004adafc */
+uptr __cdecl unit_goto_next_dir(int unit); /* 004adafc */
 u8 * __cdecl map_coarse0_at(int x,int y); /* 004aee90 */
 u8 * __cdecl map_coarse1_at(int x,int y); /* 004aeec0 */
 u8 * __cdecl map_coarse2_at(int x,int y); /* 004aeef0 */
@@ -1016,7 +1016,7 @@ void __cdecl diffeng_register_blocks(void); /* 004b21d7 */
 int __cdecl diffeng_rle_decoded_size(RleStream *stream); /* 004b24a2 */
 i32 __cdecl diffeng_rle_decode(RleStream *stream); /* 004b251a */
 i32 __cdecl diffeng_rle_encode(RleStream *stream); /* 004b263e */
-void __cdecl landmass_set_border_bit(int landmass,iptr bit); /* 004b3110 */
+void __cdecl landmass_set_border_bit(int landmass,int bit); /* 004b3110 */
 void __cdecl landmass_compute_borders(void); /* 004b315c */
 uint __cdecl map_assign_landmass_ids(void); /* 004b32fe */
 void __cdecl font_size16_bold_global_init(void); /* 004b3ca0 */
@@ -1078,60 +1078,60 @@ i32 __cdecl chat_input_on_key(i32 control,int key); /* 004b968a */
 void __cdecl rect_deflate(iptr rect,int dx,int dy); /* 004bb800 */
 void __cdecl rect_inflate(iptr rect,int dx,int dy); /* 004bb840 */
 int __cdecl mem_handle_alloc_tracked(i32 size); /* 004bb870 */
-void __cdecl wonder_show_movie(iptr wonder); /* 004bb8e0 */
+void __cdecl wonder_show_movie(int wonder); /* 004bb8e0 */
 void __cdecl wonder_movie_on_video_end(void); /* 004bc193 */
 void __cdecl wonder_movie_on_lbuttonup(void); /* 004bc1b1 */
 void __cdecl wonder_movie_on_key(int key); /* 004bc1cf */
-i32 __cdecl council_military_advice(iptr civ,i32 era); /* 004bc480 */
-i32 __cdecl council_science_advice(iptr civ,int era); /* 004bc8aa */
-i32 __cdecl council_trade_advice(iptr civ,int era); /* 004bcb9b */
-i32 __cdecl council_foreign_advice(iptr civ,int era); /* 004bcfcf */
-i32 __cdecl council_attitude_advice(iptr civ,i32 era); /* 004bd2a3 */
-i32 __cdecl civ_has_advance(iptr civ,iptr advance_id); /* 004bd9f0 */
-i32 __cdecl advance_has_prereq(iptr advance,iptr prereq); /* 004bdaa5 */
-int __cdecl ai_advance_value(iptr civ,iptr advance); /* 004bdb2c */
-void __cdecl civ_leonardo_upgrade(iptr civ); /* 004be6ba */
-void __cdecl civ_advance_gov_prompts(iptr civ,iptr advance); /* 004bea84 */
-void __cdecl civ_golden_age_popup(iptr civ); /* 004bee56 */
+i32 __cdecl council_military_advice(int civ,i32 era); /* 004bc480 */
+i32 __cdecl council_science_advice(int civ,int era); /* 004bc8aa */
+i32 __cdecl council_trade_advice(int civ,int era); /* 004bcb9b */
+i32 __cdecl council_foreign_advice(int civ,int era); /* 004bcfcf */
+i32 __cdecl council_attitude_advice(int civ,i32 era); /* 004bd2a3 */
+i32 __cdecl civ_has_advance(int civ,int advance_id); /* 004bd9f0 */
+i32 __cdecl advance_has_prereq(int advance,int prereq); /* 004bdaa5 */
+int __cdecl ai_advance_value(int civ,int advance); /* 004bdb2c */
+void __cdecl civ_leonardo_upgrade(int civ); /* 004be6ba */
+void __cdecl civ_advance_gov_prompts(int civ,int advance); /* 004bea84 */
+void __cdecl civ_golden_age_popup(int civ); /* 004bee56 */
 void __cdecl text_list_append_wrapped(iptr dialog,i32 string_id,iptr item_count,iptr line_count); /* 004befd1 */
-void __cdecl civ_give_advance(uptr civ,iptr advance,iptr civ2,iptr skip_pedia,int from_network); /* 004bf05b */
-i32 __cdecl civ_can_research_advance(iptr civ,iptr advance); /* 004bfdbe */
-i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type); /* 004bfe5a */
-i32 __cdecl civ_can_build_wonder(iptr civ,iptr wonder); /* 004c02d8 */
-i32 __cdecl city_can_build_improvement(iptr civ,iptr city,iptr improvement); /* 004c03ae */
-iptr __cdecl civ_pick_research_advance(iptr civ); /* 004c09b0 */
-i32 __cdecl research_option_draw_advance(i32 dialog,iptr surface,iptr advance,byte flags,int x,int y, int height); /* 004c0b51 */
+void __cdecl civ_give_advance(uptr civ,int advance,int civ2,int skip_pedia,int from_network); /* 004bf05b */
+i32 __cdecl civ_can_research_advance(int civ,int advance); /* 004bfdbe */
+i32 __cdecl civ_can_build_unit(int civ,int city,int unit_type); /* 004bfe5a */
+i32 __cdecl civ_can_build_wonder(int civ,int wonder); /* 004c02d8 */
+i32 __cdecl city_can_build_improvement(int civ,int city,int improvement); /* 004c03ae */
+iptr __cdecl civ_pick_research_advance(int civ); /* 004c09b0 */
+i32 __cdecl research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int x,int y, int height); /* 004c0b51 */
 i32 __cdecl research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x,int y, int height); /* 004c0be8 */
 i32 __cdecl research_option_draw_improvement(i32 dialog,iptr surface,int improvement,byte flags,int x,int y, int height); /* 004c0c83 */
-void __cdecl civ_research_goal_dialog(iptr civ,int exclude_current,int civ2); /* 004c0cf7 */
-iptr __cdecl civ_choose_research_dialog(iptr civ,int forced); /* 004c195e */
-void __cdecl civ_choose_research(iptr civ); /* 004c21ad */
-iptr __cdecl civ_research_complete(uptr civ,iptr civ2); /* 004c21d5 */
-int __cdecl civ_research_cost(iptr civ); /* 004c2788 */
+void __cdecl civ_research_goal_dialog(int civ,int exclude_current,int civ2); /* 004c0cf7 */
+iptr __cdecl civ_choose_research_dialog(int civ,int forced); /* 004c195e */
+void __cdecl civ_choose_research(int civ); /* 004c21ad */
+iptr __cdecl civ_research_complete(uptr civ,int civ2); /* 004c21d5 */
+int __cdecl civ_research_cost(int civ); /* 004c2788 */
 void __cdecl civ_add_research_points(uptr civ,int points); /* 004c2b73 */
 void __cdecl text_set_number_arg_u8(int index,uint value); /* 004c4210 */
-void __cdecl popup_game_with_advance(const char *section,iptr advance,i32 sprite_flags); /* 004c4240 */
+void __cdecl popup_game_with_advance(const char *section,int advance,i32 sprite_flags); /* 004c4240 */
 void __cdecl game_main_entry(void); /* 004c4280 */
-void __cdecl unit_do_terrain_work(iptr unit,iptr order); /* 004c42a0 */
-void __cdecl unit_set_fortified(iptr unit); /* 004c4ada */
-void __cdecl unit_found_city(iptr unit,iptr city,iptr city_name); /* 004c4d1e */
-void __cdecl unit_goto_step(iptr unit); /* 004c4e6d */
-void __cdecl unit_pillage(iptr unit,int improvement); /* 004c50d0 */
-i32 __cdecl unit_execute_orders(iptr unit); /* 004c5408 */
-void __cdecl unit_go_home(iptr unit); /* 004c54da */
-void __cdecl diplo_espionage_incident(iptr civ,iptr civ2); /* 004c59f0 */
-i32 __cdecl spy_try_escape(iptr unit,int mission_mode,iptr civ); /* 004c5fae */
-i32 __cdecl spy_check_caught(iptr unit,iptr civ); /* 004c64aa */
-uint __cdecl spy_confirm_treaty_breach(iptr civ,iptr target_civ); /* 004c654d */
-int __cdecl civ_distance_to_capital(iptr civ,i32 target_x,i32 target_y); /* 004c65d2 */
-void __cdecl city_incite_transfer(iptr city,iptr civ,i32 reason); /* 004c66ba */
-void __cdecl spy_city_mission(iptr unit,iptr city); /* 004c6bf5 */
-void __cdecl unit_bribe(iptr unit,iptr civ); /* 004c9528 */
-i32 __cdecl spy_unit_mission(iptr unit2,iptr unit,iptr civ); /* 004c9ebd */
-void __cdecl unit_airlift_perform(iptr unit,iptr city2,iptr city,int risk_rolls,iptr civ); /* 004ca1cd */
-void __cdecl unit_paradrop(iptr unit,int x,int y); /* 004ca39e */
-i32 __cdecl popup_game_with_improvement(const char *section,iptr improvement,i32 sprite_flags); /* 004cc870 */
-i32 __cdecl popup_game_with_unit(const char *section,i32 dlg_flags,iptr unit); /* 004cc8b0 */
+void __cdecl unit_do_terrain_work(int unit,int order); /* 004c42a0 */
+void __cdecl unit_set_fortified(int unit); /* 004c4ada */
+void __cdecl unit_found_city(int unit,int city,iptr city_name); /* 004c4d1e */
+void __cdecl unit_goto_step(int unit); /* 004c4e6d */
+void __cdecl unit_pillage(int unit,int improvement); /* 004c50d0 */
+i32 __cdecl unit_execute_orders(int unit); /* 004c5408 */
+void __cdecl unit_go_home(int unit); /* 004c54da */
+void __cdecl diplo_espionage_incident(int civ,int civ2); /* 004c59f0 */
+i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ); /* 004c5fae */
+i32 __cdecl spy_check_caught(int unit,int civ); /* 004c64aa */
+uint __cdecl spy_confirm_treaty_breach(int civ,int target_civ); /* 004c654d */
+int __cdecl civ_distance_to_capital(int civ,i32 target_x,i32 target_y); /* 004c65d2 */
+void __cdecl city_incite_transfer(int city,int civ,i32 reason); /* 004c66ba */
+void __cdecl spy_city_mission(int unit,int city); /* 004c6bf5 */
+void __cdecl unit_bribe(int unit,int civ); /* 004c9528 */
+i32 __cdecl spy_unit_mission(int unit2,int unit,int civ); /* 004c9ebd */
+void __cdecl unit_airlift_perform(int unit,int city2,int city,int risk_rolls,int civ); /* 004ca1cd */
+void __cdecl unit_paradrop(int unit,int x,int y); /* 004ca39e */
+i32 __cdecl popup_game_with_improvement(const char *section,int improvement,i32 sprite_flags); /* 004cc870 */
+i32 __cdecl popup_game_with_unit(const char *section,i32 dlg_flags,int unit); /* 004cc8b0 */
 void __cdecl editor_text_dlg_wnd_global_init(void); /* 004cc8f0 */
 void __cdecl editor_text_dlg_wnd_static_init(void); /* 004cc90a */
 void __cdecl editor_text_dlg_wnd_reg_atexit(void); /* 004cc924 */
@@ -1149,7 +1149,7 @@ void __cdecl rules_edit_set_section(iptr names,RulesSectionWriterFn writers); /*
 void __cdecl rules_edit_add_section(const char *name2,RulesSectionWriterFn writer); /* 004ccaed */
 void __cdecl gfx_draw_tiled_frame(iptr surface,int x,int y,int width,int height,int border); /* 004ccb6a */
 void __cdecl text_append_int_2d(i32 value); /* 004ccdb6 */
-void __cdecl text_append_advance_abbrev(iptr advance,int with_comma); /* 004ccdef */
+void __cdecl text_append_advance_abbrev(int advance,int with_comma); /* 004ccdef */
 i32 __cdecl rules_write_sections(void); /* 004ccf2d */
 i32 __cdecl tribe_editor_update_city_file(void); /* 004cd8a6 */
 i32 __cdecl editor_numeric_edit_filter(i32 ctrl,int key); /* 004cdcf6 */
@@ -1170,10 +1170,10 @@ int __cdecl events_rename_unit_refs(char *old_name,iptr new_name); /* 004cefe9 *
 void __cdecl str_trim_trailing(char *str); /* 004cfff0 */
 void __cdecl str_trim(char *str); /* 004d007e */
 void __cdecl spaceship_wnd_net_idle(void); /* 004d0160 */
-void __cdecl spaceship_wnd_load_parts(iptr civ); /* 004d01ae */
-i32 __cdecl spaceship_wnd_run(iptr civ_arg); /* 004d0208 */
-i32 __cdecl spaceship_wnd_show_for_civ(iptr civ); /* 004d0339 */
-void __cdecl spaceship_wnd_draw_title(iptr civ); /* 004d043f */
+void __cdecl spaceship_wnd_load_parts(int civ); /* 004d01ae */
+i32 __cdecl spaceship_wnd_run(int civ_arg); /* 004d0208 */
+i32 __cdecl spaceship_wnd_show_for_civ(int civ); /* 004d0339 */
+void __cdecl spaceship_wnd_draw_title(int civ); /* 004d043f */
 void __cdecl spaceship_video_on_lbuttonup(i32 x,i32 y); /* 004d61c3 */
 void __cdecl spaceship_wnd_type_tick(void); /* 004d6367 */
 void __cdecl spaceship_wnd_blink_launch_btn(void); /* 004d6384 */
@@ -1210,15 +1210,15 @@ void __cdecl parley_describe_cities(ParleyOfferItem *items); /* 004dcea5 */
 void __cdecl parley_describe_maps(int map_kind,int exchange); /* 004dd016 */
 void __cdecl parley_describe_war_targets(ParleyOfferItem *items); /* 004dd176 */
 void __cdecl parley_execute_transaction(ParleyOfferMsg *offer); /* 004dd285 */
-void __cdecl parley_give_maps(iptr receiver,iptr civ,int map_kind); /* 004dd8ad */
-void __cdecl parley_apply_war_pact(iptr civ,ParleyOfferItem *items); /* 004dde9e */
-void __cdecl parley_transfer_gold(iptr civ2,iptr civ,i32 amount); /* 004ddf04 */
-void __cdecl parley_transfer_advances(iptr civ,iptr civ2,ParleyOfferItem *items); /* 004ddfb2 */
-void __cdecl parley_transfer_cities(iptr civ,ParleyOfferItem *items); /* 004de049 */
-void __cdecl parley_cede_city(uptr city,iptr civ); /* 004de0e2 */
-void __cdecl parley_transfer_units(iptr civ,ParleyOfferItem *items); /* 004de990 */
-i32 __cdecl parley_find_unit_drop_tile(iptr unit,iptr x,iptr y,iptr civ,int must_move); /* 004ded07 */
-void __cdecl parley_apply_treaty(i32 treaty_kind,iptr civ,iptr other_civ); /* 004df10f */
+void __cdecl parley_give_maps(int receiver,int civ,int map_kind); /* 004dd8ad */
+void __cdecl parley_apply_war_pact(int civ,ParleyOfferItem *items); /* 004dde9e */
+void __cdecl parley_transfer_gold(int civ2,int civ,i32 amount); /* 004ddf04 */
+void __cdecl parley_transfer_advances(int civ,int civ2,ParleyOfferItem *items); /* 004ddfb2 */
+void __cdecl parley_transfer_cities(int civ,ParleyOfferItem *items); /* 004de049 */
+void __cdecl parley_cede_city(uptr city,int civ); /* 004de0e2 */
+void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items); /* 004de990 */
+i32 __cdecl parley_find_unit_drop_tile(int unit,iptr x,iptr y,int civ,int must_move); /* 004ded07 */
+void __cdecl parley_apply_treaty(i32 treaty_kind,int civ,int other_civ); /* 004df10f */
 void __cdecl main_menu_global_init(void); /* 004e0140 */
 void __cdecl main_menu_static_init(void); /* 004e015a */
 void __cdecl main_menu_reg_atexit(void); /* 004e0179 */
@@ -1232,7 +1232,7 @@ void __cdecl menu_graphic_options(void); /* 004e0d71 */
 void __cdecl menu_multiplayer_options(void); /* 004e0f18 */
 void __cdecl rules_apply_double_moves(void); /* 004e1314 */
 void __cdecl menu_message_options(void); /* 004e1452 */
-void __cdecl civ_eliminate(iptr civ,i32 kill_units,i32 recreate); /* 004e1763 */
+void __cdecl civ_eliminate(int civ,i32 kill_units,i32 recreate); /* 004e1763 */
 void __cdecl game_quit_or_retire(int retire); /* 004e22c9 */
 void __cdecl menu_show_hidden_terrain(void); /* 004e2597 */
 void __cdecl menu_select_music(void); /* 004e25ef */
@@ -1240,55 +1240,55 @@ void __cdecl menu_command(i32 menu,int cmd); /* 004e2803 */
 void __cdecl menu_build_main(void); /* 004e3a86 */
 void __cdecl menu_set_item_label(i32 item_id,i32 label_id,i32 enabled); /* 004e4c92 */
 void __cdecl menu_update_states(void); /* 004e4ceb */
-int __cdecl city_acquire_wonder(iptr civ,iptr city,iptr wonder,iptr cost,iptr impr); /* 004e7270 */
-i32 __cdecl city_production_category(iptr city,int build_item); /* 004e7458 */
-void __cdecl city_save_build_state(iptr city); /* 004e7492 */
-uint __cdecl city_shields_after_change(iptr city,iptr build_item); /* 004e74df */
-void __cdecl city_set_specialist_type(iptr city,int slot,int type); /* 004e7549 */
-uint __cdecl city_specialist_type(iptr city,int slot); /* 004e75a6 */
-int __cdecl city_count_specialists(iptr city,int type); /* 004e75ea */
-void __cdecl city_calc_tile_flags(iptr city); /* 004e7641 */
-uint __cdecl city_tile_worked(iptr city,iptr tile_index); /* 004e78ce */
-void __cdecl city_set_tile_worked(iptr city,iptr tile_index,int worked); /* 004e790c */
-void __cdecl city_calc_capital_link(iptr city); /* 004e7967 */
-i32 __cdecl city_count_unit_support(iptr city,iptr unit,i32 government); /* 004e7d7f */
-void __cdecl city_calc_food_box_rows(iptr city,iptr civ); /* 004e7eb1 */
+int __cdecl city_acquire_wonder(int civ,int city,int wonder,int cost,int impr); /* 004e7270 */
+i32 __cdecl city_production_category(int city,int build_item); /* 004e7458 */
+void __cdecl city_save_build_state(int city); /* 004e7492 */
+uint __cdecl city_shields_after_change(int city,int build_item); /* 004e74df */
+void __cdecl city_set_specialist_type(int city,int slot,int type); /* 004e7549 */
+uint __cdecl city_specialist_type(int city,int slot); /* 004e75a6 */
+int __cdecl city_count_specialists(int city,int type); /* 004e75ea */
+void __cdecl city_calc_tile_flags(int city); /* 004e7641 */
+uint __cdecl city_tile_worked(int city,int tile_index); /* 004e78ce */
+void __cdecl city_set_tile_worked(int city,int tile_index,int worked); /* 004e790c */
+void __cdecl city_calc_capital_link(int city); /* 004e7967 */
+i32 __cdecl city_count_unit_support(int city,int unit,i32 government); /* 004e7d7f */
+void __cdecl city_calc_food_box_rows(int city,int civ); /* 004e7eb1 */
 void __cdecl city_calc_unit_support(uptr city); /* 004e80b1 */
-int __cdecl city_tile_yield(iptr city,iptr tile_index,iptr yield_type); /* 004e868f */
-void __cdecl city_note_terraform_job(iptr city,iptr civ,iptr job_type,i32 x,i32 y); /* 004e8c8c */
-void __cdecl city_note_road_job(iptr city,iptr civ,iptr x,iptr y); /* 004e8db5 */
-void __cdecl city_calc_tile_yields(iptr city,iptr tile_index,int worked); /* 004e8e4d */
-uint __cdecl city_release_blocked_tiles(iptr city); /* 004e8ecf */
-void __cdecl city_assign_workers(iptr city); /* 004e8f42 */
-void __cdecl city_adjust_specialists(iptr city,int delta); /* 004e9719 */
-void __cdecl city_fill_specialists(iptr city); /* 004e97ae */
-int __cdecl city_corruption_divisor(iptr city,int government); /* 004e9849 */
-int __cdecl city_calc_corruption(iptr city,int amount,int clamp_distance,int update_scores); /* 004e989a */
-void __cdecl city_calc_shields_pollution(iptr city); /* 004e9c14 */
-void __cdecl city_happy_clamp_stage(iptr city,iptr stage); /* 004ea031 */
-void __cdecl city_split_trade(iptr city,int trade,int mode,int extra_tax); /* 004ea1f6 */
+int __cdecl city_tile_yield(int city,int tile_index,iptr yield_type); /* 004e868f */
+void __cdecl city_note_terraform_job(int city,int civ,iptr job_type,i32 x,i32 y); /* 004e8c8c */
+void __cdecl city_note_road_job(int city,int civ,int x,int y); /* 004e8db5 */
+void __cdecl city_calc_tile_yields(int city,int tile_index,int worked); /* 004e8e4d */
+uint __cdecl city_release_blocked_tiles(int city); /* 004e8ecf */
+void __cdecl city_assign_workers(int city); /* 004e8f42 */
+void __cdecl city_adjust_specialists(int city,int delta); /* 004e9719 */
+void __cdecl city_fill_specialists(int city); /* 004e97ae */
+int __cdecl city_corruption_divisor(int city,int government); /* 004e9849 */
+int __cdecl city_calc_corruption(int city,int amount,int clamp_distance,int update_scores); /* 004e989a */
+void __cdecl city_calc_shields_pollution(int city); /* 004e9c14 */
+void __cdecl city_happy_clamp_stage(int city,int stage); /* 004ea031 */
+void __cdecl city_split_trade(int city,int trade,int mode,int extra_tax); /* 004ea1f6 */
 int __cdecl city_calc_trade_happiness(uptr city); /* 004ea8e4 */
-void __cdecl city_count_food_routes(iptr city); /* 004eb327 */
-void __cdecl city_calc_all_stats(iptr city); /* 004eb4a1 */
+void __cdecl city_count_food_routes(int city); /* 004eb327 */
+void __cdecl city_calc_all_stats(int city); /* 004eb4a1 */
 int __cdecl city_recalc(int city,int full); /* 004eb4ed, hand-written */
-int __cdecl city_notify_dialog_ex(iptr msg_key,iptr city,int force,iptr sprite); /* 004eb571 */
-int __cdecl popup_city_picture_zoom(const char *section,iptr city,uint picture,int silent,iptr civ); /* 004eb80a */
+int __cdecl city_notify_dialog_ex(iptr msg_key,int city,int force,iptr sprite); /* 004eb571 */
+int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,int silent,int civ); /* 004eb80a */
 i32 __cdecl city_process_food(uptr city); /* 004ebbde */
-void __cdecl unit_pick_caravan_commodity(iptr city,iptr unit); /* 004ec1c6 */
-void __cdecl civ_apply_eiffel_tower(iptr civ); /* 004ec312 */
+void __cdecl unit_pick_caravan_commodity(int city,int unit); /* 004ec1c6 */
+void __cdecl civ_apply_eiffel_tower(int civ); /* 004ec312 */
 void __cdecl city_process_production(uptr city); /* 004ec3fe */
 void __cdecl city_disband_unsupported_units(uptr city); /* 004eef23 */
-void __cdecl city_process_disorder(iptr city); /* 004ef578 */
-void __cdecl city_add_science(iptr city); /* 004efbc6 */
+void __cdecl city_process_disorder(int city); /* 004ef578 */
+void __cdecl city_add_science(int city); /* 004efbc6 */
 int __cdecl city_process_pollution(int city); /* 004efd44, hand-written */
-uint __cdecl civ_improvement_upkeep(iptr civ,iptr improvement); /* 004f00f0 */
-void __cdecl city_pay_improvement_upkeep(iptr city); /* 004f0221 */
-i32 __cdecl ai_find_road_link_tile(iptr city); /* 004f03b7 */
-void __cdecl city_add_terraform_goals(iptr city); /* 004f080d */
+uint __cdecl civ_improvement_upkeep(int civ,int improvement); /* 004f00f0 */
+void __cdecl city_pay_improvement_upkeep(int city); /* 004f0221 */
+i32 __cdecl ai_find_road_link_tile(int city); /* 004f03b7 */
+void __cdecl city_add_terraform_goals(int city); /* 004f080d */
 int __cdecl city_process_turn(uptr city); /* 004f0a9c */
 void __cdecl wonder_apollo_reveal_map(void); /* 004f1220 */
-uint __cdecl city_tile_status_flags(iptr city,iptr tile_idx); /* 004f3d30 */
-void __cdecl city_notify_dialog(iptr message,iptr city,iptr extra); /* 004f3f30 */
+uint __cdecl city_tile_status_flags(int city,int tile_idx); /* 004f3d30 */
+void __cdecl city_notify_dialog(iptr message,int city,iptr extra); /* 004f3f30 */
 void __cdecl pedia_window_global_init(void); /* 004f3f80 */
 void __cdecl pedia_window_static_init(void); /* 004f3f9a */
 void __cdecl pedia_window_reg_atexit(void); /* 004f3fb4 */
@@ -1304,7 +1304,7 @@ int __cdecl pedia_list_hit_test(int x,int y); /* 004f734a */
 int __cdecl pedia_find_item_by_key(int key); /* 004f74eb */
 void __cdecl pedia_list_on_key(i32 key); /* 004f76ce */
 void __cdecl pedia_list_on_click(void); /* 004f7a30 */
-i8 * __cdecl pedia_lookup_text(PediaListNode *list_head,iptr item_id); /* 004f8a9b */
+i8 * __cdecl pedia_lookup_text(PediaListNode *list_head,int item_id); /* 004f8a9b */
 void __cdecl pedia_modal_idle(void); /* 004f8d04 */
 void __cdecl pedia_end_modal(void); /* 004f8d51 */
 void __cdecl game_palette_global_init(void); /* 004fa1c0 */
@@ -1339,8 +1339,8 @@ void __cdecl city_window_modal_notice(void); /* 005013bc */
 void __cdecl city_window_cycle_specialist(int citizen_idx); /* 00501819 */
 void __cdecl city_window_toggle_worked_tile(int mouse_x,int mouse_y); /* 005022c0 */
 void __cdecl city_window_sell_improvement(i32 list_row); /* 00505d3d */
-void __cdecl text_set_unit_info_args(iptr unit); /* 00506448 */
-void __cdecl city_window_supported_unit_menu(iptr unit); /* 00506637 */
+void __cdecl text_set_unit_info_args(int unit); /* 00506448 */
+void __cdecl city_window_supported_unit_menu(int unit); /* 00506637 */
 void __cdecl city_window_present_unit_menu(int stack_idx); /* 00506a42 */
 void __cdecl city_window_on_redraw(void); /* 00509935 */
 i32 __cdecl city_window_close(void); /* 0050994f */
@@ -1376,7 +1376,7 @@ void __cdecl text_append_plus(void); /* 00511430 */
 void __cdecl city_window_draw_icon_row(iptr sprite,i32 count,i32 x,i32 y, i32 width,i32 spacing,i32 max_width,i32 flags); /* 005114d0 */
 i32 __cdecl popup_game_with_city_flags(const char *section,i32 city,i32 flags); /* 00511520 */
 void __cdecl text_append_city_population(i32 city); /* 005116f0 */
-void __cdecl net_send_text_args(iptr popup_kind,i32 player_id,int string_count,int number_count,iptr arg_a,iptr arg_b); /* 00511880 */
+void __cdecl net_send_text_args(int popup_kind,i32 player_id,int string_count,int number_count,iptr arg_a,iptr arg_b); /* 00511880 */
 void __cdecl net_popup_queue_push(i32 popup_kind,i32 string_count,i32 number_count,i32 arg_a, i32 arg_b,i32 payload,int payload_size); /* 00511a0e */
 void __cdecl net_popup_queue_clear(void); /* 00511acf */
 void __cdecl net_popup_idle_autoclose(void); /* 00511b2d */
@@ -1386,13 +1386,13 @@ void __cdecl destroyed_civs_text_bg_global_init(void); /* 00514e10 */
 void __cdecl destroyed_civs_text_bg_static_init(void); /* 00514e2a */
 void __cdecl destroyed_civs_text_bg_reg_atexit(void); /* 00514e44 */
 void __cdecl destroyed_civs_text_bg_atexit_dtor(void); /* 00514e61 */
-void __cdecl destroyed_civs_show(iptr killer_civ); /* 00514e7b */
+void __cdecl destroyed_civs_show(int killer_civ); /* 00514e7b */
 void __cdecl victory_screen_on_click(void); /* 00516042 */
 void __cdecl victory_screen_on_key(int key); /* 00516063 */
-void __cdecl council_show(iptr civ,i32 cheat_mode); /* 00516570 */
+void __cdecl council_show(int civ,i32 cheat_mode); /* 00516570 */
 void __cdecl council_on_advisor_button(uptr button_id); /* 005181d8 */
 void __cdecl council_on_video_end(void); /* 00518471 */
-i32 __cdecl council_advisor_opinion(iptr civ,i32 advisor); /* 00518582 */
+i32 __cdecl council_advisor_opinion(int civ,i32 advisor); /* 00518582 */
 i32 __cdecl dlg_input_number_game(const char *section,i32 initial,iptr out_value); /* 00518ec0 */
 void __cdecl notice_dlg_global_init(void); /* 005190d0 */
 void __cdecl notice_dlg_static_init(void); /* 005190ea */
@@ -1405,7 +1405,7 @@ int __cdecl terrain_editor_sel_to_terrain(int sel); /* 005195f1 */
 void __cdecl terrain_editor_load_controls(void); /* 0051961e */
 int __cdecl terrain_editor_store_controls(void); /* 005197af */
 void __cdecl terrain_editor_redraw(void); /* 005199a9 */
-void __cdecl terrain_editor_append_rule_ref(iptr terrain,int with_comma); /* 005199c4 */
+void __cdecl terrain_editor_append_rule_ref(int terrain,int with_comma); /* 005199c4 */
 i32 __cdecl terrain_editor_write_section(FILE *file); /* 00519ab0 */
 void __cdecl terrain_editor_on_ok(void); /* 00519d67 */
 void __cdecl terrain_editor_on_rename(void); /* 00519e74 */
@@ -1461,17 +1461,17 @@ void __cdecl parley_on_no_thanks(void); /* 0052e57c */
 void __cdecl parley_on_counter_offer(void); /* 0052e685 */
 void __cdecl chat_on_mute_checkbox(int ctrl_id); /* 0052e71a */
 void __cdecl chat_on_send_checkbox(int ctrl_id); /* 0052e7b7 */
-int __cdecl ai_unit_role(iptr unit); /* 00531287 */
-iptr __cdecl ai_ship_best_landing_dir(iptr unit); /* 005312e4 */
-void __cdecl unit_stack_wake_by_role(iptr unit,uint role_mask,int wake); /* 00531567 */
-void __cdecl unit_set_goto(iptr unit,i32 goto_flag,i32 dest_x,i32 dest_y); /* 00531607 */
-void __cdecl ai_ship_goto_near_shore(iptr unit,i32 goto_mode,iptr x,int y); /* 00531653 */
+int __cdecl ai_unit_role(int unit); /* 00531287 */
+iptr __cdecl ai_ship_best_landing_dir(int unit); /* 005312e4 */
+void __cdecl unit_stack_wake_by_role(int unit,uint role_mask,int wake); /* 00531567 */
+void __cdecl unit_set_goto(int unit,i32 goto_flag,i32 dest_x,i32 dest_y); /* 00531607 */
+void __cdecl ai_ship_goto_near_shore(int unit,i32 goto_mode,int x,int y); /* 00531653 */
 void __cdecl ai_civ_turn_assess(uptr civ); /* 0053184d */
 i32 __cdecl ai_barbarian_unit_move(void); /* 005351aa */
-void __cdecl ai_transports_raid_empty_city(iptr city); /* 005369f3 */
-int __cdecl ai_continent_defense_quota(iptr civ,iptr continent); /* 00536bc9 */
-i32 __cdecl ai_nuke_pick_target(iptr unit); /* 00536c4c */
-i32 __cdecl ai_air_unit_orders(iptr unit,iptr unit_type,iptr x,iptr y,int mode,iptr out_flag, int may_go_home,iptr landmass,int set_flag); /* 00537331 */
+void __cdecl ai_transports_raid_empty_city(int city); /* 005369f3 */
+int __cdecl ai_continent_defense_quota(int civ,int continent); /* 00536bc9 */
+i32 __cdecl ai_nuke_pick_target(int unit); /* 00536c4c */
+i32 __cdecl ai_air_unit_orders(int unit,int unit_type,iptr x,iptr y,int mode,iptr out_flag, int may_go_home,int landmass,int set_flag); /* 00537331 */
 i32 __cdecl ai_unit_choose_orders(void); /* 00538a29 */
 void __cdecl unit_continue_active_orders(void); /* 00543b80 */
 void __cdecl ai_process_civ_units(void); /* 00543cd6 */
@@ -1560,7 +1560,7 @@ int __cdecl setup_picwnd_position_coord(int position,int size); /* 0055a192 */
 i32 __cdecl setup_picwnd_image_size(int is_height,i32 image_id); /* 0055a329 */
 void __cdecl gfx_copy_rect_same_pos(iptr src,iptr dst,i32 x,i32 y,i32 width, i32 height); /* 0055a930 */
 void __cdecl map_build_coarse_connectivity(void); /* 0055a980 */
-i32 __cdecl map_coarse_cell_landmass(iptr base_x,int base_y,iptr out_x,iptr out_y,int want_ocean); /* 0055ac37 */
+i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,iptr out_x,iptr out_y,int want_ocean); /* 0055ac37 */
 EXTERN_C i32 __stdcall win_main(i32 instance,i32 prev_instance,i32 cmd_line,i32 show_cmd); /* 0055add0 */
 void __cdecl mp_turn_timer_stop(int notify); /* 0055ae80 */
 void __cdecl mp_turn_timer_start(int notify); /* 0055af2e */
@@ -1574,20 +1574,20 @@ void __cdecl mp_window_drag_begin(void); /* 0055b47e */
 void __cdecl mp_window_drag_end(void); /* 0055b515 */
 void __cdecl mp_release_mouse_capture(void); /* 0055b59e */
 void __cdecl mp_mouse_watchdog_tick(i32 timer_id,i32 timer_arg); /* 0055b5fa */
-int __cdecl diplo_count_border_intruders(iptr civ,iptr intruder_civ); /* 0055bbc0 */
-i32 __cdecl diplo_senate_intervenes(iptr civ,iptr civ2); /* 0055bef9 */
-void __cdecl civ_set_government(iptr civ,iptr new_gov); /* 0055c066 */
-i32 __cdecl civ_can_choose_government(iptr civ,iptr government,i32 unused_3,i32 unused_4,i32 unused_5, iptr unused_6,iptr unused_7,i32 unused_8,iptr unused_9,iptr unused_10,iptr unused_11, i32 unused_12,iptr unused_13,i32 unused_14,i32 unused_15, i32 unused_16,i32 unused_17,i32 unused_18,i32 unused_19, i32 unused_20,i32 unused_21); /* 0055c277 */
+int __cdecl diplo_count_border_intruders(int civ,int intruder_civ); /* 0055bbc0 */
+i32 __cdecl diplo_senate_intervenes(int civ,int civ2); /* 0055bef9 */
+void __cdecl civ_set_government(int civ,int new_gov); /* 0055c066 */
+i32 __cdecl civ_can_choose_government(int civ,int government,i32 unused_3,i32 unused_4,i32 unused_5, iptr unused_6,iptr unused_7,i32 unused_8,iptr unused_9,iptr unused_10,iptr unused_11, i32 unused_12,iptr unused_13,i32 unused_14,i32 unused_15, i32 unused_16,i32 unused_17,i32 unused_18,i32 unused_19, i32 unused_20,i32 unused_21); /* 0055c277 */
 void __cdecl civ_select_government_dialog(int civ2, int all_govs); /* 0055c3d3, hand-written */
-void __cdecl civ_change_government(iptr civ,uptr new_gov); /* 0055c69d */
-i32 __cdecl diplo_ai_feels_secure(iptr civ,iptr civ2); /* 0055cbd5 */
+void __cdecl civ_change_government(int civ,uptr new_gov); /* 0055c69d */
+i32 __cdecl diplo_ai_feels_secure(int civ,int civ2); /* 0055cbd5 */
 i32 __cdecl diplo_ai_swap_advances(uptr civ,uptr civ2); /* 0055d1e2 */
-i32 __cdecl diplo_ally_join_war(iptr civ,iptr civ2,iptr civ3); /* 0055d685 */
-void __cdecl diplo_civs_meet(uptr civ,uptr civ2,iptr x,iptr y); /* 0055d8d8 */
+i32 __cdecl diplo_ally_join_war(int civ,int civ2,int civ3); /* 0055d685 */
+void __cdecl diplo_civs_meet(uptr civ,uptr civ2,int x,int y); /* 0055d8d8 */
 void __cdecl ai_choose_government(int civ2, int limit_choices); /* 0055f5a3, hand-written */
-void __cdecl diplo_ai_military_aid(iptr civ); /* 0055f7d1 */
+void __cdecl diplo_ai_military_aid(int civ); /* 0055f7d1 */
 void __cdecl civ_turn_update_diplomacy(uptr civ); /* 00560084 */
-void __cdecl diplo_ai_review_relations(iptr civ,uptr civ2); /* 00560d95 */
+void __cdecl diplo_ai_review_relations(int civ,uptr civ2); /* 00560d95 */
 void __cdecl diplo_ai_seek_war_ally(uptr civ2,uptr civ); /* 00562021 */
 i32 __cdecl file_require_cdrom(const char *filename); /* 00564470 */
 i8 * __cdecl file_get_fallback_drive(void); /* 00564574 */
@@ -1608,7 +1608,7 @@ void __cdecl frame_texture_free(void); /* 00568381 */
 void __cdecl frame_texture_load_hook_nop(void); /* 005683a5 */
 void __cdecl frame_texture_free_hook_nop(void); /* 005683b5 */
 i32 __cdecl gfx_dissolve_blit(iptr surface,iptr rect,uint cell_size,int mode); /* 005683c5 */
-i32 __cdecl civ_city_art_era(iptr civ); /* 00568861 */
+i32 __cdecl civ_city_art_era(int civ); /* 00568861 */
 void __cdecl status_window_global_init(void); /* 00568b00 */
 void __cdecl status_window_static_init(void); /* 00568b1a */
 void __cdecl status_window_reg_atexit(void); /* 00568b34 */
@@ -1625,10 +1625,10 @@ void __cdecl status_wnd_on_minimize(void); /* 00568c41 */
 void __cdecl status_wnd_on_restore(void); /* 00568c58 */
 i32 __cdecl status_wnd_on_close(void); /* 00568c7e */
 void __cdecl status_calc_font_sizes(void); /* 00568ca2 */
-void __cdecl status_draw_civ_color(iptr civ); /* 00568e86 */
+void __cdecl status_draw_civ_color(int civ); /* 00568e86 */
 void __cdecl status_draw_end_of_turn(int blit); /* 00568f43 */
-i32 __cdecl status_draw_cursor_loc(iptr x,iptr y,i32 draw_x,iptr draw_y); /* 0056911d */
-void __cdecl status_append_unit_orders(iptr unit); /* 005691a1 */
+i32 __cdecl status_draw_cursor_loc(int x,int y,i32 draw_x,int draw_y); /* 0056911d */
+void __cdecl status_append_unit_orders(int unit); /* 005691a1 */
 void __cdecl status_draw_info(int full_redraw); /* 00569363 */
 void __cdecl status_draw_unit_panel(void); /* 00569801 */
 void __cdecl status_redraw(int blit); /* 0056a65e */
@@ -1647,13 +1647,13 @@ void __cdecl map_label_font_static_init(void); /* 0056b8ba */
 void __cdecl map_label_font_reg_atexit(void); /* 0056b8d4 */
 void __cdecl map_label_font_static_dtor(void); /* 0056b8f1 */
 void __cdecl gfx_select_zoom_font(i32 zoom); /* 0056b90b */
-iptr __cdecl unit_stack_pick_display_unit(iptr unit); /* 0056b96e */
-void __cdecl gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int no_fortress); /* 0056baff */
+iptr __cdecl unit_stack_pick_display_unit(int unit); /* 0056b96e */
+void __cdecl gfx_draw_unit(iptr surface,int unit,uint draw_flags,int px,int py,int zoom,int no_fortress); /* 0056baff */
 void __cdecl gfx_copy_rect_clipped(iptr src,iptr dst,int src_x,int src_y,int src_origin_x,int src_origin_y,int dst_x, int dst_y,int dst_origin_x,int dst_origin_y,int width,int height); /* 0056c5fc */
-void __cdecl map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr sound_arg); /* 0056c705 */
-void __cdecl gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom); /* 0056d289 */
+void __cdecl map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int sound_arg); /* 0056c705 */
+void __cdecl gfx_draw_city(iptr surface,int city,uint draw_flags,int px,int py,int zoom); /* 0056d289 */
 int __cdecl gfx_zoom_scale_round(int value,int zoom); /* 0056e1c0 */
-i32 __cdecl civ_color_mid(iptr civ); /* 0056e1f0 */
+i32 __cdecl civ_color_mid(int civ); /* 0056e1f0 */
 void __cdecl lobby_wait_civs_chosen_idle(void); /* 0056ec92 */
 void __cdecl lobby_dialog_idle(void); /* 0056ed62 */
 void __cdecl lobby_refresh_player_list(void); /* 0056f113 */
@@ -1719,26 +1719,26 @@ void __cdecl sprite_picker_show(void); /* 0057624d */
 void __cdecl sprite_editor_import_sheet(void); /* 00576267 */
 void __cdecl str_pipes_to_tabs(char *str); /* 00578abd */
 void __cdecl menu_dispatch_command(i32 menu_index,i32 item_index); /* 00578d8a */
-i32 __cdecl diplo_force_war(iptr civ,iptr civ2); /* 00579c40 */
-int __cdecl city_treasury_share(iptr city); /* 00579dbb */
-i32 __cdecl diplo_confirm_attack(iptr civ,iptr civ2,uint treaty_mask); /* 00579ed0 */
-void __cdecl civ_steal_advance(iptr civ,iptr civ2); /* 0057a27a */
-iptr __cdecl civ_find_central_city(iptr civ); /* 0057a685 */
-void __cdecl city_transfer_for_civil_war(iptr city,iptr civ2,iptr civ); /* 0057a7e9 */
-i32 __cdecl civ_civil_war(iptr civ); /* 0057a904 */
-void __cdecl city_capture_aftermath(uptr city,iptr civ,int capture_mode); /* 0057b5df */
-int __cdecl unit_attack_strength(iptr unit); /* 0057e2c3 */
-int __cdecl unit_defense_strength(iptr unit,int recalc_tile,iptr unit2); /* 0057e33a */
-iptr __cdecl unit_stack_best_defender(iptr unit,iptr unit2); /* 0057e6e2 */
-void __cdecl unit_kill_in_combat(iptr unit,iptr unit2,iptr x,iptr y); /* 0057e9f9 */
-void __cdecl unit_kill_stack_in_combat(iptr unit,iptr unit2,i32 x,i32 y); /* 0057eb94 */
-void __cdecl unit_promote_veteran(iptr unit); /* 0057ebfd */
+i32 __cdecl diplo_force_war(int civ,int civ2); /* 00579c40 */
+int __cdecl city_treasury_share(int city); /* 00579dbb */
+i32 __cdecl diplo_confirm_attack(int civ,int civ2,uint treaty_mask); /* 00579ed0 */
+void __cdecl civ_steal_advance(int civ,int civ2); /* 0057a27a */
+iptr __cdecl civ_find_central_city(int civ); /* 0057a685 */
+void __cdecl city_transfer_for_civil_war(int city,int civ2,int civ); /* 0057a7e9 */
+i32 __cdecl civ_civil_war(int civ); /* 0057a904 */
+void __cdecl city_capture_aftermath(uptr city,int civ,int capture_mode); /* 0057b5df */
+int __cdecl unit_attack_strength(int unit); /* 0057e2c3 */
+int __cdecl unit_defense_strength(int unit,int recalc_tile,int unit2); /* 0057e33a */
+iptr __cdecl unit_stack_best_defender(int unit,int unit2); /* 0057e6e2 */
+void __cdecl unit_kill_in_combat(int unit,int unit2,int x,int y); /* 0057e9f9 */
+void __cdecl unit_kill_stack_in_combat(int unit,int unit2,i32 x,i32 y); /* 0057eb94 */
+void __cdecl unit_promote_veteran(int unit); /* 0057ebfd */
 i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id); /* 0057ed3f */
-void __cdecl map_animate_nuke(iptr x,iptr y); /* 0057f657 */
-i32 __cdecl unit_nuclear_attack(iptr civ,int x,int y,int check_sdi); /* 0057f9e3 */
-void __cdecl ai_respond_to_attack(iptr civ,iptr x,iptr y); /* 0057febc */
+void __cdecl map_animate_nuke(int x,int y); /* 0057f657 */
+i32 __cdecl unit_nuclear_attack(int civ,int x,int y,int check_sdi); /* 0057f9e3 */
+void __cdecl ai_respond_to_attack(int civ,int x,int y); /* 0057febc */
 void __cdecl map_redraw_combat_tiles(i32 att_x,i32 att_y,i32 def_x,i32 def_y); /* 005802fd */
-i32 __cdecl unit_resolve_attack(iptr unit,iptr dir,int execute); /* 00580341 */
+i32 __cdecl unit_resolve_attack(int unit,int dir,int execute); /* 00580341 */
 void __cdecl cosmic_editor_focus_redraw(void); /* 005866a0 */
 void __cdecl cosmic_editor_capture_defaults(void); /* 005866d3 */
 void __cdecl cosmic_editor_fill_list(void); /* 005869d4 */
@@ -1755,7 +1755,7 @@ void __cdecl parley_city_list_scroll(int pane,i32 pos); /* 0058804f */
 void __cdecl parley_city_list_click(int control_id); /* 005880b0 */
 int __cdecl parley_city_list_hit_test(int x,int y,int pane); /* 0058832d */
 void __cdecl parley_draw_city_list(int pane); /* 0058878e */
-void __cdecl parley_draw_city_sprite(iptr city,uint row_index,int x,int y,int row_height,i32 style); /* 00588e47 */
+void __cdecl parley_draw_city_sprite(int city,uint row_index,int x,int y,int row_height,i32 style); /* 00588e47 */
 void __cdecl main_frame_bg_surface_global_init(void); /* 005899f0 */
 void __cdecl main_frame_bg_surface_init(void); /* 00589a0a */
 void __cdecl main_frame_bg_surface_atexit(void); /* 00589a24 */
@@ -1787,7 +1787,7 @@ void __cdecl unit_cmd_wait(void); /* 0058bdfd */
 void __cdecl unit_cmd_build_city(void); /* 0058be56 */
 void __cdecl unit_cmd_disband(void); /* 0058c295 */
 i32 __cdecl tile_has_irrigation_source(int x2,int y2); /* 0058c56c */
-void __cdecl unit_cmd_terraform(iptr order); /* 0058c65e */
+void __cdecl unit_cmd_terraform(int order); /* 0058c65e */
 void __cdecl unit_cmd_home_city(void); /* 0058cbe1 */
 void __cdecl unit_cmd_fortify(void); /* 0058cce6 */
 void __cdecl unit_cmd_sleep(void); /* 0058cde5 */
@@ -1799,30 +1799,30 @@ void __cdecl unit_cmd_unload(void); /* 0058ddce */
 void __cdecl unit_cmd_automate(void); /* 0058df14 */
 void __cdecl unit_cmd_airlift(void); /* 0058df7b */
 uint __cdecl unit_enter_hut(int unit_id); /* 0058f040, hand-written */
-void __cdecl map_reveal_adjacent_units(int x,int y,iptr civ); /* 0058fda9 */
-i32 __cdecl unit_caravan_enter_city(iptr unit,uptr city); /* 0058fedb */
-i32 __cdecl unit_move_dir(iptr unit,uptr dir,i32 move_flags); /* 0059062c */
-i32 __cdecl net_lock_map(iptr civ,iptr src_x,iptr src_y,iptr dst_x,int dst_y,int wait_reply); /* 00594d42 */
-void __cdecl net_unlock_map(iptr civ,int wait_reply); /* 0059511c */
-iptr __cdecl spaceship_part_limit(iptr civ,int part); /* 00596b00 */
-i32 __cdecl spaceship_part_count(iptr civ,int part); /* 00596c08 */
-int __cdecl spaceship_group_limit(iptr civ,int group); /* 00596c61 */
+void __cdecl map_reveal_adjacent_units(int x,int y,int civ); /* 0058fda9 */
+i32 __cdecl unit_caravan_enter_city(int unit,uptr city); /* 0058fedb */
+i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags); /* 0059062c */
+i32 __cdecl net_lock_map(int civ,iptr src_x,iptr src_y,iptr dst_x,int dst_y,int wait_reply); /* 00594d42 */
+void __cdecl net_unlock_map(int civ,int wait_reply); /* 0059511c */
+iptr __cdecl spaceship_part_limit(int civ,int part); /* 00596b00 */
+i32 __cdecl spaceship_part_count(int civ,int part); /* 00596c08 */
+int __cdecl spaceship_group_limit(int civ,int group); /* 00596c61 */
 int __cdecl spaceship_group_max(int group); /* 00596ced */
-int __cdecl spaceship_group_count(iptr civ,iptr group); /* 00596d3c */
-int __cdecl spaceship_group_count_clamped(iptr civ,int group); /* 00596e06 */
+int __cdecl spaceship_group_count(int civ,iptr group); /* 00596d3c */
+int __cdecl spaceship_group_count_clamped(int civ,int group); /* 00596e06 */
 int __cdecl spaceship_component_thrust(int count); /* 00596e92 */
-void __cdecl spaceship_calc_stats(iptr civ,int apply_support); /* 00596eec */
-void __cdecl spaceship_launch(iptr civ); /* 005973fd */
-void __cdecl spaceship_status_dialog(iptr civ,int allow_launch); /* 0059772c */
-iptr __cdecl spaceship_choose_part_group(iptr civ,iptr group); /* 00597d6f */
-int __cdecl spaceship_add_part(iptr civ,iptr group); /* 00598197 */
-i32 __cdecl civ_spaceship_part_maxed(iptr civ,iptr improvement); /* 00598a05 */
+void __cdecl spaceship_calc_stats(int civ,int apply_support); /* 00596eec */
+void __cdecl spaceship_launch(int civ); /* 005973fd */
+void __cdecl spaceship_status_dialog(int civ,int allow_launch); /* 0059772c */
+iptr __cdecl spaceship_choose_part_group(int civ,iptr group); /* 00597d6f */
+int __cdecl spaceship_add_part(int civ,iptr group); /* 00598197 */
+i32 __cdecl civ_spaceship_part_maxed(int civ,int improvement); /* 00598a05 */
 void __cdecl spaceship_select_view_dialog(iptr unused); /* 00598b4e */
 i32 __cdecl spaceship_race_active(void); /* 00598ceb */
-i32 __cdecl ai_spaceship_race_behind(iptr civ); /* 00598d45 */
-uint __cdecl spaceship_group_full(iptr civ,iptr group); /* 005998b0 */
-i32 __cdecl spaceship_group_can_build(iptr civ,iptr group); /* 00599910 */
-uint __cdecl spaceship_group_at_limit(iptr civ,iptr group); /* 005999c0 */
+i32 __cdecl ai_spaceship_race_behind(int civ); /* 00598d45 */
+uint __cdecl spaceship_group_full(int civ,iptr group); /* 005998b0 */
+i32 __cdecl spaceship_group_can_build(int civ,iptr group); /* 00599910 */
+uint __cdecl spaceship_group_at_limit(int civ,iptr group); /* 005999c0 */
 int __cdecl rng_set_seed(int seed); /* 0059a6f0 */
 float10 __cdecl rng_next_unit(void); /* 0059a733, hand-written */
 int __cdecl rand_range(int lo, int hi); /* 0059a791, hand-written */
@@ -1841,7 +1841,7 @@ void __cdecl net_reset_msg_counts(void); /* 0059c276 */
 void __cdecl net_reset_error_counts(void); /* 0059c2b8 */
 void __cdecl net_modal_idle_poll(void); /* 0059c301 */
 void __cdecl net_fill_game_info(NetGameInfo *info); /* 0059c31f */
-void __cdecl casualty_log_add(iptr unit,iptr unit2,iptr year,iptr x,i32 y); /* 0059c575 */
+void __cdecl casualty_log_add(int unit,int unit2,int year,int x,i32 y); /* 0059c575 */
 void __cdecl dialog_text_font_global_init(void); /* 0059d190 */
 void __cdecl dialog_text_font_static_init(void); /* 0059d1aa */
 void __cdecl dialog_text_font_reg_atexit(void); /* 0059d1ca */
@@ -1894,11 +1894,11 @@ void __cdecl gfx_draw_line_color(iptr surface,i32 x1,i32 y1,i32 x2, i32 y2,i32 c
 void __cdecl gfx_draw_hline(iptr surface,i32 x1,int x2,int y,i32 color); /* 005a97cc */
 void __cdecl gfx_draw_vline(iptr surface,int x,i32 y1,int y2,i32 color); /* 005a9858 */
 void __cdecl gfx_draw_box_ltrb(iptr surface,i32 left,i32 top,i32 right, i32 bottom,i32 color); /* 005a98e4 */
-void __cdecl gfx_draw_frame_rect(iptr surface,int x,int y,int width,iptr height,i32 color); /* 005a9964 */
+void __cdecl gfx_draw_frame_rect(iptr surface,int x,int y,int width,int height,i32 color); /* 005a9964 */
 void __cdecl gfx_draw_bevel_rect(iptr surface,RECT *rect,i32 light_color,i32 dark_color); /* 005a99fc */
 void __cdecl gfx_fill_surface(iptr surface,i32 color); /* 005a9aa3 */
-void __cdecl gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,iptr width,iptr height, i32 color); /* 005a9abf */
-void __cdecl gfx_copy_rect_xywh(iptr src,iptr dest,i32 src_x,i32 src_y,i32 dest_x, i32 dest_y,iptr width,iptr height); /* 005a9afe */
+void __cdecl gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,int width,int height, i32 color); /* 005a9abf */
+void __cdecl gfx_copy_rect_xywh(iptr src,iptr dest,i32 src_x,i32 src_y,i32 dest_x, i32 dest_y,int width,int height); /* 005a9afe */
 int __cdecl gfx_tile_fill(iptr dest,iptr tile,int x,int y,int width,int height,int origin_x, int origin_y); /* 005a9b5d */
 void __cdecl net_host_wait_production_idle(void); /* 005a9f30 */
 void __cdecl net_host_wait_human_moves_idle(void); /* 005aa004 */
@@ -1908,16 +1908,16 @@ void __cdecl net_client_wait_ai_moves_idle(void); /* 005ab120 */
 void __cdecl net_client_wait_human_moves_idle(void); /* 005ab19d */
 void __cdecl net_client_hotwait_idle(void); /* 005ab23a */
 i32 __cdecl net_client_turn_loop(void); /* 005ab2d5 */
-int __cdecl int_clamp(iptr value,iptr lo,int hi); /* 005adfa0 */
+int __cdecl int_clamp(int value,int lo,int hi); /* 005adfa0 */
 void __cdecl int_swap(iptr a,iptr b); /* 005adfd9 */
 int __cdecl bits_count8(uint bits); /* 005ae006 */
-iptr __cdecl map_wrap_x(iptr x); /* 005ae052 */
+iptr __cdecl map_wrap_x(int x); /* 005ae052 */
 int __cdecl coarse_wrap_x(int x); /* 005ae0b0 */
 int __cdecl map_dx_wrapped(int x1,int x2); /* 005ae10e */
 int __cdecl map_distance(int x1,int y1,int x2,int y2); /* 005ae1b0 */
 int __cdecl dist_from_deltas(uint dx,uint dy); /* 005ae296 */
 i32 __cdecl map_distance_diag(i32 x1,int y1,i32 x2,int y2); /* 005ae31d */
-void __cdecl bit_index_split(iptr bit_index,iptr out_byte,iptr out_mask); /* 005ae3bf */
+void __cdecl bit_index_split(int bit_index,iptr out_byte,iptr out_mask); /* 005ae3bf */
 int __cdecl int_shift_signed(int value,int shift); /* 005ae3ec */
 i32 __cdecl setup_pbem_game(void); /* 005ae580 */
 void __cdecl unit_editor_load_rules(void); /* 005aef20 */
@@ -1937,91 +1937,91 @@ void __cdecl unit_editor_edit_flags(void); /* 005afea8 */
 void __cdecl unit_editor_update_domain_ctrls(void); /* 005b02a5 */
 void __cdecl unit_editor_on_combo(int ctrl_id); /* 005b0373 */
 void __cdecl unit_editor_run(void); /* 005b1a29 */
-i32 __cdecl unit_stack_validate(iptr unit); /* 005b2590 */
-int __cdecl unit_max_hp(iptr unit); /* 005b29aa */
-int __cdecl unit_hp_remaining(iptr unit); /* 005b29d7 */
-uint __cdecl unit_max_moves(iptr unit); /* 005b2a39 */
-int __cdecl unit_moves_left(iptr unit); /* 005b2c3d */
-iptr __cdecl unit_next_in_stack(iptr unit); /* 005b2c82 */
-iptr __cdecl unit_stack_last(iptr unit); /* 005b2cc3 */
-iptr __cdecl unit_stack_first(iptr unit); /* 005b2d39 */
+i32 __cdecl unit_stack_validate(int unit); /* 005b2590 */
+int __cdecl unit_max_hp(int unit); /* 005b29aa */
+int __cdecl unit_hp_remaining(int unit); /* 005b29d7 */
+uint __cdecl unit_max_moves(int unit); /* 005b2a39 */
+int __cdecl unit_moves_left(int unit); /* 005b2c3d */
+iptr __cdecl unit_next_in_stack(int unit); /* 005b2c82 */
+iptr __cdecl unit_stack_last(int unit); /* 005b2cc3 */
+iptr __cdecl unit_stack_first(int unit); /* 005b2d39 */
 i32 __cdecl unit_stack_first_at(int civ,int x,int y); /* 005b2daf */
 i32 __cdecl tile_first_unit(int x,int y); /* 005b2e69 */
-void __cdecl unit_set_sleep(iptr unit); /* 005b2f50 */
+void __cdecl unit_set_sleep(int unit); /* 005b2f50 */
 int __cdecl unit_stack_nth(int unit,int n); /* 005b2f92 */
-void __cdecl unit_stack_unlink(iptr unit,int sync); /* 005b319e */
-void __cdecl unit_stack_link(iptr unit,iptr x,iptr y,int sync); /* 005b345f */
-void __cdecl unit_relocate(iptr unit,iptr x,iptr y,int sync); /* 005b36df */
-void __cdecl unit_relocate_in_place(iptr unit,i32 sync); /* 005b3863 */
-void __cdecl unit_move_to_stack_bottom(iptr unit,int sync); /* 005b389f */
-void __cdecl unit_stack_relocate_all(iptr unit,iptr x,iptr y,int sync); /* 005b3ae0 */
-void __cdecl unit_stack_ships_to_top(iptr unit,i32 sync); /* 005b3b78 */
-iptr __cdecl unit_create(iptr unit_type,uptr civ,iptr x,iptr y); /* 005b3d06 */
-void __cdecl unit_delete(iptr unit,int update_ui); /* 005b4391 */
-void __cdecl unit_stack_delete_all(iptr unit,int sync); /* 005b47fa */
-void __cdecl unit_clear_visibility(iptr unit); /* 005b488a */
-void __cdecl unit_stack_clear_visibility(iptr unit); /* 005b48b1 */
-void __cdecl unit_set_seen_by(iptr unit,iptr civ); /* 005b490e */
-void __cdecl unit_stack_set_seen_by(iptr unit,iptr civ); /* 005b496e */
-uint __cdecl tile_adjacent_nonallied_civ(iptr x,int y,iptr civ); /* 005b49cf */
-uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,iptr civ); /* 005b4b66 */
-uint __cdecl tile_zoc_unit_adjacent(int x,int y,iptr civ); /* 005b4c63 */
-i32 __cdecl tile_in_enemy_zoc(iptr x,i32 y,iptr civ); /* 005b4d8c */
-void __cdecl unit_stack_add_visibility(iptr unit,i32 vis_mask); /* 005b4ee2 */
-int __cdecl unit_stack_sum(iptr unit,int mode); /* 005b50ad */
-int __cdecl unit_stack_count_role(iptr unit,int wanted_role); /* 005b53b6 */
-int __cdecl unit_gather_cargo(iptr unit,iptr lift_off,int send_update); /* 005b542e */
-void __cdecl unit_lift_off_map(iptr unit,int send_update); /* 005b5bab */
-void __cdecl unit_delete_with_cargo(iptr unit,int send_update); /* 005b5d93 */
-void __cdecl unit_destroy_redraw(iptr unit,int send_update); /* 005b6042 */
-i32 __cdecl unit_is_selectable(iptr unit); /* 005b633f */
-i32 __cdecl unit_is_awake_with_moves(iptr unit); /* 005b6458 */
-iptr __cdecl unit_find_nearest_selectable(iptr unit,int human_only); /* 005b6512 */
-void __cdecl unit_exhaust_moves(iptr unit); /* 005b6787 */
-iptr __cdecl unit_find_nearest(i32 target_x,i32 target_y,iptr owner_civ,iptr exclude_unit); /* 005b67af */
-int __cdecl unit_home_city_name(iptr unit); /* 005b6898 */
-i32 __cdecl ai_tile_improve_choice(iptr civ,iptr x,i32 y); /* 005b68f6 */
-i32 __cdecl unit_dlg_wake_unit_cb(iptr unit); /* 005b6a58 */
+void __cdecl unit_stack_unlink(int unit,int sync); /* 005b319e */
+void __cdecl unit_stack_link(int unit,int x,int y,int sync); /* 005b345f */
+void __cdecl unit_relocate(int unit,int x,int y,int sync); /* 005b36df */
+void __cdecl unit_relocate_in_place(int unit,i32 sync); /* 005b3863 */
+void __cdecl unit_move_to_stack_bottom(int unit,int sync); /* 005b389f */
+void __cdecl unit_stack_relocate_all(int unit,int x,int y,int sync); /* 005b3ae0 */
+void __cdecl unit_stack_ships_to_top(int unit,i32 sync); /* 005b3b78 */
+iptr __cdecl unit_create(iptr unit_type,uptr civ,int x,int y); /* 005b3d06 */
+void __cdecl unit_delete(int unit,int update_ui); /* 005b4391 */
+void __cdecl unit_stack_delete_all(int unit,int sync); /* 005b47fa */
+void __cdecl unit_clear_visibility(int unit); /* 005b488a */
+void __cdecl unit_stack_clear_visibility(int unit); /* 005b48b1 */
+void __cdecl unit_set_seen_by(int unit,int civ); /* 005b490e */
+void __cdecl unit_stack_set_seen_by(int unit,int civ); /* 005b496e */
+uint __cdecl tile_adjacent_nonallied_civ(int x,int y,int civ); /* 005b49cf */
+uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,int civ); /* 005b4b66 */
+uint __cdecl tile_zoc_unit_adjacent(int x,int y,int civ); /* 005b4c63 */
+i32 __cdecl tile_in_enemy_zoc(int x,i32 y,int civ); /* 005b4d8c */
+void __cdecl unit_stack_add_visibility(int unit,i32 vis_mask); /* 005b4ee2 */
+int __cdecl unit_stack_sum(int unit,int mode); /* 005b50ad */
+int __cdecl unit_stack_count_role(int unit,int wanted_role); /* 005b53b6 */
+int __cdecl unit_gather_cargo(int unit,int lift_off,int send_update); /* 005b542e */
+void __cdecl unit_lift_off_map(int unit,int send_update); /* 005b5bab */
+void __cdecl unit_delete_with_cargo(int unit,int send_update); /* 005b5d93 */
+void __cdecl unit_destroy_redraw(int unit,int send_update); /* 005b6042 */
+i32 __cdecl unit_is_selectable(int unit); /* 005b633f */
+i32 __cdecl unit_is_awake_with_moves(int unit); /* 005b6458 */
+iptr __cdecl unit_find_nearest_selectable(int unit,int human_only); /* 005b6512 */
+void __cdecl unit_exhaust_moves(int unit); /* 005b6787 */
+iptr __cdecl unit_find_nearest(i32 target_x,i32 target_y,int owner_civ,int exclude_unit); /* 005b67af */
+int __cdecl unit_home_city_name(int unit); /* 005b6898 */
+i32 __cdecl ai_tile_improve_choice(int civ,int x,i32 y); /* 005b68f6 */
+i32 __cdecl unit_dlg_wake_unit_cb(int unit); /* 005b6a58 */
 i32 __cdecl unit_dlg_dblclick_accept_cb(void); /* 005b6aa0 */
-void __cdecl unit_dlg_draw_sprite_cb(i32 dlg,iptr sprite,iptr unit,i32 left,int x, i32 y); /* 005b6ab5 */
-i32 __cdecl unit_stack_select_dialog(iptr unit,const char *title,int allow_cancel); /* 005b6aea */
+void __cdecl unit_dlg_draw_sprite_cb(i32 dlg,iptr sprite,int unit,i32 left,int x, i32 y); /* 005b6ab5 */
+i32 __cdecl unit_stack_select_dialog(int unit,const char *title,int allow_cancel); /* 005b6aea */
 void __cdecl map_alloc(void); /* 005b7fe0 */
 void __cdecl map_free(void); /* 005b8416 */
 void __cdecl map_new_seed(void); /* 005b85fe */
 i32 __cdecl map_write(iptr file,int is_scenario); /* 005b8635 */
 i32 __cdecl map_read(iptr file,int is_scenario); /* 005b8783 */
-Tile * __cdecl tile_at(iptr x,iptr y); /* 005b8931 */
-u8 * __cdecl known_at(int x,int y,iptr civ); /* 005b898b */
-byte __cdecl tile_terrain(iptr x,iptr y); /* 005b89bb */
+Tile * __cdecl tile_at(int x,int y); /* 005b8931 */
+u8 * __cdecl known_at(int x,int y,int civ); /* 005b898b */
+byte __cdecl tile_terrain(int x,int y); /* 005b89bb */
 uint __cdecl tile_is_ocean(i32 x,i32 y); /* 005b89e4 */
-int __cdecl tile_owner(iptr x,iptr y); /* 005b8a1d */
-uint __cdecl tile_landmass(iptr x,iptr y); /* 005b8a81 */
-i32 __cdecl tile_land_landmass(iptr x,iptr y); /* 005b8aa8 */
-int __cdecl tile_radius_civ(iptr x,iptr y); /* 005b8af0 */
-void __cdecl tile_update_known(iptr x,iptr y,iptr civ); /* 005b8b1a */
-uint __cdecl tile_visible_to(iptr x,iptr y,iptr civ); /* 005b8b65 */
-uint __cdecl tile_get_fertility(iptr x,iptr y); /* 005b8c18 */
-int __cdecl tile_owner_or_fertility(i32 x,iptr y); /* 005b8c42 */
-i32 __cdecl tile_city_owner(iptr x,iptr y); /* 005b8ca6 */
+int __cdecl tile_owner(int x,int y); /* 005b8a1d */
+uint __cdecl tile_landmass(int x,int y); /* 005b8a81 */
+i32 __cdecl tile_land_landmass(int x,int y); /* 005b8aa8 */
+int __cdecl tile_radius_civ(int x,int y); /* 005b8af0 */
+void __cdecl tile_update_known(int x,int y,int civ); /* 005b8b1a */
+uint __cdecl tile_visible_to(int x,int y,int civ); /* 005b8b65 */
+uint __cdecl tile_get_fertility(int x,int y); /* 005b8c18 */
+int __cdecl tile_owner_or_fertility(i32 x,int y); /* 005b8c42 */
+i32 __cdecl tile_city_owner(int x,int y); /* 005b8ca6 */
 i32 __cdecl tile_airbase_owner(i32 x,i32 y); /* 005b8d15 */
 i32 __cdecl tile_unit_owner(i32 x,i32 y); /* 005b8d62 */
-int __cdecl tile_city_or_unit_owner(iptr x,i32 y); /* 005b8da4 */
-i32 __cdecl tile_owner_at_peace(iptr x,iptr y,iptr civ); /* 005b8dec */
+int __cdecl tile_city_or_unit_owner(int x,i32 y); /* 005b8da4 */
+i32 __cdecl tile_owner_at_peace(int x,int y,int civ); /* 005b8dec */
 i32 __cdecl tile_resource(int x,int y); /* 005b8ee1 */
 i32 __cdecl tile_has_hut(int x,int y); /* 005b8ffa */
-void __cdecl tile_add_pollution(iptr x,iptr y); /* 005b90df */
-void __cdecl nuclear_blast(iptr center_x,int center_y); /* 005b9179 */
-uint __cdecl landmass_borders_body(int landmass,iptr other_body); /* 005b9431 */
-int __cdecl landmass_count_bordering(iptr body); /* 005b947f */
-uint __cdecl tile_improvements(iptr x,iptr y); /* 005b94d5 */
-void __cdecl tile_set_improvements(iptr x,iptr y,iptr bits,iptr set,int sync); /* 005b94fc */
-void __cdecl tile_set_terrain(iptr x,iptr y,iptr terrain,iptr sync); /* 005b9646 */
-void __cdecl tile_set_visible(iptr x,iptr y,iptr bits,iptr set,int sync); /* 005b976d */
-void __cdecl tile_set_fertility(iptr x,iptr y,iptr fertility,iptr sync); /* 005b98b7 */
-void __cdecl tile_set_owner(iptr x,iptr y,iptr owner,iptr sync); /* 005b99e8 */
-void __cdecl tile_set_landmass(iptr x,iptr y,iptr landmass,iptr sync); /* 005b9b35 */
-void __cdecl tile_set_radius_civ(iptr x,iptr y,iptr radius_civ,iptr sync); /* 005b9c49 */
-void __cdecl known_set(iptr x,iptr y,uptr bits,iptr civ,int merge,int sync); /* 005b9d81 */
+void __cdecl tile_add_pollution(int x,int y); /* 005b90df */
+void __cdecl nuclear_blast(int center_x,int center_y); /* 005b9179 */
+uint __cdecl landmass_borders_body(int landmass,int other_body); /* 005b9431 */
+int __cdecl landmass_count_bordering(int body); /* 005b947f */
+uint __cdecl tile_improvements(int x,int y); /* 005b94d5 */
+void __cdecl tile_set_improvements(int x,int y,iptr bits,iptr set,int sync); /* 005b94fc */
+void __cdecl tile_set_terrain(int x,int y,int terrain,iptr sync); /* 005b9646 */
+void __cdecl tile_set_visible(int x,int y,iptr bits,iptr set,int sync); /* 005b976d */
+void __cdecl tile_set_fertility(int x,int y,int fertility,iptr sync); /* 005b98b7 */
+void __cdecl tile_set_owner(int x,int y,int owner,iptr sync); /* 005b99e8 */
+void __cdecl tile_set_landmass(int x,int y,int landmass,iptr sync); /* 005b9b35 */
+void __cdecl tile_set_radius_civ(int x,int y,int radius_civ,iptr sync); /* 005b9c49 */
+void __cdecl known_set(int x,int y,uptr bits,int civ,int merge,int sync); /* 005b9d81 */
 void __cdecl net_batch_begin(void); /* 005b9ec6 */
 void __cdecl net_batch_flush(void); /* 005b9f1c */
 void __cdecl net_batch_add(int record_type,i32 x,i32 y,i32 arg1,iptr arg2, i32 arg3); /* 005b9fde */
@@ -2032,7 +2032,7 @@ void __cdecl text_set_surface(iptr surface); /* 005baeb0 */
 void __cdecl text_set_font(iptr font); /* 005baec8 */
 void __cdecl text_set_colors(i32 fg_color,i32 shadow_color,int shadow_dx,int shadow_dy); /* 005baee0 */
 int __cdecl text_draw_shadowed(iptr surface,const char *text,int x,int y); /* 005baf57 */
-int __cdecl text_draw_centered(iptr surface,const char *text,int x,iptr y,int box_width); /* 005bb024 */
+int __cdecl text_draw_centered(iptr surface,const char *text,int x,int y,int box_width); /* 005bb024 */
 int __cdecl text_draw_right_aligned(iptr surface,const char *text,int x,i32 y,int box_width); /* 005bb0af */
 bool __thiscall surfwnd_resize_dib(DibSurface *self,iptr rect); /* 005bb5be */
 void __cdecl win_drain_input_msgs(void); /* 005bb9c0 */
@@ -2115,7 +2115,7 @@ void __cdecl ctrl_paint_parent_bkgnd(iptr paint,HWND hwnd); /* 005c90ca */
 void __cdecl ctrl_parse_hotkey(iptr ctrl,const char *text); /* 005c9222 */
 LRESULT __stdcall ctrl_default_wndproc(HWND hwnd,uint msg,WPARAM wparam,LPARAM lparam); /* 005c9307 */
 int __cdecl ctrl_destroy_hwnd(iptr ctrl); /* 005c944b */
-ControlBlock * __cdecl ctrl_init_block(HWND hwnd,iptr owner); /* 005c9499 */
+ControlBlock * __cdecl ctrl_init_block(HWND hwnd,int owner); /* 005c9499 */
 ControlBlock * __cdecl wnd_from_hwnd(HWND hwnd); /* 005c9563 */
 void __cdecl ctrl_hwnd_free_block(HWND hwnd); /* 005c9595 */
 void __cdecl wnd_redraw_client(HWND hwnd); /* 005c96cc */
@@ -2152,7 +2152,7 @@ Sprite * __thiscall sprite_init(Sprite *self); /* 005cde2c */
 Sprite * __thiscall sprite_destroy(Sprite *self); /* 005cde4d */
 int __cdecl gfx_scale_length(int length,int start,int round_up); /* 005d1d00 */
 i32 __cdecl game_timer_create(TimerFn callback,i32 interval_ms,i32 repeat_count); /* 005d1f50 */
-void __cdecl game_timer_destroy(iptr slot); /* 005d2004 */
+void __cdecl game_timer_destroy(int slot); /* 005d2004 */
 void __cdecl dbg_log_file_global_init(void); /* 005d21f0 */
 void __cdecl dbg_log_file_static_init(void); /* 005d220a */
 void __cdecl dbg_log_file_reg_atexit(void); /* 005d2224 */
@@ -2163,7 +2163,7 @@ i8 __cdecl dbg_logf_int2(const char *fmt,i32 arg1,i32 arg2); /* 005d22b7 */
 void __cdecl dbg_logf3(const char *fmt,iptr arg1,i32 arg2,i32 arg3); /* 005d22f9 */
 void __cdecl dbg_logf_noret(const char *fmt,i32 arg); /* 005d233f */
 i8 __cdecl dbg_logf_str(const char *fmt,const char *str); /* 005d237d */
-void __cdecl dbg_logf_str_int(const char *fmt,const char *str,iptr value); /* 005d23bb */
+void __cdecl dbg_logf_str_int(const char *fmt,const char *str,int value); /* 005d23bb */
 void * __thiscall dbg_log_file_ctor(void *self); /* 005d246f */
 void __thiscall dbg_log_file_dtor(void *self); /* 005d2498 */
 i8 __thiscall dbg_log_write(void *self,const char *text); /* 005d24b3 */
@@ -2213,8 +2213,8 @@ uint __cdecl timer_ticks_60hz(void); /* 005d41e0 */
 void __cdecl timer_busy_wait_ticks(int ticks); /* 005d4204 */
 HWND __cdecl timer_wnd_create(iptr timer_mgr); /* 005d423c */
 void __cdecl timer_wnd_destroy(HWND hwnd); /* 005d447c */
-i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,iptr slot); /* 005d44be */
-void __cdecl timer_wnd_kill_slot(HWND hwnd,iptr slot); /* 005d4664 */
+i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot); /* 005d44be */
+void __cdecl timer_wnd_kill_slot(HWND hwnd,int slot); /* 005d4664 */
 LRESULT __stdcall timer_wnd_proc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam); /* 005d4700 */
 void __cdecl snd_shutdown(void); /* 005d48d0 */
 int __cdecl snd_wave_open(i32 notify_hwnd,i32 buffer_bytes,i32 buffer_count); /* 005d48f0 */
@@ -2372,11 +2372,11 @@ void __cdecl sprite_blit_rows_keyed(iptr sprite_data,int dst_bits,iptr scale_tbl
 void __cdecl sprite_blit_rows_solid(iptr sprite_data,int dst_bits,iptr scale_tbl,i32 key,int dst_x,int dst_y, int pitch,int surf_height,int width,int height,int skip_x,int skip_y, i32 trim_x,int src_row,int scaled_trim_x,int scaled_trim_y,i32 color); /* 005e52bf */
 void __cdecl gif_lzw_decode_stream(byte *src,i8 *dest,iptr prefix_tbl,int pitch,uint width,uint height, i32 min_code_size); /* 005e53f3 */
 void __cdecl dib_hline8(iptr bits,i32 color,uint length,int x,int y,int surf_height, int pitch); /* 005e5869 */
-void __cdecl dib_vline8(iptr bits,i32 color,int length,iptr x,int y,int surf_height, iptr pitch); /* 005e58e7 */
+void __cdecl dib_vline8(iptr bits,i32 color,int length,int x,int y,int surf_height, int pitch); /* 005e58e7 */
 i32 __cdecl ddraw_init(void); /* 005e89d0, hand-written */
 uint __cdecl ddsurf_iface_can_flip(int *surface); /* 005ea578, hand-written */
 uint __cdecl ddraw_get_vblank_status(void); /* 005ea677, hand-written */
-void __cdecl wnd_install_frame_proc(iptr owner,NativeWindow *wnd); /* 005ea7a0 */
+void __cdecl wnd_install_frame_proc(WndBase *owner,NativeWindow *wnd); /* 005ea7a0 */
 i32 __cdecl ctrl_list_find_by_hwnd(int hwnd,Control *list); /* 005ea7d7 */
 HWND __cdecl hwnd_next_sibling_wrap(HWND hwnd); /* 005ea825 */
 HWND __cdecl hwnd_prev_sibling_wrap(HWND hwnd); /* 005ea87c */
@@ -2384,8 +2384,8 @@ void __cdecl wnd_cycle_control_focus(iptr wnd,HWND hwnd,int direction); /* 005ea
 void __cdecl wnd_focus_control(iptr wnd,iptr control); /* 005eabcc */
 i32 __cdecl ctrl_list_find_type11_hwnd(Control *list); /* 005eac6d */
 LRESULT __stdcall wnd_frame_wndproc(HWND hwnd,uint msg,uint wparam,HWND lparam); /* 005eacc0, hand-written */
-void __cdecl wnd_set_owner_ptr(iptr owner,NativeWindow *wnd); /* 005eb370 */
-void __cdecl wnd_install_command_proc(iptr owner,NativeWindow *wnd); /* 005eb393 */
+void __cdecl wnd_set_owner_ptr(WndBase *owner,NativeWindow *wnd); /* 005eb370 */
+void __cdecl wnd_install_command_proc(WndBase *owner,NativeWindow *wnd); /* 005eb393 */
 uint __cdecl input_map_vkey(uint vkey); /* 005eb3ed */
 uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam); /* 005eb447, hand-written */
 void __cdecl wnd_on_menu_command(HWND hwnd,i32 cmd_id); /* 005ec1a1 */
@@ -2505,8 +2505,8 @@ int crt_mkdir(const char *path); /* 00607920, C runtime: src/native/crt.cpp */
 void __cdecl FUN_0061a000(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14); /* 0061a000 */
 void __cdecl FUN_0061a759(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12, int a13, int a14, int a15, int a16); /* 0061a759 */
 int __cdecl coarse_wrap_x(int x); /* 00403021 */
-u8 * __cdecl known_at(int x,int y,iptr civ); /* 00403823 */
-void __cdecl known_set(iptr x,iptr y,uptr bits,iptr civ,int merge,int sync); /* 00401c58 */
+u8 * __cdecl known_at(int x,int y,int civ); /* 00403823 */
+void __cdecl known_set(int x,int y,uptr bits,int civ,int merge,int sync); /* 00401c58 */
 void __cdecl map_alloc(void); /* 00403b02 */
 u8 * __cdecl map_coarse0_at(int x,int y); /* 004025ae */
 u8 * __cdecl map_coarse1_at(int x,int y); /* 004021a3 */
@@ -2514,36 +2514,36 @@ u8 * __cdecl map_coarse2_at(int x,int y); /* 00401528 */
 void __cdecl map_copy_tile_byte(iptr dst,iptr src); /* 004010a0 */
 void __cdecl map_fill_tile_byte(iptr ptr,i32 value); /* 00402842 */
 void __cdecl map_free(void); /* 00402d74 */
-i32 __cdecl map_in_bounds(iptr x,iptr y); /* 004012d0 */
+i32 __cdecl map_in_bounds(int x,int y); /* 004012d0 */
 void __cdecl map_new_seed(void); /* 004038ff */
 i32 __cdecl map_read(iptr file,int is_scenario); /* 0040264e */
-iptr __cdecl map_wrap_x(iptr x); /* 004022ed */
+iptr __cdecl map_wrap_x(int x); /* 004022ed */
 i32 __cdecl map_write(iptr file,int is_scenario); /* 004019e2 */
-void __cdecl nuclear_blast(iptr center_x,int center_y); /* 004039fe */
+void __cdecl nuclear_blast(int center_x,int center_y); /* 004039fe */
 void __cdecl thunk_map_ascii_view_mode(); /* 00401348 */
-void __cdecl tile_add_pollution(iptr x,iptr y); /* 00401785 */
+void __cdecl tile_add_pollution(int x,int y); /* 00401785 */
 i32 __cdecl tile_airbase_owner(i32 x,i32 y); /* 004026f8 */
-Tile * __cdecl tile_at(iptr x,iptr y); /* 00401bb3 */
-int __cdecl tile_city_or_unit_owner(iptr x,i32 y); /* 004025d6 */
-i32 __cdecl tile_city_owner(iptr x,iptr y); /* 004017e9 */
+Tile * __cdecl tile_at(int x,int y); /* 00401bb3 */
+int __cdecl tile_city_or_unit_owner(int x,i32 y); /* 004025d6 */
+i32 __cdecl tile_city_owner(int x,int y); /* 004017e9 */
 i32 __cdecl tile_has_hut(int x,int y); /* 0040294b */
-uint __cdecl tile_improvements(iptr x,iptr y); /* 004019f1 */
+uint __cdecl tile_improvements(int x,int y); /* 004019f1 */
 uint __cdecl tile_is_ocean(i32 x,i32 y); /* 00401f6e */
-i32 __cdecl tile_land_landmass(iptr x,iptr y); /* 00402d8d */
-uint __cdecl tile_landmass(iptr x,iptr y); /* 00401f50 */
-int __cdecl tile_owner(iptr x,iptr y); /* 004029be */
-int __cdecl tile_radius_civ(iptr x,iptr y); /* 00403a67 */
+i32 __cdecl tile_land_landmass(int x,int y); /* 00402d8d */
+uint __cdecl tile_landmass(int x,int y); /* 00401f50 */
+int __cdecl tile_owner(int x,int y); /* 004029be */
+int __cdecl tile_radius_civ(int x,int y); /* 00403a67 */
 i32 __cdecl tile_resource(int x,int y); /* 00402342 */
-void __cdecl tile_set_improvements(iptr x,iptr y,iptr bits,iptr set,int sync); /* 004011db */
-void __cdecl tile_set_landmass(iptr x,iptr y,iptr landmass,iptr sync); /* 004013b6 */
-void __cdecl tile_set_owner(iptr x,iptr y,iptr owner,iptr sync); /* 0040128f */
-void __cdecl tile_set_radius_civ(iptr x,iptr y,iptr radius_civ,iptr sync); /* 004016d6 */
-void __cdecl tile_set_terrain(iptr x,iptr y,iptr terrain,iptr sync); /* 0040203b */
-void __cdecl tile_set_visible(iptr x,iptr y,iptr bits,iptr set,int sync); /* 00402c98 */
-byte __cdecl tile_terrain(iptr x,iptr y); /* 00403648 */
+void __cdecl tile_set_improvements(int x,int y,iptr bits,iptr set,int sync); /* 004011db */
+void __cdecl tile_set_landmass(int x,int y,int landmass,iptr sync); /* 004013b6 */
+void __cdecl tile_set_owner(int x,int y,int owner,iptr sync); /* 0040128f */
+void __cdecl tile_set_radius_civ(int x,int y,int radius_civ,iptr sync); /* 004016d6 */
+void __cdecl tile_set_terrain(int x,int y,int terrain,iptr sync); /* 0040203b */
+void __cdecl tile_set_visible(int x,int y,iptr bits,iptr set,int sync); /* 00402c98 */
+byte __cdecl tile_terrain(int x,int y); /* 00403648 */
 i32 __cdecl tile_unit_owner(i32 x,i32 y); /* 004031fc */
-void __cdecl tile_update_known(iptr x,iptr y,iptr civ); /* 00402928 */
-uint __cdecl tile_visible_to(iptr x,iptr y,iptr civ); /* 00403c24 */
+void __cdecl tile_update_known(int x,int y,int civ); /* 00402928 */
+uint __cdecl tile_visible_to(int x,int y,int civ); /* 00403c24 */
 void __cdecl parley_advance_list1_on_scroll(i32 pos); /* 00450b04 */
 void __cdecl parley_unit_list_scroll_right(i32 pos); /* 004687b5 */
 void __cdecl parley_request_city_origin_clicked(void); /* 004694b7 */

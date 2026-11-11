@@ -851,7 +851,7 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,iptr terrain2,int y2
       }
     }
     else {
-      terrain_index = pedia_find_terrain_index((int)terrain_types[terrain2].improve_to[improve_kind]);
+      terrain_index = pedia_find_terrain_index(terrain_types[terrain2].improve_to[improve_kind]);
       label = pedia_lookup_text(pedia_wnd.terrain_names,terrain_index);
       crt_strcpy(((i8 *)&textbuf.buf),label);
       link_width = font2->text_width((const char *)&textbuf.buf);
@@ -913,7 +913,7 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,iptr terrain2,in
     draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
-    terrain_index = pedia_find_terrain_index((int)terrain_types[terrain2].transform_to);
+    terrain_index = pedia_find_terrain_index(terrain_types[terrain2].transform_to);
     label = pedia_lookup_text(pedia_wnd.terrain_names,terrain_index);
     crt_strcpy(((i8 *)&textbuf.buf),label);
     link_width = font2->text_width((const char *)&textbuf.buf);
@@ -1254,7 +1254,7 @@ void PediaWindow::show_terrain_modal(int terrain_id)
 }
 
 /* 00491d61 auto */
-i32 __cdecl pedia_find_terrain_index(iptr terrain_id)
+i32 __cdecl pedia_find_terrain_index(int terrain_id)
 
 {
   int index;
@@ -3393,7 +3393,7 @@ void PediaWindow::sort_list(PediaListNode *list_head,i32 *keys,i32 *ids,iptr cou
 }
 
 /* 004f8a9b auto */
-i8 * __cdecl pedia_lookup_text(PediaListNode *list_head,iptr item_id)
+i8 * __cdecl pedia_lookup_text(PediaListNode *list_head,int item_id)
 
 {
   i8 *text;

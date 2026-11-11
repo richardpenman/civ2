@@ -584,7 +584,7 @@ void FrameWindow::set_caption_button_handler(CaptionButtonFn handler)
 }
 
 /* 00414dd0 auto */
-i32 __cdecl popup_game_with_city(const char *section,iptr city)
+i32 __cdecl popup_game_with_city(const char *section,int city)
 
 {
   i32 result;
@@ -953,7 +953,7 @@ i32 __cdecl popup_debug_text(const char *section)
 }
 
 /* 004442a0 auto */
-i32 __cdecl dlg_game_txt_with_unit_flags(const char *section,iptr unit,i32 flags)
+i32 __cdecl dlg_game_txt_with_unit_flags(const char *section,int unit,i32 flags)
 
 {
   i32 result;
@@ -963,7 +963,7 @@ i32 __cdecl dlg_game_txt_with_unit_flags(const char *section,iptr unit,i32 flags
 }
 
 /* 004442e0 auto */
-i32 __cdecl dlg_game_txt_with_unit(const char *section,iptr unit)
+i32 __cdecl dlg_game_txt_with_unit(const char *section,int unit)
 
 {
   i32 result;
@@ -1759,7 +1759,7 @@ void __cdecl ui_focus_active_unit(int auto_next)
     moving_units_mode = 1;
     blink.unit_active = 0;
   }
-  selectable = unit_is_selectable((int)game.active_unit);
+  selectable = unit_is_selectable(game.active_unit);
   if (selectable == 0) {
     unit_activate_next(auto_next);
   }
@@ -1775,7 +1775,7 @@ void __cdecl ui_focus_active_unit(int auto_next)
     map_cursor.x[0] = units[unit].x;
     map_cursor.y[0] = units[unit].y;
     if (start_blink) {
-      mapviews_ensure_visible((int)map_cursor.x[0],(int)map_cursor.y[0],(int)units[unit].owner);
+      mapviews_ensure_visible((int)map_cursor.x[0],(int)map_cursor.y[0],units[unit].owner);
     }
     menu_update_states();
     map_views_block.unit_focus_done = 1;
@@ -1803,7 +1803,7 @@ void __cdecl popup_text_with_city_noflags(const char *filename,const char *secti
 }
 
 /* 00490530 auto */
-void __cdecl popup_text_with_unit_noflags(const char *filename,const char *section,iptr unit)
+void __cdecl popup_text_with_unit_noflags(const char *filename,const char *section,int unit)
 
 {
   popup_text_with_unit(filename,section,0,unit);
@@ -1836,7 +1836,7 @@ void WndBase::set_caption_height(i32 height)
 
 /* 004a6b80 auto */
 void __cdecl
-popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,iptr advance,i32 sprite_flags)
+popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,int advance,i32 sprite_flags)
 
 {
   popup_text_with_sprite((iptr)filename,section,dlg_flags,
@@ -1878,7 +1878,7 @@ popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_fla
 
 /* 004a6c85 auto */
 void __cdecl
-popup_city_sprite_draw_cb(i32 dlg,iptr sprite,iptr city,i32 left,int x,
+popup_city_sprite_draw_cb(i32 dlg,iptr sprite,int city,i32 left,int x,
             i32 y)
 
 {
@@ -1887,7 +1887,7 @@ popup_city_sprite_draw_cb(i32 dlg,iptr sprite,iptr city,i32 left,int x,
 }
 
 /* 004a6cc5 auto */
-i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dlg_flags,iptr city)
+i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dlg_flags,int city)
 
 {
   i32 result;
@@ -1912,7 +1912,7 @@ i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dl
 
 /* 004a6df7 auto */
 void __cdecl
-popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,iptr unit,i32 left,int x,
+popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,int unit,i32 left,int x,
             i32 y)
 
 {
@@ -1921,7 +1921,7 @@ popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,iptr unit,i32 left,int x,
 }
 
 /* 004a6e39 auto */
-i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dlg_flags,iptr unit)
+i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dlg_flags,int unit)
 
 {
   i32 result;
@@ -1945,7 +1945,7 @@ i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dl
 }
 
 /* 004a93b3 auto */
-void __cdecl accel_start_develop_city(iptr city,int num_tiles)
+void __cdecl accel_start_develop_city(int city,int num_tiles)
 
 {
   byte civ;
@@ -2022,7 +2022,7 @@ void __cdecl accel_start_develop_city(iptr city,int num_tiles)
     else {
       tile_set_improvements(x,y,4,1,1);
     }
-    tile_update_known(x,y,(int)cities[city].owner);
+    tile_update_known(x,y,cities[city].owner);
   }
   civ = cities[city].owner;
   for (tile = 0; tile < 0x2d; tile++) {
@@ -2030,7 +2030,7 @@ void __cdecl accel_start_develop_city(iptr city,int num_tiles)
     y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile] + y2;
     result = map_in_bounds(x,y);
     if ((result != 0) && (result = tile_is_ocean(x,y), result == 0)) {
-      result = tile_landmass((int)cities[city].x,(int)cities[city].y);
+      result = tile_landmass(cities[city].x,cities[city].y);
       landmass = tile_landmass(x,y);
       if (result == landmass) {
         tile_set_visible(x,y,1 << (civ & 0x1f) & 0xff,1,1);
@@ -2050,7 +2050,7 @@ void WndBase::move_to_rect(iptr rect)
 }
 
 /* 004c4240 auto */
-void __cdecl popup_game_with_advance(const char *section,iptr advance,i32 sprite_flags)
+void __cdecl popup_game_with_advance(const char *section,int advance,i32 sprite_flags)
 
 {
   popup_text_with_advance((const char *)&str_game_7,section,0,advance,sprite_flags);
@@ -2058,7 +2058,7 @@ void __cdecl popup_game_with_advance(const char *section,iptr advance,i32 sprite
 }
 
 /* 004cc870 auto */
-i32 __cdecl popup_game_with_improvement(const char *section,iptr improvement,i32 sprite_flags)
+i32 __cdecl popup_game_with_improvement(const char *section,int improvement,i32 sprite_flags)
 
 {
   i32 result;
@@ -2068,7 +2068,7 @@ i32 __cdecl popup_game_with_improvement(const char *section,iptr improvement,i32
 }
 
 /* 004cc8b0 auto */
-i32 __cdecl popup_game_with_unit(const char *section,i32 dlg_flags,iptr unit)
+i32 __cdecl popup_game_with_unit(const char *section,i32 dlg_flags,int unit)
 
 {
   i32 result;
@@ -3730,7 +3730,7 @@ void WndBase::show_restored()
 }
 
 /* 004eb80a auto */
-int __cdecl popup_city_picture_zoom(const char *section,iptr city,uint picture,int silent,iptr civ)
+int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,int silent,int civ)
 
 {
   CityPicturePopup *self;
@@ -5583,7 +5583,7 @@ i32 WndBase::frame_width()
 void __cdecl cmd_unit_skip_turn(void)
 
 {
-  unit_move_dir((int)game.active_unit,0xffffffff,3);
+  unit_move_dir(game.active_unit,0xffffffff,3);
   return;
 }
 
@@ -7793,8 +7793,8 @@ uint Dialog::draw_option(DialogOption *option,int blit)
       cell_y = (int)list_row_height[option->group] * row +
                  (int)list_origin_y[option->group];
       rect_set_xywh((iptr)&cell_rect,cell_x,cell_y,
-                         (iptr)list_column_width[option->group],
-                         (iptr)list_row_height[option->group]);
+                         list_column_width[option->group],
+                         list_row_height[option->group]);
       is_selected = (uint)((uptr)selected_option == (iptr)option);
       if (is_selected == 0) {
         fill_color = list_fill_color;
@@ -11019,7 +11019,7 @@ void WndBase::create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i
   
   create_with_cmd_proc(title,style,x,y,width,height,palette);
   hwnd = get_window();
-  wnd_install_frame_proc((iptr)this,hwnd);
+  wnd_install_frame_proc(this,hwnd);
   return;
 }
 
@@ -11031,7 +11031,7 @@ void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 w
   
   create_with_handlers(title,style,x,y,width,height,palette,parent);
   hwnd = get_window();
-  wnd_install_frame_proc((iptr)this,hwnd);
+  wnd_install_frame_proc(this,hwnd);
   return;
 }
 
@@ -11205,7 +11205,7 @@ void WndBase::create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 
   
   create((i32)title,style,x,y,width,height,palette);
   hwnd = get_window();
-  wnd_install_command_proc((iptr)this,hwnd);
+  wnd_install_command_proc(this,hwnd);
   ((WndHandlers *)(this + 1))->clear_handlers();
   return;
 }
@@ -11218,7 +11218,7 @@ void WndBase::create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 
   
   create_child((i32)title,style,x,y,width,height,palette,(WndBase *)parent);
   hwnd = get_window();
-  wnd_install_command_proc((iptr)this,hwnd);
+  wnd_install_command_proc(this,hwnd);
   ((WndHandlers *)(this + 1))->clear_handlers();
   return;
 }
@@ -11631,7 +11631,7 @@ void WndBase::create(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,ip
   }
   native = wnd_obj_create((LPCSTR)wnd_kind,style,x,y,width,height,0);
   native_wnd = native;
-  wnd_set_owner_ptr((iptr)this,native_wnd);
+  wnd_set_owner_ptr(this,native_wnd);
   set_palette(palette);
   return;
 }
@@ -11651,7 +11651,7 @@ void WndBase::create_child(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 hei
   parent_wnd = parent->get_window();
   native = wnd_obj_create((LPCSTR)wnd_kind,style,x,y,width,height,parent_wnd);
   native_wnd = native;
-  wnd_set_owner_ptr((iptr)this,native_wnd);
+  wnd_set_owner_ptr(this,native_wnd);
   set_palette(palette);
   return;
 }
@@ -12120,10 +12120,10 @@ i32 __stdcall surfwnd_subclass_wndproc(HWND hwnd,int msg,i32 wparam,uint lparam)
 }
 
 /* 005ea7a0 auto */
-void __cdecl wnd_install_frame_proc(iptr owner,NativeWindow *wnd)
+void __cdecl wnd_install_frame_proc(WndBase *owner,NativeWindow *wnd)
 
 {
-  SetWindowLongA(wnd->hwnd,8,owner);
+  SetWindowLongA(wnd->hwnd,8,(LONG_PTR)owner);
   SetWindowLongA(wnd->hwnd,-4,(iptr)wnd_frame_wndproc);
   return;
 }
@@ -12311,18 +12311,18 @@ void __cdecl wnd_focus_control(iptr wnd,iptr control)
 }
 
 /* 005eb370 auto */
-void __cdecl wnd_set_owner_ptr(iptr owner,NativeWindow *wnd)
+void __cdecl wnd_set_owner_ptr(WndBase *owner,NativeWindow *wnd)
 
 {
-  SetWindowLongA(wnd->hwnd,0,owner);
+  SetWindowLongA(wnd->hwnd,0,(LONG_PTR)owner);
   return;
 }
 
 /* 005eb393 auto */
-void __cdecl wnd_install_command_proc(iptr owner,NativeWindow *wnd)
+void __cdecl wnd_install_command_proc(WndBase *owner,NativeWindow *wnd)
 
 {
-  SetWindowLongA(wnd->hwnd,4,owner);
+  SetWindowLongA(wnd->hwnd,4,(LONG_PTR)owner);
   SetWindowLongA(wnd->hwnd,-4,(iptr)wnd_child_wndproc);
   return;
 }

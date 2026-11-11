@@ -1517,7 +1517,7 @@ int __cdecl ctrl_destroy_hwnd(iptr ctrl)
 }
 
 /* 005c9499 auto */
-ControlBlock * __cdecl ctrl_init_block(HWND hwnd,iptr owner)
+ControlBlock * __cdecl ctrl_init_block(HWND hwnd,int owner)
 
 {
   i32 handle;

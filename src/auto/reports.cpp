@@ -349,7 +349,7 @@ void PictureWindow::advisor_add_close_button()
 
 /* 0042d781 auto */
 int __cdecl
-advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int unhappy_count,
+advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int unhappy_count,
             int angry_count)
 
 {
@@ -376,7 +376,7 @@ advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int u
     clip_rect = happy_rect;
     draw_x = x;
     draw_y = y;
-    era = civ_city_style_era((int)cities[city].owner);
+    era = civ_city_style_era(cities[city].owner);
     ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + (citizen_index & 1) * 0x3c))->draw((iptr)clip_rect,
                (iptr)surface,draw_x,draw_y);
     x += spacing;
@@ -388,7 +388,7 @@ advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int u
     clip_rect = content_rect;
     draw_x = x;
     draw_y = y;
-    era = civ_city_style_era((int)cities[city].owner);
+    era = civ_city_style_era(cities[city].owner);
     ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + ((citizen_index & 1) * 4 + 8) * 0xf))->draw(
                (iptr)clip_rect,(iptr)surface,draw_x,draw_y);
     x += spacing;
@@ -405,7 +405,7 @@ advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int u
     clip_rect = unhappy_rect;
     draw_x = x;
     draw_y = y;
-    era = civ_city_style_era((int)cities[city].owner);
+    era = civ_city_style_era(cities[city].owner);
     ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + ((citizen_index & 1) + sprite_row) * 0x3c))->draw(
                (iptr)clip_rect,(iptr)surface,draw_x,draw_y);
     x += spacing;
@@ -416,7 +416,7 @@ advisor_draw_city_citizens(iptr city,int x,i32 y,i32 width,int happy_count,int u
     clip_rect = specialist_rect;
     draw_x = x;
     draw_y = y;
-    era = civ_city_style_era((int)cities[city].owner);
+    era = civ_city_style_era(cities[city].owner);
     specialist = city_specialist_type(city,i);
     ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + (specialist * 4 + 0x1c) * 0xf))->draw(
                (iptr)clip_rect,(iptr)surface,draw_x,draw_y);
@@ -590,7 +590,7 @@ void __cdecl attitude_advisor_on_click(i32 click_x,int click_y)
 }
 
 /* 0042e185 auto */
-void __cdecl attitude_advisor_show(iptr report_civ)
+void __cdecl attitude_advisor_show(int report_civ)
 
 {
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(4,4,0,600,400,0,0);
@@ -642,7 +642,7 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
   if (*(char *)&civs[civ].units_active[unit_type] != '\0') {
     text_set_colors(0x7a,10,0xffffffff,0xffffffff);
     text_clear();
-    text_append_int((uint)civs[civ].units_active[unit_type]);
+    text_append_int(civs[civ].units_active[unit_type]);
     text_append_space();
     text_append_label(0x15a);
     gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
@@ -651,7 +651,7 @@ static void defense_draw_unit_stats(iptr civ,iptr unit_type,int row_x,int col_x,
   if (*(char *)&civs[civ].units_in_production[unit_type] != '\0') {
     text_set_colors(0x5e,10,0xffffffff,0xffffffff);
     text_clear();
-    text_append_int((uint)civs[civ].units_in_production[unit_type]);
+    text_append_int(civs[civ].units_in_production[unit_type]);
     text_append_space();
     text_append_label(0x15b);
     gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
@@ -741,7 +741,7 @@ static void defense_draw_unit_losses(iptr civ,iptr unit_type,int text_y2,int &ro
     value = civ_color_secondary(civ);
     text_set_colors(value,bg_color,shadow_color,shadow_color2);
     text_clear();
-    text_append_int((uint)civs[civ].units_lost[unit_type]);
+    text_append_int(civs[civ].units_lost[unit_type]);
     gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
   }
   col_x += 0x1e;
@@ -759,7 +759,7 @@ static void defense_draw_unit_losses(iptr civ,iptr unit_type,int text_y2,int &ro
         value = civ_color_secondary(civ2);
         text_set_colors(value,bg_color,shadow_color,shadow_color2);
         text_clear();
-        text_append_int((uint)civs[civ2].units_lost[unit_type]);
+        text_append_int(civs[civ2].units_lost[unit_type]);
         gfx_draw_text((const char *)&textbuf.buf,col_x,text_y2);
       }
       col_x += 0x1e;
@@ -973,7 +973,7 @@ void __cdecl defense_minister_on_toggle_view(void)
 /* WARNING: Removing unreachable block (ram,0x0042f131) */
 /* WARNING: Removing unreachable block (ram,0x0042f21a) */
 
-void __cdecl defense_minister_show(iptr report_civ)
+void __cdecl defense_minister_show(int report_civ)
 
 {
   int client_y;
@@ -1158,7 +1158,7 @@ static void intel_draw_civ_facts(iptr civ,int left_x,int right_x,int line_height
     text_set_colors(0x7a,0x12,0xffffffff,0xffffffff);
     text_x2 = gfx_draw_text((const char *)&textbuf.buf,text_x2,y2);
     text_clear();
-    text_append_int((int)civs[civ].num_military_units);
+    text_append_int(civs[civ].num_military_units);
     text_append_space();
     text_append_label(0x19);
     text_set_colors(0x25,0x12,0xffffffff,0xffffffff);
@@ -1507,7 +1507,7 @@ void __cdecl intel_report_on_cities_clicked(void)
 /* WARNING: Removing unreachable block (ram,0x0043074c) */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl intel_report_show(iptr report_civ,iptr target_civ)
+void __cdecl intel_report_show(int report_civ,int target_civ)
 
 {
   int client_y;
@@ -1551,7 +1551,7 @@ void __cdecl intel_report_show(iptr report_civ,iptr target_civ)
 /* 004308ae auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl foreign_minister_show(iptr civ)
+void __cdecl foreign_minister_show(int civ)
 
 {
   NativeWindow *parley_hwnd_obj;
@@ -1575,9 +1575,9 @@ void __cdecl foreign_minister_show(iptr civ)
   if ((game.multiplayer < 3) || (parley_wnd_block.closed != 0)) {
     while( true ) {
       while( true ) {
-        value = int_clamp((uint)game.power_rank[civ],1,7);
+        value = int_clamp(game.power_rank[civ],1,7);
         text_set_label_arg(0,label_table.string_ids[0xe3 + value]);
-        value = int_clamp((uint)civs[civ].reputation,0,7);
+        value = int_clamp(civs[civ].reputation,0,7);
         text_set_label_arg(1,label_table.string_ids[0xdc + value]);
         if (game.multiplayer == '\0') {
           dialog2.load_game_section((const char *)&str_reportforeign,0x2000001);
@@ -1670,7 +1670,7 @@ void __cdecl foreign_minister_show(iptr civ)
                 text_append_gold(civs[civ2].gold);
                 if (game.difficulty < DIFF_PRINCE) {
                   text_append_comma();
-                  text_append_int((int)civs[civ2].num_military_units);
+                  text_append_int(civs[civ2].num_military_units);
                   text_append_space();
                   text_append_label(0x19);
                 }
@@ -2272,14 +2272,14 @@ void __cdecl top_cities_draw(void)
       text_append((const char *)(city * 0x58 + (iptr)((u8 *)&cities + 32)));
       text_append_space();
       text_append_lparen();
-      text = civ_get_adjective((int)cities[city].owner);
+      text = civ_get_adjective(cities[city].owner);
       text_append((const char *)text);
       text_append_rparen();
       text_set_font((iptr)&advisor_font_block.advisor_font);
       shadow_color2 = 1;
       shadow_color = 1;
       bg_color = 0x12;
-      color = civ_color_secondary((int)cities[city].owner);
+      color = civ_color_secondary(cities[city].owner);
       text_set_colors(color,bg_color,shadow_color,shadow_color2);
       gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y2,advisor_state.client_width);
       y2 += line_height;
@@ -2304,7 +2304,7 @@ void __cdecl top_cities_draw(void)
       y2 = box_bottom;
       rect_set((iptr)box_rect,advisor_state.client_x + 3,box_top,
                          advisor_state.client_width + advisor_state.client_x - 3,box_bottom);
-      color = civ_color_primary((int)cities[city].owner);
+      color = civ_color_primary(cities[city].owner);
       gfx_draw_rect_frame((iptr)&advisor_state.window,(RECT *)box_rect,color);
       y2 += 6;
     }
@@ -2316,7 +2316,7 @@ void __cdecl top_cities_draw(void)
 /* 00433122 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl top_cities_show(iptr report_civ)
+void __cdecl top_cities_show(int report_civ)
 
 {
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(8,8,1,600,400,0,0);
@@ -2337,7 +2337,7 @@ void __cdecl top_cities_show(iptr report_civ)
 
 /* 004331d1 auto */
 void __cdecl
-demographics_draw_rank(i32 *values,iptr civ,uint y,iptr unit_suffix,int left_x,int right_x)
+demographics_draw_rank(i32 *values,int civ,uint y,iptr unit_suffix,int left_x,int right_x)
 
 {
   int has_wonder;
@@ -2801,7 +2801,7 @@ void __cdecl demographics_draw(void)
 /* 00434d8a auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl demographics_show(iptr report_civ)
+void __cdecl demographics_show(int report_civ)
 
 {
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(9,9,1,600,400,0,0);
@@ -2821,7 +2821,7 @@ void __cdecl demographics_show(iptr report_civ)
 }
 
 /* 00436287 auto */
-void __cdecl advisor_refresh_if_open(iptr report_id)
+void __cdecl advisor_refresh_if_open(int report_id)
 
 {
   if (report_id == 0xc) {
@@ -2999,17 +2999,17 @@ void __cdecl hall_of_fame_draw(void)
       else {
         text_append_label(0x1b2);
         text_append_colon();
-        text_append_int((int)advisor_window_block.hall_of_fame[entry].objective_score);
+        text_append_int(advisor_window_block.hall_of_fame[entry].objective_score);
       }
       text_append_space();
       text_append_space();
       text_append_label(0x1bc);
       text_append_colon();
       if (bugfix_ui()) {
-        text_append_int((int)(u16)advisor_window_block.hall_of_fame[entry].score);  /* B15 */
+        text_append_int((u16)advisor_window_block.hall_of_fame[entry].score);  /* B15 */
       }
       else {
-        text_append_int((int)advisor_window_block.hall_of_fame[entry].score);
+        text_append_int(advisor_window_block.hall_of_fame[entry].score);
       }
       text_append_space();
       text_append_lparen();
@@ -3029,7 +3029,7 @@ void __cdecl hall_of_fame_draw(void)
       text_append((const char *)&str_empty_60);
       text_append_label(0x1bd);
       text_append_colon();
-      text_append_int((int)advisor_window_block.hall_of_fame[entry].rating);
+      text_append_int(advisor_window_block.hall_of_fame[entry].rating);
       text_append((const char *)&str_empty_61);
       text_set_colors(0x25,0x12,0xffffffff,0xffffffff);
       gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,entry_y,advisor_state.client_width);
@@ -3187,7 +3187,7 @@ void __cdecl hall_of_fame_save(void)
 /* 00436f5a auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl hall_of_fame_add_entry(iptr civ)
+void __cdecl hall_of_fame_add_entry(int civ)
 
 {
   i32 value;
@@ -3738,7 +3738,7 @@ void __cdecl casualty_timeline_draw(void)
            && ((net.casualty_log_first[civ] != 0 ||
                (log_index < net.casualty_log_next[civ]))))) {
       row_x = (entry + 1U & 1) * 0x40 + casualty.client_x;
-      unit = unit_make_dummy((int)net.casualty_log[civ * 0x12c + log_index].unit_type,
+      unit = unit_make_dummy(net.casualty_log[civ * 0x12c + log_index].unit_type,
                                  civ);
       gfx_draw_unit((iptr)&casualty.window,unit,0,row_x + 2,row_y,0,0);
       text_set_font((iptr)&advisor_bold_font);
@@ -3767,11 +3767,11 @@ void __cdecl casualty_timeline_draw(void)
       gfx_draw_text((const char *)&textbuf.buf,row_x + 0xec,text_y);
       text_set_colors(0x5e,10,0xffffffff,0xffffffff);
       text_clear();
-      text_append_int((int)net.casualty_log[civ * 0x12c + log_index].x);
+      text_append_int(net.casualty_log[civ * 0x12c + log_index].x);
       text_append((const char *)&str_empty_62);
-      text_append_int((int)net.casualty_log[civ * 0x12c + log_index].y);
-      name_x = city_find_nearest((int)net.casualty_log[civ * 0x12c + log_index].x,
-                                 (int)net.casualty_log[civ * 0x12c + log_index].y,
+      text_append_int(net.casualty_log[civ * 0x12c + log_index].y);
+      name_x = city_find_nearest(net.casualty_log[civ * 0x12c + log_index].x,
+                                 net.casualty_log[civ * 0x12c + log_index].y,
                                  -1,0xffffffff,-1);
       if (-1 < name_x) {
         text_append((const char *)&str_empty_63);
@@ -3826,7 +3826,7 @@ void __cdecl casualty_timeline_draw(void)
 /* WARNING: Removing unreachable block (ram,0x00438634) */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl casualty_timeline_show(iptr civ)
+void __cdecl casualty_timeline_show(int civ)
 
 {
   int client_y;
@@ -4745,7 +4745,7 @@ void __cdecl throneroom_close(void)
 }
 
 /* 004702e0 auto */
-void __cdecl endgame_defeat_movie(iptr civ)
+void __cdecl endgame_defeat_movie(int civ)
 
 {
   EndgameMovieWindow *self;
@@ -4995,7 +4995,7 @@ EndgameMovieWindow *EndgameMovieWindow::defeat_movie_wnd_scalar_destruct(uint fl
 }
 
 /* 004710d0 auto */
-void __cdecl endgame_spaceship_arrival(iptr civ)
+void __cdecl endgame_spaceship_arrival(int civ)
 
 {
   EndgameMovieWindow *self;
@@ -5024,7 +5024,7 @@ void __cdecl endgame_spaceship_arrival(iptr civ)
         text_append_year((int)civs[civ].spaceship_launch_year);
         text_set_string_arg(0,(const char *)&textbuf.buf);
         text_clear();
-        text_append_int((int)civs[civ].spaceship_population);
+        text_append_int(civs[civ].spaceship_population);
         text_append((const char *)&str_0_000_3);
         text_set_string_arg(1,(const char *)&textbuf.buf);
         str = civ_get_adjective(civ);
@@ -5177,7 +5177,7 @@ void EndgameMovieWindow::arrival_movie_wnd_play()
   text_append_year((int)civs[advance_civ].spaceship_launch_year);
   text_set_string_arg(0,(const char *)&textbuf.buf);
   text_clear();
-  text_append_int((int)civs[advance_civ].spaceship_population);
+  text_append_int(civs[advance_civ].spaceship_population);
   text_append((const char *)&str_0_000_4);
   text_set_string_arg(1,(const char *)&textbuf.buf);
   str = civ_get_adjective(advance_civ);
@@ -5345,7 +5345,7 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
     text_append_year((int)civs[civ].spaceship_launch_year);
     text_set_string_arg(0,(const char *)&textbuf.buf);
     text_clear();
-    text_append_int((int)civs[civ].spaceship_population);
+    text_append_int(civs[civ].spaceship_population);
     text_append((const char *)&str_0_000_5);
     text_set_string_arg(1,(const char *)&textbuf.buf);
     str = civ_get_adjective(civ);
@@ -5423,7 +5423,7 @@ void __cdecl destroyed_civs_clear(void)
 }
 
 /* 004bc480 auto */
-i32 __cdecl council_military_advice(iptr civ,i32 era)
+i32 __cdecl council_military_advice(int civ,i32 era)
 
 {
   int has;
@@ -5485,7 +5485,7 @@ i32 __cdecl council_military_advice(iptr civ,i32 era)
         air_strength[civ2]++;
       }
       for (unit_type = 0; unit_type < 0x3e; unit_type++) {
-        has = civ_has_advance(civ2,(int)unit_types[unit_type].prerequisite);
+        has = civ_has_advance(civ2,unit_types[unit_type].prerequisite);
         if (has != 0) {
           if (unit_types[unit_type].domain == DOMAIN_SEA) {
             air_strength[civ2]++;
@@ -5546,7 +5546,7 @@ i32 __cdecl council_military_advice(iptr civ,i32 era)
 }
 
 /* 004bc8aa auto */
-i32 __cdecl council_science_advice(iptr civ,int era)
+i32 __cdecl council_science_advice(int civ,int era)
 
 {
   i32 result;
@@ -5599,7 +5599,7 @@ i32 __cdecl council_science_advice(iptr civ,int era)
         route_total += (char)cities[city].trade_routes;
       }
     }
-    has = civ_has_advance(civ,(int)improvements[improvement].preq);
+    has = civ_has_advance(civ,improvements[improvement].preq);
     if ((has == 0) || (city_count / 2 <= built_count)) {
       has = civ_has_advance(civ,ADV_TRADE);
       if ((has == 0) || ((int)(city_count + (city_count >> 0x1f & 3U)) >> 2 <= route_total)) {
@@ -5623,7 +5623,7 @@ i32 __cdecl council_science_advice(iptr civ,int era)
 }
 
 /* 004bcb9b auto */
-i32 __cdecl council_trade_advice(iptr civ,int era)
+i32 __cdecl council_trade_advice(int civ,int era)
 
 {
   int value;
@@ -5719,7 +5719,7 @@ i32 __cdecl council_trade_advice(iptr civ,int era)
 }
 
 /* 004bcfcf auto */
-i32 __cdecl council_foreign_advice(iptr civ,int era)
+i32 __cdecl council_foreign_advice(int civ,int era)
 
 {
   int has;
@@ -5798,7 +5798,7 @@ i32 __cdecl council_foreign_advice(iptr civ,int era)
 }
 
 /* 004bd2a3 auto */
-i32 __cdecl council_attitude_advice(iptr civ,i32 era)
+i32 __cdecl council_attitude_advice(int civ,i32 era)
 
 {
   bool rates_off;
@@ -5956,7 +5956,7 @@ void __cdecl destroyed_civs_text_bg_atexit_dtor(void)
 }
 
 /* 00514e7b auto */
-void __cdecl destroyed_civs_show(iptr killer_civ)
+void __cdecl destroyed_civs_show(int killer_civ)
 
 {
   int created;
@@ -6334,7 +6334,7 @@ void __cdecl victory_screen_on_key(int key)
 }
 
 /* 00516570 auto */
-void __cdecl council_show(iptr civ,i32 cheat_mode)
+void __cdecl council_show(int civ,i32 cheat_mode)
 
 {
   int ok;
@@ -7090,7 +7090,7 @@ void __cdecl council_on_video_end(void)
 }
 
 /* 00518582 auto */
-i32 __cdecl council_advisor_opinion(iptr civ,i32 advisor)
+i32 __cdecl council_advisor_opinion(int civ,i32 advisor)
 
 {
   i32 opinion;
@@ -7150,7 +7150,7 @@ void __cdecl leaders_reset_custom_names(void)
 }
 
 /* 0059c575 auto */
-void __cdecl casualty_log_add(iptr unit,iptr unit2,iptr year,iptr x,i32 y)
+void __cdecl casualty_log_add(int unit,int unit2,int year,int x,i32 y)
 
 {
   i32 color;
@@ -7163,10 +7163,10 @@ void __cdecl casualty_log_add(iptr unit,iptr unit2,iptr year,iptr x,i32 y)
   net.casualty_log[units[unit].owner * 0x12c + net.casualty_log_next[units[unit].owner]].y =
        (i16)y;
   net.casualty_log[units[unit].owner * 0x12c + net.casualty_log_next[units[unit].owner]].year = (short)year;
-  color = civ_color_secondary((int)units[unit2].owner);
+  color = civ_color_secondary(units[unit2].owner);
   net.casualty_log[units[unit].owner * 0x12c + net.casualty_log_next[units[unit].owner]].killer_color = (short)color;
   _Count = 0x18;
-  _Source = civ_name_plural((int)units[unit2].owner);
+  _Source = civ_name_plural(units[unit2].owner);
   _strncpy(net.casualty_log[units[unit].owner * 0x12c + net.casualty_log_next[units[unit].owner]].killer_name,_Source,_Count);
   net.casualty_log[units[unit].owner * 0x12c + net.casualty_log_next[units[unit].owner]].killer_name[23] = 0;
   net.casualty_log_next[units[unit].owner] =

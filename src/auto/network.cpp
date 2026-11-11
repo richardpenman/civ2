@@ -1587,7 +1587,7 @@ void __cdecl net_gamelist_poll_tick(void)
   net_send_message(NM_GET_SERVERS,0,0,0,0,0,0,0,0,0);
   net_gamelist_expire_stale();
   if (net.gamelist_view->refresh_timer != 0) {
-    game_timer_destroy((i32)net.gamelist_view->refresh_timer);
+    game_timer_destroy(net.gamelist_view->refresh_timer);
   }
   timer = game_timer_create((TimerFn)net_gamelist_poll_tick,0xfa,1);
   net.gamelist_view->refresh_timer = timer;
@@ -1863,11 +1863,11 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
         text_append_rparen();
         text_append_space();
         text_append_lparen();
-        text_append_int((int)civs[civ].num_cities);
+        text_append_int(civs[civ].num_cities);
         text_append_space();
         text_append_label(0xc5);
         text_append((const char *)&str_empty_65);
-        text_append_int((int)civs[civ].num_military_units);
+        text_append_int(civs[civ].num_military_units);
         text_append_space();
         text_append_label(0xc4);
         text_append((const char *)&str_empty_66);
@@ -2003,7 +2003,7 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
         arg7 = 0;
         arg6 = 0;
         ret = 0;
-        leader_str = (iptr)(civ_leader_name((int)game.player_civ));
+        leader_str = (iptr)(civ_leader_name(game.player_civ));
         result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_4,0x17,leader_str,ret,arg6,arg7,arg8);
         if (result == 0) {
           dialog_prepend_title_label((iptr)&dlg,title_offset + 0x25e);
@@ -2087,7 +2087,7 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,iptr pane,int their_side)
     if (their_side == 0) {
       result = civ_has_advance(human_civ[0],advance);
       if ((result != 0) &&
-         ((can_see_other == 0 || (result = civ_has_advance((int)parley_wnd_block.other_civ,advance), result == 0)))) {
+         ((can_see_other == 0 || (result = civ_has_advance(parley_wnd_block.other_civ,advance), result == 0)))) {
         list_items[(u32)list_counts[pane] + pane * 0x801] = advance;
         list_selected[(u32)list_counts[pane] + pane * 0x801] = 0;
         list_counts[pane]++;
@@ -3146,8 +3146,8 @@ void ParleyWindow::sort_units_by_city(int first,int last,iptr pane)
       if (last < j) break;
       if (units[(int)window->list_items[i + pane * 0x801]].home_city != -1) {
         if (units[(int)window->list_items[j + pane * 0x801]].home_city != -1) {
-          _Str2 = (char *)unit_home_city_name((iptr)window->list_items[j + pane * 0x801]);
-          _Str1 = (char *)unit_home_city_name((iptr)window->list_items[i + pane * 0x801]);
+          _Str2 = (char *)unit_home_city_name(window->list_items[j + pane * 0x801]);
+          _Str1 = (char *)unit_home_city_name(window->list_items[i + pane * 0x801]);
           cmp = _strcmp(_Str1,_Str2);
           if (cmp < 1) continue;
         }
@@ -4099,7 +4099,7 @@ int __cdecl net_stacked_draw_run_next(void)
       crt_memcpy(((short *)&power_graph_history_block.stacked_draw_unit_copy),(const void *)(net.stacked_draw_first * 0x40 + (iptr)(((u8 *)&net.stacked_draw_arg4 + 12))),0x20);
       power_graph_history_block.stacked_draw_unit_prev = -1;
       power_graph_history_block.stacked_draw_unit_next = -1;
-      mapviews_ensure_visible(x,y,(int)power_graph_history_block.stacked_draw_unit_owner);
+      mapviews_ensure_visible(x,y,power_graph_history_block.stacked_draw_unit_owner);
       if (net.stacked_draw[net.stacked_draw_first].args[4] == -1) {
         snd_play_effect(SND_MOVPIECE,1,0,0);
       }
@@ -4572,14 +4572,14 @@ void NetSession::recv_unit_bribed(int *msg,MsgArgs &a)
   units[a.unit].home_city = -1;
   units[a.unit].moves_used = '\0';
   units[a.unit].orders = ORDER_NONE;
-  city = city_find_nearest((int)units[a.unit].x,(int)units[a.unit].y,-1,0xffffffff,-1)
+  city = city_find_nearest(units[a.unit].x,units[a.unit].y,-1,0xffffffff,-1)
   ;
   if ((-1 < city) && ((int)cities[city].owner == civ2)) {
     home_city_id = (i8)city;
     units[unit5].home_city = home_city_id;
   }
-  unit_set_seen_by(unit5,(int)civ);
-  tile_set_owner((int)units[unit5].x,(int)units[unit5].y,civ2,1);
+  unit_set_seen_by(unit5,civ);
+  tile_set_owner(units[unit5].x,units[unit5].y,civ2,1);
   net_send_state_diff(0xff,2,0,0,1);
 }
 
@@ -6052,7 +6052,7 @@ void __cdecl net_client_hot_wait_idle(void)
 /* 0048d9ad auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl net_heartbeat_send(iptr civ)
+void __cdecl net_heartbeat_send(int civ)
 
 {
   if (net.drag_hold == '\0') {
@@ -6074,7 +6074,7 @@ void __cdecl net_heartbeat_send(iptr civ)
 /* 0048da51 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl net_heartbeat_check(iptr civ)
+void __cdecl net_heartbeat_check(int civ)
 
 {
   int now;
@@ -6713,11 +6713,11 @@ void __cdecl parley_draw_civ_list(int side)
                            wnd2->list_first_row[side] + row,
                            xLeft + 2,row_top,font_height);
         text_clear();
-        text = civ_name_plural((iptr)wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
+        text = civ_name_plural(wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
         text_append(text);
         text_append_space();
         text_append_lparen();
-        text = civ_leader_name((iptr)wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
+        text = civ_leader_name(wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
         text_append(text);
         text_append_rparen();
       }
@@ -8676,7 +8676,7 @@ void __cdecl parley_poll_net_replies(void)
           parley_wnd_block.shown_right_kind = (i32)parley_wnd_block.right_kind;
           parley_wnd_block.add_side_dialog(parley_panes.mode2_left_kind,0);
           parley_wnd_block.add_side_dialog((i32)parley_wnd_block.right_kind,1);
-          civ_name = (civ_name_plural((int)parley_wnd_block.other_civ));
+          civ_name = (civ_name_plural(parley_wnd_block.other_civ));
           text_set_string_arg(0,civ_name);
           dlg_style.pending_idle_callback = parley_poll_net_replies;
           popup_game_with_sprite((const char *)&str_parleycounteroffer,(iptr)&popup_info_icon_sprite,0);
@@ -8687,7 +8687,7 @@ void __cdecl parley_poll_net_replies(void)
         parley_wnd_block.mode = 3;
         parley_wnd_block.selected_action = 0xffffffff;
         parley_wnd_block.set_mode_sides(1);
-        civ_name = (civ_name_plural((int)parley_wnd_block.other_civ));
+        civ_name = (civ_name_plural(parley_wnd_block.other_civ));
         text_set_string_arg(0,civ_name);
         dlg_style.pending_idle_callback = parley_poll_net_replies;
         popup_game_with_sprite((const char *)&str_parleynothanks,(iptr)&popup_info_icon_sprite,0);
@@ -8720,24 +8720,24 @@ void __cdecl parley_poll_net_replies(void)
   else {
     net.nm_parley_transaction_count = 0;
     if ((parley_wnd_block.received_offer->mode == 6) && (parley_wnd_block.received_offer->item.value == 3)) {
-      civ_name = (civ_name_plural((int)parley_wnd_block.other_civ));
+      civ_name = (civ_name_plural(parley_wnd_block.other_civ));
       text_set_string_arg(0,civ_name);
       civ_name = (civ_name_plural(human_civ[0]));
       text_set_string_arg(1,civ_name);
       if ((*(byte *)&civs[human_civ[0]].treaties[(int)parley_wnd_block.other_civ] & TREATY_ALLIANCE) == 0) {
         if ((*(byte *)&civs[human_civ[0]].treaties[(int)parley_wnd_block.other_civ] & TREATY_PEACE) == 0) {
           if ((*(byte *)&civs[human_civ[0]].treaties[(int)parley_wnd_block.other_civ] & TREATY_CEASEFIRE) != 0) {
-            diplo_clear_treaty_flags(human_civ[0],(int)parley_wnd_block.other_civ,2);
+            diplo_clear_treaty_flags(human_civ[0],parley_wnd_block.other_civ,2);
             popup_game((const char *)&str_breakcease);
           }
         }
         else {
-          diplo_clear_treaty_flags(human_civ[0],(int)parley_wnd_block.other_civ,4);
+          diplo_clear_treaty_flags(human_civ[0],parley_wnd_block.other_civ,4);
           popup_game((const char *)&str_cancelpeace);
         }
       }
       else {
-        diplo_clear_treaty_flags(human_civ[0],(int)parley_wnd_block.other_civ,8);
+        diplo_clear_treaty_flags(human_civ[0],parley_wnd_block.other_civ,8);
         popup_game((const char *)&str_cancelallied);
       }
     }
@@ -10180,7 +10180,7 @@ void __cdecl parley_execute_transaction(ParleyOfferMsg *offer)
 }
 
 /* 004dd8ad auto */
-void __cdecl parley_give_maps(iptr receiver,iptr civ,int map_kind)
+void __cdecl parley_give_maps(int receiver,int civ,int map_kind)
 
 {
   byte recv_bits;
@@ -10256,7 +10256,7 @@ void __cdecl parley_give_maps(iptr receiver,iptr civ,int map_kind)
       if ((units[unit].id != 0) &&
          (((giver_mask & units[unit].visibility) != 0 || (units[unit].owner == civ)))) {
         units[unit].visibility = units[unit].visibility | recv_bit;
-        y = (int)(tile_at((int)units[unit].x,(int)units[unit].y));
+        y = (int)(tile_at(units[unit].x,units[unit].y));
         if (((recv_mask & *(byte *)(y + 4)) == 0) || ((giver_mask & *(byte *)(y + 4)) == 0)) {
           for (i = 0; i < 0x15; i++) {
             x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
@@ -10284,7 +10284,7 @@ void __cdecl parley_give_maps(iptr receiver,iptr civ,int map_kind)
                *(i8 *)&cities[city].revealed_size[civ];
         }
         cities[city].known_to = cities[city].known_to | recv_bit;
-        y = (int)(tile_at((int)cities[city].x,(int)cities[city].y));
+        y = (int)(tile_at(cities[city].x,cities[city].y));
         if (((recv_mask & *(byte *)(y + 4)) == 0) || ((giver_mask & *(byte *)(y + 4)) == 0)) {
           for (i = 0; i < 0x15; i++) {
             x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
@@ -10312,7 +10312,7 @@ void __cdecl parley_give_maps(iptr receiver,iptr civ,int map_kind)
 }
 
 /* 004dde9e auto */
-void __cdecl parley_apply_war_pact(iptr civ,ParleyOfferItem *items)
+void __cdecl parley_apply_war_pact(int civ,ParleyOfferItem *items)
 
 {
   int count;
@@ -10329,7 +10329,7 @@ void __cdecl parley_apply_war_pact(iptr civ,ParleyOfferItem *items)
 }
 
 /* 004ddf04 auto */
-void __cdecl parley_transfer_gold(iptr civ2,iptr civ,i32 amount)
+void __cdecl parley_transfer_gold(int civ2,int civ,i32 amount)
 
 {
   int attitude_value;
@@ -10345,7 +10345,7 @@ void __cdecl parley_transfer_gold(iptr civ2,iptr civ,i32 amount)
 }
 
 /* 004ddfb2 auto */
-void __cdecl parley_transfer_advances(iptr civ,iptr civ2,ParleyOfferItem *items)
+void __cdecl parley_transfer_advances(int civ,int civ2,ParleyOfferItem *items)
 
 {
   int count;
@@ -10369,7 +10369,7 @@ void __cdecl parley_transfer_advances(iptr civ,iptr civ2,ParleyOfferItem *items)
 }
 
 /* 004de049 auto */
-void __cdecl parley_transfer_cities(iptr civ,ParleyOfferItem *items)
+void __cdecl parley_transfer_cities(int civ,ParleyOfferItem *items)
 
 {
   int count;
@@ -10390,7 +10390,7 @@ void __cdecl parley_transfer_cities(iptr civ,ParleyOfferItem *items)
 }
 
 /* 004de0e2 auto */
-void __cdecl parley_cede_city(uptr city,iptr civ)
+void __cdecl parley_cede_city(uptr city,int civ)
 
 {
   char *count_ptr;
@@ -10457,7 +10457,7 @@ void __cdecl parley_cede_city(uptr city,iptr civ)
         units[unit].home_city = -1;
         units[unit].moves_used = '\0';
         units[unit].orders = ORDER_NONE;
-        city = city_find_nearest((int)units[unit].x,(int)units[unit].y,civ,
+        city = city_find_nearest(units[unit].x,units[unit].y,civ,
                                      0xffffffff,-1);
         if ((-1 < (int)city) && (cities[city].owner == civ)) {
           units[unit].home_city = (i8)city;
@@ -10478,7 +10478,7 @@ void __cdecl parley_cede_city(uptr city,iptr civ)
     }
   }
   if ((cities[city].building < '\0') ||
-     (y2 = civ_can_build_unit(civ,city,(int)cities[city].building), y2 != 0)) {
+     (y2 = civ_can_build_unit(civ,city,cities[city].building), y2 != 0)) {
     if (!(-1 < cities[city].building)) {
       if (cities[city].building < 1) {
         improvement = ~(int)cities[city].building + 1;
@@ -10507,7 +10507,7 @@ void __cdecl parley_cede_city(uptr city,iptr civ)
       }
     }
   }
-  map_redraw_neighbors_all_views((int)cities[city].x,(int)cities[city].y);
+  map_redraw_neighbors_all_views((int)cities[city].x,cities[city].y);
   net_send_state_diff(0xff,2,0,0,0);
   net_send_message(NM_DRAW_AREA,0xff,(int)cities[city].x,(int)cities[city].y,0,0,0,0,0,0);
   y2 = (int)(tile_at(x,y));
@@ -10538,7 +10538,7 @@ void __cdecl parley_cede_city(uptr city,iptr civ)
 }
 
 /* 004de990 auto */
-void __cdecl parley_transfer_units(iptr civ,ParleyOfferItem *items)
+void __cdecl parley_transfer_units(int civ,ParleyOfferItem *items)
 
 {
   char *count_ptr;
@@ -10571,7 +10571,7 @@ void __cdecl parley_transfer_units(iptr civ,ParleyOfferItem *items)
             unit2 = unit_next_in_stack(unit2);
           }
           result = parley_find_unit_drop_tile(unit2,(iptr)&x3,(iptr)&y3,
-                                     (int)units[unit2].owner,1);
+                                     units[unit2].owner,1);
           if (result == 0) {
             unit_delete_with_cargo(unit2,1);
           }
@@ -10590,7 +10590,7 @@ void __cdecl parley_transfer_units(iptr civ,ParleyOfferItem *items)
         units[unit].home_city = -1;
         units[unit].moves_used = '\0';
         units[unit].orders = ORDER_NONE;
-        city = city_find_nearest((int)units[unit].x,(int)units[unit].y,civ,
+        city = city_find_nearest(units[unit].x,units[unit].y,civ,
                                       0xffffffff,-1);
         if ((-1 < city) && (cities[city].owner == civ)) {
           units[unit].home_city = (i8)city;
@@ -10617,7 +10617,7 @@ void __cdecl parley_transfer_units(iptr civ,ParleyOfferItem *items)
 }
 
 /* 004ded07 auto */
-i32 __cdecl parley_find_unit_drop_tile(iptr unit,iptr x,iptr y,iptr civ,int must_move)
+i32 __cdecl parley_find_unit_drop_tile(int unit,iptr x,iptr y,int civ,int must_move)
 
 {
   iptr x2;
@@ -10702,7 +10702,7 @@ void ParleyWindow::describe_treaty(int treaty_kind,int exchange)
 }
 
 /* 004df10f auto */
-void __cdecl parley_apply_treaty(i32 treaty_kind,iptr civ,iptr other_civ)
+void __cdecl parley_apply_treaty(i32 treaty_kind,int civ,int other_civ)
 
 {
   switch(treaty_kind) {
@@ -10731,7 +10731,7 @@ void __cdecl parley_apply_treaty(i32 treaty_kind,iptr civ,iptr other_civ)
 
 /* 00511880 auto */
 void __cdecl
-net_send_text_args(iptr popup_kind,i32 player_id,int string_count,int number_count,iptr arg_a,iptr arg_b)
+net_send_text_args(int popup_kind,i32 player_id,int string_count,int number_count,iptr arg_a,iptr arg_b)
 
 {
   size_t len;
@@ -14777,7 +14777,7 @@ void __cdecl parley_on_check_intel(void)
   }
   if ((((*(byte *)&civs[human_civ[0]].treaties[(int)parley->other_civ] & TREATY_EMBASSY) != 0)
       || (has_intel_wonder)) || (game.reveal_map != '\0')) {
-    intel_report_show(human_civ[0],(iptr)parley->other_civ);
+    intel_report_show(human_civ[0],parley->other_civ);
   }
   else {
     popup_game_with_sprite((const char *)&str_nointel_2,(iptr)&popup_info_icon_sprite,0);
@@ -16297,9 +16297,9 @@ void ParleyWindow::sort_city_list(int first,int last,int pane)
   if (1 < parley_wnd2->list_counts[pane]) {
     for (i = first; j = i, i < last; i++) {
       while (j = j + 1, j <= last) {
-        cmp = city_has_improvement((iptr)parley_wnd2->list_items[j + pane * 0x801],IMP_PALACE);
+        cmp = city_has_improvement(parley_wnd2->list_items[j + pane * 0x801],IMP_PALACE);
         if ((cmp != 0) ||
-           ((cmp = city_has_improvement((iptr)parley_wnd2->list_items[i + pane * 0x801]
+           ((cmp = city_has_improvement(parley_wnd2->list_items[i + pane * 0x801]
                                         ,IMP_PALACE), cmp == 0 &&
             (cmp = _strcmp(cities[(int)parley_wnd2->list_items[i + pane * 0x801]].
                              name,cities[(int)parley_wnd2->list_items[j + pane * 0x801]
@@ -16529,7 +16529,7 @@ void __cdecl parley_draw_city_list(int pane)
 
 /* 00588e47 auto */
 void __cdecl
-parley_draw_city_sprite(iptr city,uint row_index,int x,int y,int row_height,i32 style)
+parley_draw_city_sprite(int city,uint row_index,int x,int y,int row_height,i32 style)
 
 {
   iptr child;
@@ -16655,7 +16655,7 @@ void ParleyWindow::build_city_list(int pane,int keep_selection)
 
 /* 00594d42 auto */
 i32 __cdecl
-net_lock_map(iptr civ,iptr src_x,iptr src_y,iptr dst_x,int dst_y,int wait_reply)
+net_lock_map(int civ,iptr src_x,iptr src_y,iptr dst_x,int dst_y,int wait_reply)
 
 {
   i32 result;
@@ -16746,7 +16746,7 @@ net_lock_map(iptr civ,iptr src_x,iptr src_y,iptr dst_x,int dst_y,int wait_reply)
 }
 
 /* 0059511c auto */
-void __cdecl net_unlock_map(iptr civ,int wait_reply)
+void __cdecl net_unlock_map(int civ,int wait_reply)
 
 {
   int start_ticks;

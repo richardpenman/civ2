@@ -33,7 +33,7 @@ void __cdecl rect_set(iptr rect,int left,int top,int right,int bottom)
 }
 
 /* 004086c0 auto */
-void __cdecl rect_set_xywh(iptr rect,int x,int y,iptr width,iptr height)
+void __cdecl rect_set_xywh(iptr rect,int x,int y,int width,int height)
 
 {
   SetRect((LPRECT)rect,x,y,width + x,height + y);
@@ -59,7 +59,7 @@ void __cdecl gfx_fill_draw_target(i32 color)
 
 /* 00408780 auto */
 void __cdecl
-gfx_target_fill_rect(i32 x,i32 y,i32 width,iptr height,
+gfx_target_fill_rect(i32 x,i32 y,i32 width,int height,
             i32 color)
 
 {
@@ -270,7 +270,7 @@ void __cdecl gfx_draw_rect_frame(iptr surface,RECT *rect,i32 color)
 }
 
 /* 0043c8d0 auto */
-i32 __cdecl gfx_draw_text(const char *text,i32 x,iptr y)
+i32 __cdecl gfx_draw_text(const char *text,i32 x,int y)
 
 {
   i32 end_x;
@@ -280,7 +280,7 @@ i32 __cdecl gfx_draw_text(const char *text,i32 x,iptr y)
 }
 
 /* 0043c910 auto */
-void __cdecl gfx_draw_text_centered(const char *text,i32 x,iptr y,i32 width)
+void __cdecl gfx_draw_text_centered(const char *text,i32 x,int y,i32 width)
 
 {
   text_draw_centered(text_style.surface,text,x,y,width);
@@ -2982,7 +2982,7 @@ void __cdecl gfx_select_zoom_font(i32 zoom)
 
 /* 0056baff auto */
 void __cdecl
-gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int no_fortress)
+gfx_draw_unit(iptr surface,int unit,uint draw_flags,int px,int py,int zoom,int no_fortress)
 
 {
   int tmp;
@@ -3191,7 +3191,7 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
   }
   silhouette = (uint)(units[unit2].orders == ORDER_SLEEP);
   if ((((unit_types[units[unit2].type].domain == DOMAIN_AIR) &&
-       (tmp = map_in_bounds((int)units[unit2].x,(int)units[unit2].y), tmp != 0)) &&
+       (tmp = map_in_bounds(units[unit2].x,units[unit2].y), tmp != 0)) &&
       (tmp = tile_airbase_owner((int)units[unit2].x,(int)units[unit2].y), -1 < tmp)) &&
      (((game.active_unit != unit2 || (moving_units_mode != 1)) || (blink.unit_active == '\0')))) {
     silhouette = 1;
@@ -3212,9 +3212,9 @@ gfx_draw_unit(iptr surface,iptr unit,uint draw_flags,int px,int py,int zoom,int 
   if (units[unit2].orders == ORDER_FORTIFIED) {
     ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->draw((iptr)clip_fortify,surface,px,py);
   }
-  tmp = map_in_bounds((int)units[unit2].x,(int)units[unit2].y);
+  tmp = map_in_bounds(units[unit2].x,units[unit2].y);
   if (((tmp != 0) &&
-      (value = tile_improvements((int)units[unit2].x,(int)units[unit2].y),
+      (value = tile_improvements(units[unit2].x,units[unit2].y),
       ((byte)value & TILE_AIRBASE) == 0x40)) && (no_fortress == 0)) {
     ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->draw((iptr)clip_fortress,surface,px,py);
   }
@@ -3264,7 +3264,7 @@ gfx_copy_rect_clipped(iptr src,iptr dst,int src_x,int src_y,int src_origin_x,int
 
 /* 0056d289 auto */
 void __cdecl
-gfx_draw_city(iptr surface,iptr city,uint draw_flags,int px,int py,int zoom)
+gfx_draw_city(iptr surface,int city,uint draw_flags,int px,int py,int zoom)
 
 {
   char shown_size;
@@ -6344,7 +6344,7 @@ gfx_draw_box_ltrb(iptr surface,i32 left,i32 top,i32 right,
 
 /* 005a9964 auto */
 void __cdecl
-gfx_draw_frame_rect(iptr surface,int x,int y,int width,iptr height,i32 color)
+gfx_draw_frame_rect(iptr surface,int x,int y,int width,int height,i32 color)
 
 {
   gfx_draw_hline(surface,x,width + x - 1,y,color);
@@ -6379,7 +6379,7 @@ void __cdecl gfx_fill_surface(iptr surface,i32 color)
 
 /* 005a9abf auto */
 void __cdecl
-gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,iptr width,iptr height,
+gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,int width,int height,
             i32 color)
 
 {
@@ -6393,7 +6393,7 @@ gfx_fill_rect_xywh(iptr surface,i32 x,i32 y,iptr width,iptr height,
 /* 005a9afe auto */
 void __cdecl
 gfx_copy_rect_xywh(iptr src,iptr dest,i32 src_x,i32 src_y,i32 dest_x,
-            i32 dest_y,iptr width,iptr height)
+            i32 dest_y,int width,int height)
 
 {
   i8 dest_rect[16];
@@ -6484,7 +6484,7 @@ int __cdecl bits_count8(uint bits)
 }
 
 /* 005ae3bf auto */
-void __cdecl bit_index_split(iptr bit_index,iptr out_byte,iptr out_mask)
+void __cdecl bit_index_split(int bit_index,iptr out_byte,iptr out_mask)
 
 {
   *(iptr *)out_byte = bit_index >> 3;
@@ -10337,8 +10337,8 @@ dib_hline8(iptr bits,i32 color,uint length,int x,int y,int surf_height,
 
 /* 005e58e7 auto */
 void __cdecl
-dib_vline8(iptr bits,i32 color,int length,iptr x,int y,int surf_height,
-            iptr pitch)
+dib_vline8(iptr bits,i32 color,int length,int x,int y,int surf_height,
+            int pitch)
 
 {
   iptr abs_pitch;

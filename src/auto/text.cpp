@@ -76,7 +76,7 @@ void __cdecl text_append_string_id(i32 string_id)
 }
 
 /* 0040ff30 auto */
-void __cdecl text_append_int(iptr value)
+void __cdecl text_append_int(int value)
 
 {
   str_append_int((iptr)&textbuf.buf,value);
@@ -84,7 +84,7 @@ void __cdecl text_append_int(iptr value)
 }
 
 /* 0040ff60 auto */
-i32 __cdecl text_set_string_arg(iptr index,const char *str)
+i32 __cdecl text_set_string_arg(int index,const char *str)
 
 {
   i32 result;
@@ -545,7 +545,7 @@ void __cdecl text_append_gold(i32 gold)
 }
 
 /* 0043ca50 auto */
-void __cdecl text_append_population(iptr civ,i32 population)
+void __cdecl text_append_population(int civ,i32 population)
 
 {
   str_append_population((iptr)&textbuf.buf,civ,population);
@@ -553,7 +553,7 @@ void __cdecl text_append_population(iptr civ,i32 population)
 }
 
 /* 0043ca80 auto */
-void __cdecl text_append_city_name(iptr city)
+void __cdecl text_append_city_name(int city)
 
 {
   str_append_city_name((iptr)&textbuf.buf,city);
@@ -561,7 +561,7 @@ void __cdecl text_append_city_name(iptr city)
 }
 
 /* 0043cda6 auto */
-void __cdecl str_append_population(iptr dest,iptr civ,int population)
+void __cdecl str_append_population(iptr dest,int civ,int population)
 
 {
   int pop;
@@ -603,7 +603,7 @@ void __cdecl str_append_population(iptr dest,iptr civ,int population)
 }
 
 /* 0043ce5a auto */
-void __cdecl str_append_city_population(iptr dest,iptr city)
+void __cdecl str_append_city_population(iptr dest,int city)
 
 {
   int pop;
@@ -1163,7 +1163,7 @@ short __cdecl text_next_binary(void)
 }
 
 /* 004a2645 auto */
-i32 __cdecl text_read_section_line(const char *filename,const char *section,iptr line_index)
+i32 __cdecl text_read_section_line(const char *filename,const char *section,int line_index)
 
 {
   int status;
@@ -1389,7 +1389,7 @@ void __cdecl text_append_int_2d(i32 value)
 }
 
 /* 004ccdef auto */
-void __cdecl text_append_advance_abbrev(iptr advance,int with_comma)
+void __cdecl text_append_advance_abbrev(int advance,int with_comma)
 
 {
   size_t abbrev_len;
@@ -1563,7 +1563,7 @@ i32 __cdecl text_section_index_lookup(const char *filename,const char *section)
 }
 
 /* 00506448 auto */
-void __cdecl text_set_unit_info_args(iptr unit)
+void __cdecl text_set_unit_info_args(int unit)
 
 {
   iptr adjective;
@@ -1573,7 +1573,7 @@ void __cdecl text_set_unit_info_args(iptr unit)
   uint city;
   
   text_clear();
-  adjective = civ_get_adjective((int)units[unit].owner);
+  adjective = civ_get_adjective(units[unit].owner);
   text_append((const char *)adjective);
   if ((units[unit].flags & UNITF_VETERAN) != 0) {
     text_append_space();
@@ -2010,7 +2010,7 @@ int __cdecl text_draw_shadowed(iptr surface,const char *text,int x,int y)
 }
 
 /* 005bb024 auto */
-int __cdecl text_draw_centered(iptr surface,const char *text,int x,iptr y,int box_width)
+int __cdecl text_draw_centered(iptr surface,const char *text,int x,int y,int box_width)
 
 {
   int total_width;

@@ -594,7 +594,7 @@ int MapView::scroll_if_near_edge(int x,int y)
 }
 
 /* 004105f8 auto */
-uint __cdecl mapviews_ensure_visible(i32 x,i32 y,iptr civ)
+uint __cdecl mapviews_ensure_visible(i32 x,i32 y,int civ)
 
 {
   ushort track_mask;
@@ -1392,7 +1392,7 @@ void MapView::update_layout()
     margin_y_u = (int)(layout_height_u - tile_height_u * field_2fc) >> 1;
     field_304 = (int)map.height + 1;
   }
-  wrapped_x = map_wrap_x((int)(short)center_x_u);
+  wrapped_x = map_wrap_x((short)center_x_u);
   *(short *)&center_x_u = (short)wrapped_x;
   origin_y_uptr = (int)*(short *)((int)&center_x_u + 2) - field_2fc;
   wrapped = map_wrap_x((int)(short)center_x_u - half_view_width);
@@ -2086,7 +2086,7 @@ void MapView::draw_stack_unit(iptr unit,i32 screen_x,i32 screen_y)
       if ((((units[game.active_unit].x == units[unit].x) &&
            (units[game.active_unit].y == units[unit].y)) &&
           (((uint)game.human_players & 1 << (units[game.active_unit].owner & 0x1fU)) != 0)) &&
-         (selectable = unit_is_selectable((int)game.active_unit), selectable != 0)) {
+         (selectable = unit_is_selectable(game.active_unit), selectable != 0)) {
         draw_unit_blinking((int)game.active_unit,screen_x,screen_y);
         return;
       }
@@ -2301,7 +2301,7 @@ void MapView::draw_city_names(i32 center_x,i32 center_y,int radius)
             }
             shadow_depth = 0;
             text_color = 10;
-            shadow_color = civ_color_secondary((int)cities[city].owner);
+            shadow_color = civ_color_secondary(cities[city].owner);
             text_set_colors(shadow_color,text_color,shadow_offset,shadow_depth);
             text_width = label_y;
             name_width = tile_font.text_width((const char *)&cities[city].name);
@@ -2588,7 +2588,7 @@ void MapView::apply_zoom()
 }
 
 /* 0047e030 auto */
-i32 __cdecl mapviews_tile_visible(iptr x,iptr y)
+i32 __cdecl mapviews_tile_visible(int x,int y)
 
 {
   int visible;

@@ -535,7 +535,7 @@ int __cdecl int_clamp_b(int value,int lo,int hi)
 }
 
 /* 005adfa0 auto */
-int __cdecl int_clamp(iptr value,iptr lo,int hi)
+int __cdecl int_clamp(int value,int lo,int hi)
 
 {
   if (lo <= value) {
@@ -846,7 +846,7 @@ i8 __cdecl dbg_logf_str(const char *fmt,const char *str)
 }
 
 /* 005d23bb auto */
-void __cdecl dbg_logf_str_int(const char *fmt,const char *str,iptr value)
+void __cdecl dbg_logf_str_int(const char *fmt,const char *str,int value)
 
 {
   char buf[1024];

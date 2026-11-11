@@ -3,7 +3,7 @@
 #include "auto_common.h"
 
 /* 004087c0 auto */
-i32 __cdecl map_in_bounds(iptr x,iptr y)
+i32 __cdecl map_in_bounds(int x,int y)
 
 {
   i32 result;
@@ -1042,7 +1042,7 @@ void __cdecl mapgen_mark_tile_cluster(int x,int y)
 }
 
 /* 0040a8db auto */
-void __cdecl mapgen_mark_tile(iptr raw_x,iptr y)
+void __cdecl mapgen_mark_tile(int raw_x,int y)
 
 {
   iptr x;
@@ -1349,7 +1349,7 @@ uint __cdecl tile_grassland_has_shield(int x,int y)
 }
 
 /* 00410d98 auto */
-uint __cdecl map_set_cursor_pos(iptr x,iptr y)
+uint __cdecl map_set_cursor_pos(int x,int y)
 
 {
   int in_bounds;
@@ -1478,7 +1478,7 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
                 return;
               }
               if (paradrop_active != 0) {
-                unit_paradrop((int)game.active_unit,x2,y2);
+                unit_paradrop(game.active_unit,x2,y2);
                 map_click_in_progress = 0;
                 net.ui_input_busy = 0;
                 return;
@@ -1488,7 +1488,7 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
                 if ((int)dir < 0) {
                   dir = 7;
                 }
-                unit_move_dir((int)game.active_unit,dir,3);
+                unit_move_dir(game.active_unit,dir,3);
                 map_click_in_progress = 0;
                 net.ui_input_busy = 0;
                 return;
@@ -1627,7 +1627,7 @@ void __cdecl map_window_double_click(i32 screen_x,i32 screen_y)
 }
 
 /* 00411a13 auto */
-void __cdecl map_cursor_step_dir(iptr dir)
+void __cdecl map_cursor_step_dir(int dir)
 
 {
   char dy;
@@ -1654,7 +1654,7 @@ void __cdecl map_ascii_view_mode(int key)
   
   if ((key == 0xd) || (key == 0x20)) {
     if (((game.transient_flags & TRANSIENT_END_OF_TURN) == 0) || (key != 0xd)) {
-      city = city_at((int)map_cursor.x[0],(int)map_cursor.y[0]);
+      city = city_at((int)map_cursor.x[0],map_cursor.y[0]);
       if (-1 < city) {
         if (((cities[city].owner == human_civ[0]) || (game.reveal_map != '\0')) ||
            ((cities[city].flags & CITYF_INVESTIGATED) != 0)) {
@@ -1690,7 +1690,7 @@ void __cdecl map_ascii_unit_cmd(int key,int raw_key)
   if (((game.multiplayer < 3) || (units[unit].owner == human_civ[0])) || (key == 0xd)) {
     switch(key) {
     case 0xd:
-      city = city_at((int)map_cursor.x[0],(int)map_cursor.y[0]);
+      city = city_at((int)map_cursor.x[0],map_cursor.y[0]);
       if (-1 < city) {
         if (((cities[city].owner == human_civ[0]) || (game.reveal_map != '\0')) ||
            ((cities[city].flags & CITYF_INVESTIGATED) != 0)) {
@@ -2342,7 +2342,7 @@ void __cdecl map_window_key(int cmd)
   if ((((-1 < game.active_unit) && (game.active_unit < game.num_units)) &&
       (units[game.active_unit].id != 0)) && (-1 < (int)move_dir)) {
     if (moving_units_mode == 1) {
-      unit_move_dir((int)game.active_unit,move_dir,3);
+      unit_move_dir(game.active_unit,move_dir,3);
     }
     else {
       map_cursor_step_dir(move_dir);
@@ -2444,7 +2444,7 @@ i32 __cdecl map_load_dialog(void)
 }
 
 /* 004272d0 auto */
-void __cdecl tile_reveal_to_civ(iptr x,iptr y,int civ)
+void __cdecl tile_reveal_to_civ(int x,int y,int civ)
 
 {
   int city;
@@ -3335,7 +3335,7 @@ void __cdecl map_views_atexit_dtor(void)
 }
 
 /* 0047a747 auto */
-int __cdecl tile_calc_coast_masks(iptr base_x,int base_y)
+int __cdecl tile_calc_coast_masks(int base_x,int base_y)
 
 {
   char dy;
@@ -3414,7 +3414,7 @@ i32 __cdecl map_x_in_span(int x,int left,int width)
 
 /* 0047c37f auto */
 i32 __cdecl
-map_tile_in_box(i32 x,int y,iptr left,iptr top,i32 width,int height
+map_tile_in_box(i32 x,int y,int left,int top,i32 width,int height
             )
 
 {
@@ -3439,7 +3439,7 @@ map_tile_in_box(i32 x,int y,iptr left,iptr top,i32 width,int height
 
 /* 0047ce1e auto */
 void __cdecl
-map_redraw_area_all_views(i32 x,i32 y,i32 radius,iptr civ,
+map_redraw_area_all_views(i32 x,i32 y,i32 radius,int civ,
             i32 full_redraw)
 
 {
@@ -3469,7 +3469,7 @@ void __cdecl map_redraw_tile_all_views(i32 x,i32 y)
 }
 
 /* 0047cf22 auto */
-void __cdecl map_redraw_neighbors_all_views(i32 x,iptr y)
+void __cdecl map_redraw_neighbors_all_views(i32 x,int y)
 
 {
   int view_idx;
@@ -3483,7 +3483,7 @@ void __cdecl map_redraw_neighbors_all_views(i32 x,iptr y)
 }
 
 /* 0047cf9e auto */
-void __cdecl map_redraw_all_views(iptr civ,i32 full_redraw)
+void __cdecl map_redraw_all_views(int civ,i32 full_redraw)
 
 {
   int view_idx;
@@ -3613,7 +3613,7 @@ void __cdecl map_rebuild_unit_flags(void)
   }
   for (unit = 0; unit < game.num_units; unit++) {
     if (units[unit].id != 0) {
-      tile_set_improvements((int)units[unit].x,(int)units[unit].y,1,1,1);
+      tile_set_improvements(units[unit].x,units[unit].y,1,1,1);
     }
   }
   net.tile_sync_enabled = 1;
@@ -3622,7 +3622,7 @@ void __cdecl map_rebuild_unit_flags(void)
 }
 
 /* 00488a45 auto */
-i32 __cdecl map_road_connection(iptr civ,int x,int y,int x2,int y2)
+i32 __cdecl map_road_connection(int civ,int x,int y,int x2,int y2)
 
 {
   bool blocked;
@@ -4297,7 +4297,7 @@ u8 * __cdecl map_coarse2_at(int x,int y)
 }
 
 /* 004b3110 auto */
-void __cdecl landmass_set_border_bit(int landmass,iptr bit)
+void __cdecl landmass_set_border_bit(int landmass,int bit)
 
 {
   iptr byte_idx;
@@ -4752,7 +4752,7 @@ void __cdecl terrain_editor_redraw(void)
 }
 
 /* 005199c4 auto */
-void __cdecl terrain_editor_append_rule_ref(iptr terrain,int with_comma)
+void __cdecl terrain_editor_append_rule_ref(int terrain,int with_comma)
 
 {
   if (terrain == -1) {
@@ -4809,7 +4809,7 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
     if (terrain2 < 0xb) {
       for (i = 0; i < 2; i++) {
         text_append_spaces(3);
-        terrain_editor_append_rule_ref((int)terrain_types[terrain2].improve_to[i],1);
+        terrain_editor_append_rule_ref(terrain_types[terrain2].improve_to[i],1);
         text_append_int_2d((int)(char)terrain_types[terrain2].improve_bonus[i]);
         crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_bonus_sep));
         text_append_int_2d((int)(char)terrain_types[terrain2].improve_turns[i]);
@@ -4821,7 +4821,7 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
         crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ai_gov_sep));
       }
       text_append_spaces(2);
-      terrain_editor_append_rule_ref((int)terrain_types[terrain2].transform_to,1);
+      terrain_editor_append_rule_ref(terrain_types[terrain2].transform_to,1);
       crt_strcat(((i8 *)&textbuf.buf),str_empty_161);
       terrain_editor_append_rule_ref(terrain2,0);
     }
@@ -5892,7 +5892,7 @@ void __cdecl map_build_coarse_connectivity(void)
 }
 
 /* 0055ac37 auto */
-i32 __cdecl map_coarse_cell_landmass(iptr base_x,int base_y,iptr out_x,iptr out_y,int want_ocean)
+i32 __cdecl map_coarse_cell_landmass(int base_x,int base_y,iptr out_x,iptr out_y,int want_ocean)
 
 {
   iptr x;
@@ -5961,7 +5961,7 @@ void __cdecl map_label_font_static_dtor(void)
 
 /* 0056c705 auto */
 void __cdecl
-map_animate_unit_move(iptr unit,int from_x,int from_y,iptr dir,int sound_id,iptr sound_arg)
+map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int sound_arg)
 
 {
   char dy;
@@ -6306,7 +6306,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
 }
 
 /* 0057f657 auto */
-void __cdecl map_animate_nuke(iptr x,iptr y)
+void __cdecl map_animate_nuke(int x,int y)
 
 {
   int ok;
@@ -6443,7 +6443,7 @@ i32 __cdecl tile_has_irrigation_source(int x2,int y2)
 }
 
 /* 0058fda9 auto */
-void __cdecl map_reveal_adjacent_units(int x,int y,iptr civ)
+void __cdecl map_reveal_adjacent_units(int x,int y,int civ)
 
 {
   int is_ocean;
@@ -6470,7 +6470,7 @@ void __cdecl map_reveal_adjacent_units(int x,int y,iptr civ)
 }
 
 /* 005ae052 auto */
-iptr __cdecl map_wrap_x(iptr x)
+iptr __cdecl map_wrap_x(int x)
 
 {
   if ((game.rules & RULE_FLAT_WORLD) == 0) {
@@ -6574,7 +6574,7 @@ i32 __cdecl tile_first_unit(int x,int y)
 }
 
 /* 005b49cf auto */
-uint __cdecl tile_adjacent_nonallied_civ(iptr x,int y,iptr civ)
+uint __cdecl tile_adjacent_nonallied_civ(int x,int y,int civ)
 
 {
   int city_owner;
@@ -6617,7 +6617,7 @@ uint __cdecl tile_adjacent_nonallied_civ(iptr x,int y,iptr civ)
 }
 
 /* 005b4b66 auto */
-uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,iptr civ)
+uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,int civ)
 
 {
   char dy;
@@ -6640,7 +6640,7 @@ uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,iptr civ)
 }
 
 /* 005b4c63 auto */
-uint __cdecl tile_zoc_unit_adjacent(int x,int y,iptr civ)
+uint __cdecl tile_zoc_unit_adjacent(int x,int y,int civ)
 
 {
   int is_ocean;
@@ -6666,7 +6666,7 @@ uint __cdecl tile_zoc_unit_adjacent(int x,int y,iptr civ)
 }
 
 /* 005b4d8c auto */
-i32 __cdecl tile_in_enemy_zoc(iptr x,i32 y,iptr civ)
+i32 __cdecl tile_in_enemy_zoc(int x,i32 y,int civ)
 
 {
   int city_owner;
@@ -6958,7 +6958,7 @@ i32 __cdecl map_read(iptr file,int is_scenario)
 }
 
 /* 005b8931 auto */
-Tile * __cdecl tile_at(iptr x,iptr y)
+Tile * __cdecl tile_at(int x,int y)
 
 {
   int in_bounds;
@@ -6976,14 +6976,14 @@ Tile * __cdecl tile_at(iptr x,iptr y)
 }
 
 /* 005b898b auto */
-u8 * __cdecl known_at(int x,int y,iptr civ)
+u8 * __cdecl known_at(int x,int y,int civ)
 
 {
   return map_data.known[civ] + (x >> 1) + ((int)map.width >> 1) * y;
 }
 
 /* 005b89bb auto */
-byte __cdecl tile_terrain(iptr x,iptr y)
+byte __cdecl tile_terrain(int x,int y)
 
 {
   byte *tile;
@@ -7003,7 +7003,7 @@ uint __cdecl tile_is_ocean(i32 x,i32 y)
 }
 
 /* 005b8a1d auto */
-int __cdecl tile_owner(iptr x,iptr y)
+int __cdecl tile_owner(int x,int y)
 
 {
   iptr in_bounds;
@@ -7025,7 +7025,7 @@ int __cdecl tile_owner(iptr x,iptr y)
 }
 
 /* 005b8a81 auto */
-uint __cdecl tile_landmass(iptr x,iptr y)
+uint __cdecl tile_landmass(int x,int y)
 
 {
   Tile *tile;
@@ -7035,7 +7035,7 @@ uint __cdecl tile_landmass(iptr x,iptr y)
 }
 
 /* 005b8aa8 auto */
-i32 __cdecl tile_land_landmass(iptr x,iptr y)
+i32 __cdecl tile_land_landmass(int x,int y)
 
 {
   int is_ocean;
@@ -7050,7 +7050,7 @@ i32 __cdecl tile_land_landmass(iptr x,iptr y)
 }
 
 /* 005b8af0 auto */
-int __cdecl tile_radius_civ(iptr x,iptr y)
+int __cdecl tile_radius_civ(int x,int y)
 
 {
   Tile *tile;
@@ -7060,7 +7060,7 @@ int __cdecl tile_radius_civ(iptr x,iptr y)
 }
 
 /* 005b8b1a auto */
-void __cdecl tile_update_known(iptr x,iptr y,iptr civ)
+void __cdecl tile_update_known(int x,int y,int civ)
 
 {
   Tile *tile;
@@ -7078,7 +7078,7 @@ void __cdecl tile_update_known(iptr x,iptr y,iptr civ)
 }
 
 /* 005b8b65 auto */
-uint __cdecl tile_visible_to(iptr x,iptr y,iptr civ)
+uint __cdecl tile_visible_to(int x,int y,int civ)
 
 {
   uint result;
@@ -7095,7 +7095,7 @@ uint __cdecl tile_visible_to(iptr x,iptr y,iptr civ)
 }
 
 /* 005b8c18 auto */
-uint __cdecl tile_get_fertility(iptr x,iptr y)
+uint __cdecl tile_get_fertility(int x,int y)
 
 {
   Tile *tile;
@@ -7105,7 +7105,7 @@ uint __cdecl tile_get_fertility(iptr x,iptr y)
 }
 
 /* 005b8c42 auto */
-int __cdecl tile_owner_or_fertility(i32 x,iptr y)
+int __cdecl tile_owner_or_fertility(i32 x,int y)
 
 {
   int result;
@@ -7119,7 +7119,7 @@ int __cdecl tile_owner_or_fertility(i32 x,iptr y)
 }
 
 /* 005b8ca6 auto */
-i32 __cdecl tile_city_owner(iptr x,iptr y)
+i32 __cdecl tile_city_owner(int x,int y)
 
 {
   int in_bounds;
@@ -7175,7 +7175,7 @@ i32 __cdecl tile_unit_owner(i32 x,i32 y)
 }
 
 /* 005b8da4 auto */
-int __cdecl tile_city_or_unit_owner(iptr x,i32 y)
+int __cdecl tile_city_or_unit_owner(int x,i32 y)
 
 {
   int owner;
@@ -7188,7 +7188,7 @@ int __cdecl tile_city_or_unit_owner(iptr x,i32 y)
 }
 
 /* 005b8dec auto */
-i32 __cdecl tile_owner_at_peace(iptr x,iptr y,iptr civ)
+i32 __cdecl tile_owner_at_peace(int x,int y,int civ)
 
 {
   int radius_civ;
@@ -7289,7 +7289,7 @@ i32 __cdecl tile_has_hut(int x,int y)
 }
 
 /* 005b90df auto */
-void __cdecl tile_add_pollution(iptr x,iptr y)
+void __cdecl tile_add_pollution(int x,int y)
 
 {
   int in_bounds;
@@ -7308,7 +7308,7 @@ void __cdecl tile_add_pollution(iptr x,iptr y)
 }
 
 /* 005b9431 auto */
-uint __cdecl landmass_borders_body(int landmass,iptr other_body)
+uint __cdecl landmass_borders_body(int landmass,int other_body)
 
 {
   iptr byte_idx;
@@ -7319,7 +7319,7 @@ uint __cdecl landmass_borders_body(int landmass,iptr other_body)
 }
 
 /* 005b947f auto */
-int __cdecl landmass_count_bordering(iptr body)
+int __cdecl landmass_count_bordering(int body)
 
 {
   int borders;
@@ -7337,7 +7337,7 @@ int __cdecl landmass_count_bordering(iptr body)
 }
 
 /* 005b94d5 auto */
-uint __cdecl tile_improvements(iptr x,iptr y)
+uint __cdecl tile_improvements(int x,int y)
 
 {
   Tile *tile;
@@ -7347,7 +7347,7 @@ uint __cdecl tile_improvements(iptr x,iptr y)
 }
 
 /* 005b94fc auto */
-void __cdecl tile_set_improvements(iptr x,iptr y,iptr bits,iptr set,int sync)
+void __cdecl tile_set_improvements(int x,int y,iptr bits,iptr set,int sync)
 
 {
   char old_value;
@@ -7378,7 +7378,7 @@ void __cdecl tile_set_improvements(iptr x,iptr y,iptr bits,iptr set,int sync)
 }
 
 /* 005b9646 auto */
-void __cdecl tile_set_terrain(iptr x,iptr y,iptr terrain,iptr sync)
+void __cdecl tile_set_terrain(int x,int y,int terrain,iptr sync)
 
 {
   byte old_value;
@@ -7405,7 +7405,7 @@ void __cdecl tile_set_terrain(iptr x,iptr y,iptr terrain,iptr sync)
 }
 
 /* 005b976d auto */
-void __cdecl tile_set_visible(iptr x,iptr y,iptr bits,iptr set,int sync)
+void __cdecl tile_set_visible(int x,int y,iptr bits,iptr set,int sync)
 
 {
   char old_value;
@@ -7436,7 +7436,7 @@ void __cdecl tile_set_visible(iptr x,iptr y,iptr bits,iptr set,int sync)
 }
 
 /* 005b98b7 auto */
-void __cdecl tile_set_fertility(iptr x,iptr y,iptr fertility,iptr sync)
+void __cdecl tile_set_fertility(int x,int y,int fertility,iptr sync)
 
 {
   char old_value;
@@ -7463,7 +7463,7 @@ void __cdecl tile_set_fertility(iptr x,iptr y,iptr fertility,iptr sync)
 }
 
 /* 005b99e8 auto */
-void __cdecl tile_set_owner(iptr x,iptr y,iptr owner,iptr sync)
+void __cdecl tile_set_owner(int x,int y,int owner,iptr sync)
 
 {
   char old_value;
@@ -7493,7 +7493,7 @@ void __cdecl tile_set_owner(iptr x,iptr y,iptr owner,iptr sync)
 }
 
 /* 005b9b35 auto */
-void __cdecl tile_set_landmass(iptr x,iptr y,iptr landmass,iptr sync)
+void __cdecl tile_set_landmass(int x,int y,int landmass,iptr sync)
 
 {
   char old_value;
@@ -7519,7 +7519,7 @@ void __cdecl tile_set_landmass(iptr x,iptr y,iptr landmass,iptr sync)
 }
 
 /* 005b9c49 auto */
-void __cdecl tile_set_radius_civ(iptr x,iptr y,iptr radius_civ,iptr sync)
+void __cdecl tile_set_radius_civ(int x,int y,int radius_civ,iptr sync)
 
 {
   char old_value;
@@ -7546,7 +7546,7 @@ void __cdecl tile_set_radius_civ(iptr x,iptr y,iptr radius_civ,iptr sync)
 }
 
 /* 005b9d81 auto */
-void __cdecl known_set(iptr x,iptr y,uptr bits,iptr civ,int merge,int sync)
+void __cdecl known_set(int x,int y,uptr bits,int civ,int merge,int sync)
 
 {
   byte old_value;

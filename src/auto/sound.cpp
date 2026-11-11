@@ -25,7 +25,7 @@ void AviPlayer::set_end_callback(VideoNotifyFn callback)
 }
 
 /* 0046e020 auto */
-void __cdecl snd_play_effect(iptr effect,iptr play_mode,int loop,SoundDoneFn done_callback)
+void __cdecl snd_play_effect(int effect,int play_mode,int loop,SoundDoneFn done_callback)
 
 {
   int result;

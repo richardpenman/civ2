@@ -44,7 +44,7 @@ void __cdecl diplo_status_icons_static_dtor(void)
 }
 
 /* 00456f8b auto */
-int __cdecl diplo_patience_limit(iptr civ2,iptr civ)
+int __cdecl diplo_patience_limit(int civ2,int civ)
 
 {
   int has_wonder;
@@ -223,7 +223,7 @@ static void diplo_stance_scenario_overrides(iptr civ2,iptr civ)
 }
 
 /* 0045705e auto */
-void __cdecl diplo_eval_ai_stance(iptr civ2,iptr civ)
+void __cdecl diplo_eval_ai_stance(int civ2,int civ)
 
 {
   uint *treaty_flags;
@@ -481,7 +481,7 @@ void __cdecl diplo_eval_ai_stance(iptr civ2,iptr civ)
 }
 
 /* 00458a3b auto */
-void __cdecl diplo_set_attitude_arg(iptr civ2,iptr civ)
+void __cdecl diplo_set_attitude_arg(int civ2,int civ)
 
 {
   iptr level;
@@ -501,7 +501,7 @@ void __cdecl diplo_set_attitude_arg(iptr civ2,iptr civ)
 }
 
 /* 00458ab1 auto */
-void __cdecl diplo_greet_emissary(iptr civ2,iptr civ)
+void __cdecl diplo_greet_emissary(int civ2,int civ)
 
 {
   uint *treaty;
@@ -560,7 +560,7 @@ void __cdecl diplo_greet_emissary(iptr civ2,iptr civ)
 }
 
 /* 00458df9 auto */
-uint __cdecl diplo_ask_receive_emissary(iptr civ2,iptr civ,iptr x,iptr y)
+uint __cdecl diplo_ask_receive_emissary(int civ2,int civ,int x,int y)
 
 {
   int ret;
@@ -647,7 +647,7 @@ void __cdecl diplo_session_reset(void)
 }
 
 /* 004591cb auto */
-i32 __cdecl diplo_offer_sell_tech(iptr civ,iptr civ2,int mode)
+i32 __cdecl diplo_offer_sell_tech(int civ,int civ2,int mode)
 
 {
   i32 result;
@@ -839,7 +839,7 @@ static void diplo_exchange_compose_offer(iptr civ2,int mode,iptr advance2,Dialog
 
 /* 0045950b auto */
 int __cdecl
-diplo_tech_exchange(iptr civ2,iptr civ,i32 x,i32 y,int mode,int eval_only
+diplo_tech_exchange(int civ2,int civ,i32 x,i32 y,int mode,int eval_only
             )
 
 {
@@ -1052,7 +1052,7 @@ diplo_tech_exchange(iptr civ2,iptr civ,i32 x,i32 y,int mode,int eval_only
 }
 
 /* 0045a535 auto */
-void __cdecl diplo_form_alliance(iptr civ2,iptr civ)
+void __cdecl diplo_form_alliance(int civ2,int civ)
 
 {
   iptr adjective;
@@ -1076,7 +1076,7 @@ void __cdecl diplo_form_alliance(iptr civ2,iptr civ)
 }
 
 /* 0045a6ab auto */
-void __cdecl diplo_sign_peace_treaty(iptr civ2,iptr civ)
+void __cdecl diplo_sign_peace_treaty(int civ2,int civ)
 
 {
   iptr str;
@@ -1103,7 +1103,7 @@ void __cdecl diplo_sign_peace_treaty(iptr civ2,iptr civ)
 }
 
 /* 0045a7a8 auto */
-void __cdecl diplo_agree_ceasefire(iptr civ2,iptr civ)
+void __cdecl diplo_agree_ceasefire(int civ2,int civ)
 
 {
   uint *treaty;
@@ -1136,7 +1136,7 @@ void __cdecl diplo_agree_ceasefire(iptr civ2,iptr civ)
 }
 
 /* 0045a8e3 auto */
-void __cdecl diplo_allies_join_war(iptr civ,iptr civ2)
+void __cdecl diplo_allies_join_war(int civ,int civ2)
 
 {
   uint *treaty;
@@ -1198,7 +1198,7 @@ void __cdecl diplo_allies_join_war(iptr civ,iptr civ2)
 }
 
 /* 0045ac71 auto */
-void __cdecl diplo_declare_war(iptr civ,iptr civ3,iptr civ2)
+void __cdecl diplo_declare_war(int civ,int civ3,int civ2)
 
 {
   char *counter;
@@ -1279,7 +1279,7 @@ void __cdecl diplo_declare_war(iptr civ,iptr civ3,iptr civ2)
 }
 
 /* 0045b0d6 auto */
-void __cdecl diplo_ally_demand_help(iptr civ,iptr civ2)
+void __cdecl diplo_ally_demand_help(int civ,int civ2)
 
 {
   int payment;
@@ -1958,7 +1958,7 @@ static uint diplo_answer_demand(iptr civ2,iptr civ,int proposal)
              && ((advisor_window_block.nearest_city_dist < 3 &&
                  (city = city_find_nearest(x2,y2,civ,0xffffffff,-1), -1 < city)
                  ))) {
-            unit_relocate(unit,(int)cities[city].x,(int)cities[city].y,1);
+            unit_relocate(unit,cities[city].x,cities[city].y,1);
             units[unit].visibility = '\0';
             units[unit].orders = ORDER_NONE;
             map_redraw_tile_all_views(x2,y2);
@@ -2088,7 +2088,7 @@ static uint diplo_answer_demand(iptr civ2,iptr civ,int proposal)
 }
 
 /* 0045b4da auto */
-i32 __cdecl diplo_ai_answer_proposal(iptr civ2,iptr civ,int proposal)
+i32 __cdecl diplo_ai_answer_proposal(int civ2,int civ,int proposal)
 
 {
   uint result;
@@ -2366,7 +2366,7 @@ static void diplo_favor_mercenary_war(iptr civ2,iptr civ,int civ3,int &civ4)
 }
 
 /* 0045dd7f auto */
-void __cdecl diplo_favor_menu(iptr civ2,iptr civ)
+void __cdecl diplo_favor_menu(int civ2,int civ)
 
 {
   char patience;
@@ -2494,7 +2494,7 @@ void __cdecl diplo_favor_menu(iptr civ2,iptr civ)
 }
 
 /* 0045f0b1 auto */
-void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
+void __cdecl diplo_gift_menu(int civ2,int civ)
 
 {
   char *unit_count;
@@ -2634,7 +2634,7 @@ void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
         civs[civ].diplo_request_count--;
         return;
       }
-      city4 = city_find_nearest((int)cities[city].x,(int)cities[city].y,civ,0xffffffff,
+      city4 = city_find_nearest(cities[city].x,cities[city].y,civ,0xffffffff,
                                     -1);
       if ((((city4 < 0) || (level = diplo_attitude_level(diplo_eval.cur_attitude), 4 < level)) ||
           (civs[civ2].num_advances < civs[civ].num_advances)) ||
@@ -2656,7 +2656,7 @@ void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
         return;
       }
       if ((-1 < unit_types[units[unit].type].obsolete_by) &&
-         (has_advance = civ_has_advance(civ,(int)unit_types[units[unit].type].obsolete_by),
+         (has_advance = civ_has_advance(civ,unit_types[units[unit].type].obsolete_by),
          has_advance != 0)) {
         str = civ_get_adjective(civ);
         text_set_string_arg(1,(const char *)str);
@@ -2672,10 +2672,10 @@ void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
       units[unit].visibility = '\0';
       unit_count = (char *)(units[unit].type + (iptr)((u8 *)&civs + 216) + civ * 0x594);
       *unit_count = *unit_count + 1;
-      unit_stack_link(unit,(int)cities[city4].x,(int)cities[city4].y,1);
+      unit_stack_link(unit,cities[city4].x,cities[city4].y,1);
       units[unit].home_city = -1;
       attitude_cost = (char)unit_types[units[unit].type].cost * 3;
-      has_advance = civ_has_advance(civ,(int)unit_types[units[unit].type].prerequisite);
+      has_advance = civ_has_advance(civ,unit_types[units[unit].type].prerequisite);
       if (has_advance != 0) {
         attitude_cost = attitude_cost / 2;
       }
@@ -2688,13 +2688,13 @@ void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
       text_set_string_arg(1,(const char *)str);
       diplo_leader_play_reaction(2);
       popup_game((const char *)&str_accept_3);
-      city = civ_has_advance(civ,(int)unit_types[units[unit].type].prerequisite);
+      city = civ_has_advance(civ,unit_types[units[unit].type].prerequisite);
       if (city == 0) {
         advance = unit_types[units[unit].type].prerequisite;
         advance2 = -1;
         for (advance_idx = 0; advance_idx < 100; advance_idx++) {
           city = civ_has_advance(civ,advance_idx);
-          if ((city == 0) && (city = advance_has_prereq((int)advance,advance_idx), city != 0)) {
+          if ((city == 0) && (city = advance_has_prereq(advance,advance_idx), city != 0)) {
             advance2 = advance_idx;
             break;
           }
@@ -2716,7 +2716,7 @@ void __cdecl diplo_gift_menu(iptr civ2,iptr civ)
 }
 
 /* 0045fd67 auto */
-void __cdecl diplo_ai_senate_hawks_notice(iptr civ,iptr civ2)
+void __cdecl diplo_ai_senate_hawks_notice(int civ,int civ2)
 
 {
   iptr name2;
@@ -2738,7 +2738,7 @@ void __cdecl diplo_ai_senate_hawks_notice(iptr civ,iptr civ2)
 }
 
 /* 0045fe19 auto */
-i32 __cdecl diplo_proposal_menu(iptr civ2,iptr civ)
+i32 __cdecl diplo_proposal_menu(int civ2,int civ)
 
 {
   bool at_peace;
@@ -3856,7 +3856,7 @@ static void diplo_meet_ally_war_talk(iptr civ2,iptr civ)
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
 void __cdecl
-diplo_ai_meet_player(iptr civ2,iptr civ,i32 x,i32 y,int player_initiated)
+diplo_ai_meet_player(int civ2,int civ,i32 x,i32 y,int player_initiated)
 
 {
   uint *treaty;
@@ -4128,7 +4128,7 @@ end_meeting:
 }
 
 /* 00467750 auto */
-void __cdecl diplo_clear_treaty_flags(iptr civ,iptr civ2,uint flags)
+void __cdecl diplo_clear_treaty_flags(int civ,int civ2,uint flags)
 
 {
   uint *treaty;
@@ -4150,7 +4150,7 @@ void __cdecl diplo_clear_treaty_flags(iptr civ,iptr civ2,uint flags)
 }
 
 /* 00467825 auto */
-void __cdecl diplo_set_treaty_flags(iptr civ,iptr civ2,uint flags)
+void __cdecl diplo_set_treaty_flags(int civ,int civ2,uint flags)
 
 {
   uint *treaty;
@@ -4209,7 +4209,7 @@ i32 __cdecl diplo_attitude_level(int attitude)
 }
 
 /* 00467af0 auto */
-uint __cdecl diplo_is_hostile(iptr civ,iptr civ2)
+uint __cdecl diplo_is_hostile(int civ,int civ2)
 
 {
   uint result;
@@ -4278,7 +4278,7 @@ void __cdecl diplo_expel_units(int civ2,int civ)
           }
           if ((-1 < city2) && (units[unit].owner == cities[city2].owner)) {
             unit_lift_off_map(unit,0);
-            unit_stack_relocate_all(unit,(int)cities[city2].x,(int)cities[city2].y,1);
+            unit_stack_relocate_all(unit,cities[city2].x,cities[city2].y,1);
             if ((moving_units_mode == 1) && (game.active_unit == unit)) {
               map_cursor.x[0] = cities[city2].x;
               map_cursor.y[0] = cities[city2].y;
@@ -4293,7 +4293,7 @@ void __cdecl diplo_expel_units(int civ2,int civ)
 }
 
 /* 00467ef2 auto */
-void __cdecl diplo_cancel_alliance(iptr civ,iptr civ2)
+void __cdecl diplo_cancel_alliance(int civ,int civ2)
 
 {
   iptr name2;
@@ -4355,7 +4355,7 @@ void __cdecl diplo_greeting_sound_done_cb(void)
 /* 00493e83: written by hand in src/game/unwind.cpp */
 
 /* 00493f0f auto */
-void __cdecl diplo_leader_wnd_launch(iptr civ2,iptr civ)
+void __cdecl diplo_leader_wnd_launch(int civ2,int civ)
 
 {
   DiploLeaderWindow *self;
@@ -4510,7 +4510,7 @@ i32 DiploLeaderWindow::init(i32 viewer_civ,iptr leader_civ)
   }
   else {
     ((DllHandle *)leader_dll)->load((const char *)dll_path);
-    result = civ_city_style_era((uint)this->leader_civ);
+    result = civ_city_style_era(this->leader_civ);
     style_era = (u8)result;
     ok = init_tile();
     if (ok == 0) {
@@ -4657,7 +4657,7 @@ uint DiploLeaderWindow::init_main_art()
     blue_ptr = &blue;
     green_ptr = &green;
     red_ptr = &red;
-    color_index = civ_color_primary((uint)leader_civ);
+    color_index = civ_color_primary(leader_civ);
     ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_entry(color_index,(iptr)red_ptr,(iptr)green_ptr,(iptr)blue_ptr);
     palette.set_entry(0x91,red,green,blue);
     palette.get_rgb((iptr)rgb_buf,0x6a,0x28);
@@ -4731,7 +4731,7 @@ void DiploLeaderWindow::science_rank_top_techs(int (&top_techs)[13],int &tech_co
   int depth;
   
   for (advance = 0; advance < 100; advance++) {
-    value = civ_has_advance((uint)leader_civ,advance);
+    value = civ_has_advance(leader_civ,advance);
     if (value != 0) {
       tech_count++;
       if (map_views_block.tech_prereq_depth_cache[advance] < 1) {
@@ -5192,7 +5192,7 @@ i32 __cdecl diplo_wnd_close_active(void)
     if ((((int)parley_wnd_block.other_civ == -1) || (net.nm_parley_cancel_count != 0)) || (net.nm_parley_accept_offer_count != 0)) {
       if ((((int)parley_wnd_block.other_civ != -1) && (net.nm_parley_cancel_count != 0)) && (net.nm_parley_accept_offer_count == 0)) {
         net.nm_parley_cancel_count = 0;
-        civ_name = (iptr)(civ_name_plural((int)parley_wnd_block.other_civ));
+        civ_name = (iptr)(civ_name_plural(parley_wnd_block.other_civ));
         text_set_string_arg(0,(const char *)civ_name);
         dlg_style.pending_idle_callback = turn_popup_timeout_idle;
         popup_game_with_sprite((const char *)&str_parleycancel_3,(iptr)&popup_info_icon_sprite,0);
@@ -5213,7 +5213,7 @@ i32 __cdecl diplo_wnd_close_active(void)
 }
 
 /* 004c59f0 auto */
-void __cdecl diplo_espionage_incident(iptr civ,iptr civ2)
+void __cdecl diplo_espionage_incident(int civ,int civ2)
 
 {
   uint *contact_flags;
@@ -5331,7 +5331,7 @@ void __cdecl diplo_espionage_incident(iptr civ,iptr civ2)
 }
 
 /* 0055bbc0 auto */
-int __cdecl diplo_count_border_intruders(iptr civ,iptr intruder_civ)
+int __cdecl diplo_count_border_intruders(int civ,int intruder_civ)
 
 {
   iptr x;
@@ -5414,7 +5414,7 @@ int __cdecl diplo_count_border_intruders(iptr civ,iptr intruder_civ)
 }
 
 /* 0055bef9 auto */
-i32 __cdecl diplo_senate_intervenes(iptr civ,iptr civ2)
+i32 __cdecl diplo_senate_intervenes(int civ,int civ2)
 
 {
   i32 result;
@@ -5456,7 +5456,7 @@ i32 __cdecl diplo_senate_intervenes(iptr civ,iptr civ2)
 }
 
 /* 0055cbd5 auto */
-i32 __cdecl diplo_ai_feels_secure(iptr civ,iptr civ2)
+i32 __cdecl diplo_ai_feels_secure(int civ,int civ2)
 
 {
   byte treaty_flags;
@@ -5654,7 +5654,7 @@ i32 __cdecl diplo_ai_swap_advances(uptr civ,uptr civ2)
 }
 
 /* 0055d685 auto */
-i32 __cdecl diplo_ally_join_war(iptr civ,iptr civ2,iptr civ3)
+i32 __cdecl diplo_ally_join_war(int civ,int civ2,int civ3)
 
 {
   uint *flags_ptr;
@@ -6118,7 +6118,7 @@ static void diplo_civs_meet_war(uptr civ,uptr civ2)
 /* 0055d8d8 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl diplo_civs_meet(uptr civ,uptr civ2,iptr x,iptr y)
+void __cdecl diplo_civs_meet(uptr civ,uptr civ2,int x,int y)
 
 {
   int city;
@@ -6209,7 +6209,7 @@ void __cdecl diplo_civs_meet(uptr civ,uptr civ2,iptr x,iptr y)
 /* 0055f5a3: written by hand in src/game/bigframes.cpp */
 
 /* 0055f7d1 auto */
-void __cdecl diplo_ai_military_aid(iptr civ)
+void __cdecl diplo_ai_military_aid(int civ)
 
 {
   char *unit_count;
@@ -6289,7 +6289,7 @@ void __cdecl diplo_ai_military_aid(iptr civ)
                       (city2 = tile_landmass(x,y),
                       *(char *)&civs[civ2].continent_policy[city2] == 1)) &&
                      (city2 = tile_zoc_unit_adjacent(x,y,civ2), city2 == 0)))) &&
-                   (city2 = city_at((int)units[unit2].x,(int)units[unit2].y),
+                   (city2 = city_at((int)units[unit2].x,units[unit2].y),
                    -1 < city2)) {
                   unit_stack_unlink(unit2,1);
                   unit_count = (char *)(units[unit2].type + (iptr)((u8 *)&civs + 216) + civ * 0x594);
@@ -6381,9 +6381,9 @@ static void diplo_review_violators(iptr civ,uptr civ2,iptr city,iptr x,int y)
       if ((((units[unit].id != 0) && ((units[unit].flags & UNITF_BORDER_INTRUDER) != 0)) &&
           (units[unit].flags = units[unit].flags & ~UNITF_BORDER_INTRUDER,
           (int)units[unit].owner == civ2)) &&
-         (y = city_find_nearest((int)units[unit].x,(int)units[unit].y,civ2,
+         (y = city_find_nearest(units[unit].x,units[unit].y,civ2,
                                      0xffffffff,-1), -1 < y)) {
-        unit_relocate(unit,(int)cities[y].x,(int)cities[y].y,1);
+        unit_relocate(unit,cities[y].x,cities[y].y,1);
         units[unit].visibility = '\0';
         units[unit].orders = ORDER_NONE;
         if (unit_types[units[unit].type].range != '\0') {
@@ -6687,7 +6687,7 @@ static int diplo_review_attitude_delta(iptr civ,uptr civ2,int attitude_delta)
 }
 
 /* 00560d95 auto */
-void __cdecl diplo_ai_review_relations(iptr civ,uptr civ2)
+void __cdecl diplo_ai_review_relations(int civ,uptr civ2)
 
 {
   int attitude_delta;
@@ -6865,7 +6865,7 @@ void __cdecl diplo_ai_seek_war_ally(uptr civ2,uptr civ)
 }
 
 /* 00579c40 auto */
-i32 __cdecl diplo_force_war(iptr civ,iptr civ2)
+i32 __cdecl diplo_force_war(int civ,int civ2)
 
 {
   uint *flags_ptr;
@@ -6894,7 +6894,7 @@ i32 __cdecl diplo_force_war(iptr civ,iptr civ2)
 }
 
 /* 00579ed0 auto */
-i32 __cdecl diplo_confirm_attack(iptr civ,iptr civ2,uint treaty_mask)
+i32 __cdecl diplo_confirm_attack(int civ,int civ2,uint treaty_mask)
 
 {
   i32 result;

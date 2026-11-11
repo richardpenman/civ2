@@ -545,7 +545,7 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
           if (accel_choice != 0) {
             game_accelerated_start(accel_choice + -1);
           }
-          civ_intro_popup((int)game.player_civ);
+          civ_intro_popup(game.player_civ);
           result = 0;
           return result;
         }
@@ -1405,7 +1405,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
       editor_text_edit_block.spaceship_wnd_part_count_list[(uint)row->kind]) {
     if (row->kind == 1) {
       part_count = row->count;
-      load_ok = spaceship_part_count((i32)ship_civ,1);
+      load_ok = spaceship_part_count(ship_civ,1);
       if (load_ok < (int)(uint)part_count) {
         ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1ba,9,
                      row->v[5],1,
@@ -1421,7 +1421,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
     }
     else if (row->kind == 4) {
       part_count = row->count;
-      load_ok = spaceship_part_count((i32)ship_civ,4);
+      load_ok = spaceship_part_count(ship_civ,4);
       if (load_ok < (int)(uint)part_count) {
         ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1e1,9,
                      row->v[5],1,
@@ -1437,7 +1437,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
     }
     else if (row->kind == 2) {
       part_count = row->count;
-      load_ok = spaceship_part_count((i32)ship_civ,2);
+      load_ok = spaceship_part_count(ship_civ,2);
       if (load_ok < (int)(uint)part_count) {
         ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1c8,9,
                      row->v[5],1,
@@ -1453,7 +1453,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
     }
     else if (row->kind == 5) {
       part_count = row->count;
-      load_ok = spaceship_part_count((i32)ship_civ,5);
+      load_ok = spaceship_part_count(ship_civ,5);
       if (load_ok < (int)(uint)part_count) {
         ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1e9,9,
                      row->v[5],1,
@@ -1469,7 +1469,7 @@ void SpaceshipWindow::render_ship_draw_part(ShipSurfaces &sf,ShipPartRow *row,i8
     }
     else if (row->kind == 3) {
       part_count = row->count;
-      load_ok = spaceship_part_count((i32)ship_civ,3);
+      load_ok = spaceship_part_count(ship_civ,3);
       if (load_ok < (int)(uint)part_count) {
         ((Sprite *)((iptr)this + 0x93c))->grab_from_surface((iptr)sf.surf_1d7,9,
                      row->v[5],1,
@@ -1567,7 +1567,7 @@ i32 SpaceshipWindow::render_ship()
   }
   ((Sprite *)((iptr)this + 0x93c))->draw((iptr)sprite_final,(iptr)this + 0xb8,0xaf,
                99);
-  spaceship_wnd_draw_title((i32)ship_civ);
+  spaceship_wnd_draw_title(ship_civ);
   render_ship_free_surfaces(sf,unwind_state);
   return 1;
 }

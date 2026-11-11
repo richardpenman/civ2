@@ -5,7 +5,7 @@
 #include "rules.h"
 
 /* 0040bd10 auto */
-i32 __cdecl civ_max_tax_rate(iptr civ)
+i32 __cdecl civ_max_tax_rate(int civ)
 
 {
   i32 max_rate;
@@ -26,7 +26,7 @@ i32 __cdecl civ_max_tax_rate(iptr civ)
 }
 
 /* 00410070 auto */
-i32 __cdecl civ_get_adjective(iptr civ)
+i32 __cdecl civ_get_adjective(int civ)
 
 {
   i32 adjective;
@@ -188,13 +188,13 @@ i32 __cdecl tech_editor_write_civilize(FILE *file)
       name_len = 0x13;
     }
     text_append_spaces(0x13 - name_len);
-    text_append_int((int)advances[advance].ai_value);
+    text_append_int(advances[advance].ai_value);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_ctrl_kinds_block.civilize_rules_ai_sep_str));
     text_append_int_2d((int)advances[advance].civilized_mod);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_ctrl_kinds_block.civilize_rules_mod_sep_str));
-    text_append_advance_abbrev((int)advances[advance].preq[0],1);
+    text_append_advance_abbrev(advances[advance].preq[0],1);
     text_append_space();
-    text_append_advance_abbrev((int)advances[advance].preq[1],1);
+    text_append_advance_abbrev(advances[advance].preq[1],1);
     text_append_space();
     text_append_int((int)(char)advances[advance].epoch);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_ctrl_kinds_block.civilize_rules_epoch_sep_str));
@@ -1502,7 +1502,7 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
       leaders[leader].color = old_value;
     }
     else {
-      value = int_clamp((int)leaders[leader].color,1,7);
+      value = int_clamp(leaders[leader].color,1,7);
       leaders[leader].color = (i16)value;
     }
     old_value = leaders[leader].city_style;
@@ -1512,7 +1512,7 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
       leaders[leader].city_style = old_value;
     }
     else {
-      value = int_clamp((int)leaders[leader].city_style,0,3);
+      value = int_clamp(leaders[leader].city_style,0,3);
       leaders[leader].city_style = (i16)value;
     }
     old_value = leaders[leader].plural;
@@ -1636,7 +1636,7 @@ void __cdecl rules_parse_sections(i32 load_civ_data)
 }
 
 /* 0041b8ff auto */
-void __cdecl civ_intro_popup(iptr civ)
+void __cdecl civ_intro_popup(int civ)
 
 {
   int has_advance;
@@ -1826,7 +1826,7 @@ void __cdecl science_advisor_draw(void)
       }
       text_append_space();
       text_append_lparen();
-      text_append_int((int)civs[civ].research_progress);
+      text_append_int(civs[civ].research_progress);
       text_append("/");
       text_append_int(civ_research_cost(civ));
       text_append(", +");
@@ -1991,7 +1991,7 @@ void __cdecl science_advisor_on_goal_clicked(void)
 /* WARNING: Removing unreachable block (ram,0x0042b72b) */
 /* WARNING: Removing unreachable block (ram,0x0042b7b6) */
 
-void __cdecl science_advisor_show(iptr civ)
+void __cdecl science_advisor_show(int civ)
 
 {
   int client_y;
@@ -2180,7 +2180,7 @@ static int civ_score_draw_objectives(iptr civ,int header_y,int line_height)
   text_y3 += line_height;
   if (scenario.objective_civ != 0) {
     text_clear();
-    text = civ_get_adjective((int)scenario.objective_civ);
+    text = civ_get_adjective(scenario.objective_civ);
     text_append((const char *)text);
     text_append_space();
     text_append_label(0x1b2);
@@ -2226,7 +2226,7 @@ static int civ_score_draw_objectives(iptr civ,int header_y,int line_height)
       text_append_label(0x1b7);
     }
     text_append_colon();
-    text_append_int((int)(((i16 *)&scenario.victory_thresholds))[threshold]);
+    text_append_int((((i16 *)&scenario.victory_thresholds))[threshold]);
     gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,text_y3,advisor_state.client_width);
     text_y3 += line_height;
   }
@@ -2476,7 +2476,7 @@ void __cdecl civ_score_window_draw(void)
 /* 00435d15 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl civ_score_window_show(iptr civ)
+void __cdecl civ_score_window_show(int civ)
 
 {
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(10,10,1,600,400,0,0);
@@ -2614,7 +2614,7 @@ void __cdecl civ_rating_window_draw(void)
 /* 004361cc auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl civ_rating_window_show(iptr civ)
+void __cdecl civ_rating_window_show(int civ)
 
 {
   ((PictureWindow *)((i8 *)&advisor_state.window))->open(10,10,1,600,400,0,0);
@@ -2635,7 +2635,7 @@ void __cdecl civ_rating_window_show(iptr civ)
 }
 
 /* 0043cab0 auto */
-i32 __cdecl civ_color_primary(iptr civ)
+i32 __cdecl civ_color_primary(int civ)
 
 {
   int color_index;
@@ -2650,7 +2650,7 @@ i32 __cdecl civ_color_primary(iptr civ)
 }
 
 /* 0043cb30 auto */
-i32 __cdecl civ_color_secondary(iptr civ)
+i32 __cdecl civ_color_secondary(int civ)
 
 {
   int color_index;
@@ -2665,7 +2665,7 @@ i32 __cdecl civ_color_secondary(iptr civ)
 }
 
 /* 0043cce5 auto */
-int __cdecl civ_total_population(iptr civ)
+int __cdecl civ_total_population(int civ)
 
 {
   int city_pop;
@@ -2694,7 +2694,7 @@ int __cdecl civ_total_population(iptr civ)
 }
 
 /* 00442541 auto */
-void __cdecl civ_reset_city_production(uptr civ,iptr landmass)
+void __cdecl civ_reset_city_production(uptr civ,int landmass)
 
 {
   int city_landmass;
@@ -2704,7 +2704,7 @@ void __cdecl civ_reset_city_production(uptr civ,iptr landmass)
     for (city = 0; city < game.num_cities; city++) {
       if (((cities[city].id != 0) && ((int)cities[city].owner == (civ & 0xff))) &&
          ((landmass < 0 ||
-          (city_landmass = tile_landmass((int)cities[city].x,(int)cities[city].y), city_landmass == landmass)))
+          (city_landmass = tile_landmass(cities[city].x,cities[city].y), city_landmass == landmass)))
          ) {
         city_set_production(city,99);
       }
@@ -2912,7 +2912,7 @@ void __cdecl civ_portrait_sprites_static_dtor(void)
 }
 
 /* 00448f92 auto */
-i32 __cdecl civ_city_style_era(iptr civ)
+i32 __cdecl civ_city_style_era(int civ)
 
 {
   int has_advance;
@@ -2937,7 +2937,7 @@ i32 __cdecl civ_city_style_era(iptr civ)
 }
 
 /* 00453e51 auto */
-i32 __cdecl civ_has_wonder(iptr civ,iptr wonder)
+i32 __cdecl civ_has_wonder(int civ,int wonder)
 
 {
   i32 result;
@@ -2962,7 +2962,7 @@ i32 __cdecl civ_has_wonder(iptr civ,iptr wonder)
 }
 
 /* 00456f20 auto */
-void __cdecl civ_adjust_attitude(iptr civ,iptr other_civ,int delta)
+void __cdecl civ_adjust_attitude(int civ,int other_civ,int delta)
 
 {
   int attitude;
@@ -2977,14 +2977,14 @@ void __cdecl civ_adjust_attitude(iptr civ,iptr other_civ,int delta)
 }
 
 /* 00467904 auto */
-uint __cdecl civ_get_attitude(iptr civ,iptr other_civ)
+uint __cdecl civ_get_attitude(int civ,int other_civ)
 
 {
   return (uint)civs[civ].attitude[other_civ];
 }
 
 /* 00467933 auto */
-void __cdecl civ_set_attitude(iptr civ,iptr other_civ,iptr attitude)
+void __cdecl civ_set_attitude(int civ,int other_civ,int attitude)
 
 {
   i32 clamped;
@@ -3329,13 +3329,13 @@ void __cdecl civ_process_cities_turn(uptr civ)
     if (max_rate <= 10 - value) {
       result = max_rate;
     }
-    clamped = int_clamp((uint)civs[civ].science_rate,0,result);
+    clamped = int_clamp(civs[civ].science_rate,0,result);
     civs[civ].science_rate = (u8)clamped;
     result = civ_has_advance(civ,ADV_FUSION_POWER);
     if ((((result != 0) && (result = civ_has_advance(civ,ADV_LASER), result != 0)) &&
-        (result = civ_has_advance(civ,(int)improvements[IMP_SS_STRUCTURAL].preq), result != 0)) &&
-       ((result = civ_has_advance(civ,(int)improvements[IMP_SS_COMPONENT].preq), result != 0 &&
-        (result = civ_has_advance(civ,(int)improvements[IMP_SS_MODULE].preq), result != 0)))) {
+        (result = civ_has_advance(civ,improvements[IMP_SS_STRUCTURAL].preq), result != 0)) &&
+       ((result = civ_has_advance(civ,improvements[IMP_SS_COMPONENT].preq), result != 0 &&
+        (result = civ_has_advance(civ,improvements[IMP_SS_MODULE].preq), result != 0)))) {
       civs[civ].science_rate = '\0';
     }
     civs[civ].tax_rate = '\n' - (civs[civ].science_rate + (char)value);
@@ -3409,7 +3409,7 @@ void __cdecl civ_process_cities_turn(uptr civ)
 }
 
 /* 00488cef auto */
-void __cdecl civ_heal_units(iptr civ)
+void __cdecl civ_heal_units(int civ)
 
 {
   u8 domain;
@@ -3441,14 +3441,14 @@ void __cdecl civ_heal_units(iptr civ)
         if (units[unit].damage != '\0') {
           heal_amount = 1;
           civ2 = -1;
-          value = tile_landmass((int)units[unit].x,(int)units[unit].y);
-          city = city_find_nearest((int)units[unit].x,(int)units[unit].y,civ,value,
+          value = tile_landmass(units[unit].x,units[unit].y);
+          city = city_find_nearest(units[unit].x,units[unit].y,civ,value,
                                      civ2);
           if (-1 < city) {
             advisor_window_block.nearest_city_dist = map_distance((int)units[unit].x,(int)units[unit].y,
                                               (int)cities[city].x,(int)cities[city].y);
           }
-          value = tile_improvements((int)units[unit].x,(int)units[unit].y);
+          value = tile_improvements(units[unit].x,units[unit].y);
           if (((byte)value & 0x42) == 0x40) {
             heal_amount = 2;
           }
@@ -3513,7 +3513,7 @@ void __cdecl civ_heal_units(iptr civ)
       }
       else if (((unit_types[units[unit].type].domain == DOMAIN_AIR) &&
                (unit_types[units[unit].type].range == '\0')) &&
-              (heal = tile_improvements((int)units[unit].x,(int)units[unit].y),
+              (heal = tile_improvements(units[unit].x,units[unit].y),
               (heal & 2) == 0)) {
         max_hp = unit_max_hp(unit);
         max_hp2 = unit_max_hp(unit);
@@ -3526,7 +3526,7 @@ void __cdecl civ_heal_units(iptr civ)
 }
 
 /* 00489292 auto */
-void __cdecl civ_check_pop_and_funds(iptr civ,int prev_gold)
+void __cdecl civ_check_pop_and_funds(int civ,int prev_gold)
 
 {
   short old_milestone;
@@ -3647,7 +3647,7 @@ void __cdecl civ_ai_goal_negate_priority(int civ,int goal)
 
 /* 00492c15 auto */
 void __cdecl
-civ_clear_standing_goals_near(iptr civ,i32 role,i32 x,i32 y,int max_dist)
+civ_clear_standing_goals_near(int civ,i32 role,i32 x,i32 y,int max_dist)
 
 {
   int dist;
@@ -3668,7 +3668,7 @@ civ_clear_standing_goals_near(iptr civ,i32 role,i32 x,i32 y,int max_dist)
 }
 
 /* 00492d18 auto */
-void __cdecl civ_ai_goal_insert_gap(iptr civ,iptr goal)
+void __cdecl civ_ai_goal_insert_gap(int civ,int goal)
 
 {
   i16 goal_y;
@@ -3687,7 +3687,7 @@ void __cdecl civ_ai_goal_insert_gap(iptr civ,iptr goal)
 }
 
 /* 00492dd0 auto */
-void __cdecl civ_standing_goal_insert_gap(iptr civ,int start)
+void __cdecl civ_standing_goal_insert_gap(int civ,int start)
 
 {
   i16 goal_y;
@@ -3707,7 +3707,7 @@ void __cdecl civ_standing_goal_insert_gap(iptr civ,int start)
 }
 
 /* 00492e60 auto */
-int __cdecl civ_ai_goal_get_priority(iptr civ,int x,int y,i32 role)
+int __cdecl civ_ai_goal_get_priority(int civ,int x,int y,i32 role)
 
 {
   int abs_priority;
@@ -3739,7 +3739,7 @@ int __cdecl civ_ai_goal_get_priority(iptr civ,int x,int y,i32 role)
 }
 
 /* 0049301b auto */
-void __cdecl civ_add_ai_goal(iptr civ,int x,int y,int role,int priority)
+void __cdecl civ_add_ai_goal(int civ,int x,int y,int role,int priority)
 
 {
   int value;
@@ -3757,7 +3757,7 @@ void __cdecl civ_add_ai_goal(iptr civ,int x,int y,int role,int priority)
           if ((((units[unit].id != 0) && (units[unit].owner == civ)) &&
               (value = unit_is_awake_with_moves(unit), value != 0)) &&
              ((char)unit_types[units[unit].type].role == role)) {
-            value = tile_landmass((int)units[unit].x,(int)units[unit].y);
+            value = tile_landmass(units[unit].x,units[unit].y);
             value2 = tile_landmass(x,y);
             if (value == value2) {
               value = map_distance_diag(x,y,(int)units[unit].x,
@@ -3798,7 +3798,7 @@ void __cdecl civ_add_ai_goal(iptr civ,int x,int y,int role,int priority)
 }
 
 /* 004933f2 auto */
-void __cdecl civ_add_standing_goal(iptr civ,int x,int y,i32 role,int priority)
+void __cdecl civ_add_standing_goal(int civ,int x,int y,i32 role,int priority)
 
 {
   int goal;
@@ -3832,7 +3832,7 @@ void __cdecl civ_add_standing_goal(iptr civ,int x,int y,i32 role,int priority)
 }
 
 /* 00493602 auto */
-void __cdecl civ_refresh_ai_goals(iptr civ)
+void __cdecl civ_refresh_ai_goals(int civ)
 
 {
   int goal;
@@ -3855,7 +3855,7 @@ void __cdecl civ_refresh_ai_goals(iptr civ)
 }
 
 /* 0049376f auto */
-void __cdecl civ_reset_standing_goals(iptr civ)
+void __cdecl civ_reset_standing_goals(int civ)
 
 {
   int goal;
@@ -3868,7 +3868,7 @@ void __cdecl civ_reset_standing_goals(iptr civ)
 }
 
 /* 00493b10 auto */
-char * __cdecl civ_leader_name(iptr civ)
+char * __cdecl civ_leader_name(int civ)
 
 {
   int name2;
@@ -3886,7 +3886,7 @@ char * __cdecl civ_leader_name(iptr civ)
 }
 
 /* 00493ba6 auto */
-int __cdecl civ_leader_title(iptr civ)
+int __cdecl civ_leader_title(int civ)
 
 {
   int title;
@@ -3907,7 +3907,7 @@ int __cdecl civ_leader_title(iptr civ)
 }
 
 /* 00493c7d auto */
-char * __cdecl civ_name_plural(iptr civ)
+char * __cdecl civ_name_plural(int civ)
 
 {
   int name2;
@@ -3925,7 +3925,7 @@ char * __cdecl civ_name_plural(iptr civ)
 }
 
 /* 00493d13 auto */
-int __cdecl civ_adjective(iptr civ)
+int __cdecl civ_adjective(int civ)
 
 {
   int adjective;
@@ -3943,7 +3943,7 @@ int __cdecl civ_adjective(iptr civ)
 }
 
 /* 00494dae auto */
-void __cdecl advance_count_prereq_depth(iptr advance)
+void __cdecl advance_count_prereq_depth(int advance)
 
 {
   iptr preq_index;
@@ -3952,7 +3952,7 @@ void __cdecl advance_count_prereq_depth(iptr advance)
     for (preq_index = 0; preq_index < 2; preq_index++) {
       if ('\0' < advances[advance].preq[preq_index]) {
         tech_prereq_walk_count++;
-        advance_count_prereq_depth((int)advances[advance].preq[preq_index]);
+        advance_count_prereq_depth(advances[advance].preq[preq_index]);
       }
     }
   }
@@ -3976,7 +3976,7 @@ void __cdecl civ_password_ensure_set(int civ)
 }
 
 /* 0049836a auto */
-void __cdecl civ_change_password_dialog(iptr civ)
+void __cdecl civ_change_password_dialog(int civ)
 
 {
   char entered[32];
@@ -4061,7 +4061,7 @@ i32 __cdecl civ_password_prompt(int civ)
 }
 
 /* 00498a5c auto */
-i32 __cdecl civ_check_password(iptr civ)
+i32 __cdecl civ_check_password(int civ)
 
 {
   int prompt_result;
@@ -4092,7 +4092,7 @@ i32 __cdecl civ_check_password(iptr civ)
 }
 
 /* 004a28b0 auto */
-int __cdecl civ_calc_score(iptr civ)
+int __cdecl civ_calc_score(int civ)
 
 {
   int value;
@@ -4227,7 +4227,7 @@ int __cdecl civ_calc_score(iptr civ)
 }
 
 /* 004a74bc auto */
-void __cdecl civ_reset_spaceship(iptr civ)
+void __cdecl civ_reset_spaceship(int civ)
 
 {
   int part;
@@ -4243,21 +4243,21 @@ void __cdecl civ_reset_spaceship(iptr civ)
 }
 
 /* 004a7577 auto */
-uint __cdecl civ_spaceship_launched(iptr civ)
+uint __cdecl civ_spaceship_launched(int civ)
 
 {
   return civs[civ].spaceship_flags & SHIP_LAUNCHED;
 }
 
 /* 004a75a6 auto */
-uint __cdecl civ_spaceship_exists(iptr civ)
+uint __cdecl civ_spaceship_exists(int civ)
 
 {
   return civs[civ].spaceship_flags & SHIP_EXISTS;
 }
 
 /* 004a75d5 auto */
-i32 __cdecl civ_spaceship_arrived(iptr civ)
+i32 __cdecl civ_spaceship_arrived(int civ)
 
 {
   int launched;
@@ -4274,7 +4274,7 @@ i32 __cdecl civ_spaceship_arrived(iptr civ)
 }
 
 /* 004a762d auto */
-void __cdecl civ_spaceship_lost_notify(iptr civ)
+void __cdecl civ_spaceship_lost_notify(int civ)
 
 {
   iptr adjective;
@@ -4700,7 +4700,7 @@ static void civ_create_reset_civ(iptr civ,int *continent_city_counts)
 }
 
 /* 004a7ce9 auto */
-int __cdecl civ_create(iptr civ)
+int __cdecl civ_create(int civ)
 
 {
   int result;
@@ -4736,8 +4736,8 @@ int __cdecl civ_create(iptr civ)
         else {
           civ_create_find_start(civ,continent_city_counts,x2,y2,attempts);
           if ((game.turn == 0) &&
-             (result = map_in_bounds((int)start_positions.x[civs[civ].tribe],
-                                    (int)start_positions.y[civs[civ].tribe]), result != 0)) {
+             (result = map_in_bounds(start_positions.x[civs[civ].tribe],
+                                    start_positions.y[civs[civ].tribe]), result != 0)) {
             x2 = (uint)start_positions.x[civs[civ].tribe];
             y2 = (uint)start_positions.y[civs[civ].tribe];
             attempts = 0;
@@ -4796,7 +4796,7 @@ int __cdecl civ_create(iptr civ)
 }
 
 /* 004aa378 auto */
-int __cdecl civ_check_destroyed(iptr civ,iptr civ2)
+int __cdecl civ_check_destroyed(int civ,int civ2)
 
 {
   uint *treaty_ptr;
@@ -4996,7 +4996,7 @@ i8 __cdecl rules_parse_terrain_abbrev(char *abbrev)
 }
 
 /* 004bd9f0 auto */
-i32 __cdecl civ_has_advance(iptr civ,iptr advance_id)
+i32 __cdecl civ_has_advance(int civ,int advance_id)
 
 {
   i32 result;
@@ -5055,7 +5055,7 @@ static i32 advance_has_prereq_seen(iptr advance,iptr prereq,u8 (&seen)[100])
 }
 
 /* 004bdaa5 auto */
-i32 __cdecl advance_has_prereq(iptr advance,iptr prereq)
+i32 __cdecl advance_has_prereq(int advance,int prereq)
 
 {
   u8 seen[100];
@@ -5065,7 +5065,7 @@ i32 __cdecl advance_has_prereq(iptr advance,iptr prereq)
 }
 
 /* 004be6ba auto */
-void __cdecl civ_leonardo_upgrade(iptr civ)
+void __cdecl civ_leonardo_upgrade(int civ)
 
 {
   byte unit_type;
@@ -5131,7 +5131,7 @@ void __cdecl civ_leonardo_upgrade(iptr civ)
 }
 
 /* 004bea84 auto */
-void __cdecl civ_advance_gov_prompts(iptr civ,iptr advance)
+void __cdecl civ_advance_gov_prompts(int civ,int advance)
 
 {
   int choice;
@@ -5207,7 +5207,7 @@ void __cdecl civ_advance_gov_prompts(iptr civ,iptr advance)
 }
 
 /* 004bee56 auto */
-void __cdecl civ_golden_age_popup(iptr civ)
+void __cdecl civ_golden_age_popup(int civ)
 
 {
   iptr adjective;
@@ -5415,7 +5415,7 @@ static void civ_advance_first_discovery(uptr civ,iptr advance,iptr civ2,Dialog &
 }
 
 /* 004bf05b auto */
-void __cdecl civ_give_advance(uptr civ,iptr advance,iptr civ2,iptr skip_pedia,int from_network)
+void __cdecl civ_give_advance(uptr civ,int advance,int civ2,int skip_pedia,int from_network)
 
 {
   iptr has_wonder_a;
@@ -5536,22 +5536,22 @@ void __cdecl civ_give_advance(uptr civ,iptr advance,iptr civ2,iptr skip_pedia,in
 }
 
 /* 004bfdbe auto */
-i32 __cdecl civ_can_research_advance(iptr civ,iptr advance)
+i32 __cdecl civ_can_research_advance(int civ,int advance)
 
 {
   int known;
   
   if ((((advances[advance].enabled != '\0') &&
        (known = civ_has_advance(civ,advance), known == 0)) &&
-      (known = civ_has_advance(civ,(int)advances[advance].preq[0]), known != 0)) &&
-     (known = civ_has_advance(civ,(int)advances[advance].preq[1]), known != 0)) {
+      (known = civ_has_advance(civ,advances[advance].preq[0]), known != 0)) &&
+     (known = civ_has_advance(civ,advances[advance].preq[1]), known != 0)) {
     return 1;
   }
   return 0;
 }
 
 /* 004bfe5a auto */
-i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type)
+i32 __cdecl civ_can_build_unit(int civ,int city,int unit_type)
 
 {
   char prereq;
@@ -5562,9 +5562,9 @@ i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type)
   result = 0;
   prereq = unit_types[unit_type].prerequisite;
   if ((((-2 < prereq) &&
-       ((prereq < '\0' || (known = civ_has_advance(civ,(int)prereq), known != 0)))) &&
+       ((prereq < '\0' || (known = civ_has_advance(civ,prereq), known != 0)))) &&
       (((unit_types[unit_type].obsolete_by < '\0' ||
-        (known = civ_has_advance(civ,(int)unit_types[unit_type].obsolete_by), known == 0)) &&
+        (known = civ_has_advance(civ,unit_types[unit_type].obsolete_by), known == 0)) &&
        ((((unit_types[unit_type].role != ROLE_DEFEND ||
           ((char)unit_types[UNIT_MUSKETEERS].defense <= (char)unit_types[unit_type].defense)) ||
          (known = civ_has_advance(civ,ADV_GUNPOWDER), known == 0)) &&
@@ -5572,7 +5572,7 @@ i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type)
           ((int)(char)unit_types[unit_type].move != (uint)cosmic.road_move_mult * 2)) ||
          (((char)unit_types[UNIT_KNIGHTS].attack < (char)unit_types[unit_type].attack ||
           (((char)unit_types[UNIT_KNIGHTS].defense <= (char)unit_types[unit_type].defense ||
-           (known = civ_has_advance(civ,(int)unit_types[UNIT_KNIGHTS].prerequisite), known == 0))))))
+           (known = civ_has_advance(civ,unit_types[UNIT_KNIGHTS].prerequisite), known == 0))))))
         )))))) &&
      ((((char)unit_types[unit_type].attack < 'c' ||
        ((game.wonder_city[WONDER_MANHATTAN] != -1 && (known = civ_has_advance(civ,ADV_NUCLEAR_FISSION), known != 0))))
@@ -5586,7 +5586,7 @@ i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type)
         if (((((unit_type2 != unit_type) && (unit_types[unit_type2].role == unit_types[unit_type].role)) &&
              (unit_types[unit_type2].domain == unit_types[unit_type].domain)) &&
             (((int)(uint)cosmic.road_move_mult < (int)(char)unit_types[unit_type2].move &&
-             (known = civ_has_advance(civ,(int)unit_types[unit_type2].prerequisite), known != 0
+             (known = civ_has_advance(civ,unit_types[unit_type2].prerequisite), known != 0
              )))) && (((char)unit_types[unit_type].attack <= (char)unit_types[unit_type2].attack &&
                       ((char)unit_types[unit_type].defense <= (char)unit_types[unit_type2].defense)))) {
           if (unit_types[unit_type2].attack != unit_types[unit_type].attack) {
@@ -5606,7 +5606,7 @@ i32 __cdecl civ_can_build_unit(iptr civ,iptr city,iptr unit_type)
 }
 
 /* 004c02d8 auto */
-i32 __cdecl civ_can_build_wonder(iptr civ,iptr wonder)
+i32 __cdecl civ_can_build_wonder(int civ,int wonder)
 
 {
   int known;
@@ -5616,14 +5616,14 @@ i32 __cdecl civ_can_build_wonder(iptr civ,iptr wonder)
   if ((((((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 4) == 0)) || (game.reveal_map != '\0'))
       || ((((int)(short)scenario.flags[0] & 0x8000U) != 0 && (wonder == WONDER_MANHATTAN)))) &&
      ((game.wonder_city[wonder] == -1 &&
-      (known = civ_has_advance(civ,(int)improvements[wonder + 0x27].preq), known != 0)))) {
+      (known = civ_has_advance(civ,improvements[wonder + 0x27].preq), known != 0)))) {
     result = 1;
   }
   return result;
 }
 
 /* 004c09b0 auto */
-iptr __cdecl civ_pick_research_advance(iptr civ)
+iptr __cdecl civ_pick_research_advance(int civ)
 
 {
   int value;
@@ -5671,7 +5671,7 @@ iptr __cdecl civ_pick_research_advance(iptr civ)
 
 /* 004c0b51 auto */
 i32 __cdecl
-research_option_draw_advance(i32 dialog,iptr surface,iptr advance,byte flags,int x,int y,
+research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int x,int y,
             int height)
 
 {
@@ -5880,7 +5880,7 @@ static void research_goal_help(int mode,iptr choice,Dialog &dialog2)
 }
 
 /* 004c0cf7 auto */
-void __cdecl civ_research_goal_dialog(iptr civ,int exclude_current,int civ2)
+void __cdecl civ_research_goal_dialog(int civ,int exclude_current,int civ2)
 
 {
   iptr label;
@@ -5949,9 +5949,9 @@ void __cdecl civ_research_goal_dialog(iptr civ,int exclude_current,int civ2)
     if ((advances[advance].enabled != '\0') &&
        (known = civ_has_advance(civ,advance), known == 0)) {
       if (civ2 == 0) {
-        known = civ_has_advance(civ,(int)advances[advance].preq[0]);
+        known = civ_has_advance(civ,advances[advance].preq[0]);
         if (!(((known != 0) &&
-              (known = civ_has_advance(civ,(int)advances[advance].preq[1]), known != 0)) &&
+              (known = civ_has_advance(civ,advances[advance].preq[1]), known != 0)) &&
              ((exclude_current == 0 || (civs[civ].researching != advance))))) continue;
         if (((option_count2 != 0) && (game.difficulty != DIFF_CHIEFTAIN)) && ((game.game_flags & GAME_SCENARIO) == 0)) {
           known = (int)(advance - ((uint)civs[civ].num_advances + exclude_current)) % 3;
@@ -6012,7 +6012,7 @@ void __cdecl civ_research_goal_dialog(iptr civ,int exclude_current,int civ2)
 }
 
 /* 004c195e auto */
-iptr __cdecl civ_choose_research_dialog(iptr civ,int forced)
+iptr __cdecl civ_choose_research_dialog(int civ,int forced)
 
 {
   iptr advance2;
@@ -6135,8 +6135,8 @@ iptr __cdecl civ_choose_research_dialog(iptr civ,int forced)
       for (advance = 0; advance < 100; advance++) {
         if (((((advances[advance].enabled != '\0') &&
               (known = civ_has_advance(civ,advance), known == 0)) &&
-             ((known = civ_has_advance(civ,(int)advances[advance].preq[0]), known != 0 &&
-              (known = civ_has_advance(civ,(int)advances[advance].preq[1]), known != 0))))
+             ((known = civ_has_advance(civ,advances[advance].preq[0]), known != 0 &&
+              (known = civ_has_advance(civ,advances[advance].preq[1]), known != 0))))
             && ((advances[advance].preq[0] != -2 || (advances[advance].preq[1] != -2)))) &&
            ((count == 0 ||
             ((((game.difficulty == DIFF_CHIEFTAIN || (forced != 0)) || ((game.game_flags & GAME_SCENARIO) != 0)) ||
@@ -6175,7 +6175,7 @@ iptr __cdecl civ_choose_research_dialog(iptr civ,int forced)
 }
 
 /* 004c21ad auto */
-void __cdecl civ_choose_research(iptr civ)
+void __cdecl civ_choose_research(int civ)
 
 {
   civ_choose_research_dialog(civ,0);
@@ -6183,7 +6183,7 @@ void __cdecl civ_choose_research(iptr civ)
 }
 
 /* 004c21d5 auto */
-iptr __cdecl civ_research_complete(uptr civ,iptr civ2)
+iptr __cdecl civ_research_complete(uptr civ,int civ2)
 
 {
   short current_research;
@@ -6225,7 +6225,7 @@ iptr __cdecl civ_research_complete(uptr civ,iptr civ2)
       text_append_string_id(advances[advance].name);
       if (advance == ADV_FUTURE_TECH) {
         text_append_space();
-        text_append_int((uint)civs[civ].future_techs);
+        text_append_int(civs[civ].future_techs);
       }
       text_set_string_arg_b(2,(const char *)&textbuf.buf);
       dialog2.load_game_text((const char *)&str_civadvance);
@@ -6274,7 +6274,7 @@ iptr __cdecl civ_research_complete(uptr civ,iptr civ2)
 }
 
 /* 004c2788 auto */
-int __cdecl civ_research_cost(iptr civ)
+int __cdecl civ_research_cost(int civ)
 
 {
   uint tech_count;
@@ -6287,7 +6287,7 @@ int __cdecl civ_research_cost(iptr civ)
   if (tech_count < 2) {
     tech_count = 1;
   }
-  multiplier = int_clamp((uint)game.difficulty,0,4);
+  multiplier = int_clamp(game.difficulty,0,4);
   if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
     multiplier = 0xe - multiplier;
   }
@@ -6384,7 +6384,7 @@ void __cdecl civ_add_research_points(uptr civ,int points)
 }
 
 /* 004c65d2 auto */
-int __cdecl civ_distance_to_capital(iptr civ,i32 target_x,i32 target_y)
+int __cdecl civ_distance_to_capital(int civ,i32 target_x,i32 target_y)
 
 {
   int dist;
@@ -6565,7 +6565,7 @@ void __cdecl rules_apply_double_moves(void)
 }
 
 /* 004e1763 auto */
-void __cdecl civ_eliminate(iptr civ,i32 kill_units,i32 recreate)
+void __cdecl civ_eliminate(int civ,i32 kill_units,i32 recreate)
 
 {
   uint *treaty_ptr;
@@ -6626,9 +6626,9 @@ void __cdecl civ_eliminate(iptr civ,i32 kill_units,i32 recreate)
                 relinked = true;
               }
               if ((!relinked) &&
-                 (x4 = map_in_bounds((int)units[unit].x,(int)units[unit].y), x4 != 0))
+                 (x4 = map_in_bounds(units[unit].x,units[unit].y), x4 != 0))
               {
-                tile_set_improvements((int)units[unit].x,(int)units[unit].y,1,0,1);
+                tile_set_improvements(units[unit].x,units[unit].y,1,0,1);
               }
               units[unit].prev_in_stack = -1;
               units[unit].next_in_stack = -1;
@@ -6782,7 +6782,7 @@ void __cdecl civ_eliminate(iptr civ,i32 kill_units,i32 recreate)
 }
 
 /* 004ec312 auto */
-void __cdecl civ_apply_eiffel_tower(iptr civ)
+void __cdecl civ_apply_eiffel_tower(int civ)
 
 {
   uint *treaty_ptr;
@@ -6803,7 +6803,7 @@ void __cdecl civ_apply_eiffel_tower(iptr civ)
 }
 
 /* 004f00f0 auto */
-uint __cdecl civ_improvement_upkeep(iptr civ,iptr improvement)
+uint __cdecl civ_improvement_upkeep(int civ,int improvement)
 
 {
   int has;
@@ -6841,7 +6841,7 @@ uint __cdecl civ_improvement_upkeep(iptr civ,iptr improvement)
 }
 
 /* 0055c066 auto */
-void __cdecl civ_set_government(iptr civ,iptr new_gov)
+void __cdecl civ_set_government(int civ,int new_gov)
 
 {
   uint *treaty_ptr;
@@ -6879,7 +6879,7 @@ void __cdecl civ_set_government(iptr civ,iptr new_gov)
 
 /* 0055c277 auto */
 i32 __cdecl
-civ_can_choose_government(iptr civ,iptr government,i32 unused_3,i32 unused_4,i32 unused_5,
+civ_can_choose_government(int civ,int government,i32 unused_3,i32 unused_4,i32 unused_5,
             iptr unused_6,iptr unused_7,i32 unused_8,iptr unused_9,iptr unused_10,iptr unused_11,
             i32 unused_12,iptr unused_13,i32 unused_14,i32 unused_15,
             i32 unused_16,i32 unused_17,i32 unused_18,i32 unused_19,
@@ -6932,7 +6932,7 @@ civ_can_choose_government(iptr civ,iptr government,i32 unused_3,i32 unused_4,i32
 /* 0055c3d3: written by hand in src/game/unwind.cpp */
 
 /* 0055c69d auto */
-void __cdecl civ_change_government(iptr civ,uptr new_gov)
+void __cdecl civ_change_government(int civ,uptr new_gov)
 
 {
   iptr text;
@@ -7226,7 +7226,7 @@ void __cdecl civ_turn_update_diplomacy(uptr civ)
 }
 
 /* 00568861 auto */
-i32 __cdecl civ_city_art_era(iptr civ)
+i32 __cdecl civ_city_art_era(int civ)
 
 {
   int known;
@@ -7243,7 +7243,7 @@ i32 __cdecl civ_city_art_era(iptr civ)
 }
 
 /* 0056e1f0 auto */
-i32 __cdecl civ_color_mid(iptr civ)
+i32 __cdecl civ_color_mid(int civ)
 
 {
   int color_index;
@@ -7258,7 +7258,7 @@ i32 __cdecl civ_color_mid(iptr civ)
 }
 
 /* 0057a27a auto */
-void __cdecl civ_steal_advance(iptr civ,iptr civ2)
+void __cdecl civ_steal_advance(int civ,int civ2)
 
 {
   int known;
@@ -7337,7 +7337,7 @@ void __cdecl civ_steal_advance(iptr civ,iptr civ2)
 }
 
 /* 0057a685 auto */
-iptr __cdecl civ_find_central_city(iptr civ)
+iptr __cdecl civ_find_central_city(int civ)
 
 {
   int dist;
@@ -7369,7 +7369,7 @@ iptr __cdecl civ_find_central_city(iptr civ)
 }
 
 /* 0057a904 auto */
-i32 __cdecl civ_civil_war(iptr civ)
+i32 __cdecl civ_civil_war(int civ)
 
 {
   char civ4;
@@ -7424,7 +7424,7 @@ i32 __cdecl civ_civil_war(iptr civ)
       capital_landmass = -1;
       for (city = 0; (int)city < (int)game.num_cities; city++) {
         if ((cities[city].id != 0) && (cities[city].owner == civ)) {
-          landmass2 = tile_landmass((int)cities[city].x,(int)cities[city].y);
+          landmass2 = tile_landmass(cities[city].x,cities[city].y);
           landmass_sizes[landmass2] += (int)cities[city].size;
           has_palace = city_has_improvement(city,IMP_PALACE);
           if ((has_palace != 0) && ((capital_landmass < 0 || (civs[civ].capital_x == cities[city].x))))
@@ -7507,7 +7507,7 @@ i32 __cdecl civ_civil_war(iptr civ)
           if ((loyal_size < rebel_size * 2) && (rebel_size <= loyal_size)) {
             for (city = 0; (int)city < (int)game.num_cities; city++) {
               if ((cities[city].id != 0) && (cities[city].owner == civ)) {
-                landmass2 = tile_landmass((int)cities[city].x,(int)cities[city].y);
+                landmass2 = tile_landmass(cities[city].x,cities[city].y);
                 if (landmass_sizes[landmass2] == 2) {
                   city_reveal_to_civ(city,civ);
                   city_transfer_for_civil_war(city,civ,civ2);
@@ -7544,7 +7544,7 @@ i32 __cdecl civ_civil_war(iptr civ)
           }
           for (unit = 0; unit < game.num_units; unit++) {
             if ((units[unit].id != 0) && (units[unit].owner == civ)) {
-              city = city_at((int)units[unit].x,(int)units[unit].y);
+              city = city_at((int)units[unit].x,units[unit].y);
               if (((int)city < 0) && (units[unit].home_city != -1)) {
                 city = (uptr)(byte)units[unit].home_city;
               }
@@ -7552,7 +7552,7 @@ i32 __cdecl civ_civil_war(iptr civ)
                 civ4 = cities[city].owner;
                 city2 = (int)civ4;
                 if ((city2 == civ) || (city2 == civ2)) {
-                  tile_set_owner((int)units[unit].x,(int)units[unit].y,city2,1);
+                  tile_set_owner(units[unit].x,units[unit].y,city2,1);
                   saved_unit = unit;
                   for (unit = unit_stack_first(unit); -1 < unit;
                       unit = unit_next_in_stack(unit)) {
@@ -8016,7 +8016,7 @@ void __cdecl cosmic_editor_run(void)
 }
 
 /* 00598a05 auto */
-i32 __cdecl civ_spaceship_part_maxed(iptr civ,iptr improvement)
+i32 __cdecl civ_spaceship_part_maxed(int civ,int improvement)
 
 {
   if (improvement == IMP_SS_STRUCTURAL) {

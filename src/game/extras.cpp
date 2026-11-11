@@ -1158,7 +1158,7 @@ void extras_city_status_draw(void)
         x = gfx_draw_text((const char *)&textbuf.buf, x, ty) + 4;
         text_clear();
         text_append_lparen();
-        text_append_int((int)cities[city].shield_box);
+        text_append_int(cities[city].shield_box);
         text_append("/");
         text_append_int(cosmic.shield_box_rows * cost);
         text_append_rparen();

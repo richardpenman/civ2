@@ -19,7 +19,7 @@ void __cdecl spaceship_wnd_net_idle(void)
 }
 
 /* 004d01ae auto */
-void __cdecl spaceship_wnd_load_parts(iptr civ)
+void __cdecl spaceship_wnd_load_parts(int civ)
 
 {
   int i;
@@ -32,7 +32,7 @@ void __cdecl spaceship_wnd_load_parts(iptr civ)
 }
 
 /* 004d0208 auto */
-i32 __cdecl spaceship_wnd_run(iptr civ_arg)
+i32 __cdecl spaceship_wnd_run(int civ_arg)
 
 {
   i32 result;
@@ -78,7 +78,7 @@ i32 __cdecl spaceship_wnd_run(iptr civ_arg)
 }
 
 /* 004d0339 auto */
-i32 __cdecl spaceship_wnd_show_for_civ(iptr civ)
+i32 __cdecl spaceship_wnd_show_for_civ(int civ)
 
 {
   i32 result;
@@ -117,7 +117,7 @@ i32 __cdecl spaceship_wnd_show_for_civ(iptr civ)
 }
 
 /* 004d043f auto */
-void __cdecl spaceship_wnd_draw_title(iptr civ)
+void __cdecl spaceship_wnd_draw_title(int civ)
 
 {
   iptr text;
@@ -1122,7 +1122,7 @@ void __cdecl spaceship_wnd_on_key(int key)
       spaceship_launch_sprite_xs_block.spaceship_wnd->draw_close_btn(1,0);
       if (self->launched == 0) {
         if (self->anim_timer != 0) {
-          game_timer_destroy((i32)self->anim_timer);
+          game_timer_destroy(self->anim_timer);
           self->anim_timer = 0;
         }
         do {
@@ -1317,7 +1317,7 @@ void __cdecl spaceship_wnd_on_mousemove(i32 x,i32 y)
 }
 
 /* 00596b00 auto */
-iptr __cdecl spaceship_part_limit(iptr civ,int part)
+iptr __cdecl spaceship_part_limit(int civ,int part)
 
 {
   int structurals;
@@ -1342,7 +1342,7 @@ iptr __cdecl spaceship_part_limit(iptr civ,int part)
 }
 
 /* 00596c08 auto */
-i32 __cdecl spaceship_part_count(iptr civ,int part)
+i32 __cdecl spaceship_part_count(int civ,int part)
 
 {
   short built;
@@ -1350,12 +1350,12 @@ i32 __cdecl spaceship_part_count(iptr civ,int part)
   
   built = civs[civ].spaceship_parts[part];
   result = spaceship_part_limit(civ,part);
-  result = int_clamp((int)built,0,result);
+  result = int_clamp(built,0,result);
   return result;
 }
 
 /* 00596c61 auto */
-int __cdecl spaceship_group_limit(iptr civ,int group)
+int __cdecl spaceship_group_limit(int civ,int group)
 
 {
   int total;
@@ -1398,7 +1398,7 @@ int __cdecl spaceship_group_max(int group)
 }
 
 /* 00596d3c auto */
-int __cdecl spaceship_group_count(iptr civ,iptr group)
+int __cdecl spaceship_group_count(int civ,iptr group)
 
 {
   int count;
@@ -1417,7 +1417,7 @@ int __cdecl spaceship_group_count(iptr civ,iptr group)
 }
 
 /* 00596e06 auto */
-int __cdecl spaceship_group_count_clamped(iptr civ,int group)
+int __cdecl spaceship_group_count_clamped(int civ,int group)
 
 {
   int total;
@@ -1464,7 +1464,7 @@ int __cdecl spaceship_component_thrust(int count)
 }
 
 /* 00596eec auto */
-void __cdecl spaceship_calc_stats(iptr civ,int apply_support)
+void __cdecl spaceship_calc_stats(int civ,int apply_support)
 
 {
   byte flags;
@@ -1582,7 +1582,7 @@ void __cdecl spaceship_calc_stats(iptr civ,int apply_support)
 }
 
 /* 005973fd auto */
-void __cdecl spaceship_launch(iptr civ)
+void __cdecl spaceship_launch(int civ)
 
 {
   uint *treaty;
@@ -1643,7 +1643,7 @@ void __cdecl spaceship_launch(iptr civ)
 }
 
 /* 0059772c auto */
-void __cdecl spaceship_status_dialog(iptr civ,int allow_launch)
+void __cdecl spaceship_status_dialog(int civ,int allow_launch)
 
 {
   short part_count;
@@ -1681,7 +1681,7 @@ void __cdecl spaceship_status_dialog(iptr civ,int allow_launch)
     text_append_string_id(label_table.string_ids[spaceship_part_table_block.spaceship_parts[part].label_id]
                       );
     text_append_colon();
-    text_append_int((int)civs[civ].spaceship_parts[part]);
+    text_append_int(civs[civ].spaceship_parts[part]);
     if ((over_limit != 0) && (part == 0)) {
       text_append((const char *)&str_empty_176);
     }
@@ -1692,7 +1692,7 @@ void __cdecl spaceship_status_dialog(iptr civ,int allow_launch)
   text_clear();
   text_append_label(0x22);
   text_append_colon();
-  text_append_int((int)civs[civ].spaceship_parts[3]);
+  text_append_int(civs[civ].spaceship_parts[3]);
   text_append((const char *)&str_0_000_7);
   dlg.add_option((const char *)&textbuf.buf,0,0);
   text_clear();
@@ -1764,7 +1764,7 @@ void __cdecl spaceship_status_dialog(iptr civ,int allow_launch)
       text_append((const char *)&str_empty_182);
       text_append_label(0xda);
       text_append_space();
-      text_append_int((int)civs[civ].spaceship_arrival_year);
+      text_append_int(civs[civ].spaceship_arrival_year);
     }
     text_append((const char *)&str_empty_183);
     dlg.add_option((const char *)&textbuf.buf,0,0);
@@ -1781,7 +1781,7 @@ void __cdecl spaceship_status_dialog(iptr civ,int allow_launch)
 }
 
 /* 00597d6f auto */
-iptr __cdecl spaceship_choose_part_group(iptr civ,iptr group)
+iptr __cdecl spaceship_choose_part_group(int civ,iptr group)
 
 {
   short earliest_arrival;
@@ -1850,7 +1850,7 @@ iptr __cdecl spaceship_choose_part_group(iptr civ,iptr group)
            (count = civ_spaceship_launched(civ2), count != 0)) &&
           (civs[civ2].spaceship_arrival_year <= spaceship_stats.projected_arrival_year)) &&
          ((count = spaceship_group_full(civ,1), count == 0 &&
-          (count = civ_has_advance(civ,(int)improvements[IMP_SS_COMPONENT].preq), count != 0)))) {
+          (count = civ_has_advance(civ,improvements[IMP_SS_COMPONENT].preq), count != 0)))) {
         earliest_arrival = civs[civ].spaceship_parts[1];
         count = spaceship_part_limit(civ,1);
         if (earliest_arrival <= count) {
@@ -1872,7 +1872,7 @@ iptr __cdecl spaceship_choose_part_group(iptr civ,iptr group)
 }
 
 /* 00598197 auto */
-int __cdecl spaceship_add_part(iptr civ,iptr group)
+int __cdecl spaceship_add_part(int civ,iptr group)
 
 {
   short *part_ptr;
@@ -2093,7 +2093,7 @@ i32 __cdecl spaceship_race_active(void)
 }
 
 /* 005998b0 auto */
-uint __cdecl spaceship_group_full(iptr civ,iptr group)
+uint __cdecl spaceship_group_full(int civ,iptr group)
 
 {
   int max_count;
@@ -2105,7 +2105,7 @@ uint __cdecl spaceship_group_full(iptr civ,iptr group)
 }
 
 /* 00599910 auto */
-i32 __cdecl spaceship_group_can_build(iptr civ,iptr group)
+i32 __cdecl spaceship_group_can_build(int civ,iptr group)
 
 {
   int result;
@@ -2113,14 +2113,14 @@ i32 __cdecl spaceship_group_can_build(iptr civ,iptr group)
   result = spaceship_group_at_limit(civ,group);
   if ((((result == 0) || (result = spaceship_group_count(civ,group), result == 0)) &&
       (result = spaceship_group_full(civ,group), result == 0)) &&
-     (result = civ_has_advance(civ,(int)improvements[group + 0x23].preq), result != 0)) {
+     (result = civ_has_advance(civ,improvements[group + 0x23].preq), result != 0)) {
     return 1;
   }
   return 0;
 }
 
 /* 005999c0 auto */
-uint __cdecl spaceship_group_at_limit(iptr civ,iptr group)
+uint __cdecl spaceship_group_at_limit(int civ,iptr group)
 
 {
   int count;
