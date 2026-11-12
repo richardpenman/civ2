@@ -135,7 +135,7 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
 * **Recording** (`tests/unit_record.c`, `make unit-record`).  The recording build
   (`build_native.py --target linux32rec`) compiles the game and the platform layer with
   `-finstrument-functions`: every function calls the recorder on entry and exit.  While a replay runs
-  (`tools/unit_record.sh`: the scenarios in `UNIT_SCRIPTS`, 35 of the 41, each run checked against
+  (`tools/unit_record.sh`: the scenarios in `UNIT_SCRIPTS`, 35 of the 44, each run checked against
   the original's recording as by the suite), the recorder takes some calls of each game function (the 1st, 2nd, 3rd, 4th, 6th,
   9th ...; at most 6 per scenario and 16 in all): the argument words (by the signatures
   `tools/unit_sigs.py` gets from the debugging information), the state at entry (the game's data,

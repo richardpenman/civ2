@@ -43,8 +43,10 @@ recordings:
 | `build/civ2-linux32` | gcc -m32 |
 | `build/OpenCiv2` (64-bit, portable to macOS and Windows) | wasm32 → wasm2c → cc |
 
-All 41 scenarios of `harness/scripts` give pixel-identical screenshots,
-the identical `rand()` trace and the same sounds and videos asked for.  The last few pixels came from Wine details
+All 44 scenarios of `harness/scripts` give pixel-identical screenshots,
+the identical `rand()` trace and the same sounds and videos asked for
+(and on the Windows build, `OpenCiv2.exe` under Wine: `make native-suite
+EXE=OpenCiv2.exe`; macOS is not run here).  The last few pixels came from Wine details
 now matched: a combo box's text clipped to its field (a glyph's overhang
 shows), a multiline edit's text clipped to its format rectangle and drawn
 in Uniscribe items each on its own background box, LineTo's Bresenham
@@ -110,7 +112,7 @@ message by message and clock event by clock event.
   with AddressSanitizer over every replay (build_native.py --target
   linux32asan; learned extents in re/data_extents.tsv), by checking that
   every initial value and every data pointer matches the original image, and
-  by the replays: every replay runs clean under AddressSanitizer (all 41,
+  by the replays: every replay runs clean under AddressSanitizer (all 44,
   each to the original's last rand() call).  Code no
   replay runs may still reach from one variable into the next, so the data
   keeps the original's layout exactly: one section, in address order, each
@@ -546,7 +548,10 @@ message by message and clock event by clock event.
     load; a player leaving and joining the game in progress; three players
     with either one hosting (the host relaying: the original's and our
     record tags compared on a capture, the same rules); the host rejecting
-    a player in its lobby; the host leaving, the client becoming the host
+    a player in its lobby; players coming and going in the host's lobby
+    (`--lobby`: Reject Player with no one listed, a player cancelling its
+    wait and joining again, then rejected; ours hosting ours and two
+    originals, the original hosting two of ours); the host leaving, the client becoming the host
     and playing on (migration); simultaneous moves, the turn timer, the
     multiplayer features, a timer change and option votes, the advisors
     during a network game.
@@ -578,7 +583,22 @@ message by message and clock event by clock event.
   presenting the screen takes at most a third of the time.  Network code
   run by the tests (`tools/xdnet/netcov.py`, the linux32cov build):
   228 of the 311 network functions (73%; 60% of their lines;
-  the scenarios before this round: 168, 54%).  The parley's unit, city
+  the scenarios before this round: 168, 54%), counted by name prefix in
+  October.  Since then many became members of NetSession, ParleyWindow
+  and LobbyList: by prefix netcov now counts 246, with the network
+  classes' members (`netcov.py --classes`) 377.  The runs that pass today
+  (the three `--lobby` runs, relaying, migration, a rejoin) run 190 of
+  the 377 (50%; 33% of their lines), all of LobbyList (host_wait_players,
+  add_player_entry, find_waiting_entry, remove_entry ...) among them.  The
+  chat and parley runs fail today: their clicks, set when ours had no
+  interface additions, miss our chat and parley windows (centred in a
+  client area 20 pixels taller than the original's under the test, so 10
+  pixels higher), and a game the test kills writes no gcov data.  Found by
+  `--lobby`: the original, its join cancelled in the host's lobby, lists
+  no games when it tries again (its game list never broadcasts
+  NM_GET_SERVERS: no XD_SendBroadcastData at all); ours lists them and
+  joins.  Not traced; timerdll's one-notification-per-timer flag left set
+  by a lost message would do it, which depends on timing.  The parley's unit, city
   and advance lists ran in the 50-turn game against the original, outside
   the coverage build.  Never run: the modem, serial, IPX and DirectPlay-lobby
   paths (XD_InitializeModem/Serial/SocketsIPXSPX, XD_ShutdownModem/TEN,
@@ -608,12 +628,24 @@ message by message and clock event by clock event.
   and the "EMAIL the Game" popup (`@EMAILDONE1`/`2`, play_loop_human_turn_start)
   before the turn loop ends.  The game never sends mail itself.  Kept as
   translated, run by no replay.
-* Coverage of the comparison: the 41 scripts execute 2,964 of the 4,122
+* Coverage of the comparison: the 44 scripts execute 2,988 of the 4,159
   compiled game functions (72%, 60% of lines; `tools/coverage_report.py`
-  with the linux32cov build, per function in re/coverage.tsv; the 36 scripts
+  with the linux32cov build, per function in re/coverage.tsv; the 41 scripts
+  before pediascroll, cityunits and premade: 2,964 of 4,122, 72%, 60%; the 36
   before rome, rarecalls, spritepick, uimisc and editrename: 2,872, 70%, 57% of
   lines; the count includes OpenCiv2's additions, off in replays and tested by
-  `make test-extras`).  The new scripts: the Rome scenario (ROME.SCN, as the
+  `make test-extras`).  pediascroll: Civilopedia descriptions longer than
+  their box (Republic, Democracy) scrolled by the scroll bar's arrows and
+  track, keys on the page (they do nothing), a short one after a scrolled
+  one; it found our multiline edit wrapping and paging unlike Wine's (Wine
+  goes back from a guess to a break before it, so "cannot be set / higher";
+  a page is a whole page), now as Wine's EDIT, with ScriptBreak's break
+  rules.  The thumb is not dragged: Wine's scroll bar tracks a held button
+  in a loop of its own, which the replay cannot drive; and a file dialog's
+  list is not scrolled: the replays answer the file dialogs (`file`), they
+  are not shown.  cityunits: the city window's menu for a unit present
+  (Sleep, Fortify, Disband).  premade: Start on Premade World (GREECE.MP
+  through map_load_dialog).  Earlier scripts: the Rome scenario (ROME.SCN, as the
   Independent Greeks, barbarians taking Delphi: the casualties popups at the
   start of the next turns); paradrops, global warming, the trade and cheat
   dialogs, the wonder movies list, the Apollo reveal, the password prompt and
