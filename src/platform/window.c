@@ -569,6 +569,7 @@ Bitmap *wnd_surface(Window *w)
             bmp_destroy(w->surf);
         }
         w->surf = n;
+        plat_draw_gen++;
     }
     w->surf_client = w->client;
     return w->surf;

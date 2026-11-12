@@ -20,12 +20,39 @@ void replay_init(void);
 void resources_init(void);
 void sound_poll(void);
 
+extern int plat_color_lut_on;
+extern unsigned char plat_color_lut[256];
+
 static int window_open;
 static uint64_t last_present, present_cost;
+static uint32_t shown_sig;
+
+/* What the composed screen is made of: what was drawn (plat_draw_gen), and
+   where each top-level window shows.  The same as at the last frame shown:
+   nothing to show anew. */
+static uint32_t frame_sig(void)
+{
+    uint32_t h = 2166136261u;
+    Window *w;
+    int i;
+#define MIX(v) (h = (h ^ (uint32_t)(v)) * 16777619u)
+    MIX(plat_draw_gen); MIX(screen_w); MIX(screen_h); MIX(plat_color_lut_on);
+    if (plat_color_lut_on)
+        for (i = 0; i < 256; i++)
+            MIX(plat_color_lut[i]);
+    for (w = desktop->children; w; w = w->next) {
+        MIX((uintptr_t)w->hwnd); MIX(w->style); MIX(w->exstyle); MIX(w->minimized); MIX(w->maximized); MIX(w->managed);
+        MIX(w->rect.left); MIX(w->rect.top); MIX(w->rect.right); MIX(w->rect.bottom);
+        MIX(w->host_clipped); MIX(w->host_dx); MIX(w->host_dy); MIX((uintptr_t)w->surf);
+    }
+#undef MIX
+    return h;
+}
 
 void plat_present(void)
 {
     uint64_t now;
+    uint32_t sig = 0;
     if (!window_open)
         return;
     now = host_time_us();
@@ -34,9 +61,19 @@ void plat_present(void)
        messages between the tiles it draws, would spend its time here */
     if (now - last_present < 15000 || now - last_present < 2 * present_cost)
         return;
+    /* Normal play: a screen unchanged is not shown again (an idle game
+       would spend most of its time here), except twice a second (the host
+       window uncovered).  Replays as before. */
+    if (!plat_replay && !plat_overlay && last_present) {
+        sig = frame_sig();
+        if (sig == shown_sig && now - last_present < 500000)
+            return;
+    }
     last_present = now;
     if (!plat_overlay)
         plat_compose();
+    if (!plat_replay && !plat_overlay)
+        shown_sig = frame_sig();
     host_present(screen->bits, screen->stride);
     present_cost = host_time_us() - now;
 }
@@ -104,7 +141,7 @@ int msg_pump_events(int wait)
         return 0;
     }
     menu_native_sync();
-    while (wait ? host_wait_event(&e, 10) : host_poll_event(&e)) {
+    while (wait > 0 ? host_wait_event(&e, wait) : host_poll_event(&e)) {
         wait = 0;
         n++;
         switch (e.type) {

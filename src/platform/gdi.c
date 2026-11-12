@@ -267,10 +267,13 @@ void dc_update_window(DC *dc)
     rgn_offset(&dc->clip, -top->rect.left, -top->rect.top);
 }
 
+unsigned plat_draw_gen;
+
 Bitmap *dc_target(DC *dc)
 {
     if (dc->is_memory)
         return dc->bitmap;
+    plat_draw_gen++;
     if (((WindowDC *)dc)->overlay)
         return screen;
     dc_update_window(dc);
@@ -729,7 +732,8 @@ WINBOOL WINAPI GetBitmapDimensionEx(HBITMAP h, LPSIZE s)
     return TRUE;
 }
 
-WINBOOL WINAPI GdiFlush(void) { API_TRACE(); return TRUE; }
+/* (Also a sign for the idle detection: win_dispatch_all_messages ends with it.) */
+WINBOOL WINAPI GdiFlush(void) { API_TRACE(); plat_gdi_flushed(); return TRUE; }
 
 /* ---- palettes ---- */
 

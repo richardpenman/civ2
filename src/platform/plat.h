@@ -42,6 +42,7 @@ int obj_is_stock(Handle h);
 
 DWORD plat_ticks(void);                 /* timeGetTime / GetTickCount */
 DWORD plat_now(void);                   /* the platform's own clock reads */
+void plat_gdi_flushed(void);             /* GdiFlush: see the idle detection (message.c) */
 void plat_idle(void);                   /* nothing to do: let time pass (replay) or poll events */
 void plat_suspicious(const char *fmt, ...);  /* impossible request: logged, fatal with CIV2_STRICT */
 int plat_sane_extent(int v);
@@ -129,6 +130,7 @@ typedef struct DC {
 } DC;
 
 Bitmap *dc_target(DC *dc);              /* surface drawn on */
+extern unsigned plat_draw_gen;          /* counts what may have drawn on a window or the desktop */
 void dc_update_window(DC *dc);          /* window moved/clipping changed */
 COLORREF dc_resolve_color(DC *dc, COLORREF c);
 void dc_fill_rect(DC *dc, const RECT *r, COLORREF c);  /* logical coords */
@@ -218,7 +220,7 @@ extern HWND focus_wnd, capture_wnd, active_wnd;
 /* ---- messages and input ---- */
 
 void msg_post(HWND h, UINT msg, WPARAM wp, LPARAM lp);
-int msg_pump_events(int wait);         /* host events -> input messages */
+int msg_pump_events(int wait_ms);      /* host events -> input messages (waiting up to WAIT_MS for one) */
 void xd_poll(void);                    /* network play's events and callbacks (xdaemon.c) */
 void input_key(int vk, int down);
 void input_mouse_move(int x, int y);

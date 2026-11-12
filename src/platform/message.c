@@ -310,13 +310,61 @@ void plat_modal_tick(void)
     busy = 0;
 }
 
+/* Normal play: is the game idle?  Its idle loops (a dialog or the map
+ * waiting for input: win_dispatch_one_message) look at every message (no
+ * window, no range) again microseconds after finding none, and draw nothing
+ * in between.  The game at work takes longer between such peeks, draws, or
+ * peeks for its own messages only (building the world, the delay loops of
+ * animations).  One exception: in a network game the map is drawn with a
+ * look at every message after each square (net.process_messages ->
+ * ui_pump_messages); that look is win_dispatch_all_messages', which ends with
+ * GdiFlush, and its loop has no other.  So a quick empty peek counts as idle
+ * where one of the two looks before it was not such a pump (the network
+ * game's idle loop alternates the two).  After IDLE_SPINS of them in a row,
+ * plat_idle waits for input up to IDLE_WAIT_MS (or the next timer) instead
+ * of spinning.  Not in replays: their clock is their own (plat_idle). */
+#define IDLE_SPIN_US 100
+#define IDLE_SPINS 20
+#define IDLE_WAIT_MS 2
+static uint64_t peek_left_us;   /* when the last empty peek at every message returned */
+static unsigned peek_left_gen;  /* plat_draw_gen then */
+static int peek_left_one;       /* and no GdiFlush since (not win_dispatch_all_messages') */
+static int peek_one_hist;       /* that, for the last two such peeks (bits) */
+static int idle_spins;
+static int idle_peek;           /* this peek is at every message */
+
+static void idle_peek_enter(HWND h, UINT lo, UINT hi)
+{
+    idle_peek = !plat_replay && !h && !lo && !hi;
+    if (idle_peek) {
+        peek_one_hist = ((peek_one_hist << 1) | peek_left_one) & 3;
+        if (host_time_us() - peek_left_us < IDLE_SPIN_US && plat_draw_gen == peek_left_gen && peek_one_hist) {
+            if (idle_spins < IDLE_SPINS)
+                idle_spins++;
+        } else
+            idle_spins = 0;
+    }
+}
+
+void plat_gdi_flushed(void)
+{
+    peek_left_one = 0;
+}
+
+static WINBOOL peek_got(const MSG *m, UINT remove, UINT lo, UINT hi)
+{
+    idle_spins = 0;
+    return log_msg(m, remove, lo, hi);
+}
+
 static WINBOOL peek_message(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
 {
+    idle_peek_enter(h, lo, hi);
     msg_pump_events(0);
     xd_poll();      /* (the network library's messages, as its windows got them) */
     if (take(msg, h, lo, hi, remove) || paint_message(msg, h, lo, hi)) {
         GetCursorPos(&msg->pt);
-        return log_msg(msg, remove, lo, hi);
+        return peek_got(msg, remove, lo, hi);
     }
     /* Like Wine under a busy game, X events (window configuration, pointer
        crossings) are only processed once nothing else is pending. */
@@ -324,14 +372,19 @@ static WINBOOL peek_message(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
     pointer_check();
     if (take(msg, h, lo, hi, remove) || paint_message(msg, h, lo, hi)) {
         GetCursorPos(&msg->pt);
-        return log_msg(msg, remove, lo, hi);
+        return peek_got(msg, remove, lo, hi);
     }
     /* Idle: time passes, timers fire, the script may act. */
     plat_idle();
     plat_present();
     if (take(msg, h, lo, hi, remove) || paint_message(msg, h, lo, hi)) {
         GetCursorPos(&msg->pt);
-        return log_msg(msg, remove, lo, hi);
+        return peek_got(msg, remove, lo, hi);
+    }
+    if (idle_peek) {
+        peek_left_us = host_time_us();
+        peek_left_gen = plat_draw_gen;
+        peek_left_one = 1;
     }
     return FALSE;
 }
@@ -354,7 +407,7 @@ WINBOOL WINAPI GetMessageA(LPMSG msg, HWND h, UINT lo, UINT hi)
         if (!plat_replay) {
             int was = may_deliver;
             may_deliver = deliverable(h, lo, hi);
-            msg_pump_events(1);     /* nothing to do: wait for input (at most 10 ms, for timers) */
+            msg_pump_events(10);    /* nothing to do: wait for input (at most 10 ms, for timers) */
             may_deliver = was;
         }
     return msg->message != WM_QUIT;
@@ -929,6 +982,23 @@ void WINAPI Sleep(DWORD ms)
     timers_fire();
 }
 
+/* How long an idle game may wait for input: IDLE_WAIT_MS, less if a timer
+   is due sooner (the clock is real time here). */
+static int idle_wait_ms(void)
+{
+    unsigned long long left = IDLE_WAIT_MS * 1000;
+    int i;
+    sync_real_clock();
+    for (i = 0; i < MAX_TIMERS; i++)
+        if (timers[i].used) {
+            if (timers[i].due_us <= vclock_us)
+                return 0;
+            if (timers[i].due_us - vclock_us < left)
+                left = timers[i].due_us - vclock_us;
+        }
+    return (int)(left / 1000);
+}
+
 void plat_idle(void)
 {
     if (virtual_clock()) {
@@ -942,11 +1012,15 @@ void plat_idle(void)
          * peek.  A short sleep now and then keeps its idle loop from taking
          * a whole core. */
         static int empty;
-        if (++empty >= 100) {
-            empty = 0;
-            host_delay_ms(1);
+        if (idle_peek && idle_spins >= IDLE_SPINS)
+            msg_pump_events(idle_wait_ms());    /* idle: wait for input */
+        else {
+            if (++empty >= 100) {
+                empty = 0;
+                host_delay_ms(1);
+            }
+            msg_pump_events(0);
         }
-        msg_pump_events(0);
         sync_real_clock();
         timers_fire();
         if (plat_replay)
