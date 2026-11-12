@@ -631,6 +631,73 @@ static int encode_music(const struct audio *a, const char *game_dir)
     return ok;
 }
 
+/* --CueSheetFuzzyMatch: a cue sheet's INDEX 01 marks can be off by a
+ * couple of seconds (e.g. late by the 2 s gap between tracks, with no
+ * INDEX 00), so that a track's file ends with the next one's opening.  Each
+ * boundary between two audio tracks that follow each other in one file is
+ * moved to the quietest sector within FUZZY_WINDOW of it (of equally quiet
+ * ones, the nearest), if that is silent (FUZZY_SILENT) and the sector
+ * before the mark is not already: a cue sheet that is right is read as it
+ * is.  Each boundary's outcome is told on stderr. */
+#define FUZZY_WINDOW 225        /* sectors: 3 s */
+#define FUZZY_SILENT 1074LL     /* mean square of a sector's samples: -60 dBFS (32.77^2) */
+
+/* Mean square of a sector's 1176 samples (16-bit little-endian). */
+static long long sector_power(const unsigned char *s)
+{
+    long long sum = 0;
+    int i;
+    for (i = 0; i < RAW / 2; i++) {
+        long v = (short)(s[2 * i] | s[2 * i + 1] << 8);
+        sum += (long long)v * v;
+    }
+    return sum / (RAW / 2);
+}
+
+static void fuzzy_boundaries(struct audio *a)
+{
+    int i;
+    for (i = 0; i + 1 < a->n; i++) {
+        long long b = a->t[i].end, lo = b - FUZZY_WINDOW, hi = b + FUZZY_WINDOW, at, best = -1, best_p = 0;
+        unsigned char *buf;
+        if (a->t[i + 1].ctx != a->t[i].ctx || a->t[i + 1].start != b)
+            continue;
+        if (lo < a->t[i].start + 1)
+            lo = a->t[i].start + 1;             /* (each track keeps a sector) */
+        if (hi > a->t[i + 1].end - 1)
+            hi = a->t[i + 1].end - 1;
+        if (hi <= lo || !(buf = malloc((size_t)(hi - lo) * RAW)))
+            continue;
+        if (!a->read(a->t[i].ctx, lo, (int)(hi - lo), buf)) {
+            free(buf);
+            continue;
+        }
+        if (b - 1 >= lo && sector_power(buf + (b - 1 - lo) * RAW) < FUZZY_SILENT) {
+            fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary kept (silent already)\n",
+                    a->t[i].number, a->t[i + 1].number);
+            free(buf);
+            continue;
+        }
+        for (at = lo; at < hi; at++) {
+            long long p = sector_power(buf + (at - lo) * RAW);
+            long long dist = at < b ? b - at : at - b, best_dist = best < b ? b - best : best - b;
+            if (best < 0 || p < best_p || (p == best_p && dist < best_dist)) {
+                best = at;
+                best_p = p;
+            }
+        }
+        free(buf);
+        if (best < 0 || best_p >= FUZZY_SILENT) {
+            fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary kept (no silence near it)\n",
+                    a->t[i].number, a->t[i + 1].number);
+            continue;
+        }
+        fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary moved %+lld sectors (%+.2f s)\n",
+                a->t[i].number, a->t[i + 1].number, best - b, (best - b) / 75.0);
+        a->t[i].end = a->t[i + 1].start = best;
+    }
+}
+
 int image_encode_music(const char *cue, const char *game_dir)
 {
     struct disc *d = disc_open(cue);
@@ -651,6 +718,8 @@ int image_encode_music(const char *cue, const char *game_dir)
         a.t[a.n].ctx = d->f[t->file];
         a.n++;
     }
+    if (setup_has_flag("--CueSheetFuzzyMatch"))
+        fuzzy_boundaries(&a);
     ok = encode_music(&a, game_dir);
     if (ok == ENC_UNREAD) {
         char text[SETUP_PATH + 64];
