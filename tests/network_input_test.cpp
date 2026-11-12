@@ -234,6 +234,31 @@ static void message_bodies() {
     assert(!ok(args(NM_REALTIME_STACKER, {7, 0, 2048})));
     assert(ok(args(NM_BRIBED_UNIT, {2047, 7, 300})) && !ok(args(NM_BRIBED_UNIT, {2048, 7})));
     assert(ok(args(NM_DEATH_STACK, {0, 2047})) && !ok(args(NM_DEATH_STACK, {0, 2048})));
+    // civs[], advances[], units[] and the direction tables from the handlers' arguments.
+    assert(ok(args(NM_SET_CIV, {7, 99, 7, 1})) && ok(args(NM_SET_CIV, {0, 0, -2, 0})));
+    assert(!ok(args(NM_SET_CIV, {8, 0, 0})) && !ok(args(NM_SET_CIV, {0, 100, 0})) &&
+           !ok(args(NM_SET_CIV, {0, -1, 0})) && !ok(args(NM_SET_CIV, {0, 0, 8})));
+    assert(ok(args(NM_ASK_ALLY, {7, 0})) && !ok(args(NM_ASK_ALLY, {8, 0})) && !ok(args(NM_ASK_ALLY, {0, -1})));
+    assert(ok(args(NM_CITYWIN_CHECK_UNIT, {-1, 5, 5})) && ok(args(NM_CITYWIN_CHECK_UNIT, {2047})) &&
+           !ok(args(NM_CITYWIN_CHECK_UNIT, {2048})));
+    assert(ok(args(NM_FEAT_LOC_SET, {-5, 9999, 1, 7, 0})) && !ok(args(NM_FEAT_LOC_SET, {0, 0, 1, 8, 0})) &&
+           !ok(args(NM_FEAT_LOC_SET, {0, 0, 1, -1, 0})));
+    std::vector<unsigned char> slide = args(NM_SLIDE_PIECE, {2047, 3, 4, 7, -1}, 0x20);
+    slide[44 + 6] = 61;
+    slide[44 + 7] = 7;
+    assert(ok(slide));
+    put(slide, 28, -1);
+    assert(ok(slide));
+    for (auto bad : {std::pair<int, int>{16, 2048}, {16, -1}, {28, 8}, {28, -2}}) {
+        std::vector<unsigned char> q = slide;
+        put(q, bad.first, bad.second);
+        assert(!ok(q));
+    }
+    slide[44 + 6] = 62;
+    assert(!ok(slide));
+    slide[44 + 6] = 61;
+    slide[44 + 7] = 8;
+    assert(!ok(slide));
     assert(ok(args(NM_EVENTSLOADED, {1, 110})) && !ok(args(NM_EVENTSLOADED, {1, 111})) &&
            !ok(args(NM_EVENTSLOADED, {2, 0})));
     std::vector<unsigned char> p = message(20, NM_START_WHOSE_TURN);
@@ -393,6 +418,13 @@ static void message_bodies() {
     assert(!ok(p));
     put(p, 44, -1);
     assert(ok(p));
+    put(p, 44, 2);                      // known_set's civ (record 7: x, y, bits, civ, merge)
+    put(p, 48 + 20 + 16, 7);
+    assert(ok(p));
+    put(p, 48 + 20 + 16, 8);
+    assert(!ok(p));
+    put(p, 48 + 20 + 16, -1);
+    assert(!ok(p));
     // State diffs (BF-277): records inside the message.
     p = args(NM_ALPHA_DIFFERENCE_ENGINE, {2}, 12 + 8 + 12 + 3);
     put(p, 44 + 8, 8);

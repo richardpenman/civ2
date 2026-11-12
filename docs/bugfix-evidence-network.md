@@ -58,6 +58,18 @@ reads; a message the original sends is never refused.
 | BF-137, 167, 169, 196, 203, 205..211, 227, 228, 233, 240, 263 and `NM_QUIT_REQUEST` | `net_message_body_valid` | Civ selectors 0..7 (the conqueror of `NM_KILL_CIV` -1..7), map-lock rows 0..7, units 0..2047 (-1 where the callee ignores it), cities 0..255 (`NM_DELETE_CITY` keeps the negatives `city_delete` ignores), wonders 0..27, unit types 0..61, city and unit counts at most 256 and 2048, events loaded 0/1 and at most 110. |
 | BF-222, 247, 248, 171, 249 | strings and the player record | A NUL inside each string the handlers copy (server path, answer, player node, player record and its titles); the player's civ, leader, gender and city style inside their tables. The host's scenario folder and file, after our directory, must fit the 260-byte paths `net_join_load_scenario` builds, else the join fails as for a missing folder. |
 
+Later, from a review of every handler that indexes a table with a message's argument (the
+handlers named in the review, `recv_unit_bribed`, `recv_war_pretext`, `NM_NEW_CIV` and
+`NM_SET_ATTITUDE`, were already covered above):
+
+| Boundary | Correction |
+| --- | --- |
+| `NM_SET_CIV` (`civ_give_advance`) | The civ 0..7, the advance 0..99 (`advances[]`, `advance_source[]`, `advance_known_by[]`; the sender's are), the civ it came from below 8 (negative: none). |
+| `NM_ASK_ALLY` (`diplo_ally_demand_help`) | Both civs 0..7 (`civs[].treaties[]`). |
+| `NM_SLIDE_PIECE` (`net_stacked_draw_run_next`, `map_animate_unit_move`) | The unit 0..2047 (`unit_stack_validate`), the direction -1..7 (the direction tables; -1 is the paradrop's with no neighbour, which the original sends), and in the unit record that follows the type 0..61 and the owner 0..7. |
+| `NM_CITYWIN_CHECK_UNIT` (`CityWindow::on_unit_change`) | A unit below 2048 (negative: none, the only value sent). |
+| `NM_FEAT_LOC_SET`, `NM_MAP_PACKETS` record 7 (`known_set`) | The civ 0..7 on arrival; the square on the map where it is applied (`known_at` does not bound it, unlike `tile_at`): one off the map is ignored. |
+
 Elsewhere: host migration stops (fails, as when no one came) where the original stopped at its
 assertion for a player missing from the old list, and writes `net_civ_slots` only for a civ 0..7
 (BF-162); `diffeng_buf_append` copies nothing past its buffer (BF-083); `net_send_message` zeroes
@@ -71,7 +83,7 @@ record that does not decode are logged (`SecureReceiveFunc: refused ...`, `recv_
 debug lines in our log): the two-game tests (tools/xdnet/nettest.py, ours with the original both
 ways, chat, parley, save and load, 20 turns) log none.
 
-The focused regression above now also covers every listed minimum (one byte short refused), the
+The focused regression above now also covers the handlers' selectors of the later table, every listed minimum (one byte short refused), the
 selectors at and past their limits, popup payloads and kinds, parley items, map batches, diff
 records, run-length streams (an encoded 40000-byte run and 33000-byte literal round trip, the
 0x7fff run, cut and overlong codes) and the record-in-section check. `make test` runs the three
@@ -92,4 +104,5 @@ source probes (tests/*_test.cpp) after the recorded cases.
   the city of a joining unit's home (BF-233's cross-check).
 - `net_slots[net_civ_slots[civ]]` with a civ whose player left (-1) is used in about 170 other
   places, mostly as a send target.
-- Map coordinates in map and unit messages are not checked here; the tile accessors bound them.
+- Map coordinates in map and unit messages are not checked here; the tile accessors bound them
+  (`known_set`'s, which does not, is checked where it is applied).

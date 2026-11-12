@@ -340,6 +340,12 @@ static int net_message_body_valid(const void *data,uint size,int type)
       if ((uint)record[0] >= 8 || (left - pos) / 4 < (uint)net_batch.record_sizes[record[0]]) {
         return 0;
       }
+      if (record[0] == 7) {   /* known_set: x, y, bits, civ (its map of what the civ knows) */
+        memcpy(record,body + pos + 16,4);
+        if ((uint)record[0] >= 8) {
+          return 0;
+        }
+      }
       pos += net_batch.record_sizes[record[0]] * 4;
     }
     return 1;
@@ -388,6 +394,17 @@ static int net_message_body_valid(const void *data,uint size,int type)
     return (uint)msg->args[0] < 0x800 && (uint)msg->args[1] < 8;
   case NM_DEATH_STACK:   /* the unit lost and its killer */
     return (uint)msg->args[0] < 0x800 && (uint)msg->args[1] < 0x800;
+  case NM_SET_CIV:   /* civ_give_advance: civ, advance, from whom (< 0: none) */
+    return (uint)msg->args[0] < 8 && (uint)msg->args[1] < 100 && msg->args[2] < 8;
+  case NM_ASK_ALLY:   /* diplo_ally_demand_help: the ally, its enemy */
+    return (uint)msg->args[0] < 8 && (uint)msg->args[1] < 8;
+  case NM_SLIDE_PIECE:   /* unit, x, y, direction (-1: a paradrop with none), then the unit's record */
+    return (uint)msg->args[0] < 0x800 && -1 <= msg->args[3] && msg->args[3] < 8 &&
+           body[6] < 0x3e && body[7] < 8;
+  case NM_CITYWIN_CHECK_UNIT:   /* a unit (< 0: none), x, y */
+    return msg->args[0] < 0x800;
+  case NM_FEAT_LOC_SET:   /* known_set: x, y, bits, civ (the coordinates where it is applied) */
+    return (uint)msg->args[3] < 8;
   }
   return 1;
 }
@@ -5518,7 +5535,11 @@ void NetSession::dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sende
     break;
   case NM_FEAT_LOC_SET:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
-    known_set(a.unit,a.civ3,a.unit3,a.y2,a.x2,a.y3);
+    /* (port) known_at does not bound the square: one off the map is
+       ignored (a peer's memory error; the civ is checked on arrival) */
+    if (map_in_bounds(a.unit,a.civ3) != 0) {
+      known_set(a.unit,a.civ3,a.unit3,a.y2,a.x2,a.y3);
+    }
     break;
   case NM_SET_ATTITUDE:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
@@ -18210,7 +18231,10 @@ void __cdecl net_apply_tile_updates(u8 *batch)
         tile_set_radius_civ(args[0],args[1],args[2],1);
         break;
       case 7:
-        known_set(args[0],args[1],args[2],args[3],args[4],1);
+        /* (port) as NM_FEAT_LOC_SET: a square off the map is ignored */
+        if (map_in_bounds(args[0],args[1]) != 0) {
+          known_set(args[0],args[1],args[2],args[3],args[4],1);
+        }
       }
     }
     net.tile_sync_enabled = saved_sync;
