@@ -328,8 +328,9 @@ void replay_run_script(void)
                are those named in the scripts (build/native/gen/calltable.c). */
             char name[128] = "";
             unsigned addr = 0;
-            int args[4] = {0, 0, 0, 0};
-            sscanf(arg, "%127s %x %d %d %d %d", name, &addr, &args[0], &args[1], &args[2], &args[3]);
+            int args[6] = {0, 0, 0, 0, 0, 0};
+            sscanf(arg, "%127s %x %d %d %d %d %d %d", name, &addr, &args[0], &args[1], &args[2], &args[3],
+                   &args[4], &args[5]);
             (void)addr;
             {
                 extern const struct { const char *name; void (*fn)(void); } replay_calltable[];
@@ -339,7 +340,10 @@ void replay_run_script(void)
                 if (replay_calltable[i].name) {
                     next_action_us = vclock_us + 100 * 1000;
                     running = 0;        /* the call may run a modal loop that idles */
-                    ((int (*)(int, int, int, int))replay_calltable[i].fn)(args[0], args[1], args[2], args[3]);
+                    /* (six words: a fifth and sixth argument passed as written, not
+                       whatever the platform's calling convention leaves there) */
+                    ((int (*)(int, int, int, int, int, int))replay_calltable[i].fn)(args[0], args[1], args[2],
+                                                                                    args[3], args[4], args[5]);
                     running = 1;
                 } else
                     plat_log("replay: no function %s (tools/build_native.py gen_calltable)\n", name);

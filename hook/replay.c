@@ -602,11 +602,13 @@ static void run_script(void)
                (cdecl) directly; the native replay calls FUNCTION by name */
             char name[128];
             unsigned addr = 0;
-            int a[4] = {0, 0, 0, 0};
-            sscanf(arg, "%127s %x %d %d %d %d", name, &addr, &a[0], &a[1], &a[2], &a[3]);
+            int a[6] = {0, 0, 0, 0, 0, 0};
+            sscanf(arg, "%127s %x %d %d %d %d %d %d", name, &addr, &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
             next_action_us = vclock_us + 100 * 1000;
+            /* (six words: before, four, a fifth argument was what lay on the
+               stack: recordings made then got that) */
             if (addr)
-                ((int (__cdecl *)(int, int, int, int))addr)(a[0], a[1], a[2], a[3]);
+                ((int (__cdecl *)(int, int, int, int, int, int))addr)(a[0], a[1], a[2], a[3], a[4], a[5]);
             return;
         } else if (strcmp(cmd, "shot") == 0) {
             screenshot(arg);
