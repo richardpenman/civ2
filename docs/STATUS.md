@@ -132,14 +132,17 @@ message by message and clock event by clock event.
   CIV2_CXX=permissive, tools/cxx_compare.py), which passes the suite as the C
   build did.  The parameters and return values the decompiler left as
   `iptr` (an integer the size of a pointer) have their real types: of the
-  1,021 in src/auto/protos.h, 20 remain (indexes and coordinates are int,
+  1,021 in src/auto/protos.h, 7 remain (indexes and coordinates are int,
   rectangles RECT *, surfaces DibSurface *, sprites Sprite *, strings
   char *, files FILE *, controls Control *, out-parameters int * ...; the
-  call sites lost 2,870 casts net).  The 20 left: the eight dialog drawing
-  callbacks, whose signature DialogSpriteDrawFn / DialogOptionDrawFn fixes,
-  the two debug-log format arguments (a number or a string), and ten values
-  the game keeps as integers (window longs, the dialog parent and palette
-  globals, the rules editor's section table, the DDControl message target).
+  call sites lost 2,870 casts net).  The dialog drawing callbacks take the
+  DibSurface * they draw on (DialogSpriteDrawFn / DialogOptionDrawFn too),
+  the rules editor's sections their const char * names, the frame border
+  tile a DibSurface *, the timer window its TimerManager *, the paint
+  procedure its SurfaceWindow *, the AVI sound its u16 * status.  The 7
+  left: the two debug-log format arguments (a number or a string), and five
+  values the game keeps as integers (the dialog parent and palette globals,
+  the active child window, the DDControl message target).
   Checked function by function: the machine code is the same but for about
   150 functions that differ in register choice and stack slots (the address
   of a stack buffer computed before or after the other arguments), sources
@@ -150,21 +153,28 @@ message by message and clock event by clock event.
   classes, typed callbacks and the rest of the modernization come next.  Types
   and fields are recovered per subsystem: raw offset accesses
   (`*(T *)(p + 0x34)`, `(T *)((int)this + 0x34)`) went from over 5,100 to
-  64 in src/auto and src/game (573 before the last pass, which counts a
-  byte offset from a pointer or an offset from an integer:
-  tools/cxx_subobjects.py lists them), now struct members (network sessions
+  22 in src/auto and src/game (64 and then 573 before the last two passes;
+  tools/cxx_subobjects.py lists them, with the casts it leaves: 76, 120
+  before), now struct members (network sessions
   and messages, native windows, dialog lists, scenario events, Civilopedia
   lists; the surfaces, palettes, fonts, sprites, buttons, click maps and video
   players the windows hold, each window class with its own layout from its
   constructor and its destructor's unwind funclets; the windows, lobby
-  entries, tiles and packets the code kept in integers).  The 64 left: strings
-  skipped past their first character (11), byte streams read at offsets
-  (network message texts, the RLE, GIF and compressed-data decoders' cursors,
-  a palette's RGB triples: 16), the original's vtable addresses (3), the power
-  graph's stack window and font declared as a byte array (4), and pointers
-  kept as integers whose type is not certain (the MCI device, the menu and
-  control lists' nodes, the error report's choice dialog, the council's speech
-  text, a few tiles, rectangles and windows: 30).  The 529 casts in
+  entries, tiles and packets the code kept in integers; the power graph's
+  stack window a PowerGraphWindow, the council's speech lines and advisor
+  codes CouncilWindow arrays, a frame's caption buttons and client rectangle
+  FrameWindow members, the menu and control lists' nodes, the error report's
+  choice dialog, the players' slots, the tax rates' locks, the tiles,
+  rectangles, palettes and windows kept in integers).  The 22 left: byte
+  streams read at offsets (network message texts, the RLE, GIF and
+  compressed-data decoders' cursors, a palette's RGB triples: 16), the
+  original's vtable addresses (3), and records no code describes beyond the
+  one access (the MCI device a movie window keeps where a Wnd keeps its
+  controls, at 0x8 and 0x10; the DirectDraw window's native record: 3).
+  Strings read from their second character are `buf + 1`.  Offsets written
+  as indexes, which the count misses, remain in the dialog's button table
+  (labels, ids and x at 0x294..0x2f4), the parley offers' item ids and
+  panes, and a few byte buffers.  The 529 casts in
   gamedata.cpp's initializers point into the original's string pool and data
   blocks: data addresses, not field accesses.  The decompiler's byte-joining
   macros (CONCAT11, CONCAT12, CONCAT22, CONCAT31, CONCAT44: 73 uses on 57
