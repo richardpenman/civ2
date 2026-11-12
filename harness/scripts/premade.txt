@@ -1,0 +1,49 @@
+# Start on Premade World: GREECE.MP loaded through the file dialog
+# (map_load_dialog: its start positions randomized), the setup dialogs
+# (defaults), the first screens of the game on that map.
+wait 8000
+key Down                    # Start on Premade World
+wait 500
+file GREECE.MP
+key Return
+wait 5000
+shot 01
+key Return
+wait 3000
+shot 02
+key Return
+wait 3000
+shot 03
+key Return
+wait 3000
+shot 04
+key Return
+wait 3000
+shot 05
+key Return
+wait 3000
+shot 06
+key Return
+wait 3000
+shot 07
+key Return
+wait 3000
+shot 08
+key Return
+wait 3000
+shot 09
+key Return
+wait 3000
+shot 10
+key Return                  # city style
+wait 300000                 # the world built around the map
+shot 11
+key Return
+wait 5000
+shot 12
+key Return
+wait 5000
+shot 13
+key Return
+wait 12000
+shot 14
