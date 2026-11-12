@@ -1265,34 +1265,34 @@ void NetGamelistView::update_details()
     top_host_name[0] = '\0';
   }
   else {
-    get_entry_names((iptr)list_dialog->selected_option,(iptr)&selected_game_name,
-                       (iptr)&selected_host_name);
-    get_entry_names((iptr)list_dialog->list_top_option[0],(iptr)&top_game_name,
-                       (iptr)&top_host_name);
+    get_entry_names(list_dialog->selected_option,selected_game_name,
+                       selected_host_name);
+    get_entry_names(list_dialog->list_top_option[0],top_game_name,
+                       top_host_name);
   }
   return;
 }
 
 /* 004247b2 auto */
-void NetGamelistView::get_entry_names(iptr option,iptr out_game_name,iptr out_host_name)
+void NetGamelistView::get_entry_names(DialogOption *option,char *out_game_name,char *out_host_name)
 
 {
   int remaining;
   NetGameInfo *game2;
   
   for (game2 = net.found_games;
-      (game2 != 0 && (*(int *)(option + 4) != game2->list_id));
+      (game2 != 0 && (option->id != game2->list_id));
       game2 = game2->next) {
   }
   if (game2 == 0) {
     game2 = net.found_games;
-    for (remaining = list_dialog->option_group_index((DialogOption *)option);
+    for (remaining = list_dialog->option_group_index(option);
         (game2->next != 0 && (remaining != 0)); remaining--) {
       game2 = game2->next;
     }
   }
-  crt_strcpy((char *)((void *)out_game_name),game2->game_name);
-  crt_strcpy((char *)((void *)out_host_name),game2->host_name);
+  crt_strcpy(out_game_name,game2->game_name);
+  crt_strcpy(out_host_name,game2->host_name);
   return;
 }
 
@@ -2321,7 +2321,7 @@ int __cdecl parley_advance_list_hit_test(int px,int py,int pane)
     }
     else if (px < (int)window->list_rects[pane * 4 + 2]) {
       result = (int)window->list_rects[pane * 4 + 1];
-      list_height = rect_height((RECT *)(pane * 0x10 + (iptr)window + 0x3c0));
+      list_height = rect_height((RECT *)&window->list_rects[pane * 4]);
       result = (py - result) / (list_height / (window->list_rows[pane] + 1)) +
               window->list_first_row[pane];
     }
@@ -2722,7 +2722,7 @@ int __cdecl parley_unit_list_hit_test(int px,int py,int pane)
     }
     else if (px < (int)window->list_rects[pane * 4 + 2]) {
       result = (int)window->list_rects[pane * 4 + 1];
-      list_height = rect_height((RECT *)(pane * 0x10 + (iptr)window + 0x3c0));
+      list_height = rect_height((RECT *)&window->list_rects[pane * 4]);
       result = (py - result) / (list_height / window->list_rows[pane]) +
               window->list_first_row[pane];
     }
@@ -4822,12 +4822,12 @@ void NetSession::run_blocked_input()
   blocked_input_kind = 0;
   switch(deferred_input) {
   case 1:
-    if (((MapView *)blocked_input_window)->open != 0) {
-      if (blocked_input_window == 0) {
+    if (blocked_input_window->open != 0) {
+      if (blocked_input_window == (MapView *)0x0) {
         click_wnd = 0;
       }
       else {
-        click_wnd = (u32)blocked_input_window + 0x48;
+        click_wnd = (iptr)&blocked_input_window->window;
       }
       wnd_set_active_child(click_wnd);
       map_window_click(blocked_input_arg1,(u32)blocked_input_arg2,
@@ -4835,12 +4835,12 @@ void NetSession::run_blocked_input()
     }
     break;
   case 2:
-    if (((MapView *)blocked_input_window)->open != 0) {
-      if (blocked_input_window == 0) {
+    if (blocked_input_window->open != 0) {
+      if (blocked_input_window == (MapView *)0x0) {
         dblclick_wnd = 0;
       }
       else {
-        dblclick_wnd = (u32)blocked_input_window + 0x48;
+        dblclick_wnd = (iptr)&blocked_input_window->window;
       }
       wnd_set_active_child(dblclick_wnd);
       map_window_double_click(blocked_input_arg1,(u32)blocked_input_arg2);
@@ -10275,8 +10275,8 @@ void __cdecl parley_give_maps(int receiver,int civ,int map_kind)
       if ((units[unit].id != 0) &&
          (((giver_mask & units[unit].visibility) != 0 || (units[unit].owner == civ)))) {
         units[unit].visibility = units[unit].visibility | recv_bit;
-        y = (int)(tile_at(units[unit].x,units[unit].y));
-        if (((recv_mask & *(byte *)(y + 4)) == 0) || ((giver_mask & *(byte *)(y + 4)) == 0)) {
+        tile = tile_at(units[unit].x,units[unit].y);
+        if (((recv_mask & tile->visible) == 0) || ((giver_mask & tile->visible) == 0)) {
           for (i = 0; i < 0x15; i++) {
             x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
             y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
@@ -10303,8 +10303,8 @@ void __cdecl parley_give_maps(int receiver,int civ,int map_kind)
                *(i8 *)&cities[city].revealed_size[civ];
         }
         cities[city].known_to = cities[city].known_to | recv_bit;
-        y = (int)(tile_at(cities[city].x,cities[city].y));
-        if (((recv_mask & *(byte *)(y + 4)) == 0) || ((giver_mask & *(byte *)(y + 4)) == 0)) {
+        tile = tile_at(cities[city].x,cities[city].y);
+        if (((recv_mask & tile->visible) == 0) || ((giver_mask & tile->visible) == 0)) {
           for (i = 0; i < 0x15; i++) {
             x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
             y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
@@ -10529,8 +10529,8 @@ void __cdecl parley_cede_city(uptr city,int civ)
   map_redraw_neighbors_all_views((int)cities[city].x,cities[city].y);
   net_send_state_diff(0xff,2,0,0,0);
   net_send_message(NM_DRAW_AREA,0xff,cities[city].x,cities[city].y,0,0,0,0,0,0);
-  y2 = (int)(tile_at(x,y));
-  if ((1 << ((byte)civ & 0x1f) & (uint)*(byte *)(y2 + 4)) == 0) {
+  tile = tile_at(x,y);
+  if ((1 << ((byte)civ & 0x1f) & (uint)tile->visible) == 0) {
     tile_set_visible(x,y,1 << ((byte)civ & 0x1f),1,1);
     map_redraw_tile_all_views(x,y);
   }
@@ -10539,7 +10539,7 @@ void __cdecl parley_cede_city(uptr city,int civ)
     y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[i] + y;
     in_bounds2 = map_in_bounds(x2,y2);
     if ((in_bounds2 != 0) &&
-       (tile = (Tile *)(int)(tile_at(x2,y2)),
+       (tile = tile_at(x2,y2),
        (1 << ((byte)civ & 0x1f) & (uint)tile->visible) == 0)) {
       tile_set_visible(x2,y2,1 << ((byte)civ & 0x1f),1,1);
       map_redraw_tile_all_views(x2,y2);
@@ -11870,7 +11870,7 @@ i32 __cdecl net_host_register_player_civ(NetPlayerInfoMsg *player_info,int playe
       if (player_info->has_titles != 0) {
         for (title_idx = 0; title_idx < 7; title_idx++) {
           crt_strcpy((char *)(&civ_names[game.player_civ].titles[title_idx]),
-                       (const char *)(title_idx * 0x18 + (iptr)player_info + 0x6c));
+                       (const char *)player_info->govt_titles[title_idx]);
         }
       }
     }
@@ -17260,12 +17260,12 @@ void NetSession::add_player(NetPlayerNodeMsg *player_info)
     slot++;
   }
   net_slots[slot].id = player_info->slot.id;
-  _memset((void *)((int)this + slot * 0x54 + 0x208),0,0x20);
-  _strncpy((char *)((int)this + slot * 0x54 + 0x208),&player_info->slot.address[0],0x20);
+  _memset(net_slots[slot].address,0,0x20);
+  _strncpy(net_slots[slot].address,&player_info->slot.address[0],0x20);
   net_slots[slot].is_host = 0;
   net_slots[slot].active = 1;
   net_slots[slot].civ = 0xffffffff;
-  crt_strcpy((char *)((void *)((int)this + slot * 0x54 + 0x228)),(const char *)((const void *)player_info->slot.name));
+  crt_strcpy(net_slots[slot].name,(const char *)((const void *)player_info->slot.name));
   net_slots[slot].field_44 = 0;
   net_slots[slot].lobby_id = 0;
   net_player_count[0] = net_player_count[0] + 1;
@@ -17288,7 +17288,7 @@ void NetSession::remove_player(int player_id)
     if ((0 < net_slots[slot].civ) &&
        (net_slots[slot].civ < 8)) {
       game.human_players =
-           ~(byte)(1 << (*(byte *)((int)this + slot * 0x54 + 0x254) & 0x1f)) & game.human_players
+           ~(byte)(1 << ((byte)net_slots[slot].civ & 0x1f)) & game.human_players
       ;
     }
     net_slots[slot].id = 0;

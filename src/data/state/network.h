@@ -484,7 +484,7 @@ typedef struct NetSession {
     i32 blocked_input_char_pending;  /* 006c31c4 */
     char blocked_input_char;  /* 006c31c8 */
     u8 blocked_input_char_rest[3];
-    i32 blocked_input_window;  /* 006c31cc */
+    struct MapView *blocked_input_window;  /* 006c31cc */
     i8 drag_hold;  /* 006c31d0 */
     u8 drag_hold_rest[3];
     NetGameInfo *found_games;  /* 006c31d4 */
@@ -628,6 +628,7 @@ typedef struct NetSession {
     void free_game_list();    /* 0059baf0 */
 } NetSession;
 #pragma pack(pop)
+static_assert(__builtin_offsetof(NetSession, net_slots) == 0x204, "");
 extern NetSession net;
 extern i32 net_batch_buffer[772];
 

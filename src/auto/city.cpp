@@ -181,13 +181,13 @@ void __cdecl taxrate_on_lock_toggled(int control_id,int checked)
 {
   int i;
   
-  *(int *)((iptr)taxrate_wnd.dlg + 0x34c + (control_id - 300) * 4) = checked;
+  taxrate_wnd.dlg->rate_locked[control_id - 300] = checked;
   if (checked != 0) {
     for (i = 0; i < 3; i++) {
       if (control_id - 300 != i) {
-        *(i32 *)((iptr)taxrate_wnd.dlg + 0x34c + i * 4) = 0;
-        ((Checkbox *)(i * 0x3c + 0x418 + (iptr)taxrate_wnd.dlg))->set_checked(0);
-        ((Control *)(i * 0x3c + 0x418 + (iptr)taxrate_wnd.dlg))->show_and_redraw()
+        taxrate_wnd.dlg->rate_locked[i] = 0;
+        taxrate_wnd.dlg->lock_checkboxes[i].set_checked(0);
+        ((Control *)&taxrate_wnd.dlg->lock_checkboxes[i])->show_and_redraw()
         ;
       }
     }

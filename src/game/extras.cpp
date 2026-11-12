@@ -525,10 +525,16 @@ void extras_radio_hotkeys(RadioItem *items, int count)
 
 /* ---- X1: the mouse wheel and middle button; X32: Shift on specialists ---- */
 
-static HWND frame_hwnd(void *frame_window)
+static HWND wnd_hwnd(WndBase *wnd)
 {
-    NativeWindow *w = ((WndBase *)((i8 *)frame_window + 0x48))->native_wnd;
+    NativeWindow *w = wnd->native_wnd;
     return w ? w->hwnd : 0;
+}
+
+/* A SurfaceWindow's: its window is at 0x48. */
+static HWND frame_hwnd(SurfaceWindow *frame_window)
+{
+    return wnd_hwnd(&frame_window->window);
 }
 
 /* h, or a window it is in, is ancestor */
@@ -547,8 +553,8 @@ static MapView *main_map(void)
 
 static int city_window_open(void)
 {
-    return ((CityWindow *)((i8 *)&city_wnd.window))->get_city() != -1 && frame_hwnd(&city_wnd.window) &&
-           IsWindowVisible(frame_hwnd(&city_wnd.window));
+    return ((CityWindow *)((i8 *)&city_wnd.window))->get_city() != -1 && frame_hwnd((SurfaceWindow *)&city_wnd.window) &&
+           IsWindowVisible(frame_hwnd((SurfaceWindow *)&city_wnd.window));
 }
 
 /* The game's scroll bar control of a scroll bar window, or 0. */
@@ -584,7 +590,7 @@ static HWND wheel_scrollbar(HWND under)
             return any;
         if (count > 1)
             return 0;       /* several horizontal ones (the tax rates): only under the pointer */
-        if (h == frame_hwnd(&main_frame_wnd_block.main_frame_wnd))
+        if (h == wnd_hwnd(&main_frame_wnd_block.main_frame_wnd))
             break;
     }
     return 0;
@@ -698,10 +704,10 @@ static int wheel_message(const MSG *m, HWND under, POINT pt)
     HWND bar;
     if (!notches || abs(notches) > 10)
         return 0;
-    if (city_window_open() && within(under, frame_hwnd(&city_wnd.window))) {
+    if (city_window_open() && within(under, frame_hwnd((SurfaceWindow *)&city_wnd.window))) {
         int id = -1, kind = 0;
         POINT c = pt;
-        ScreenToClient(frame_hwnd(&city_wnd.window), &c);
+        ScreenToClient(frame_hwnd((SurfaceWindow *)&city_wnd.window), &c);
         if (city_wnd.clickmap.hit_test( c.x, c.y, (iptr)&id, (iptr)&kind) >= 0 &&
             kind == 2)
             return city_specialists(id, notches > 0 ? 1 : -1,
@@ -741,7 +747,7 @@ int extras_input(void *msg)
             return 1;
     }
     if (m->message == WM_LBUTTONDOWN && (m->wParam & MK_SHIFT) && extra_ui(X_MASS_SPECIALISTS) &&
-        city_window_open() && m->hwnd == frame_hwnd(&city_wnd.window)) {
+        city_window_open() && m->hwnd == frame_hwnd((SurfaceWindow *)&city_wnd.window)) {
         /* X32: Shift+click on a specialist: all of them to its kind */
         int id = -1, kind = 0;
         if (city_wnd.clickmap.hit_test( (short)LOWORD(m->lParam),

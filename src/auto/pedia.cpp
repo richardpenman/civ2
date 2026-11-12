@@ -4900,9 +4900,9 @@ void PediaWindow::show_unit_list(iptr unused_arg)
    added to the description when the unit has the flag (mask). */
 void PediaWindow::append_unit_fact(iptr unit_type,u32 mask,char *desc_buf,int &has_text)
 {
-  int line;
+  i8 *line;
 
-  line = (int)text_read_line_or_end(1);
+  line = text_read_line_or_end(1);
   /* BF-053 (Peter Johnson's ledger): within draw_unit_page's 1000 bytes (the
      original appended without a bound); a longer text is cut */
   if ((unit_types[unit_type].flags & mask) != 0) {

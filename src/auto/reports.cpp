@@ -1881,7 +1881,7 @@ void __cdecl powergraph_show(void)
   int prev_y;
   int prev_x;
   int grid_x;
-  i8 graph_wnd[736];
+  PowerGraphWindow graph_wnd;
   Dialog dialog2;
   i32 year2;
   i32 civ_color;
@@ -1898,9 +1898,9 @@ void __cdecl powergraph_show(void)
   int seh_state;
   
   seh_state = 0xffffffff;
-  ((FrameWindow *)graph_wnd)->FrameWindow::construct();
+  graph_wnd.FrameWindow::construct();
   seh_state = 0;
-  ((GameFont *)(graph_wnd + 0x2d8))->init_empty();
+  graph_wnd.font.init_empty();
   (*((char *)&seh_state + 0)) = 1;
   legend_font.init_empty();
   (*((char *)&seh_state + 0)) = 2;
@@ -1908,7 +1908,7 @@ void __cdecl powergraph_show(void)
   (*((char *)&seh_state + 0)) = 3;
   bg_surface2 = (DibSurface *)0x0;
   bg_palette = (GamePalette *)0x0;
-  ((GameFont *)(graph_wnd + 0x2d8))->set_styled(0,0xc,1);
+  graph_wnd.font.set_styled(0,0xc,1);
   legend_font.set_styled(0,0xe,1);
   self = (DibSurface *)operator_new(0x48);
   (*((char *)&seh_state + 0)) = 4;
@@ -1940,27 +1940,21 @@ void __cdecl powergraph_show(void)
   wnd_x = 0;
   wnd_style = 0xd;
   title = (iptr)label_string(label_table.string_ids[0xd6]);
-  ((FrameWindow *)graph_wnd)->FrameWindow::create((const char *)title,wnd_style,wnd_x,wnd_y,wnd_width,wnd_height,wnd_arg6,wnd_arg7,wnd_arg8);
-  text_set_surface((DibSurface *)graph_wnd);
-  text_set_font(((GameFont *)(graph_wnd + 0x2d8)));
-  origin_x2 = (*(i32 *)((char *)&graph_wnd + 292));
-  origin_y2 = (*(i32 *)((char *)&graph_wnd + 296));
-  ((FrameWindow *)graph_wnd)->layout();
-  ((FrameWindow *)graph_wnd)->FrameWindow::draw_caption();
-  gfx_copy_rect_xywh(bg_surface2,(DibSurface *)graph_wnd,0,0,origin_x2,origin_y2,600,400);
-  rect2.left = (*(i32 *)((char *)&graph_wnd + 700));
-  ((u8 *)&rect2.right)[0] = graph_wnd[0x2c4];
-  ((u8 *)&rect2.right)[1] = graph_wnd[0x2c5];
-  ((u8 *)&rect2.right)[2] = graph_wnd[0x2c6];
-  ((u8 *)&rect2.right)[3] = graph_wnd[0x2c7];
-  ((u8 *)&rect2.bottom)[0] = graph_wnd[0x2c8];
-  ((u8 *)&rect2.bottom)[1] = graph_wnd[0x2c9];
-  ((u8 *)&rect2.bottom)[2] = graph_wnd[0x2ca];
-  ((u8 *)&rect2.bottom)[3] = graph_wnd[0x2cb];
-  rect2.top = (*(i32 *)((char *)&graph_wnd + 704)) + 400;
-  gfx_fill_rect((DibSurface *)graph_wnd,(RECT *)&rect2,0x14);
+  graph_wnd.FrameWindow::create((const char *)title,wnd_style,wnd_x,wnd_y,wnd_width,wnd_height,wnd_arg6,wnd_arg7,wnd_arg8);
+  text_set_surface(&graph_wnd);
+  text_set_font(&graph_wnd.font);
+  origin_x2 = graph_wnd.client_origin_x;
+  origin_y2 = graph_wnd.client_origin_y;
+  graph_wnd.layout();
+  graph_wnd.FrameWindow::draw_caption();
+  gfx_copy_rect_xywh(bg_surface2,&graph_wnd,0,0,origin_x2,origin_y2,600,400);
+  rect2.left = graph_wnd.client_rect;
+  rect2.right = graph_wnd.client_right;
+  rect2.bottom = graph_wnd.client_bottom;
+  rect2.top = graph_wnd.client_top + 400;
+  gfx_fill_rect(&graph_wnd,(RECT *)&rect2,0x14);
   rect_set_xywh((RECT *)&rect2,origin_x2 + 8,origin_y2 + 2,0x248,0x16e);
-  gfx_draw_rect_frame((DibSurface *)graph_wnd,(RECT *)&rect2,10);
+  gfx_draw_rect_frame(&graph_wnd,(RECT *)&rect2,10);
   if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
     sample_count = (int)((int)game.turn + ((int)game.turn >> 0x1f & 3U)) >> 2;
   }
@@ -1990,7 +1984,7 @@ void __cdecl powergraph_show(void)
     else {
       grid_x = sample * 2;
     }
-    gfx_draw_line_color((DibSurface *)graph_wnd,grid_x + origin_x2 + 8,origin_y2 + 2,
+    gfx_draw_line_color(&graph_wnd,grid_x + origin_x2 + 8,origin_y2 + 2,
                        grid_x + origin_x2 + 8,origin_y2 + 0x170,10);
     if (sample % (grid_step * 2) == 0) {
       year2 = game_turn_to_year(sample + 1);
@@ -2000,7 +1994,7 @@ void __cdecl powergraph_show(void)
       gfx_draw_text((const char *)&textbuf.buf,grid_x + origin_x2,origin_y2 + 0x172);
     }
   }
-  ((DibSurface *)graph_wnd)->set_clip((RECT *)&rect2);
+  graph_wnd.set_clip((RECT *)&rect2);
   for (civ = 1; civ < 8; civ++) {
     if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
        ((1 << ((byte)civ & 0x1f) & (uint)game.civs_at_start) != 0)) {
@@ -2010,14 +2004,14 @@ void __cdecl powergraph_show(void)
         point_x = sample * 4;
         point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
                    (int)max_power;
-        gfx_draw_line_color((DibSurface *)graph_wnd,prev_x + origin_x2 + 9,(origin_y2 - prev_y) + 0x171,
+        gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 9,(origin_y2 - prev_y) + 0x171,
                            point_x + origin_x2 + 9,(origin_y2 - point_y) + 0x171,0x12);
         prev_x = point_x;
         prev_y = point_y;
       }
     }
   }
-  ((DibSurface *)graph_wnd)->set_clip((RECT *)(iptr)(graph_wnd + 700));
+  graph_wnd.set_clip((RECT *)&graph_wnd.client_rect);
   text_set_font(&legend_font);
   legend_row = 0;
   for (civ = 1; civ < 8; civ++) {
@@ -2037,19 +2031,19 @@ void __cdecl powergraph_show(void)
         point_x = sample * 4;
         point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
                    (int)max_power;
-        gfx_draw_line_color((DibSurface *)graph_wnd,prev_x + origin_x2 + 8,(origin_y2 + 0x170) - prev_y,
+        gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 8,(origin_y2 + 0x170) - prev_y,
                            point_x + origin_x2 + 8,(origin_y2 + 0x170) - point_y,civ_color);
         prev_x = point_x;
         prev_y = point_y;
       }
     }
   }
-  ((SurfaceWindow *)graph_wnd)->SurfaceWindow::show();
-  dialog2.init((iptr)graph_wnd,0,0,0x114000);
-  dialog2.wnd_width = (*(i32 *)((char *)&graph_wnd + 300));
-  dialog2.wnd_height = (*(i32 *)((char *)&graph_wnd + 304));
-  dialog2.origin_x = (*(i32 *)((char *)&graph_wnd + 292));
-  dialog2.origin_y = (*(i32 *)((char *)&graph_wnd + 296));
+  graph_wnd.SurfaceWindow::show();
+  dialog2.init((iptr)&graph_wnd,0,0,0x114000);
+  dialog2.wnd_width = graph_wnd.client_width;
+  dialog2.wnd_height = graph_wnd.client_height;
+  dialog2.origin_x = graph_wnd.client_origin_x;
+  dialog2.origin_y = graph_wnd.client_origin_y;
   dialog2.show_modal(0);
   if (bg_surface2 != (DibSurface *)0x0) {
     bg_surface2->surface_delete(1);
@@ -2062,9 +2056,9 @@ void __cdecl powergraph_show(void)
   (*((char *)&seh_state + 0)) = 1;
   /* inlined unwind funclet 004325d5 */ { legend_font.destroy(); }
   seh_state = seh_state & 0xffffff00;
-  /* inlined unwind funclet 004325e1 */ { ((GameFont *)((u8 *)&graph_wnd + 0x2d8))->destroy(); }
+  /* inlined unwind funclet 004325e1 */ { graph_wnd.font.destroy(); }
   seh_state = 0xffffffff;
-  /* inlined unwind funclet 004325ed */ { ((FrameWindow *)&graph_wnd)->FrameWindow::destruct(); }
+  /* inlined unwind funclet 004325ed */ { graph_wnd.FrameWindow::destruct(); }
   return;
 }
 
@@ -6474,15 +6468,15 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
   }
   else {
     for (advisor = 0; advisor < 5; advisor++) {
-      str_clear((char *)(advisor_code_slots + advisor * 3 - 0x40));
+      str_clear(advisor_codes[advisor]);
     }
-    str_append((char *)&advisor_codes,(const char *)&str_m_2);
-    str_append((char *)((int)&advisor_codes + 3),(const char *)&str_s);
-    str_append((char *)((int)&advisor_codes_part2 + 2),(const char *)&str_t);
-    str_append((char *)((int)&advisor_codes_part3 + 1),(const char *)&str_f);
-    str_append((char *)&advisor_codes_part4,(const char *)&str_a_2);
+    str_append(advisor_codes[0],(const char *)&str_m_2);
+    str_append(advisor_codes[1],(const char *)&str_s);
+    str_append(advisor_codes[2],(const char *)&str_t);
+    str_append(advisor_codes[3],(const char *)&str_f);
+    str_append(advisor_codes[4],(const char *)&str_a_2);
     for (advisor = 0; advisor < 5; advisor++) {
-      str_append_int(((char *)(advisor_code_slots + advisor * 3 - 0x40)),
+      str_append_int(advisor_codes[advisor],
                          council_settings[advisor + 1]);
     }
   }
@@ -6780,7 +6774,7 @@ i32 CouncilWindow::load_speech(uptr advisor)
   if (4 < (int)advisor) {
     return 0;
   }
-  status = text_open_section((const char *)council_text_file,(const char *)((int)&advisor_codes + advisor * 3));
+  status = text_open_section((const char *)council_text_file,(const char *)advisor_codes[advisor]);
   if (status != 0) {
     return 0;
   }
@@ -6794,9 +6788,9 @@ i32 CouncilWindow::load_speech(uptr advisor)
     speech_line_values[0] = value;
     value = text_next_int();
     speech_line_params[0] = value;
-    str_clear((char *)((u8 *)this + 0xea8));
+    str_clear(speech_lines[0]);
     str_trim((*(char * *)&text_parse.line_cursor));
-    str_append((char *)((u8 *)this + 0xea8),(const char *)(*(char * *)&text_parse.line_cursor));
+    str_append(speech_lines[0],(const char *)(*(char * *)&text_parse.line_cursor));
     line_idx = 1;
     matched = true;
     skip_read = false;
@@ -6855,10 +6849,10 @@ i32 CouncilWindow::load_speech(uptr advisor)
           ((u32 *)&speech_line_values)[line_idx] = value;
           value = text_next_int();
           ((u32 *)&speech_line_params)[line_idx] = value;
-          str_clear((char *)((int)this + line_idx * 0xff + 0xea8));
+          str_clear(speech_lines[line_idx]);
           str_trim((*(char * *)&text_parse.line_cursor));
           if (*(*(char * *)&text_parse.line_cursor) != '*') {
-            str_append((char *)((int)this + line_idx * 0xff + 0xea8),(const char *)(*(char * *)&text_parse.line_cursor));
+            str_append(speech_lines[line_idx],(const char *)(*(char * *)&text_parse.line_cursor));
           }
           line_idx++;
           matched = true;
@@ -6901,22 +6895,21 @@ void CouncilWindow::draw_speech(int mode)
       rect.right = speech_rect_right - 2;
       rect.top = speech_rect_top + speech_line_y;
       ((Dialog *)((u8 *)&council_dialog))->set_font((iptr)&font2);
-      if (council_speech_lines[speech_advisor_index * 0xff + 0x5c] != '\0') {
+      if (speech_lines[speech_advisor_index][0] != '\0') {
         OffsetRect(&rect,1,1);
         gfx_set_text_color_index(0x25);
         draw_text_rect((iptr)&font2,
-                   (const char *)(council_speech_lines + speech_advisor_index * 0xff + 0x5c),
+                   (const char *)speech_lines[speech_advisor_index],
                    (iptr)&rect,1);
         OffsetRect(&rect,-1,-1);
         gfx_set_text_color_index(10);
         draw_text_rect((iptr)&font2,
-                   (const char *)(council_speech_lines + speech_advisor_index * 0xff + 0x5c),
+                   (const char *)speech_lines[speech_advisor_index],
                    (iptr)&rect,1);
         spacing = font2.line_spacing();
         speech_line_y = speech_line_y + spacing;
         spacing = font2.text_width(
-                           (const char *)(council_speech_lines +
-                                 speech_advisor_index * 0xff + 0x5c));
+                           (const char *)speech_lines[speech_advisor_index]);
         if (rect.right - rect.left < spacing) {
           spacing = font2.line_spacing();
           speech_line_y = speech_line_y + spacing;
@@ -6947,7 +6940,7 @@ void CouncilWindow::draw_advisor_frames()
   if (council_active_2 == 0) {
     for (advisor = 0; advisor < 5; advisor++) {
       status = text_open_section((const char *)council_text_file,
-                                 (const char *)(advisor_code_slots + advisor * 3 - 0x40));
+                                 (const char *)advisor_codes[advisor]);
       if (status != 0) {
         return;
       }

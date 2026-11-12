@@ -579,7 +579,7 @@ i32 __cdecl ddraw_init(void)
 
 /* Part of wnd_child_wndproc (005eb447): WM_HSCROLL: moves the horizontal scroll bar
    (line, page, thumb) and tells the window. */
-static void wnd_child_on_hscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
+static void wnd_child_on_hscroll(HWND hwnd,Wnd *child2,WndHandlers *view,WPARAM wp)
 {
   int page;
   int scroll_pos2;
@@ -591,11 +591,11 @@ static void wnd_child_on_hscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
       SetScrollPos(hwnd, 0, scroll_pos2, 1);
       (*(void * *)&modal_wnd.active_child) = child2;
       child2->hscroll_pos = scroll_pos2;
-      ((WndHandlers *)view)->call_hscroll( child2->hscroll_pos);
+      view->call_hscroll( child2->hscroll_pos);
       break;
   case 5:     /* SB_THUMBTRACK */
       (*(void * *)&modal_wnd.active_child) = child2;
-      ((WndHandlers *)view)->call_hscroll_track( (int)(short)(wp >> 0x10));
+      view->call_hscroll_track( (int)(short)(wp >> 0x10));
       break;
   case 0:
   case 1:
@@ -621,14 +621,14 @@ static void wnd_child_on_hscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
       scroll_pos2 = GetScrollPos(hwnd, 0);
       (*(void * *)&modal_wnd.active_child) = child2;
       child2->hscroll_pos = scroll_pos2;
-      ((WndHandlers *)view)->call_hscroll( scroll_pos2);
+      view->call_hscroll( scroll_pos2);
       break;
   }
 }
 
 /* Part of wnd_child_wndproc (005eb447): WM_VSCROLL: moves the vertical scroll bar
    (line, page, thumb) and tells the window. */
-static void wnd_child_on_vscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
+static void wnd_child_on_vscroll(HWND hwnd,Wnd *child2,WndHandlers *view,WPARAM wp)
 {
   int page;
   int scroll_pos2;
@@ -640,11 +640,11 @@ static void wnd_child_on_vscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
       SetScrollPos(hwnd, 1, scroll_pos2, 1);
       (*(void * *)&modal_wnd.active_child) = child2;
       child2->vscroll_pos = scroll_pos2;
-      ((WndHandlers *)view)->call_vscroll( child2->vscroll_pos);
+      view->call_vscroll( child2->vscroll_pos);
       break;
   case 5:     /* SB_THUMBTRACK */
       (*(void * *)&modal_wnd.active_child) = child2;
-      ((WndHandlers *)view)->call_vscroll_track( (int)(short)(wp >> 0x10));
+      view->call_vscroll_track( (int)(short)(wp >> 0x10));
       break;
   case 0:
   case 1:
@@ -670,7 +670,7 @@ static void wnd_child_on_vscroll(HWND hwnd,Wnd *child2,void *view,WPARAM wp)
       scroll_pos2 = GetScrollPos(hwnd, 1);
       (*(void * *)&modal_wnd.active_child) = child2;
       child2->vscroll_pos = scroll_pos2;
-      ((WndHandlers *)view)->call_vscroll( scroll_pos2);
+      view->call_vscroll( scroll_pos2);
       break;
   }
 }
@@ -681,7 +681,7 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
 {
     int wnd_obj;
     NativeWindow *owner;
-    void *view;
+    WndHandlers *view;
     WPARAM wp = wparam_hwnd;
     short x = (short)lparam;
     short y = (short)(lparam >> 0x10);
@@ -696,25 +696,25 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
     child2 = (Wnd *)GetWindowLongA(hwnd, 4);
     if (child2 == (Wnd *)0x0)
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
-    view = (void *)((int)child2 + 0x10);
+    view = &child2->wnd_handlers;
 
     switch (msg) {
     case 0x210:     /* WM_PARENTNOTIFY */
         switch (wp & 0xffff) {
         case 0x201:
             (*(void * *)&modal_wnd.active_child) = child2;
-            ((WndHandlers *)view)->call_lbuttondown( lparam & 0xffff, lparam >> 0x10);
+            view->call_lbuttondown( lparam & 0xffff, lparam >> 0x10);
             break;
         case 0x204:
             (*(void * *)&modal_wnd.active_child) = child2;
-            ((WndHandlers *)view)->call_rbuttondown( lparam & 0xffff, lparam >> 0x10);
+            view->call_rbuttondown( lparam & 0xffff, lparam >> 0x10);
             break;
         }
         break;
 
     case 0x4c8:
         if (lparam == 0x20d)
-            ((WndHandlers *)view)->call_msg4c8( 0);
+            view->call_msg4c8( 0);
         break;
 
     case 0x24: {    /* WM_GETMINMAXINFO */
@@ -739,15 +739,15 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
             BringWindowToTop(hwnd);
         }
         child2->lbutton_down = 1;
-        ((WndHandlers *)view)->call_lbuttondown( (int)x, (int)y);
+        view->call_lbuttondown( (int)x, (int)y);
         break;
     case 0x202:     /* WM_LBUTTONUP */
         (*(void * *)&modal_wnd.active_child) = child2;
         if ((int)child2->lbutton_down == 1) {
             child2->lbutton_down = 0;
-            ((WndHandlers *)view)->call_lbuttonup( (int)x, (int)y);
+            view->call_lbuttonup( (int)x, (int)y);
         }
-        ((WndHandlers *)view)->call_lbuttonup_raw( lparam & 0xffff, lparam >> 0x10);
+        view->call_lbuttonup_raw( lparam & 0xffff, lparam >> 0x10);
         break;
     case 0x204:     /* WM_RBUTTONDOWN */
         owner = ((WndBase *)GetWindowLongA(hwnd, 0))->get_window();
@@ -757,43 +757,43 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
         }
         (*(void * *)&modal_wnd.active_child) = child2;
         child2->rbutton_down = 1;
-        ((WndHandlers *)view)->call_rbuttondown( (int)x, (int)y);
+        view->call_rbuttondown( (int)x, (int)y);
         break;
     case 0x205:     /* WM_RBUTTONUP */
         (*(void * *)&modal_wnd.active_child) = child2;
         if ((int)child2->rbutton_down == 1) {
             (*(void * *)&modal_wnd.active_child) = child2;
             child2->rbutton_down = 0;
-            ((WndHandlers *)view)->call_rbuttonup( (int)x, (int)y);
+            view->call_rbuttonup( (int)x, (int)y);
         }
-        ((WndHandlers *)view)->call_rbuttonup_raw( (int)x, (int)y);
+        view->call_rbuttonup_raw( (int)x, (int)y);
         break;
     case 0x200:     /* WM_MOUSEMOVE */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_mousemove( (int)x, (int)y);
+        view->call_mousemove( (int)x, (int)y);
         break;
     case 0x203:     /* WM_LBUTTONDBLCLK */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_dblclick( (int)x, (int)y);
+        view->call_dblclick( (int)x, (int)y);
         break;
 
     case 0x100:     /* WM_KEYDOWN */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_keydown_pre( input_map_vkey(wp));
-        ((WndHandlers *)view)->call_keydown( input_map_vkey(wp));
+        view->call_keydown_pre( input_map_vkey(wp));
+        view->call_keydown( input_map_vkey(wp));
         break;
     case 0x102:     /* WM_CHAR */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_char( wp & 0xff);
+        view->call_char( wp & 0xff);
         break;
     case 0x101:     /* WM_KEYUP */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_keyup( input_map_vkey(wp));
+        view->call_keyup( input_map_vkey(wp));
         break;
 
     case 7:         /* WM_SETFOCUS */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_setfocus();
+        view->call_setfocus();
         break;
 
     case 0x311:     /* WM_PALETTECHANGED */
@@ -817,12 +817,12 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
         (*(void * *)&modal_wnd.active_child) = child2;
         if (IsIconic(hwnd) == 0) {
             child2->on_size_nop( (int)x, (int)y);
-            ((WndHandlers *)view)->call_size( wp);
+            view->call_size( wp);
         }
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
     case 3:         /* WM_MOVE */
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_move( (int)x, (int)y);
+        view->call_move( (int)x, (int)y);
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
 
     case 0x111:     /* WM_COMMAND */
@@ -846,24 +846,24 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
         (*(void * *)&modal_wnd.active_child) = child2;
         switch (wp) {
         case 0xf020:    /* SC_MINIMIZE */
-            ((WndHandlers *)view)->call_minimize();
+            view->call_minimize();
             break;
         case 0xf120:    /* SC_RESTORE */
-            ((WndHandlers *)view)->call_restore();
+            view->call_restore();
             break;
         }
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
 
     case 0x10:      /* WM_CLOSE */
         (*(void * *)&modal_wnd.active_child) = child2;
-        wnd_obj = ((WndHandlers *)view)->call_close();
+        wnd_obj = view->call_close();
         if (wnd_obj == 0)
             break;
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
 
     case 0x44:
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_msg44( lparam & 0xffff);
+        view->call_msg44( lparam & 0xffff);
         return 1;
 
     case 0x114:     /* WM_HSCROLL */
@@ -882,13 +882,13 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
         owner = ((WndBase *)GetWindowLongA(hwnd, 0))->get_window();
         (void)owner;
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_entersizemove();
+        view->call_entersizemove();
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
     case 0x232:     /* WM_EXITSIZEMOVE */
         owner = ((WndBase *)GetWindowLongA(hwnd, 0))->get_window();
         (void)owner;
         (*(void * *)&modal_wnd.active_child) = child2;
-        ((WndHandlers *)view)->call_exitsizemove();
+        view->call_exitsizemove();
         return wnd_base_wndproc(hwnd, msg, wp, lparam);
 
     default:

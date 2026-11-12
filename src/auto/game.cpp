@@ -3416,11 +3416,11 @@ void __cdecl game_save_dialog(int is_scenario)
       result = ui_file_name_dialog(&main_frame_wnd_block.main_frame_wnd,(const char *)title,name_arg,filter_arg,ext_arg,leader_name,flag_arg);
       if (result != 0) {
         __chdir(((i8 *)&game_dirs.home));
-        result = save_write_game((const char *)(file_name_buf + 1),is_scenario);
+        result = save_write_game((file_name_buf + 1),is_scenario);
         if (result == 0) {
           if (is_scenario == 0) {
             if (game.multiplayer == 2) {
-              text_set_string_arg(0,(const char *)(file_name_buf + 1));
+              text_set_string_arg(0,(file_name_buf + 1));
               popup_game((const char *)&str_emailsaved);
             }
             else {
@@ -11859,15 +11859,13 @@ int __cdecl setup_choose_tribe(int player_slot,int game_mode,int in_game)
       if (leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][0]
           < 1) {
         *(ushort *)&leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][0]
-             = ~*(ushort *)
-                 (game_section_dialog_block.setup_slot_tribes[player_slot] * 0x30 + (iptr)((u8 *)leaders + 20) + title * 4) +
+             = ~*(ushort *)&leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][0] +
                1;
       }
       if (leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][1]
           < 1) {
         *(ushort *)&leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][1]
-             = ~*(ushort *)
-                 (game_section_dialog_block.setup_slot_tribes[player_slot] * 0x30 + (iptr)((u8 *)leaders + 22) + title * 4) +
+             = ~*(ushort *)&leaders[(game_section_dialog_block.setup_slot_tribes[player_slot])].titles[title][1] +
                1;
       }
     }

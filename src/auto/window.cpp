@@ -209,7 +209,7 @@ void DibSurface::wnd_blit_surface_rect(iptr rect)
     else {
       view = this + 1;
     }
-    blit_to_wnd((iptr)view,(RECT *)&bounds_rect,(iptr)&bounds_rect);
+    blit_to_wnd((iptr)view,(RECT *)&bounds_rect,(RECT *)&bounds_rect);
     ((WndBase *)(this + 1))->view_validate_rect((iptr)&bounds_rect);
   }
   else {
@@ -219,7 +219,7 @@ void DibSurface::wnd_blit_surface_rect(iptr rect)
     else {
       view2 = this + 1;
     }
-    blit_to_wnd((iptr)view2,(RECT *)rect,rect);
+    blit_to_wnd((iptr)view2,(RECT *)rect,(RECT *)rect);
     ((WndBase *)(this + 1))->view_validate_rect(rect);
   }
   return;
@@ -1456,7 +1456,7 @@ void WndBase::center()
 void WndBase::apply_palette_handle(iptr palette)
 
 {
-  wnd_obj_select_palette(native_wnd,*(i32 *)(palette + 0x404));
+  wnd_obj_select_palette(native_wnd,(i32)((GamePalette *)palette)->hpalette);
   return;
 }
 
@@ -4317,12 +4317,12 @@ int FrameWindow::draw_frame_borders(int bevel,i32 highlight_color2,i32 shadow_co
   }
   button_x = ui_metrics.border_width;
   for (i = 0; i < (int)caption_button_count; i++) {
-    width2 = (int)(*(int *)(caption_button_area + i * 0x1c + 0xc) * caption_height) / 0x18;
-    height2 = (int)(*(int *)(caption_button_area + i * 0x1c + 0x10) * caption_height) / 0x18;
+    width2 = (int)(caption_buttons[i].width * caption_height) / 0x18;
+    height2 = (int)(caption_buttons[i].height * caption_height) / 0x18;
     button_y2 = ((int)caption_height >> 1) - (height2 >> 1);
     rect_set_xywh((RECT *)&rect2,button_x,button_y2,width2,height2);
     gfx_set_scale_ratio(caption_height,0x18);
-    (*(Sprite **)(caption_button_area + i * 0x1c + 0x14))->draw((RECT *)sprite_rect,
+    caption_buttons[i].sprite->draw((RECT *)sprite_rect,
                this,button_x,button_y2);
     gfx_reset_zoom_scale();
     button_x = button_x + width2 + ui_metrics.padding;
@@ -4529,7 +4529,7 @@ void __cdecl frame_wnd_on_caption_button_click(int button_id)
     frame_wnd = child - 0x48;
   }
   if (((FrameWindow *)frame_wnd)->on_caption_button != 0) {
-    ((FrameWindow *)frame_wnd)->on_caption_button(*(i32 *)(frame_wnd + 0x200 + (button_id - 1000) * 0x1c));
+    ((FrameWindow *)frame_wnd)->on_caption_button(((FrameWindow *)frame_wnd)->caption_buttons[button_id - 1000].id);
   }
   return;
 }
@@ -4564,8 +4564,8 @@ void FrameWindow::layout()
   destroy_caption_buttons();
   button_x = ui_metrics.border_width;
   for (i = 0; i < (int)caption_button_count; i++) {
-    width = (int)(*(int *)(caption_button_area + i * 0x1c + 0xc) * caption_height) / 0x18;
-    height = (int)(*(int *)(caption_button_area + i * 0x1c + 0x10) * caption_height) / 0x18;
+    width = (int)(caption_buttons[i].width * caption_height) / 0x18;
+    height = (int)(caption_buttons[i].height * caption_height) / 0x18;
     rect_set_xywh((RECT *)button_rect,button_x,((int)caption_height >> 1) - (height >> 1),width,
                        height);
     this_00 = (Hotspot *)operator_new(0x40);
@@ -4575,16 +4575,16 @@ void FrameWindow::layout()
     else {
       hotspot = hotspot_ctor(this_00);
     }
-    *(i32 *)(caption_button_area + i * 0x1c + 0x18) = (i32)hotspot;
+    caption_buttons[i].hotspot = (u32)hotspot;
     if (this == (FrameWindow *)0x0) {
       native_wnd2 = (u8 *)0x0;
     }
     else {
       native_wnd2 = (u8 *)&window;
     }
-    (*(Hotspot **)(caption_button_area + i * 0x1c + 0x18))->create((iptr)native_wnd2,
+    ((Hotspot *)caption_buttons[i].hotspot)->create((iptr)native_wnd2,
                i + 1000,(iptr)button_rect);
-    (*(Hotspot **)(caption_button_area + i * 0x1c + 0x18))->set_click_callback(frame_wnd_on_caption_button_click);
+    ((Hotspot *)caption_buttons[i].hotspot)->set_click_callback(frame_wnd_on_caption_button_click);
     button_x = button_x + width + ui_metrics.padding;
   }
   return;
@@ -4594,24 +4594,19 @@ void FrameWindow::layout()
 void FrameWindow::add_caption_button(iptr sprite,i32 callback)
 
 {
-  u8 *slot;
   u32 index;
   i32 dim;
   
   if ((int)caption_button_count < 6) {
     index = caption_button_count;
     caption_button_count++;
-    *(iptr *)(close_caption_sprite_slot + index * 0x1c - 0x3c) = sprite;
-    *(i32 *)(caption_button_area + index * 0x1c) = callback;
+    caption_buttons[index].sprite = (Sprite *)sprite;
+    caption_buttons[index].id = callback;
     dim = ((Sprite *)sprite)->width();
-    *(i32 *)(close_caption_sprite_slot + index * 0x1c - 0x44) = dim;
+    caption_buttons[index].width = dim;
     dim = ((Sprite *)sprite)->height();
-    *(i32 *)(close_caption_sprite_slot + index * 0x1c - 0x40) = dim;
-    slot = close_caption_sprite_slot + index * 0x1c - 0x38;
-    slot[0] = '\0';
-    slot[1] = '\0';
-    slot[2] = '\0';
-    slot[3] = '\0';
+    caption_buttons[index].height = dim;
+    caption_buttons[index].hotspot = 0;
   }
   return;
 }
@@ -4640,11 +4635,11 @@ void FrameWindow::destroy_caption_buttons()
   int i;
   
   for (i = 0; i < 6; i++) {
-    if (((u32 *)&caption_button_slots)[i * 7] != 0) {
-      if ((Hotspot *)((u32 *)&caption_button_slots)[i * 7] != (Hotspot *)0x0) {
-        ((Hotspot *)((u32 *)&caption_button_slots)[i * 7])->scalar_destruct(1);
+    if (caption_buttons[i].hotspot != 0) {
+      if ((Hotspot *)caption_buttons[i].hotspot != (Hotspot *)0x0) {
+        ((Hotspot *)caption_buttons[i].hotspot)->scalar_destruct(1);
       }
-      ((u32 *)&caption_button_slots)[i * 7] = 0;
+      caption_buttons[i].hotspot = 0;
     }
   }
   return;
@@ -4663,18 +4658,13 @@ void FrameWindow::close()
 FrameWindow *FrameWindow::construct()
 
 {
-  u8 *slot;
   int i;
   i32 eh_prev;
   
   SurfaceWindow::construct();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 7);
   for (i = 0; i < 6; i++) {
-    slot = (u8 *)&caption_button_slots + i * 0x1c;
-    slot[0] = '\0';
-    slot[1] = '\0';
-    slot[2] = '\0';
-    slot[3] = '\0';
+    caption_buttons[i].hotspot = 0;
   }
   return this;
 }
@@ -5071,12 +5061,12 @@ int GameMenu::item_visible_index(MenuNode *item)
 
 {
   int index;
-  iptr cur;
+  MenuNode *cur;
   
   index = 1;
-  for (cur = (iptr)item->link->link; (cur != 0 && ((iptr)item != cur));
-      cur = *(iptr *)(cur + 0x10)) {
-    if ((*(byte *)(cur + 8) & 2) == 0) {
+  for (cur = item->link->link; (cur != (MenuNode *)0x0 && (item != cur));
+      cur = cur->next) {
+    if ((cur->flags_byte & 2) == 0) {
       index++;
     }
   }
@@ -5276,51 +5266,51 @@ void GameMenu::apply_item_checked(i32 item_id)
 void GameMenu::rebuild(iptr window)
 
 {
-  i32 *menu2;
+  MenuNode *menu2;
   int menu_index;
   int item_index;
-  i32 *item;
+  MenuNode *item;
   int i;
   i8 spec[256];
   
   if ((menu_flags & 0x8000) == 0) {
     spec[0] = 0;
-    menu2 = (i32 *)menus;
+    menu2 = menus;
     menu_index = 1;
-    for (; menu2 != (i32 *)0x0; menu2 = (i32 *)menu2[4]) {
-      if ((*(byte *)(menu2 + 2) & 2) == 0) {
-        crt_strcat((char *)((void *)spec),(const char *)((void *)*menu2));
+    for (; menu2 != (MenuNode *)0x0; menu2 = menu2->next) {
+      if ((menu2->flags_byte & 2) == 0) {
+        crt_strcat((char *)((void *)spec),(const char *)((void *)menu2->text));
         crt_strcat(spec,((i8 *)&menu_title_sep_str));
       }
       if (window == 0) {
         for (i = 0x1e; 0 < i; i--) {
           native_delete(menu_index,i);
         }
-        menu2[3] = 0;
+        menu2->field_0c = 0;
       }
       menu_index++;
     }
     if (window != 0) {
       native_build((iptr)spec);
     }
-    menu2 = (i32 *)menus;
+    menu2 = menus;
     menu_index = 1;
-    for (; menu2 != (i32 *)0x0; menu2 = *(i32 **)((int)menu2 + 0x10)) {
-      if ((*(byte *)((int)menu2 + 8) & 2) == 0) {
+    for (; menu2 != (MenuNode *)0x0; menu2 = menu2->next) {
+      if ((menu2->flags_byte & 2) == 0) {
         if (window != 0) {
           native_delete(menu_index,1);
         }
-        item = *(i32 **)((int)menu2 + 0x18);
+        item = menu2->link;
         item_index = 1;
-        for (; item != (i32 *)0x0; item = (i32 *)item[4]) {
-          if ((*(byte *)(item + 2) & 2) == 0) {
-            *(int *)((int)menu2 + 0xcU) = *(int *)((int)menu2 + 0xcU) + 1;
-            native_insert(menu_index,item_index,(const char *)(*item));
-            if ((*(byte *)(item + 2) & 1) != 0) {
-              apply_item_enabled(item[1]);
+        for (; item != (MenuNode *)0x0; item = item->next) {
+          if ((item->flags_byte & 2) == 0) {
+            menu2->field_0c = menu2->field_0c + 1;
+            native_insert(menu_index,item_index,(const char *)(item->text));
+            if ((item->flags_byte & 1) != 0) {
+              apply_item_enabled(item->id);
             }
-            if ((*(byte *)(item + 2) & 4) != 0) {
-              apply_item_checked(item[1]);
+            if ((item->flags_byte & 4) != 0) {
+              apply_item_checked(item->id);
             }
             item_index++;
           }
@@ -11045,16 +11035,16 @@ void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 w
 void Wnd::append_control(iptr ctrl)
 
 {
-  uptr last;
+  Control *last;
   
-  last = control_list;
-  if (last == 0) {
+  last = (Control *)control_list;
+  if (last == (Control *)0x0) {
     control_list = ctrl;
   }
   else {
-    for (; *(int *)(last + 0x20) != 0; last = *(uptr *)(last + 0x20)) {
+    for (; last->next_ctrl != 0; last = (Control *)last->next_ctrl) {
     }
-    *(iptr *)(last + 0x20) = ctrl;
+    last->next_ctrl = (u32)ctrl;
   }
   return;
 }
@@ -11368,8 +11358,7 @@ HWND __cdecl hotspot_create_hwnd(int *rect,Control *ctrl)
   width = rect_width((RECT *)rect);
   hotspot_hwnd = CreateWindowExA(4,str_mscontrolclass,((i8 *)&hotspot_wnd_title),0x50000000,*rect,rect[1],
                            width,height,hotspot_hwnd,hMenu,hInstance,lpParam);
-  width = (int)ctrl_init_block(hotspot_hwnd,(int)ctrl);
-  *(i32 *)(width + 0x2c) = 1;
+  ctrl_init_block(hotspot_hwnd,(int)ctrl)->kind = 1;
   SetWindowLongA(hotspot_hwnd,-4,(iptr)hotspot_wndproc);
   return hotspot_hwnd;
 }
@@ -11708,11 +11697,11 @@ void __cdecl dlg_radio_choice_button_cb(int button_id)
 
 {
   if (button_id == 0x65) {
-    ((ModalMenuWindow *)(err_report_ctx_block.choice_dlg_window + 0x48))->end_modal_loop();
+    err_report_ctx_block.choice_dlg_window->window.end_modal_loop();
   }
   else if (button_id == 0x66) {
     err_report_ctx_block.choice_dlg_selection = 0xffffffff;
-    ((ModalMenuWindow *)(err_report_ctx_block.choice_dlg_window + 0x48))->end_modal_loop();
+    err_report_ctx_block.choice_dlg_window->window.end_modal_loop();
   }
   return;
 }
@@ -12068,7 +12057,7 @@ i32 __stdcall surfwnd_subclass_wndproc(HWND hwnd,int msg,i32 wparam,uint lparam)
         else {
           owner_ptr = (u8 *)&self->window;
         }
-        self->blit_to_wnd((iptr)owner_ptr,&paint_rect,(iptr)&paint_rect);
+        self->blit_to_wnd((iptr)owner_ptr,&paint_rect,&paint_rect);
         EndPaint(hwnd,&ps);
       }
     }
@@ -12100,8 +12089,7 @@ i32 __stdcall surfwnd_subclass_wndproc(HWND hwnd,int msg,i32 wparam,uint lparam)
         dest_rect.bottom = self->get_width();
         dest_rect.bottom = (src_dim * dim_b) / dest_rect.bottom;
       }
-      src_dim = (int)self->get_dib();
-      hdcSrc = *(HDC *)(src_dim + 4);
+      hdcSrc = self->get_dib()->hdc;
       rop = 0xcc0020;
       src_dim = self->get_height();
       dim_b = self->get_width();

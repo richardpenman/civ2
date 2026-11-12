@@ -294,7 +294,7 @@ typedef struct DibSurface {
     void replace_color_clip(i32 from_color,i32 to_color);    /* 005c044a */
     void replace_color(iptr rect,i32 from_color,i32 to_color);    /* 005c0479 */
     void blit(DibSurface *src,RECT *dest_rect,RECT *src_rect);    /* 005c0593 */
-    void blit_to_wnd(iptr wnd,RECT *src_rect,iptr dest_pt);    /* 005c0979 */
+    void blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt);    /* 005c0979 */
     uint get_pixel(i32 x,i32 y);    /* 005c0bf2 */
     void set_pixel(i32 x,i32 y,i32 color);    /* 005c0c5d */
     void set_palette(iptr palette);    /* 005c0cc5 */
@@ -973,7 +973,7 @@ typedef struct Sprite {
     void unlock();    /* 005cf337 */
     bool has_data();    /* 005cf36f */
     void replace_color(i32 old_color,i32 new_color);    /* 005cf467 */
-    int encode_from_surface(iptr surface,int key_mode,RECT *src_rect);    /* 005cf64c */
+    int encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect);    /* 005cf64c */
     int *blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y);    /* 005d056c */
     int *blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y,i32 color);    /* 005d10cd */
     void merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy);    /* 005d1612 */
@@ -1031,7 +1031,7 @@ typedef struct NetGamelistView {
     void restore_selection();    /* 004244e0 */
     DialogOption *find_option(iptr game_name,iptr host_name);    /* 00424688 */
     void update_details();    /* 0042472a */
-    void get_entry_names(iptr option,iptr out_game_name,iptr out_host_name);    /* 004247b2 */
+    void get_entry_names(DialogOption *option,char *out_game_name,char *out_host_name);    /* 004247b2 */
     void add_info_lines();    /* 0042486f */
     void clear();    /* 004253ef */
     DialogOption *add_entry(const char *name2,uint id);    /* 004254a8 */
@@ -2206,7 +2206,7 @@ typedef struct FrameWindow : SurfaceWindow {
     union { i32 timer_cache; u32 timer_last_value; };
     u8 pad_1ec[16];
     u32 caption_button_count;
-    union { ParleyCaptionButton caption_buttons[6]; struct { u8 caption_button_area[8]; u8 gap_208_1[16]; u32 caption_button_slots[34]; }; struct { u8 gap_200_2[80]; u8 close_caption_sprite_slot[4]; }; };
+    ParleyCaptionButton caption_buttons[6];   /* 0x200 */
     CaptionButtonFn on_caption_button;
     union { i32 frame_left; u32 frame_rect; };
     union { i32 frame_top; u32 frame_top_u; };
@@ -2214,7 +2214,8 @@ typedef struct FrameWindow : SurfaceWindow {
     u32 frame_bottom;
     u32 client_rect;
     union { i32 client_top; u32 client_top_u; };
-    u8 pad_2c4[8];
+    u32 client_right;               /* 0x2c4 */
+    u32 client_bottom;              /* 0x2c8 */
     uptr title_font;
     uptr title_small_font;
     u8 text_font[4];
@@ -2236,6 +2237,18 @@ typedef struct FrameWindow : SurfaceWindow {
     void create(const char *title,uint flags,int x,int y,int width, int height,u32 resize_width,u32 caption_h,u32 border_w);    /* 005534bc */
 } FrameWindow;
 static_assert(sizeof(FrameWindow) == 0x2d8, "");
+static_assert(__builtin_offsetof(FrameWindow, caption_buttons) == 0x200, "");
+static_assert(__builtin_offsetof(FrameWindow, client_rect) == 0x2bc, "");
+static_assert(__builtin_offsetof(FrameWindow, client_right) == 0x2c4, "");
+static_assert(__builtin_offsetof(FrameWindow, client_bottom) == 0x2c8, "");
+
+/* The power graph (powergraph_show 00431d22): a FrameWindow and its
+   font, on the stack (0x2e0 bytes, the font destroyed first). */
+typedef struct PowerGraphWindow : FrameWindow {
+    GameFont font;                  /* 0x2d8 */
+} PowerGraphWindow;
+static_assert(sizeof(PowerGraphWindow) == 0x2e0, "");
+static_assert(__builtin_offsetof(PowerGraphWindow, font) == 0x2d8, "");
 
 /* Called when a video ends, or reaches its cue frame. */
 typedef void (*VideoNotifyFn)(void);
@@ -2465,6 +2478,7 @@ typedef struct ParleyWindow : SurfaceWindow {
     void build_city_list(int pane,int keep_selection);    /* 00588f36 */
 } ParleyWindow;
 static_assert(sizeof(ParleyWindow) == 0x10430, "");
+static_assert(__builtin_offsetof(ParleyWindow, list_rects) == 0x3c0, "");
 
 /* The Civilopedia window (pedia_window_ctor 004f3feb; one instance,
    pedia_wnd.window, whose members after 0x114 the code also
@@ -2647,20 +2661,17 @@ typedef struct CouncilWindow : SurfaceWindow {
     union { Dialog dialog; u32 council_dialog; };
     union { DllHandle dll; u8 council_dll_handle[4]; };
     u8 council_text_file[4];
-    u8 pad_e38[20];
-    u8 council_speech_lines[8];
+    u8 pad_e38[28];
     union { i32 council_settings[6]; struct { i32 council_era; u32 advisor_opinions[5]; }; };
     u32 council_civ;
     u32 council_active_2;
-    u32 advisor_codes;
-    u32 advisor_codes_part2;
-    u32 advisor_codes_part3;
-    u32 advisor_codes_part4;
-    u32 speech_line_advisors[3];
-    u32 speech_line_values[3];
-    u32 speech_line_params[6];
-    u8 advisor_code_slots[24];
-    u8 pad_ecc[732];
+    char advisor_codes[5][3];       /* 0xe74 the COUNCIL.TXT sections: "M", "S", "T", "F", "A" and the opinion */
+    u8 pad_e83;
+    u32 speech_line_advisors[3];    /* 0xe84 (load_speech clears five words from here) */
+    u32 speech_line_values[3];      /* 0xe90 */
+    u32 speech_line_params[3];      /* 0xe9c */
+    char speech_lines[3][255];      /* 0xea8 */
+    u8 pad_11a5[3];
     i32 speech_advisor_index;
     i32 speech_line_y;
     i32 speech_rect;
@@ -2688,6 +2699,12 @@ typedef struct CouncilWindow : SurfaceWindow {
     i32 advisor_from_letter(i8 *token);    /* 00518392 */
 } CouncilWindow;
 static_assert(sizeof(CouncilWindow) == 0x1330, "");
+static_assert(__builtin_offsetof(CouncilWindow, council_settings) == 0xe54, "");
+static_assert(__builtin_offsetof(CouncilWindow, advisor_codes) == 0xe74, "");
+static_assert(__builtin_offsetof(CouncilWindow, speech_line_advisors) == 0xe84, "");
+static_assert(__builtin_offsetof(CouncilWindow, speech_line_params) == 0xe9c, "");
+static_assert(__builtin_offsetof(CouncilWindow, speech_lines) == 0xea8, "");
+static_assert(__builtin_offsetof(CouncilWindow, speech_advisor_index) == 0x11a8, "");
 static_assert(__builtin_offsetof(CouncilWindow, advisor_button_1) == 0x11c0, "");
 static_assert(__builtin_offsetof(CouncilWindow, advisor_button_4) == 0x11fc, "");
 static_assert(__builtin_offsetof(CouncilWindow, advisor_button_3) == 0x1238, "");
@@ -2744,6 +2761,7 @@ typedef struct TaxRateDialog : FrameWindow {
 } TaxRateDialog;
 static_assert(sizeof(TaxRateDialog) == 0x510, "");
 static_assert(__builtin_offsetof(TaxRateDialog, rate_locked) == 0x34c, "");
+static_assert(__builtin_offsetof(TaxRateDialog, lock_checkboxes) == 0x418, "");
 
 /* A map view window (mapview_ctor 0047dce0, 0x3f0 bytes;
    map_views_block.map_view_recs[8], view 0 is the main map).  The members

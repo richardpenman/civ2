@@ -7151,7 +7151,7 @@ void DibSurface::blit(DibSurface *src,RECT *dest_rect,RECT *src_rect)
 }
 
 /* 005c0979 auto */
-void DibSurface::blit_to_wnd(iptr wnd,RECT *src_rect,iptr dest_pt)
+void DibSurface::blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt)
 
 {
   char locked;
@@ -7172,8 +7172,8 @@ void DibSurface::blit_to_wnd(iptr wnd,RECT *src_rect,iptr dest_pt)
     }
     dest_y = ((WndBase *)wnd)->get_palette_obj();
     apply_palette((GamePalette *)dest_y);
-    dest_y = *(i32 *)(dest_pt + 4);
-    dest_x = *(i32 *)dest_pt;
+    dest_y = dest_pt->top;
+    dest_x = dest_pt->left;
     window = ((WndBase *)wnd)->get_window();
     height = rect_height(src_rect);
     width = rect_width(src_rect);
@@ -8355,7 +8355,7 @@ void Sprite::grab_surface_rect(iptr surface,iptr rect)
 {
   u32 handle;
   
-  handle = encode_from_surface(surface,0xffffffff,(RECT *)rect);
+  handle = encode_from_surface((DibSurface *)surface,0xffffffff,(RECT *)rect);
   data_handle = handle;
   lock();
   return;
@@ -8369,7 +8369,7 @@ void Sprite::encode_rect(iptr surface,int x,int y,int width,int height)
   tagRECT rect;
   
   SetRect(&rect,x,y,x + width,height + y);
-  handle = encode_from_surface(surface,0xffffffff,&rect);
+  handle = encode_from_surface((DibSurface *)surface,0xffffffff,&rect);
   data_handle = handle;
   lock();
   return;
@@ -8381,7 +8381,7 @@ void Sprite::grab_rect(iptr surface,uint key_color,iptr rect)
 {
   u32 handle;
   
-  handle = encode_from_surface(surface,key_color & 0xff,(RECT *)rect);
+  handle = encode_from_surface((DibSurface *)surface,key_color & 0xff,(RECT *)rect);
   data_handle = handle;
   lock();
   return;
@@ -8395,7 +8395,7 @@ void Sprite::grab_from_surface(iptr surface,uint key_color,int x,int y,int width
   tagRECT rect;
   
   SetRect(&rect,x,y,width + x,height + y);
-  handle = encode_from_surface(surface,key_color & 0xff,&rect);
+  handle = encode_from_surface((DibSurface *)surface,key_color & 0xff,&rect);
   data_handle = handle;
   lock();
   return;
@@ -8521,7 +8521,7 @@ void Sprite::replace_color(i32 old_color,i32 new_color)
 }
 
 /* 005cf64c auto */
-int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
+int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
 
 {
   char locked;
@@ -8554,23 +8554,23 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
   all_empty = 1;
   SetRect(&rect,src_rect->left,src_rect->top,src_rect->right,
           src_rect->bottom);
-  IntersectRect(&rect,&rect,(RECT *)(surface + 0x14));
+  IntersectRect(&rect,&rect,(RECT *)&surface->clip_left);
   min_left = 10000;
   max_right = 0;
   total_size = 0;
   width2 = rect.right - rect.left;
   height2 = rect.bottom - rect.top;
-  locked = ((DibSurface *)surface)->is_locked();
+  locked = surface->is_locked();
   if (locked == '\0') {
     dbg_log((const char *)&str_warning_port_not_locked_on_sprite_extrac);
     was_locked = 0;
-    ((DibSurface *)surface)->lock();
+    surface->lock();
   }
-  top_row = (u8 *)((DibSurface *)surface)->pixel_ptr(rect.left,rect.top);
+  top_row = (u8 *)surface->pixel_ptr(rect.left,rect.top);
   if (top_row == (u8 *)0x0) {
     dbg_logf_int2((const char *)&str_error_sprite_extract_illegal_pixel_mappi,rect.left,rect.top);
     if (was_locked == 0) {
-      ((DibSurface *)surface)->unlock();
+      surface->unlock();
     }
     handle = 0;
   }
@@ -8588,7 +8588,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
         if ((*scan != key2) || (key_mode == -2)) {
           first_row2 = row;
           scan++;
-          top_row = (u8 *)((DibSurface *)surface)->prev_row((iptr)top_row);
+          top_row = (u8 *)surface->prev_row((iptr)top_row);
           row = height2;
           all_empty = 0;
           break;
@@ -8596,10 +8596,10 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
         scan++;
       }
       row++;
-      top_row = (u8 *)((DibSurface *)surface)->next_row((iptr)top_row);
+      top_row = (u8 *)surface->next_row((iptr)top_row);
     }
     if (all_empty == 0) {
-      bottom_row = (u8 *)((DibSurface *)surface)->pixel_ptr(rect.left,
+      bottom_row = (u8 *)surface->pixel_ptr(rect.left,
                                   rect.top + height2 - 1);
       row = 0;
       while (row < height2) {
@@ -8614,7 +8614,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
           scan++;
         }
         row++;
-        bottom_row = (u8 *)((DibSurface *)surface)->prev_row((iptr)bottom_row);
+        bottom_row = (u8 *)surface->prev_row((iptr)bottom_row);
       }
       run_ptrs = (u8 **)operator_new(0xa00);
       run_starts = (i32 *)operator_new(0xa00);
@@ -8658,7 +8658,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
                        run_starts[row];
           }
           row++;
-          top_row = (u8 *)((DibSurface *)surface)->next_row((iptr)top_row);
+          top_row = (u8 *)surface->next_row((iptr)top_row);
         }
         if (data_ptr != 0) {
           unlock();
@@ -8672,7 +8672,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
         if (handle == 0) {
           dbg_logf((const char *)&str_error_couldn_t_allocate_memory_for_sprit,total_size);
           if (was_locked == 0) {
-            ((DibSurface *)surface)->unlock();
+            surface->unlock();
           }
           operator_delete(run_ptrs);
           operator_delete(run_starts);
@@ -8703,7 +8703,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
           *out = 0;
           out = (i32 *)mem_handle_unlock(handle);
           if (was_locked == 0) {
-            ((DibSurface *)surface)->unlock();
+            surface->unlock();
           }
           operator_delete(run_ptrs);
           operator_delete(run_starts);
@@ -8725,7 +8725,7 @@ int Sprite::encode_from_surface(iptr surface,int key_mode,RECT *src_rect)
       offset_x = 0;
       offset_y = 0;
       if (was_locked == 0) {
-        ((DibSurface *)surface)->unlock();
+        surface->unlock();
       }
       data_ptr = 0;
       handle = 0;

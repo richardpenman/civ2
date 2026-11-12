@@ -141,7 +141,7 @@ struct err_report_ctx_block {
     u8 palette_static_half_count_rest[8];
     i32 choice_dlg_selection;  /* 006e5018 */
     u8 choice_dlg_selection_rest[4];
-    int choice_dlg_window;  /* 006e5020 */
+    struct SurfaceWindow *choice_dlg_window;  /* 006e5020 the choice dialog's window (FUN_005e0863) */
     u8 choice_dlg_window_rest[4];
     IndeoOptions indeo;  /* 006e5028 */
     i32 avi_indeo_frame_extra_i32;  /* 006e50dc */

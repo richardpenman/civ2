@@ -4399,10 +4399,10 @@ void __cdecl diplo_leader_wnd_launch(int civ2,int civ)
       parent_wnd2 = 0;
     }
     else {
-      parent_wnd2 = (iptr)diplo_leader.window + 0x110;
+      parent_wnd2 = (iptr)&diplo_leader.window->leader_surface.window;
     }
     dlg_set_parent_window(parent_wnd2);
-    dlg_set_palette((iptr)diplo_leader.window + 0x224);
+    dlg_set_palette((iptr)&diplo_leader.window->leader_palette);
     diplo_leader.window->show();
   }
   return;
@@ -4812,7 +4812,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       j = j + 1) {
     str_append_max((aCStack_641 + 1),(const char *)(words + j * 0x32),sizeof aCStack_641 - 1);
     str_append_max((aCStack_641 + 1),(const char *)&str_empty_104,sizeof aCStack_641 - 1);
-    value = font2.text_width((const char *)(aCStack_641 + 1));
+    value = font2.text_width((aCStack_641 + 1));
     if (text_width < value) break;
   }
   if ((words[j * 0x32] == '\0') || (word2 == 2)) {
@@ -4821,7 +4821,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       value = lstrlenA(aCStack_641 + 1);
       char_pos = (char)value;
       while ((char_pos != '\0' &&
-             (value = font2.text_width((const char *)(aCStack_641 + 1)),
+             (value = font2.text_width((aCStack_641 + 1)),
              text_width < value))) {
         aCStack_641[char_pos + 1] = '\0';
         char_pos--;
@@ -4835,11 +4835,11 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
     CopyRect(&draw_rect,&text_rect);
     if (top_techs[0xc] != 0) {
       gfx_set_text_color_index(10);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
                  &draw_rect,0);
       OffsetRect(&draw_rect,-1,-1);
       gfx_set_text_color_index(text_colors[style_era]);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
                  &draw_rect,0);
     }
   }
@@ -4852,7 +4852,7 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       truncated = 0;
       char_pos = (char)value;
       while ((char_pos != '\0' &&
-             (value = font2.text_width((const char *)(aCStack_641 + 1)),
+             (value = font2.text_width((aCStack_641 + 1)),
              text_width < value))) {
         aCStack_641[char_pos + 1] = '\0';
         char_pos--;
@@ -4874,11 +4874,11 @@ void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&
       value = font2.font_cached_height();
       OffsetRect(&draw_rect,0,((rect_height2 >> 1) - value) + 1);
       gfx_set_text_color_index(10);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
                  &draw_rect,1);
       OffsetRect(&draw_rect,-1,-1);
       gfx_set_text_color_index(text_colors[style_era]);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
                  &draw_rect,1);
     }
     str_clear((char *)line2_buf);

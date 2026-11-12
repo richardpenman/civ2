@@ -137,7 +137,7 @@ void __cdecl spaceship_wnd_draw_title(int civ)
   text_append((const char *)&str_empty_124);
   gfx_set_text_color_index(0xfa);
   SetRect(&rect,0,0,0x27f,0x28);
-  spaceship_launch_sprite_xs_block.spaceship_wnd->surface_wnd.draw_text_in_rect((iptr)spaceship_launch_sprite_xs_block.spaceship_wnd + 0x8c4,(const char *)&textbuf.buf,&rect,
+  spaceship_launch_sprite_xs_block.spaceship_wnd->surface_wnd.draw_text_in_rect((iptr)&spaceship_launch_sprite_xs_block.spaceship_wnd->large_font,(const char *)&textbuf.buf,&rect,
              0);
   win_flush_pending_msgs();
   return;

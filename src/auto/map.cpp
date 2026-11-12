@@ -1542,12 +1542,12 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
       net.blocked_input_arg1 = screen_x;
       net.blocked_input_arg2 = screen_y;
       net.blocked_input_arg3 = alt_click;
-      net.blocked_input_window = wnd_get_active_child();
-      if (net.blocked_input_window == 0) {
-        net.blocked_input_window = 0;
+      net.blocked_input_window = (MapView *)wnd_get_active_child();
+      if (net.blocked_input_window == (MapView *)0x0) {
+        net.blocked_input_window = (MapView *)0x0;
       }
       else {
-        net.blocked_input_window -= 0x48;
+        net.blocked_input_window = (MapView *)((u8 *)net.blocked_input_window - offsetof(SurfaceWindow, window));
       }
     }
   }
@@ -1615,12 +1615,12 @@ void __cdecl map_window_double_click(i32 screen_x,i32 screen_y)
     net.blocked_input_kind = 2;
     net.blocked_input_arg1 = screen_x;
     net.blocked_input_arg2 = screen_y;
-    net.blocked_input_window = wnd_get_active_child();
-    if (net.blocked_input_window == 0) {
-      net.blocked_input_window = 0;
+    net.blocked_input_window = (MapView *)wnd_get_active_child();
+    if (net.blocked_input_window == (MapView *)0x0) {
+      net.blocked_input_window = (MapView *)0x0;
     }
     else {
-      net.blocked_input_window -= 0x48;
+      net.blocked_input_window = (MapView *)((u8 *)net.blocked_input_window - offsetof(SurfaceWindow, window));
     }
   }
   return;
