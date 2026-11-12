@@ -1,0 +1,56 @@
+# The city window's units present (Rome on the autosave): the menu of
+# orders for a unit in the city (its handler called: that part of the
+# window is off the replay's screen): Escape, then orders picked by keys,
+# last Disband clicked.
+wait 8000
+key Down Down Down Down
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_command 4e2803 0 528
+wait 3000
+key Return
+wait 4000
+click 205 245
+wait 4000
+shot c0
+call city_window_present_unit_menu 506a42 0
+wait 3000
+shot u0
+key Escape
+wait 2000
+call city_window_present_unit_menu 506a42 0
+wait 3000
+key Down                    # Sleep
+key Return
+wait 3000
+shot u1
+call city_window_present_unit_menu 506a42 0
+wait 3000
+shot u2
+key Down                    # Fortify
+key Down
+key Return
+wait 3000
+shot u3
+call city_window_present_unit_menu 506a42 0
+wait 3000
+shot u4
+key Down                    # the second item
+key Return
+wait 3000
+shot u5
+call city_window_present_unit_menu 506a42 0
+wait 3000
+shot u6
+click 420 426               # Disband
+wait 500
+click 360 530               # OK
+wait 3000
+shot u7
+key Escape
+wait 3000
+shot c1
