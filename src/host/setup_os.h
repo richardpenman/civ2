@@ -36,12 +36,12 @@ int setup_image_in(const char *dir, int depth, char *out, size_t size);
 int image_extract_cabinet(const char *cue, const char *dir, char *cab, size_t size);
 /* the image's CIV2/KINGS, VIDEO into game_dir, where it has none */
 int image_copy_videos(const char *cue, const char *game_dir);
-/* its audio tracks as game_dir/Music/TrackNN.ogg (Ogg Vorbis); with
-   --CueSheetFuzzyMatch, the boundaries between them moved to the silence
-   nearby */
+/* its audio tracks as game_dir/Music/TrackNN.ogg (Ogg Vorbis), the
+   boundaries between them moved to the silence nearby where the cue sheet
+   is a second or two off (unless setup_fix_cue_gaps is 0) */
 int image_encode_music(const char *cue, const char *game_dir);
-/* (setup.c) the command line has this flag (any case) */
-int setup_has_flag(const char *flag);
+/* 1; 0 with --no-fix-cue-gaps (setup.c): the cue sheet's marks as they are */
+extern int setup_fix_cue_gaps;
 /* the music of the CD (cd: its folder) read from its drive (os_cd_open):
    1: there is (the drive reads its audio tracks), 0: none (not a CD in
    a drive, no audio tracks), -1: the drive could not be read */

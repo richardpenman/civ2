@@ -631,14 +631,16 @@ static int encode_music(const struct audio *a, const char *game_dir)
     return ok;
 }
 
-/* --CueSheetFuzzyMatch: a cue sheet's INDEX 01 marks can be off by a
+/* A cue sheet's INDEX 01 marks can be off by a
  * couple of seconds (e.g. late by the 2 s gap between tracks, with no
  * INDEX 00), so that a track's file ends with the next one's opening.  Each
  * boundary between two audio tracks that follow each other in one file is
  * moved to the quietest sector within FUZZY_WINDOW of it (of equally quiet
  * ones, the nearest), if that is silent (FUZZY_SILENT) and the sector
  * before the mark is not already: a cue sheet that is right is read as it
- * is.  Each boundary's outcome is told on stderr. */
+ * is.  (Off with --no-fix-cue-gaps.)  Each boundary's outcome is told on stderr. */
+int setup_fix_cue_gaps = 1;
+
 #define FUZZY_WINDOW 225        /* sectors: 3 s */
 #define FUZZY_SILENT 1074LL     /* mean square of a sector's samples: -60 dBFS (32.77^2) */
 
@@ -673,7 +675,7 @@ static void fuzzy_boundaries(struct audio *a)
             continue;
         }
         if (b - 1 >= lo && sector_power(buf + (b - 1 - lo) * RAW) < FUZZY_SILENT) {
-            fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary kept (silent already)\n",
+            fprintf(stderr, "setup: fix-cue-gaps: tracks %d/%d: boundary kept (silent already)\n",
                     a->t[i].number, a->t[i + 1].number);
             free(buf);
             continue;
@@ -688,11 +690,11 @@ static void fuzzy_boundaries(struct audio *a)
         }
         free(buf);
         if (best < 0 || best_p >= FUZZY_SILENT) {
-            fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary kept (no silence near it)\n",
+            fprintf(stderr, "setup: fix-cue-gaps: tracks %d/%d: boundary kept (no silence near it)\n",
                     a->t[i].number, a->t[i + 1].number);
             continue;
         }
-        fprintf(stderr, "setup: CueSheetFuzzyMatch: tracks %d/%d: boundary moved %+lld sectors (%+.2f s)\n",
+        fprintf(stderr, "setup: fix-cue-gaps: tracks %d/%d: boundary moved %+lld sectors (%+.2f s)\n",
                 a->t[i].number, a->t[i + 1].number, best - b, (best - b) / 75.0);
         a->t[i].end = a->t[i + 1].start = best;
     }
@@ -718,7 +720,7 @@ int image_encode_music(const char *cue, const char *game_dir)
         a.t[a.n].ctx = d->f[t->file];
         a.n++;
     }
-    if (setup_has_flag("--CueSheetFuzzyMatch"))
+    if (setup_fix_cue_gaps)
         fuzzy_boundaries(&a);
     ok = encode_music(&a, game_dir);
     if (ok == ENC_UNREAD) {

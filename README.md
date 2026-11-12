@@ -15,9 +15,9 @@ disc image (`.cue`/`.bin`). Download the program for your system:
 
 The first time, it finds your copy of the game (or asks where it is) and sets it up, music
 included when it comes from the CD or a disc image. `--setup [FOLDER or IMAGE.cue]` sets it
-up again. With `--CueSheetFuzzyMatch`, a disc image's music tracks end at the silence before
-each boundary rather than exactly where the cue sheet says, for cue sheets whose track marks
-are a second or two off.
+up again. From a disc image, each music track ends at the silence before the next one where
+the cue sheet's track marks are a second or two off (`--no-fix-cue-gaps` with `--setup` cuts
+them exactly where the cue sheet says).
 
 OpenCiv2 fixes the original game's bugs ([BUGS.md](docs/BUGS.md)) and adds the interface
 improvements of FoxAhead's [CIV2UIA](https://github.com/FoxAhead/Civ2-UI-Additions) (mouse
