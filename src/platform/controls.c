@@ -217,11 +217,183 @@ static void edit_font_margins(Window *w)
     e->left_margin = e->right_margin = width / 2;
 }
 
+/* Line breaking classes (UAX #14) of the characters in the game's texts:
+ * ASCII, Latin-1 and the Windows-1252 additions as the Unicode characters
+ * they convert to; Wine's ScriptBreak (usp10 breaking.c) decides where a
+ * line may break from them. */
+enum { LB_AL, LB_BA, LB_BB, LB_B2, LB_BK, LB_CL, LB_CM, LB_CP, LB_CR, LB_EX, LB_GL, LB_HY, LB_IN,
+       LB_IS, LB_LF, LB_NL, LB_NU, LB_OP, LB_PO, LB_PR, LB_QU, LB_SP, LB_SY };
+
+static int lb_class(unsigned char c)
+{
+    static const char ascii[] = /* 0x20 .. 0x7e */
+        "\x15\x09\x14\x00\x13\x12\x00\x14\x11\x07\x00\x13\x0d\x0b\x0d\x16"   /*  !"#$%&'()*+,-./ */
+        "\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x0d\x0d\x00\x00\x00\x09"   /* 0-9 :;<=>? */
+        "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"   /* @A-O */
+        "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11\x13\x07\x00\x00"   /* P-Z [\]^_ */
+        "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"   /* `a-o */
+        "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x11\x01\x05\x00";      /* p-z {|}~ */
+    if (c >= 0x20 && c < 0x7f)
+        return ascii[c - 0x20];
+    switch (c) {
+    case '\t': return LB_BA;
+    case '\n': return LB_LF;
+    case '\v': case '\f': return LB_BK;
+    case '\r': return LB_CR;
+    case 0x80: return LB_PR;                    /* euro sign */
+    case 0x82: case 0x84: return LB_OP;         /* low quotation marks */
+    case 0x85: return LB_IN;                    /* ellipsis */
+    case 0x89: return LB_PO;                    /* per mille */
+    case 0x8b: case 0x91: case 0x92: case 0x93: case 0x94: case 0x9b: return LB_QU;
+    case 0x96: return LB_BA;                    /* en dash */
+    case 0x97: return LB_B2;                    /* em dash */
+    case 0x81: case 0x8d: case 0x8f: case 0x90: case 0x9d: return LB_CM;
+    case 0xa0: return LB_GL;
+    case 0xa1: case 0xbf: return LB_OP;
+    case 0xa2: case 0xb0: return LB_PO;
+    case 0xa3: case 0xa4: case 0xa5: case 0xb1: return LB_PR;
+    case 0xab: case 0xbb: return LB_QU;
+    case 0xad: return LB_BA;
+    case 0xb4: return LB_BB;
+    }
+    return c < 0x20 || c == 0x7f ? LB_CM : LB_AL;
+}
+
+/* soft[i]: a line may break before character i (SCRIPT_LOGATTR.fSoftBreak),
+ * by Wine's BREAK_line (the rules for the classes above). */
+static void edit_soft_breaks(const char *t, int n, char *soft)
+{
+    enum { B_NONE, B_X, B_R, B_S };
+    char *cls = (char *)malloc(n + 1), *before = (char *)malloc(n + 1);
+    int i, j;
+#define ELSE_BREAK(k, v) do { if (!before[k]) before[k] = (v); } while (0)
+    for (i = 0; i < n; i++) {
+        cls[i] = (char)lb_class((unsigned char)t[i]);
+        before[i] = B_NONE;
+    }
+    before[0] = B_X;                                    /* LB2 - LB3 */
+    for (i = 0; i < n; i++) {
+        switch (cls[i]) {
+        case LB_CR:                                     /* LB4 - LB6 */
+            if (i < n - 1 && cls[i + 1] == LB_LF) {
+                ELSE_BREAK(i, B_X);
+                ELSE_BREAK(i + 1, B_X);
+                break;
+            }
+            /* fall through */
+        case LB_LF: case LB_NL: case LB_BK:
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_R);
+            ELSE_BREAK(i, B_X);
+            break;
+        case LB_SP:                                     /* LB7 */
+            ELSE_BREAK(i, B_X);
+            break;
+        }
+    }
+    for (i = 0; i < n; i++)                             /* LB9 - LB10 */
+        if (cls[i] == LB_CM) {
+            if (i == 0)
+                cls[i] = LB_AL;
+            else
+                switch (cls[i - 1]) {
+                case LB_SP: case LB_BK: case LB_CR: case LB_LF: case LB_NL: cls[i] = LB_AL; break;
+                default: cls[i] = cls[i - 1];
+                }
+        }
+    for (i = 0; i < n; i++) {
+        switch (cls[i]) {
+        case LB_GL:                                     /* LB12, LB12a */
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_X);
+            if (i > 0 && cls[i - 1] != LB_SP && cls[i - 1] != LB_BA && cls[i - 1] != LB_HY)
+                ELSE_BREAK(i, B_X);
+            break;
+        case LB_CL: case LB_CP: case LB_EX: case LB_IS: case LB_SY:     /* LB13 */
+            ELSE_BREAK(i, B_X);
+            break;
+        case LB_OP:                                     /* LB14 */
+            while (i < n - 1 && cls[i + 1] == LB_SP) {
+                ELSE_BREAK(i + 1, B_X);
+                i++;
+            }
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_X);
+            break;
+        case LB_QU:                                     /* LB15 */
+            j = i + 1;
+            while (j < n - 1 && cls[j] == LB_SP)
+                j++;
+            if (j < n && cls[j] == LB_OP)
+                for (; j > i; j--)
+                    ELSE_BREAK(j, B_X);
+            break;
+        case LB_B2:                                     /* LB17 */
+            j = i + 1;
+            while (j < n && cls[j] == LB_SP)
+                j++;
+            if (j < n && cls[j] == LB_B2)
+                for (; j > i; j--)
+                    ELSE_BREAK(j, B_X);
+            break;
+        }
+    }
+    for (i = 0; i < n; i++) {
+        switch (cls[i]) {
+        case LB_SP:                                     /* LB18 */
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_S);
+            break;
+        case LB_QU:                                     /* LB19 */
+            ELSE_BREAK(i, B_X);
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_X);
+            break;
+        case LB_BA: case LB_HY:                         /* LB21 */
+            ELSE_BREAK(i, B_X);
+            break;
+        case LB_BB:
+            if (i < n - 1)
+                ELSE_BREAK(i + 1, B_X);
+            break;
+        case LB_IN:                                     /* LB22 */
+            if (i > 0 && (cls[i - 1] == LB_AL || cls[i - 1] == LB_IN || cls[i - 1] == LB_NU))
+                ELSE_BREAK(i, B_X);
+            break;
+        }
+        if (i < n - 1) {
+            int a = cls[i], b = cls[i + 1];
+            if ((a == LB_AL && b == LB_NU) || (a == LB_NU && b == LB_AL) ||         /* LB23 */
+                (a == LB_PR && b == LB_AL) || (a == LB_PO && b == LB_AL) ||         /* LB24 */
+                ((a == LB_CL || a == LB_CP) && (b == LB_PO || b == LB_PR)) ||       /* LB25 */
+                (a == LB_NU && (b == LB_PO || b == LB_PR)) ||
+                ((a == LB_PO || a == LB_PR) && (b == LB_OP || b == LB_NU)) ||
+                ((a == LB_HY || a == LB_IS || a == LB_NU || a == LB_SY) && b == LB_NU) ||
+                (a == LB_AL && b == LB_AL) ||                                       /* LB28 */
+                (a == LB_IS && b == LB_AL) ||                                       /* LB29 */
+                ((a == LB_AL || a == LB_NU) && b == LB_OP) ||                       /* LB30 */
+                (a == LB_CP && (b == LB_AL || b == LB_NU)))
+                ELSE_BREAK(i + 1, B_X);
+        }
+    }
+    for (i = 0; i < n - 1; i++)                         /* LB31 */
+        ELSE_BREAK(i + 1, B_S);
+    for (i = 0; i < n; i++)
+        soft[i] = before[i] != B_X;
+#undef ELSE_BREAK
+    free(cls);
+    free(before);
+}
+
 /* The lines of a multi-line edit, as Wine's EDIT_BuildLineDefs_ML: a hard
- * break at "\r\n" and, unless it scrolls sideways, a soft break after the
- * last space that fits the format rectangle (a word too long for a line is
- * broken where it overflows).  starts/lens: the lines' characters, without
- * the hard break; returns the number of lines (at least 1). */
+ * break at "\r\n" or "\n" ("\r\r\n", a soft one, without its first "\r")
+ * and, unless it scrolls sideways, a wrap when the line is wider than the
+ * format rectangle: from a guess in proportion to how much too wide it is,
+ * back to a break before (UAX #14, edit_soft_breaks) until what is left fits
+ * (so a line may end before the last word that would fit); with no break,
+ * characters taken off its end until it fits.  starts/lens: the lines'
+ * characters, without the line ends; returns the number of lines (at
+ * least 1). */
 #define EDIT_MAX_LINES 1024
 static int edit_layout(Window *w, int *starts, int *lens)
 {
@@ -232,51 +404,64 @@ static int edit_layout(Window *w, int *starts, int *lens)
                 ((w->exstyle & WS_EX_CLIENTEDGE) ? 2 : 0);
     int wrap = (w->style & ES_MULTILINE) && !(w->style & (ES_AUTOHSCROLL | WS_HSCROLL)) && f;
     int n = 0, i = 0;
+    char *soft = NULL;
     for (;;) {
-        int end = i, next;
-        while (end < e->len && !(e->text[end] == '\r' && end + 1 < e->len && e->text[end + 1] == '\n'))
+        int end = i, next, net;
+        while (end < e->len && e->text[end] != '\n' && !(e->text[end] == '\r' && end + 1 < e->len && e->text[end + 1] == '\n'))
             end++;
-        next = end < e->len ? end + 2 : -1;
+        next = end >= e->len ? -1 : e->text[end] == '\n' ? end + 1 : end + 2;
+        net = end > i && end < e->len && e->text[end - 1] == '\r' ? end - 1 : end;     /* END_SOFT */
         if (!(w->style & ES_MULTILINE)) {
-            end = e->len;
+            net = end = e->len;
             next = -1;
         }
-        while (wrap && text_width(f, e->text + i, end - i) > width) {
-            /* whole words with the spaces after them while they fit
-               (Wine's WB_RIGHT steps); none fits: as many characters as do */
-            int prev = i, next = i, j;
-            for (;;) {
-                j = next;
-                while (j < end && e->text[j] != ' ')
-                    j++;
-                while (j < end && e->text[j] == ' ')
-                    j++;
-                if (j == next || text_width(f, e->text + i, j - i) > width)
-                    break;
-                prev = next = j;
+        if (wrap && net > i && text_width(f, e->text + i, net - i) > width && width > text_ave_width(f)) {
+            int count = net - i, prev = count - 1, wdt = text_width(f, e->text + i, count), nx;
+            float d = (float)wdt / (float)width;
+            if (!soft) {
+                soft = (char *)malloc(e->len + 1);
+                edit_soft_breaks(e->text, e->len, soft);
             }
-            if (prev == i) {
-                int x = 0;
-                for (j = i; j < end && x + text_width(f, e->text + j, 1) <= width; j++)
-                    x += text_width(f, e->text + j, 1);
-                prev = j > i ? j : i + 1;
+            if (d > 1.2f)
+                d -= 0.2f;
+            nx = (int)(prev / d);
+            if (nx >= prev)
+                nx = prev - 1;
+            do {                                        /* WB_LEFT from nx */
+                prev = nx > 0 ? nx - 1 : 0;
+                while (prev > 0 && !soft[i + prev])
+                    prev--;
+                wdt = prev > 0 ? text_width(f, e->text + i, prev) : 0;
+                nx = prev - 1;
+            } while (prev && wdt > width);
+            if (prev == 0) {                            /* no break: force one */
+                wdt = text_width(f, e->text + i, count);
+                prev = count - 1;
+                do {
+                    wdt -= text_width(f, e->text + i + prev, 1);
+                    prev--;
+                } while (prev > 0 && wdt > width);
+                if (prev <= 0)
+                    prev = 1;
             }
             if (n < EDIT_MAX_LINES) {
                 starts[n] = i;
-                lens[n] = prev - i;
+                lens[n] = prev;
                 n++;
             }
-            i = prev;
+            i += prev;
+            continue;
         }
         if (n < EDIT_MAX_LINES) {
             starts[n] = i;
-            lens[n] = end - i;
+            lens[n] = net - i;
             n++;
         }
         if (next < 0)
             break;
         i = next;
     }
+    free(soft);
     return n;
 }
 
@@ -328,8 +513,8 @@ static int edit_scroll_command(Window *w, int command, int thumb)
     switch (command) {
     case SB_LINEUP: line--; break;
     case SB_LINEDOWN: line++; break;
-    case SB_PAGEUP: line -= page > 1 ? page - 1 : 1; break;
-    case SB_PAGEDOWN: line += page > 1 ? page - 1 : 1; break;
+    case SB_PAGEUP: line -= page; break;        /* (Wine: a whole page) */
+    case SB_PAGEDOWN: line += page; break;
     case SB_THUMBPOSITION: case SB_THUMBTRACK: line = thumb; break;
     case SB_TOP: line = 0; break;
     case SB_BOTTOM: line = EDIT_MAX_LINES; break;
@@ -745,7 +930,7 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
     case EM_GETFIRSTVISIBLELINE:
         return (w->style & ES_MULTILINE) ? e->top_line : e->first;
     case WM_VSCROLL:
-        if (w->style & ES_MULTILINE) {
+        if ((w->style & ES_MULTILINE) && (w->style & ES_AUTOVSCROLL)) {     /* (Wine: only then) */
             edit_scroll_command(w, LOWORD(wp), HIWORD(wp));
             return 0;
         }

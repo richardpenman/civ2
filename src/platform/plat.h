@@ -254,6 +254,7 @@ FontFace *font_face_for(const LOGFONTA *lf);
 void text_metrics(FontFace *f, TEXTMETRICA *tm);
 int text_width(FontFace *f, const char *s, int n);
 int text_height(FontFace *f);
+int text_ave_width(FontFace *f);        /* tmAveCharWidth */
 void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip);   /* logical coords, top left */
 void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *clip);   /* as Uniscribe places glyphs */
 

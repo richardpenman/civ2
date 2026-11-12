@@ -273,6 +273,7 @@ int text_width(FontFace *f, const char *s, int n)
 }
 
 int text_height(FontFace *f) { return f->tm[0]; }
+int text_ave_width(FontFace *f) { return f->tm[5]; }
 
 static FontFace *dc_face(DC *dc)
 {

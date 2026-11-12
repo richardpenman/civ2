@@ -1,5 +1,7 @@
 // SOURCE src/platform/controls.c edit_origin
 // SOURCE src/platform/controls.c edit_format_rect
+// SOURCE src/platform/controls.c lb_class
+// SOURCE src/platform/controls.c edit_soft_breaks
 // SOURCE src/platform/controls.c edit_layout
 // SOURCE src/platform/controls.c edit_page_lines
 // SOURCE src/platform/controls.c edit_update_scroll
@@ -12,6 +14,7 @@
 // Exercise the real wrapped-line layout, viewport, hit testing and navigation.
 #include <cassert>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 enum { ES_MULTILINE=4, ES_AUTOHSCROLL=0x80, WS_HSCROLL=0x100000,
@@ -19,6 +22,8 @@ enum { ES_MULTILINE=4, ES_AUTOHSCROLL=0x80, WS_HSCROLL=0x100000,
        EN_VSCROLL=0x602, TRUE=1, EDIT_MAX_LINES=1024 };
 enum { SB_LINEUP, SB_LINEDOWN, SB_PAGEUP, SB_PAGEDOWN, SB_THUMBPOSITION,
        SB_THUMBTRACK, SB_TOP, SB_BOTTOM, SB_ENDSCROLL };
+enum { LB_AL, LB_BA, LB_BB, LB_B2, LB_BK, LB_CL, LB_CM, LB_CP, LB_CR, LB_EX, LB_GL, LB_HY, LB_IN,
+       LB_IS, LB_LF, LB_NL, LB_NU, LB_OP, LB_PO, LB_PR, LB_QU, LB_SP, LB_SY };     // (controls.c's)
 struct RECT { int left,top,right,bottom; };
 struct FontFace { int width=8,height=16; } face;
 struct Edit {
@@ -38,6 +43,7 @@ static Edit *edit_of(Window *w) { return &w->edit; }
 static FontFace *font_face_of(int) { return &face; }
 static int text_height(FontFace *f) { return f->height; }
 static int text_width(FontFace *f,const char *,int n) { return f->width*n; }
+static int text_ave_width(FontFace *f) { return f->width; }
 static int GetSystemMetrics(int) { return 1; }
 static void GetClientRect(Window *w,RECT *r) { *r={0,0,w->client.right-w->client.left,w->client.bottom-w->client.top}; }
 static int paints,invalidates,notifications;
@@ -67,8 +73,8 @@ int main()
     assert(w.vscroll.max==39 && w.vscroll.page==3 && w.vscroll.pos==0);
     assert(edit_scroll_command(&w,SB_LINEUP,0)==0);
     assert(edit_scroll_command(&w,SB_LINEDOWN,0)==1);
-    assert(edit_scroll_command(&w,SB_PAGEDOWN,0)==2);
-    assert(w.edit.top_line==3 && w.vscroll.pos==3);
+    assert(edit_scroll_command(&w,SB_PAGEDOWN,0)==3);     // (Wine: a whole page)
+    assert(w.edit.top_line==4 && w.vscroll.pos==4);
     edit_scroll_command(&w,SB_THUMBTRACK,20);
     assert(w.edit.top_line==20);
     edit_scroll_command(&w,SB_THUMBPOSITION,25);
@@ -119,6 +125,15 @@ int main()
     edit_update_scroll(&w,edit_layout(&w,starts,lens));
     assert(w.edit.top_line==0);
     assert(description.find("line 39 example")!=std::string::npos);
+
+    // Where a line may break (Wine's ScriptBreak, UAX #14): after spaces,
+    // hyphens and slashes, not inside "(or", "80%." or before ")".
+    const char breaks[]="a city-states (or b) 80%. x/y";
+    char soft[sizeof breaks];
+    edit_soft_breaks(breaks,(int)strlen(breaks),soft);
+    std::string got;
+    for(size_t k=0;k<strlen(breaks);k++) got+=soft[k]?'|':'.';
+    assert(got=="..|....|......|...|..|....|.|");
 
     // Existing single-line caret scrolling/hit testing stays independent.
     w.style=0;w.client.right=80;w.edit.first=0;w.edit.sel_end=20;

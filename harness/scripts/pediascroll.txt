@@ -1,0 +1,69 @@
+# Civilopedia descriptions longer than their box (Republic, Democracy),
+# scrolled with the scroll bar: its arrows, the track above and below
+# the thumb; keys on the page; then a short one (Anarchy) after a
+# scrolled long one.  (The thumb is not dragged: Wine's scroll bar tracks
+# a held button in a loop of its own, which the replay cannot drive.)
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_command 4e2803 0 2313     # Civilopedia: governments
+wait 3000
+click 42 260                # Republic
+wait 1000
+click 144 382               # Info
+wait 3000
+shot r0
+click 604 353               # the down arrow
+wait 1000
+click 604 353
+wait 1000
+shot r1
+click 604 340               # the track below the thumb: a page down
+wait 1000
+shot r2
+click 604 340
+wait 1000
+shot r3
+click 604 54                # the up arrow
+wait 1000
+shot r4
+click 604 70                # the track above the thumb: a page up
+wait 1000
+shot r5
+key Next                    # keys: the page has the focus, not the text
+wait 1000
+key Down
+wait 1000
+shot r6
+key End
+wait 1000
+shot r7
+click 93 382                # Go Back: the list
+wait 3000
+shot r8
+click 52 128                # Democracy
+wait 1000
+click 144 382               # Info
+wait 3000
+shot d0
+click 604 300               # the track: a page down
+wait 1000
+shot d1
+click 604 353               # the down arrow at the end
+wait 1000
+shot d2
+click 93 382                # Go Back
+wait 3000
+click 40 62                 # Anarchy: a short one after a scrolled long one
+wait 1000
+click 144 382               # Info
+wait 3000
+shot a0
+key Escape
+wait 2000
+shot e0
