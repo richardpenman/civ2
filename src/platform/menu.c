@@ -72,6 +72,10 @@ static int find_item(HMENU h, UINT which, UINT flags, Menu **owner)
 static void set_item(MenuItem *it, UINT flags, UINT_PTR id, LPCSTR text)
 {
     free(it->text);
+    /* a string item without a string is a separator, as Windows makes it
+       (Wine's MENU_SetItemData): the game's menus have theirs so */
+    if (!text && !(flags & (MF_POPUP | MF_BITMAP | MF_OWNERDRAW)))
+        flags |= MF_SEPARATOR;
     it->flags = flags & ~(MF_BYPOSITION);
     it->id = id;
     it->text = (flags & (MF_SEPARATOR | MF_BITMAP | MF_OWNERDRAW)) || !text ? NULL : plat_strdup(text);
