@@ -112,6 +112,44 @@ class Game:
         self.ex('xdotool mousemove %d %d click 1' % (x, y))
         time.sleep(0.6 if self.slow else 0.3)
 
+    # ---- where the game's windows are ----
+    # The coordinates of clicks in a game's windows are the original's (its
+    # main window moved and sized by fit_window: the map window's frame at
+    # y 38).  Ours has no caption of its own (the host's frame has it; but
+    # with CIV2_CLASSIC=1), so its main window's client area is taller and
+    # the windows centred in it are higher: found on the screen (frames.py).
+    ORIG_MAP_TOP = 38
+
+    def frames(self, col=None):
+        """The windows' frames on the screen now: [(x, y)] of their top-left corners."""
+        p = os.path.join(self.shots, '.frames-%s.png' % self.role).replace(ROOT, '/work')
+        self.ex('xwd -root -silent -display :%d | convert xwd:- png:%s' % (self.disp, p), check=False)
+        out = self.ex('python3 /work/tools/xdnet/frames.py %s %s' % (p, '' if col is None else col),
+                      check=False, capture=True)
+        return [tuple(int(v) for v in line.split()) for line in out.splitlines()
+                if len(line.split()) == 2 and all(v.isdigit() for v in line.split())]
+
+    def centred_dy(self):
+        """How much higher (negative) a window centred in the main window sits
+        than the original's: half the difference of the map windows' tops."""
+        if getattr(self, 'dy', None) is None:
+            tops = [y for x, y in self.frames(0) if y < 100]
+            self.dy = -((self.ORIG_MAP_TOP - tops[0] + 1) // 2) if tops else 0
+            log(self.role, 'windows centred in the game: %+d px from the original\'s' % self.dy)
+        return self.dy
+
+    def locate(self, x, y):
+        """The window whose frame's top-left corner is at (X, Y) in the
+        original: its offset (dy) here, found on the screen (else estimated)."""
+        found = [fy - y for fx, fy in self.frames(x) if abs(fy - y) <= 40]
+        if found:
+            return min(found, key=abs)
+        return self.centred_dy()
+
+    def wclick(self, x, y, dy=None):
+        """A click at the original's (X, Y) in a window centred in the game."""
+        self.click(x, y + (self.centred_dy() if dy is None else dy))
+
     def shot(self, name=None):
         self.n += 1
         name = name or 'x'
@@ -544,7 +582,7 @@ def wait_popup(g, pred, timeout=30):
 
 # The parley window (its large layout: 1024x768 screens; the original's
 # window is fitted to ours, fit_window, so the same places serve both)
-PARLEY_ACTION = {'treaty': 225, 'proposal': 260, 'gift': 295, 'barter': 330, 'threat': 365}   # x 414
+PARLEY_ACTION = {'treaty': 225, 'proposal': 260, 'gift': 295, 'barter': 330, 'threat': 365}   # x 480 (the label)
 PARLEY_TREATY = {'ceasefire': 245, 'peace': 275, 'alliance': 305, 'cancel': 335}              # x 130
 PARLEY_GIFT = {'knowledge': 230, 'money': 260, 'unit': 290, 'territory': 320, 'maps': 350}      # x 130
 PARLEY_PROPOSAL = {'war': 276, 'maps': 306}                                                     # x 130
@@ -593,7 +631,7 @@ def request_audience(req, rec, answer=1):
     wait_popup(req, lambda t: t == 'Foreign Minister')
     time.sleep(1.5)
     req.shot('foreign')
-    req.click(404, 511)                         # Send Emissary
+    req.wclick(404, 511)                        # Send Emissary
     if answer != 'auto':                        # ('auto': REC answers by itself, busy)
         wait_popup(rec, lambda t: '(' in t)     # 'Dictator Caesar of the Romans (Icy)'
         time.sleep(1.5)
@@ -611,7 +649,7 @@ def request_audience(req, rec, answer=1):
 
 
 def parley_click(g, x, y, pause=1.5):
-    g.click(x, y)
+    g.wclick(x, y)
     time.sleep(pause)
 
 
@@ -628,10 +666,10 @@ def offer(g, other, action, *picks, reply='accept', amount=None, dblclick=False)
     parley_click(g, PARLEY_BUTTON['right'], 400)
     parley_click(g, PARLEY_BUTTON['right'], 400)
     if dblclick:                                            # (a double-click on the action: Continue)
-        g.ex('xdotool mousemove 414 %d click --repeat 2 --delay 80 1' % PARLEY_ACTION[action])
+        g.ex('xdotool mousemove 480 %d click --repeat 2 --delay 80 1' % (PARLEY_ACTION[action] + g.centred_dy()))
         time.sleep(1.5)
     else:
-        parley_click(g, 414, PARLEY_ACTION[action])
+        parley_click(g, 480, PARLEY_ACTION[action])
         parley_click(g, PARLEY_BUTTON['mid'], 400)          # Continue
     if action == 'treaty':
         parley_click(g, 130, PARLEY_TREATY[picks[0]])
@@ -683,7 +721,7 @@ def intel(g):
 def window_moves(g, other):
     """A key typed to the window; its caption's middle button (the small
     layout); Escape there ends the negotiations (NM_PARLEYREQUEST_CANCEL)."""
-    g.click(511, 140)
+    g.wclick(511, 140)
     g.keys('a')
     time.sleep(1)
     n = g.count('tx', nm('NM_PARLEYREQUEST_CANCEL'))
@@ -832,6 +870,9 @@ def run_offers(h, c, skip=0):
         step()
 
 
+CHAT_WINDOW = (99, 123)             # the original's Chat with Kings: its frame's top-left corner
+
+
 def chat(host, client):
     """Chat with Kings both ways: the client writes to the host, the host's
     chat window opens and it answers."""
@@ -841,12 +882,15 @@ def chat(host, client):
         n = g.count('tx', nm('NM_CHAT'))
         r = other.count('rx', nm('NM_CHAT'))
         if g is client or not other.count('tx', nm('NM_CHAT')):
+            if g.kind == 'ours':
+                g.keys('Escape')                # (a city window left open from the turns takes Ctrl+C)
             g.keys('ctrl+c')                    # (the host's opens by itself on a message)
         time.sleep(3)
-        g.click(188, 251)                       # [x] Send (to the one other king)
-        g.click(400, 350)
+        dy = g.locate(*CHAT_WINDOW)
+        g.wclick(188, 251, dy)                  # [x] Send (to the one other king)
+        g.wclick(400, 350, dy)
         g.type(text)
-        g.click(870, 333)                       # Send
+        g.wclick(870, 333, dy)                  # Send
         g.wait_msg('tx', nm('NM_CHAT'), n + 1, timeout=30, what='CHAT')
         other.wait_msg('rx', nm('NM_CHAT'), r + 1, timeout=30, what='CHAT')
         time.sleep(3)
@@ -857,23 +901,24 @@ def chat(host, client):
     # the other king, Remain Anonymous, Mute Anonymous) on and off; the
     # window dragged by its caption and back
     g = client
-    g.click(400, 350)
+    dy = g.locate(*CHAT_WINDOW)
+    g.wclick(400, 350, dy)
     for k in ('ctrl+F1', 'ctrl+F2', 'ctrl+F3'):
         g.keys(k)
     g.shot('chat-macros')
-    g.click(870, 372)                           # Clear
+    g.wclick(870, 372, dy)                      # Clear
     for x, y in ((154, 251), (130, 185), (396, 185)):
-        g.click(x, y)
+        g.wclick(x, y, dy)
         time.sleep(1)
-        g.click(x, y)
+        g.wclick(x, y, dy)
         time.sleep(1)
     for (x0, y0), (x1, y1) in (((300, 146), (340, 176)), ((340, 176), (300, 146))):
         g.ex('xdotool mousemove %d %d mousedown 1 mousemove %d %d mousemove %d %d mouseup 1' % (
-            x0, y0, (x0 + x1) // 2, (y0 + y1) // 2, x1, y1))
+            x0, y0 + dy, (x0 + x1) // 2, (y0 + y1) // 2 + dy, x1, y1 + dy))
         time.sleep(2)
     g.shot('chat-dragged')
     for g in (client, host):
-        g.click(511, 661)                       # End Chat
+        g.wclick(511, 661, g.locate(*CHAT_WINDOW))      # End Chat
         time.sleep(2)
     log('chat done')
 

@@ -587,13 +587,16 @@ message by message and clock event by clock event.
   October.  Since then many became members of NetSession, ParleyWindow
   and LobbyList: by prefix netcov now counts 246, with the network
   classes' members (`netcov.py --classes`) 377.  The runs that pass today
-  (the three `--lobby` runs, relaying, migration, a rejoin) run 190 of
-  the 377 (50%; 33% of their lines), all of LobbyList (host_wait_players,
-  add_player_entry, find_waiting_entry, remove_entry ...) among them.  The
-  chat and parley runs fail today: their clicks, set when ours had no
-  interface additions, miss our chat and parley windows (centred in a
-  client area 20 pixels taller than the original's under the test, so 10
-  pixels higher), and a game the test kills writes no gcov data.  Found by
+  (the three `--lobby` runs, relaying, migration, a rejoin, and `--diplo`
+  ours with the original both ways: chat and the parley) run 264 of the
+  377 (70%; 55% of their lines; by prefix 155 of 246, 63%), all of
+  LobbyList (host_wait_players, add_player_entry, find_waiting_entry,
+  remove_entry ...) among them.  The chat and parley runs failed for a
+  while: their clicks are the original's positions, and our main window
+  has no caption of its own (the host's frame has it, but with
+  CIV2_CLASSIC=1), so its client area is 19 pixels taller and the windows
+  centred in it 10 pixels higher; nettest now finds the windows on the
+  screen (tools/xdnet/frames.py: their frames' corners).  Found by
   `--lobby`: the original, its join cancelled in the host's lobby, lists
   no games when it tries again (its game list never broadcasts
   NM_GET_SERVERS: no XD_SendBroadcastData at all); ours lists them and
