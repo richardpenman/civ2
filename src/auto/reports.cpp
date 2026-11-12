@@ -466,7 +466,7 @@ void __cdecl attitude_advisor_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
   text_clear();
-  gov_index = int_clamp(civs[civ].government - 1,0,4);
+  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
   text_append_label(gov_index + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -825,7 +825,7 @@ void __cdecl defense_minister_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
   text_clear();
-  list_top = int_clamp(civs[civ].government - 1,0,4);
+  list_top = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
   text_append_label(list_top + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -3691,7 +3691,7 @@ void __cdecl casualty_timeline_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,casualty.client_x,y,casualty.client_width);
   y += line_height;
   text_clear();
-  row_x = int_clamp(civs[civ].government - 1,0,4);
+  row_x = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
   text_append_label(row_x + 0x148);
   text_append_space();
   text_append_label(0x8c);
