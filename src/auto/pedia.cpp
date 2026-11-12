@@ -1,6 +1,7 @@
 /* The game, the Civilopedia: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include <stdarg.h>
 
 /* 00451af0 auto */
 void PediaWindow::draw_category_body(i32 category,i32 flags)
@@ -700,6 +701,24 @@ void PediaWindow::init_terrain_list(iptr rect)
   return;
 }
 
+/* (port) A Civilopedia line from a LABELS.TXT format (the special
+   resources' bonuses): formatted within the text buffer, and only with the
+   conversions the arguments have (WANT, text_format_matches); a format
+   with others (a modified file) is shown as it is.  The original printed
+   it with sprintf whatever it held. */
+static void pedia_label_format(const char *fmt,const char *want,...)
+{
+  va_list ap;
+
+  if (text_format_matches(fmt,want) == 0) {
+    str_copy_max(((i8 *)&textbuf.buf),fmt,TEXTBUF_SIZE);
+    return;
+  }
+  va_start(ap,want);
+  vsnprintf(((i8 *)&textbuf.buf),TEXTBUF_SIZE,fmt,ap);
+  va_end(ap);
+}
+
 /* Part of PediaWindow::draw_terrain_page (004906fd): a special resource:
    what it adds to its base terrain's food, shields and trade. */
 void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr terrain3,int y2,
@@ -746,11 +765,11 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr 
     measured = base_food;
     icon_center_y = special_food;
     _Format = label_string(label_table.string_ids[0x2c4]);
-    _sprintf(((i8 *)&textbuf.buf),_Format,name_arg,measured,icon_center_y);
+    pedia_label_format(_Format,"sdd",name_arg,measured,icon_center_y);
   }
   else {
     label = label_string(label_table.string_ids[0x2c5]);
-    crt_strcpy(((i8 *)&textbuf.buf),label);
+    str_copy_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
   }
   draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
   y2 += line_height;
@@ -758,37 +777,37 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr 
   str_clear((char *)format_buf);
   if (base_shields < special_shields) {
     label = label_string(label_table.string_ids[0x2c6]);
-    crt_strcpy(format_buf,label);
-    _sprintf(((i8 *)&textbuf.buf),format_buf,base_shields,special_shields);
+    str_copy_max(format_buf,label,sizeof format_buf);
+    pedia_label_format(format_buf,"dd",base_shields,special_shields);
     draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
     y2 += line_height;
     text_clear();
     str_clear((char *)format_buf);
     if (base_trade2 < special_trade) {
       label = label_string(label_table.string_ids[0x2c7]);
-      crt_strcat(format_buf,label);
-      _sprintf(((i8 *)&textbuf.buf),format_buf,base_trade2,special_trade);
+      str_append_max(format_buf,label,sizeof format_buf);
+      pedia_label_format(format_buf,"dd",base_trade2,special_trade);
     }
     else {
       label = label_string(label_table.string_ids[0x2c8]);
-      crt_strcat(((i8 *)&textbuf.buf),label);
+      str_append_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
     }
   }
   else {
     label = label_string(label_table.string_ids[0x2c9]);
-    crt_strcpy(((i8 *)&textbuf.buf),label);
+    str_copy_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
     draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
     y2 += line_height;
     text_clear();
     str_clear((char *)format_buf);
     if (base_trade2 < special_trade) {
       label = label_string(label_table.string_ids[0x2c7]);
-      crt_strcat(format_buf,label);
-      _sprintf(((i8 *)&textbuf.buf),format_buf,base_trade2,special_trade);
+      str_append_max(format_buf,label,sizeof format_buf);
+      pedia_label_format(format_buf,"dd",base_trade2,special_trade);
     }
     else {
       label = label_string(label_table.string_ids[0x2ca]);
-      crt_strcat(((i8 *)&textbuf.buf),label);
+      str_append_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
     }
   }
   draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);

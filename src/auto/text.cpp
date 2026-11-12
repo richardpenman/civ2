@@ -515,6 +515,52 @@ char * __cdecl str_copy_max(char *dest,const char *src,size_t size)
   return dest;
 }
 
+/* (port) A format string from the game's text (LABELS.TXT) given to
+   sprintf: its conversions those of the arguments passed (WANT: 's' a
+   string, 'd' an int), in order.  Flags, width and precision are allowed;
+   '*', length modifiers and other conversions are not.  Fewer than passed
+   is harmless. */
+int __cdecl text_format_matches(const char *fmt,const char *want)
+
+{
+  for (; *fmt != '\0'; fmt++) {
+    if (*fmt != '%') {
+      continue;
+    }
+    fmt++;
+    if (*fmt == '%') {
+      continue;
+    }
+    while ((*fmt != '\0') && (strchr("-+ #0",*fmt) != 0)) {
+      fmt++;
+    }
+    while (('0' <= *fmt) && (*fmt <= '9')) {
+      fmt++;
+    }
+    if (*fmt == '.') {
+      fmt++;
+      while (('0' <= *fmt) && (*fmt <= '9')) {
+        fmt++;
+      }
+    }
+    if (*fmt == 's') {
+      if (*want != 's') {
+        return 0;
+      }
+    }
+    else if ((*fmt != '\0') && (strchr("diuoxXc",*fmt) != 0)) {
+      if (*want != 'd') {
+        return 0;
+      }
+    }
+    else {
+      return 0;
+    }
+    want++;
+  }
+  return 1;
+}
+
 /* (port) str_append within a buffer of size bytes (see str_copy_max). */
 char * __cdecl str_append_max(char *dest,const char *src,size_t size)
 

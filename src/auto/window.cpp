@@ -5185,6 +5185,7 @@ MenuNode *GameMenu::add_item(i32 menu_id,i32 item_id,const char *text,size_t min
       }
       buffer = memblock_alloc((MemBlock *)item_storage,buf_len + 1);
       item->text = (char *)buffer;
+      item->field_0c = (i32)(buf_len + 1);   /* (port) its size, for set_item_text */
       crt_strcpy((char *)((void *)item->text),(const char *)((void *)text));
       str_pipes_to_tabs(item->text);
     }
@@ -5456,8 +5457,13 @@ void GameMenu::set_item_text(i32 item_id,const char *text)
   i32 item_text;
   
   item = find_item(item_id);
-  if (item != (MenuNode *)0x0) {
-    crt_strcpy((char *)((void *)item->text),(const char *)((void *)text));
+  /* (port) the text within the buffer the item was made with (add_item:
+     its text or the room asked for; a longer one is cut), and none into an
+     item made without a text (the original copied it whole: the menu's
+     only caller, menu_set_item_label, cuts its labels to the room its items
+     are made with, so no menu of the game's is affected) */
+  if ((item != (MenuNode *)0x0) && (item->text != 0)) {
+    str_copy_max((char *)((void *)item->text),(const char *)((void *)text),(size_t)item->field_0c);
     str_pipes_to_tabs(item->text);
     if (((menu_flags & 0x8000) != 0) && ((item->flags_byte & 2) == 0)) {
       item_text = (i32)item->text;

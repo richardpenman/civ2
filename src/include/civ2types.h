@@ -831,7 +831,7 @@ typedef struct MenuNode {
     char *text;                     /* 0x00 */
     i32 id;                         /* 0x04 */
     union { u32 flags; u8 flags_byte; };  /* 0x08 1 disabled, 2 hidden, 4 checked */
-    i32 field_0c;                   /* 0x0c */
+    i32 field_0c;                   /* 0x0c the original: 0, never read; ours: an item's text buffer size (set_item_text) */
     struct MenuNode *next;          /* 0x10 */
     struct MenuNode *prev;          /* 0x14 */
     struct MenuNode *link;          /* 0x18 a menu: its first item; an item: its menu */

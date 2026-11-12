@@ -101,8 +101,16 @@ of names, it is larger or an `snprintf`.
   unit facts, run with the AddressSanitizer build on replays that show them.
 - The 41 replays, the unit tests and the source probes, extras, the port and Windows builds.
 
+## Not in the ledger
+
+| Site | Correction |
+| --- | --- |
+| `GameMenu::set_item_text` | The text within the buffer the item was made with (`add_item` keeps its size in the node's word at 0x0c, which the original set to 0 and never read); nothing into an item made without a text. Its only caller, `menu_set_item_label`, already cuts its labels to the 60 characters its items are made with (BF-200), so no menu of the game's changes. |
+| `PediaWindow::draw_terrain_special_bonus` (`pedia_label_format`) | The special resources' three LABELS.TXT formats (`%s ... %d ... %d`, `%d ... %d`) are given to the formatter only with the conversions of the arguments passed (`text_format_matches`: flags, width and precision allowed; `*`, length modifiers, `%n` and the rest not), and formatted within the text buffer; a format with others is shown as it is. The labels copied around them within their 256-byte buffer and the text buffer. The game's own three formats match. |
+
+`tests/text_bounds_test.cpp` checks `text_format_matches` with the game's formats and modified ones.
+
 ## Not done
 
-- The other unbounded copies of the game's text that the ledger does not list (for example
-  `GameMenu::set_item_text` into an item made for a shorter label from another caller, the
-  Civilopedia's terrain lines formatted with a LABELS.TXT format string) are as before.
+- Other unbounded copies of the game's text that neither the ledger nor the review above found
+  may remain.

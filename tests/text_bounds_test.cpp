@@ -2,6 +2,7 @@
 // SOURCE src/auto/text.cpp file_open_path
 // SOURCE src/auto/text.cpp str_copy_max
 // SOURCE src/auto/text.cpp str_append_max
+// SOURCE src/auto/text.cpp text_format_matches
 // SOURCE src/auto/text.cpp text_expand_vars_max
 // SOURCE src/auto/text.cpp text_expand_vars
 // SOURCE src/auto/text.cpp text_read_line
@@ -255,13 +256,25 @@ static void events_file() {
     assert(parse({"@THEN", "TEXT", "@ENDIF", "@IF", "@ENDEVENTS"}) == 1); // an action before any @IF
     assert(actions == 0 && popups == 1);
 }
+static void label_formats() {
+    // The Civilopedia's LABELS.TXT formats (the game's own pass) and modified ones.
+    assert(text_format_matches("Increase the amount of Food produced in %s Terrain from %d to %d.", "sdd"));
+    assert(text_format_matches("Increase Shields from %d to %d, and", "dd"));
+    assert(text_format_matches("increases Trade from %d to %d.", "dd"));
+    assert(text_format_matches("100%% %-3d%+.2d", "dd") && text_format_matches("%s only", "sdd"));
+    assert(text_format_matches("no values", "dd"));
+    assert(!text_format_matches("%d %d", "sdd") && !text_format_matches("%s %s", "dd"));
+    assert(!text_format_matches("%d %d %d", "dd") && !text_format_matches("%n", "d"));
+    assert(!text_format_matches("%*d", "dd") && !text_format_matches("%ld", "d") && !text_format_matches("%", "d"));
+}
 int main() {
     open_paths();
+    label_formats();
     text_vars();
     section_lines();
     prereqs();
     trade_routes();
     events_file();
     puts("text and game code: long open paths, text arguments, unterminated sections, cyclic "
-         "prerequisites, unset trade slot, events action before @IF passed");
+         "prerequisites, unset trade slot, events action before @IF, label formats passed");
 }

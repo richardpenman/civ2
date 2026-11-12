@@ -329,6 +329,7 @@ void __cdecl gfx_draw_rect_frame(DibSurface *surface,RECT *rect,i32 color); /* 0
 void __cdecl text_append_period(void); /* 0043c810 */
 void __cdecl str_append(char *dest,const char *src); /* 0043c840 */
 char * __cdecl str_copy_max(char *dest,const char *src,size_t size);
+int __cdecl text_format_matches(const char *fmt,const char *want);
 char * __cdecl str_append_max(char *dest,const char *src,size_t size);
 void __cdecl text_append_long(i32 value); /* 0043c870 */
 void __cdecl text_append_gold(i32 gold); /* 0043c8a0 */
