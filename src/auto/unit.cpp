@@ -10414,6 +10414,47 @@ void __cdecl unit_lift_off_map(int unit,int send_update)
   return;
 }
 
+/* B36: a ship lost at sea takes with it its cargo (the units
+   unit_gather_cargo has just marked aboard), and the land units of its
+   owner that the other ships on the square cannot carry; the other
+   ships, the rest of their cargo, aircraft in flight and other civs'
+   units stay.  (The original deletes every unit on the square.) */
+static void unit_delete_ship_at_sea(int ship)
+{
+  static int left[0x802];
+  int n = 0, capacity = 0, land = 0, unit, next, i;
+  char owner = units[ship].owner;
+  for (unit = unit_stack_first(ship); -1 < unit; unit = next) {
+    next = unit_next_in_stack(unit);
+    if (unit == ship) {
+      continue;
+    }
+    if ((units[unit].flags & UNITF_ABOARD) != 0) {
+      unit_delete(unit,0);
+      continue;
+    }
+    if (units[unit].owner != owner) {
+      continue;
+    }
+    if (unit_types[units[unit].type].domain == DOMAIN_SEA) {
+      if ((unit_types[units[unit].type].flags & UTYPE_CARRY_AIR) == 0 &&
+          (unit_types[units[unit].type].hold != 0 ||
+           (unit_types[units[unit].type].flags & UTYPE_SUBMARINE) == 0)) {
+        capacity += owner == 0 ? 0x14 : (int)(char)unit_types[units[unit].type].hold;
+      }
+    }
+    else if (unit_types[units[unit].type].domain == DOMAIN_LAND) {
+      left[n++] = unit;
+      land++;
+    }
+  }
+  unit_delete(ship,0);
+  /* (those that do not fit: the last on the square) */
+  for (i = n - 1; capacity < land && 0 <= i; i--, land--) {
+    unit_delete(left[i],0);
+  }
+}
+
 /* 005b5d93 auto */
 void __cdecl unit_delete_with_cargo(int unit,int send_update)
 
@@ -10469,7 +10510,12 @@ void __cdecl unit_delete_with_cargo(int unit,int send_update)
   }
   if (at_sea) {
     unit_gather_cargo(unit,0,0);
-    unit_stack_delete_all(unit,0);
+    if (bugfix_state()) {  /* B36 */
+      unit_delete_ship_at_sea(unit);
+    }
+    else {
+      unit_stack_delete_all(unit,0);
+    }
     ((CityWindow *)((i8 *)&city_wnd.window))->on_unit_change(-1,x2,y2);
   }
   else if (!deleted) {
