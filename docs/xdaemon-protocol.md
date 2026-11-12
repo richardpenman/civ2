@@ -651,13 +651,20 @@ tools/xdnet/nettest.py ours-ours --exe civ2-linux32cov --migrate   # coverage (n
   becomes the host (NM_SERVER_QUIT_REQUEST/_ACK, then it opens its sockets
   as a server) and plays a turn alone; `--kick` (with `--third`) the host
   rejects the third player in Available Players
-  (XD_ServerCloseConnection; it sees "You were REJECTED"); `--save-end`
+  (XD_ServerCloseConnection; it sees "You were REJECTED"); `--lobby` (with
+  `--third --kick`) the lobby as players come and go first: Reject Player
+  with no one listed (nothing happens), the third player (Carol) cancels
+  its wait (NM_CLIENT_CANCELED_START: the host takes it off the list) and
+  joins again (ours from the network menu; the original starts again: its
+  game list, after a join it cancelled, never asks for games, no
+  XD_SendBroadcastData, so it lists none), then it is rejected; `--save-end`
   both players save where the game stands and `tools/xdnet/savecmp.py`
   compares the two saves section by section (game, civs, map, units,
   cities; what each civ has seen and the saving player's own header
   fields apart); `--exe civ2-linux32cov` runs the coverage build with its
   gcov data in run/xd/cov/RUN-ROLE (`tools/xdnet/netcov.py` merges them
-  and lists the network functions never run); `--exe OpenCiv2.exe` runs
+  and lists the network functions never run; `--classes`: with the
+  network classes' members, LobbyList:: ...); `--exe OpenCiv2.exe` runs
   the Windows build under Wine (its Winsock code).
 - `--diplo`: Chat with Kings both ways (with the chat macros Ctrl+F1..F3,
   Clear, the Mute and Anonymous boxes); an audience left unanswered (the

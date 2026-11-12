@@ -19,7 +19,7 @@ usage (from the project root, on the docker host):
            --rejoin                 the client leaves and joins the game in progress
            --third ours|orig        a third player: the host relays
            --keep                   leave the containers running (drive them by hand)
-           --extras --migrate --kick --simultaneous --timer N --features LIST --save-end
+           --extras --migrate --kick --lobby --simultaneous --timer N --features LIST --save-end
            --exe civ2-linux32cov (gcov data: tools/xdnet/netcov.py)  --exe OpenCiv2.exe (Windows build, Wine)
   (docs/xdaemon-protocol.md section 11.1)
 
@@ -115,7 +115,7 @@ class Game:
     def shot(self, name=None):
         self.n += 1
         name = name or 'x'
-        p = os.path.join(self.shots, '%s%02d-%s.png' % (self.role[0], self.n, name))
+        p = os.path.join(self.shots, '%s%02d-%s.png' % (self.role[0] + self.role[-1:].strip('abcdefghijklmnopqrstuvwxyz'), self.n, name))
         for attempt in range(3):      # (xwd can fail while windows come and go)
             if self.ex('xwd -root -silent -display :%d | convert xwd:- png:%s' % (
                     self.disp, p.replace(ROOT, '/work')), check=False) == 0:
@@ -295,8 +295,10 @@ def host_setup(g, inet, name='Alice', game='TestGame', chat=False, rejoin=False,
     g.shot('lobby')                             # Available Players
 
 
-def client_join(g, host, inet, name='Bob'):
-    to_network_menu(g, inet)
+def client_join(g, host, inet, name='Bob', n=1, again=False):
+    """AGAIN: from the network menu, Join already picked (a player that left the lobby)."""
+    if not again:
+        to_network_menu(g, inet)
     if inet:
         g.step('join', 'Down', 'Down', 'Down', 'Down', 'Down', 'Return')
         g.type(name)
@@ -305,18 +307,19 @@ def client_join(g, host, inet, name='Bob'):
         g.type('127.0.0.1')
         g.step('address', 'Return')
     else:
-        g.step('join', 'Down', 'Down', 'Down', 'Down', 'Down', 'Return')  # Join a Multiplayer Game
+        g.step('join', *(['Return'] if again else ['Down', 'Down', 'Down', 'Down', 'Down', 'Return']))  # Join a Multiplayer Game
+        seen = sum(1 for m in g.msgs() if m[1] == 'rx' and m[2] == 'udp' and m[4] == 408)
         g.type(name)
         g.keys('Return')
         # the game list fills from the host's NM_SERVER_INFO broadcasts
         end = time.time() + 60
-        while time.time() < end and not any(
-                m[1] == 'rx' and m[2] == 'udp' and m[4] == 408 for m in g.msgs()):
+        while time.time() < end and sum(
+                1 for m in g.msgs() if m[1] == 'rx' and m[2] == 'udp' and m[4] == 408) <= seen:
             time.sleep(1)
         g.wait_stable()
         g.shot('gamelist')
         g.keys('Return')                        # Join Game
-    g.wait_msg('tx', nm('NM_PLAYER_LIST_NODE'), timeout=90, what='PLAYER_LIST_NODE')
+    g.wait_msg('tx', nm('NM_PLAYER_LIST_NODE'), n, timeout=90, what='PLAYER_LIST_NODE')
     g.wait_stable()
     g.shot('joined')
 
@@ -1047,6 +1050,59 @@ def migrate(host, client, opts):
     quit_one(client)
 
 
+def lobby_empty_reject(host):
+    """--lobby: Reject Player while Available Players lists no one (only its
+    "waiting" line): nothing happens (find_waiting_entry)."""
+    host.click(363, 496)                        # Reject Player
+    time.sleep(2)
+    host.wait_stable()
+    host.shot('reject-nobody')
+
+
+def lobby_leave(host, g, inet):
+    """--lobby: G, waiting in the host's lobby, cancels (NM_CLIENT_CANCELED_START:
+    the host takes it off Available Players), then joins again."""
+    host.shot('lobby-full')
+    for attempt in range(6):                    # (a key can be lost while the game is busy)
+        if attempt % 2:
+            g.keys('Return')                    # Waiting for the game machine: Cancel
+        else:
+            g.click(515, 438)                   # (its Cancel button)
+        end = time.time() + 10
+        while time.time() < end and not host.count('rx', nm('NM_CLIENT_CANCELED_START')):
+            time.sleep(1)
+        if host.count('rx', nm('NM_CLIENT_CANCELED_START')):
+            break
+    host.wait_msg('rx', nm('NM_CLIENT_CANCELED_START'), timeout=30, what='CLIENT_CANCELED_START')
+    g.wait_stable()
+    g.shot('left-lobby')                        # back in the network menu, Join picked
+    host.wait_stable()
+    host.shot('lobby-left')
+    log(g.role, 'left the lobby')
+    if g.kind == 'orig':
+        # (the original, its join cancelled, lists no games when it tries
+        # again: its game list never asks for them, no XD_SendBroadcastData;
+        # so it leaves and starts again)
+        end = time.time() + 90
+        while time.time() < end and g.alive():
+            g.keys('Escape')
+            time.sleep(2)
+        if g.alive():
+            raise Fail('%s: still running after leaving the lobby' % g.role)
+        for f in ('xdlog-%s.txt' % g.role, 'wine-%s.log' % g.role, 'hook-%s.log' % g.role):
+            p = os.path.join(g.out, f)
+            if os.path.exists(p):
+                os.rename(p, p[:-4] + '-left' + p[-4:])
+        g.logpos, g.wins, g.shown, g.pending = 0, {}, set(), None
+        start(g, inet)
+        client_join(g, host, inet, name='Carol')
+    else:
+        client_join(g, host, inet, name='Carol', n=2, again=True)
+    host.wait_msg('rx', nm('NM_PLAYER_LIST_NODE'), 3, timeout=60, what='PLAYER_LIST_NODE')
+    host.wait_stable()
+    log(g.role, 'joined again')
+
+
 def kick(host, g):
     """In Available Players the host picks the last player who joined (G)
     and rejects it (XD_ServerCloseConnection): G loses its connection; it
@@ -1244,6 +1300,8 @@ def main():
     ap.add_argument('--simultaneous', action='store_true', help='simultaneous moves (CIV.INI Simultaneous=1, the feature ticked)')
     ap.add_argument('--kick', action='store_true', help='with --third: the host rejects the third player in its lobby; two play on')
     ap.add_argument('--extras', action='store_true', help='after the turns: advisors and reports, Multiplayer Options, the host changes the timer')
+    ap.add_argument('--lobby', action='store_true', help='with --third --kick: Reject Player with no one listed; the third player '
+                    'cancels in the lobby and joins again before it is rejected')
     ap.add_argument('--migrate', action='store_true', help='at the end the host leaves first: the client becomes the host, plays a turn')
     ap.add_argument('--save-end', action='store_true', help='at the end both save the game: the saves must agree (savecmp.py)')
     ap.add_argument('--load', action='store_true', help='then (after quitting) the host loads that game, the client joins, N more turns (implies --save)')
@@ -1267,6 +1325,12 @@ def main():
     os.makedirs(os.path.join(out, 'shots'))
     # two containers: the bridge gives each its address (LAN); for Internet
     # mode the client shares the host's network namespace and uses :8
+    if 'orig' in (kh, kc, opts.third) and not os.path.exists(os.path.join(ROOT, 'run/xd/logproxy/XDaemon.dll')):
+        # the originals' XDaemon log proxy (docs/xdaemon-protocol.md section 11)
+        os.makedirs(os.path.join(ROOT, 'run/xd/logproxy'), exist_ok=True)
+        sh('docker', 'run', '--rm', '-v', '%s:/work' % ROOT, '-w', '/work/tools/xdnet', 'civ2-dev', 'sh', '-c',
+           'i686-w64-mingw32-gcc -O1 -shared -o /work/run/xd/logproxy/XDaemon.dll xdlog.c xdlog.def '
+           '-static-libgcc -Wl,--enable-stdcall-fixup')
     docker_up('xdh', 'civ2-wine2')
     docker_up('xdc', 'civ2-wine', net='xdh' if opts.inet else None)
     sniffer = None
@@ -1301,15 +1365,19 @@ def main():
         log('host: new game')
         host_setup(host, opts.inet, chat=opts.chat, rejoin=opts.rejoin,
                    features=[f for f in opts.features.split(',') if f], timer=opts.timer)
+        if opts.lobby:
+            lobby_empty_reject(host)
         if opts.stop_after == 'lobby':
             raise Fail('stopped after lobby')
         log('client: join')
         client_join(client, host, opts.inet)
         for g in EXTRA:
             log('%s: join' % g.role)
-            client_join(g, host, opts.inet)
+            client_join(g, host, opts.inet, name='Carol' if opts.lobby else 'Bob')
         host.wait_msg('rx', nm('NM_PLAYER_LIST_NODE'), 1 + len(EXTRA), timeout=60, what='PLAYER_LIST_NODE')
         host.wait_stable()
+        if opts.lobby:
+            lobby_leave(host, EXTRA[-1], opts.inet)
         if opts.kick:
             kick(host, EXTRA.pop())
         host.step('players', 'Return')              # Start Game

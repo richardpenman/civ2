@@ -6,10 +6,11 @@ data redirected to run/xd/cov/RUN-ROLE/ (GCOV_PREFIX), so the replays' data
 in build/native/linux32cov stays as it is.  This merges the directories
 given (all of run/xd/cov/ by default) and prints, for the network functions
 (net_*, parley_*, lobby_*, chat_*, mp_*, xd*), how many ran and the ones that
-never did.
+never did; --classes also counts the network classes' member functions
+(LobbyList::, NetSession::, ParleyWindow::, NetGamelistView::, Net*Msg::).
 
 usage (in the container, from the project root):
-  python3 tools/xdnet/netcov.py [--tsv OUT] [DIR...]
+  python3 tools/xdnet/netcov.py [--classes] [--tsv OUT] [DIR...]
 """
 import glob
 import os
@@ -24,11 +25,15 @@ OBJ = os.path.join(ROOT, 'build', 'native', 'linux32cov')
 SOURCES = sorted(os.path.relpath(f, ROOT) for f in glob.glob(os.path.join(ROOT, 'src/auto/*.cpp'))) + \
     ['src/platform/xdaemon.c', 'src/host/host_net.c']
 NET = re.compile(r'^(net_|parley_|lobby_|chat_|mp_|XD_|xd_|host_net_)')
+CLASSES = re.compile(r'^(LobbyList|NetSession|ParleyWindow|NetGamelistView|NetMsgQueue|Net\w*Msg|NetMsgHeader)::')
 
 
 def main():
     args = sys.argv[1:]
     tsv = None
+    net = NET
+    if args[:1] == ['--classes']:
+        net, args = re.compile(NET.pattern + '|' + CLASSES.pattern), args[1:]
     if args[:1] == ['--tsv']:
         tsv, args = args[1], args[2:]
     dirs = args or sorted(glob.glob(os.path.join(ROOT, 'run/xd/cov/*')))
@@ -60,7 +65,7 @@ def main():
                                  cwd=ROOT, capture_output=True, text=True).stdout
             for m in re.finditer(r"Function '([^']+)'\nLines executed:([\d.]+)% of (\d+)", out):
                 name = m.group(1).split('(')[0]
-                if NET.match(name):
+                if net.match(name):
                     n = int(m.group(3))
                     rows.append((name, round(float(m.group(2)) * n / 100), n, src))
     finally:
