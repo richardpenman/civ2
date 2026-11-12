@@ -19346,7 +19346,7 @@ TimerManager *TimerManager::construct()
     entry[2] = '\0';
     entry[3] = '\0';
   }
-  hwnd = timer_wnd_create((iptr)this);
+  hwnd = timer_wnd_create(this);
   timer_hwnd = hwnd;
   return this;
 }
@@ -19393,7 +19393,7 @@ void __cdecl timer_busy_wait_ticks(int ticks)
 }
 
 /* 005d423c auto */
-HWND __cdecl timer_wnd_create(iptr timer_mgr)
+HWND __cdecl timer_wnd_create(TimerManager *timer_mgr)
 
 {
   MMRESULT uTimerID;
@@ -19406,7 +19406,7 @@ HWND __cdecl timer_wnd_create(iptr timer_mgr)
                               -0x80000000,-0x80000000,-0x80000000,(HWND)0x0,(HMENU)0x0,err_report_ctx_block.app_hinstance,
                               (LPVOID)0x0);
     if (hwnd2 != (HWND)0x0) {
-      SetWindowLongA(hwnd2,0,timer_mgr);
+      SetWindowLongA(hwnd2,0,(LONG_PTR)timer_mgr);
       timer_mm_available = 0;
     }
   }
@@ -19432,7 +19432,7 @@ HWND __cdecl timer_wnd_create(iptr timer_mgr)
       }
       else {
         timeBeginPeriod(5);
-        SetWindowLongA(hwnd2,0,timer_mgr);
+        SetWindowLongA(hwnd2,0,(LONG_PTR)timer_mgr);
         uTimerID = timeSetEvent(100,5,timerdll.timer_callback,hwnd2,1);
         if (uTimerID == 0) {
           timer_mm_available = 0;

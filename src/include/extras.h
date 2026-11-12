@@ -124,7 +124,7 @@ void extras_city_status_click(int x, int y);
 void extras_note_dialog(struct Dialog *d, const char *file, const char *section);
 int extras_popup_suppressed(struct Dialog *d);
 void extras_draw_map_messages(iptr surface, int blit);
-i32 extras_unit_list_draw(struct Dialog *dialog, iptr surface, i32 unit, i32 flags, i32 x, i32 y, i32 row_height);
+i32 extras_unit_list_draw(struct Dialog *dialog, struct DibSurface *surface, i32 unit, i32 flags, i32 x, i32 y, i32 row_height);
 int extras_hover_input(const MSG *m, HWND under, POINT pt);
 int extras_path_input(const MSG *m, HWND under, POINT pt);
 int extras_panel_width(int width);

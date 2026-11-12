@@ -4848,7 +4848,7 @@ void __cdecl terrain_editor_on_ok(void)
   errors = terrain_editor_store_controls();
   if (errors == 0) {
     terrain_editor_store_rules();
-    rules_edit_set_section((iptr)&str_terrain_2,(RulesSectionWriterFn)terrain_editor_write_section);
+    rules_edit_set_section(str_terrain_2,(RulesSectionWriterFn)terrain_editor_write_section);
     ok = rules_write_sections();
     if (ok == 0) {
       _sprintf(msg,str_error_updating_rules_s_4,((i8 *)&lang_file_ext));

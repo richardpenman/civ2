@@ -5868,7 +5868,7 @@ i32 __cdecl council_attitude_advice(int civ,i32 era)
 
 /* 0050a2f7 auto */
 i32 __cdecl
-foreign_minister_draw_civ_city(i32 ctx,iptr surface,int civ,byte flags,int x,int y,
+foreign_minister_draw_civ_city(i32 ctx,DibSurface *surface,int civ,byte flags,int x,int y,
             int height)
 
 {
@@ -5903,7 +5903,7 @@ foreign_minister_draw_civ_city(i32 ctx,iptr surface,int civ,byte flags,int x,int
       draw_x = x + 0x26;
     }
     value = gfx_zoom_scale(0x30,0xfffffffe);
-    gfx_draw_city((DibSurface *)surface,city2,0,draw_x,y - (value - height) / 2,0xfffffffe);
+    gfx_draw_city(surface,city2,0,draw_x,y - (value - height) / 2,0xfffffffe);
   }
   return 0;
 }

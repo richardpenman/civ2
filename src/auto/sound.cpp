@@ -951,7 +951,7 @@ void __cdecl snd_avi_stream_refill(WaveSource *source)
 }
 
 /* 005d5d11 auto */
-i32 __cdecl snd_avi_stream_prepare(i32 start_time,i32 end_time,iptr status_ptr)
+i32 __cdecl snd_avi_stream_prepare(i32 start_time,i32 end_time,u16 *status_ptr)
 
 {
   i32 result;
@@ -1032,7 +1032,7 @@ i16 __cdecl snd_avi_stream_start(void)
     snd_wave_write_pending(snd_wave.buffer_ring);
     snd_wave.sources->flags = snd_wave.sources->flags | 0x10;
     if (snd_wave.sources->status_ptr != 0) {
-      *(ushort *)snd_wave.sources->status_ptr = *(ushort *)snd_wave.sources->status_ptr | 4;
+      *snd_wave.sources->status_ptr = *snd_wave.sources->status_ptr | 4;
     }
   }
   ring = (iptr)snd_wave.buffer_ring;
@@ -1514,7 +1514,7 @@ i32 __cdecl snd_wave_on_buffer_done(HWAVEOUT wave_out,WaveHeader *wave_hdr)
       source = snd_wave.sources;
       if ((((snd_wave.sources != 0) && (snd_wave.sources->kind == 4)) &&
           ((buffer->flags >> 1 & 1) != 0)) && ((buffer->flags >> 4 & 1) != 0)) {
-        *(ushort *)snd_wave.sources->status_ptr = *(ushort *)snd_wave.sources->status_ptr & 0xfffb;
+        *snd_wave.sources->status_ptr = *snd_wave.sources->status_ptr & 0xfffb;
         first_source->flags = first_source->flags | 2;
       }
       do {
@@ -3502,7 +3502,7 @@ int AviAudio::prepare_range(i32 start_time,i32 end_time)
 {
   int result;
   
-  result = snd_avi_stream_prepare(start_time,end_time,(iptr)this);
+  result = snd_avi_stream_prepare(start_time,end_time,&flags);
   if (result == 0) {
     flags = flags | 2;
   }

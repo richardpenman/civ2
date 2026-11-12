@@ -807,12 +807,12 @@ int extras_input(void *msg)
 
 /* A row's unit (Dialog's option draw callback): its picture in the
    indent, then the text the default way. */
-i32 extras_unit_list_draw(Dialog *dialog, iptr surface, i32 unit, i32 flags, i32 x, i32 y, i32 row_height)
+i32 extras_unit_list_draw(Dialog *dialog, DibSurface *surface, i32 unit, i32 flags, i32 x, i32 y, i32 row_height)
 {
     int zoom = -4, h = gfx_zoom_scale(0x30, zoom);
     (void)dialog;
     (void)flags;
-    gfx_draw_unit((DibSurface *)surface, unit, 4, x, y - (h - row_height) / 2, zoom, 0);
+    gfx_draw_unit(surface, unit, 4, x, y - (h - row_height) / 2, zoom, 0);
     return 0;
 }
 

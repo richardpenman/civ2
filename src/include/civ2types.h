@@ -636,7 +636,7 @@ typedef struct WaveSource {
     i32 avi_stream;                 /* 0x84 PAVISTREAM */
     i16 kind;                       /* 0x88 1 wave, 4 AVI stream */
     i16 sound_id;                   /* 0x8a */
-    iptr status_ptr;                /* 0x8c u16 * of the AVI player's status (4 = playing) */
+    u16 *status_ptr;                /* 0x8c the AVI player's status (AviAudio.flags: 4 = playing) */
     i32 stream_pos;                 /* 0x90 AVI: next byte to read */
     i32 stream_start;               /* 0x94 */
     WaveBuffer *fill_buffer;        /* 0x98 AVI: the buffer being filled */
@@ -985,7 +985,7 @@ typedef i32 (*RulesSectionWriterFn)(FILE *out_file, FILE *in_file);
 
 /* A section of RULES.TXT the rules editors rewrite (rules_edit_add_section). */
 typedef struct RulesEditSection {
-    iptr name;                      /* 0x0 "@NAME" without the @, 0 ends the list */
+    const char *name;               /* 0x0 "@NAME" without the @, 0 ends the list */
     RulesSectionWriterFn writer;    /* 0x4 */
 } RulesEditSection;
 /* A row of a rules editor's control table: what is on that row. */

@@ -907,7 +907,7 @@ static void gfx_load_icons_sheet(void)
   ((DibSurface *)((i8 *)&window_border_tile_surface))->DibSurface::create(0x40,0x20);
   gfx_copy_rect_xywh(&gfx_sheet_surface_block.gfx_sheet_surface,&window_border_tile_surface,199,0x142,0,0,0x40,0x20);
   dialog_set_frame_tile_surface(&window_border_tile_surface);
-  frame_set_border_tile((iptr)&window_border_tile_surface);
+  frame_set_border_tile(&window_border_tile_surface);
   ((DibSurface *)((i8 *)&panel_texture_surface))->DibSurface::create(0x20,0x20);
   gfx_copy_rect_xywh(&gfx_sheet_surface_block.gfx_sheet_surface,&panel_texture_surface,0x12a,0xbe,0,0,0x20,0x20);
   (*(i8 * *)&dlg_style.client_tile_surface) = ((i8 *)&panel_texture_surface);
@@ -2157,13 +2157,13 @@ void PortraitDialog::paint()
     dll.dll_handle_free();
     loaded = ui_metrics.caption_height + ui_metrics.bevel_width * -2;
     height = get_width();
-    gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,0,ui_metrics.bevel_width,height,loaded,0,ui_metrics.bevel_width);
+    gfx_tile_fill(this,ui_metrics.border_tile,0,ui_metrics.bevel_width,height,loaded,0,ui_metrics.bevel_width);
     height = get_height();
     loaded = ui_metrics.border_width + ui_metrics.bevel_width * -2;
     x2 = ui_metrics.bevel_width;
     tmp_a = ui_metrics.caption_height - ui_metrics.bevel_width;
     for (i = 0; i < 8; i++) {
-      gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,x2,tmp_a,loaded,height,x2,tmp_a);
+      gfx_tile_fill(this,ui_metrics.border_tile,x2,tmp_a,loaded,height,x2,tmp_a);
       x2 = x2 + ui_metrics.border_width + 0x5a;
     }
     tmp_b = ui_metrics.border_width + ui_metrics.bevel_width * -2;
@@ -2172,7 +2172,7 @@ void PortraitDialog::paint()
     tmp_a = ui_metrics.bevel_width;
     loaded = ui_metrics.bevel_width * -2;
     for (i = 0; i < 2; i++) {
-      gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,tmp_a,y2,tmp_c + loaded,tmp_b,tmp_a,y2);
+      gfx_tile_fill(this,ui_metrics.border_tile,tmp_a,y2,tmp_c + loaded,tmp_b,tmp_a,y2);
       y2 = y2 + ui_metrics.border_width + 0x6e;
     }
     loaded = ui_metrics.border_width * 2;
@@ -2181,7 +2181,7 @@ void PortraitDialog::paint()
     tmp_a = ui_metrics.bevel_width * -2;
     tmp_d = get_height();
     tmp_d = tmp_d + ui_metrics.border_width * -2 - 0x24 + ui_metrics.bevel_width;
-    gfx_tile_fill(this,(DibSurface *)ui_metrics.border_tile,tmp_b,tmp_d,tmp_c + tmp_a,loaded + 0x24,tmp_b,tmp_d);
+    gfx_tile_fill(this,ui_metrics.border_tile,tmp_b,tmp_d,tmp_c + tmp_a,loaded + 0x24,tmp_b,tmp_d);
     SetRect(&dst_rect,ui_metrics.border_width - ui_metrics.bevel_width,ui_metrics.caption_height - ui_metrics.bevel_width,
             ui_metrics.bevel_width * 2 + (ui_metrics.border_width - ui_metrics.bevel_width) + 0x5a,
             ui_metrics.bevel_width * 2 + (ui_metrics.caption_height - ui_metrics.bevel_width) + 0x6e);
@@ -6502,7 +6502,7 @@ void DibSurface::wnd_create(iptr parent,i32 style,i32 x,i32 y ,i32 width,i32 hei
   create(width,height);
   set_palette(palette);
   window = ((WndBase *)(this + 1))->get_window();
-  wnd_install_paint_proc((iptr)this,window);
+  wnd_install_paint_proc((SurfaceWindow *)this,window);
   return;
 }
 

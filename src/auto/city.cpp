@@ -7507,9 +7507,9 @@ void WonderMovieWindow::play()
 void WonderMovieWindow::draw_caption()
 
 {
-  frame_set_border_tile((iptr)(frame_surface_bytes));
+  frame_set_border_tile(&frame_surface);
   this->FrameWindow::draw_caption();
-  frame_set_border_tile((iptr)&window_border_tile_surface);
+  frame_set_border_tile(&window_border_tile_surface);
   return;
 }
 
@@ -7904,7 +7904,7 @@ void __cdecl impr_editor_on_ok(void)
   clamp_count = impr_editor_save_controls();
   if (clamp_count == 0) {
     impr_editor_store_rules();
-    rules_edit_set_section((iptr)&str_improve_2,(RulesSectionWriterFn)impr_editor_write_section);
+    rules_edit_set_section(str_improve_2,(RulesSectionWriterFn)impr_editor_write_section);
     rules_edit_add_section((const char *)&str_endwonder_3,(RulesSectionWriterFn)impr_editor_write_endwonder);
     write_ok = rules_write_sections();
     if (write_ok == 0) {
@@ -15707,7 +15707,7 @@ void __cdecl city_button_buy(i32 control_id)
 
 /* 0050a1d6 auto */
 i32 __cdecl
-city_change_draw_option_icon(i32 dialog,iptr surface,int option,byte flags,int x,int y,
+city_change_draw_option_icon(i32 dialog,DibSurface *surface,int option,byte flags,int x,int y,
             int row_height)
 
 {
@@ -15740,14 +15740,14 @@ city_change_draw_option_icon(i32 dialog,iptr surface,int option,byte flags,int x
     y_offset = (sprite_height2 - row_height) / 2;
     draw_y -= y_offset;
     gfx_set_zoom_scale(zoom2);
-    ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)unit_rect,(DibSurface *)surface,draw_x,
+    ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)unit_rect,surface,draw_x,
                draw_y);
     gfx_reset_zoom_scale();
   }
   if (-1 < improvement) {
     y_offset = (0x14 - row_height) / 2;
     draw_y = y - y_offset;
-    ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)improvement_rect,(DibSurface *)surface,draw_x,
+    ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)improvement_rect,surface,draw_x,
                draw_y);
   }
   return 0;

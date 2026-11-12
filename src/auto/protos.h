@@ -940,9 +940,9 @@ void __cdecl tribe_editor_run(void); /* 004a5d92 */
 void __cdecl popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,int advance,i32 sprite_flags); /* 004a6b80 */
 i32 __cdecl popup_text_with_improvement(const char *filename,const char *section,i32 dlg_flags,int improvement,i32 sprite_flags); /* 004a6bdc */
 i32 __cdecl popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_flags,int unit_type,i32 sprite_flags); /* 004a6c4b */
-void __cdecl popup_city_sprite_draw_cb(i32 dlg,iptr sprite,int city,i32 left,int x, i32 y); /* 004a6c85 */
+void __cdecl popup_city_sprite_draw_cb(i32 dlg,DibSurface *surface,int city,i32 left,int x, i32 y); /* 004a6c85 */
 i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dlg_flags,int city); /* 004a6cc5 */
-void __cdecl popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,int unit,i32 left,int x, i32 y); /* 004a6df7 */
+void __cdecl popup_unit_sprite_draw_cb(i32 dlg,DibSurface *surface,int unit,i32 left,int x, i32 y); /* 004a6df7 */
 i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dlg_flags,int unit); /* 004a6e39 */
 void __cdecl prefs_set_defaults(void); /* 004a70b0 */
 void __cdecl prefs_set_mp_defaults(void); /* 004a71bb */
@@ -1101,9 +1101,9 @@ i32 __cdecl civ_can_build_unit(int civ,int city,int unit_type); /* 004bfe5a */
 i32 __cdecl civ_can_build_wonder(int civ,int wonder); /* 004c02d8 */
 i32 __cdecl city_can_build_improvement(int civ,int city,int improvement); /* 004c03ae */
 int __cdecl civ_pick_research_advance(int civ); /* 004c09b0 */
-i32 __cdecl research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int x,int y, int height); /* 004c0b51 */
-i32 __cdecl research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x,int y, int height); /* 004c0be8 */
-i32 __cdecl research_option_draw_improvement(i32 dialog,iptr surface,int improvement,byte flags,int x,int y, int height); /* 004c0c83 */
+i32 __cdecl research_option_draw_advance(i32 dialog,DibSurface *surface,int advance,byte flags,int x,int y, int height); /* 004c0b51 */
+i32 __cdecl research_option_draw_unit(i32 dialog,DibSurface *surface,int unit_type,byte flags,int x,int y, int height); /* 004c0be8 */
+i32 __cdecl research_option_draw_improvement(i32 dialog,DibSurface *surface,int improvement,byte flags,int x,int y, int height); /* 004c0c83 */
 void __cdecl civ_research_goal_dialog(int civ,int exclude_current,int civ2); /* 004c0cf7 */
 int __cdecl civ_choose_research_dialog(int civ,int forced); /* 004c195e */
 void __cdecl civ_choose_research(int civ); /* 004c21ad */
@@ -1146,7 +1146,7 @@ void __cdecl editor_font_static_init(void); /* 004cc9e0 */
 void __cdecl editor_font_reg_atexit(void); /* 004cc9fe */
 void __cdecl editor_font_static_dtor(void); /* 004cca1b */
 i32 __cdecl memblock_alloc_checked(MemBlock *block,uint size); /* 004cca35 */
-void __cdecl rules_edit_set_section(iptr names,RulesSectionWriterFn writers); /* 004ccab9 */
+void __cdecl rules_edit_set_section(const char *names,RulesSectionWriterFn writers); /* 004ccab9 */
 void __cdecl rules_edit_add_section(const char *name2,RulesSectionWriterFn writer); /* 004ccaed */
 void __cdecl gfx_draw_tiled_frame(DibSurface *surface,int x,int y,int width,int height,int border); /* 004ccb6a */
 void __cdecl text_append_int_2d(i32 value); /* 004ccdb6 */
@@ -1351,8 +1351,8 @@ void __cdecl city_window_on_minimize(void); /* 00509a82 */
 void __cdecl city_window_on_restore(void); /* 00509a9c */
 void __cdecl city_text_append_build_turns(int cost,int shields); /* 00509ac0 */
 void __cdecl city_button_buy(i32 control_id); /* 00509b48 */
-i32 __cdecl city_change_draw_option_icon(i32 dialog,iptr surface,int option,byte flags,int x,int y, int row_height); /* 0050a1d6 */
-i32 __cdecl foreign_minister_draw_civ_city(i32 ctx,iptr surface,int civ,byte flags,int x,int y, int height); /* 0050a2f7 */
+i32 __cdecl city_change_draw_option_icon(i32 dialog,DibSurface *surface,int option,byte flags,int x,int y, int row_height); /* 0050a1d6 */
+i32 __cdecl foreign_minister_draw_civ_city(i32 ctx,DibSurface *surface,int civ,byte flags,int x,int y, int height); /* 0050a2f7 */
 void __cdecl city_button_change(i32 control_id); /* 0050a473 */
 void __cdecl city_change_idle_autoclose(void); /* 0050b674 */
 void __cdecl city_button_rename(i32 control_id); /* 0050b74e */
@@ -1518,7 +1518,7 @@ void __cdecl ui_text_font_static_init(void); /* 00551f98 */
 void __cdecl ui_text_font_reg_atexit(void); /* 00551fb6 */
 void __cdecl ui_text_font_static_dtor(void); /* 00551fd3 */
 void __cdecl ui_init_screen_metrics(void); /* 00551fed */
-void __cdecl frame_set_border_tile(iptr tile); /* 005520fa */
+void __cdecl frame_set_border_tile(DibSurface *tile); /* 005520fa */
 void __cdecl frame_wnd_on_caption_button_click(int button_id); /* 00552e5b */
 int __cdecl str_find_bad_filename_char(const char *filename); /* 00553db0 */
 i32 __cdecl editor_create_scenario_folder(void); /* 00553dfd */
@@ -1984,7 +1984,7 @@ int __cdecl unit_home_city_name(int unit); /* 005b6898 */
 i32 __cdecl ai_tile_improve_choice(int civ,int x,i32 y); /* 005b68f6 */
 i32 __cdecl unit_dlg_wake_unit_cb(int unit); /* 005b6a58 */
 i32 __cdecl unit_dlg_dblclick_accept_cb(void); /* 005b6aa0 */
-void __cdecl unit_dlg_draw_sprite_cb(i32 dlg,iptr sprite,int unit,i32 left,int x, i32 y); /* 005b6ab5 */
+void __cdecl unit_dlg_draw_sprite_cb(i32 dlg,DibSurface *surface,int unit,i32 left,int x, i32 y); /* 005b6ab5 */
 i32 __cdecl unit_stack_select_dialog(int unit,const char *title,int allow_cancel); /* 005b6aea */
 void __cdecl map_alloc(void); /* 005b7fe0 */
 void __cdecl map_free(void); /* 005b8416 */
@@ -2212,7 +2212,7 @@ void __cdecl ui_set_radio_disabled_color(i32 color_index); /* 005d4197 */
 void __cdecl ui_set_radio_text_shadow(i32 color_index,i32 dx,i32 dy); /* 005d41af */
 uint __cdecl timer_ticks_60hz(void); /* 005d41e0 */
 void __cdecl timer_busy_wait_ticks(int ticks); /* 005d4204 */
-HWND __cdecl timer_wnd_create(iptr timer_mgr); /* 005d423c */
+HWND __cdecl timer_wnd_create(TimerManager *timer_mgr); /* 005d423c */
 void __cdecl timer_wnd_destroy(HWND hwnd); /* 005d447c */
 i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot); /* 005d44be */
 void __cdecl timer_wnd_kill_slot(HWND hwnd,int slot); /* 005d4664 */
@@ -2232,7 +2232,7 @@ i32 __cdecl snd_wave_get_position_samples(void); /* 005d5706, hand-written */
 i32 __cdecl snd_avi_stream_feed(uint sample_count); /* 005d57b1 */
 i32 __cdecl snd_avi_stream_stop(void); /* 005d5b88 */
 void __cdecl snd_avi_stream_refill(WaveSource *source); /* 005d5bec */
-i32 __cdecl snd_avi_stream_prepare(i32 start_time,i32 end_time,iptr status_ptr); /* 005d5d11 */
+i32 __cdecl snd_avi_stream_prepare(i32 start_time,i32 end_time,u16 *status_ptr); /* 005d5d11 */
 i16 __cdecl snd_avi_stream_start(void); /* 005d5f91 */
 short __cdecl snd_wave_play(const char *filename,uint flags,i32 sound_id,SoundDoneFn done_callback); /* 005d6038 */
 void __cdecl snd_wave_free_by_id(i32 sound_id); /* 005d61ab */
@@ -2335,7 +2335,7 @@ void __cdecl menu_hmenu_check_item(HMENU hmenu,int menu_pos,int item_pos,i32 che
 void __cdecl menu_hmenu_delete_item(HMENU hmenu,int menu_pos,int item_pos); /* 005e1226 */
 void __cdecl menu_hmenu_insert_item(HMENU hmenu,int menu_pos,int item_pos,LPCSTR text); /* 005e128c */
 void __cdecl menu_hmenu_set_item_text(HMENU hmenu,int menu_pos,int item_pos,LPCSTR text); /* 005e14c8 */
-void __cdecl wnd_install_paint_proc(iptr surface,NativeWindow *wnd); /* 005e1880 */
+void __cdecl wnd_install_paint_proc(SurfaceWindow *surface,NativeWindow *wnd); /* 005e1880 */
 i32 __stdcall surfwnd_subclass_wndproc(HWND hwnd,int msg,i32 wparam,uint lparam); /* 005e18ff */
 void __cdecl avi_update_current_frame(void); /* 005e1c70 */
 int __cdecl avi_open_file(AviPlayer *player,const char *filename); /* 005e1c8e */

@@ -613,7 +613,7 @@ void __cdecl tribe_editor_on_ok(void)
   tribe_editor_store_controls();
   tribe_editor_update_city_file();
   tribe_editor_apply_tables();
-  rules_edit_set_section((iptr)&str_governments_2,(RulesSectionWriterFn)tribe_editor_write_governments);
+  rules_edit_set_section(str_governments_2,(RulesSectionWriterFn)tribe_editor_write_governments);
   rules_edit_add_section((const char *)&str_leaders_2,(RulesSectionWriterFn)tribe_editor_write_leaders);
   rules_edit_add_section((const char *)&str_caravan_5,(RulesSectionWriterFn)tribe_editor_write_caravan);
   ok = rules_write_sections();

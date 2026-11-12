@@ -256,7 +256,7 @@ void __cdecl tech_editor_on_ok(void)
   if (errors == 0) {
     tech_editor_save_items();
     tech_editor_relink_prereqs();
-    rules_edit_set_section((iptr)&str_civilize,(RulesSectionWriterFn)tech_editor_write_civilize);
+    rules_edit_set_section(str_civilize,(RulesSectionWriterFn)tech_editor_write_civilize);
     ok = rules_write_sections();
     if (ok == 0) {
       _sprintf(msg,str_error_updating_rules_s,((i8 *)&lang_file_ext));
@@ -5681,7 +5681,7 @@ int __cdecl civ_pick_research_advance(int civ)
 
 /* 004c0b51 auto */
 i32 __cdecl
-research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int x,int y,
+research_option_draw_advance(i32 dialog,DibSurface *surface,int advance,byte flags,int x,int y,
             int height)
 
 {
@@ -5699,13 +5699,13 @@ research_option_draw_advance(i32 dialog,iptr surface,int advance,byte flags,int 
   ((Sprite *)
              (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
              (char)advances[advance].category * 0xf0 + (char)advances[advance].epoch * 0x3c))->draw(
-             (RECT *)draw_ctx,(DibSurface *)surface,draw_x,draw_y);
+             (RECT *)draw_ctx,surface,draw_x,draw_y);
   return 0;
 }
 
 /* 004c0be8 auto */
 i32 __cdecl
-research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x,int y,
+research_option_draw_unit(i32 dialog,DibSurface *surface,int unit_type,byte flags,int x,int y,
             int height)
 
 {
@@ -5726,7 +5726,7 @@ research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x
   y_offset = (sprite_height2 - height) / 2;
   draw_y -= y_offset;
   gfx_set_zoom_scale(zoom2);
-  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)draw_ctx,(DibSurface *)surface,draw_x,
+  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)draw_ctx,surface,draw_x,
              draw_y);
   gfx_reset_zoom_scale();
   return 0;
@@ -5734,7 +5734,7 @@ research_option_draw_unit(i32 dialog,iptr surface,int unit_type,byte flags,int x
 
 /* 004c0c83 auto */
 i32 __cdecl
-research_option_draw_improvement(i32 dialog,iptr surface,int improvement,byte flags,int x,int y,
+research_option_draw_improvement(i32 dialog,DibSurface *surface,int improvement,byte flags,int x,int y,
             int height)
 
 {
@@ -5749,7 +5749,7 @@ research_option_draw_improvement(i32 dialog,iptr surface,int improvement,byte fl
   }
   y_offset = (0x14 - height) / 2;
   draw_y = y - y_offset;
-  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)draw_ctx,(DibSurface *)surface,draw_x,
+  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)draw_ctx,surface,draw_x,
              draw_y);
   return 0;
 }
@@ -6416,7 +6416,7 @@ int __cdecl civ_distance_to_capital(int civ,i32 target_x,i32 target_y)
 /* 004ccab9 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void __cdecl rules_edit_set_section(iptr names,RulesSectionWriterFn writers)
+void __cdecl rules_edit_set_section(const char *names,RulesSectionWriterFn writers)
 
 {
   font_size16_bold_block.rules_edit_sections[0].name = names;
@@ -6436,7 +6436,7 @@ void __cdecl rules_edit_add_section(const char *name2,RulesSectionWriterFn write
       slot = slot + 1) {
   }
   if (slot < 7) {
-    font_size16_bold_block.rules_edit_sections[slot].name = (iptr)name2;
+    font_size16_bold_block.rules_edit_sections[slot].name = name2;
     font_size16_bold_block.rules_edit_sections[slot].writer = writer;
     font_size16_bold_block.rules_edit_sections[slot + 1].name = 0;
     font_size16_bold_block.rules_edit_sections[slot + 1].writer = 0;
@@ -7813,7 +7813,7 @@ void __cdecl cosmic_editor_ok_clicked(void)
   UINT uType;
   char message[32];
   
-  rules_edit_set_section((iptr)&str_cosmic_2,cosmic_editor_write_section);
+  rules_edit_set_section(str_cosmic_2,cosmic_editor_write_section);
   ok = rules_write_sections();
   if (ok == 0) {
     _sprintf(message,str_error_updating_rules_s_5,((i8 *)&lang_file_ext));

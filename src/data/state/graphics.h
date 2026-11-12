@@ -12,7 +12,7 @@ extern u8 str_empty_109[4];  /* only PortraitDialog::create uses it */
 /* Sizes of the window frames and fonts (chosen by the screen size). */
 #pragma pack(push, 1)
 typedef struct UiMetrics {
-    iptr border_tile;  /* 0063357c */
+    DibSurface *border_tile;  /* 0063357c */
     iptr font_height;  /* 00633580 */
     int large_screen;  /* 00633584 */
     int bevel_width;  /* 00633588 */

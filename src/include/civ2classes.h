@@ -323,8 +323,8 @@ static_assert(sizeof(DibSurface) == 0x48, "");
 
 /* The dialog's callbacks. */
 typedef i32 (*DialogSpriteFn)(i32 sprite_id);   /* a sprite clicked (its id) or double-clicked (0): nonzero ends the dialog */
-typedef void (*DialogSpriteDrawFn)(i32 sprite, iptr surface, i32 id, i32 data, i32 x, i32 y);   /* draws a sprite (DialogSprite's sprite, id, field_04) */
-typedef i32 (*DialogOptionDrawFn)(struct Dialog *dialog, iptr surface, i32 option_id, i32 flags, i32 x, i32 y, i32 row_height);   /* 0: draw the option the default way */
+typedef void (*DialogSpriteDrawFn)(i32 sprite, DibSurface *surface, i32 id, i32 data, i32 x, i32 y);   /* draws a sprite (DialogSprite's sprite, id, field_04) */
+typedef i32 (*DialogOptionDrawFn)(struct Dialog *dialog, DibSurface *surface, i32 option_id, i32 flags, i32 x, i32 y, i32 row_height);   /* 0: draw the option the default way */
 typedef void (*DialogSelectFn)(struct Dialog *dialog, i32 option_id);   /* the selected option changed */
 typedef i32 (*DialogPollFn)(struct Dialog *dialog);   /* polled while modal: nonzero ends the dialog */
 

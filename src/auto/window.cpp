@@ -1878,11 +1878,11 @@ popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_fla
 
 /* 004a6c85 auto */
 void __cdecl
-popup_city_sprite_draw_cb(i32 dlg,iptr sprite,int city,i32 left,int x,
+popup_city_sprite_draw_cb(i32 dlg,DibSurface *surface,int city,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_city((DibSurface *)sprite,city,0,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8);
+  gfx_draw_city(surface,city,0,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8);
   return;
 }
 
@@ -1912,11 +1912,11 @@ i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dl
 
 /* 004a6df7 auto */
 void __cdecl
-popup_unit_sprite_draw_cb(i32 dlg,iptr sprite,int unit,i32 left,int x,
+popup_unit_sprite_draw_cb(i32 dlg,DibSurface *surface,int unit,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_unit((DibSurface *)sprite,unit,4,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8,0);
+  gfx_draw_unit(surface,unit,4,x + 2,y,(ui_metrics.large_screen == 0) - 1 & 8,0);
   return;
 }
 
@@ -4253,7 +4253,7 @@ void __cdecl ui_init_screen_metrics(void)
 }
 
 /* 005520fa auto */
-void __cdecl frame_set_border_tile(iptr tile)
+void __cdecl frame_set_border_tile(DibSurface *tile)
 
 {
   ui_metrics.border_tile = tile;
@@ -7806,7 +7806,7 @@ uint Dialog::draw_option(DialogOption *option,int blit)
         inner_rect.left = cell_rect.left + (int)list_indents[option->group];
       }
       if ((on_draw_option == 0) ||
-         (group_index = on_draw_option(this,(iptr)surf_wnd,option->id,group_index,cell_x,cell_y
+         (group_index = on_draw_option(this,surf_wnd,option->id,group_index,cell_x,cell_y
                              ,(i32)list_row_height[option->group]),
          group_index == 0)) {
         if (is_selected != 0) {
@@ -9493,7 +9493,7 @@ void Dialog::render()
         sprite->sprite->draw((RECT *)sprite_rect,(DibSurface *)surf_wnd,sprite_x2,sprite_y2);
       }
       else {
-        on_draw_sprite((i32)sprite->sprite,(iptr)surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
+        on_draw_sprite((i32)sprite->sprite,surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);
       }
       if (((style_flags & 0x20000) != 0) && ((i32 *)selected_sprite == ((i32 *)sprite))) {
         rect_set(&rect,sprite_x2 - 1,sprite_y2 - 1,sprite_w + sprite_x2,
@@ -10077,7 +10077,7 @@ void DibSurface::wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y
   create(width,height);
   set_palette(palette);
   hwnd = ((WndBase *)(this + 1))->get_window();
-  wnd_install_paint_proc((iptr)this,hwnd);
+  wnd_install_paint_proc((SurfaceWindow *)this,hwnd);
   return;
 }
 
@@ -11985,10 +11985,10 @@ void __cdecl menu_hmenu_set_item_text(HMENU hmenu,int menu_pos,int item_pos,LPCS
 }
 
 /* 005e1880 auto */
-void __cdecl wnd_install_paint_proc(iptr surface,NativeWindow *wnd)
+void __cdecl wnd_install_paint_proc(SurfaceWindow *surface,NativeWindow *wnd)
 
 {
-  SetWindowLongA(wnd->hwnd,0xc,surface);
+  SetWindowLongA(wnd->hwnd,0xc,(LONG_PTR)surface);
   SetWindowLongA(wnd->hwnd,-4,(iptr)surfwnd_subclass_wndproc);
   return;
 }

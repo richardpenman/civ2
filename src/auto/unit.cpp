@@ -8507,7 +8507,7 @@ void __cdecl unit_editor_on_ok(void)
       }
     }
     unit_editor_store_rules();
-    rules_edit_set_section((iptr)&str_units_3,(RulesSectionWriterFn)unit_editor_write_units);
+    rules_edit_set_section(str_units_3,(RulesSectionWriterFn)unit_editor_write_units);
     result = rules_write_sections();
     if (result == 0) {
       _sprintf(rules_err_msg,str_error_updating_rules_s_6,((i8 *)&lang_file_ext));
@@ -10750,11 +10750,11 @@ i32 __cdecl unit_dlg_dblclick_accept_cb(void)
 
 /* 005b6ab5 auto */
 void __cdecl
-unit_dlg_draw_sprite_cb(i32 dlg,iptr sprite,int unit,i32 left,int x,
+unit_dlg_draw_sprite_cb(i32 dlg,DibSurface *surface,int unit,i32 left,int x,
             i32 y)
 
 {
-  gfx_draw_unit((DibSurface *)sprite,unit,4,x + 2,y,dlg_unit_sprite_zoom,0);
+  gfx_draw_unit(surface,unit,4,x + 2,y,dlg_unit_sprite_zoom,0);
   return;
 }
 
