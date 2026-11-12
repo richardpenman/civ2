@@ -28,8 +28,8 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 34 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
-B23 to B25, B28 and B32 to B34. Fixed in every mode: B1 (our build reads the original's usual
+Status of the list: 36 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
+B23 to B25, B28 and B32 to B36. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
 anyway. Not fixed: B5
@@ -115,6 +115,22 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** not asked, `answer` is 0: expelled, as an AI unit does. **State.**
 - **Saves:** none.
 - **Status: fixed** (`bugfix_state()`). No replay uses autoplay.
+
+### B36. A ship lost at sea takes every unit on its square with it
+- **Where:** `src/auto/unit.cpp`, `unit_delete_with_cargo` (005b5d93): for a ship at sea it calls
+  `unit_gather_cargo(unit, 0, 0)`, which marks the ship's cargo `UNITF_ABOARD` (its sentried
+  passengers, then others up to its hold), and then ignores that and calls
+  `unit_stack_delete_all`, which deletes every unit on the square. Disbanding the ship, losing it
+  to its city's support and the other ways a ship is deleted go through it.
+- **What goes wrong:** disbanding one of two ships at sea also deletes the other ship, its cargo,
+  aircraft flying over the square and any other units there.
+- **Source:** community (duplij's civ2.exe fixes on CivFanatics, item 5; issue #24), traced here.
+- **Fix:** delete the ship, the units marked aboard, and the owner's land units that the other
+  ships on the square can't carry (the last in the stack first; a ship's room is counted as
+  `unit_gather_cargo` counts it). Other ships, the rest of their cargo, aircraft in flight and
+  other civilizations' units stay. **State.** Tested by `tests/ship_at_sea_test.cpp`.
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`).
 
 ## AI
 
@@ -640,6 +656,19 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 - **Status: fixed in every mode.**
 
+### B35. The advisors call a democracy a republic
+- **Where:** the title line of the advisors (`attitude_advisor_draw`, `defense_minister_draw` and
+  the casualty view in `src/auto/reports.cpp`, `trade_advisor_draw` and `city_status_draw` in
+  `src/auto/city.cpp`, `science_advisor_draw` in `src/auto/civ.cpp`): the label is
+  `0x148 + int_clamp(government - 1, 0, 4)`, of Empire, Kingdom, People's Republic, Holy
+  Empire, Republic and United States (0x148..0x14d).
+- **What goes wrong:** the clamp to 4 shows Democracy as "Republic of the ..."; the "United
+  States" label is never used.
+- **Source:** community (duplij's civ2.exe fixes on CivFanatics, item 24; issue #24), traced here.
+- **Fix:** clamp to 5. **UI only.** (Anarchy still shows "Empire".)
+- **Saves:** none.
+- **Status: fixed** (`bugfix_ui()`; also in the `CityStatus` extra's own City Status view).
+
 ## Memory errors of the original (fixed in every mode)
 
 These do not change the game when the original "gets away with them", so OpenCiv2 fixes them
@@ -648,6 +677,14 @@ for good and keeps the original's results:
 - BMP export reserved bytes and the initial RLE8 cursor (BF-011/BF-073):
   [evidence and focused regression](bugfix-evidence-bitmap.md).
 - `events_compact` freeing the string pool its callers still use (B8).
+- An AI goal added for civilization -1 (`civ_add_ai_goal`, `civ_add_standing_goal`): the goals
+  of `civs[-1]` lie over the improvements table (`improvements[19..54]`), whose names, costs
+  and upkeep they overwrite, and the game crashes drawing a name. The path found:
+  `unit_reveal_surroundings_far` (unit.cpp) takes a square's owner from
+  `tile_city_or_unit_owner`, which says -1 when the square's unit flag has gone out of step
+  with the units on it (as `unit_stack_validate`'s repairs can leave it) while
+  `tile_first_unit` still finds one. Reported by duplij (civ2.exe fixes on CivFanatics, item
+  55; issue #24). The goal is not added.
 - `diffeng_rle_encode` (the network difference engine) reading one byte past its input; the
   decoded data is the same.
 - Saved unit/city counts and PCM format chunk extents (BF-091/BF-111/BF-305):

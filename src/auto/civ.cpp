@@ -3747,6 +3747,11 @@ void __cdecl civ_add_ai_goal(int civ,int x,int y,int role,int priority)
   iptr unit;
   int goal;
   
+  /* (no civilization: civs[-1]'s goals would be the improvements'
+     table; memory errors of the original, BUGS.md) */
+  if ((uint)civ > 7) {
+    return;
+  }
   goal = 0;
   while( true ) {
     if (0x2f < goal) {
@@ -3803,6 +3808,11 @@ void __cdecl civ_add_standing_goal(int civ,int x,int y,i32 role,int priority)
 {
   int goal;
   
+  /* (no civilization: civs[-1]'s goals would be the improvements'
+     table; memory errors of the original, BUGS.md) */
+  if ((uint)civ > 7) {
+    return;
+  }
   goal = 0;
   while( true ) {
     if (0xf < goal) {
