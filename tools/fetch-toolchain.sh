@@ -5,29 +5,35 @@
 # sources (the set-up's readers of the game's CD) and libogg's and
 # libvorbis's (its encoder of the CD's music).  macOS (Apple silicon),
 # Linux (x86-64, arm64), Windows (x86-64, in an MSYS2 shell).
-#   fetch-toolchain.sh [windows] [sources]
+#   fetch-toolchain.sh [windows] [sources] [web] [browser]
 # windows: also SDL2's MinGW release, to cross-compile the Windows
 # executable; sources: only the sources (unshield, zlib, libogg, libvorbis;
-# and SDL2's MinGW release with windows).
+# and SDL2's MinGW release with windows).  web: Binaryen (wasm-opt, for the
+# browser version: tools/build_web.py); browser: Node.js and Chrome's
+# headless shell (Linux x86-64), for the browser version's smoke test
+# (src/web/test/smoke.mjs).  With web or browser only those are fetched.
 set -e
-mingw=; wasm=1
+mingw=; wasm=1; srcs=1; web=; browser=
 for a in "$@"; do
     case "$a" in
         windows) mingw=1 ;;
         sources) wasm= ;;
-        *) echo "usage: $0 [windows] [sources]" >&2; exit 1 ;;
+        web) web=1 ;;
+        browser) browser=1 ;;
+        *) echo "usage: $0 [windows] [sources] [web] [browser]" >&2; exit 1 ;;
     esac
 done
+if [ -n "$web$browser" ]; then wasm=; srcs=; fi
 cd "$(dirname "$0")"
 mkdir -p toolchain && cd toolchain
 os=$(uname -s); arch=$(uname -m)
 case "$os-$arch" in
-    Darwin-arm64) sdk=arm64-macos; wabt=macos-arm64 ;;
-    Darwin-x86_64) sdk=x86_64-macos; wabt= ;;
-    Linux-x86_64) sdk=x86_64-linux; wabt=linux-x64 ;;
-    Linux-aarch64|Linux-arm64) sdk=arm64-linux; wabt=linux-arm64 ;;
-    MINGW64*-x86_64|MSYS*-x86_64|CYGWIN*-x86_64) sdk=x86_64-windows; wabt=windows-x64 ;;
-    *) [ -z "$wasm" ] || { echo "no prebuilt toolchain for $os $arch" >&2; exit 1; } ;;
+    Darwin-arm64) sdk=arm64-macos; wabt=macos-arm64; binaryen=arm64-macos ;;
+    Darwin-x86_64) sdk=x86_64-macos; wabt=; binaryen=x86_64-macos ;;
+    Linux-x86_64) sdk=x86_64-linux; wabt=linux-x64; binaryen=x86_64-linux ;;
+    Linux-aarch64|Linux-arm64) sdk=arm64-linux; wabt=linux-arm64; binaryen=aarch64-linux ;;
+    MINGW64*-x86_64|MSYS*-x86_64|CYGWIN*-x86_64) sdk=x86_64-windows; wabt=windows-x64; binaryen=x86_64-windows ;;
+    *) [ -z "$wasm$web" ] || { echo "no prebuilt toolchain for $os $arch" >&2; exit 1; } ;;
 esac
 if [ -n "$wasm" ] && [ ! -d wasi-sdk ]; then
     curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-$sdk.tar.gz | tar xz
@@ -45,6 +51,36 @@ if [ -n "$mingw" ] && [ ! -d SDL2-mingw ]; then
     curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-2.30.9/SDL2-devel-2.30.9-mingw.tar.gz | tar xz
     mv SDL2-2.30.9 SDL2-mingw
 fi
+# Binaryen (wasm-opt): the browser version's module, made resumable
+# (asyncify) and tolerant of calls through mismatched function types
+# (fpcast-emu); tools/build_web.py.  Checked against its release's SHA-256.
+if [ -n "$web" ] && [ ! -d binaryen ]; then
+    url=https://github.com/WebAssembly/binaryen/releases/download/version_130/binaryen-version_130-$binaryen.tar.gz
+    curl -fL# --retry 5 --retry-all-errors --retry-delay 5 "$url" -o binaryen.tar.gz
+    want=$(curl -fsSL --retry 5 "$url.sha256" | cut -d' ' -f1)
+    sum=$( (sha256sum binaryen.tar.gz 2>/dev/null || shasum -a 256 binaryen.tar.gz) | cut -d' ' -f1)
+    [ "$sum" = "$want" ] || { echo "binaryen.tar.gz: not the expected file (SHA-256 $sum)" >&2; exit 1; }
+    tar xzf binaryen.tar.gz && rm binaryen.tar.gz && mv binaryen-version_130 binaryen
+fi
+# The browser version's smoke test: Node.js and Chrome for Testing's
+# headless shell, Linux x86-64 (pinned, checked).
+if [ -n "$browser" ]; then
+    [ "$os-$arch" = Linux-x86_64 ] || { echo "browser: Linux x86-64 only" >&2; exit 1; }
+    if [ ! -d node ]; then
+        curl -fL# --retry 5 https://nodejs.org/dist/v26.13.0/node-v26.13.0-linux-x64.tar.xz -o node.tar.xz
+        [ "$(sha256sum node.tar.xz | cut -d' ' -f1)" = d28a96af6c38596f6d9d97c0ee531c13d238d757742387d1928de822d959e997 ] ||
+            { echo "node.tar.xz: not the expected file" >&2; exit 1; }
+        tar xJf node.tar.xz && rm node.tar.xz && mv node-v26.13.0-linux-x64 node
+    fi
+    if [ ! -d chrome-headless-shell ]; then
+        curl -fL# --retry 5 https://storage.googleapis.com/chrome-for-testing-public/156.0.8078.80/linux64/chrome-headless-shell-linux64.zip -o chs.zip
+        [ "$(sha256sum chs.zip | cut -d' ' -f1)" = 547dcd374e02961bf998f6046a267644f8502225c36bb78ca307dab32a0b3eb4 ] ||
+            { echo "chs.zip: not the expected file" >&2; exit 1; }
+        python3 -c "import zipfile,sys; zipfile.ZipFile('chs.zip').extractall('.')" && rm chs.zip
+        mv chrome-headless-shell-linux64 chrome-headless-shell && chmod +x chrome-headless-shell/chrome-headless-shell
+    fi
+fi
+[ -n "$srcs" ] || { echo "toolchain ready in tools/toolchain"; exit 0; }
 # The set-up's readers of the game's CD (src/host/setup.c): unshield (its
 # InstallShield cabinet) and zlib; and of a disc image's music
 # (src/host/setup_disc.c): libogg and libvorbis (Ogg Vorbis encoding); as
