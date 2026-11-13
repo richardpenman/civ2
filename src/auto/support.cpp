@@ -937,19 +937,19 @@ void __cdecl err_report_ctx_atexit_dtor(void)
 }
 
 /* 005dae6b auto */
-void ErrorContext::report(i32 code,iptr file,iptr line,i32 extra)
+void ErrorContext::report(i32 code,const char *text,const char *file,i32 line)
 
 {
   ErrorContext *msg;
   
   set_code(code);
-  msg = format_message((const char *)&str_fatal_error,(const char *)file,line,extra);
+  msg = format_message((const char *)&str_fatal_error,text,file,line);
   show_fatal_box((i32)msg);
   return;
 }
 
 /* 005daef7 auto */
-ErrorContext *ErrorContext::format_message(const char *fmt,const char *text,i32 file,i32 line)
+ErrorContext *ErrorContext::format_message(const char *fmt,const char *text,const char *file,i32 line)
 
 {
   size_t len;
@@ -1096,7 +1096,7 @@ HGLOBAL __cdecl mem_handle_alloc(SIZE_T size)
   
   handle = GlobalAlloc(0x42,size);
   if (handle == (HGLOBAL)0x0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(1,(iptr)&str_err_memallocfailed,(iptr)&str_d_ss_smeds32_pcmem_cpp,0x4c);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(1,(const char*)&str_err_memallocfailed,(const char*)&str_d_ss_smeds32_pcmem_cpp,0x4c);
   }
   return handle;
 }
@@ -1630,18 +1630,18 @@ void PtrListNode::destruct()
 }
 
 /* 005f068c auto */
-void PtrListNode::set_next(iptr next)
+void PtrListNode::set_next(PtrListNode *next)
 
 {
-  next_node = next;
+  next_node = (u32)next;
   return;
 }
 
 /* 005f06ad auto */
-void PtrListNode::set_prev(iptr prev)
+void PtrListNode::set_prev(PtrListNode *prev)
 
 {
-  prev_node = prev;
+  prev_node = (u32)prev;
   return;
 }
 
@@ -1735,8 +1735,8 @@ void PtrList::remove_current()
       iter_node = tail;
     }
     else {
-      prev_node->set_next((iptr)next_node);
-      next_node->set_prev((iptr)prev_node);
+      prev_node->set_next(next_node);
+      next_node->set_prev(prev_node);
       if ((void *)iter_node != (void *)0x0) {
         ((PtrListNode *)iter_node)->scalar_destruct(1);
       }

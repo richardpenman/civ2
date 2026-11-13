@@ -408,7 +408,7 @@ static void grey_map_update(void)
     u8 rgb[256 * 3];
     u32 sum = 0;
     int i, j, greys[256], ngreys = 0, lum[256];
-    ((GamePalette *)&game_palette_block.game_palette)->get_rgb((iptr)rgb, 0, 256);
+    ((GamePalette *)&game_palette_block.game_palette)->get_rgb(rgb, 0, 256);
     for (i = 0; i < 256 * 3; i++)
         sum = sum * 31 + rgb[i];
     if (sum == grey_map_sum && grey_map[1] | grey_map[2])
@@ -1009,7 +1009,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
         }
         if (!support_bar->hwnd) {
             rect_set_xywh((RECT *)rect, left + area_w - sw - 1, top + label_h + 1, sw, area_h - label_h - 2);
-            support_bar->create((iptr)&city_wnd.wnd, 98, (RECT *)rect, 1);
+            support_bar->create((Wnd *)&city_wnd.wnd, 98, (RECT *)rect, 1);
             support_bar->set_callback(support_on_scroll);
         }
         support_bar->set_range(0, support_rows_total - rows);
@@ -1195,7 +1195,7 @@ void extras_city_status_draw(void)
     if (advisor_state.controls_created == 0) {
         rect_set((RECT *)scroll_rect, (advisor_state.client_right - advisor_state.vscroll_width) - 2, status_list_top,
                  advisor_state.client_right - 2, list_bottom);
-        advisor_state.scrollbar.create((iptr)&advisor_state.wnd, 200, (RECT *)scroll_rect, 1);
+        advisor_state.scrollbar.create((Wnd *)&advisor_state.wnd, 200, (RECT *)scroll_rect, 1);
         advisor_state.scrollbar.set_range(0, max_row);
         advisor_state.scrollbar.set_pos(advisor_state.first_row);
         advisor_state.scrollbar.set_page_size(rows_per_page);
@@ -1970,7 +1970,7 @@ static int options_fields(const char *title, const char *note, const char *const
         d.add_line(note, -1, -1, -1, 0);
     for (i = 0; i < n; i++) {
         snprintf(k, sizeof k, "option.%s", keys[i]);
-        d.add_edit_field(extras_text(k), (iptr)shown[i], is_text && i == n - 1 ? 255 : 7);
+        d.add_edit_field(extras_text(k), shown[i], is_text && i == n - 1 ? 255 : 7);
     }
     result = d.show_modal(0);
     if (result < 0)

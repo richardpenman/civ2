@@ -307,10 +307,10 @@ uint SpaceshipWindow::create()
   win_flush_pending_msgs();
   create_with_handlers((const char *)&str_empty_125,0x800,frame_left,frame_top,
              frame_right - frame_left,(frame_bottom - frame_top) + 5,(GamePalette *)&game_palette_block.game_palette,
-             (iptr)&main_frame_wnd_block.main_frame_wnd);
+             &main_frame_wnd_block.main_frame_wnd);
   set_bg_color(0);
   surface_wnd.wnd_create_with_surface((const char *)&str_empty_126,0x800,0,0,0x280,0x1e0,
-             &ship_palette,(iptr)this);
+             &ship_palette,this);
   loaded = surface_wnd.load_gif_resource(499,10,0xec,&ship_palette);
   if (loaded != 0) {
     surface_wnd.window.center();
@@ -821,7 +821,7 @@ void SpaceshipWindow::play_launch_video()
   str_append((char *)video_path,(const char *)&str_civ2_video_launch_avi);
   found = file_resolve_path((const char *)video_path);
   if (found != 0) {
-    launch_video_player->create((iptr)&str_empty_136,0x800,0,0);
+    launch_video_player->create((const char*)&str_empty_136,0x800,0,0);
     launch_video_player->set_double_size(1);
     open_result = launch_video_player->open((const char *)video_path);
     if (open_result != 0) {

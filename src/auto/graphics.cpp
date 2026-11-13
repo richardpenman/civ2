@@ -1391,14 +1391,14 @@ void __cdecl gfx_build_grey_remap(void)
   
   rgb_handle = mem_handle_alloc(0x2c4);
   if (rgb_handle == 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_handle_fullcolors,(iptr)&str_d_ss_franklinton_grey_cpp,0x22);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_handle_fullcolors,(const char*)&str_d_ss_franklinton_grey_cpp,0x22);
   }
   else {
     rgb_data = (iptr)mem_handle_lock(rgb_handle);
-    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb(rgb_data,10,0x20);
+    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb((u8 *)rgb_data,10,0x20);
     handle = mem_handle_alloc(0x88);
     if (handle == 0) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_hlocpal,(iptr)&str_d_ss_franklinton_grey_cpp_2,0x2a);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_hlocpal,(const char*)&str_d_ss_franklinton_grey_cpp_2,0x2a);
       mem_handle_unlock(rgb_handle);
       mem_handle_free(rgb_handle);
     }
@@ -1414,7 +1414,7 @@ void __cdecl gfx_build_grey_remap(void)
       }
       h = CreatePalette(plpal);
       if (h == (HPALETTE)0x0) {
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_handle_palette,(iptr)&str_d_ss_franklinton_grey_cpp_3,0x3e);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_handle_palette,(const char*)&str_d_ss_franklinton_grey_cpp_3,0x3e);
         mem_handle_unlock(rgb_handle);
         mem_handle_free(rgb_handle);
       }
@@ -1423,7 +1423,7 @@ void __cdecl gfx_build_grey_remap(void)
         mem_handle_free(handle);
         handle = mem_handle_alloc(0x2c4);
         if (handle == 0) {
-          ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_handle_colors,(iptr)&str_d_ss_franklinton_grey_cpp_4,0x48);
+          ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_handle_colors,(const char*)&str_d_ss_franklinton_grey_cpp_4,0x48);
           mem_handle_unlock(rgb_handle);
           mem_handle_free(rgb_handle);
         }
@@ -1431,7 +1431,7 @@ void __cdecl gfx_build_grey_remap(void)
           full_rgb = (iptr)mem_handle_lock(handle);
           grey_palette_block.grey_remap_handle = mem_handle_alloc(0xec);
           if (grey_palette_block.grey_remap_handle == 0) {
-            ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_handle_grey,(iptr)&str_d_ss_franklinton_grey_cpp_5,0x51);
+            ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_handle_grey,(const char*)&str_d_ss_franklinton_grey_cpp_5,0x51);
             mem_handle_unlock(rgb_handle);
             mem_handle_free(rgb_handle);
             mem_handle_unlock(handle);
@@ -1439,7 +1439,7 @@ void __cdecl gfx_build_grey_remap(void)
           }
           else {
             remap_table = (iptr)mem_handle_lock(grey_palette_block.grey_remap_handle);
-            ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb(full_rgb,10,0xec);
+            ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb((u8 *)full_rgb,10,0xec);
             for (offset = 0; offset < 0x2c4; offset += 3) {
               nearest_index = GetNearestPaletteIndex
                                 (h,RGB(*(i8 *)(offset + full_rgb),*(i8 *)(offset + 1 + full_rgb),
@@ -1485,12 +1485,12 @@ void __cdecl gfx_grey_out_windows(void)
   if (remap_table != 0) {
     for (view = 0; view < 8; view++) {
       if ((view == 0) || (map_views_block.map_view_recs[view].open != 0)) {
-        map_views_block.map_view_recs[view].remap_colors(remap_table,10,0xec);
+        map_views_block.map_view_recs[view].remap_colors((u8 *)remap_table,10,0xec);
       }
     }
-    ((DibSurface *)((i8 *)&status_wnd.window))->remap_colors(remap_table,10,0xec);
-    ((DibSurface *)((i8 *)&minimap_state.window))->remap_colors(remap_table,10,0xec);
-    ((DibSurface *)((i8 *)&city_wnd.window))->remap_colors(remap_table,10,0xec);
+    ((DibSurface *)((i8 *)&status_wnd.window))->remap_colors((u8 *)remap_table,10,0xec);
+    ((DibSurface *)((i8 *)&minimap_state.window))->remap_colors((u8 *)remap_table,10,0xec);
+    ((DibSurface *)((i8 *)&city_wnd.window))->remap_colors((u8 *)remap_table,10,0xec);
     mem_handle_unlock(grey_palette_block.grey_remap_handle);
     ui_blit_all_windows();
   }
@@ -1571,7 +1571,7 @@ void __cdecl palette_set_nocollapse_all(void)
   
   logpal = (GameLogPalette *)((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_logpalette();
   if (logpal == 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_p,(iptr)&str_d_ss_franklinton_grey_cpp_6,0xbc);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_p,(const char*)&str_d_ss_franklinton_grey_cpp_6,0xbc);
   }
   for (i = 0; i < 0x100; i++) {
     logpal->entries[i].flags = 4;
@@ -2063,7 +2063,7 @@ i32 PortraitDialog::create()
 
 {
   wnd_create_with_surface((const char *)&str_empty_109,0xc00,0,0,ui_metrics.border_width * 8 + 0x276,
-             ui_metrics.border_width * 4 + ui_metrics.caption_height + 0x16e,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+             ui_metrics.border_width * 4 + ui_metrics.caption_height + 0x16e,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
   create_buttons();
   ((WndBase *)&window)->set_caption_height(ui_metrics.caption_height);
   window.wnd_handlers.set_lbuttonup_handler(portrait_dlg_on_click);
@@ -2091,7 +2091,7 @@ void PortraitDialog::create_buttons()
   else {
     parent_a = (u8 *)this + 0x48;
   }
-  ok_button.create_with_callback((iptr)parent_a,0x65,&button_rect,0x21,(const char *)&str_ok);
+  ok_button.create_with_callback((Wnd *)parent_a,0x65,&button_rect,0x21,(const char *)&str_ok);
   OffsetRect(&button_rect,((ui_metrics.border_width * 8 + 0x276 >> 1) + 2) - ui_metrics.border_width,0);
   if (this == (PortraitDialog *)0x0) {
     parent_b = (u8 *)0x0;
@@ -2099,7 +2099,7 @@ void PortraitDialog::create_buttons()
   else {
     parent_b = (u8 *)this + 0x48;
   }
-  cancel_button.create_with_callback((iptr)parent_b,100,&button_rect,0x21,(const char *)&str_cancel);
+  cancel_button.create_with_callback((Wnd *)parent_b,100,&button_rect,0x21,(const char *)&str_cancel);
   cancel_button.set_callback(portrait_dlg_on_button);
   ok_button.set_callback(portrait_dlg_on_button);
   return;
@@ -2323,10 +2323,10 @@ void __cdecl portrait_dlg_on_button(int button_id)
 }
 
 /* 00497c40 auto */
-void GamePalette::get_entry(int index,iptr red,iptr green,iptr blue)
+void GamePalette::get_entry(int index,i8 *red,i8 *green,i8 *blue)
 
 {
-  palette_get_entry_rgb((GameLogPalette *)this,index,(i8 *)red,(i8 *)green,(i8 *)blue);
+  palette_get_entry_rgb((GameLogPalette *)this,index,red,green,blue);
   return;
 }
 
@@ -4493,7 +4493,7 @@ sprite_editor_create_window(const char *title,uint style_flags,int x,int y,int w
     parent_hwnd = (iptr)&editor_active.wnd->window;
   }
   ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,
-             parent_hwnd);
+             (WndBase *)parent_hwnd);
   if (sprite_editor.caption_height != 0) {
     ((WndBase *)((i8 *)&sprite_editor.wnd))->set_caption_height(sprite_editor.caption_height);
   }
@@ -5344,12 +5344,12 @@ void __cdecl sprite_editor_run(Sprite *sprite,const char *title,i32 sheet_mode,S
   button_x = sprite_editor.origin_x + 2;
   rect_set_xywh((RECT *)button_rect,button_x,button_y2,button_width2,button_height);
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)&sprite_editor.wnd,0x65,(RECT *)button_rect,(const char *)label);
+  ok_button.create((Wnd *)&sprite_editor.wnd,0x65,(RECT *)button_rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)sprite_editor_ok_clicked);
   button_x = button_x + button_width2 + 2;
   rect_set_xywh((RECT *)button_rect,button_x,button_y2,button_width2,button_height);
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)&sprite_editor.wnd,0x66,(RECT *)button_rect,(const char *)label);
+  cancel_button.create((Wnd *)&sprite_editor.wnd,0x66,(RECT *)button_rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)sprite_editor_cancel_clicked);
   cancel_button.set_cancel_button();
   ((WndHandlers *)((i8 *)&sprite_editor.wnd_events))->set_lbuttondown_handler(sprite_editor_on_mouse_down);
@@ -5691,7 +5691,7 @@ sprite_picker_create_window(const char *title,uint style_flags,int x,int y,int w
     y = (caption_font_block.screen_height >> 1) - (height >> 1);
   }
   ((DibSurface *)((i8 *)&sprite_editor.sprite_picker_window))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,
-             (iptr)&sprite_editor.wnd);
+             &sprite_editor.wnd);
   if (sprite_editor.sprite_picker_caption_height != 0) {
     ((WndBase *)((i8 *)&sprite_editor.sprite_picker_wnd))->set_caption_height(sprite_editor.sprite_picker_caption_height);
   }
@@ -6028,7 +6028,7 @@ void SpritePicker::run()
   else {
     scroll_parent = (u8 *)&window;
   }
-  scrollbar.create((iptr)scroll_parent,0x65,(RECT *)rect,0);
+  scrollbar.create((Wnd *)scroll_parent,0x65,(RECT *)rect,0);
   scrollbar.set_range(0,sprite_editor.sprite_sheet_cell_count - 1);
   scrollbar.set_pos(0);
   scrollbar.set_callback(sprite_picker_select_cell);
@@ -6045,7 +6045,7 @@ void SpritePicker::run()
     ok_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  button_1.create((iptr)ok_parent,0xc9,(RECT *)rect,(const char *)label);
+  button_1.create((Wnd *)ok_parent,0xc9,(RECT *)rect,(const char *)label);
   button_1.set_callback((CtrlNotifyFn)sprite_picker_ok_clicked);
   button_1.set_default_button();
   x2 = x2 + init_lux_rate + 2;
@@ -6057,7 +6057,7 @@ void SpritePicker::run()
     import_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x255]);
-  button_2.create((iptr)import_parent,0xc9,(RECT *)rect,(const char *)label);
+  button_2.create((Wnd *)import_parent,0xc9,(RECT *)rect,(const char *)label);
   button_2.set_callback((CtrlNotifyFn)sprite_picker_import_all_clicked);
   button_2.set_default_button();
   if (sprite_picker_sprite_block.sprite_sheet_mode == 5) {
@@ -6072,7 +6072,7 @@ void SpritePicker::run()
     cancel_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  button_3.create((iptr)cancel_parent,0xca,(RECT *)rect,(const char *)label);
+  button_3.create((Wnd *)cancel_parent,0xca,(RECT *)rect,(const char *)label);
   button_3.set_callback((CtrlNotifyFn)sprite_picker_cancel_clicked);
   button_3.set_cancel_button();
   set_redraw_callback(sprite_picker_redraw_cb);
@@ -6493,12 +6493,12 @@ void __cdecl bit_index_split(int bit_index,int *out_byte,int *out_mask)
 }
 
 /* 005bb3f0 auto */
-void DibSurface::wnd_create(iptr parent,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette)
+void DibSurface::wnd_create(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette)
 
 {
   NativeWindow *window;
   
-  ((WndBase *)(this + 1))->create_framed((const char *)parent,style,x,y,width,height,palette);
+  ((WndBase *)(this + 1))->create_framed(title,style,x,y,width,height,palette);
   create(width,height);
   set_palette(palette);
   window = ((WndBase *)(this + 1))->get_window();
@@ -6589,7 +6589,7 @@ i32 DibSurface::alloc_dib8(RECT *rect)
       lock();
       return 1;
     }
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(iptr)&str_err_portallocfailed,(iptr)&str_d_ss_smeds32_port_cpp,0x71);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(const char*)&str_err_portallocfailed,(const char*)&str_d_ss_smeds32_port_cpp,0x71);
     return 0;
   }
   set_dims(0);
@@ -6682,7 +6682,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
       win_flush_pending_msgs();
       if (mem == 0) {
         dbg_logf_str((const char *)&str_error_gif_resource_not_found,filename);
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(3,(iptr)&str_err_resourcenotfound,(iptr)&str_d_ss_smeds32_port_cpp_2,0x382);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(3,(const char*)&str_err_resourcenotfound,(const char*)&str_d_ss_smeds32_port_cpp_2,0x382);
         ret = 0;
       }
       else {
@@ -6693,7 +6693,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
             dbg_logf_str((const char *)&str_error_gif_contains_no_global_color_map,filename);
             mem_handle_unlock(mem);
             mem_handle_free(mem);
-            ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat_2,(iptr)&str_d_ss_smeds32_port_cpp_4,0x396);
+            ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat_2,(const char*)&str_d_ss_smeds32_port_cpp_4,0x396);
             ret = 0;
           }
           else {
@@ -6708,7 +6708,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
               if (table_size <= color_count) {
                 color_count = table_size;
               }
-              (palette)->set_rgb(first_color,color_count,(iptr)cursor)
+              (palette)->set_rgb(first_color,color_count,(u8 *)cursor)
               ;
               win_flush_pending_msgs();
             }
@@ -6752,7 +6752,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
               dbg_logf_str((const char *)&str_error_gif_image_block_not_found,filename);
               mem_handle_unlock(mem);
               mem_handle_free(mem);
-              ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat_3,(iptr)&str_d_ss_smeds32_port_cpp_5,0x3b3);
+              ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat_3,(const char*)&str_d_ss_smeds32_port_cpp_5,0x3b3);
               ret = 0;
             }
           }
@@ -6761,7 +6761,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
           dbg_logf_str((const char *)&str_error_resource_is_not_a_gif,filename);
           mem_handle_unlock(mem);
           mem_handle_free(mem);
-          ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat,(iptr)&str_d_ss_smeds32_port_cpp_3,0x38d);
+          ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat,(const char*)&str_d_ss_smeds32_port_cpp_3,0x38d);
           ret = 0;
         }
       }
@@ -6795,7 +6795,7 @@ i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,G
   res = res_load(res_type,res_id);
   if (res == 0) {
     dbg_logf((const char *)&str_error_gif_resource_not_found_2,res_id);
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(3,(iptr)&str_err_resourcenotfound_2,(iptr)&str_d_ss_smeds32_port_cpp_6,0x3f4);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(3,(const char*)&str_err_resourcenotfound_2,(const char*)&str_d_ss_smeds32_port_cpp_6,0x3f4);
     ret = 0;
   }
   else {
@@ -6805,14 +6805,14 @@ i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,G
       dbg_logf((const char *)&str_error_resource_is_not_a_gif_2,res_id);
       res_unlock(res);
       res_free(res);
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat_4,(iptr)&str_d_ss_smeds32_port_cpp_7,0x3ff);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat_4,(const char*)&str_d_ss_smeds32_port_cpp_7,0x3ff);
       ret = 0;
     }
     else if ((data[10] & 0x80U) == 0) {
       dbg_logf((const char *)&str_error_gif_contains_no_global_color_map_2,res_id);
       res_unlock(res);
       res_free(res);
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat_5,(iptr)&str_d_ss_smeds32_port_cpp_8,0x408);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat_5,(const char*)&str_d_ss_smeds32_port_cpp_8,0x408);
       ret = 0;
     }
     else {
@@ -6825,7 +6825,7 @@ i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,G
         if (table_size <= color_count) {
           color_count = table_size;
         }
-        (palette)->set_rgb(first_color,color_count,(iptr)cursor);
+        (palette)->set_rgb(first_color,color_count,(u8 *)cursor);
       }
       win_flush_pending_msgs();
       for (cursor = data + table_size * 3 + 0xd; *cursor == '\0'; cursor++) {
@@ -6858,7 +6858,7 @@ i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,G
         dbg_logf((const char *)&str_error_gif_image_block_not_found_2,res_id);
         res_unlock(res);
         res_free(res);
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(iptr)&str_err_badpicformat_6,(iptr)&str_d_ss_smeds32_port_cpp_9,0x424);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(4,(const char*)&str_err_badpicformat_6,(const char*)&str_d_ss_smeds32_port_cpp_9,0x424);
         ret = 0;
       }
     }
@@ -7068,7 +7068,7 @@ void DibSurface::replace_color(RECT *rect,i32 from_color,i32 to_color)
       pixel++;
       col++;
     }
-    next_row = this->next_row((iptr)pixel);
+    next_row = (int)this->next_row((u8 *)pixel);
     pixel = (char *)(next_row - width2);
     row++;
   }
@@ -7151,7 +7151,7 @@ void DibSurface::blit(DibSurface *src,RECT *dest_rect,RECT *src_rect)
 }
 
 /* 005c0979 auto */
-void DibSurface::blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt)
+void DibSurface::blit_to_wnd(WndBase *wnd,RECT *src_rect,RECT *dest_pt)
 
 {
   char locked;
@@ -7170,11 +7170,11 @@ void DibSurface::blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt)
       dbg_log((const char *)&str_warning_port_not_locked_in_copytoscreen);
       lock();
     }
-    dest_y = ((WndBase *)wnd)->get_palette_obj();
+    dest_y = (wnd)->get_palette_obj();
     apply_palette((GamePalette *)dest_y);
     dest_y = dest_pt->top;
     dest_x = dest_pt->left;
-    window = ((WndBase *)wnd)->get_window();
+    window = (wnd)->get_window();
     height = rect_height(src_rect);
     width = rect_width(src_rect);
     dib_blit_to_wnd_obj(dib,src_rect->left,src_rect->top,width,height,
@@ -7468,7 +7468,7 @@ i8 DibSurface::in_clip(int x,int y)
 }
 
 /* 005c1a62 auto */
-void DibSurface::remap_colors(iptr remap_table,int base_index,i32 unused)
+void DibSurface::remap_colors(u8 *remap_table,int base_index,i32 unused)
 
 {
   byte *pixel;
@@ -7480,7 +7480,7 @@ void DibSurface::remap_colors(iptr remap_table,int base_index,i32 unused)
     for (row = 0; row < (int)pixel_height; row++) {
       for (col = 0; col < (int)pixel_width; col++) {
         if (-1 < (int)((uint)*pixel - base_index)) {
-          *pixel = *(byte *)(((uint)*pixel - base_index) + remap_table);
+          *pixel = *(((uint)*pixel - base_index) + remap_table);
         }
         pixel++;
       }
@@ -7525,7 +7525,7 @@ i32 DibSurface::alloc_dib16(RECT *rect)
       lock();
       return 1;
     }
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(iptr)&str_err_portallocfailed_2,(iptr)&str_d_ss_smeds32_port_cpp_10,0x86c);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(const char*)&str_err_portallocfailed_2,(const char*)&str_d_ss_smeds32_port_cpp_10,0x86c);
     return 0;
   }
   set_dims(0);
@@ -7567,7 +7567,7 @@ i32 DibSurface::alloc_dib24(RECT *rect)
       lock();
       return 1;
     }
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(iptr)&str_err_portallocfailed_3,(iptr)&str_d_ss_smeds32_port_cpp_11,0x8a1);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(const char*)&str_err_portallocfailed_3,(const char*)&str_d_ss_smeds32_port_cpp_11,0x8a1);
     return 0;
   }
   set_dims(0);
@@ -7609,7 +7609,7 @@ i32 DibSurface::alloc_dib32(RECT *rect)
       lock();
       return 1;
     }
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(iptr)&str_err_portallocfailed_4,(iptr)&str_d_ss_smeds32_port_cpp_12,0x8d6);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(2,(const char*)&str_err_portallocfailed_4,(const char*)&str_d_ss_smeds32_port_cpp_12,0x8d6);
     return 0;
   }
   set_dims(0);
@@ -7650,7 +7650,7 @@ GdiDib *DibSurface::get_dib()
 }
 
 /* 005c5610 auto */
-int DibSurface::next_row(iptr row_ptr)
+u8 *DibSurface::next_row(u8 *row_ptr)
 
 {
   return signed_pitch + row_ptr;
@@ -7676,7 +7676,7 @@ u32 GamePalette::get_version()
 }
 
 /* 005c5710 auto */
-int DibSurface::prev_row(iptr row_ptr)
+u8 *DibSurface::prev_row(u8 *row_ptr)
 
 {
   return row_ptr - signed_pitch;
@@ -7755,7 +7755,7 @@ void GamePalette::load_ctab_res(i32 res_id)
     data = (i32 *)res_lock(res);
     first = endian_from_le(*data);
     count = endian_from_le(data[1]);
-    set_rgb(first,count,(iptr)(data + 2));
+    set_rgb(first,count,((u8 *)(data + 2)));
     res_unlock(res);
     res_free(res);
   }
@@ -7786,10 +7786,10 @@ void GamePalette::reserve_range(i32 first,i32 count)
 }
 
 /* 005c6b63 auto */
-void GamePalette::get_rgb(iptr dest,i32 first,i32 count)
+void GamePalette::get_rgb(u8 *dest,i32 first,i32 count)
 
 {
-  palette_copy_rgb_range((GameLogPalette *)this,(u8 *)dest,first,count);
+  palette_copy_rgb_range((GameLogPalette *)this,dest,first,count);
   return;
 }
 
@@ -7803,7 +7803,7 @@ void GamePalette::set_entry(i32 index,i32 red,i32 green, i32 blue)
 }
 
 /* 005c6da8 auto */
-void GamePalette::set_rgb(int first,int count,iptr rgb)
+void GamePalette::set_rgb(int first,int count,u8 *rgb)
 
 {
   i32 hi_bits;
@@ -7814,7 +7814,7 @@ void GamePalette::set_rgb(int first,int count,iptr rgb)
   }
   for (index = first; index < count + first; index++) {
     hi_bits = (i32)((uint)rgb >> 8);
-    palette_set_entry_rgb((GameLogPalette *)this,index,*(u8 *)rgb,*(u8 *)(rgb + 1),*(u8 *)(rgb + 2));
+    palette_set_entry_rgb((GameLogPalette *)this,index,*rgb,*(rgb + 1),*(rgb + 2));
     rgb += 3;
   }
   commit_range(first,count);
@@ -7858,7 +7858,7 @@ void GamePalette::fade_end()
   u32 handle;
   
   src_buf = (iptr)mem_handle_lock(fade_src_rgb);
-  set_rgb(fade_first,fade_count,src_buf);
+  set_rgb(fade_first,fade_count,(u8 *)src_buf);
   mem_handle_unlock(fade_src_rgb);
   handle = mem_handle_free(fade_src_rgb);
   fade_src_rgb = handle;
@@ -8588,7 +8588,7 @@ int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
         if ((*scan != key2) || (key_mode == -2)) {
           first_row2 = row;
           scan++;
-          top_row = (u8 *)surface->prev_row((iptr)top_row);
+          top_row = surface->prev_row(top_row);
           row = height2;
           all_empty = 0;
           break;
@@ -8596,7 +8596,7 @@ int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
         scan++;
       }
       row++;
-      top_row = (u8 *)surface->next_row((iptr)top_row);
+      top_row = surface->next_row(top_row);
     }
     if (all_empty == 0) {
       bottom_row = (u8 *)surface->pixel_ptr(rect.left,
@@ -8614,7 +8614,7 @@ int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
           scan++;
         }
         row++;
-        bottom_row = (u8 *)surface->prev_row((iptr)bottom_row);
+        bottom_row = surface->prev_row(bottom_row);
       }
       run_ptrs = (u8 **)operator_new(0xa00);
       run_starts = (i32 *)operator_new(0xa00);
@@ -8658,7 +8658,7 @@ int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
                        run_starts[row];
           }
           row++;
-          top_row = (u8 *)surface->next_row((iptr)top_row);
+          top_row = surface->next_row(top_row);
         }
         if (data_ptr != 0) {
           unlock();
@@ -9498,8 +9498,8 @@ void __cdecl dib_set_color_table_range(GdiDib *dib,GamePalette *palette,UINT fir
   uptr index;
   
   for (index = first; (int)index < (int)(count + first); index++) {
-    palette->get_entry(index,(iptr)&colors[index].rgbRed,(iptr)&colors[index].rgbGreen,
-               (iptr)(colors + index));
+    palette->get_entry(index,(i8 *)&colors[index].rgbRed,(i8 *)&colors[index].rgbGreen,
+               ((i8 *)(colors + index)));
     colors[index].rgbReserved = '\0';
   }
   SetDIBColorTable(dib->hdc,first,count,colors);

@@ -340,7 +340,7 @@ void PictureWindow::advisor_add_close_button()
     parent_wnd2 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  close_button.create((iptr)parent_wnd2,100,(RECT *)button_rect,(const char *)label);
+  close_button.create((Wnd *)parent_wnd2,100,(RECT *)button_rect,(const char *)label);
   close_button.set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   close_button.set_default_button();
   close_button.set_cancel_button();
@@ -541,7 +541,7 @@ void __cdecl attitude_advisor_draw(void)
   if (advisor_state.controls_created == 0) {
     rect_set((RECT *)scroll_rect,(advisor_state.client_right - advisor_state.vscroll_width) - 2,y,advisor_state.client_right - 2,
                        bottom);
-    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(RECT *)scroll_rect,1);
+    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((Wnd *)&advisor_state.wnd,200,(RECT *)scroll_rect,1);
     max_row = int_clamp(city_count - 1,0,999);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_range(0,max_row);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_pos(advisor_state.first_row);
@@ -896,7 +896,7 @@ void __cdecl defense_minister_draw(void)
       if (advisor_state.controls_created == 0) {
         rect_set((RECT *)frame_rect2,(advisor_state.client_right - advisor_state.vscroll_width) - 2,list_top,advisor_state.client_right - 2
                            ,bottom);
-        ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(RECT *)frame_rect2,1);
+        ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((Wnd *)&advisor_state.wnd,200,(RECT *)frame_rect2,1);
         ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_callback(defense_minister_on_scroll);
       }
       value = int_clamp(type_count - 1,0,999);
@@ -990,16 +990,16 @@ void __cdecl defense_minister_show(int report_civ)
   rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
   rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.close_button))->create((Wnd *)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
   rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0x159]);
-  ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.toggle_button))->create((Wnd *)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)defense_minister_on_toggle_view);
   label = (iptr)label_string(label_table.string_ids[0x158]);
-  ((Button *)((i8 *)&advisor_state.alt_toggle_button))->create((iptr)&advisor_state.wnd,0x66,(RECT *)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.alt_toggle_button))->create((Wnd *)&advisor_state.wnd,0x66,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.alt_toggle_button))->set_callback((CtrlNotifyFn)defense_minister_on_toggle_view);
   ((Control *)((i8 *)&advisor_state.alt_toggle_button))->hide();
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->set_redraw_callback(defense_minister_draw);
@@ -1336,7 +1336,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
   }
   if (advisor_state.controls_created == 0) {
     rect_set((RECT *)scroll_rect,left_x,list_bottom,right_x,list_bottom + scroll_height);
-    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(RECT *)scroll_rect,0);
+    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((Wnd *)&advisor_state.wnd,200,(RECT *)scroll_rect,0);
     color = int_clamp((rows_per_page - 1 + advance_count) / rows_per_page - 1,0,999);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_range(0,color);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_pos(advisor_state.first_row);
@@ -1524,13 +1524,13 @@ void __cdecl intel_report_show(int report_civ,int target_civ)
   rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
   rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.close_button))->create((Wnd *)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
   rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0xc5]);
-  ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.toggle_button))->create((Wnd *)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)intel_report_on_cities_clicked);
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->set_redraw_callback(intel_report_draw);
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->repaint();
@@ -3070,13 +3070,13 @@ int __cdecl hall_of_fame_show(int highlight)
     rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
     rect_offset((RECT *)button_rect,299,0);
     label = (iptr)label_string(label_table.string_ids[0x147]);
-    ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
+    ((Button *)((i8 *)&advisor_state.close_button))->create((Wnd *)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
     ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
     ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
     ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
     rect_offset((RECT *)button_rect,0xfffffed5,0);
     label = (iptr)label_string(label_table.string_ids[0x1be]);
-    ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
+    ((Button *)((i8 *)&advisor_state.toggle_button))->create((Wnd *)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
     ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)hall_of_fame_on_clear_clicked);
   }
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->set_redraw_callback(hall_of_fame_draw);
@@ -3800,7 +3800,7 @@ void __cdecl casualty_timeline_draw(void)
   if (casualty.controls_created == 0) {
     rect_set((RECT *)scroll_rect,(casualty.client_right - casualty.vscroll_width) - 2,line_height,casualty.client_right - 2,
                        bottom);
-    ((Scrollbar *)((i8 *)&casualty.scrollbar))->create((iptr)&casualty.parent_wnd,200,(RECT *)scroll_rect,1);
+    ((Scrollbar *)((i8 *)&casualty.scrollbar))->create((Wnd *)&casualty.parent_wnd,200,(RECT *)scroll_rect,1);
     ((Scrollbar *)((i8 *)&casualty.scrollbar))->set_callback(casualty_scrollbar_on_scroll);
     ((WndHandlers *)((i8 *)&casualty.wnd_events))->set_dblclick_handler(casualty_timeline_on_dblclick);
   }
@@ -3837,7 +3837,7 @@ void __cdecl casualty_timeline_show(int civ)
     rect_h = rect_height((RECT *)button_rect);
     rect_offset((RECT *)button_rect,casualty.client_x,(client_y - rect_h) + 0x18e);
     label = (iptr)label_string(label_table.string_ids[0x147]);
-    ((Button *)((i8 *)&casualty.close_button))->create((iptr)&casualty.parent_wnd,100,(RECT *)button_rect,(const char *)label);
+    ((Button *)((i8 *)&casualty.close_button))->create((Wnd *)&casualty.parent_wnd,100,(RECT *)button_rect,(const char *)label);
     ((Button *)((i8 *)&casualty.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
     ((Button *)((i8 *)&casualty.close_button))->set_default_button();
     ((Button *)((i8 *)&casualty.close_button))->set_cancel_button();
@@ -3946,10 +3946,10 @@ uint ThroneRoomWindow::create_windows()
   if (found != 0) {
     throne_dll.load((const char *)path);
     create_with_handlers((const char *)&str_empty_67,0x800,0,0,throne_width,throne_height + 5,(GamePalette *)&game_palette_block.game_palette
-               ,(iptr)&main_frame_wnd_block.main_frame_wnd);
+               ,&main_frame_wnd_block.main_frame_wnd);
     set_bg_color(0);
     throne_surface_wnd.wnd_create_with_surface((const char *)&str_empty_68,0x800,0,0,0x280,0x1e0,&palette,
-               (iptr)this);
+               this);
     throne_surface_wnd.window.center();
     throne_surface_wnd.window.wnd_handlers.set_lbuttonup_handler(throneroom_on_click);
     throne_surface_wnd.window.wnd_handlers.set_keydown_handler(throneroom_on_key);
@@ -4842,10 +4842,10 @@ i32 EndgameMovieWindow::defeat_movie_wnd_create(uint civ)
         advance_civ = civ;
       }
       create_with_handlers((const char *)&str_empty_84,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
-                 (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+                 (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
       set_bg_color(0);
       media_wnd.load_gif_resource(4000,10,0xec,&palette);
-      media_wnd.create((iptr)&str_empty_85,0x800,0,0);
+      media_wnd.create((const char*)&str_empty_85,0x800,0,0);
       media_wnd.set_double_size(1);
       open_err = media_wnd.open((const char *)avi_path);
       if (open_err == 0) {
@@ -5119,10 +5119,10 @@ i32 EndgameMovieWindow::arrival_movie_wnd_create(int civ)
     else {
       movie_dll.load((const char *)dll_path);
       create_with_handlers((const char *)&str_empty_88,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
-                 (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+                 (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
       set_bg_color(0);
       media_wnd.load_gif_resource(2000,10,0xec,&palette);
-      media_wnd.create((iptr)&str_empty_89,0x800,0,0);
+      media_wnd.create((const char*)&str_empty_89,0x800,0,0);
       media_wnd.set_double_size(1);
       open_err = media_wnd.open((const char *)avi_path);
       if (open_err == 0) {
@@ -5320,9 +5320,9 @@ void __cdecl endgame_show_centauri_beaten(uptr civ)
     SetRect(&text_rect,0,0,0x280,0xf0);
     InflateRect(&text_rect,-10,0);
     ((WndBase *)&frame_wnd)->create_with_handlers((const char *)&str_empty_91,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
-               (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+               (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
     ((WndBase *)&frame_wnd)->set_bg_color(0);
-    surface_wnd.wnd_create((iptr)&str_empty_92,0x800,0,0,0x280,0xf0,&palette);
+    surface_wnd.wnd_create((const char*)&str_empty_92,0x800,0,0,0x280,0xf0,&palette);
     surface_wnd.load_gif_resource(30000,10,0xec,&palette);
     surface_wnd.window.center();
     backup_surface.DibSurface::create(0x280,0xf0);
@@ -6038,10 +6038,10 @@ i32 DestroyedCivsWindow::create(uint killer)
     art_dll.load((const char *)dll_path);
     killer_civ = killer;
     create_with_handlers((const char *)&str_empty_156,0x800,screen_bounds.left,screen_bounds.top,screen_bounds.right - screen_bounds.left,
-               (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+               (screen_bounds.bottom - screen_bounds.top) + 5,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
     set_bg_color(0);
     surface_wnd.wnd_create_with_surface((const char *)&str_empty_157,0x800,0,0,0x280,0x1e0,
-               &palette,(iptr)this);
+               &palette,this);
     surface_wnd.window.center();
     civs_art_surface.load_gif_resource(0x2711,10,0xec,&palette);
     panel_sprite.grab_from_surface(&civs_art_surface,8,0,0,0x129,0xad
@@ -6221,8 +6221,8 @@ void DestroyedCivsWindow::draw_portrait(int entry)
   civs_art_surface.DibSurface::blit(&surface_wnd,
              (RECT *)&panel_clip_rect,(RECT *)&panel_clip_rect);
   portrait_surface.load_gif_resource((byte)(((i8 *)&destroyed_civs.portraits))[entry] + 0xdc,10,0xec,&palette);
-  palette.get_rgb((iptr)rgb_buf,0x2a,0x40);
-  this->palette.set_rgb(0x2a,0x40,(iptr)rgb_buf);
+  palette.get_rgb((u8 *)rgb_buf,0x2a,0x40);
+  this->palette.set_rgb(0x2a,0x40,(u8 *)rgb_buf);
   portrait_surface.set_palette(&this->palette);
   portrait_sprite.grab_from_surface(&portrait_surface,9,1,1,0xe1,0x113);
   portrait_sprite.draw((RECT *)draw_tmp,&surface_wnd,
@@ -6424,7 +6424,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
   result = civ_city_art_era(council_civ);
   council_era = result;
   wnd_create_with_surface((const char *)&str_empty_159,0xc02,0,0,ui_metrics.border_width * 6 + 0x1c2,
-             ui_metrics.caption_height * 2 + ui_metrics.bevel_width + 0xfc,(GamePalette *)&art_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+             ui_metrics.caption_height * 2 + ui_metrics.bevel_width + 0xfc,(GamePalette *)&art_palette,&main_frame_wnd_block.main_frame_wnd);
   ((WndBase *)&window)->set_caption_height(ui_metrics.caption_height);
   ui_set_button_font(&dialog_plain_font_obj_block.dialog_plain_font_obj);
   create_buttons();
@@ -6504,7 +6504,7 @@ i32 CouncilWindow::init(u32 civ,int cheat_mode)
   else {
     dialog.init(this,this,
                (RECT *)(iptr)((u8 *)&speech_rect),0x84008);
-    video.create_child((iptr)&str_empty_160,0x200,0,0,this);
+    video.create_child((const char*)&str_empty_160,0x200,0,0,this);
     str_clear((char *)avi_path);
     str_append((char *)avi_path,(const char *)&str_civ2_video);
     str_append((char *)avi_path,(const char *)council_text_file);
@@ -6693,7 +6693,7 @@ void CouncilWindow::create_buttons()
     parent1 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0x9b]);
-  advisor_button_0.create_with_callback((iptr)parent1,0,&rect,0x21,(const char *)label);
+  advisor_button_0.create_with_callback(parent1,0,&rect,0x21,(const char *)label);
   advisor_button_0.set_callback((CtrlNotifyFn)council_on_advisor_button);
   OffsetRect(&rect,ui_metrics.border_width + 0x5a,0);
   if (this == (CouncilWindow *)0x0) {
@@ -6703,7 +6703,7 @@ void CouncilWindow::create_buttons()
     parent2 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0x5b]);
-  advisor_button_1.create_with_callback((iptr)parent2,1,&rect,0x21,(const char *)label);
+  advisor_button_1.create_with_callback(parent2,1,&rect,0x21,(const char *)label);
   advisor_button_1.set_callback((CtrlNotifyFn)council_on_advisor_button);
   OffsetRect(&rect,ui_metrics.border_width + 0x5a,0);
   if (this == (CouncilWindow *)0x0) {
@@ -6713,7 +6713,7 @@ void CouncilWindow::create_buttons()
     parent3 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0x45]);
-  advisor_button_2.create_with_callback((iptr)parent3,2,&rect,0x21,(const char *)label);
+  advisor_button_2.create_with_callback(parent3,2,&rect,0x21,(const char *)label);
   advisor_button_2.set_callback((CtrlNotifyFn)council_on_advisor_button);
   OffsetRect(&rect,ui_metrics.border_width + 0x5a,0);
   if (this == (CouncilWindow *)0x0) {
@@ -6723,7 +6723,7 @@ void CouncilWindow::create_buttons()
     parent4 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0x1b8]);
-  advisor_button_3.create_with_callback((iptr)parent4,3,&rect,0x21,(const char *)label);
+  advisor_button_3.create_with_callback(parent4,3,&rect,0x21,(const char *)label);
   advisor_button_3.set_callback((CtrlNotifyFn)council_on_advisor_button);
   OffsetRect(&rect,ui_metrics.border_width + 0x5a,0);
   if (this == (CouncilWindow *)0x0) {
@@ -6733,7 +6733,7 @@ void CouncilWindow::create_buttons()
     parent5 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0x1b9]);
-  advisor_button_4.create_with_callback((iptr)parent5,4,&rect,0x21,(const char *)label);
+  advisor_button_4.create_with_callback(parent5,4,&rect,0x21,(const char *)label);
   advisor_button_4.set_callback((CtrlNotifyFn)council_on_advisor_button);
   y = get_height();
   y = (y - ui_metrics.bevel_width) - 1;
@@ -6748,7 +6748,7 @@ void CouncilWindow::create_buttons()
     parent6 = &window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  council_close_button.create_with_callback((iptr)parent6,0xca,&rect,0x21,(const char *)label);
+  council_close_button.create_with_callback(parent6,0xca,&rect,0x21,(const char *)label);
   council_close_button.set_callback((CtrlNotifyFn)council_on_advisor_button);
   return;
 }

@@ -1977,11 +1977,10 @@ i32 AviPlayer::destruct()
 }
 
 /* 005dd27e auto */
-void AviPlayer::create(iptr parent,i32 style,u32 x,u32 y)
+void AviPlayer::create(const char *title,i32 style,u32 x,u32 y)
 
 {
-  wnd_create(parent,style,x,y,0x140,0xf0,&palette
-            );
+  wnd_create(title,style,x,y,0x140,0xf0,&palette);
   fill(0);
   pos_x_u = x;
   pos_y_u = y;
@@ -1989,19 +1988,18 @@ void AviPlayer::create(iptr parent,i32 style,u32 x,u32 y)
 }
 
 /* 005dd2e3 auto */
-void AviPlayer::create_child(iptr parent,i32 style,u32 x,u32 y,SurfaceWindow *target)
+void AviPlayer::create_child(const char *title,i32 style,u32 x,u32 y,SurfaceWindow *target)
 
 {
-  iptr target_dib;
+  WndBase *target_dib;
   
   if (target == 0) {
     target_dib = 0;
   }
   else {
-    target_dib = (iptr)&target->window;
+    target_dib = &target->window;
   }
-  wnd_create_with_surface((const char *)parent,style,x,y,0x140,0xf0,&palette
-             ,target_dib);
+  wnd_create_with_surface(title,style,x,y,0x140,0xf0,&palette,target_dib);
   fill(0);
   target_surface_uptr = (uptr)target;
   pos_x_u = x;
@@ -2541,7 +2539,7 @@ int __cdecl avi_open_file(AviPlayer *player,const char *filename)
               palette_rgb[i * 3 + 1] = (i8)player->dst_colors[0x29 + i * 4];
               palette_rgb[i * 3 + 2] = (i8)player->dst_colors[0x28 + i * 4];
             }
-            player->palette.set_rgb(10,0xec,(iptr)palette_rgb);
+            player->palette.set_rgb(10,0xec,(u8 *)palette_rgb);
             ICSendMessage(avi_play.decompressor,0x401d,(iptr)&player->dst_format,0);
             result = avi_ic_decompress_ex_begin(avi_play.decompressor,0,(BITMAPINFOHEADER *)&player->src_format,0,0,0,
                                    player->src_format.width,player->src_format.height
@@ -2960,7 +2958,7 @@ void __cdecl avi_apply_palette(AviPlayer *player,GamePalette *palette)
   
   if ((player != 0) && (avi_play.file_loaded != 0)) {
     ICSendMessage(avi_play.decompressor,0x403f,0,0);
-    palette->get_rgb((iptr)palette_rgb,0,0xec);
+    palette->get_rgb((u8 *)palette_rgb,0,0xec);
     for (i = 0; i < 0xec; i++) {
       player->dst_colors[i * 4] = palette_rgb[i * 3 + 2];
       player->dst_colors[1 + i * 4] = palette_rgb[i * 3 + 1];

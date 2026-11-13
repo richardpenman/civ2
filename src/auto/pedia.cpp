@@ -106,7 +106,7 @@ void PediaWindow::update_controls()
         else {
           hotspot_parent = (u8 *)&window;
         }
-        ((Hotspot *)list_hotspot)->create((iptr)hotspot_parent,0xfa9,(RECT *)&rect2);
+        ((Hotspot *)list_hotspot)->create((Wnd *)hotspot_parent,0xfa9,(RECT *)&rect2);
         ((Hotspot *)list_hotspot)->set_click_callback((CtrlNotifyFn)pedia_list_on_click);
         ((Hotspot *)list_hotspot)->set_dblclick_callback(pedia_toggle_describe);
         ((Control *)list_hotspot)->show_and_redraw();
@@ -137,7 +137,7 @@ void PediaWindow::update_controls()
         else {
           hotspot_parent2 = (u8 *)&window;
         }
-        ((Hotspot *)list_hotspot)->create((iptr)hotspot_parent2,0xfa9,(RECT *)&rect2);
+        ((Hotspot *)list_hotspot)->create((Wnd *)hotspot_parent2,0xfa9,(RECT *)&rect2);
         ((Hotspot *)list_hotspot)->set_click_callback((CtrlNotifyFn)pedia_list_on_click);
         ((Hotspot *)list_hotspot)->set_dblclick_callback(pedia_toggle_describe);
         ((Control *)list_hotspot)->show_and_redraw();
@@ -363,7 +363,7 @@ HWND __cdecl hyperlink_create_hwnd(int *rect,Control *control)
 }
 
 /* 00452b89 auto */
-void Hyperlink::create(iptr parent,i32 control_id,RECT *rect)
+void Hyperlink::create(Wnd *parent,i32 control_id,RECT *rect)
 
 {
   u32 hwnd;
@@ -498,7 +498,7 @@ void PediaWindow::add_link(int item_id,int x,int y,i32 link_kind, i32 rect_left,
   else {
     parent_wnd2 = (u8 *)&window;
   }
-  link->control.create((iptr)parent_wnd2,link_index + 0xfb4,(RECT *)rect);
+  link->control.create((Wnd *)parent_wnd2,link_index + 0xfb4,(RECT *)rect);
   switch(link_kind) {
   case 0:
     link->control.set_click_callback(pedia_link_on_click_advance);
@@ -1621,7 +1621,7 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_2 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x27]);
-  list_describe_button.create((iptr)parent_2,0xfa1,&rect,(const char *)label);
+  list_describe_button.create((Wnd *)parent_2,0xfa1,&rect,(const char *)label);
   list_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1631,7 +1631,7 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_3 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  list_close_button.create((iptr)parent_3,0xfa2,&rect,(const char *)label);
+  list_close_button.create((Wnd *)parent_3,0xfa2,&rect,(const char *)label);
   list_close_button.set_default_button();
   list_close_button.set_cancel_button();
   list_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
@@ -1643,7 +1643,7 @@ void PediaWindow::create_list_buttons(int left_x,int yTop,int btn_height,int ava
     parent_4 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  concept_list_back_button.create((iptr)parent_4,0xfb2,&rect,(const char *)label);
+  concept_list_back_button.create((Wnd *)parent_4,0xfb2,&rect,(const char *)label);
   concept_list_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
 }
 
@@ -1672,7 +1672,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_5 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x27]);
-  advance_list_describe_button.create((iptr)parent_5,0xfab,&rect,(const char *)label);
+  advance_list_describe_button.create((Wnd *)parent_5,0xfab,&rect,(const char *)label);
   advance_list_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1682,7 +1682,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_6 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x360]);
-  advance_list_tech_tree_button.create((iptr)parent_6,0xfac,&rect,(const char *)label);
+  advance_list_tech_tree_button.create((Wnd *)parent_6,0xfac,&rect,(const char *)label);
   advance_list_tech_tree_button.set_callback((CtrlNotifyFn)pedia_show_tech_tree);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1692,7 +1692,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_7 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  advance_list_close_button.create((iptr)parent_7,0xfad,&rect,(const char *)label);
+  advance_list_close_button.create((Wnd *)parent_7,0xfad,&rect,(const char *)label);
   advance_list_close_button.set_default_button();
   advance_list_close_button.set_cancel_button();
   advance_list_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
@@ -1705,7 +1705,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_8 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  advance_detail_back_button.create((iptr)parent_8,0xfae,&rect,(const char *)label);
+  advance_detail_back_button.create((Wnd *)parent_8,0xfae,&rect,(const char *)label);
   advance_detail_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1715,7 +1715,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_9 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x360]);
-  advance_detail_tech_tree_button.create((iptr)parent_9,0xfaf,&rect,(const char *)label);
+  advance_detail_tech_tree_button.create((Wnd *)parent_9,0xfaf,&rect,(const char *)label);
   advance_detail_tech_tree_button.set_callback((CtrlNotifyFn)pedia_show_tech_tree);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1725,7 +1725,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_10 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2c1]);
-  advance_detail_describe_button.create((iptr)parent_10,0xfb0,&rect,(const char *)label);
+  advance_detail_describe_button.create((Wnd *)parent_10,0xfb0,&rect,(const char *)label);
   advance_detail_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width * 3 + left_x,yTop,col_width * 4 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1735,7 +1735,7 @@ void PediaWindow::create_advance_buttons(int left_x,int yTop,int btn_height,int 
     parent_11 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  advance_detail_close_button.create((iptr)parent_11,0xfb1,&rect,(const char *)label);
+  advance_detail_close_button.create((Wnd *)parent_11,0xfb1,&rect,(const char *)label);
   advance_detail_close_button.set_default_button();
   advance_detail_close_button.set_cancel_button();
   advance_detail_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
@@ -1763,7 +1763,7 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_12 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  detail_back_button.create((iptr)parent_12,0xfa3,&rect,(const char *)label);
+  detail_back_button.create((Wnd *)parent_12,0xfa3,&rect,(const char *)label);
   detail_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,col_width + left_x,yTop,col_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1773,7 +1773,7 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_13 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2c1]);
-  detail_describe_button.create((iptr)parent_13,0xfa4,&rect,(const char *)label);
+  detail_describe_button.create((Wnd *)parent_13,0xfa4,&rect,(const char *)label);
   detail_describe_button.set_callback(pedia_toggle_describe);
   SetRect(&rect,col_width * 2 + left_x,yTop,col_width * 3 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1783,7 +1783,7 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_14 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  detail_close_button.create((iptr)parent_14,0xfa5,&rect,(const char *)label);
+  detail_close_button.create((Wnd *)parent_14,0xfa5,&rect,(const char *)label);
   detail_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
   avail_width = avail_width / 2;
   SetRect(&rect,left_x,yTop,avail_width + left_x,btn_height + yTop);
@@ -1794,7 +1794,7 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_15 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x356]);
-  text_back_button.create((iptr)parent_15,0xfa6,&rect,(const char *)label);
+  text_back_button.create((Wnd *)parent_15,0xfa6,&rect,(const char *)label);
   text_back_button.set_callback((CtrlNotifyFn)pedia_on_back);
   SetRect(&rect,avail_width + left_x,yTop,avail_width * 2 + left_x,btn_height + yTop);
   if (this == (PediaWindow *)0x0) {
@@ -1804,7 +1804,7 @@ void PediaWindow::create_detail_buttons(int left_x,int yTop,int btn_height,int a
     parent_16 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  text_close_button.create((iptr)parent_16,0xfa7,&rect,(const char *)label);
+  text_close_button.create((Wnd *)parent_16,0xfa7,&rect,(const char *)label);
   text_close_button.set_callback((CtrlNotifyFn)pedia_on_close);
 }
 
@@ -1850,7 +1850,7 @@ void PediaWindow::create()
   col_width = main_frame_wnd_block.main_frame_wnd.client_height();
   crt_strcpy((char *)pedia_title_text_2_618,((i8 *)&pedia_window_empty_title_str));
   wnd_create_with_surface(0,0xe02,left_x / 2 - (int)panel_width / 2,
-             col_width / 2 - (int)panel_height / 2,panel_width,panel_height,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd)
+             col_width / 2 - (int)panel_height / 2,panel_width,panel_height,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd)
   ;
   window.wnd_handlers.set_close_handler(pedia_close);
   set_redraw_callback(pedia_redraw_page);
@@ -1882,7 +1882,7 @@ void PediaWindow::create()
   else {
     close_parent = (u8 *)&window;
   }
-  close_box_hotspot->create((iptr)close_parent,4000,&rect);
+  close_box_hotspot->create((Wnd *)close_parent,4000,&rect);
   close_box_hotspot->set_click_callback((CtrlNotifyFn)pedia_on_close);
   left_x = panel_layout.bevel_width + panel_layout.margin_x + 2;
   panel_h = panel_height;
@@ -1903,7 +1903,7 @@ void PediaWindow::create()
   else {
     edit_parent = (u8 *)&window;
   }
-  description_edit.create_styled((iptr)edit_parent,0xfaa,(RECT *)&content_left,
+  description_edit.create_styled((Wnd *)edit_parent,0xfaa,(RECT *)&content_left,
              (const char *)&str_empty_143,0x122,0);
   rect.left = content_left;
   rect.top = content_top;
@@ -1918,7 +1918,7 @@ void PediaWindow::create()
   else {
     scroll_parent = (u8 *)&window;
   }
-  list_scrollbar.create((iptr)scroll_parent,0xfa8,&rect,0);
+  list_scrollbar.create((Wnd *)scroll_parent,0xfa8,&rect,0);
   list_scrollbar.set_callback(pedia_list_on_scroll);
   list_scrollbar.set_track_callback(pedia_list_on_scroll);
   list_scrollbar.set_page_size(2);

@@ -744,7 +744,7 @@ static LRESULT wnd_base_on_paint(HWND hwnd)
           src_rect = &win_rect;
           tmp_wnd = wnd2;
           wnd_data = (int)((WndBase *)wnd2)->get_window();
-          ((NativeWindow *)wnd_data)->bg_tile->blit_to_wnd((iptr)tmp_wnd,src_rect,dst_rect);
+          ((NativeWindow *)wnd_data)->bg_tile->blit_to_wnd((WndBase *)tmp_wnd,src_rect,dst_rect);
         }
       }
     }
@@ -778,7 +778,7 @@ static LRESULT wnd_base_on_paint(HWND hwnd)
       src_rect = &win_rect;
       tmp_wnd = wnd2;
       wnd_data = (int)((WndBase *)wnd2)->get_window();
-      ((NativeWindow *)wnd_data)->bg_surface->blit_to_wnd((iptr)tmp_wnd,src_rect,dst_rect);
+      ((NativeWindow *)wnd_data)->bg_surface->blit_to_wnd((WndBase *)tmp_wnd,src_rect,dst_rect);
     }
   }
   EndPaint(hwnd,&ps);

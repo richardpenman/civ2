@@ -84,7 +84,7 @@ void Control::destroy()
 }
 
 /* 0040f680 auto */
-void Button::create(iptr parent,i32 ctrl_id,RECT *rect,const char *label)
+void Button::create(Wnd *parent,i32 ctrl_id,RECT *rect,const char *label)
 
 {
   u32 new_hwnd;
@@ -102,10 +102,10 @@ void Button::create(iptr parent,i32 ctrl_id,RECT *rect,const char *label)
 }
 
 /* 0040f730 auto */
-void Control::init(iptr parent_wnd,u32 type_code,u32 id,RECT *rect)
+void Control::init(Wnd *parent_wnd,u32 type_code,u32 id,RECT *rect)
 
 {
-  parent = parent_wnd;
+  parent = (uptr)parent_wnd;
   ctrl_type = type_code;
   ctrl_id = id;
   rect_left = (u32)rect->left;
@@ -115,7 +115,7 @@ void Control::init(iptr parent_wnd,u32 type_code,u32 id,RECT *rect)
   next_ctrl = 0;
   hwnd = 0;
   wants_initial_focus = '\0';
-  ((Wnd *)parent_wnd)->append_control((iptr)this);
+  (parent_wnd)->append_control(this);
   return;
 }
 
@@ -181,7 +181,7 @@ void __thiscall checkbox_dtor(Checkbox *self)
 }
 
 /* 0040f9d0 auto */
-void Checkbox::create(iptr parent,i32 ctrl_id,i32 x,i32 y ,const char *label)
+void Checkbox::create(Wnd *parent,i32 ctrl_id,i32 x,i32 y ,const char *label)
 
 {
   u32 new_hwnd;
@@ -245,7 +245,7 @@ void Scrollbar::destruct()
 }
 
 /* 0040fc50 auto */
-void Scrollbar::create(iptr parent,int ctrl_id,RECT *rect,i32 style)
+void Scrollbar::create(Wnd *parent,int ctrl_id,RECT *rect,i32 style)
 
 {
   u32 new_hwnd;
@@ -331,7 +331,7 @@ void __thiscall edit_dtor(EditControl *self)
 }
 
 /* 00418910 auto */
-void EditControl::create(iptr parent,i32 ctrl_id,RECT *rect,const char *text)
+void EditControl::create(Wnd *parent,i32 ctrl_id,RECT *rect,const char *text)
 
 {
   u32 new_hwnd;
@@ -406,7 +406,7 @@ void __thiscall combo_dtor(ComboBox *self)
 }
 
 /* 00418bf0 auto */
-void ComboBox::create(iptr parent,i32 ctrl_id,RECT *rect)
+void ComboBox::create(Wnd *parent,i32 ctrl_id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -503,7 +503,7 @@ void ListBox::destruct()
 }
 
 /* 00418f40 auto */
-void ListBox::create(iptr parent,i32 ctrl_id,RECT *rect)
+void ListBox::create(Wnd *parent,i32 ctrl_id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -746,7 +746,7 @@ void EditControl::set_sel(i32 sel_start,i32 sel_end)
 }
 
 /* 00497d40 auto */
-void Button::create_with_callback(iptr parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label)
+void Button::create_with_callback(Wnd *parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label)
 
 {
   on_select = callback;
@@ -829,7 +829,7 @@ void Control::set_focus()
 }
 
 /* 004bb620 auto */
-void EditControl::create_styled(iptr parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style)
+void EditControl::create_styled(Wnd *parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style)
 
 {
   u32 new_hwnd;
@@ -1021,7 +1021,7 @@ void EditControl::set_change_callback(CtrlNotifyFn callback)
 }
 
 /* 00530ee0 auto */
-void Checkbox::create_fixed(iptr parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const char *label)
+void Checkbox::create_fixed(Wnd *parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const char *label)
 
 {
   u32 hwnd;
@@ -1072,7 +1072,7 @@ RadioGroup *RadioGroup::construct()
 }
 
 /* 005310a0 auto */
-void RadioGroup::create(iptr parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, iptr labels)
+void RadioGroup::create(Wnd *parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, char **labels)
 
 {
   u32 handle;
@@ -1088,7 +1088,7 @@ void RadioGroup::create(iptr parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_
   this->item_count = item_count;
   this->columns = columns;
   selected = 0;
-  handle = radiogrp_create_items((int *)&this->item_count,(int *)rect,columns,this,item_count,(char **)labels,1,
+  handle = radiogrp_create_items((int *)&this->item_count,(int *)rect,columns,this,item_count,labels,1,
                        radio_font);
   items_handle = handle;
   handle = (u32)mem_handle_lock(items_handle);
@@ -2467,7 +2467,7 @@ static void checkbox_paint(HWND hwnd,ControlBlock *block,Checkbox *checkbox)
     color_index = (uint)ctrl_colors.shadow;
     parent_wnd = (WndBase *)checkbox->get_parent();
     game_palette2 = (GamePalette *)parent_wnd->get_palette();
-    game_palette2->get_entry(color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+    game_palette2->get_entry(color_index,red_out,green_out,blue_out);
     SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
     draw_flags = 0x24;
     draw_rect = &rect;
@@ -2855,7 +2855,7 @@ u32 Scrollbar::get_page_size()
 }
 
 /* 005d25c0 auto */
-void EditControl::create_at(iptr parent,i32 ctrl_id,int x,int y,int width, const char *text)
+void EditControl::create_at(Wnd *parent,i32 ctrl_id,int x,int y,int width, const char *text)
 
 {
   tagRECT rect;
@@ -3704,7 +3704,7 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   value = parent->get_palette();
   ctrl_palette = value;
   SetRect(&rect,x,y,width + x,y + height);
-  init((iptr)parent,6,ctrl_id,&rect);
+  init((Wnd *)parent,6,ctrl_id,&rect);
   on_click = 0;
   on_rclick = 0;
   gfx_get_scale_ratio(&scale_num2,&scale_den2);
@@ -4278,7 +4278,7 @@ static void radiogrp_item_paint(HWND hwnd,ControlBlock *block,RadioGroup *group,
     color_index = (uint)ctrl_colors.radio_shadow;
     parent_wnd = (WndBase *)group->get_parent();
     game_palette2 = (GamePalette *)parent_wnd->get_palette();
-    game_palette2->get_entry(color_index,(iptr)red_out,(iptr)green_out,(iptr)blue_out);
+    game_palette2->get_entry(color_index,red_out,green_out,blue_out);
     SetTextColor(hdc,RGB(red[0],green[0],blue[0]));
     draw_flags = 0x24;
     draw_rect = &rect;

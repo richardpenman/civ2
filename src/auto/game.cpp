@@ -455,7 +455,7 @@ i32 __cdecl setup_choose_map_size(void)
     while( true ) {
       text_set_string_arg_b(1,(const char *)&str_80);
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(2,6,2);
-      rc = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_customsize,5,(iptr)&str_50,0,0,0,1)
+      rc = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_customsize,5,(const char*)&str_50,0,0,0,1)
       ;
       if (rc != 0) {
         ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
@@ -887,10 +887,10 @@ i32 __cdecl load_game_pick_civ(int title_offset)
         arg5 = 0;
         arg4 = 0;
         name2 = civ_leader_name(game.player_civ);
-        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,(iptr)name2,(SurfaceWindow *)arg4,(DibSurface *)arg5,(RECT *)arg6,arg7);
+        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,name2,(SurfaceWindow *)arg4,(DibSurface *)arg5,(RECT *)arg6,arg7);
         if (choice == 0) {
           dialog_prepend_title_label(&dlg,title_offset + 0x25e);
-          choice = dlg.run_modal((iptr)name_buf,0);
+          choice = dlg.run_modal(name_buf,0);
           if (choice == 0) {
             crt_strcpy((char *)(&civ_names[game.player_civ].leader_name),name_buf);
             arg4 = 0;
@@ -1369,7 +1369,7 @@ void __cdecl game_main(void)
         result = log_file.create((const char *)&str_chatlog_txt);
         if (result != 0) {
           log_len = _strlen(chat.log_buffer);
-          log_file.write((iptr)chat.log_buffer,log_len);
+          log_file.write(chat.log_buffer,log_len);
           log_file.map_close();
         }
         for (i = 0; i < 8; i++) {
@@ -1590,8 +1590,8 @@ static int setup_net_verify_ip(Dialog *dlg,char *ip_buf)
       title_buf = XD_GetCurrentProtoAddr(net.adapter_index,(*(uint *)&net.net_protocol));
       crt_strcpy(((i8 *)&menu_prefs.net_ip_address),title_buf);
     }
-    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_ipverify,0x1f,(iptr)&menu_prefs.net_ip_address,0,0,0,1);
-    rc = dlg->run_modal((iptr)ip_buf,0);
+    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_ipverify,0x1f,(const char*)&menu_prefs.net_ip_address,0,0,0,1);
+    rc = dlg->run_modal(ip_buf,0);
     if (rc == -1) {
       net.shutdown(1);
       return 0;
@@ -1606,7 +1606,7 @@ static int setup_net_verify_ip(Dialog *dlg,char *ip_buf)
   ip_len = _strlen(((i8 *)&menu_prefs.net_ip_address));
   title_buf = (char *)operator_new(len + ip_len + 3);
   if (title_buf == (char *)0x0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_tempstr,(iptr)&str_d_ss_franklinton_startup_lan_cpp_3,0x1b9);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_tempstr,(const char*)&str_d_ss_franklinton_startup_lan_cpp_3,0x1b9);
   }
   crt_strcpy(title_buf,(*(char * *)&net.connection_title));
   crt_strcat(title_buf,((i8 *)&net_title_ip_sep_str));
@@ -1774,7 +1774,7 @@ static void setup_net_connection_title(int conn_type)
   len = _strlen(((i8 *)&textbuf.buf));
   (*(char * *)&net.connection_title) = (char *)operator_new(len + 1);
   if ((*(char * *)&net.connection_title) == (char *)0x0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_gnetmgr_pdescription,(iptr)&str_d_ss_franklinton_startup_lan_cpp_2,0x79);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_gnetmgr_pdescription,(const char*)&str_d_ss_franklinton_startup_lan_cpp_2,0x79);
   }
   crt_strcpy((*(char * *)&net.connection_title),((i8 *)&textbuf.buf));
 }
@@ -1802,7 +1802,7 @@ i32 __cdecl setup_network_game(int conn_type)
   ON_SCOPE_EXIT(palette.destroy());
   if ((((conn_type != 0) && (conn_type != 1)) && (conn_type != 4)) && ((conn_type != 2 && (conn_type != 3))))
   {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_whichnetwork_internet_whichnetwork_local,(iptr)&str_d_ss_franklinton_startup_lan_cpp,0x21);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_whichnetwork_internet_whichnetwork_local,(const char*)&str_d_ss_franklinton_startup_lan_cpp,0x21);
   }
   if (bugfix_ui()) {
     saved_open_game = (int)mp_options.open_game;  /* B18: joining keeps the option (docs/BUGS.md) */
@@ -2364,7 +2364,7 @@ void __cdecl intro_play_opening_video(void)
       ((WndBase *)&host_wnd)->create_with_cmd_proc((const char *)&str_empty_82,0x800,0,0,screen_rect2.right,screen_rect2.bottom + 5,(GamePalette *)&game_palette_block.game_palette);
       ((WndBase *)&host_wnd)->set_bg_color(0);
       intro.video_player = &player;
-      player.create((iptr)&str_empty_83,0x800,0,0);
+      player.create((const char*)&str_empty_83,0x800,0,0);
       player.window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)intro_video_on_click);
       player.window.wnd_handlers.set_keydown_handler(intro_video_on_keydown);
       player.set_end_callback(intro_video_on_end);
@@ -3737,7 +3737,7 @@ void __cdecl events_relink_pool(void)
     event = unit_types_block.events_pool_base;
     string_ptr = unit_types_block.events_pool_base + unit_types_block.scenario_event_count * 0x1c4;
     if ((string_ptr <= unit_types_block.events_pool_base) || (unit_types_block.events_pool_base + unit_types_block.events_pool_size <= string_ptr)) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_pstrings_charptr_pevents_pstrings_scenar,(iptr)&str_d_ss_franklinton_netmgr_poll_cpp_6,0x913);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_pstrings_charptr_pevents_pstrings_scenar,(const char*)&str_d_ss_franklinton_netmgr_poll_cpp_6,0x913);
     }
     for (i = 0; i < event_count; i++) {
       ((ScenarioEvent *)event)->next = 0;
@@ -6811,7 +6811,7 @@ i32 __cdecl diffeng_alloc_mirror(void)
     diffeng_scan.mirror_size[0] += (i32)diffeng_section_table[section].padded_size;
   }
   if ((diffeng_scan.mirror_size[0] & 3) != 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_mirrorlength_sizeof_long_0,(iptr)&str_d_ss_franklinton_difference_engine_cpp,0x22);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_mirrorlength_sizeof_long_0,(const char*)&str_d_ss_franklinton_difference_engine_cpp,0x22);
   }
   diffeng.mirror_buf = (iptr)operator_new(diffeng_scan.mirror_size[0]);
   if ((void *)diffeng.mirror_buf == (void *)0x0) {
@@ -6920,7 +6920,7 @@ i32 __cdecl diffeng_build_civ_image(void **out_buf)
   capacity2 = diffeng_game_section_block.diffeng_game_section[0] + diffeng_leaders_section_block.diffeng_leaders_section[0] + diffeng_civs_section_block.diffeng_civs_section[0] + diffeng_civ_names_section_block.diffeng_civ_names_section[0] + diffeng_scenario_section_block.diffeng_scenario_section[0] + diffeng_civ_view_section_block.diffeng_civ_view_section[0]
             + diffeng_events_section_block.diffeng_events_section[0] + 0x8c;
   if ((int)capacity2 < 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_size_0,(iptr)&str_d_ss_franklinton_difference_engine_cpp_4,0x226);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_size_0,(const char*)&str_d_ss_franklinton_difference_engine_cpp_4,0x226);
   }
   alloc = operator_new(capacity2);
   *out_buf = alloc;
@@ -6961,7 +6961,7 @@ void __cdecl diffeng_buf_append(char *buf,int *pos_ptr,int capacity,const void *
 
 {
   if (capacity < *pos_ptr + len) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_cursize_datsize_bufsize,(iptr)&str_d_ss_franklinton_difference_engine_cpp_5,0x20d);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_cursize_datsize_bufsize,(const char*)&str_d_ss_franklinton_difference_engine_cpp_5,0x20d);
     return;   /* (BF-083) the original stopped at its assertion: the copy would overrun */
   }
   crt_memcpy((void *)(*pos_ptr + buf),src,len);
@@ -7020,7 +7020,7 @@ i32 __cdecl diffeng_build_full_image(void **out_buf)
   
   capacity = diffeng_total_size();
   if ((int)capacity < 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_sz_0,(iptr)&str_d_ss_franklinton_difference_engine_cpp_6,0x27f);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_sz_0,(const char*)&str_d_ss_franklinton_difference_engine_cpp_6,0x27f);
   }
   alloc = operator_new(capacity);
   *out_buf = alloc;
@@ -7084,7 +7084,7 @@ i32 __cdecl diffeng_build_delta_image(void **out_buf)
   
   capacity = diffeng_total_size();
   if ((int)capacity < 0) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_sz_0_2,(iptr)&str_d_ss_franklinton_difference_engine_cpp_7,0x2c6);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_sz_0_2,(const char*)&str_d_ss_franklinton_difference_engine_cpp_7,0x2c6);
   }
   alloc = operator_new(capacity);
   *out_buf = alloc;
@@ -7141,7 +7141,7 @@ void __cdecl diffeng_apply_image(int *image_buf,char compressed)
   int *cursor;
   
   if ((image_buf == (int *)0x0) || (*image_buf == 0)) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_phdata_phdata,(iptr)&str_d_ss_franklinton_difference_engine_cpp_8,0x2fc);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_phdata_phdata,(const char*)&str_d_ss_franklinton_difference_engine_cpp_8,0x2fc);
   }
   saved_game_options = game.game_options;
   saved_msg_options = game.message_options;
@@ -7182,7 +7182,7 @@ void __cdecl diffeng_apply_image(int *image_buf,char compressed)
     offset = *cursor + offset + 0x14;
     if ((cursor[2] < 0) || (section_id_ptr = cursor + 2, cursor = payload, 0x17 < *section_id_ptr)) {
       cursor = payload;
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_pnode_type_0_pnode_type_num_block_types,(iptr)&str_d_ss_franklinton_difference_engine_cpp_9,0x338);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_pnode_type_0_pnode_type_num_block_types,(const char*)&str_d_ss_franklinton_difference_engine_cpp_9,0x338);
     }
     crt_memcpy((void *)(iptr)diffeng_section_table[header[2]].data_ptr,cursor,*header);
     checksum = mem_checksum(cursor,*header);
@@ -7204,7 +7204,7 @@ void __cdecl diffeng_apply_map_header_image(int *image_buf,char compressed)
   int cursor;
   
   if ((image_buf == (int *)0x0) || (*image_buf == 0)) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_phdata_phdata_2,(iptr)&str_d_ss_franklinton_difference_engine_cpp_10,0x34b);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_phdata_phdata_2,(const char*)&str_d_ss_franklinton_difference_engine_cpp_10,0x34b);
   }
   saved_msg_options = game.message_options;
   saved_game_options = game.game_options;
@@ -7215,11 +7215,11 @@ void __cdecl diffeng_apply_map_header_image(int *image_buf,char compressed)
   map_free();
   section_id = diffeng_read_block((int **)&cursor);
   if (section_id != 1) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_blocktype_btgame,(iptr)&str_d_ss_franklinton_difference_engine_cpp_11,0x35a);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_blocktype_btgame,(const char*)&str_d_ss_franklinton_difference_engine_cpp_11,0x35a);
   }
   section_id = diffeng_read_block((int **)&cursor);
   if (section_id != 0xc) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_blocktype_btmapstruct,(iptr)&str_d_ss_franklinton_difference_engine_cpp_12,0x35d);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_blocktype_btmapstruct,(const char*)&str_d_ss_franklinton_difference_engine_cpp_12,0x35d);
   }
   game.game_options = saved_game_options;
   game.message_options = saved_msg_options;
@@ -7239,7 +7239,7 @@ int __cdecl diffeng_read_block(int **cursor_ptr)
   header = *cursor_ptr;
   *(int *)cursor_ptr = *(int *)cursor_ptr + 0x14;
   if ((header[2] < 0) || (0x17 < header[2])) {
-    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_pnode_type_0_pnode_type_num_block_types_2,(iptr)&str_d_ss_franklinton_difference_engine_cpp_13,0x36d);
+    ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_pnode_type_0_pnode_type_num_block_types_2,(const char*)&str_d_ss_franklinton_difference_engine_cpp_13,0x36d);
   }
   crt_memcpy((void *)(iptr)diffeng_section_table[header[2]].data_ptr,(const void *)*(i32 *)cursor_ptr,*header);
   checksum = mem_checksum((const void *)*(iptr *)cursor_ptr,*header);
@@ -7256,32 +7256,32 @@ void __cdecl diffeng_register_blocks(void)
   int section;
   
   memblock_ensure_locked((MemBlock *)&unit_types_block.str_empty_188);
-  ((DiffEngSection *)((i8 *)&diffeng_sections_block.diffeng_sections))->init((iptr)&str_empty_115,4,0);
-  ((DiffEngSection *)((i32 *)&diffeng_game_section_block.diffeng_game_section))->init((iptr)&game,0x14c,1);
-  ((DiffEngSection *)((i32 *)&diffeng_civ_names_section_block.diffeng_civ_names_section))->init((iptr)&civ_names,0x790,2);
-  ((DiffEngSection *)((i32 *)&diffeng_civs_section_block.diffeng_civs_section))->init((iptr)&civs,0x2ca0,3);
-  ((DiffEngSection *)((i8 *)&diffeng_landmass_section))->init((iptr)&landmass_table_block.landmass_table,0x400,4);
-  ((DiffEngSection *)((i8 *)&diffeng_units_section))->init((iptr)((u8 *)units),0x10000,5);
-  ((DiffEngSection *)((i8 *)&diffeng_cities_section))->init((iptr)&cities,0x5800,6);
-  ((DiffEngSection *)((i32 *)&diffeng_leaders_section_block.diffeng_leaders_section))->init((iptr)((u8 *)leaders),0x3f0,7);
-  ((DiffEngSection *)((i8 *)&diffeng_power_graph_section))->init((iptr)&power_graph_history_block.power_graph_history,0x4b0,8);
-  ((DiffEngSection *)((i32 *)&diffeng_scenario_section_block.diffeng_scenario_section))->init((iptr)&scenario.flags,100,9);
-  ((DiffEngSection *)((i8 *)&diffeng_destroyed_civs_section))->init((iptr)&destroyed_civs.count,0x154,10);
-  ((DiffEngSection *)((i32 *)&diffeng_civ_view_section_block.diffeng_civ_view_section))->init((iptr)&civ_view.saved_cursor_x,0x494,0xb);
-  ((DiffEngSection *)((i32 *)&diffeng_map_header_section_block.diffeng_map_header_section))->init((iptr)&map,0x10,0xc);
-  ((DiffEngSection *)((i8 *)&diffeng_map_coarse0_section))->init((iptr)map_data.coarse[0],(int)map.quarter_w * (int)map.quarter_h
+  ((DiffEngSection *)((i8 *)&diffeng_sections_block.diffeng_sections))->init((void *)&str_empty_115,4,0);
+  ((DiffEngSection *)((i32 *)&diffeng_game_section_block.diffeng_game_section))->init(&game,0x14c,1);
+  ((DiffEngSection *)((i32 *)&diffeng_civ_names_section_block.diffeng_civ_names_section))->init(&civ_names,0x790,2);
+  ((DiffEngSection *)((i32 *)&diffeng_civs_section_block.diffeng_civs_section))->init(&civs,0x2ca0,3);
+  ((DiffEngSection *)((i8 *)&diffeng_landmass_section))->init(&landmass_table_block.landmass_table,0x400,4);
+  ((DiffEngSection *)((i8 *)&diffeng_units_section))->init(((u8 *)units),0x10000,5);
+  ((DiffEngSection *)((i8 *)&diffeng_cities_section))->init(&cities,0x5800,6);
+  ((DiffEngSection *)((i32 *)&diffeng_leaders_section_block.diffeng_leaders_section))->init(((u8 *)leaders),0x3f0,7);
+  ((DiffEngSection *)((i8 *)&diffeng_power_graph_section))->init(&power_graph_history_block.power_graph_history,0x4b0,8);
+  ((DiffEngSection *)((i32 *)&diffeng_scenario_section_block.diffeng_scenario_section))->init(&scenario.flags,100,9);
+  ((DiffEngSection *)((i8 *)&diffeng_destroyed_civs_section))->init(&destroyed_civs.count,0x154,10);
+  ((DiffEngSection *)((i32 *)&diffeng_civ_view_section_block.diffeng_civ_view_section))->init(&civ_view.saved_cursor_x,0x494,0xb);
+  ((DiffEngSection *)((i32 *)&diffeng_map_header_section_block.diffeng_map_header_section))->init(&map,0x10,0xc);
+  ((DiffEngSection *)((i8 *)&diffeng_map_coarse0_section))->init(map_data.coarse[0],(int)map.quarter_w * (int)map.quarter_h
              ,0xd);
-  ((DiffEngSection *)((i8 *)&diffeng_map_coarse1_section))->init((iptr)map_data.coarse[1],(int)map.quarter_w * (int)map.quarter_h
+  ((DiffEngSection *)((i8 *)&diffeng_map_coarse1_section))->init(map_data.coarse[1],(int)map.quarter_w * (int)map.quarter_h
              ,0xe);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known1_section_block.diffeng_map_known1_section))->init((iptr)map_data.known[1],(int)map.area,0xf);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known2_section))->init((iptr)map_data.known[2],(int)map.area,0x10);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known3_section))->init((iptr)map_data.known[3],(int)map.area,0x11);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known4_section))->init((iptr)map_data.known[4],(int)map.area,0x12);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known5_section))->init((iptr)map_data.known[5],(int)map.area,0x13);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known6_section))->init((iptr)map_data.known[6],(int)map.area,0x14);
-  ((DiffEngSection *)((i8 *)&diffeng_map_known7_section))->init((iptr)map_data.known[7],(int)map.area,0x15);
-  ((DiffEngSection *)((i8 *)&diffeng_map_tiles_section))->init((iptr)map_data.tiles,map.area * 6,0x16);
-  ((DiffEngSection *)((i32 *)&diffeng_events_section_block.diffeng_events_section))->init((*(iptr *)&unit_types_block.events_pool_base),50000,0x17);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known1_section_block.diffeng_map_known1_section))->init(map_data.known[1],(int)map.area,0xf);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known2_section))->init(map_data.known[2],(int)map.area,0x10);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known3_section))->init(map_data.known[3],(int)map.area,0x11);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known4_section))->init(map_data.known[4],(int)map.area,0x12);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known5_section))->init(map_data.known[5],(int)map.area,0x13);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known6_section))->init(map_data.known[6],(int)map.area,0x14);
+  ((DiffEngSection *)((i8 *)&diffeng_map_known7_section))->init(map_data.known[7],(int)map.area,0x15);
+  ((DiffEngSection *)((i8 *)&diffeng_map_tiles_section))->init(map_data.tiles,map.area * 6,0x16);
+  ((DiffEngSection *)((i32 *)&diffeng_events_section_block.diffeng_events_section))->init(((void *)*(iptr *)&unit_types_block.events_pool_base),50000,0x17);
   offset = 0;
   for (section = 0; section < 0x17; section++) {
     diffeng_section_table[section].mirror_offset = offset;
@@ -7465,10 +7465,10 @@ i32 __cdecl diffeng_rle_encode(RleStream *stream)
 }
 
 /* 004b3080 auto */
-void DiffEngSection::init(iptr data_ptr,u32 data_size,u32 section_id)
+void DiffEngSection::init(void *data_ptr,u32 data_size,u32 section_id)
 
 {
-  this->data_ptr = data_ptr;
+  this->data_ptr = (u32)data_ptr;
   this->data_size = data_size;
   this->section_id = section_id;
   checksum = 0;
@@ -8876,7 +8876,7 @@ i32 ScenarioEvents::check_no_schism(int civ)
 }
 
 /* 004fc2bb auto */
-i32 ScenarioEvents::check_city_taken(iptr city_name,int attacker_civ,int defender_civ)
+i32 ScenarioEvents::check_city_taken(const char *city_name,int attacker_civ,int defender_civ)
 
 {
   int cmp;
@@ -10691,7 +10691,7 @@ i32 __cdecl setup_choose_multiplayer_type(void)
       choice = 2;
     }
     if ((choice < 0) || (3 < choice)) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_event_0_event_3,(iptr)&str_d_ss_franklinton_startup_multiplayer_cpp,0x66);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_event_0_event_3,(const char*)&str_d_ss_franklinton_startup_multiplayer_cpp,0x66);
     }
     switch(choice) {
     case 0:
@@ -11118,7 +11118,7 @@ i32 __cdecl setup_choose_game_timer(int in_game)
       break;
     case 6:
       while( true ) {
-        minutes = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_customgametimer,4,(iptr)&menu_prefs.turn_timer_custom,0,0,0,1);
+        minutes = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_customgametimer,4,(const char*)&menu_prefs.turn_timer_custom,0,0,0,1);
         if (minutes != 0) {
           if (in_game == 0) {
             ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
@@ -11133,7 +11133,7 @@ i32 __cdecl setup_choose_game_timer(int in_game)
         else {
           dlg.set_position(0xfffffc19,0xfffffc19);
         }
-        choice = dlg.run_modal((iptr)custom_text,0);
+        choice = dlg.run_modal(custom_text,0);
         snd_play_effect(SND_MENUOK,0,0,0);
         if (choice < 0) break;
         custom_seconds = _atoi(custom_text);
@@ -11351,7 +11351,7 @@ static TribeStep setup_tribe_leader_name(Dialog *dlg,char *input_text,int *resul
     if (in_game == 0) {
       setup_show_side_picture(7,0);
     }
-    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_name_5,0x17,(iptr)&civ_names[game.player_civ].leader_name,0,0,0,1);
+    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_name_5,0x17,(const char*)&civ_names[game.player_civ].leader_name,0,0,0,1);
     dialog_prepend_title_label(dlg,player_slot + 0x25e);
     if (in_game == 0) {
       dlg->set_position(0xfffffc19,
@@ -11361,7 +11361,7 @@ static TribeStep setup_tribe_leader_name(Dialog *dlg,char *input_text,int *resul
     if (2 < game_mode) {
       dlg_style.pending_idle_callback = net_pump_idle_cb;
     }
-    cancelled = dlg->run_modal((iptr)input_text,0);
+    cancelled = dlg->run_modal(input_text,0);
   } while (input_text[0] == '\0');
   if ((net.nm_server_canceled_count != 0) || (net.nm_lost_server_on_join_count != 0)) {
     setup_tribe_server_lost_popup((const char *)&str_lostserver_9,(const char *)&str_serverquit_8);
@@ -11422,7 +11422,7 @@ static TribeStep setup_tribe_custom_names(Dialog *dlg,int *choice,int *result,ip
     if (in_game == 0) {
       setup_show_side_picture(7,0);
     }
-    cancelled = dlg->load_text_section((const char *)&str_game_7,(const char *)&str_customtribe_2,0x17,(iptr)&civ_names[game.player_civ].leader_name,
+    cancelled = dlg->load_text_section((const char *)&str_game_7,(const char *)&str_customtribe_2,0x17,(const char*)&civ_names[game.player_civ].leader_name,
                           0,0,0,1);
     if (cancelled != 0) {
       game.human_players = ~(byte)(1 << (game.player_civ & 0x1fU)) & game.human_players;
@@ -11482,11 +11482,11 @@ static TribeStep setup_tribe_custom_names(Dialog *dlg,int *choice,int *result,ip
       text_append_string_id(government_names[title]);
       text_append_colon();
       if (((((i8 *)&net.player_info_govt_titles))[title * 0x18] == '\0') || (game_mode == 1)) {
-        dlg->add_edit_field((const char *)&textbuf.buf,(iptr)&civ_names[game.player_civ].titles[title],0x17);
+        dlg->add_edit_field((const char *)&textbuf.buf,(const char*)&civ_names[game.player_civ].titles[title],0x17);
       }
       else {
         dlg->add_edit_field((const char *)&textbuf.buf,
-                   (iptr)(((i8 *)&net.player_info_govt_titles) + title * 0x18),0x17);
+                   (((i8 *)&net.player_info_govt_titles) + title * 0x18),0x17);
       }
     }
     if (in_game == 0) {
@@ -11591,14 +11591,14 @@ static TribeStep setup_tribe_city_style(Dialog *dlg,char *input_text,int *choice
     else {
       email_default = ((i8 *)&setup_input_blank_default);
     }
-    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_emailaddress,0x1f,(iptr)email_default,0,0,0,1);
+    dlg->load_text_section((const char *)&str_game_7,(const char *)&str_emailaddress,0x1f,email_default,0,0,0,1);
     dialog_prepend_title_label(dlg,player_slot + 0x25e);
     if (in_game == 0) {
       dlg->set_position(0xfffffc19,
                  -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) +
                   1));
     }
-    cancelled = dlg->run_modal((iptr)input_text,0);
+    cancelled = dlg->run_modal(input_text,0);
     if ((net.nm_server_canceled_count != 0) || (net.nm_lost_server_on_join_count != 0)) {
       setup_tribe_server_lost_popup((const char *)&str_lostserver_11,(const char *)&str_serverquit_10);
       *result = 1;
@@ -12121,10 +12121,10 @@ i32 __cdecl scenario_pick_human_civs(int num_players)
           game.player_civ = (byte)civ;
           game.turn_civ = (byte)civ;
           game.game_options = game.game_options & ~OPT_TUTORIAL;
-          result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_6,0x17,(iptr)&civ_names[((char)(byte)civ)].leader_name,0,0,0,1);
+          result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_6,0x17,(const char*)&civ_names[((char)(byte)civ)].leader_name,0,0,0,1);
         } while (result != 0);
         dialog_prepend_title_label(&dlg,player_idx + 0x25e);
-        result = dlg.run_modal((iptr)name_text,0);
+        result = dlg.run_modal(name_text,0);
         if (result == 0) break;
         game.human_players = game.human_players & ~(byte)(1 << ((byte)civ & 0x1f));
       }
@@ -12568,10 +12568,10 @@ i32 __cdecl setup_join_pick_civ(int player_idx)
     ret = 0;
     human_civ[0] = civ;
     str = civ_leader_name(civ);
-    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,(iptr)str,(SurfaceWindow *)ret,(DibSurface *)arg_b,(RECT *)arg_c,arg_d);
+    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,str,(SurfaceWindow *)ret,(DibSurface *)arg_b,(RECT *)arg_c,arg_d);
     if (result == 0) {
       dialog_prepend_title_label(&dlg,player_idx + 0x25f);
-      result = dlg.run_modal((iptr)name_text,0);
+      result = dlg.run_modal(name_text,0);
       if (result == 0) {
         crt_strcpy((char *)(&civ_names[civ].leader_name),name_text);
         if (0 < leaders[civs[civ].tribe].leader_name) {
@@ -15855,7 +15855,7 @@ void EditorWindow::events_editor_run()
     parent2 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x237]);
-  add_trigger_button.create((iptr)parent2,0x65,(RECT *)rect,(const char *)label);
+  add_trigger_button.create((Wnd *)parent2,0x65,(RECT *)rect,(const char *)label);
   add_trigger_button.set_callback((CtrlNotifyFn)events_editor_on_add_trigger);
   x = x + button_width_u + 3;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15866,7 +15866,7 @@ void EditorWindow::events_editor_run()
     parent22 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x238]);
-  edit_trigger_button.create((iptr)parent22,0x65,(RECT *)rect,(const char *)label);
+  edit_trigger_button.create((Wnd *)parent22,0x65,(RECT *)rect,(const char *)label);
   edit_trigger_button.set_callback(events_editor_on_edit_trigger);
   rect_set_xywh((RECT *)rect,x + button_width_u + 3,y,button_width_u,
                      button_height_u);
@@ -15877,7 +15877,7 @@ void EditorWindow::events_editor_run()
     parent3 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x239]);
-  ((Button *)((u8 *)&delete_trigger_button_u))->create((iptr)parent3,0x65,(RECT *)rect,(const char *)label);
+  ((Button *)((u8 *)&delete_trigger_button_u))->create((Wnd *)parent3,0x65,(RECT *)rect,(const char *)label);
   ((Button *)((u8 *)&delete_trigger_button_u))->set_callback((CtrlNotifyFn)events_editor_on_delete_trigger);
   y = client_y + 0x13a;
   x = client_x + 0x32;
@@ -15889,7 +15889,7 @@ void EditorWindow::events_editor_run()
     parent7 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x237]);
-  add_action_button.create((iptr)parent7,0x65,(RECT *)rect,(const char *)label);
+  add_action_button.create((Wnd *)parent7,0x65,(RECT *)rect,(const char *)label);
   add_action_button.set_callback((CtrlNotifyFn)events_editor_on_add_action);
   x = x + button_width_u + 3;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15900,7 +15900,7 @@ void EditorWindow::events_editor_run()
     parent8 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x238]);
-  edit_action_button.create((iptr)parent8,0x65,(RECT *)rect,(const char *)label);
+  edit_action_button.create((Wnd *)parent8,0x65,(RECT *)rect,(const char *)label);
   edit_action_button.set_callback(events_editor_on_edit_action);
   rect_set_xywh((RECT *)rect,x + button_width_u + 3,y,button_width_u,
                      button_height_u);
@@ -15911,7 +15911,7 @@ void EditorWindow::events_editor_run()
     parent9 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x239]);
-  delete_action_button.create((iptr)parent9,0x65,(RECT *)rect,(const char *)label);
+  delete_action_button.create((Wnd *)parent9,0x65,(RECT *)rect,(const char *)label);
   delete_action_button.set_callback((CtrlNotifyFn)events_editor_on_delete_action);
   rect_set_xywh((RECT *)rect,client_x + 0x32,client_y + 0x1b,0x1cb,0x6e);
   x = editor_lists.next_ctrl_id;
@@ -15922,7 +15922,7 @@ void EditorWindow::events_editor_run()
   else {
     list_parent = (u8 *)&window;
   }
-  trigger_listbox.create((iptr)list_parent,x,(RECT *)rect);
+  trigger_listbox.create((Wnd *)list_parent,x,(RECT *)rect);
   trigger_listbox.set_font(&editor_font_block.editor_font);
   trigger_listbox.set_select_callback(events_editor_fill_actions);
   trigger_listbox.set_dblclick_callback(events_editor_on_edit_trigger);
@@ -15937,7 +15937,7 @@ void EditorWindow::events_editor_run()
   else {
     list_parent2 = (u8 *)&window;
   }
-  action_listbox.create((iptr)list_parent2,x,(RECT *)rect);
+  action_listbox.create((Wnd *)list_parent2,x,(RECT *)rect);
   action_listbox.set_font(&editor_font_block.editor_font);
   action_listbox.set_select_callback(events_editor_update_buttons);
   action_listbox.set_dblclick_callback(events_editor_on_edit_action);
@@ -15954,7 +15954,7 @@ void EditorWindow::events_editor_run()
     parent4 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)parent4,0x65,(RECT *)rect,(const char *)label);
+  ok_button.create((Wnd *)parent4,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)events_editor_on_ok);
   x = x + button_width_u + 2;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15965,7 +15965,7 @@ void EditorWindow::events_editor_run()
     parent5 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)parent5,0x66,(RECT *)rect,(const char *)label);
+  help_button.create((Wnd *)parent5,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)events_editor_on_help);
   rect_set_xywh((RECT *)rect,x + button_width_u + 2,y,button_width_u,
                      button_height_u);
@@ -15976,7 +15976,7 @@ void EditorWindow::events_editor_run()
     parent6 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)parent6,0x66,(RECT *)rect,(const char *)label);
+  cancel_button.create((Wnd *)parent6,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)events_editor_on_cancel);
   cancel_button.set_cancel_button();
   window.set_keyboard_nav(0);
@@ -17112,7 +17112,7 @@ void __cdecl cheat_edit_king(void)
         }
         text_set_string_arg(1,(const char *)&civ_names[civ].tribe_name);
         text_set_string_arg(2,(const char *)&civ_names[civ].adjective);
-        dialog2.load_text_section((const char *)&str_game_7,(const char *)&str_editkingname,0x17,(iptr)&civ_names[civ].leader_name,0,0,0,1);
+        dialog2.load_text_section((const char *)&str_game_7,(const char *)&str_editkingname,0x17,(const char*)&civ_names[civ].leader_name,0,0,0,1);
         choice = dialog2.show_modal(0);
         if (-1 < choice) {
           crt_strcpy((char *)(&civ_names[civ].leader_name),((i8 *)&text_args.strings));
@@ -19053,9 +19053,9 @@ uint __cdecl main_frame_create(void)
     main_frame_bg_surface_block.main_frame_nonclient_width = main_frame_wnd_block.main_frame_wnd.frame_width();
     main_frame_bg_surface_block.main_frame_nonclient_height_i32 = main_frame_wnd_block.main_frame_wnd.nonclient_height();
     main_frame_wnd_block.main_frame_wnd.maximize();
-    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb((iptr)saved_rgb2,10,0xec);
+    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->get_rgb((u8 *)saved_rgb2,10,0xec);
     intro_play_opening_video();
-    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->set_rgb(10,0xec,(iptr)saved_rgb2);
+    ((GamePalette *)((i8 *)&game_palette_block.game_palette))->set_rgb(10,0xec,(u8 *)saved_rgb2);
     ((GamePalette *)((i8 *)&game_palette_block.game_palette))->commit_range(10,0xec);
     main_frame_wnd_block.main_frame_wnd.wnd_handlers.set_close_handler(main_frame_on_close);
     main_frame_wnd_block.main_frame_wnd.wnd_handlers.set_keydown_handler(map_window_key);
@@ -19291,7 +19291,7 @@ void __cdecl game_timer_destroy(int slot)
 }
 
 /* 005d2042 auto */
-iptr TimerManager::add(TimerFn callback,i32 interval_ms,u32 repeat_count)
+int TimerManager::add(TimerFn callback,i32 interval_ms,u32 repeat_count)
 
 {
   int started;
@@ -19419,7 +19419,7 @@ HWND __cdecl timer_wnd_create(TimerManager *timer_mgr)
     if ((((timerdll.timer_callback == 0) || (timerdll.set_timer_id == 0)) ||
         (timerdll.get_timer_id == 0)) ||
        ((timerdll.get_timer_index == 0 || (timerdll.reset_timer_notified == 0)))) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(9,(iptr)&str_err_dynamiclinkfailed,(iptr)&str_d_ss_smeds32_pctimer_cpp,0x55);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(9,(const char*)&str_err_dynamiclinkfailed,(const char*)&str_d_ss_smeds32_pctimer_cpp,0x55);
       FreeLibrary(timerdll.module);
     }
     else {
@@ -19427,7 +19427,7 @@ HWND __cdecl timer_wnd_create(TimerManager *timer_mgr)
                                 -0x80000000,-0x80000000,-0x80000000,(HWND)0x0,(HMENU)0x0,
                                 err_report_ctx_block.app_hinstance,(LPVOID)0x0);
       if (hwnd2 == (HWND)0x0) {
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(10,(iptr)&str_err_cantcreatewindow,(iptr)&str_d_ss_smeds32_pctimer_cpp_2,0x71);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(10,(const char*)&str_err_cantcreatewindow,(const char*)&str_d_ss_smeds32_pctimer_cpp_2,0x71);
         FreeLibrary(timerdll.module);
       }
       else {
@@ -19471,7 +19471,7 @@ i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot)
     if (wnd_modal_stack_below_block.timer_alt_kind_request == 0) {
       timer_id = SetTimer(hwnd,slot,interval_ms,(TIMERPROC)0x0);
       if (timer_id == 0) {
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(iptr)&str_err_timersetfailed_3,(iptr)&str_d_ss_smeds32_pctimer_cpp_5,0xc3);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(const char*)&str_err_timersetfailed_3,(const char*)&str_d_ss_smeds32_pctimer_cpp_5,0xc3);
         result = 0;
       }
       else {
@@ -19481,7 +19481,7 @@ i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot)
     else {
       mm_timer_id = timeSetEvent(interval_ms,5,timerdll.timer_callback,hwnd,1);
       if (mm_timer_id == 0) {
-        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(iptr)&str_err_timersetfailed_4,(iptr)&str_d_ss_smeds32_pctimer_cpp_6,0xd7);
+        ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(const char*)&str_err_timersetfailed_4,(const char*)&str_d_ss_smeds32_pctimer_cpp_6,0xd7);
         result = 0;
       }
       else {
@@ -19493,7 +19493,7 @@ i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot)
   else if (wnd_modal_stack_below_block.timer_alt_kind_request == 0) {
     mm_timer_id = timeSetEvent(interval_ms,5,timerdll.timer_callback,hwnd,1);
     if (mm_timer_id == 0) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(iptr)&str_err_timersetfailed,(iptr)&str_d_ss_smeds32_pctimer_cpp_3,0xa8);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(const char*)&str_err_timersetfailed,(const char*)&str_d_ss_smeds32_pctimer_cpp_3,0xa8);
       result = 0;
     }
     else {
@@ -19504,7 +19504,7 @@ i32 __cdecl timer_wnd_start_slot(HWND hwnd,UINT interval_ms,int slot)
   else {
     timer_id = SetTimer(hwnd,slot,interval_ms,(TIMERPROC)0x0);
     if (timer_id == 0) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(iptr)&str_err_timersetfailed_2,(iptr)&str_d_ss_smeds32_pctimer_cpp_4,0xb4);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(0xb,(const char*)&str_err_timersetfailed_2,(const char*)&str_d_ss_smeds32_pctimer_cpp_4,0xb4);
       result = 0;
     }
     else {

@@ -209,7 +209,7 @@ void DibSurface::wnd_blit_surface_rect(RECT *rect)
     else {
       view = this + 1;
     }
-    blit_to_wnd((iptr)view,(RECT *)&bounds_rect,(RECT *)&bounds_rect);
+    blit_to_wnd((WndBase *)view,(RECT *)&bounds_rect,(RECT *)&bounds_rect);
     ((WndBase *)(this + 1))->view_validate_rect((RECT *)&bounds_rect);
   }
   else {
@@ -219,7 +219,7 @@ void DibSurface::wnd_blit_surface_rect(RECT *rect)
     else {
       view2 = this + 1;
     }
-    blit_to_wnd((iptr)view2,rect,rect);
+    blit_to_wnd((WndBase *)view2,rect,rect);
     ((WndBase *)(this + 1))->view_validate_rect(rect);
   }
   return;
@@ -1499,7 +1499,7 @@ Hotspot * __thiscall hotspot_ctor(Hotspot *self)
 }
 
 /* 004519b0 auto */
-void Hotspot::create(iptr parent,int id,RECT *rect)
+void Hotspot::create(Wnd *parent,int id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -3338,7 +3338,7 @@ void __cdecl menu_build_main(void)
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_hidden(0x417,1);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_hidden(0x418,1);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_hidden(0x41b,1);
-  ((GameMenu *)((i8 *)&main_menu_block.main_menu))->rebuild((iptr)&main_frame_wnd_block.main_frame_wnd);
+  ((GameMenu *)((i8 *)&main_menu_block.main_menu))->rebuild(&main_frame_wnd_block.main_frame_wnd);
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_command_handler(menu_command);
   return;
 }
@@ -3955,9 +3955,9 @@ dlg_text_input(const char *file,const char *section,i32 max_len,const char *init
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
   str_clear(out_text);
-  status = dialog2.load_text_section(file,section,max_len,(iptr)initial_text,0,0,0,1);
+  status = dialog2.load_text_section(file,section,max_len,initial_text,0,0,0,1);
   if (status == 0) {
-    result = dialog2.run_modal((iptr)out_text,0);
+    result = dialog2.run_modal(out_text,0);
     for (p = out_text;
         (*p != '\0' && ((*p == ' ' || (*p == '\t')))); p++)
     {
@@ -4582,7 +4582,7 @@ void FrameWindow::layout()
     else {
       native_wnd2 = (u8 *)&window;
     }
-    ((Hotspot *)caption_buttons[i].hotspot)->create((iptr)native_wnd2,
+    ((Hotspot *)caption_buttons[i].hotspot)->create((Wnd *)native_wnd2,
                i + 1000,(RECT *)button_rect);
     ((Hotspot *)caption_buttons[i].hotspot)->set_click_callback(frame_wnd_on_caption_button_click);
     button_x = button_x + width + ui_metrics.padding;
@@ -4737,7 +4737,7 @@ void FrameWindow::create(const char *title,uint flags,int x,int y,int width, int
     x = (caption_font_block.screen_width >> 1) - (width >> 1);
     y = (caption_font_block.screen_height >> 1) - (height >> 1);
   }
-  wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+  wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd);
   if (caption_height != 0) {
     ((WndBase *)&window)->set_caption_height(caption_height);
   }
@@ -4841,7 +4841,7 @@ void __cdecl frame_texture_load(void)
     ((DibSurface *)((i8 *)&frame_texture_surface_block.frame_texture_surface))->fill(0x21);
   }
   else {
-    dll.resource_dll_load((iptr)path);
+    dll.resource_dll_load(path);
     ON_SCOPE_EXIT(dll.free());
     ok = surface.load_gif_resource(999,10,0xec,(GamePalette *)&art_palette);
     if (ok == 0) {
@@ -5206,7 +5206,7 @@ void GameMenu::attach_to_window(ModalMenuWindow *window)
   if (window != (ModalMenuWindow *)0x0) {
     menu_state.owner_window = window;
     menu_state.active_object = this;
-    window->attach_menu((iptr)this);
+    window->attach_menu(this);
     window->set_menu_callback(menu_dispatch_command);
   }
   return;
@@ -5263,7 +5263,7 @@ void GameMenu::apply_item_checked(i32 item_id)
 }
 
 /* 00578f2c auto */
-void GameMenu::rebuild(iptr window)
+void GameMenu::rebuild(ModalMenuWindow *window)
 
 {
   MenuNode *menu2;
@@ -5291,7 +5291,7 @@ void GameMenu::rebuild(iptr window)
       menu_index++;
     }
     if (window != 0) {
-      native_build((iptr)spec);
+      native_build(spec);
     }
     menu2 = menus;
     menu_index = 1;
@@ -5319,7 +5319,7 @@ void GameMenu::rebuild(iptr window)
       }
     }
     menu_flags = menu_flags | 0x8000;
-    attach_to_window((ModalMenuWindow *)window);
+    attach_to_window(window);
   }
   if (menu_state.owner_window != (ModalMenuWindow *)0x0) {
     menu_state.owner_window->redraw_menu_bar();
@@ -5466,12 +5466,12 @@ void GameMenu::set_item_text(i32 item_id,const char *text)
 }
 
 /* 005799c0 auto */
-void GameMenu::native_build(iptr spec)
+void GameMenu::native_build(char *spec)
 
 {
   u32 menu_handle;
   
-  menu_handle = menu_hmenu_build_from_spec((char *)spec);
+  menu_handle = menu_hmenu_build_from_spec(spec);
   hmenu = menu_handle;
   return;
 }
@@ -5519,16 +5519,16 @@ void GameMenu::native_check(i32 menu_index,i32 item_index,i32 checked)
 }
 
 /* 00579b40 auto */
-void ModalMenuWindow::attach_menu(iptr menu_obj)
+void ModalMenuWindow::attach_menu(GameMenu *menu_obj)
 
 {
   i32 hmenu;
   NativeWindow *hwnd;
   
-  hmenu = ((GameMenu *)menu_obj)->get_hmenu();
+  hmenu = (menu_obj)->get_hmenu();
   hwnd = get_window();
   wnd_obj_attach_menu(hwnd,hmenu);
-  menu = menu_obj;
+  menu = (u32)menu_obj;
   return;
 }
 
@@ -6171,7 +6171,7 @@ void Dialog::close()
   }
   if (this == dialog_state.active) {
     if ((dlg_style.stack_depth < 1) || (0x10 < dlg_style.stack_depth)) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_popupstackindex_0_popupstackindex_17,(iptr)&str_d_ss_franklinton_popup_1_cpp,0x19c);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_popupstackindex_0_popupstackindex_17,(const char*)&str_d_ss_franklinton_popup_1_cpp,0x19c);
     }
     dlg_style.stack_depth--;
     (*(iptr *)&net.dialog_stack_top) = (((i32 *)&dlg_style.stack))[dlg_style.stack_depth];
@@ -6850,7 +6850,7 @@ DialogOption *Dialog::add_checkbox_option(const char *text,int option_id,int che
 }
 
 /* 0059f06d auto */
-DialogEditField *Dialog::add_edit_field(const char *label,iptr initial_text,size_t max_len)
+DialogEditField *Dialog::add_edit_field(const char *label,const char *initial_text,size_t max_len)
 
 {
   DialogEditField *field;
@@ -8131,12 +8131,12 @@ i32 Dialog::create_window()
       palette = (*(i8 * *)&dlg_defaults.palette);
     }
     if (parent2 == (i8 *)0x0) {
-      ((DibSurface *)surf_wnd)->wnd_create((iptr)title,wnd_style,window_x,
+      ((DibSurface *)surf_wnd)->wnd_create(title,wnd_style,window_x,
                  window_y,wnd_width,wnd_height,(GamePalette *)&game_palette_block.game_palette);
     }
     else {
       ((DibSurface *)surf_wnd)->wnd_create_with_surface((const char *)title,wnd_style,window_x,
-                 window_y,wnd_width,wnd_height,(GamePalette *)palette,(iptr)parent2);
+                 window_y,wnd_width,wnd_height,(GamePalette *)palette,(WndBase *)parent2);
     }
     if ((style_flags & 0x10000) == 0) {
       surf_wnd->window.set_caption_height(title_height);
@@ -8215,8 +8215,8 @@ void Dialog::create_radio_group(uint *labels)
   else {
     parent_18c = (uptr)&surf_wnd->window;
   }
-  ((RadioGroup *)radio_group)->create(parent_18c,200,(RECT *)rect,columns,
-             option_count,(iptr)labels);
+  ((RadioGroup *)radio_group)->create((Wnd *)parent_18c,200,(RECT *)rect,columns,
+             option_count,(char **)labels);
   option = option_list;
   item_index = 0;
   for (; option != (DialogOption *)0x0; option = option->next) {
@@ -8271,7 +8271,7 @@ void Dialog::create_checkboxes()
     else {
       parent_188 = (uptr)&surf_wnd->window;
     }
-    ((Checkbox *)(checkboxes + i * 0x3c))->create(parent_188,i + 200
+    ((Checkbox *)(checkboxes + i * 0x3c))->create((Wnd *)parent_188,i + 200
                ,x,y2,(const char *)option->text);
     ((Checkbox *)(checkboxes + i * 0x3c))->set_checked(option->flags & 4);
     if ((option->flags & 1) != 0) {
@@ -8313,7 +8313,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
       else {
         parent = (uptr)&surf_wnd->window;
       }
-      ((Scrollbar *)list_vscroll[cur_pane])->create(parent,
+      ((Scrollbar *)list_vscroll[cur_pane])->create((Wnd *)parent,
                  0xb,&list_vscroll_rect[cur_pane],1);
       count = count_group_options(cur_pane);
       ((Scrollbar *)list_vscroll[cur_pane])->set_range(0,
@@ -8341,7 +8341,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
       else {
         parent = (uptr)&surf_wnd->window;
       }
-      ((Scrollbar *)list_hscroll[cur_pane])->create(parent,0xc,
+      ((Scrollbar *)list_hscroll[cur_pane])->create((Wnd *)parent,0xc,
                  &list_hscroll_rect[cur_pane],0);
       count = count_group_options(cur_pane);
       value = column_of_index(count - 1);
@@ -8385,7 +8385,7 @@ void Dialog::create_list_listbox()
   else {
     parent = (uptr)&surf_wnd->window;
   }
-  ((ListBox *)listbox[cur_pane])->create(parent,10,
+  ((ListBox *)listbox[cur_pane])->create((Wnd *)parent,10,
              (RECT *)rect);
   option = option_list;
   item_index = 0;
@@ -8446,7 +8446,7 @@ void Dialog::create_sprite_hotspots()
       else {
         parent_190 = (uptr)&surf_wnd->window;
       }
-      ((Hotspot *)(sprite_hotspots + i * 0x40))->create(parent_190,i + 300,
+      ((Hotspot *)(sprite_hotspots + i * 0x40))->create((Wnd *)parent_190,i + 300,
                  (RECT *)rect);
       ((Hotspot *)(sprite_hotspots + i * 0x40))->set_click_callback(dialog_on_sprite_click);
       ((Hotspot *)(sprite_hotspots + i * 0x40))->set_dblclick_callback((CtrlNotifyFn)dialog_sprite_on_dblclick);
@@ -8493,7 +8493,7 @@ void Dialog::create_edit_fields()
       value = (i32)edit_field->buffer;
       text = edit_field->width;
       count = edit_row_height();
-      ((EditControl *)(edit_controls + i * 0x48))->create_at(parent_194,0x14,
+      ((EditControl *)(edit_controls + i * 0x48))->create_at((Wnd *)parent_194,0x14,
                  edit_x + edit_label_width,count * i + edit_y,text,(const char *)value)
       ;
       if (2 < game.multiplayer) {
@@ -8551,7 +8551,7 @@ void Dialog::create_buttons()
     else {
       parent_198 = (uptr)&surf_wnd->window;
     }
-    ((Button *)(button_controls + i * 0x3c))->create(parent_198,i + 100,
+    ((Button *)(button_controls + i * 0x3c))->create((Wnd *)parent_198,i + 100,
                (RECT *)rect,(const char *)label);
     if ((button_id == 2) || ((button_id == 0 && ((style_flags & 1) == 0)))) {
       ((Button *)(button_controls + i * 0x3c))->set_cancel_button();
@@ -8578,7 +8578,7 @@ void Dialog::create_controls()
   label_count2 = 0;
   if (this != dialog_state.active) {
     if ((dlg_style.stack_depth < 0) || (0xf < dlg_style.stack_depth)) {
-      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(iptr)&str_popupstackindex_0_popupstackindex_16,(iptr)&str_d_ss_franklinton_popup_1_cpp_2,0xc75);
+      ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_popupstackindex_0_popupstackindex_16,(const char*)&str_d_ss_franklinton_popup_1_cpp_2,0xc75);
     }
     dlg_style.stack_depth++;
     (*(Dialog * *)&net.dialog_stack_top) = this;
@@ -9605,7 +9605,7 @@ static int dialog_list_text_fits(uptr list,int index,size_t size)
 /* 005a5f34 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-u32 Dialog::run_modal(iptr out_text,int timeout_secs)
+u32 Dialog::run_modal(char *out_text,int timeout_secs)
 
 {
   NativeWindow *main_hwnd;
@@ -9657,7 +9657,7 @@ u32 Dialog::run_modal(iptr out_text,int timeout_secs)
         }
       }
       if ((out_text != 0) && (edit_controls != 0)) {
-        ((Control *)edit_controls)->Control::get_text((char *)out_text);
+        ((Control *)edit_controls)->Control::get_text(out_text);
       }
       if (1 < (int)edit_count) {
         for (i = 0; i < (int)edit_count; i++) {
@@ -9719,7 +9719,7 @@ u32 Dialog::run_modal(iptr out_text,int timeout_secs)
    (options follow), @TEXT, @TITLE=, @BUTTON=, @COLUMNS, @HEIGHT, @SMALLFONT, @X,
    @Y, @WIDTH, @LENGTH, @CHECKBOX, @LISTBOX, @SYSTEM, @DEFAULT; another @ word
    ends the section. */
-void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default_value,uint has_edit,iptr edit_default,i8 *edit_text)
+void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default_value,uint has_edit,const char *edit_default,i8 *edit_text)
 {
   int cmp;
   size_t len;
@@ -9895,7 +9895,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
 }
 
 /* 005a632a auto */
-i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,SurfaceWindow *init_arg1, DibSurface *init_arg2,RECT *init_arg3,uint flags)
+i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,const char *edit_default,SurfaceWindow *init_arg1, DibSurface *init_arg2,RECT *init_arg3,uint flags)
 
 {
   int cmp;
@@ -9977,7 +9977,7 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
             if (edit_count != 0) {
               edit_buf = ((i8 *)&text_args.strings) + edit_count * 0x104;
             }
-            add_edit_field((const char *)expanded,(iptr)edit_buf,default_value);
+            add_edit_field((const char *)expanded,edit_buf,default_value);
           }
         }
       }
@@ -10067,7 +10067,7 @@ void Dialog::draw_text_default_font(const char *text,i32 x,i32 y, i32 flags)
 }
 
 /* 005bb4ae auto */
-void DibSurface::wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
+void DibSurface::wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent)
 
 {
   NativeWindow *hwnd;
@@ -10475,7 +10475,7 @@ void __cdecl wnd_obj_set_bg_color(NativeWindow *wnd,uint color_index)
   if (display_palette.palettized == 0) {
     wnd_view = (WndBase *)GetWindowLongA(wnd->hwnd,0);
     self = (GamePalette *)wnd_view->get_palette();
-    self->get_entry(color_index & 0xff,(iptr)red,(iptr)green,(iptr)blue);
+    self->get_entry(color_index & 0xff,red,green,blue);
     brush = CreateSolidBrush(RGB(red[0],green[0],blue[0]));
     wnd->bg_brush = brush;
   }
@@ -11020,7 +11020,7 @@ void WndBase::create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i
 }
 
 /* 005c57f9 auto */
-void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
+void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent)
 
 {
   NativeWindow *hwnd;
@@ -11032,14 +11032,14 @@ void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 w
 }
 
 /* 005c59c4 auto */
-void Wnd::append_control(iptr ctrl)
+void Wnd::append_control(Control *ctrl)
 
 {
   Control *last;
   
   last = (Control *)control_list;
   if (last == (Control *)0x0) {
-    control_list = ctrl;
+    control_list = (uptr)ctrl;
   }
   else {
     for (; last->next_ctrl != 0; last = (Control *)last->next_ctrl) {
@@ -11207,12 +11207,12 @@ void WndBase::create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 
 }
 
 /* 005c5fc4 auto */
-void WndBase::create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
+void WndBase::create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent)
 
 {
   NativeWindow *hwnd;
   
-  create_child((i32)title,style,x,y,width,height,palette,(WndBase *)parent);
+  create_child((i32)title,style,x,y,width,height,palette,parent);
   hwnd = get_window();
   wnd_install_command_proc(this,hwnd);
   ((WndHandlers *)(this + 1))->clear_handlers();
@@ -12057,7 +12057,7 @@ i32 __stdcall surfwnd_subclass_wndproc(HWND hwnd,int msg,i32 wparam,uint lparam)
         else {
           owner_ptr = (u8 *)&self->window;
         }
-        self->blit_to_wnd((iptr)owner_ptr,&paint_rect,&paint_rect);
+        self->blit_to_wnd((WndBase *)owner_ptr,&paint_rect,&paint_rect);
         EndPaint(hwnd,&ps);
       }
     }

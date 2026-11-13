@@ -874,7 +874,7 @@ void EditorWindow::tribe_editor_create_combo(int slot)
   else {
     parent_wnd2 = (u8 *)&window;
   }
-  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_x,
+  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->create((Wnd *)parent_wnd2,ctrl_x,
              (RECT *)rect);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_callback(tribe_editor_on_combo);
@@ -940,7 +940,7 @@ void EditorWindow::tribe_editor_create_edit(int slot)
   else {
     parent_wnd2 = (u8 *)&window;
   }
-  ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->create((iptr)parent_wnd2,ctrl_id,
+  ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->create((Wnd *)parent_wnd2,ctrl_id,
              (RECT *)rect,(const char *)&str_empty_114);
   ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->set_max_len(0x17);
   return;
@@ -1113,7 +1113,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd1 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0x250]));
-  add_trigger_button.create((iptr)parent_wnd1,0x65,(RECT *)rect,(const char *)label);
+  add_trigger_button.create((Wnd *)parent_wnd1,0x65,(RECT *)rect,(const char *)label);
   add_trigger_button.set_callback((CtrlNotifyFn)tribe_editor_rename_commodity);
   rect_set_xywh((RECT *)rect,height + 0xe1,pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
@@ -1123,7 +1123,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd2 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0x251]));
-  edit_trigger_button.create((iptr)parent_wnd2,0x65,(RECT *)rect,(const char *)label);
+  edit_trigger_button.create((Wnd *)parent_wnd2,0x65,(RECT *)rect,(const char *)label);
   edit_trigger_button.set_callback((CtrlNotifyFn)tribe_editor_rename_govt);
   rect_set_xywh((RECT *)rect,height + 0x159,pos,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
@@ -1133,7 +1133,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd3 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0x252]));
-  delete_trigger_button.create((iptr)parent_wnd3,0x65,(RECT *)rect,(const char *)label);
+  delete_trigger_button.create((Wnd *)parent_wnd3,0x65,(RECT *)rect,(const char *)label);
   delete_trigger_button.set_callback((CtrlNotifyFn)tribe_editor_rename_title);
   pos = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = pos + 8;
@@ -1148,7 +1148,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd4 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0xfe]));
-  ok_button.create((iptr)parent_wnd4,0x65,(RECT *)rect,(const char *)label);
+  ok_button.create((Wnd *)parent_wnd4,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)tribe_editor_on_ok);
   pos = pos + button_width_u + 2;
   rect_set_xywh((RECT *)rect,pos,button_y,button_width_u,button_height_u);
@@ -1159,7 +1159,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd5 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0x23b]));
-  help_button.create((iptr)parent_wnd5,0x66,(RECT *)rect,(const char *)label);
+  help_button.create((Wnd *)parent_wnd5,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)tribe_editor_on_help);
   rect_set_xywh((RECT *)rect,pos + button_width_u + 2,button_y,button_width_u,
                      button_height_u);
@@ -1170,7 +1170,7 @@ void EditorWindow::tribe_editor_main()
     parent_wnd6 = (u8 *)&window;
   }
   label = (iptr)(label_string(label_table.string_ids[0xff]));
-  cancel_button.create((iptr)parent_wnd6,0x66,(RECT *)rect,(const char *)label);
+  cancel_button.create((Wnd *)parent_wnd6,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)tribe_editor_on_cancel);
   cancel_button.set_cancel_button();
   window.set_keyboard_nav(0);
@@ -1560,7 +1560,7 @@ editor_text_dlg_create(const char *title,uint style,int x,int y,int width,int he
     parent_wnd2 = (iptr)&editor_active.wnd->window;
   }
   ((DibSurface *)((i8 *)&editor_text_dlg.wnd))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,
-             parent_wnd2);
+             (WndBase *)parent_wnd2);
   if (editor_text_dlg.caption_height != 0) {
     ((WndBase *)((i8 *)&editor_text_dlg.inner))->set_caption_height(editor_text_dlg.caption_height);
   }
@@ -1664,7 +1664,7 @@ i32 __cdecl editor_text_edit_dialog(i32 *lines,const char *title)
   button_width2 = (editor_text_dlg.client_width - 6) / 2;
   rect_set_xywh((RECT *)rect,editor_text_dlg.client_x + 4,editor_text_dlg.client_y + 4,editor_text_dlg.client_width - 9,
                      (editor_text_dlg.client_height - button_height) - 9);
-  ((EditControl *)((i8 *)&editor_text_edit_block.editor_text_edit))->create_styled((iptr)&editor_text_dlg.inner,0xc9,(RECT *)rect,0,2,1);
+  ((EditControl *)((i8 *)&editor_text_edit_block.editor_text_edit))->create_styled((Wnd *)&editor_text_dlg.inner,0xc9,(RECT *)rect,0,2,1);
   for (line_idx = 0; (line_idx < 0x14 && (lines[line_idx] != 0));
       line_idx = line_idx + 1) {
     if (line_idx != 0) {
@@ -1676,12 +1676,12 @@ i32 __cdecl editor_text_edit_dialog(i32 *lines,const char *title)
   button_x = editor_text_dlg.client_x + 2;
   rect_set_xywh((RECT *)rect,button_x,button_y,button_width2,button_height);
   label = (iptr)(label_string(label_table.string_ids[0xfe]));
-  ok_btn.create((iptr)&editor_text_dlg.inner,0x65,(RECT *)rect,(const char *)label);
+  ok_btn.create((Wnd *)&editor_text_dlg.inner,0x65,(RECT *)rect,(const char *)label);
   ok_btn.set_callback((CtrlNotifyFn)editor_text_dlg_on_ok);
   button_x = button_x + button_width2 + 2;
   rect_set_xywh((RECT *)rect,button_x,button_y,button_width2,button_height);
   label = (iptr)(label_string(label_table.string_ids[0xff]));
-  cancel_btn.create((iptr)&editor_text_dlg.inner,0x66,(RECT *)rect,(const char *)label);
+  cancel_btn.create((Wnd *)&editor_text_dlg.inner,0x66,(RECT *)rect,(const char *)label);
   cancel_btn.set_callback((CtrlNotifyFn)editor_text_dlg_on_cancel);
   cancel_btn.set_cancel_button();
   ((SurfaceWindow *)((i8 *)&editor_text_dlg.wnd))->set_redraw_callback(editor_text_dlg_redraw);

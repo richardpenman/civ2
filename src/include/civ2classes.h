@@ -10,6 +10,8 @@
 /* Classes the methods' declarations name before their definitions. */
 struct GamePalette;
 struct GameFont;
+struct GameMenu;
+struct Control;
 struct EventsParseState;    /* game.cpp: the parts of ScenarioEvents::parse_file */
 
 /* The window classes.  WndBase (wnd_record_init 005db610, 0x10 bytes) is
@@ -67,9 +69,9 @@ typedef struct WndBase {
     void set_client_size(i32 width,i32 height);    /* 005bb8e0 */
     i16 get_style_flags();    /* 005bd610 */
     void create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette);    /* 005c5760 */
-    void create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent);    /* 005c57f9 */
+    void create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent);    /* 005c57f9 */
     void create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette);    /* 005c5f20 */
-    void create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent);    /* 005c5fc4 */
+    void create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent);    /* 005c5fc4 */
     WndBase *init();    /* 005db610 */
     void destroy();    /* 005db650 */
     void create(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,GamePalette *palette);    /* 005db67b */
@@ -201,7 +203,7 @@ typedef struct ModalMenuWindow : WndBase {
     void set_min_size(u32 width,u32 height);    /* 00408370 */
     void set_modal_idle_callback(WndNotifyFn callback);    /* 0040f320 */
     ModalMenuWindow *construct();    /* 0044c730 */
-    void attach_menu(iptr menu_obj);    /* 00579b40 */
+    void attach_menu(GameMenu *menu_obj);    /* 00579b40 */
     void set_menu_callback(MenuPosCommandFn callback);    /* 00579bc0 */
     void redraw_menu_bar();    /* 00579bf0 */
     void get_min_size(i32 *out_width,i32 *out_height);    /* 005bb910 */
@@ -230,7 +232,7 @@ typedef struct Wnd : ModalMenuWindow {
     void set_keyboard_nav(i32 enabled);    /* 0040f350 */
     Wnd *construct();    /* 0044c670 */
     void activate();    /* 004518d0 */
-    void append_control(iptr ctrl);    /* 005c59c4 */
+    void append_control(Control *ctrl);    /* 005c59c4 */
     void remove_control(int ctrl_id);    /* 005c5a27 */
     void remove_all_controls();    /* 005c5aeb */
     void focus_first_control();    /* 005c5b7f */
@@ -277,8 +279,8 @@ typedef struct DibSurface {
     void mapview_blit_with_net_pump();    /* 0047cb50 */
     u32 *get_rect();    /* 00497c90 */
     void pedia_draw_tree_connector(int x,int y_from,int x_to,int y_to);    /* 005674b9 */
-    void wnd_create(iptr parent,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette);    /* 005bb3f0 */
-    void wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent);    /* 005bb4ae */
+    void wnd_create(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette);    /* 005bb3f0 */
+    void wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,WndBase *parent);    /* 005bb4ae */
     void create(int width,int height);    /* 005bd65c */
     i32 alloc_dib8(RECT *rect);    /* 005bd696 */
     void set_dims(int *rect);    /* 005bd813 */
@@ -295,7 +297,7 @@ typedef struct DibSurface {
     void replace_color_clip(i32 from_color,i32 to_color);    /* 005c044a */
     void replace_color(RECT *rect,i32 from_color,i32 to_color);    /* 005c0479 */
     void blit(DibSurface *src,RECT *dest_rect,RECT *src_rect);    /* 005c0593 */
-    void blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt);    /* 005c0979 */
+    void blit_to_wnd(WndBase *wnd,RECT *src_rect,RECT *dest_pt);    /* 005c0979 */
     uint get_pixel(i32 x,i32 y);    /* 005c0bf2 */
     void set_pixel(i32 x,i32 y,i32 color);    /* 005c0c5d */
     void set_palette(GamePalette *palette);    /* 005c0cc5 */
@@ -306,16 +308,16 @@ typedef struct DibSurface {
     void draw_line(u32 x1,u32 y1,u32 x2,u32 y2);    /* 005c11b2 */
     int pixel_ptr(int x,int y);    /* 005c19d3 */
     i8 in_clip(int x,int y);    /* 005c1a00 */
-    void remap_colors(iptr remap_table,int base_index,i32 unused);    /* 005c1a62 */
+    void remap_colors(u8 *remap_table,int base_index,i32 unused);    /* 005c1a62 */
     i32 alloc_dib16(RECT *rect);    /* 005c1b47 */
     i32 alloc_dib24(RECT *rect);    /* 005c1cf7 */
     i32 alloc_dib32(RECT *rect);    /* 005c1ea7 */
     bool is_locked();    /* 005c54f0 */
     u32 get_pitch();    /* 005c55d0 */
     GdiDib *get_dib();    /* 005c55f0 */
-    int next_row(iptr row_ptr);    /* 005c5610 */
+    u8 *next_row(u8 *row_ptr);    /* 005c5610 */
     uptr get_bits();    /* 005c5640 */
-    int prev_row(iptr row_ptr);    /* 005c5710 */
+    u8 *prev_row(u8 *row_ptr);    /* 005c5710 */
     void avi_player_set_palette(GamePalette *palette);    /* 005dd561 */
     void avi_player_draw_to(DibSurface *dest,int x,int y);    /* 005dd64c */
     void draw_text_cur_font(const char *text,int x,int y,uint flags);    /* 005c0d69 */
@@ -505,7 +507,7 @@ typedef struct Dialog {
     DialogSprite *add_sprite(Sprite *sprite,int sprite_id,const char *label);    /* 0059ec88 */
     DialogOption *add_option(const char *text,int option_id,uint data);    /* 0059edf0 */
     DialogOption *add_checkbox_option(const char *text,int option_id,int checked);    /* 0059f026 */
-    DialogEditField *add_edit_field(const char *label,iptr initial_text,size_t max_len);    /* 0059f06d */
+    DialogEditField *add_edit_field(const char *label,const char *initial_text,size_t max_len);    /* 0059f06d */
     void add_button(const char *label);    /* 0059f2a3 */
     void set_text_color(int highlighted,int use_alt,int shadow);    /* 0059f31a */
     int draw_text_shadowed(GameFont *font,char *text,int x,int y,uint flags);    /* 0059f3d7 */
@@ -541,9 +543,9 @@ typedef struct Dialog {
     void create_buttons();    /* part of create_controls */
     void fill_rect_bg(RECT *rect,int area);    /* 005a5649 */
     void render();    /* 005a577e */
-    u32 run_modal(iptr out_text,int timeout_secs);    /* 005a5f34 */
-    i32 load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,SurfaceWindow *init_arg1, DibSurface *init_arg2,RECT *init_arg3,uint flags);    /* 005a632a */
-    void load_section_keyword(char *line,i8 *expanded,int &mode,int &default_value,uint has_edit,iptr edit_default,i8 *edit_text);    /* part of load_text_section */
+    u32 run_modal(char *out_text,int timeout_secs);    /* 005a5f34 */
+    i32 load_text_section(const char *file_name,const char *section,int default_value,const char *edit_default,SurfaceWindow *init_arg1, DibSurface *init_arg2,RECT *init_arg3,uint flags);    /* 005a632a */
+    void load_section_keyword(char *line,i8 *expanded,int &mode,int &default_value,uint has_edit,const char *edit_default,i8 *edit_text);    /* part of load_text_section */
     uint uses_alt_text_color();    /* 005a96f0 */
     void draw_text_default_font(const char *text,i32 x,i32 y, i32 flags);    /* 005a9730 */
 } Dialog;
@@ -582,7 +584,7 @@ typedef struct ScenarioEvents : Dialog {
     i32 check_unit_killed(int unit_type,int attacker_civ,int defender_civ);    /* 004fbd9d */
     i32 check_negotiation(int talker_civ,int listener_civ);    /* 004fbe84 */
     i32 check_no_schism(int civ);    /* 004fc20d */
-    i32 check_city_taken(iptr city_name,int attacker_civ,int defender_civ);    /* 004fc2bb */
+    i32 check_city_taken(const char *city_name,int attacker_civ,int defender_civ);    /* 004fc2bb */
     i32 run_actions(ScenarioEvent *event);    /* 004fc3ae */
     int parse_file(const char *filename,const char *section);    /* 004fc516 */
     int parse_trigger_unit_killed(EventsParseState *ps);    /* part of parse_file */
@@ -660,7 +662,7 @@ typedef struct Control {
     Control *base_construct();    /* 0040f480 */
     i32 base_destruct();    /* 0040f510 */
     void destroy();    /* 0040f610 */
-    void init(iptr parent_wnd,u32 type_code,u32 id,RECT *rect);    /* 0040f730 */
+    void init(Wnd *parent_wnd,u32 type_code,u32 id,RECT *rect);    /* 0040f730 */
     uptr get_parent();    /* 0040f810 */
     u32 get_id();    /* 00418740 */
     u32 get_hwnd();    /* 00418770 */
@@ -684,13 +686,13 @@ typedef struct Button : Control {
     union { u32 field_34; u32 on_select; };   /* -1 (button_ctor), button_create_with_callback's callback */
     union { u32 field_38; u32 font; };
     /* methods */
-    void create(iptr parent,i32 ctrl_id,RECT *rect,const char *label);    /* 0040f680 */
+    void create(Wnd *parent,i32 ctrl_id,RECT *rect,const char *label);    /* 0040f680 */
     void set_default_button();    /* 0040f7d0 */
     void set_cancel_button();    /* 0040f840 */
     void set_callback(CtrlNotifyFn callback);    /* 0040f880 */
     void disable();    /* 00453c40 */
     void enable();    /* 00453c80 */
-    void create_with_callback(iptr parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label);    /* 00497d40 */
+    void create_with_callback(Wnd *parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label);    /* 00497d40 */
     Button *scalar_destruct(uint flags);    /* 004bb3b0 */
     u32 ctrl_is_enabled();    /* 00530e80 */
     Button *vector_destruct(uint flags);    /* 005a9440 */
@@ -705,11 +707,11 @@ typedef struct Checkbox : Control {
     union { u32 field_34; u32 is_enabled; };
     union { u32 field_38; u32 font; };
     /* methods */
-    void create(iptr parent,i32 ctrl_id,i32 x,i32 y ,const char *label);    /* 0040f9d0 */
+    void create(Wnd *parent,i32 ctrl_id,i32 x,i32 y ,const char *label);    /* 0040f9d0 */
     void set_callback(CheckboxToggleFn callback);    /* 0040faa0 */
     void set_checked(u32 checked);    /* 0040fad0 */
     Checkbox *scalar_destruct(uint flags);    /* 004bb450 */
-    void create_fixed(iptr parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const char *label);    /* 00530ee0 */
+    void create_fixed(Wnd *parent,i32 ctrl_id,i32 x,i32 y ,i32 width,const char *label);    /* 00530ee0 */
     void enable();    /* 00530fb0 */
     u32 is_checked();    /* 00530fe0 */
     Checkbox *vector_destruct(uint flags);    /* 005a9320 */
@@ -729,7 +731,7 @@ typedef struct Scrollbar : Control {
     /* methods */
     Scrollbar *construct();    /* 0040fb00 */
     void destruct();    /* 0040fbb0 */
-    void create(iptr parent,int ctrl_id,RECT *rect,i32 style);    /* 0040fc50 */
+    void create(Wnd *parent,int ctrl_id,RECT *rect,i32 style);    /* 0040fc50 */
     void set_pos(int pos);    /* 0040fcf0 */
     void set_range(i32 min_value,i32 max_value);    /* 0040fd40 */
     void set_callback(ScrollFn callback);    /* 0040fd80 */
@@ -754,20 +756,20 @@ typedef struct EditControl : Control {
     union { u32 field_40; u32 edit_font; };
     u32 field_44;                               /* 0 (edit_ctor) */
     /* methods */
-    void create(iptr parent,i32 ctrl_id,RECT *rect,const char *text);    /* 00418910 */
+    void create(Wnd *parent,i32 ctrl_id,RECT *rect,const char *text);    /* 00418910 */
     void set_max_len(i32 max_len);    /* 004189c0 */
     void set_callback(EditKeyFn callback);    /* 00418a00 */
     i32 get_sel_end();    /* 00492ab0 */
     void replace_sel(const char *text);    /* 00492ae0 */
     void set_sel(i32 sel_start,i32 sel_end);    /* 00492b20 */
     EditControl *scalar_destruct(uint flags);    /* 004bb400 */
-    void create_styled(iptr parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style);    /* 004bb620 */
+    void create_styled(Wnd *parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style);    /* 004bb620 */
     void set_caret(i32 pos);    /* 004bb6d0 */
     i32 get_text_end();    /* 004bb710 */
     i32 get_line(i32 line,char *buffer,i32 max_len);    /* 004cffb0 */
     void set_change_callback(CtrlNotifyFn callback);    /* 00530eb0 */
     EditControl *vector_destruct(uint flags);    /* 005a93b0 */
-    void create_at(iptr parent,i32 ctrl_id,int x,int y,int width, const char *text);    /* 005d25c0 */
+    void create_at(Wnd *parent,i32 ctrl_id,int x,int y,int width, const char *text);    /* 005d25c0 */
     i32 fire_key_callback(int key);    /* 005d30e0 */
     void fire_maxtext_callback();    /* 005eb2f0 */
     void fire_change_callback();    /* 005eb330 */
@@ -781,7 +783,7 @@ typedef struct ComboBox : Control {
     union { u32 field_30; CtrlNotifyFn on_dblclick; };
     union { u32 field_34; CtrlNotifyFn on_select; };
     /* methods */
-    void create(iptr parent,i32 ctrl_id,RECT *rect);    /* 00418bf0 */
+    void create(Wnd *parent,i32 ctrl_id,RECT *rect);    /* 00418bf0 */
     void set_font(GameFont *font);    /* 00418c70 */
     void add_string(const char *text);    /* 00418ce0 */
     void clear();    /* 00418d20 */
@@ -803,7 +805,7 @@ typedef struct ListBox : Control {
     /* methods */
     ListBox *construct();    /* 00418e00 */
     void destruct();    /* 00418ea0 */
-    void create(iptr parent,i32 ctrl_id,RECT *rect);    /* 00418f40 */
+    void create(Wnd *parent,i32 ctrl_id,RECT *rect);    /* 00418f40 */
     void set_font(GameFont *font);    /* 00418fe0 */
     void add_string(const char *text);    /* 00419020 */
     void clear();    /* 00419060 */
@@ -828,7 +830,7 @@ typedef struct Hotspot : Control {
     union { u32 field_38; CtrlNotifyFn on_press; };
     union { u32 field_3c; CtrlNotifyFn on_dblclick; };
     /* methods */
-    void create(iptr parent,int id,RECT *rect);    /* 004519b0 */
+    void create(Wnd *parent,int id,RECT *rect);    /* 004519b0 */
     void set_click_callback(CtrlNotifyFn callback);    /* 00451a60 */
     void set_dblclick_callback(CtrlNotifyFn callback);    /* 00451a90 */
     Hotspot *scalar_destruct(uint flags);    /* 00453aa0 */
@@ -851,7 +853,7 @@ typedef struct Hyperlink : Control {
     union { u32 field_3c; CtrlNotifyFn on_dblclick; };
     /* methods */
     void destruct();    /* 00452a67 */
-    void create(iptr parent,i32 control_id,RECT *rect);    /* 00452b89 */
+    void create(Wnd *parent,i32 control_id,RECT *rect);    /* 00452b89 */
     Hyperlink *construct();    /* 00453cc0 */
     void set_click_callback(CtrlNotifyFn callback);    /* 00453d40 */
     void set_dblclick_callback(CtrlNotifyFn callback);    /* 00453d70 */
@@ -891,7 +893,7 @@ typedef struct RadioGroup : Control {
     RadioGroup *scalar_destruct(uint flags);    /* 004bb4a0 */
     void destruct();    /* 004bb740 */
     RadioGroup *construct();    /* 00531010 */
-    void create(iptr parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, iptr labels);    /* 005310a0 */
+    void create(Wnd *parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, char **labels);    /* 005310a0 */
     void set_select_callback(RadioNotifyFn callback);    /* 005311b0 */
     void set_dblclick_callback(RadioNotifyFn callback);    /* 005311e0 */
     u32 get_items();    /* 005c5ee0 */
@@ -993,7 +995,7 @@ typedef struct FileObject {
     /* methods */
     i32 create(const char *path);    /* 00421bf0 */
     i32 map_close();    /* 00421c30 */
-    void write(iptr data,i32 size);    /* 00421c60 */
+    void write(char *data,i32 size);    /* 00421c60 */
     i32 open(const char *path);    /* 004929c0 */
     i32 get_size();    /* 00492a80 */
     void read(char *buf,i32 size);    /* 004bb370 */
@@ -1030,7 +1032,7 @@ typedef struct NetGamelistView {
     NetGamelistView *view_construct();    /* 00421f70 */
     void view_destruct();    /* 00421fad */
     void restore_selection();    /* 004244e0 */
-    DialogOption *find_option(iptr game_name,iptr host_name);    /* 00424688 */
+    DialogOption *find_option(const char *game_name,const char *host_name);    /* 00424688 */
     void update_details();    /* 0042472a */
     void get_entry_names(DialogOption *option,char *out_game_name,char *out_host_name);    /* 004247b2 */
     void add_info_lines();    /* 0042486f */
@@ -1066,7 +1068,7 @@ static_assert(sizeof(MemBlock) == 0x14, "");
 typedef struct DllHandle {
     union { u32 field_0; u32 hmodule; };
     /* methods */
-    DllHandle *resource_dll_load(iptr dll_name);    /* 0043c3f0 */
+    DllHandle *resource_dll_load(const char *dll_name);    /* 0043c3f0 */
     void free();    /* 0043c430 */
     DllHandle *init();    /* 004502b0 */
     void load(const char *path);    /* 004502e0 */
@@ -1094,15 +1096,15 @@ typedef struct GamePalette {
     /* methods */
     GamePalette *scalar_destruct(uint flags);    /* 0043c740 */
     GamePalette *get_logpalette();    /* 0046f440 */
-    void get_entry(int index,iptr red,iptr green,iptr blue);    /* 00497c40 */
+    void get_entry(int index,i8 *red,i8 *green,i8 *blue);    /* 00497c40 */
     void commit_range(int first,int count);    /* 005c6480 */
     GamePalette *init();    /* 005c64da */
     void load_ctab_res(i32 res_id);    /* 005c65f9 */
     void new_version();    /* 005c6a42 */
     void reserve_range(i32 first,i32 count);    /* 005c6a8d */
-    void get_rgb(iptr dest,i32 first,i32 count);    /* 005c6b63 */
+    void get_rgb(u8 *dest,i32 first,i32 count);    /* 005c6b63 */
     void set_entry(i32 index,i32 red,i32 green, i32 blue);    /* 005c6b93 */
-    void set_rgb(int first,int count,iptr rgb);    /* 005c6da8 */
+    void set_rgb(int first,int count,u8 *rgb);    /* 005c6da8 */
     void fade_begin(u32 first,u32 count,u32 steps,GamePalette *target_pal);    /* 005c71f3 */
     void fade_end();    /* 005c72f8 */
     void fade_step(int step);    /* 005c738e */
@@ -1304,7 +1306,7 @@ typedef struct DiffEngSection {
     union { u32 field_10; u32 mirror_offset; };  /* offset of its copy in the mirror buffer */
     union { u32 field_14; u32 data_ptr; };
     /* methods */
-    void init(iptr data_ptr,u32 data_size,u32 section_id);    /* 004b3080 */
+    void init(void *data_ptr,u32 data_size,u32 section_id);    /* 004b3080 */
 } DiffEngSection;
 
 /* A caption button of the parley window (0x1c bytes). */
@@ -1368,14 +1370,14 @@ typedef struct GameMenu {
     void set_command_handler(MenuCommandFn handler);    /* 00578e38 */
     i32 apply_item_enabled(i32 item_id);    /* 00578e60 */
     void apply_item_checked(i32 item_id);    /* 00578ec7 */
-    void rebuild(iptr window);    /* 00578f2c */
+    void rebuild(ModalMenuWindow *window);    /* 00578f2c */
     void set_item_hidden(i32 item_id,int hidden);    /* 00579260 */
     GameMenu *set_item_enabled(i32 item_id,int enabled);    /* 005792e1 */
     void remove_item(i32 item_id);    /* 005793a3 */
     void set_item_checked(i32 item_id,int checked);    /* 0057940d */
     void set_menu_enabled(i32 menu_id,i32 enabled);    /* 005794cf */
     void set_item_text(i32 item_id,const char *text);    /* 0057953e */
-    void native_build(iptr spec);    /* 005799c0 */
+    void native_build(char *spec);    /* 005799c0 */
     void native_insert(i32 menu_index,i32 item_index,const char *text);    /* 00579a00 */
     void native_delete(i32 menu_index,i32 item_index);    /* 00579a40 */
     void native_set_text(i32 menu_index,i32 item_index,const char *text);    /* 00579a80 */
@@ -1608,7 +1610,7 @@ typedef void (WINAPI *TimerDllResetNotifiedFn)(int slot);
 typedef struct TimerManager {
     union { u32 field_0; u32 timer_hwnd; };
     /* methods */
-    iptr add(TimerFn callback,i32 interval_ms,u32 repeat_count);    /* 005d2042 */
+    int add(TimerFn callback,i32 interval_ms,u32 repeat_count);    /* 005d2042 */
     void game_timer_kill_slot(int slot);    /* 005d20e6 */
     void destruct();    /* 005d2182 */
     void game_timer_fire_slot(int slot);    /* 005d47d0 */
@@ -1629,8 +1631,8 @@ typedef struct ErrorContext {
     union { u32 field_700; u32 error_bits; };
     union { u32 field_704; u32 last_error_code; };
     /* methods */
-    void report(i32 code,iptr file,iptr line,i32 extra);    /* 005dae6b */
-    ErrorContext *format_message(const char *fmt,const char *text,i32 file,i32 line);    /* 005daef7 */
+    void report(i32 code,const char *text,const char *file,i32 line);    /* 005dae6b */
+    ErrorContext *format_message(const char *fmt,const char *text,const char *file,i32 line);    /* 005daef7 */
     u8 *get_stack_trace();    /* 005daf63 */
     void show_fatal_box(i32 msg);    /* 005daf92 */
     void set_code(u32 code);    /* 005dafdf */
@@ -1971,8 +1973,8 @@ typedef struct PtrListNode {
     union { u32 field_8; u32 prev_node; };
     /* methods */
     void destruct();    /* 005f0676 */
-    void set_next(iptr next);    /* 005f068c */
-    void set_prev(iptr prev);    /* 005f06ad */
+    void set_next(PtrListNode *next);    /* 005f068c */
+    void set_prev(PtrListNode *prev);    /* 005f06ad */
     u32 data();    /* 005f0e50 */
     u32 next();    /* 005f0e70 */
     u32 prev();    /* 005f0e90 */
@@ -2286,8 +2288,8 @@ typedef struct AviPlayer : SurfaceWindow {
     AviPlayer *scalar_destruct(uint flags);    /* 004d8b20 */
     AviPlayer *construct();    /* 005dd010 */
     i32 destruct();    /* 005dd1a0 */
-    void create(iptr parent,i32 style,u32 x,u32 y);    /* 005dd27e */
-    void create_child(iptr parent,i32 style,u32 x,u32 y,SurfaceWindow *target);    /* 005dd2e3 */
+    void create(const char *title,i32 style,u32 x,u32 y);    /* 005dd27e */
+    void create_child(const char *title,i32 style,u32 x,u32 y,SurfaceWindow *target);    /* 005dd2e3 */
     int open(const char *filename);    /* 005dd377 */
     void play();    /* 005dd3c2 */
     void play_range(u32 first_frame,u32 last_frame);    /* 005dd3f1 */
@@ -2444,7 +2446,7 @@ typedef struct ParleyWindow : SurfaceWindow {
     void open(int other_civ,u32 mode);    /* 004b7eb6 */
     void set_mode_sides(int refresh);    /* 004b8676 */
     void clear_side_controls(int side);    /* 004b888e */
-    void chat_receive_message(int civ,int civ2,int is_private,iptr message);    /* 004b90ad */
+    void chat_receive_message(int civ,int civ2,int is_private,const char *message);    /* 004b90ad */
     i32 *send_offer(int mode);    /* 004db690 */
     void pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item_size,int side);    /* 004dbab4 */
     void build_description(ParleyOfferMsg *offer,int received);    /* 004dbee6 */
@@ -2472,8 +2474,8 @@ typedef struct ParleyWindow : SurfaceWindow {
     void add_waiting_pane();    /* part of add_side_dialog */
     void add_review_pane();    /* part of add_side_dialog */
     void update_buttons();    /* 0052e971 */
-    iptr find_unit_by_id(int unit_id);    /* 0052ec47 */
-    iptr find_city_by_id(int city_id);    /* 0052ed95 */
+    int find_unit_by_id(int unit_id);    /* 0052ec47 */
+    int find_city_by_id(int city_id);    /* 0052ed95 */
     void create_city_list_pane(RECT *rect,int pane,i32 own_cities);    /* 00587a90 */
     void sort_city_list(int first,int last,int pane);    /* 0058843f */
     void build_city_list(int pane,int keep_selection);    /* 00588f36 */

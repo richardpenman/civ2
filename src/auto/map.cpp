@@ -2480,7 +2480,7 @@ void __cdecl tiles_dll_global_init(void)
 void __cdecl tiles_dll_static_init(void)
 
 {
-  ((DllHandle *)((i8 *)&tiles_dll_block.tiles_dll))->resource_dll_load((iptr)&str_tiles_dll);
+  ((DllHandle *)((i8 *)&tiles_dll_block.tiles_dll))->resource_dll_load((const char*)&str_tiles_dll);
   return;
 }
 
@@ -2501,12 +2501,12 @@ void __cdecl tiles_dll_static_dtor(void)
 }
 
 /* 0043c3f0 auto */
-DllHandle *DllHandle::resource_dll_load(iptr dll_name)
+DllHandle *DllHandle::resource_dll_load(const char *dll_name)
 
 {
   u32 hmodule;
   
-  hmodule = res_dll_load_library((LPCSTR)dll_name);
+  hmodule = res_dll_load_library(dll_name);
   this->hmodule = hmodule;
   return this;
 }
@@ -5391,7 +5391,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
   else {
     parent2 = (u8 *)&window;
   }
-  ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->create((iptr)parent2,left,
+  ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->create((Wnd *)parent2,left,
              (RECT *)rect);
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_callback(terrain_editor_on_combo);
@@ -5453,7 +5453,7 @@ void EditorWindow::terrain_editor_create_edit(int field_idx)
   else {
     parent2 = (u8 *)&window;
   }
-  ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->create((iptr)parent2,ctrl_id,
+  ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->create((Wnd *)parent2,ctrl_id,
              (RECT *)rect,(const char *)&str_empty_162);
   ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->set_max_len(3);
   ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->set_callback(editor_numeric_edit_filter);
@@ -5699,7 +5699,7 @@ void EditorWindow::terrain_editor_run()
     ok_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)ok_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
+  ok_button.create((Wnd *)ok_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   ok_button.set_callback((CtrlNotifyFn)terrain_editor_on_ok);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -5710,7 +5710,7 @@ void EditorWindow::terrain_editor_run()
     rename_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x2a]);
-  rename_button.create((iptr)rename_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
+  rename_button.create((Wnd *)rename_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   rename_button.set_callback((CtrlNotifyFn)terrain_editor_on_rename);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -5721,7 +5721,7 @@ void EditorWindow::terrain_editor_run()
     help_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)help_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
+  help_button.create((Wnd *)help_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   help_button.set_callback((CtrlNotifyFn)terrain_editor_on_help);
   rect_set_xywh((RECT *)btn_rect,btn_x + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
@@ -5732,7 +5732,7 @@ void EditorWindow::terrain_editor_run()
     cancel_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)cancel_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
+  cancel_button.create((Wnd *)cancel_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   cancel_button.set_callback((CtrlNotifyFn)terrain_editor_on_cancel);
   cancel_button.set_cancel_button();
   btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
@@ -5750,7 +5750,7 @@ void EditorWindow::terrain_editor_run()
     icon_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x1f3]);
-  icon_button.create((iptr)icon_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
+  icon_button.create((Wnd *)icon_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   icon_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_icon);
   btn_y = (client_width + client_x - 0x19) - button_width_u;
   btn_x = client_y + 0x28;
@@ -5762,7 +5762,7 @@ void EditorWindow::terrain_editor_run()
     river_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23d]);
-  misc_button.create((iptr)river_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
+  misc_button.create((Wnd *)river_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   misc_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_river);
   btn_x = btn_x + button_height_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
@@ -5773,7 +5773,7 @@ void EditorWindow::terrain_editor_run()
     coast_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23e]);
-  coast_button.create((iptr)coast_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
+  coast_button.create((Wnd *)coast_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   coast_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_coast);
   rect_set_xywh((RECT *)btn_rect,btn_y,btn_x + button_height_u + 2,button_width_u,
                      button_height_u);
@@ -5784,7 +5784,7 @@ void EditorWindow::terrain_editor_run()
     misc_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23c]);
-  terrain_misc_button.create((iptr)misc_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
+  terrain_misc_button.create((Wnd *)misc_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   terrain_misc_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_misc);
   window.set_keyboard_nav(0);
   terrain_editor_load_rules();

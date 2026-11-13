@@ -162,7 +162,7 @@ static int setup_custom_tribe_dialogs(Dialog &dlg)
       text_set_string_arg_b(2,(const char *)&civ_names[game.player_civ].adjective[0]);
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(2,6,7);
       dlg_err = dlg.load_text_section((const char *)&str_game_7,(const char *)str_customtribe,0x17,
-                                    (iptr)&civ_names[game.player_civ].leader_name[0],0,0,0,1);
+                                    &civ_names[game.player_civ].leader_name[0],0,0,0,1);
       if (dlg_err != 0) {
         ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
         return 2;
@@ -190,7 +190,7 @@ static int setup_custom_tribe_dialogs(Dialog &dlg)
         text_append_string_id(government_names[title_i]);
         text_append_colon();
         dlg.add_edit_field((const char *)&textbuf.buf,
-                           (iptr)&civ_names[game.player_civ].titles[title_i][0],0x17);
+                           &civ_names[game.player_civ].titles[title_i][0],0x17);
       }
       dlg.set_position(0xfffffc19,
                          -(((int)(caption_font_block.screen_height + -0x1e0 + (caption_font_block.screen_height + -0x1e0 >> 0x1f & 7U)
@@ -481,11 +481,11 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
         if (dlg.result_extra == 0) {
           ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(2,6,7);
           dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name,0x17,
-                             (iptr)&civ_names[game.player_civ].leader_name[0],0,0,0,1);
+                             &civ_names[game.player_civ].leader_name[0],0,0,0,1);
           dlg.set_position(0xfffffc19,
                              -(((int)(caption_font_block.screen_height + -0x1e0 + (caption_font_block.screen_height + -0x1e0 >> 0x1f & 7U)) >>
                                3) + 1));
-          dlg_err = dlg.run_modal((iptr)custom_name,0);
+          dlg_err = dlg.run_modal(custom_name,0);
           snd_play_effect(SND_MENUOK,0,0,0);
           ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
           if (dlg_err != 0) continue;

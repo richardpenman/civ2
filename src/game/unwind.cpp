@@ -169,11 +169,11 @@ i32 __cdecl FUN_005e0863(void)
     btn_y = btn_y + -0x23;
     btn_x = ((DibSurface *)(&surf_wnd2))->get_width();
     OffsetRect(&btn_rect, btn_x + -0x46, btn_y);
-    ((Button *)ok_button)->create( (i32)(u8 *)&surf_wnd2.window, 0x65, &btn_rect,
+    ((Button *)ok_button)->create( &surf_wnd2.window, 0x65, &btn_rect,
                        (const char *)((i32 *)&str_ok_3));
     ((Button *)ok_button)->set_callback( dlg_radio_choice_button_cb);
     OffsetRect(&btn_rect, 0, -0x23);
-    ((Button *)cancel_button)->create( (i32)(u8 *)&surf_wnd2.window, 0x66, &btn_rect,
+    ((Button *)cancel_button)->create( &surf_wnd2.window, 0x66, &btn_rect,
                        (const char *)str_cancel_3);
     ((Button *)cancel_button)->set_callback( dlg_radio_choice_button_cb);
     /* funclets 005e0a31..005e0a6a: destroy the locals in reverse order */

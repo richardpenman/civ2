@@ -210,10 +210,10 @@ i32 FileObject::map_close()
 }
 
 /* 00421c60 auto */
-void FileObject::write(iptr data,i32 size)
+void FileObject::write(char *data,i32 size)
 
 {
-  file_obj_write_bytes(this,(char *)data,size);
+  file_obj_write_bytes(this,data,size);
   return;
 }
 

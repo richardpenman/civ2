@@ -74,7 +74,7 @@ def edit_signature(text, start, func, index, newtype):
             head_start = line_start
         m = re.match(r'(\s*(?:EXTERN_C\s+)?)(.*?)(\s*(?:__cdecl|__stdcall|__thiscall|__fastcall)?\s*)$', head, re.S)
         new_head = m.group(1) + newtype + m.group(3)
-        if not m.group(3).strip() and not newtype.endswith('*'):
+        if not m.group(3) and not newtype.endswith('*'):
             new_head += ' '
         return text[:head_start] + new_head + text[head_start + len(head):]
     params = split_params(text[i + 1:j])
