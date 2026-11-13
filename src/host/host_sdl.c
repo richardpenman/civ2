@@ -426,12 +426,28 @@ static int convert(const SDL_Event *s, HostEvent *e)
         e->y = s->button.y;
         e->button = s->button.button == SDL_BUTTON_LEFT ? 1 : s->button.button == SDL_BUTTON_RIGHT ? 2 : 3;
         return 1;
-    case SDL_MOUSEWHEEL:
-        if (s->wheel.y == 0)
+    case SDL_MOUSEWHEEL: {
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+        /* (a trackpad scrolls by fractions of a notch: added up) */
+        static float wheel_rest;
+        float y = s->wheel.preciseY;
+        int n;
+        if (s->wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+            y = -y;
+        if ((wheel_rest > 0 && y < 0) || (wheel_rest < 0 && y > 0))
+            wheel_rest = 0;         /* (turned back: from 0 again) */
+        wheel_rest += y;
+        n = (int)wheel_rest;
+        wheel_rest -= (float)n;
+#else
+        int n = s->wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -s->wheel.y : s->wheel.y;
+#endif
+        if (n == 0)
             return 0;
         e->type = HOST_EV_WHEEL;
-        e->button = s->wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -s->wheel.y : s->wheel.y;
+        e->button = n;
         return 1;
+    }
     case SDL_WINDOWEVENT:
         if (s->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
             int w, h;
