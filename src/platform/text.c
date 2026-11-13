@@ -261,12 +261,17 @@ void text_metrics(FontFace *f, TEXTMETRICA *tm)
    lines past their boxes (the heralds question).  CIV2_WINE_TEXT=1 keeps
    Wine's measures, for comparing with the original's recordings
    (tools/native-run.sh). */
-int text_width(FontFace *f, const char *s, int n)
+static int wine_text(void)
 {
     static int wine = -1;
-    int i, w = 0;
     if (wine < 0)
         wine = getenv("CIV2_WINE_TEXT") != NULL;
+    return wine;
+}
+
+int text_width(FontFace *f, const char *s, int n)
+{
+    int i, w = 0, wine = wine_text();
     for (i = 0; i < n; i++)
         w += wine ? f->g[(unsigned char)s[i]].adv : f->g[(unsigned char)s[i]].dadv;
     return w;
@@ -282,12 +287,15 @@ static FontFace *dc_face(DC *dc)
 }
 
 /* Glyphs placed at their measured advances (text_draw_measured), not their
-   drawing ones: as Uniscribe places them (Wine's EDIT control). */
+   drawing ones: as Uniscribe places them (Wine's EDIT control).  Only with
+   CIV2_WINE_TEXT=1, where text_width measures so too: in play text is
+   measured as drawn, and a line drawn in runs (an edit's selection) must
+   place its letters where one run would. */
 static int measured_advances;
 
 void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
 {
-    measured_advances = 1;
+    measured_advances = wine_text();
     text_draw(dc, x, y, s, n, clip);
     measured_advances = 0;
 }
@@ -366,8 +374,12 @@ void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
                                                   aa_blend(GetBValue(d), tb, v)));
                     }
             }
-            /* antialiased glyphs advance as measured, the others as drawn */
-            x += f->aa_mono && !measured_advances ? g->adv : f->g[(unsigned char)s[i]].adv;
+            /* Wine: antialiased glyphs advance as measured, the others as
+               drawn; in play every glyph as text_width counts it */
+            if (!wine_text())
+                x += f->g[(unsigned char)s[i]].dadv;
+            else
+                x += f->aa_mono && !measured_advances ? g->adv : f->g[(unsigned char)s[i]].adv;
         }
         rgn_free(&rg);
         return;

@@ -187,10 +187,19 @@ static int edit_item_end(const char *s, int i, int end)
 
 /* Unselected text, item by item: each is an ExtTextOut of its own, so in
  * OPAQUE mode its background box covers the overhang of the item before
- * (a 't' before a '.'). */
+ * (a 't' before a '.').  That is Wine's, for comparing with the original's
+ * recordings (CIV2_WINE_TEXT=1, tools/native-run.sh); in play the run is
+ * drawn whole, its last letters not cut (the 'e' of "Senate."). */
 static void edit_draw_items(DC *dc, FontFace *f, int x, int y, const char *s, int n, const RECT *clip)
 {
+    static int wine = -1;
     int i = 0;
+    if (wine < 0)
+        wine = getenv("CIV2_WINE_TEXT") != NULL;
+    if (!wine) {
+        text_draw_measured(dc, x, y, s, n, clip);
+        return;
+    }
     while (i < n) {
         int j = edit_item_end(s, i, n);
         text_draw_measured(dc, x, y, s + i, j - i, clip);
