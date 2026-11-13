@@ -4712,7 +4712,7 @@ i32 CityViewWindow::take_improvement_slot()
 }
 
 /* 00455d38 auto */
-void CityViewWindow::place_improvement(iptr slot,iptr improvement)
+void CityViewWindow::place_improvement(int slot,int improvement)
 
 {
   if (-1 < slot) {
@@ -4728,7 +4728,7 @@ void CityViewWindow::place_improvement(iptr slot,iptr improvement)
 }
 
 /* 00455dfd auto */
-void CityViewWindow::place_wonder(iptr slot,iptr wonder)
+void CityViewWindow::place_wonder(int slot,int wonder)
 
 {
   if (-1 < slot) {
@@ -4744,7 +4744,7 @@ void CityViewWindow::place_wonder(iptr slot,iptr wonder)
 }
 
 /* 00455ebe auto */
-void CityViewWindow::place_large_house(iptr slot)
+void CityViewWindow::place_large_house(int slot)
 
 {
   int variant;
@@ -4757,7 +4757,7 @@ void CityViewWindow::place_large_house(iptr slot)
 }
 
 /* 00455f2e auto */
-void CityViewWindow::place_small_house(iptr slot)
+void CityViewWindow::place_small_house(int slot)
 
 {
   int variant;
@@ -4770,7 +4770,7 @@ void CityViewWindow::place_small_house(iptr slot)
 }
 
 /* 00455f9e auto */
-void CityViewWindow::place_large_empty_lot(iptr slot)
+void CityViewWindow::place_large_empty_lot(int slot)
 
 {
   int variant;
@@ -4783,7 +4783,7 @@ void CityViewWindow::place_large_empty_lot(iptr slot)
 }
 
 /* 00456005 auto */
-void CityViewWindow::place_empty_lot(iptr slot)
+void CityViewWindow::place_empty_lot(int slot)
 
 {
   int variant;
@@ -15377,7 +15377,7 @@ void CityWindow::bring_to_top()
 }
 
 /* 00509590 auto */
-void CityWindow::open(iptr city)
+void CityWindow::open(int city)
 
 {
   int flushing;
@@ -16603,7 +16603,7 @@ void __cdecl city_window_on_rbuttonup(i32 x,i32 y)
 }
 
 /* 0050c449 auto */
-void CityWindow::close_if_city(iptr city)
+void CityWindow::close_if_city(int city)
 
 {
   if (((int)((u32)city_index) <= city) && (city <= (int)((u32)city_index))) {
@@ -16613,7 +16613,7 @@ void CityWindow::close_if_city(iptr city)
 }
 
 /* 0050c494 auto */
-void CityWindow::on_unit_change(iptr unit,iptr x,iptr y)
+void CityWindow::on_unit_change(int unit,int x,int y)
 
 {
   if ((((is_closed == 0) && (redraw_suspended == 0)) &&
@@ -16644,7 +16644,7 @@ void CityWindow::on_unit_change(iptr unit,iptr x,iptr y)
 }
 
 /* 0050c679 auto */
-void CityWindow::refresh_if_city(iptr city)
+void CityWindow::refresh_if_city(int city)
 
 {
   if ((((is_closed == 0) && (redraw_suspended == 0)) &&

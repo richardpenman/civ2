@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Give a function's parameter (or return value) its real type, in
-src/auto/protos.h and in the definition:
+src/auto/protos.h (a member function: its class in
+src/include/civ2classes.h) and in the definition:
 
     cxx_retype.py ROWS.tsv     rows: FUNCTION<TAB>PARAM<TAB>NEWTYPE
+                               FUNCTION: a free name or Class::member
                                PARAM: 1-based position (self counts) or ret
 
 The call sites are left to the compiler: tools/cxx_retype.sh compiles,
@@ -16,6 +18,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROTOS = os.path.join(ROOT, 'src', 'auto', 'protos.h')
+CLASSES = os.path.join(ROOT, 'src', 'include', 'civ2classes.h')
 
 
 def sources():
@@ -75,9 +78,20 @@ def edit_signature(text, start, func, index, newtype):
             new_head += ' '
         return text[:head_start] + new_head + text[head_start + len(head):]
     params = split_params(text[i + 1:j])
-    k = int(index) - 1
+    k = int(index) - (2 if '::' in func else 1)
     params[k] = retype_param(params[k], newtype)
     return text[:i + 1] + ','.join(params) + text[j:]
+
+
+def member_decl(classes, func):
+    """Index of the member's name in its class's declaration (or None)."""
+    cls, member = func.split('::')
+    m = re.search(r'(?m)^(?:typedef )?struct %s\b[^;{]*\{' % re.escape(cls), classes)
+    if not m:
+        return None
+    end = re.compile(r'(?m)^\}').search(classes, m.end()).start()
+    d = re.compile(r'(?m)^\s+[^;/]*?\b%s\(' % re.escape(member)).search(classes, m.end(), end)
+    return d.end() - len(member) - 1 if d else None
 
 
 def main():
@@ -86,18 +100,26 @@ def main():
         return 1
     rows = [l.rstrip('\n').split('\t') for l in open(sys.argv[1]) if l.strip() and not l.startswith('#')]
     protos = open(PROTOS).read()
+    classes = open(CLASSES).read()
     files = {f: open(f).read() for group in sources() for f in group}
     done = 0
     for func, index, newtype in rows:
-        m = re.search(r'(?m)^.*?\b%s\(' % re.escape(func), protos)
-        if not m:
-            print('no prototype: %s' % func)
-            continue
-        protos = edit_signature(protos, m.end() - len(func) - 1, func, index, newtype)
+        if '::' in func:
+            at = member_decl(classes, func)
+            if at is None:
+                print('no declaration: %s' % func)
+                continue
+            classes = edit_signature(classes, at, func, index, newtype)
+        else:
+            m = re.search(r'(?m)^.*?\b%s\(' % re.escape(func), protos)
+            if not m:
+                print('no prototype: %s' % func)
+                continue
+            protos = edit_signature(protos, m.end() - len(func) - 1, func, index, newtype)
         found = False
         for f, text in files.items():
             # the definition: the name, its parameters, then the body
-            for d in re.finditer(r'\b%s\s*\(' % re.escape(func), text):
+            for d in re.finditer(r'(?<!::)\b%s\s*\(' % re.escape(func), text):
                 k = text.index('(', d.start())
                 depth, j = 0, k
                 while j < len(text):
@@ -118,6 +140,7 @@ def main():
             print('no definition: %s' % func)
         done += 1
     open(PROTOS, 'w').write(protos)
+    open(CLASSES, 'w').write(classes)
     for f, text in files.items():
         if open(f).read() != text:
             open(f, 'w').write(text)

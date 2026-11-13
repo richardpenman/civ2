@@ -125,7 +125,7 @@ void __cdecl gfx_fill_rect(DibSurface *surface,RECT *rect,i32 color)
 }
 
 /* 00417ef0 auto */
-void GameFont::set(i32 face,iptr size)
+void GameFont::set(i32 face,int size)
 
 {
   u32 handle;
@@ -2323,7 +2323,7 @@ void __cdecl portrait_dlg_on_button(int button_id)
 }
 
 /* 00497c40 auto */
-void GamePalette::get_entry(iptr index,iptr red,iptr green,iptr blue)
+void GamePalette::get_entry(int index,iptr red,iptr green,iptr blue)
 
 {
   palette_get_entry_rgb((GameLogPalette *)this,index,(i8 *)red,(i8 *)green,(i8 *)blue);
@@ -6771,7 +6771,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
 }
 
 /* 005bf5e1 auto */
-i32 DibSurface::load_gif_resource(iptr res_id,uint first_color,uint color_count,iptr palette)
+i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,iptr palette)
 
 {
   i32 ret;
@@ -7286,7 +7286,7 @@ void DibSurface::draw_text_cur_font(const char *text,int x,int y,uint flags)
 }
 
 /* 005c0f57 auto */
-void DibSurface::draw_text(iptr font,const char *text,iptr x,int y,uint flags)
+void DibSurface::draw_text(iptr font,const char *text,int x,int y,uint flags)
 
 {
   i8 old_color;
@@ -7468,7 +7468,7 @@ i8 DibSurface::in_clip(int x,int y)
 }
 
 /* 005c1a62 auto */
-void DibSurface::remap_colors(iptr remap_table,iptr base_index,i32 unused)
+void DibSurface::remap_colors(iptr remap_table,int base_index,i32 unused)
 
 {
   byte *pixel;

@@ -3877,7 +3877,7 @@ void __cdecl casualty_timeline_on_dblclick(i32 click_x,int click_y)
 }
 
 /* 0044ce16 auto */
-ThroneRoomWindow *ThroneRoomWindow::construct(iptr civ)
+ThroneRoomWindow *ThroneRoomWindow::construct(int civ)
 
 {
   iptr i;
@@ -5084,7 +5084,7 @@ void EndgameMovieWindow::arrival_movie_wnd_destruct()
 }
 
 /* 00471565 auto */
-i32 EndgameMovieWindow::arrival_movie_wnd_create(iptr civ)
+i32 EndgameMovieWindow::arrival_movie_wnd_create(int civ)
 
 {
   int found;
@@ -6155,7 +6155,7 @@ void DestroyedCivsWindow::run()
 }
 
 /* 00515999 auto */
-void DestroyedCivsWindow::draw_entry(iptr entry)
+void DestroyedCivsWindow::draw_entry(int entry)
 
 {
   iptr label;
@@ -6206,7 +6206,7 @@ void DestroyedCivsWindow::draw_entry(iptr entry)
 }
 
 /* 00515c15 auto */
-void DestroyedCivsWindow::draw_portrait(iptr entry)
+void DestroyedCivsWindow::draw_portrait(int entry)
 
 {
   i8 draw_tmp[16];
@@ -7009,7 +7009,7 @@ void __cdecl council_on_advisor_button(uptr button_id)
 }
 
 /* 00518342 auto */
-void CouncilWindow::move_video_to_slot(iptr slot)
+void CouncilWindow::move_video_to_slot(int slot)
 
 {
   if (slot < 5) {

@@ -245,7 +245,7 @@ void Scrollbar::destruct()
 }
 
 /* 0040fc50 auto */
-void Scrollbar::create(iptr parent,iptr ctrl_id,iptr rect,i32 style)
+void Scrollbar::create(iptr parent,int ctrl_id,iptr rect,i32 style)
 
 {
   u32 new_hwnd;
@@ -262,7 +262,7 @@ void Scrollbar::create(iptr parent,iptr ctrl_id,iptr rect,i32 style)
 }
 
 /* 0040fcf0 auto */
-void Scrollbar::set_pos(iptr pos)
+void Scrollbar::set_pos(int pos)
 
 {
   cur_pos = pos;
@@ -461,7 +461,7 @@ i32 ComboBox::get_cur_sel()
 }
 
 /* 00418d90 auto */
-void ComboBox::set_cur_sel(iptr index)
+void ComboBox::set_cur_sel(int index)
 
 {
   combo_hwnd_set_cur_sel(hwnd,index);
@@ -557,7 +557,7 @@ void __cdecl input_flush_events(void)
 }
 
 /* 00421ca0 auto */
-void RadioGroup::enable_item(iptr index)
+void RadioGroup::enable_item(int index)
 
 {
   if ((index < (int)item_count) && (-1 < index)) {
@@ -578,7 +578,7 @@ void Control::hide()
 }
 
 /* 00447210 auto */
-void RadioGroup::disable_item(iptr index)
+void RadioGroup::disable_item(int index)
 
 {
   if ((index < (int)item_count) && (-1 < index)) {
@@ -3166,7 +3166,7 @@ void __cdecl edit_hwnd_replace_sel(HWND hwnd,LPARAM text)
 }
 
 /* 005d30e0 auto */
-i32 EditControl::fire_key_callback(iptr key)
+i32 EditControl::fire_key_callback(int key)
 
 {
   i32 result;

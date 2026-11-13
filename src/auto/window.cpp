@@ -291,12 +291,12 @@ void Dialog::reset(i32 flags)
 }
 
 /* 0040bc80 auto */
-i32 Dialog::show_modal(iptr parent)
+i32 Dialog::show_modal(int timeout_secs)
 
 {
   i32 result;
   
-  result = run_modal(0,parent);
+  result = run_modal(0,timeout_secs);
   return result;
 }
 
@@ -480,7 +480,7 @@ i32 __cdecl ui_paradrop_cursor_active(void)
 }
 
 /* 00414b70 auto */
-void WndBase::set_cursor_now(iptr cursor,i32 flag)
+void WndBase::set_cursor_now(int cursor,i32 flag)
 
 {
   wnd_obj_set_cursor_now(native_wnd,cursor,flag);
@@ -919,7 +919,7 @@ void WndBase::enable()
 }
 
 /* 0043c990 auto */
-void Dialog::set_list_indent(uptr indent,iptr index)
+void Dialog::set_list_indent(uptr indent,int index)
 
 {
   (this)->list_indents[index] = indent;
@@ -1499,7 +1499,7 @@ Hotspot * __thiscall hotspot_ctor(Hotspot *self)
 }
 
 /* 004519b0 auto */
-void Hotspot::create(iptr parent,iptr id,iptr rect)
+void Hotspot::create(iptr parent,int id,iptr rect)
 
 {
   u32 new_hwnd;
@@ -3822,7 +3822,7 @@ u32 WndBase::get_palette()
 }
 
 /* 00511460 auto */
-void ClickMap::hotspot_add_rect(iptr id,i32 cursor,RECT *rect)
+void ClickMap::hotspot_add_rect(int id,i32 cursor,RECT *rect)
 
 {
   add(id,cursor,rect->left,rect->top,
@@ -6553,7 +6553,7 @@ DialogSprite *Dialog::find_sprite(int sprite_id)
 }
 
 /* 0059e8db auto */
-void Dialog::set_option_disabled(iptr option_id,int disabled)
+void Dialog::set_option_disabled(int option_id,int disabled)
 
 {
   DialogOption *option;
@@ -6609,7 +6609,7 @@ void Dialog::set_option_checked(i32 option_id,int checked)
 }
 
 /* 0059ea99 auto */
-void Dialog::set_default_choice(iptr choice_id)
+void Dialog::set_default_choice(int choice_id)
 
 {
   uptr entry;
@@ -6708,7 +6708,7 @@ void Dialog::set_image_zoom(u32 zoom)
 }
 
 /* 0059ec88 auto */
-DialogSprite *Dialog::add_sprite(iptr sprite,iptr sprite_id,const char *label)
+DialogSprite *Dialog::add_sprite(iptr sprite,int sprite_id,const char *label)
 
 {
   DialogSprite *entry;
@@ -6760,7 +6760,7 @@ DialogSprite *Dialog::add_sprite(iptr sprite,iptr sprite_id,const char *label)
 }
 
 /* 0059edf0 auto */
-DialogOption *Dialog::add_option(const char *text,iptr option_id,uint data)
+DialogOption *Dialog::add_option(const char *text,int option_id,uint data)
 
 {
   u32 width;
@@ -6836,7 +6836,7 @@ DialogOption *Dialog::add_option(const char *text,iptr option_id,uint data)
 }
 
 /* 0059f026 auto */
-DialogOption *Dialog::add_checkbox_option(const char *text,iptr option_id,int checked)
+DialogOption *Dialog::add_checkbox_option(const char *text,int option_id,int checked)
 
 {
   DialogOption *option;
@@ -9605,7 +9605,7 @@ static int dialog_list_text_fits(uptr list,int index,size_t size)
 /* 005a5f34 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-u32 Dialog::run_modal(iptr out_text,iptr timeout_secs)
+u32 Dialog::run_modal(iptr out_text,int timeout_secs)
 
 {
   NativeWindow *main_hwnd;
@@ -12387,7 +12387,7 @@ void WndHandlers::call_mousemove(i32 x,i32 y)
 }
 
 /* 005ecf90 auto */
-void WndHandlers::call_lbuttondown(iptr x,iptr y)
+void WndHandlers::call_lbuttondown(int x,int y)
 
 {
   if (on_lbutton_down != 0) {
@@ -12397,7 +12397,7 @@ void WndHandlers::call_lbuttondown(iptr x,iptr y)
 }
 
 /* 005ecfd0 auto */
-void WndHandlers::call_lbuttonup_raw(iptr x,iptr y)
+void WndHandlers::call_lbuttonup_raw(int x,int y)
 
 {
   if (on_lbutton_up_raw != 0) {
@@ -12417,7 +12417,7 @@ void WndHandlers::call_lbuttonup(i32 x,i32 y)
 }
 
 /* 005ed050 auto */
-void WndHandlers::call_rbuttondown(iptr x,iptr y)
+void WndHandlers::call_rbuttondown(int x,int y)
 
 {
   if (on_rbutton_down != 0) {
@@ -12562,7 +12562,7 @@ void WndHandlers::call_move(i32 x,i32 y)
 }
 
 /* 005ed3a0 auto */
-void WndHandlers::call_msg44(iptr notify_arg)
+void WndHandlers::call_msg44(int notify_arg)
 
 {
   if (on_msg_44 != 0) {

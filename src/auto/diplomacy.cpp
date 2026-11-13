@@ -4488,7 +4488,7 @@ void DiploLeaderWindow::destruct()
 }
 
 /* 004944bb auto */
-i32 DiploLeaderWindow::init(i32 viewer_civ,iptr leader_civ)
+i32 DiploLeaderWindow::init(i32 viewer_civ,int leader_civ)
 
 {
   int ok;
@@ -4765,7 +4765,7 @@ void DiploLeaderWindow::science_rank_top_techs(int (&top_techs)[13],int &tech_co
 }
 
 /* Part of DiploLeaderWindow::init_science (00494e2a): draw one advance: its category icon and its name on one or two lines. words, aCStack_641 and line2_buf are the caller's buffers (line2_buf is read before it is written, with what the previous advance left). */
-void DiploLeaderWindow::science_draw_tech(iptr advance,GameFont &font2,Sprite (&category_sprites)[5],i8 (&draw_ctx)[16],i32 draw_x,int draw_y,tagRECT &text_rect,int text_width,int (&top_techs)[13],i8 (&text_colors)[4],CHAR (&words)[252],CHAR (&aCStack_641)[53],CHAR (&line2_buf)[51])
+void DiploLeaderWindow::science_draw_tech(int advance,GameFont &font2,Sprite (&category_sprites)[5],i8 (&draw_ctx)[16],i32 draw_x,int draw_y,tagRECT &text_rect,int text_width,int (&top_techs)[13],i8 (&text_colors)[4],CHAR (&words)[252],CHAR (&aCStack_641)[53],CHAR (&line2_buf)[51])
 {
   int value;
   iptr label;

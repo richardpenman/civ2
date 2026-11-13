@@ -2065,7 +2065,7 @@ LobbyList *LobbyList::scalar_destruct(uint flags)
 }
 
 /* 00450480 auto */
-void ParleyWindow::create_advance_list_pane(RECT *rect,iptr pane,int their_side)
+void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
 
 {
   int result;
@@ -3086,7 +3086,7 @@ void __cdecl parley_sort_by_unit_clicked(int pane)
 }
 
 /* 0046968b auto */
-void ParleyWindow::sort_unit_list(int first,int last,iptr pane)
+void ParleyWindow::sort_unit_list(int first,int last,int pane)
 
 {
   i32 swap;
@@ -3132,7 +3132,7 @@ void ParleyWindow::sort_unit_list(int first,int last,iptr pane)
 }
 
 /* 0046990a auto */
-void ParleyWindow::sort_units_by_city(int first,int last,iptr pane)
+void ParleyWindow::sort_units_by_city(int first,int last,int pane)
 
 {
   i32 swap;
@@ -8583,7 +8583,7 @@ void ParleyWindow::build_title()
 /* WARNING: Removing unreachable block (ram,0x004b8051) */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void ParleyWindow::open(iptr other_civ,u32 mode)
+void ParleyWindow::open(int other_civ,u32 mode)
 
 {
   bool can_see_all;
@@ -9061,7 +9061,7 @@ void __cdecl parley_gold_edit_on_change(int control_id)
 /* 004b90ad auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
-void ParleyWindow::chat_receive_message(iptr civ,iptr civ2,iptr is_private,iptr message)
+void ParleyWindow::chat_receive_message(int civ,int civ2,int is_private,iptr message)
 
 {
   u32 muted;
@@ -9450,7 +9450,7 @@ i32 *ParleyWindow::send_offer(int mode)
 }
 
 /* 004dbab4 auto */
-void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item_size,iptr side)
+void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item_size,int side)
 
 {
   int gold;

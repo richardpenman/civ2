@@ -383,7 +383,7 @@ void Hyperlink::create(iptr parent,i32 control_id,iptr rect)
 }
 
 /* 00452c14 auto */
-void PediaWindow::add_link(iptr item_id,int x,int y,i32 link_kind, i32 rect_left,i32 rect_top,i32 rect_right,i32 rect_bottom)
+void PediaWindow::add_link(int item_id,int x,int y,i32 link_kind, i32 rect_left,i32 rect_top,i32 rect_right,i32 rect_bottom)
 
 {
   i32 rect[4] = {rect_left, rect_top, rect_right, rect_bottom};  /* the rectangle passed as four arguments */
@@ -721,7 +721,7 @@ static void pedia_label_format(const char *fmt,const char *want,...)
 
 /* Part of PediaWindow::draw_terrain_page (004906fd): a special resource:
    what it adds to its base terrain's food, shields and trade. */
-void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr terrain3,int y2,
+void PediaWindow::draw_terrain_special_bonus(GameFont *font2,int terrain2,int terrain3,int y2,
                                                        int line_height,int margin)
 {
   u8 shields;
@@ -816,7 +816,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,iptr terrain2,iptr 
 /* Part of PediaWindow::draw_terrain_page (004906fd): a base terrain's
    irrigation and mining rows: the bonus (or the terrain it turns into, as
    a link) and the turns it takes. */
-void PediaWindow::draw_terrain_improve_rows(GameFont *font2,iptr terrain2,int y2,int line_height,
+void PediaWindow::draw_terrain_improve_rows(GameFont *font2,int terrain2,int y2,int line_height,
                                                       int margin,int value_x,int row_height)
 {
   int measured;
@@ -904,7 +904,7 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,iptr terrain2,int y2
 /* Part of PediaWindow::draw_terrain_page (004906fd): the
    right column of a base terrain: what it transforms to, the road bonus,
    and links to its two special resources. */
-void PediaWindow::draw_terrain_transform_column(GameFont *font2,iptr terrain2,int stats_top,
+void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int stats_top,
                                                           int line_height,int right_col_x,int row_height)
 {
   int measured;
@@ -2238,7 +2238,7 @@ void PediaWindow::redraw()
 /* Part of PediaWindow::draw_item_list (004f66c6): a terrain
    row's picture (base terrain with its forest, hills, mountains or
    resource), its background filled from text_x_off. */
-void PediaWindow::draw_list_terrain_icon(iptr advance,uint is_selected,int col_base,int row,int col_x,
+void PediaWindow::draw_list_terrain_icon(int advance,uint is_selected,int col_base,int row,int col_x,
                                                    int row_y,tagRECT &row_rect,int &text_x_off)
 {
   int dim_a;
@@ -2429,7 +2429,7 @@ void PediaWindow::draw_list_icon(int icon_mode,uint is_selected,int col_base,int
 
 /* Part of PediaWindow::draw_item_list (004f66c6): the name of item number advance of
    the category's list into the text buffer. */
-void PediaWindow::copy_list_item_name(iptr advance)
+void PediaWindow::copy_list_item_name(int advance)
 {
   char *name_text;
 
@@ -3370,7 +3370,7 @@ void PediaWindow::load_indexes()
 }
 
 /* 004f896a auto */
-void PediaWindow::sort_list(PediaListNode *list_head,i32 *keys,i32 *ids,iptr count)
+void PediaWindow::sort_list(PediaListNode *list_head,i32 *keys,i32 *ids,int count)
 
 {
   i32 swap_tmp;
@@ -3809,7 +3809,7 @@ void PediaWindow::init_advance_list(iptr unused_arg)
 
 /* Part of PediaWindow::draw_advance_page (00564e6d): the "Requires" line: the
    prerequisites as links (or "None"). */
-void PediaWindow::draw_advance_requires(GameFont *font2,iptr advance,int y2)
+void PediaWindow::draw_advance_requires(GameFont *font2,int advance,int y2)
 {
   int measure;
   int line_height;
@@ -3861,7 +3861,7 @@ void PediaWindow::draw_advance_requires(GameFont *font2,iptr advance,int y2)
 
 /* Part of PediaWindow::draw_advance_page (00564e6d): the "Allows" list:
    each advance this one leads to, with its other prerequisite. */
-void PediaWindow::draw_advance_children(GameFont *font2,iptr advance,int list_x2,int row_height,
+void PediaWindow::draw_advance_children(GameFont *font2,int advance,int list_x2,int row_height,
                                                   int &y2)
 {
   int measure;
@@ -3924,7 +3924,7 @@ void PediaWindow::draw_advance_children(GameFont *font2,iptr advance,int list_x2
 
 /* Part of PediaWindow::draw_advance_page (00564e6d): the improvements
    and wonders this advance allows, two to a row. */
-void PediaWindow::draw_advance_improvements(GameFont *font2,iptr advance,int list_x2,int row_height,
+void PediaWindow::draw_advance_improvements(GameFont *font2,int advance,int list_x2,int row_height,
                                                       u32 &x2,int &y2)
 {
   int measure;
@@ -3985,7 +3985,7 @@ void PediaWindow::draw_advance_improvements(GameFont *font2,iptr advance,int lis
 /* Part of PediaWindow::draw_advance_page (00564e6d): the units this
    advance allows, two to a row (with their pictures when the page has
    room: fewer than 11 items). */
-void PediaWindow::draw_advance_units(GameFont *font2,iptr advance,int related_count,int list_x2,
+void PediaWindow::draw_advance_units(GameFont *font2,int advance,int related_count,int list_x2,
                                                int row_height,u32 &x2,int &y2)
 {
   int measure;
@@ -4069,7 +4069,7 @@ void PediaWindow::draw_advance_units(GameFont *font2,iptr advance,int related_co
    facts of the @PEDIACIVFACTS section: the special notes of some advances
    (when the scenario has no Pedia of its own) and the wonders this advance
    makes obsolete. */
-void PediaWindow::draw_advance_civ_facts(GameFont *font2,iptr advance,int has_pedia,const char *pedia_file,
+void PediaWindow::draw_advance_civ_facts(GameFont *font2,int advance,int has_pedia,const char *pedia_file,
                                                    int list_x2,int row_height,u32 x2,int y2)
 {
   int measure;
@@ -4288,7 +4288,7 @@ void PediaWindow::draw_advance_page()
 }
 
 /* 00566584 auto */
-void PediaWindow::show_topic_modal(iptr advance_id)
+void PediaWindow::show_topic_modal(int advance_id)
 
 {
   char *name_text;
@@ -4777,7 +4777,7 @@ void PediaWindow::draw_improvement_page()
 }
 
 /* 0059a15d auto */
-void PediaWindow::load_improvement_text(iptr improvement_id)
+void PediaWindow::load_improvement_text(int improvement_id)
 
 {
   int status;
@@ -4824,7 +4824,7 @@ void PediaWindow::load_improvement_text(iptr improvement_id)
 }
 
 /* 0059a2e6 auto */
-void PediaWindow::show_improvement_modal(iptr improvement_id)
+void PediaWindow::show_improvement_modal(int improvement_id)
 
 {
   char *name_text;
@@ -4898,7 +4898,7 @@ void PediaWindow::show_unit_list(iptr unused_arg)
 /* Part of PediaWindow::draw_unit_page (005ac9ad): one line of the
    @PEDIAUNITFACTS section, read for each of the 15 unit flags in turn and
    added to the description when the unit has the flag (mask). */
-void PediaWindow::append_unit_fact(iptr unit_type,u32 mask,char *desc_buf,int &has_text)
+void PediaWindow::append_unit_fact(int unit_type,u32 mask,char *desc_buf,int &has_text)
 {
   i8 *line;
 
@@ -5113,7 +5113,7 @@ void PediaWindow::draw_unit_page()
 }
 
 /* 005ad998 auto */
-void PediaWindow::show_unit_modal(iptr unit_type)
+void PediaWindow::show_unit_modal(int unit_type)
 
 {
   char *name_text;

@@ -8776,7 +8776,7 @@ i32 ScenarioEvents::check_unit_killed(int unit_type,int attacker_civ,int defende
 }
 
 /* 004fbe84 auto */
-i32 ScenarioEvents::check_negotiation(iptr talker_civ,iptr listener_civ)
+i32 ScenarioEvents::check_negotiation(int talker_civ,int listener_civ)
 
 {
   ScenarioEvent *event;
@@ -8845,7 +8845,7 @@ i32 ScenarioEvents::check_negotiation(iptr talker_civ,iptr listener_civ)
 }
 
 /* 004fc20d auto */
-i32 ScenarioEvents::check_no_schism(iptr civ)
+i32 ScenarioEvents::check_no_schism(int civ)
 
 {
   bool triggered;
@@ -8876,7 +8876,7 @@ i32 ScenarioEvents::check_no_schism(iptr civ)
 }
 
 /* 004fc2bb auto */
-i32 ScenarioEvents::check_city_taken(iptr city_name,iptr attacker_civ,iptr defender_civ)
+i32 ScenarioEvents::check_city_taken(iptr city_name,int attacker_civ,int defender_civ)
 
 {
   int cmp;
@@ -17606,7 +17606,7 @@ void SetupPicWindow::draw_image(iptr rect)
 }
 
 /* 0055a00b auto */
-void SetupPicWindow::setup_picwnd_client_rect(iptr rect,int x,int y,iptr width,iptr height)
+void SetupPicWindow::setup_picwnd_client_rect(iptr rect,int x,int y,int width,int height)
 
 {
   rect_set_xywh((RECT *)rect,client_x + x,client_y + y,width,height);
@@ -19318,7 +19318,7 @@ iptr TimerManager::add(TimerFn callback,i32 interval_ms,u32 repeat_count)
 }
 
 /* 005d20e6 auto */
-void TimerManager::game_timer_kill_slot(iptr slot)
+void TimerManager::game_timer_kill_slot(int slot)
 
 {
   ((TimerManagerExt *)this)->timer_callbacks[slot] = 0;
@@ -19570,7 +19570,7 @@ LRESULT __stdcall timer_wnd_proc(HWND hwnd,UINT msg,WPARAM wparam,LPARAM lparam)
 }
 
 /* 005d47d0 auto */
-void TimerManager::game_timer_fire_slot(iptr slot)
+void TimerManager::game_timer_fire_slot(int slot)
 
 {
   if ((((TimerManagerExt *)this)->timer_callbacks[slot] != 0) && (((u32 *)&((TimerManagerExt *)this)->timer_repeat_counts)[slot] != 0)) {

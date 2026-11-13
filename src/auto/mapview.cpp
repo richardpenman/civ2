@@ -537,7 +537,7 @@ void __cdecl mapview_on_redraw(void)
 }
 
 /* 00410402 auto */
-void MapView::center_on(iptr x,i32 y)
+void MapView::center_on(int x,i32 y)
 
 {
   i8 saved_blink;
@@ -1247,7 +1247,7 @@ void ClickMap::remove_by_id(int id)
 }
 
 /* 0046ace7 auto */
-u32 ClickMap::add(iptr id,i32 value,i32 x,i32 y, iptr width,iptr height)
+u32 ClickMap::add(int id,i32 value,i32 x,i32 y, int width,int height)
 
 {
   u32 index;
@@ -1502,7 +1502,7 @@ void MapView::tile_to_screen(iptr out_x,iptr out_y,int x,int y)
 
 /* Part of MapView::draw_tile_terrain (0047a8c9): an ocean tile: the plain ocean when zoomed
    far out, else the coast quarters and the river mouths. */
-void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,iptr x,int y,int zoom,u32 half_w,u32 half_h)
+void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,int x,int y,int zoom,u32 half_w,u32 half_h)
 {
   int check;
   byte *known;
@@ -1544,7 +1544,7 @@ void MapView::draw_tile_ocean(iptr surface,int screen_x,int screen_y,iptr x,int 
 /* Part of MapView::draw_tile_terrain (0047a8c9): a land tile: the base terrain dithered with
    its neighbours, forest/mountain/hill shapes joined to like neighbours, the
    river, irrigation and farmland, the grassland shield. */
-void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y,int zoom,uint terrain2,uint improvements2,uint has_river,u32 half_w,u32 half_h,uint *dither_terrain)
+void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,int x,int y,int zoom,uint terrain2,uint improvements2,uint has_river,u32 half_w,u32 half_h,uint *dither_terrain)
 {
   byte nbr_raw;
   uint new_flags;
@@ -1682,7 +1682,7 @@ void MapView::draw_tile_land(iptr surface,int screen_x,int screen_y,iptr x,int y
 
 /* Part of MapView::draw_tile_terrain (0047a8c9): the road and railroad pieces toward the
    neighbours that have one (a dot when none). */
-void MapView::draw_tile_roads(iptr surface,int screen_x,int screen_y,iptr x,int y,int viewer_civ,uint improvements2)
+void MapView::draw_tile_roads(iptr surface,int screen_x,int screen_y,int x,int y,int viewer_civ,uint improvements2)
 {
   int check;
   byte *known;
@@ -1761,7 +1761,7 @@ void MapView::draw_tile_roads(iptr surface,int screen_x,int screen_y,iptr x,int 
 
 /* Part of MapView::draw_tile_terrain (0047a8c9): pollution, the hut, the fortress, the airbase
    (with a plane when one is there, in the owner's color). */
-void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,iptr x,int y,uint improvements2,u32 tile_w,u32 tile_h,u32 half_h)
+void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,int x,int y,uint improvements2,u32 tile_w,u32 tile_h,u32 half_h)
 {
   int check;
   iptr civ;
@@ -1804,7 +1804,7 @@ void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,iptr x,i
 
 /* Part of MapView::draw_tile_terrain (0047a8c9): darkens the quarters toward unexplored
    neighbours (in a city window: also those outside the city radius). */
-void MapView::draw_tile_unexplored_edges(iptr surface,int screen_x,int screen_y,iptr x,int y,int viewer_civ,iptr city_tile_idx,u32 half_w,u32 half_h)
+void MapView::draw_tile_unexplored_edges(iptr surface,int screen_x,int screen_y,int x,int y,int viewer_civ,int city_tile_idx,u32 half_w,u32 half_h)
 {
   int check;
   u32 unexp_dy;
@@ -1887,7 +1887,7 @@ void MapView::draw_tile_unexplored_edges(iptr surface,int screen_x,int screen_y,
 }
 
 /* 0047a8c9 auto */
-void MapView::draw_tile_terrain(iptr surface,int screen_x,int screen_y,iptr x,int y, int viewer_civ,int zoom,iptr city_tile_idx)
+void MapView::draw_tile_terrain(iptr surface,int screen_x,int screen_y,int x,int y, int viewer_civ,int zoom,int city_tile_idx)
 
 {
   int check;
@@ -2009,7 +2009,7 @@ void MapView::draw_tile_terrain(iptr surface,int screen_x,int screen_y,iptr x,in
 }
 
 /* 0047ba1d auto */
-void MapView::draw_tile_city(i32 screen_x,int screen_y,iptr x,iptr y)
+void MapView::draw_tile_city(i32 screen_x,int screen_y,int x,int y)
 
 {
   iptr city;
@@ -2040,7 +2040,7 @@ void MapView::draw_tile_city(i32 screen_x,int screen_y,iptr x,iptr y)
 }
 
 /* 0047bba5 auto */
-void MapView::draw_unit_stacked(iptr unit,uint draw_flags,i32 screen_x,i32 screen_y)
+void MapView::draw_unit_stacked(int unit,uint draw_flags,i32 screen_x,i32 screen_y)
 
 {
   gfx_draw_unit(this,unit,draw_flags | 3,screen_x,screen_y,(int)(short)zoom_u,0);
@@ -2048,7 +2048,7 @@ void MapView::draw_unit_stacked(iptr unit,uint draw_flags,i32 screen_x,i32 scree
 }
 
 /* 0047bbea auto */
-void MapView::draw_unit_blinking(iptr unit,i32 screen_x,i32 screen_y)
+void MapView::draw_unit_blinking(int unit,i32 screen_x,i32 screen_y)
 
 {
   if (((blink.unit_active == '\0') || (blink.unit_phase == '\0')) || (moving_units_mode != 1)) {
@@ -2058,7 +2058,7 @@ void MapView::draw_unit_blinking(iptr unit,i32 screen_x,i32 screen_y)
 }
 
 /* 0047bc59 auto */
-void MapView::draw_unit_at(iptr unit)
+void MapView::draw_unit_at(int unit)
 
 {
   int screen_y;
@@ -2074,7 +2074,7 @@ void MapView::draw_unit_at(iptr unit)
 }
 
 /* 0047bd04 auto */
-void MapView::draw_stack_unit(iptr unit,i32 screen_x,i32 screen_y)
+void MapView::draw_stack_unit(int unit,i32 screen_x,i32 screen_y)
 
 {
   int selectable;
@@ -2169,7 +2169,7 @@ void MapView::draw_tile_units(i32 screen_x,int screen_y,int x,int y)
 }
 
 /* 0047c103 auto */
-void MapView::draw_tile(iptr x,iptr y,int civ)
+void MapView::draw_tile(int x,int y,int civ)
 
 {
   int result;
@@ -2445,7 +2445,7 @@ void DibSurface::mapview_blit_with_net_pump()
 }
 
 /* 0047cbb4 auto */
-void MapView::redraw_area(i32 tile_x,i32 tile_y,i32 radius, iptr viewer_civ,int do_blit)
+void MapView::redraw_area(i32 tile_x,i32 tile_y,i32 radius, int viewer_civ,int do_blit)
 
 {
   int in_view;
@@ -2496,7 +2496,7 @@ void MapView::redraw_tile_neighbors(i32 tile_x,i32 tile_y)
 }
 
 /* 0047cd51 auto */
-void MapView::redraw(iptr viewer_civ,int do_blit)
+void MapView::redraw(int viewer_civ,int do_blit)
 
 {
   iptr civ;
@@ -2616,7 +2616,7 @@ void __cdecl mapview_center_if_moved(int center_x,int center_y)
 }
 
 /* 004d8b70 auto */
-void ClickMap::add_xywh(iptr id,i32 left,i32 top,i32 width, i32 height)
+void ClickMap::add_xywh(int id,i32 left,i32 top,i32 width, i32 height)
 
 {
   add(id,0,left,top,width,height);
