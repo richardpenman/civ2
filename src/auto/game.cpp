@@ -887,7 +887,7 @@ i32 __cdecl load_game_pick_civ(int title_offset)
         arg5 = 0;
         arg4 = 0;
         name2 = civ_leader_name(game.player_civ);
-        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,(iptr)name2,arg4,arg5,arg6,arg7);
+        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,(iptr)name2,arg4,arg5,(RECT *)arg6,arg7);
         if (choice == 0) {
           dialog_prepend_title_label(&dlg,title_offset + 0x25e);
           choice = dlg.run_modal((iptr)name_buf,0);
@@ -5665,7 +5665,7 @@ static void mp_host_remote_turn(uptr civ)
   rect2.top = map_views_block.main_view_frame_top;
   rect2.right = map_views_block.main_view_frame_right;
   rect2.bottom = map_views_block.main_view_client_top;
-  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&rect2);
+  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&rect2);
   net.nm_start_civ_count = 0;
   net.civ_turn_ended[civ] = 0;
   net_send_message(NM_START_WHOSE_TURN,0xff,civ,0,0,0,0,0,0,0);
@@ -5706,7 +5706,7 @@ static void mp_host_ai_turn(uptr civ)
   rect2.top = map_views_block.main_view_frame_top;
   rect2.right = map_views_block.main_view_frame_right;
   rect2.bottom = map_views_block.main_view_client_top;
-  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&rect2);
+  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&rect2);
   net_send_message(NM_START_WHOSE_TURN,0xff,civ,0,0,0,0,0,0,0);
   map_redraw_all_views(human_civ[0],1);
   status_draw_civ_color(civ);
@@ -5752,7 +5752,7 @@ static int mp_host_own_turn(uptr civ,Dialog *dialog2,i32 force_process)
   rect2.top = map_views_block.main_view_frame_top;
   rect2.right = map_views_block.main_view_frame_right;
   rect2.bottom = map_views_block.main_view_client_top;
-  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&rect2);
+  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&rect2);
   net_send_message(NM_START_WHOSE_TURN,0xff,civ,0,0,0,0,0,0,0);
   ((MapView *)((i8 *)&map_views_block.map_views))->update_title();
   map_redraw_all_views(human_civ[0],1);
@@ -12568,7 +12568,7 @@ i32 __cdecl setup_join_pick_civ(int player_idx)
     ret = 0;
     human_civ[0] = civ;
     str = civ_leader_name(civ);
-    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,(iptr)str,ret,arg_b,arg_c,arg_d);
+    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,(iptr)str,ret,arg_b,(RECT *)arg_c,arg_d);
     if (result == 0) {
       dialog_prepend_title_label(&dlg,player_idx + 0x25f);
       result = dlg.run_modal((iptr)name_text,0);
@@ -15855,7 +15855,7 @@ void EditorWindow::events_editor_run()
     parent2 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x237]);
-  add_trigger_button.create((iptr)parent2,0x65,(iptr)rect,(const char *)label);
+  add_trigger_button.create((iptr)parent2,0x65,(RECT *)rect,(const char *)label);
   add_trigger_button.set_callback((CtrlNotifyFn)events_editor_on_add_trigger);
   x = x + button_width_u + 3;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15866,7 +15866,7 @@ void EditorWindow::events_editor_run()
     parent22 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x238]);
-  edit_trigger_button.create((iptr)parent22,0x65,(iptr)rect,(const char *)label);
+  edit_trigger_button.create((iptr)parent22,0x65,(RECT *)rect,(const char *)label);
   edit_trigger_button.set_callback(events_editor_on_edit_trigger);
   rect_set_xywh((RECT *)rect,x + button_width_u + 3,y,button_width_u,
                      button_height_u);
@@ -15877,7 +15877,7 @@ void EditorWindow::events_editor_run()
     parent3 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x239]);
-  ((Button *)((u8 *)&delete_trigger_button_u))->create((iptr)parent3,0x65,(iptr)rect,(const char *)label);
+  ((Button *)((u8 *)&delete_trigger_button_u))->create((iptr)parent3,0x65,(RECT *)rect,(const char *)label);
   ((Button *)((u8 *)&delete_trigger_button_u))->set_callback((CtrlNotifyFn)events_editor_on_delete_trigger);
   y = client_y + 0x13a;
   x = client_x + 0x32;
@@ -15889,7 +15889,7 @@ void EditorWindow::events_editor_run()
     parent7 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x237]);
-  add_action_button.create((iptr)parent7,0x65,(iptr)rect,(const char *)label);
+  add_action_button.create((iptr)parent7,0x65,(RECT *)rect,(const char *)label);
   add_action_button.set_callback((CtrlNotifyFn)events_editor_on_add_action);
   x = x + button_width_u + 3;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15900,7 +15900,7 @@ void EditorWindow::events_editor_run()
     parent8 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x238]);
-  edit_action_button.create((iptr)parent8,0x65,(iptr)rect,(const char *)label);
+  edit_action_button.create((iptr)parent8,0x65,(RECT *)rect,(const char *)label);
   edit_action_button.set_callback(events_editor_on_edit_action);
   rect_set_xywh((RECT *)rect,x + button_width_u + 3,y,button_width_u,
                      button_height_u);
@@ -15911,7 +15911,7 @@ void EditorWindow::events_editor_run()
     parent9 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x239]);
-  delete_action_button.create((iptr)parent9,0x65,(iptr)rect,(const char *)label);
+  delete_action_button.create((iptr)parent9,0x65,(RECT *)rect,(const char *)label);
   delete_action_button.set_callback((CtrlNotifyFn)events_editor_on_delete_action);
   rect_set_xywh((RECT *)rect,client_x + 0x32,client_y + 0x1b,0x1cb,0x6e);
   x = editor_lists.next_ctrl_id;
@@ -15922,7 +15922,7 @@ void EditorWindow::events_editor_run()
   else {
     list_parent = (u8 *)&window;
   }
-  trigger_listbox.create((iptr)list_parent,x,(iptr)rect);
+  trigger_listbox.create((iptr)list_parent,x,(RECT *)rect);
   trigger_listbox.set_font((iptr)&editor_font_block.editor_font);
   trigger_listbox.set_select_callback(events_editor_fill_actions);
   trigger_listbox.set_dblclick_callback(events_editor_on_edit_trigger);
@@ -15937,7 +15937,7 @@ void EditorWindow::events_editor_run()
   else {
     list_parent2 = (u8 *)&window;
   }
-  action_listbox.create((iptr)list_parent2,x,(iptr)rect);
+  action_listbox.create((iptr)list_parent2,x,(RECT *)rect);
   action_listbox.set_font((iptr)&editor_font_block.editor_font);
   action_listbox.set_select_callback(events_editor_update_buttons);
   action_listbox.set_dblclick_callback(events_editor_on_edit_action);
@@ -15954,7 +15954,7 @@ void EditorWindow::events_editor_run()
     parent4 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)parent4,0x65,(iptr)rect,(const char *)label);
+  ok_button.create((iptr)parent4,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)events_editor_on_ok);
   x = x + button_width_u + 2;
   rect_set_xywh((RECT *)rect,x,y,button_width_u,button_height_u);
@@ -15965,7 +15965,7 @@ void EditorWindow::events_editor_run()
     parent5 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)parent5,0x66,(iptr)rect,(const char *)label);
+  help_button.create((iptr)parent5,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)events_editor_on_help);
   rect_set_xywh((RECT *)rect,x + button_width_u + 2,y,button_width_u,
                      button_height_u);
@@ -15976,7 +15976,7 @@ void EditorWindow::events_editor_run()
     parent6 = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)parent6,0x66,(iptr)rect,(const char *)label);
+  cancel_button.create((iptr)parent6,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)events_editor_on_cancel);
   cancel_button.set_cancel_button();
   window.set_keyboard_nav(0);
@@ -17596,7 +17596,7 @@ void SetupPicWindow::blit_image_rect(int *rect)
 }
 
 /* 00559fcf auto */
-void SetupPicWindow::draw_image(iptr rect)
+void SetupPicWindow::draw_image(RECT *rect)
 
 {
   gfx_set_draw_target(this);
@@ -17606,10 +17606,10 @@ void SetupPicWindow::draw_image(iptr rect)
 }
 
 /* 0055a00b auto */
-void SetupPicWindow::setup_picwnd_client_rect(iptr rect,int x,int y,int width,int height)
+void SetupPicWindow::setup_picwnd_client_rect(RECT *rect,int x,int y,int width,int height)
 
 {
-  rect_set_xywh((RECT *)rect,client_x + x,client_y + y,width,height);
+  rect_set_xywh(rect,client_x + x,client_y + y,width,height);
   return;
 }
 
@@ -17619,10 +17619,10 @@ void SetupPicWindow::redraw()
 {
   layout();
   setup_picwnd_load_image(rates_civ,max_rate_value);
-  setup_picwnd_client_rect((iptr)&sci_rate_sel,0,0,rates_civ,max_rate_value);
+  setup_picwnd_client_rect((RECT *)&sci_rate_sel,0,0,rates_civ,max_rate_value);
   gfx_set_draw_target(this);
   draw_caption();
-  draw_image((iptr)&sci_rate_sel);
+  draw_image((RECT *)&sci_rate_sel);
   wnd_blit_surface();
   return;
 }
@@ -18066,7 +18066,7 @@ void __cdecl status_draw_civ_color(int civ)
     color = civ_color_primary(civ);
     gfx_fill_rect(&status_wnd.window,&rect,color);
     win_flush_pending_msgs();
-    ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&rect.left);
+    ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((RECT *)&rect.left);
     ((DibSurface *)((i8 *)&status_wnd.window))->reset_clip();
     win_flush_pending_msgs();
   }
@@ -18111,7 +18111,7 @@ void __cdecl status_draw_end_of_turn(int blit)
     gfx_draw_text((const char *)&textbuf.buf,text_x,text_y + line_height - 1);
     win_flush_pending_msgs();
     if (blit != 0) {
-      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&frame_texture_surface_block.status_end_turn_rect);
+      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((RECT *)&frame_texture_surface_block.status_end_turn_rect);
       win_flush_pending_msgs();
     }
     ((DibSurface *)((i8 *)&status_wnd.window))->reset_clip();
@@ -18309,7 +18309,7 @@ void __cdecl status_draw_info(int full_redraw)
   ((DibSurface *)((i8 *)&status_wnd.window))->reset_clip();
   if (full_redraw != 0) {
     win_flush_pending_msgs();
-    ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&frame_texture_surface_block.status_upper_rect);
+    ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((RECT *)&frame_texture_surface_block.status_upper_rect);
     win_flush_pending_msgs();
   }
   return;
@@ -18731,7 +18731,7 @@ void __cdecl status_redraw(int blit)
     status_calc_font_sizes();
     status_draw_unit_panel();
     if (blit != 0) {
-      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&frame_texture_surface_block.status_upper_rect);
+      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((RECT *)&frame_texture_surface_block.status_upper_rect);
       rect2.left = status_wnd.lower_rect;
       rect2.top = status_wnd.lower_rect_top;
       rect2.right = status_wnd.lower_rect_right;
@@ -18739,7 +18739,7 @@ void __cdecl status_redraw(int blit)
       if (frame_texture_surface_block.status_text_bottom <= old_bottom) {
         rect2.bottom = old_bottom;
       }
-      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&rect2);
+      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect(&rect2);
     }
   }
   return;
@@ -18837,7 +18837,7 @@ void __cdecl status_calc_wnd_rect(void)
 void __cdecl status_wnd_on_size(void)
 
 {
-  ((WndBase *)((i8 *)&status_wnd.wnd))->get_rect_in_parent((iptr)&minimap_wnd_rect_block.status_wnd_rect);
+  ((WndBase *)((i8 *)&status_wnd.wnd))->get_rect_in_parent((RECT *)&minimap_wnd_rect_block.status_wnd_rect);
   return;
 }
 
@@ -18845,7 +18845,7 @@ void __cdecl status_wnd_on_size(void)
 void __cdecl status_wnd_on_move(void)
 
 {
-  ((WndBase *)((i8 *)&status_wnd.wnd))->get_rect_in_parent((iptr)&minimap_wnd_rect_block.status_wnd_rect);
+  ((WndBase *)((i8 *)&status_wnd.wnd))->get_rect_in_parent((RECT *)&minimap_wnd_rect_block.status_wnd_rect);
   return;
 }
 
@@ -18953,13 +18953,13 @@ void __cdecl status_draw_timer_bar(int percent,int color)
       height = rect_height(&bar_rect);
       bar_width = rect_width(&bar_rect);
       gfx_copy_rect_xywh(&status_wnd.timer_bg_surface,&status_wnd.window,0,0,bar_rect.left,bar_rect.top,bar_width,height);
-      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&bar_rect);
+      ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect(&bar_rect);
       if (-1 < color) {
         width = rect_width(&bar_rect);
         bar_rect.right = bar_rect.left + (percent * width) / 100;
         gfx_fill_rect(&status_wnd.window,&bar_rect,color);
         win_flush_pending_msgs();
-        ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect((iptr)&bar_rect);
+        ((DibSurface *)((i8 *)&status_wnd.window))->wnd_blit_surface_rect(&bar_rect);
       }
       ((DibSurface *)((i8 *)&status_wnd.window))->reset_clip();
       win_flush_pending_msgs();

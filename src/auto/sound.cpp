@@ -2907,7 +2907,7 @@ void __cdecl avi_update_frame(AviPlayer *player)
         dirty_rect.right = indeo.view_rect_x[0] + indeo.view_rect_width;
         dirty_rect.bottom = indeo.view_rect_y + indeo.view_rect_height;
         UnionRect(&dirty_rect,&dirty_rect,(RECT *)((i32 *)&avi_blit_union_left_block.avi_blit_union_left));
-        player->wnd_blit_surface_rect((iptr)&dirty_rect);
+        player->wnd_blit_surface_rect(&dirty_rect);
         avi_blit_union_left_block.avi_blit_union_left[0] = dirty_rect.left;
         avi_blit_union_left_block.avi_blit_union_top = dirty_rect.top;
         avi_blit_union_left_block.avi_blit_union_right = dirty_rect.right;
@@ -3094,8 +3094,8 @@ static void moviewnd_on_getminmaxinfo(WndOnMciDoneView *wnd2,uint lparam)
   frame_height = wnd_obj_frame_height(window);
   window = ((WndBase *)wnd2)->get_window();
   frame_width = wnd_obj_frame_width(window);
-  ((ModalMenuWindow *)wnd2)->get_min_size((iptr)&min_width2,(iptr)&min_height2);
-  ((ModalMenuWindow *)wnd2)->get_max_size((iptr)&max_width2,(iptr)&max_height2);
+  ((ModalMenuWindow *)wnd2)->get_min_size(&min_width2,&min_height2);
+  ((ModalMenuWindow *)wnd2)->get_max_size(&max_width2,&max_height2);
   minmax_info->ptMaxTrackSize.x = frame_width + max_width2;
   minmax_info->ptMaxTrackSize.y = frame_height + max_height2;
   minmax_info->ptMinTrackSize.x = frame_width + min_width2;

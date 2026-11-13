@@ -32,9 +32,9 @@ typedef struct WndBase {
     void set_icon(i32 icon);    /* 00408050 */
     void minimize();    /* 00408090 */
     i32 client_width();    /* 004080c0 */
-    void get_rect_in_parent(iptr rect);    /* 004080f0 */
+    void get_rect_in_parent(RECT *rect);    /* 004080f0 */
     void destroy_native();    /* 00408420 */
-    void view_validate_rect(iptr rect);    /* 00408580 */
+    void view_validate_rect(RECT *rect);    /* 00408580 */
     void handle_show_raise();    /* 00408650 */
     void set_cursor_now(int cursor,i32 flag);    /* 00414b70 */
     i32 client_height();    /* 00414bb0 */
@@ -51,17 +51,17 @@ typedef struct WndBase {
     void hide();    /* 004503d0 */
     void center();    /* 00450400 */
     void apply_palette_handle(iptr palette);    /* 00450440 */
-    void get_cursor_pos(iptr out_x,iptr out_y);    /* 00451890 */
+    void get_cursor_pos(i32 *out_x,i32 *out_y);    /* 00451890 */
     void focus_and_raise();    /* 00451900 */
     void set_focus();    /* 004923c0 */
     void set_caption_height(i32 height);    /* 00497d00 */
-    void move_to_rect(iptr rect);    /* 004bb570 */
+    void move_to_rect(RECT *rect);    /* 004bb570 */
     void set_resize_border(i32 width);    /* 004cff70 */
     void show_restored();    /* 004e7240 */
     u32 get_palette();    /* 00511320 */
     void move_xy(i32 x,i32 y);    /* 00518e80 */
     i32 frame_width();    /* 00589d50 */
-    void get_screen_rect(iptr rect);    /* 005a9600 */
+    void get_screen_rect(RECT *rect);    /* 005a9600 */
     u32 get_palette_obj();    /* 005bb8c0 */
     void set_client_size(i32 width,i32 height);    /* 005bb8e0 */
     i16 get_style_flags();    /* 005bd610 */
@@ -203,8 +203,8 @@ typedef struct ModalMenuWindow : WndBase {
     void attach_menu(iptr menu_obj);    /* 00579b40 */
     void set_menu_callback(MenuPosCommandFn callback);    /* 00579bc0 */
     void redraw_menu_bar();    /* 00579bf0 */
-    void get_min_size(iptr out_width,iptr out_height);    /* 005bb910 */
-    void get_max_size(iptr out_width,iptr out_height);    /* 005bb950 */
+    void get_min_size(i32 *out_width,i32 *out_height);    /* 005bb910 */
+    void get_max_size(i32 *out_width,i32 *out_height);    /* 005bb950 */
     void run_modal_loop();    /* 005c61b0 */
     void end_modal_loop();    /* 005c62cb */
     bool fire_menu_select(i32 item_id);    /* 005c63af */
@@ -267,7 +267,7 @@ typedef struct DibSurface {
     void wnd_destroy_with_surface();    /* 004083b0 */
     void release();    /* 004083f0 */
     void wnd_blit_surface();    /* 00408460 */
-    void wnd_blit_surface_rect(iptr rect);    /* 00408490 */
+    void wnd_blit_surface_rect(RECT *rect);    /* 00408490 */
     DibSurface *surface_delete(uint flags);    /* 0040f010 */
     u32 surface_height();    /* 0043c560 */
     u32 surface_width();    /* 0043c590 */
@@ -286,13 +286,13 @@ typedef struct DibSurface {
     void reset_clip();    /* 005c0034 */
     void set_clip(RECT *rect);    /* 005c0073 */
     void get_clip(RECT *out_rect);    /* 005c00ce */
-    i32 resize(iptr rect);    /* 005c019d */
+    i32 resize(RECT *rect);    /* 005c019d */
     void lock();    /* 005c01c1 */
     void unlock();    /* 005c02e0 */
-    void fill_rect(iptr rect,i32 color);    /* 005c0333 */
+    void fill_rect(RECT *rect,i32 color);    /* 005c0333 */
     void fill(i32 color);    /* 005c041f */
     void replace_color_clip(i32 from_color,i32 to_color);    /* 005c044a */
-    void replace_color(iptr rect,i32 from_color,i32 to_color);    /* 005c0479 */
+    void replace_color(RECT *rect,i32 from_color,i32 to_color);    /* 005c0479 */
     void blit(DibSurface *src,RECT *dest_rect,RECT *src_rect);    /* 005c0593 */
     void blit_to_wnd(iptr wnd,RECT *src_rect,RECT *dest_pt);    /* 005c0979 */
     uint get_pixel(i32 x,i32 y);    /* 005c0bf2 */
@@ -301,7 +301,7 @@ typedef struct DibSurface {
     void apply_palette(GamePalette *palette);    /* 005c0d12 */
     void draw_text(iptr font,const char *text,int x,int y,uint flags);    /* 005c0f57 */
     void draw_text_in_rect(iptr font,const char *text,RECT *rect,uint flags);    /* 005c1020 */
-    void draw_text_rect(iptr font,const char *text,iptr rect,i32 flags);    /* 005c1167 */
+    void draw_text_rect(iptr font,const char *text,RECT *rect,i32 flags);    /* 005c1167 */
     void draw_line(u32 x1,u32 y1,u32 x2,u32 y2);    /* 005c11b2 */
     int pixel_ptr(int x,int y);    /* 005c19d3 */
     i8 in_clip(int x,int y);    /* 005c1a00 */
@@ -541,7 +541,7 @@ typedef struct Dialog {
     void fill_rect_bg(RECT *rect,int area);    /* 005a5649 */
     void render();    /* 005a577e */
     u32 run_modal(iptr out_text,int timeout_secs);    /* 005a5f34 */
-    i32 load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,iptr init_arg1, iptr init_arg2,iptr init_arg3,uint flags);    /* 005a632a */
+    i32 load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,iptr init_arg1, iptr init_arg2,RECT *init_arg3,uint flags);    /* 005a632a */
     void load_section_keyword(char *line,i8 *expanded,int &mode,int &default_value,uint has_edit,iptr edit_default,i8 *edit_text);    /* part of load_text_section */
     uint uses_alt_text_color();    /* 005a96f0 */
     void draw_text_default_font(const char *text,i32 x,i32 y, i32 flags);    /* 005a9730 */
@@ -683,13 +683,13 @@ typedef struct Button : Control {
     union { u32 field_34; u32 on_select; };   /* -1 (button_ctor), button_create_with_callback's callback */
     union { u32 field_38; u32 font; };
     /* methods */
-    void create(iptr parent,i32 ctrl_id,iptr rect,const char *label);    /* 0040f680 */
+    void create(iptr parent,i32 ctrl_id,RECT *rect,const char *label);    /* 0040f680 */
     void set_default_button();    /* 0040f7d0 */
     void set_cancel_button();    /* 0040f840 */
     void set_callback(CtrlNotifyFn callback);    /* 0040f880 */
     void disable();    /* 00453c40 */
     void enable();    /* 00453c80 */
-    void create_with_callback(iptr parent,i32 ctrl_id,iptr rect,u32 callback,const char *label);    /* 00497d40 */
+    void create_with_callback(iptr parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label);    /* 00497d40 */
     Button *scalar_destruct(uint flags);    /* 004bb3b0 */
     u32 ctrl_is_enabled();    /* 00530e80 */
     Button *vector_destruct(uint flags);    /* 005a9440 */
@@ -728,7 +728,7 @@ typedef struct Scrollbar : Control {
     /* methods */
     Scrollbar *construct();    /* 0040fb00 */
     void destruct();    /* 0040fbb0 */
-    void create(iptr parent,int ctrl_id,iptr rect,i32 style);    /* 0040fc50 */
+    void create(iptr parent,int ctrl_id,RECT *rect,i32 style);    /* 0040fc50 */
     void set_pos(int pos);    /* 0040fcf0 */
     void set_range(i32 min_value,i32 max_value);    /* 0040fd40 */
     void set_callback(ScrollFn callback);    /* 0040fd80 */
@@ -739,7 +739,7 @@ typedef struct Scrollbar : Control {
     void fire_track(i32 pos);    /* 005cd680 */
     u32 get_page_size();    /* 005cd6c0 */
     void set_page_size(u32 page_size);    /* 005db0d0 */
-    void get_ctl_range(iptr min_out,iptr max_out);    /* 005db110 */
+    void get_ctl_range(i32 *min_out,i32 *max_out);    /* 005db110 */
 } Scrollbar;
 static_assert(sizeof(Scrollbar) == 0x40, "");
 
@@ -753,14 +753,14 @@ typedef struct EditControl : Control {
     union { u32 field_40; u32 edit_font; };
     u32 field_44;                               /* 0 (edit_ctor) */
     /* methods */
-    void create(iptr parent,i32 ctrl_id,iptr rect,const char *text);    /* 00418910 */
+    void create(iptr parent,i32 ctrl_id,RECT *rect,const char *text);    /* 00418910 */
     void set_max_len(i32 max_len);    /* 004189c0 */
     void set_callback(EditKeyFn callback);    /* 00418a00 */
     i32 get_sel_end();    /* 00492ab0 */
     void replace_sel(const char *text);    /* 00492ae0 */
     void set_sel(i32 sel_start,i32 sel_end);    /* 00492b20 */
     EditControl *scalar_destruct(uint flags);    /* 004bb400 */
-    void create_styled(iptr parent,i32 ctrl_id,iptr rect,const char *text, i32 multiline,i32 style);    /* 004bb620 */
+    void create_styled(iptr parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style);    /* 004bb620 */
     void set_caret(i32 pos);    /* 004bb6d0 */
     i32 get_text_end();    /* 004bb710 */
     i32 get_line(i32 line,char *buffer,i32 max_len);    /* 004cffb0 */
@@ -780,7 +780,7 @@ typedef struct ComboBox : Control {
     union { u32 field_30; CtrlNotifyFn on_dblclick; };
     union { u32 field_34; CtrlNotifyFn on_select; };
     /* methods */
-    void create(iptr parent,i32 ctrl_id,iptr rect);    /* 00418bf0 */
+    void create(iptr parent,i32 ctrl_id,RECT *rect);    /* 00418bf0 */
     void set_font(iptr font);    /* 00418c70 */
     void add_string(const char *text);    /* 00418ce0 */
     void clear();    /* 00418d20 */
@@ -802,7 +802,7 @@ typedef struct ListBox : Control {
     /* methods */
     ListBox *construct();    /* 00418e00 */
     void destruct();    /* 00418ea0 */
-    void create(iptr parent,i32 ctrl_id,iptr rect);    /* 00418f40 */
+    void create(iptr parent,i32 ctrl_id,RECT *rect);    /* 00418f40 */
     void set_font(iptr font);    /* 00418fe0 */
     void add_string(const char *text);    /* 00419020 */
     void clear();    /* 00419060 */
@@ -827,7 +827,7 @@ typedef struct Hotspot : Control {
     union { u32 field_38; CtrlNotifyFn on_press; };
     union { u32 field_3c; CtrlNotifyFn on_dblclick; };
     /* methods */
-    void create(iptr parent,int id,iptr rect);    /* 004519b0 */
+    void create(iptr parent,int id,RECT *rect);    /* 004519b0 */
     void set_click_callback(CtrlNotifyFn callback);    /* 00451a60 */
     void set_dblclick_callback(CtrlNotifyFn callback);    /* 00451a90 */
     Hotspot *scalar_destruct(uint flags);    /* 00453aa0 */
@@ -850,7 +850,7 @@ typedef struct Hyperlink : Control {
     union { u32 field_3c; CtrlNotifyFn on_dblclick; };
     /* methods */
     void destruct();    /* 00452a67 */
-    void create(iptr parent,i32 control_id,iptr rect);    /* 00452b89 */
+    void create(iptr parent,i32 control_id,RECT *rect);    /* 00452b89 */
     Hyperlink *construct();    /* 00453cc0 */
     void set_click_callback(CtrlNotifyFn callback);    /* 00453d40 */
     void set_dblclick_callback(CtrlNotifyFn callback);    /* 00453d70 */
@@ -890,7 +890,7 @@ typedef struct RadioGroup : Control {
     RadioGroup *scalar_destruct(uint flags);    /* 004bb4a0 */
     void destruct();    /* 004bb740 */
     RadioGroup *construct();    /* 00531010 */
-    void create(iptr parent,i32 ctrl_id,iptr rect,u32 columns,u32 item_count, iptr labels);    /* 005310a0 */
+    void create(iptr parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, iptr labels);    /* 005310a0 */
     void set_select_callback(RadioNotifyFn callback);    /* 005311b0 */
     void set_dblclick_callback(RadioNotifyFn callback);    /* 005311e0 */
     u32 get_items();    /* 005c5ee0 */
@@ -961,9 +961,9 @@ typedef struct Sprite {
     i32 height();    /* 004bb540 */
     i32 create_solid(i32 width,i32 height,uint color);    /* 005cdea1 */
     void free();    /* 005cdf50 */
-    void grab_surface_rect(iptr surface,iptr rect);    /* 005cebb4 */
+    void grab_surface_rect(iptr surface,RECT *rect);    /* 005cebb4 */
     void encode_rect(iptr surface,int x,int y,int width,int height);    /* 005cebec */
-    void grab_rect(iptr surface,uint key_color,iptr rect);    /* 005cec44 */
+    void grab_rect(iptr surface,uint key_color,RECT *rect);    /* 005cec44 */
     void grab_from_surface(iptr surface,uint key_color,int x,int y,int width, int height);    /* 005cedad */
     RECT *draw(RECT *dest,DibSurface *surface,i32 x,i32 y);    /* 005cef31 */
     RECT *draw_keyed(RECT *dest,DibSurface *surface,uint key_color,i32 x, i32 y);    /* 005cef66 */
@@ -979,7 +979,7 @@ typedef struct Sprite {
     void merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy);    /* 005d1612 */
     void clear_fields();    /* 005d1b38 */
     void set_origin(u32 x,u32 y);    /* 005cf39b */
-    void get_origin(iptr out_x,iptr out_y);    /* 005cf3c5 */
+    void get_origin(i32 *out_x,i32 *out_y);    /* 005cf3c5 */
 } Sprite;
 
 /* 11 methods, size 0x98 (file_obj_init clears 0x98 bytes) */
@@ -1163,7 +1163,7 @@ typedef struct ClickMap {
     void clear();    /* 0046ab5f */
     void remove_at(int index);    /* 0046ab82 */
     void remove_by_id(int id);    /* 0046ac89 */
-    int hit_test(int x,int y,iptr out_id,iptr out_value);    /* 0046ad85 */
+    int hit_test(int x,int y,i32 *out_id,i32 *out_value);    /* 0046ad85 */
 } ClickMap;
 
 /* 10 methods, size 0x8 */
@@ -1340,7 +1340,7 @@ typedef struct NetMsgQueue {
     void clear();    /* 00514254 */
     void reset();    /* 00514272 */
     i32 enqueue(int sender,NetMsg *msg,uint msg_size);    /* 0051438f */
-    i32 dequeue(iptr out_sender,iptr out_msg,iptr out_size,int priority_only);    /* 005149d6 */
+    i32 dequeue(i32 *out_sender,i32 *out_msg,i32 *out_size,int priority_only);    /* 005149d6 */
 } NetMsgQueue;
 static_assert(sizeof(NetMsgQueue) == 0x5dd8, "");
 
@@ -2573,13 +2573,13 @@ typedef struct PediaWindow : SurfaceWindow {
     void dispatch_category_draw(i32 left,i32 top,i32 right, i32 bottom,i32 category);    /* 00452188 */
     void update_describe_button(int list_index);    /* 00452768 */
     void add_link(int item_id,int x,int y,i32 link_kind, i32 rect_left,i32 rect_top,i32 rect_right,i32 rect_bottom);    /* 00452c14 */
-    void init_terrain_list(iptr rect);    /* 00490590 */
+    void init_terrain_list(RECT *rect);    /* 00490590 */
     void draw_terrain_page();    /* 004906fd */
     void draw_terrain_special_bonus(GameFont *font2,int terrain2,int terrain3,int y2,int line_height,int margin);    /* part of draw_terrain_page */
     void draw_terrain_improve_rows(GameFont *font2,int terrain2,int y2,int line_height,int margin,int value_x,int row_height);    /* part of draw_terrain_page */
     void draw_terrain_transform_column(GameFont *font2,int terrain2,int stats_top,int line_height,int right_col_x,int row_height);    /* part of draw_terrain_page */
     void show_terrain_modal(int terrain_id);    /* 00491c20 */
-    void init_concept_list(iptr unused_arg);    /* 004a69b0 */
+    void init_concept_list(RECT *unused_arg);    /* 004a69b0 */
     PediaWindow *construct();    /* 004f3feb */
     void destruct();    /* 004f44a7 */
     void clear_links();    /* 004f4793 */
@@ -2608,11 +2608,11 @@ typedef struct PediaWindow : SurfaceWindow {
     void load_terrain_index(PediaListNode *&prev_node2);    /* part of load_indexes */
     void load_concept_index(PediaListNode *&prev_node2);    /* part of load_indexes */
     void history_push();    /* 004f8af9 */
-    void init_government_list(iptr unused_arg);    /* 00518f00 */
-    void init_wonder_list(iptr unused_arg);    /* 005261a0 */
+    void init_government_list(RECT *unused_arg);    /* 00518f00 */
+    void init_wonder_list(RECT *unused_arg);    /* 005261a0 */
     void draw_improvement();    /* 0052630d */
     void show_wonder_modal(int wonder_id);    /* 00526913 */
-    void init_advance_list(iptr unused_arg);    /* 00564d00 */
+    void init_advance_list(RECT *unused_arg);    /* 00564d00 */
     void draw_advance_page();    /* 00564e6d */
     void draw_advance_requires(GameFont *font2,int advance,int y2);    /* part of draw_advance_page */
     void draw_advance_children(GameFont *font2,int advance,int list_x2,int row_height,int &y2);    /* part of draw_advance_page */
@@ -2622,11 +2622,11 @@ typedef struct PediaWindow : SurfaceWindow {
     void show_topic_modal(int advance_id);    /* 00566584 */
     void draw_advance_tree();    /* 005666da */
     void draw_tree_stub(i32 x,int y);    /* 005675b7 */
-    void init_improvement_list(iptr unused_arg);    /* 00599a20 */
+    void init_improvement_list(RECT *unused_arg);    /* 00599a20 */
     void draw_improvement_page();    /* 00599b8d */
     void load_improvement_text(int improvement_id);    /* 0059a15d */
     void show_improvement_modal(int improvement_id);    /* 0059a2e6 */
-    void show_unit_list(iptr unused_arg);    /* 005ac840 */
+    void show_unit_list(RECT *unused_arg);    /* 005ac840 */
     void draw_unit_page();    /* 005ac9ad */
     void append_unit_fact(int unit_type,u32 mask,char *desc_buf,int &has_text);    /* part of draw_unit_page */
     void show_unit_modal(int unit_type);    /* 005ad998 */
@@ -2806,8 +2806,8 @@ typedef struct MapView : FrameWindow {
     void create();    /* 00413717 */
     void init_state(u32 view_index);    /* 00479ede */
     void update_layout();    /* 00479fbe */
-    i32 screen_to_tile(iptr out_x,iptr out_y,i32 mouse_x,i32 mouse_y);    /* 0047a540 */
-    void tile_to_screen(iptr out_x,iptr out_y,int x,int y);    /* 0047a6b0 */
+    i32 screen_to_tile(i32 *out_x,i32 *out_y,i32 mouse_x,i32 mouse_y);    /* 0047a540 */
+    void tile_to_screen(i32 *out_x,i32 *out_y,int x,int y);    /* 0047a6b0 */
     void draw_tile_terrain(iptr surface,int screen_x,int screen_y,int x,int y, int viewer_civ,int zoom,int city_tile_idx);    /* 0047a8c9 */
     void draw_tile_ocean(iptr surface,int screen_x,int screen_y,int x,int y,int zoom,u32 half_w,u32 half_h);    /* part of draw_tile_terrain */
     void draw_tile_land(iptr surface,int screen_x,int screen_y,int x,int y,int zoom,uint terrain2,uint improvements2,uint has_river,u32 half_w,u32 half_h,uint *dither_terrain);    /* part of draw_tile_terrain */
@@ -2823,7 +2823,7 @@ typedef struct MapView : FrameWindow {
     void draw_tile(int x,int y,int civ);    /* 0047c103 */
     i32 tile_in_view(i32 tile_x,i32 tile_y);    /* 0047c3e0 */
     void draw_city_names(i32 center_x,i32 center_y,int radius);    /* 0047c443 */
-    void tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect);    /* 0047c7aa */
+    void tile_radius_rect(i32 tile_x,i32 tile_y,int radius,RECT *out_rect);    /* 0047c7aa */
     void draw_tile_radius(int center_x,int center_y,int radius,i32 civ);    /* 0047c869 */
     void draw_all_tiles(i32 civ);    /* 0047c9d4 */
     void blit_tile_radius(i32 tile_x,i32 tile_y,i32 radius);    /* 0047caea */
@@ -3012,7 +3012,7 @@ typedef struct CityWindow : FrameWindow {
     CityWindow *construct();    /* 00501551 */
     void destruct();    /* 0050160a */
     void blit_bg_rect(int *rect);    /* 005016b2 */
-    void begin_draw(iptr rect);    /* 00501733 */
+    void begin_draw(RECT *rect);    /* 00501733 */
     void recalc_redraw(i32 flag);    /* 00501780 */
     int draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, int angry);    /* 005019c1 */
     int happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unhappy,int angry);    /* 00501e63 */
@@ -3031,12 +3031,12 @@ typedef struct CityWindow : FrameWindow {
     void draw_improvements(int blit);    /* 00505ffa */
     void draw_units_present();    /* 005070e5 */
     void draw_support_map();    /* 00507b69 */
-    void happy_draw_building_icons(iptr x_ptr,int row_top,int row_h);    /* 00507f31 */
-    void happy_draw_unit_effects(iptr x_ptr,int row_top,int row_h,int max_width);    /* 00508177 */
+    void happy_draw_building_icons(i32 *x_ptr,int row_top,int row_h);    /* 00507f31 */
+    void happy_draw_unit_effects(i32 *x_ptr,int row_top,int row_h,int max_width);    /* 00508177 */
     void draw_happiness();    /* 00508552 */
     void draw_info_panel(int blit);    /* 00508adc */
     void draw_all(i32 blit);    /* 00508bc5 */
-    void set_scaled_rect(iptr rect,int x,int y,int width,int height);    /* 00508c84 */
+    void set_scaled_rect(RECT *rect,int x,int y,int width,int height);    /* 00508c84 */
     void layout_rects();    /* 00508d24 */
     void fill_margins();    /* 00508ec6 */
     void apply_size();    /* 00509028 */
@@ -3124,8 +3124,8 @@ typedef struct SetupPicWindow : FrameWindow {
     SetupPicWindow *construct();    /* 00559e3c */
     void destruct();    /* 00559ed4 */
     void blit_image_rect(int *rect);    /* 00559f60 */
-    void draw_image(iptr rect);    /* 00559fcf */
-    void setup_picwnd_client_rect(iptr rect,int x,int y,int width,int height);    /* 0055a00b */
+    void draw_image(RECT *rect);    /* 00559fcf */
+    void setup_picwnd_client_rect(RECT *rect,int x,int y,int width,int height);    /* 0055a00b */
     void redraw();    /* 0055a051 */
     void show(i32 x_pos,i32 y_pos,u32 image_id);    /* 0055a41d */
     void close();    /* 0055a567 */

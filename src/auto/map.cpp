@@ -1376,12 +1376,12 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
   iptr flush_pending;
   iptr child_wnd;
   int result;
-  iptr x2;
+  int x2;
   int paradrop_active;
   iptr unit;
   iptr city;
   uptr dir;
-  iptr y2;
+  int y2;
   MapView *view;
   uint goto_mode;
   
@@ -1410,7 +1410,7 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
         if (alt_click == 0) {
           mapviews_reset_cursor();
         }
-        result = view->screen_to_tile((iptr)&x2,(iptr)&y2,screen_x,screen_y);
+        result = view->screen_to_tile(&x2,&y2,screen_x,screen_y);
         if (result == 0) {
           map_click_in_progress = 1;
           result = map_in_bounds(x2,y2);
@@ -5392,7 +5392,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
     parent2 = (u8 *)&window;
   }
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->create((iptr)parent2,left,
-             (iptr)rect);
+             (RECT *)rect);
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_callback(terrain_editor_on_combo);
   switch(combo_idx) {
@@ -5454,7 +5454,7 @@ void EditorWindow::terrain_editor_create_edit(int field_idx)
     parent2 = (u8 *)&window;
   }
   ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->create((iptr)parent2,ctrl_id,
-             (iptr)rect,(const char *)&str_empty_162);
+             (RECT *)rect,(const char *)&str_empty_162);
   ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->set_max_len(3);
   ((EditControl *)(numeric_edit_controls_area + field_idx * 0x48 - 0x2c))->set_callback(editor_numeric_edit_filter);
   return;
@@ -5699,7 +5699,7 @@ void EditorWindow::terrain_editor_run()
     ok_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)ok_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
+  ok_button.create((iptr)ok_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   ok_button.set_callback((CtrlNotifyFn)terrain_editor_on_ok);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -5710,7 +5710,7 @@ void EditorWindow::terrain_editor_run()
     rename_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x2a]);
-  rename_button.create((iptr)rename_parent,0x66,(iptr)btn_rect,(const char *)btn_label);
+  rename_button.create((iptr)rename_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   rename_button.set_callback((CtrlNotifyFn)terrain_editor_on_rename);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -5721,7 +5721,7 @@ void EditorWindow::terrain_editor_run()
     help_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)help_parent,0x66,(iptr)btn_rect,(const char *)btn_label);
+  help_button.create((iptr)help_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   help_button.set_callback((CtrlNotifyFn)terrain_editor_on_help);
   rect_set_xywh((RECT *)btn_rect,btn_x + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
@@ -5732,7 +5732,7 @@ void EditorWindow::terrain_editor_run()
     cancel_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)cancel_parent,0x66,(iptr)btn_rect,(const char *)btn_label);
+  cancel_button.create((iptr)cancel_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   cancel_button.set_callback((CtrlNotifyFn)terrain_editor_on_cancel);
   cancel_button.set_cancel_button();
   btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
@@ -5750,7 +5750,7 @@ void EditorWindow::terrain_editor_run()
     icon_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x1f3]);
-  icon_button.create((iptr)icon_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
+  icon_button.create((iptr)icon_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   icon_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_icon);
   btn_y = (client_width + client_x - 0x19) - button_width_u;
   btn_x = client_y + 0x28;
@@ -5762,7 +5762,7 @@ void EditorWindow::terrain_editor_run()
     river_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23d]);
-  misc_button.create((iptr)river_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
+  misc_button.create((iptr)river_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   misc_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_river);
   btn_x = btn_x + button_height_u + 2;
   rect_set_xywh((RECT *)btn_rect,btn_y,btn_x,button_width_u,button_height_u);
@@ -5773,7 +5773,7 @@ void EditorWindow::terrain_editor_run()
     coast_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23e]);
-  coast_button.create((iptr)coast_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
+  coast_button.create((iptr)coast_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   coast_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_coast);
   rect_set_xywh((RECT *)btn_rect,btn_y,btn_x + button_height_u + 2,button_width_u,
                      button_height_u);
@@ -5784,7 +5784,7 @@ void EditorWindow::terrain_editor_run()
     misc_parent = (u8 *)&window;
   }
   btn_label = (iptr)label_string(label_table.string_ids[0x23c]);
-  terrain_misc_button.create((iptr)misc_parent,0x65,(iptr)btn_rect,(const char *)btn_label);
+  terrain_misc_button.create((iptr)misc_parent,0x65,(RECT *)btn_rect,(const char *)btn_label);
   terrain_misc_button.set_callback((CtrlNotifyFn)terrain_editor_on_edit_misc);
   window.set_keyboard_nav(0);
   terrain_editor_load_rules();
@@ -6024,10 +6024,10 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
       view_active[view] = 1;
       saved_origin_x[view] = (((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc];
       saved_origin_y[view] = (((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc];
-      map_views_block.map_view_recs[view].tile_to_screen((iptr)&from_sx,
-                 (iptr)&from_sy,from_x,from_y);
-      map_views_block.map_view_recs[view].tile_to_screen((iptr)&to_sx,
-                 (iptr)&to_sy,to_x,to_y);
+      map_views_block.map_view_recs[view].tile_to_screen(&from_sx,
+                 &from_sy,from_x,from_y);
+      map_views_block.map_view_recs[view].tile_to_screen(&to_sx,
+                 &to_sy,to_x,to_y);
       from_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
       to_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
       tmp = to_sx;
@@ -6137,7 +6137,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
               tmp = dirty_rect.bottom;
             }
             dirty_rect.bottom = tmp;
-            map_views_block.map_view_recs[view].wnd_blit_surface_rect((iptr)&dirty_rect);
+            map_views_block.map_view_recs[view].wnd_blit_surface_rect(&dirty_rect);
             gfx_copy_rect_clipped((saved_bg + view),&map_views_block.map_view_recs[view]
                                ,cur_sx[view] - rect_left2[view],
                                cur_sy[view] - rect_top2[view],0,0,
@@ -6217,8 +6217,8 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
       sprite_w[view] = scaled;
       scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
       sprite_h[view] = scaled;
-      map_views_block.map_view_recs[view].tile_to_screen((iptr)(screen_x + view)
-                 ,(iptr)(screen_y + view),x,y);
+      map_views_block.map_view_recs[view].tile_to_screen((screen_x + view)
+                 ,(screen_y + view),x,y);
       screen_x[view] += map_views_block.map_view_recs[view].quarter_tile_width;
       rect_set_xywh(((RECT *)(view_rects + view * 0x10)),screen_x[view],
                          screen_y[view],sprite_w[view],sprite_h[view]);
@@ -6259,7 +6259,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
               scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
               sprite_h[view] = scaled;
               map_views_block.map_view_recs[view].tile_to_screen(
-                         (iptr)(screen_x + view),(iptr)(screen_y + view),x,
+                         (screen_x + view),(screen_y + view),x,
                          y);
               screen_x[view] =
                    screen_x[view] + map_views_block.map_view_recs[view].quarter_tile_width;
@@ -6278,7 +6278,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                        &map_views_block.map_view_recs[view],screen_x[view],
                        screen_y[view]);
             map_views_block.map_view_recs[view].wnd_blit_surface_rect(
-                       (iptr)(view_rects + view * 0x10));
+                       ((RECT *)(view_rects + view * 0x10)));
           }
         }
       }
@@ -6353,7 +6353,7 @@ void __cdecl map_animate_nuke(int x,int y)
     anim_w = ((MapView *)((i8 *)&map_views_block.map_views))->zoom_scale(0x5b);
     anim_h = ((MapView *)((i8 *)&map_views_block.map_views))->zoom_scale(0x48);
     saved_bg->DibSurface::create(anim_w,anim_h);
-    ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
+    ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen(&screen_x,&screen_y,x,y);
     anim_x = (map_views_block.mapview_half_tile_width + screen_x) - (anim_w >> 1);
     anim_y = (map_views_block.mapview_half_tile_height[0] + screen_y) - (anim_h >> 1);
     gfx_copy_rect_clipped(&map_views_block.map_views,saved_bg,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],map_views_block.mapview_client_origin_y[0],0,0,0,0,
@@ -6372,7 +6372,7 @@ void __cdecl map_animate_nuke(int x,int y)
       for (frame2 = 0; frame2 < 0xb; frame2++) {
         ((Sprite *)(((i8 *)&hill_sprites_block.nuke_anim_sprites) + frame2 * 0x3c))->draw((RECT *)clip_rect,&map_views_block.map_views,
                    anim_x,anim_y);
-        ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&dirty_rect);
+        ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&dirty_rect);
         do {
           win_flush_pending_msgs();
           if (2 < game.multiplayer) {
@@ -6385,7 +6385,7 @@ void __cdecl map_animate_nuke(int x,int y)
                            map_views_block.mapview_client_origin_y[0],anim_w,anim_h);
       }
       gfx_reset_zoom_scale();
-      ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&dirty_rect);
+      ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&dirty_rect);
     }
     if (saved_bg != (DibSurface *)0x0) {
       saved_bg->surface_delete(1);

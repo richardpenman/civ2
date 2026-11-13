@@ -38,10 +38,10 @@ i32 WndBase::client_width()
 }
 
 /* 004080f0 auto */
-void WndBase::get_rect_in_parent(iptr rect)
+void WndBase::get_rect_in_parent(RECT *rect)
 
 {
-  wnd_obj_get_rect_in_parent(native_wnd,(LPRECT)rect);
+  wnd_obj_get_rect_in_parent(native_wnd,rect);
   return;
 }
 
@@ -196,7 +196,7 @@ void DibSurface::wnd_blit_surface()
 }
 
 /* 00408490 auto */
-void DibSurface::wnd_blit_surface_rect(iptr rect)
+void DibSurface::wnd_blit_surface_rect(RECT *rect)
 
 {
   DibSurface *view;
@@ -210,7 +210,7 @@ void DibSurface::wnd_blit_surface_rect(iptr rect)
       view = this + 1;
     }
     blit_to_wnd((iptr)view,(RECT *)&bounds_rect,(RECT *)&bounds_rect);
-    ((WndBase *)(this + 1))->view_validate_rect((iptr)&bounds_rect);
+    ((WndBase *)(this + 1))->view_validate_rect((RECT *)&bounds_rect);
   }
   else {
     if (this == (DibSurface *)0x0) {
@@ -219,17 +219,17 @@ void DibSurface::wnd_blit_surface_rect(iptr rect)
     else {
       view2 = this + 1;
     }
-    blit_to_wnd((iptr)view2,(RECT *)rect,(RECT *)rect);
+    blit_to_wnd((iptr)view2,rect,rect);
     ((WndBase *)(this + 1))->view_validate_rect(rect);
   }
   return;
 }
 
 /* 00408580 auto */
-void WndBase::view_validate_rect(iptr rect)
+void WndBase::view_validate_rect(RECT *rect)
 
 {
-  wnd_obj_validate_rect(native_wnd,(RECT *)rect);
+  wnd_obj_validate_rect(native_wnd,rect);
   return;
 }
 
@@ -1461,13 +1461,13 @@ void WndBase::apply_palette_handle(iptr palette)
 }
 
 /* 00451890 auto */
-void WndBase::get_cursor_pos(iptr out_x,iptr out_y)
+void WndBase::get_cursor_pos(i32 *out_x,i32 *out_y)
 
 {
   NativeWindow *hwnd;
   
   hwnd = get_window();
-  wnd_obj_get_cursor_pos(hwnd,(LONG *)out_x,(LONG *)out_y);
+  wnd_obj_get_cursor_pos(hwnd,out_x,out_y);
   return;
 }
 
@@ -1499,7 +1499,7 @@ Hotspot * __thiscall hotspot_ctor(Hotspot *self)
 }
 
 /* 004519b0 auto */
-void Hotspot::create(iptr parent,int id,iptr rect)
+void Hotspot::create(iptr parent,int id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -1507,7 +1507,7 @@ void Hotspot::create(iptr parent,int id,iptr rect)
   if (hwnd != 0) {
     destroy();
   }
-  init(parent,1,id,(RECT *)rect);
+  init(parent,1,id,rect);
   on_enter = 0;
   on_leave = 0;
   on_click = 0;
@@ -2042,7 +2042,7 @@ void __cdecl accel_start_develop_city(int city,int num_tiles)
 }
 
 /* 004bb570 auto */
-void WndBase::move_to_rect(iptr rect)
+void WndBase::move_to_rect(RECT *rect)
 
 {
   wnd_obj_move_to_rect(native_wnd,(int *)rect);
@@ -2134,17 +2134,17 @@ void __cdecl ui_reset_window_layout(void)
   main_frame_wnd_block.main_frame_wnd.maximize();
   city_window_init_size();
   ((WndBase *)((i8 *)&city_wnd.wnd))->show_restored();
-  ((WndBase *)((i8 *)&city_wnd.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.city_wnd_rect);
+  ((WndBase *)((i8 *)&city_wnd.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.city_wnd_rect);
   city_window_close();
   minimap_calc_rect();
   ((WndBase *)((i8 *)&minimap_state.wnd))->show_restored();
   minimap_hidden = 0;
-  ((WndBase *)((i8 *)&minimap_state.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.minimap_wnd_rect);
+  ((WndBase *)((i8 *)&minimap_state.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect);
   ((SurfaceWindow *)((i8 *)&minimap_state.window))->repaint();
   status_calc_wnd_rect();
   ((WndBase *)((i8 *)&status_wnd.wnd))->show_restored();
   status_bar.wnd_hidden = 0;
-  ((WndBase *)((i8 *)&status_wnd.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.status_wnd_rect);
+  ((WndBase *)((i8 *)&status_wnd.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.status_wnd_rect);
   ((SurfaceWindow *)((i8 *)&status_wnd.window))->repaint();
   if (parley_wnd_block.large_layout == 0) {
     width2 = 0x208;
@@ -2165,7 +2165,7 @@ void __cdecl ui_reset_window_layout(void)
   client_height = main_frame_wnd_block.main_frame_wnd.client_height();
   parley_wnd_block.wnd_y = (client_height >> 1) - (height2 >> 1);
   SetRect((LPRECT)parley_wnd_block.init_rect,left,(int)parley_wnd_block.wnd_y,left + width2,(int)parley_wnd_block.wnd_y + height2);
-  ((WndBase *)((i8 *)&parley_wnd_block.window))->move_to_rect((iptr)(LPRECT)parley_wnd_block.init_rect);
+  ((WndBase *)((i8 *)&parley_wnd_block.window))->move_to_rect((RECT *)parley_wnd_block.init_rect);
   if (chat_wnd_block.large_layout == 0) {
     width2 = 0x208;
     height2 = 0x14f;
@@ -2185,7 +2185,7 @@ void __cdecl ui_reset_window_layout(void)
   client_height = main_frame_wnd_block.main_frame_wnd.client_height();
   chat_wnd_block.wnd_y = (client_height >> 1) - (height2 >> 1);
   SetRect((LPRECT)chat_wnd_block.init_rect,left,(int)chat_wnd_block.wnd_y,left + width2,(int)chat_wnd_block.wnd_y + height2);
-  ((WndBase *)((i8 *)&chat_wnd_block.window))->move_to_rect((iptr)(LPRECT)chat_wnd_block.init_rect);
+  ((WndBase *)((i8 *)&chat_wnd_block.window))->move_to_rect((RECT *)chat_wnd_block.init_rect);
   for (view = 1; view < 8; view++) {
     if (map_views_block.map_view_recs[view].open != 0) {
       map_views_block.map_view_recs[view].open = 0;
@@ -2194,7 +2194,7 @@ void __cdecl ui_reset_window_layout(void)
   }
   mapview_calc_rect();
   ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->show_restored();
-  ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((iptr)&map_view_saved_rects_block.map_view_saved_rects);
+  ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((RECT *)&map_view_saved_rects_block.map_view_saved_rects);
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   ui_flush_input();
   return;
@@ -2241,14 +2241,14 @@ void __cdecl menu_load_game(void)
     if (destroyed_civ_count_block.saved_layout_valid == 0) {
       ui_reset_window_layout();
       ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->show_restored();
-      ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((iptr)&map_view_saved_rects_block.map_view_saved_rects);
+      ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((RECT *)&map_view_saved_rects_block.map_view_saved_rects);
       ((MapView *)((i8 *)&map_views_block.map_views))->update_title();
       ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
       for (view = 1; view < 8; view++) {
         if (map_views_block.map_view_recs[view].open != 0) {
           map_views_block.map_view_recs[view].create();
           ((WndBase *)&map_views_block.map_view_recs[view].window)->move_to_rect(
-                     (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10));
+                     ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10)));
           map_views_block.map_view_recs[view].update_title();
           ((SurfaceWindow *)&map_views_block.map_view_recs[view])->repaint();
         }
@@ -2257,25 +2257,25 @@ void __cdecl menu_load_game(void)
     else {
       main_frame_wnd_block.main_frame_wnd.maximize();
       ((WndBase *)((i8 *)&city_wnd.wnd))->show_restored();
-      ((WndBase *)((i8 *)&city_wnd.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.city_wnd_rect);
+      ((WndBase *)((i8 *)&city_wnd.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.city_wnd_rect);
       city_window_close();
       ((WndBase *)((i8 *)&minimap_state.wnd))->show_restored();
       minimap_hidden = 0;
-      ((WndBase *)((i8 *)&minimap_state.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.minimap_wnd_rect);
+      ((WndBase *)((i8 *)&minimap_state.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect);
       ((SurfaceWindow *)((i8 *)&minimap_state.window))->repaint();
       ((WndBase *)((i8 *)&status_wnd.wnd))->show_restored();
       status_bar.wnd_hidden = 0;
-      ((WndBase *)((i8 *)&status_wnd.wnd))->move_to_rect((iptr)&minimap_wnd_rect_block.status_wnd_rect);
+      ((WndBase *)((i8 *)&status_wnd.wnd))->move_to_rect((RECT *)&minimap_wnd_rect_block.status_wnd_rect);
       ((SurfaceWindow *)((i8 *)&status_wnd.window))->repaint();
       ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->show_restored();
-      ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((iptr)&map_view_saved_rects_block.map_view_saved_rects);
+      ((WndBase *)((i8 *)&map_views_block.map_view_wnds))->move_to_rect((RECT *)&map_view_saved_rects_block.map_view_saved_rects);
       ((MapView *)((i8 *)&map_views_block.map_views))->update_title();
       ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
       for (view = 1; view < 8; view++) {
         if (map_views_block.map_view_recs[view].open != 0) {
           map_views_block.map_view_recs[view].create();
           ((WndBase *)&map_views_block.map_view_recs[view].window)->move_to_rect(
-                     (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10));
+                     ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10)));
           map_views_block.map_view_recs[view].update_title();
           ((SurfaceWindow *)&map_views_block.map_view_recs[view])->repaint();
         }
@@ -3898,7 +3898,7 @@ popup_text_run(const char *file,const char *section,i32 result,i32 arg4,i32 arg5
   
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
-  status = dialog2.load_text_section(file,section,result,0,arg4,arg5,arg6,arg7);
+  status = dialog2.load_text_section(file,section,result,0,arg4,arg5,(RECT *)arg6,arg7);
   if (status == 0) {
     if (((byte)dialog2.style_flags & 4) != 0) {
       for (i = 0; i < (int)dialog2.option_count; i++) {
@@ -4583,7 +4583,7 @@ void FrameWindow::layout()
       native_wnd2 = (u8 *)&window;
     }
     ((Hotspot *)caption_buttons[i].hotspot)->create((iptr)native_wnd2,
-               i + 1000,(iptr)button_rect);
+               i + 1000,(RECT *)button_rect);
     ((Hotspot *)caption_buttons[i].hotspot)->set_click_callback(frame_wnd_on_caption_button_click);
     button_x = button_x + width + ui_metrics.padding;
   }
@@ -4624,7 +4624,7 @@ void FrameWindow::set_caption(const char *title)
   rect2.top = frame_top_u;
   rect2.right = frame_right_u;
   rect2.bottom = client_top_u;
-  wnd_blit_surface_rect((iptr)&rect2);
+  wnd_blit_surface_rect((RECT *)&rect2);
   return;
 }
 
@@ -5305,7 +5305,7 @@ void GameMenu::rebuild(iptr window)
         for (; item != (MenuNode *)0x0; item = item->next) {
           if ((item->flags_byte & 2) == 0) {
             menu2->field_0c = menu2->field_0c + 1;
-            native_insert(menu_index,item_index,(const char *)(item->text));
+            native_insert(menu_index,item_index,(const char *)item->text);
             if ((item->flags_byte & 1) != 0) {
               apply_item_enabled(item->id);
             }
@@ -7427,7 +7427,7 @@ void Dialog::layout_place_window()
 
   if ((style_flags & 0x100000) == 0) {
     gfx_get_screen_rect(&screen_rect2);
-    main_frame_wnd_block.main_frame_wnd.get_screen_rect((iptr)((i8 *)&frame_rect2.left));
+    main_frame_wnd_block.main_frame_wnd.get_screen_rect(((RECT *)(i8 *)&frame_rect2.left));
     if (window_x == 0xfffffc19) {
       value = rect_width((RECT *)(iptr)((i8 *)&screen_rect2.left));
       window_x = (value >> 1) - ((int)wnd_width >> 1);
@@ -7818,7 +7818,7 @@ uint Dialog::draw_option(DialogOption *option,int blit)
                    option->flags & 1);
       }
       if (blit != 0) {
-        ((DibSurface *)surf_wnd)->wnd_blit_surface_rect((iptr)&cell_rect);
+        ((DibSurface *)surf_wnd)->wnd_blit_surface_rect(&cell_rect);
       }
     }
   }
@@ -7890,7 +7890,7 @@ void Dialog::draw_option_list()
       }
       ((DibSurface *)surf_wnd)->reset_clip();
       ((DibSurface *)surf_wnd)->wnd_blit_surface_rect(
-                 (iptr)&pane_rect[cur_pane]);
+                 &pane_rect[cur_pane]);
     }
   }
   cur_pane = saved_pane;
@@ -8215,7 +8215,7 @@ void Dialog::create_radio_group(uint *labels)
   else {
     parent_18c = (uptr)&surf_wnd->window;
   }
-  ((RadioGroup *)radio_group)->create(parent_18c,200,(iptr)rect,columns,
+  ((RadioGroup *)radio_group)->create(parent_18c,200,(RECT *)rect,columns,
              option_count,(iptr)labels);
   option = option_list;
   item_index = 0;
@@ -8314,7 +8314,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
         parent = (uptr)&surf_wnd->window;
       }
       ((Scrollbar *)list_vscroll[cur_pane])->create(parent,
-                 0xb,(iptr)&list_vscroll_rect[cur_pane],1);
+                 0xb,&list_vscroll_rect[cur_pane],1);
       count = count_group_options(cur_pane);
       ((Scrollbar *)list_vscroll[cur_pane])->set_range(0,
                  count - 1);
@@ -8342,7 +8342,7 @@ void Dialog::create_list_scrollbar(ScrollFn vscroll_cb,ScrollFn hscroll_cb)
         parent = (uptr)&surf_wnd->window;
       }
       ((Scrollbar *)list_hscroll[cur_pane])->create(parent,0xc,
-                 (iptr)&list_hscroll_rect[cur_pane],0);
+                 &list_hscroll_rect[cur_pane],0);
       count = count_group_options(cur_pane);
       value = column_of_index(count - 1);
       ((Scrollbar *)list_hscroll[cur_pane])->set_range(0,value);
@@ -8386,7 +8386,7 @@ void Dialog::create_list_listbox()
     parent = (uptr)&surf_wnd->window;
   }
   ((ListBox *)listbox[cur_pane])->create(parent,10,
-             (iptr)rect);
+             (RECT *)rect);
   option = option_list;
   item_index = 0;
   for (; option != (DialogOption *)0x0; option = option->next) {
@@ -8447,7 +8447,7 @@ void Dialog::create_sprite_hotspots()
         parent_190 = (uptr)&surf_wnd->window;
       }
       ((Hotspot *)(sprite_hotspots + i * 0x40))->create(parent_190,i + 300,
-                 (iptr)rect);
+                 (RECT *)rect);
       ((Hotspot *)(sprite_hotspots + i * 0x40))->set_click_callback(dialog_on_sprite_click);
       ((Hotspot *)(sprite_hotspots + i * 0x40))->set_dblclick_callback((CtrlNotifyFn)dialog_sprite_on_dblclick);
       y2 = y2 + section_gap + count;
@@ -8552,7 +8552,7 @@ void Dialog::create_buttons()
       parent_198 = (uptr)&surf_wnd->window;
     }
     ((Button *)(button_controls + i * 0x3c))->create(parent_198,i + 100,
-               (iptr)rect,(const char *)label);
+               (RECT *)rect,(const char *)label);
     if ((button_id == 2) || ((button_id == 0 && ((style_flags & 1) == 0)))) {
       ((Button *)(button_controls + i * 0x3c))->set_cancel_button();
     }
@@ -9895,7 +9895,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
 }
 
 /* 005a632a auto */
-i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,iptr init_arg1, iptr init_arg2,iptr init_arg3,uint flags)
+i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,iptr init_arg1, iptr init_arg2,RECT *init_arg3,uint flags)
 
 {
   int cmp;
@@ -9922,7 +9922,7 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
   cmp = text_open_section(file_name,section);
   if (cmp == 0) {
     if ((flags & 0x8000) == 0) {
-      init(init_arg1,init_arg2,(RECT *)init_arg3,flags);
+      init(init_arg1,init_arg2,init_arg3,flags);
     }
     else {
       style_flags = style_flags | flags;
@@ -9985,7 +9985,7 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
     result = 0;
   }
   else if ((flags & 0x8000) == 0) {
-    init(init_arg1,init_arg2,(RECT *)init_arg3,flags);
+    init(init_arg1,init_arg2,init_arg3,flags);
   }
   return result;
 }
@@ -10044,10 +10044,10 @@ SurfaceWindow *SurfaceWindow::scalar_destruct(uint flags)
 }
 
 /* 005a9600 auto */
-void WndBase::get_screen_rect(iptr rect)
+void WndBase::get_screen_rect(RECT *rect)
 
 {
-  wnd_obj_get_screen_rect(native_wnd,(LPRECT)rect);
+  wnd_obj_get_screen_rect(native_wnd,rect);
   return;
 }
 
@@ -10150,8 +10150,8 @@ void SurfaceWindow::resize_clamped(int width,int height)
   int max_height2;
   int max_width2;
   
-  window.get_min_size((iptr)&min_width2,(iptr)&min_height2);
-  window.get_max_size((iptr)&max_width2,(iptr)&max_height2);
+  window.get_min_size(&min_width2,&min_height2);
+  window.get_max_size(&max_width2,&max_height2);
   if (width < min_width2) {
     width = min_width2;
   }
@@ -10184,7 +10184,7 @@ void WndBase::set_client_size(i32 width,i32 height)
 }
 
 /* 005bb910 auto */
-void ModalMenuWindow::get_min_size(iptr out_width,iptr out_height)
+void ModalMenuWindow::get_min_size(i32 *out_width,i32 *out_height)
 
 {
   *(u32 *)out_width = min_width;
@@ -10193,7 +10193,7 @@ void ModalMenuWindow::get_min_size(iptr out_width,iptr out_height)
 }
 
 /* 005bb950 auto */
-void ModalMenuWindow::get_max_size(iptr out_width,iptr out_height)
+void ModalMenuWindow::get_max_size(i32 *out_width,i32 *out_height)
 
 {
   *(u32 *)out_width = max_width;

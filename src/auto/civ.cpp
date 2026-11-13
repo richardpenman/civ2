@@ -530,7 +530,7 @@ void EditorWindow::tech_editor_create_combo(int slot)
     parent_wnd2 = (u8 *)&window;
   }
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_id,
-             (iptr)rect);
+             (RECT *)rect);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_callback(tech_editor_on_combo);
   switch(slot) {
@@ -595,7 +595,7 @@ void EditorWindow::tech_editor_create_edit(int slot)
     parent_wnd2 = (u8 *)&window;
   }
   ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->create((iptr)parent_wnd2,ctrl_id,
-             (iptr)rect,(const char *)&str_empty_11);
+             (RECT *)rect,(const char *)&str_empty_11);
   ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->set_max_len(4);
   ((EditControl *)(numeric_edit_controls_area + slot * 0x48 - 0x2c))->set_callback(editor_numeric_edit_filter);
   return;
@@ -761,7 +761,7 @@ void EditorWindow::tech_editor_dialog_run()
   else {
     list_parent = (u8 *)&window;
   }
-  list_box.create((iptr)list_parent,pos,(iptr)rect);
+  list_box.create((iptr)list_parent,pos,(RECT *)rect);
   list_box.set_font((iptr)&editor_font_block.editor_font);
   pos = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = pos + 8;
@@ -777,7 +777,7 @@ void EditorWindow::tech_editor_dialog_run()
     ok_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
+  ok_button.create((iptr)ok_parent,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)tech_editor_on_ok);
   pos = pos + button_width_u + 2;
   rect_set_xywh((RECT *)rect,pos,btn_y,button_width_u,button_height_u);
@@ -788,7 +788,7 @@ void EditorWindow::tech_editor_dialog_run()
     rename_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2a]);
-  rename_button.create((iptr)rename_parent,0x65,(iptr)rect,(const char *)label);
+  rename_button.create((iptr)rename_parent,0x65,(RECT *)rect,(const char *)label);
   rename_button.set_callback((CtrlNotifyFn)tech_editor_on_rename);
   pos = pos + button_width_u + 2;
   rect_set_xywh((RECT *)rect,pos,btn_y,button_width_u,button_height_u);
@@ -799,7 +799,7 @@ void EditorWindow::tech_editor_dialog_run()
     help_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
+  help_button.create((iptr)help_parent,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)tech_editor_on_help);
   rect_set_xywh((RECT *)rect,pos + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
@@ -810,7 +810,7 @@ void EditorWindow::tech_editor_dialog_run()
     cancel_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)cancel_parent,0x66,(iptr)rect,(const char *)label);
+  cancel_button.create((iptr)cancel_parent,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)tech_editor_on_cancel);
   cancel_button.set_cancel_button();
   button_width_u = 0x55;
@@ -825,7 +825,7 @@ void EditorWindow::tech_editor_dialog_run()
     icon_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x1f3]);
-  icon_button.create((iptr)icon_parent,0x65,(iptr)rect,(const char *)label);
+  icon_button.create((iptr)icon_parent,0x65,(RECT *)rect,(const char *)label);
   icon_button.set_callback((CtrlNotifyFn)tech_editor_on_edit_icon);
   window.set_keyboard_nav(0);
   tech_editor_load_items();
@@ -1927,7 +1927,7 @@ void __cdecl science_advisor_draw(void)
   }
   if (advisor_state.controls_created == 0) {
     rect_set((RECT *)frame_rect2,list_left,list_bottom,list_right,list_bottom + scrollbar_height);
-    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(iptr)frame_rect2,0);
+    ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->create((iptr)&advisor_state.wnd,200,(RECT *)frame_rect2,0);
     max_value = int_clamp((rows_per_page - 1 + known_count) / rows_per_page - 1,0,999);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_range(0,max_value);
     ((Scrollbar *)((i8 *)&advisor_state.scrollbar))->set_pos(advisor_state.first_row);
@@ -2007,13 +2007,13 @@ void __cdecl science_advisor_show(int civ)
   rect_offset((RECT *)button_rect,advisor_state.client_x,(client_y - rect_h) + 0x18e);
   rect_offset((RECT *)button_rect,299,0);
   label = (iptr)label_string(label_table.string_ids[0x147]);
-  ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(iptr)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.close_button))->create((iptr)&advisor_state.wnd,100,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.close_button))->set_callback((CtrlNotifyFn)advisor_on_close_clicked);
   ((Button *)((i8 *)&advisor_state.close_button))->set_default_button();
   ((Button *)((i8 *)&advisor_state.close_button))->set_cancel_button();
   rect_offset((RECT *)button_rect,0xfffffed5,0);
   label = (iptr)label_string(label_table.string_ids[0x173]);
-  ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(iptr)button_rect,(const char *)label);
+  ((Button *)((i8 *)&advisor_state.toggle_button))->create((iptr)&advisor_state.wnd,0x65,(RECT *)button_rect,(const char *)label);
   ((Button *)((i8 *)&advisor_state.toggle_button))->set_callback((CtrlNotifyFn)science_advisor_on_goal_clicked);
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->set_redraw_callback(science_advisor_draw);
   ((SurfaceWindow *)((i8 *)&advisor_state.window))->repaint();
@@ -7940,7 +7940,7 @@ void EditorWindow::cosmic_editor_dialog()
   else {
     list_parent = (u8 *)&window;
   }
-  list_box.create((iptr)list_parent,x_pos,(iptr)rect);
+  list_box.create((iptr)list_parent,x_pos,(RECT *)rect);
   list_box.set_font((iptr)&editor_font_block.editor_font);
   list_box.set_dblclick_callback((CtrlNotifyFn)cosmic_editor_edit_value);
   cosmic_editor_capture_defaults();
@@ -7960,7 +7960,7 @@ void EditorWindow::cosmic_editor_dialog()
     ok_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
+  ok_button.create((iptr)ok_parent,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)cosmic_editor_ok_clicked);
   x_pos = x_pos + button_width_u + 2;
   rect_set_xywh((RECT *)rect,x_pos,y_pos,button_width_u,button_height_u);
@@ -7971,7 +7971,7 @@ void EditorWindow::cosmic_editor_dialog()
     edit_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x238]);
-  rename_button.create((iptr)edit_parent,0x66,(iptr)rect,(const char *)label);
+  rename_button.create((iptr)edit_parent,0x66,(RECT *)rect,(const char *)label);
   rename_button.set_callback((CtrlNotifyFn)cosmic_editor_edit_value);
   rename_button.set_default_button();
   x_pos = x_pos + button_width_u + 2;
@@ -7983,7 +7983,7 @@ void EditorWindow::cosmic_editor_dialog()
     help_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
+  help_button.create((iptr)help_parent,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)cosmic_editor_help_clicked);
   rect_set_xywh((RECT *)rect,x_pos + button_width_u + 2,y_pos,button_width_u,
                      button_height_u);
@@ -7994,7 +7994,7 @@ void EditorWindow::cosmic_editor_dialog()
     cancel_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)cancel_parent,0x66,(iptr)rect,(const char *)label);
+  cancel_button.create((iptr)cancel_parent,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)cosmic_editor_cancel_clicked);
   cancel_button.set_cancel_button();
   window.set_keyboard_nav(0);

@@ -1715,7 +1715,7 @@ static void net_host_human_turn(Dialog &dlg)
   rect_top2 = map_views_block.main_view_frame_top;
   rect_right2 = map_views_block.main_view_frame_right;
   rect_bottom2 = map_views_block.main_view_client_top;
-  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)&rect_left2);
+  ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((RECT *)&rect_left2);
   ((MapView *)((i8 *)&map_views_block.map_views))->update_title();
   map_redraw_all_views(human_civ[0],1);
   status_draw_civ_color(human_civ[0]);

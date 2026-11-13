@@ -424,7 +424,7 @@ void __cdecl minimap_calc_rect(void)
 void __cdecl minimap_on_size(void)
 
 {
-  ((WndBase *)((i8 *)&minimap_state.wnd))->get_rect_in_parent((iptr)&minimap_wnd_rect_block.minimap_wnd_rect);
+  ((WndBase *)((i8 *)&minimap_state.wnd))->get_rect_in_parent((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect);
   return;
 }
 
@@ -432,7 +432,7 @@ void __cdecl minimap_on_size(void)
 void __cdecl minimap_on_move(void)
 
 {
-  ((WndBase *)((i8 *)&minimap_state.wnd))->get_rect_in_parent((iptr)&minimap_wnd_rect_block.minimap_wnd_rect);
+  ((WndBase *)((i8 *)&minimap_state.wnd))->get_rect_in_parent((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect);
   return;
 }
 
@@ -640,7 +640,7 @@ int MapView::point_unit_dir(int mouse_x,int mouse_y,i32 unit_x,i32 unit_y)
   int off_x;
   int tile_sy;
   
-  tile_to_screen((iptr)tile_sx,(iptr)&tile_sy,unit_x,unit_y);
+  tile_to_screen(tile_sx,&tile_sy,unit_x,unit_y);
   if (((short)mouse_x < tile_sx[0]) || ((short)mouse_y < tile_sy)) {
     dir = 8;
   }
@@ -673,9 +673,9 @@ void __cdecl mapview_on_mousemove(int mouse_x,int mouse_y)
 {
   iptr child_wnd;
   int check;
-  iptr x2;
+  int x2;
   iptr unit;
-  iptr y2;
+  int y2;
   int civ;
   uptr cursor_id;
   MapView *view;
@@ -702,7 +702,7 @@ void __cdecl mapview_on_mousemove(int mouse_x,int mouse_y)
     else {
       cursor_id = 0x202;
       unit = (iptr)game.active_unit;
-      check = view->screen_to_tile((iptr)&x2,(iptr)&y2,mouse_x,mouse_y);
+      check = view->screen_to_tile(&x2,&y2,mouse_x,mouse_y);
       if (check != 0) {
         return;
       }
@@ -939,7 +939,7 @@ void __cdecl mapview_on_size(void)
     view = (MapView *)(child_wnd - 0x48);
   }
   view->window.get_rect_in_parent(
-             (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10));
+             ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10)));
   return;
 }
 
@@ -958,7 +958,7 @@ void __cdecl mapview_on_move(void)
     view = (MapView *)(child_wnd - 0x48);
   }
   view->window.get_rect_in_parent(
-             (iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10));
+             ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10)));
   return;
 }
 
@@ -1264,7 +1264,7 @@ u32 ClickMap::add(int id,i32 value,i32 x,i32 y, int width,int height)
 }
 
 /* 0046ad85 auto */
-int ClickMap::hit_test(int x,int y,iptr out_id,iptr out_value)
+int ClickMap::hit_test(int x,int y,i32 *out_id,i32 *out_value)
 
 {
   int hit;
@@ -1282,10 +1282,10 @@ int ClickMap::hit_test(int x,int y,iptr out_id,iptr out_value)
   }
   if (-1 < hit) {
     if (out_id != 0) {
-      *(i32 *)out_id = hit_regions[hit].id;
+      *out_id = hit_regions[hit].id;
     }
     if (out_value != 0) {
-      *(i32 *)out_value = hit_regions[hit].value;
+      *out_value = hit_regions[hit].value;
     }
   }
   return hit;
@@ -1305,7 +1305,7 @@ void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color)
   
   in_view = ((MapView *)((i8 *)&map_views_block.map_views))->tile_in_view(x,y);
   if (in_view != 0) {
-    ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
+    ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen(&screen_x,&screen_y,x,y);
     width = gfx_zoom_scale(0x40,(int)map_views_block.mapview_zoom[0]);
     height = gfx_zoom_scale(0x20,(int)map_views_block.mapview_zoom[0]);
     rect_set_xywh((RECT *)rect,screen_x,screen_y,width,height);
@@ -1318,7 +1318,7 @@ void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color)
     rect_offset((RECT *)rect,0xfffffffe,0xfffffffe);
     gfx_set_text_color_index(color);
     ((DibSurface *)((i8 *)&map_views_block.map_views))->draw_text_in_rect((iptr)&map_views_block.tile_number_font,(const char *)num_text,(RECT *)rect,0);
-    ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((iptr)rect);
+    ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect((RECT *)rect);
   }
   return;
 }
@@ -1444,7 +1444,7 @@ void MapView::update_layout()
 }
 
 /* 0047a540 auto */
-i32 MapView::screen_to_tile(iptr out_x,iptr out_y,i32 mouse_x,i32 mouse_y)
+i32 MapView::screen_to_tile(i32 *out_x,i32 *out_y,i32 mouse_x,i32 mouse_y)
 
 {
   short px;
@@ -1474,8 +1474,8 @@ i32 MapView::screen_to_tile(iptr out_x,iptr out_y,i32 mouse_x,i32 mouse_y)
       tile_y += (((i8 *)&diag_neighbor_bits_block.pick_quadrant_dy_table))[quadrant];
     }
     result = map_wrap_x(tile_x);
-    *(int *)out_x = (int)(short)result;
-    *(int *)out_y = (int)tile_y;
+    *out_x = (int)(short)result;
+    *out_y = (int)tile_y;
     result = 0;
   }
   else {
@@ -1485,7 +1485,7 @@ i32 MapView::screen_to_tile(iptr out_x,iptr out_y,i32 mouse_x,i32 mouse_y)
 }
 
 /* 0047a6b0 auto */
-void MapView::tile_to_screen(iptr out_x,iptr out_y,int x,int y)
+void MapView::tile_to_screen(i32 *out_x,i32 *out_y,int x,int y)
 
 {
   uptr top;
@@ -1495,8 +1495,8 @@ void MapView::tile_to_screen(iptr out_x,iptr out_y,int x,int y)
   top = origin_y_uptr;
   *(u32 *)out_x = half_tile_width_u * (dx - 1) + margin_x_u;
   *(u32 *)out_y = half_tile_height_u * ((y - top) - 1) + margin_y_u;
-  *(u32 *)out_x = *(int *)out_x + client_x;
-  *(u32 *)out_y = *(int *)out_y + client_y;
+  *(u32 *)out_x = *out_x + client_x;
+  *(u32 *)out_y = *out_y + client_y;
   return;
 }
 
@@ -1798,7 +1798,7 @@ void MapView::draw_tile_specials(iptr surface,int screen_x,int screen_y,int x,in
     rect_set_xywh((RECT *)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
     civ = tile_owner(x,y);
     color = civ_color_primary(civ);
-    ((DibSurface *)surface)->replace_color((iptr)airbase_area,0x106,color);
+    ((DibSurface *)surface)->replace_color((RECT *)airbase_area,0x106,color);
   }
 }
 
@@ -2065,7 +2065,7 @@ void MapView::draw_unit_at(int unit)
   i32 screen_x;
   
   if (((blink.unit_active == '\0') || (blink.unit_phase == '\0')) || (moving_units_mode != 1)) {
-    tile_to_screen((iptr)&screen_x,(iptr)&screen_y,(int)units[unit].x,
+    tile_to_screen(&screen_x,&screen_y,(int)units[unit].x,
                        (int)units[unit].y);
     screen_y -= half_tile_height_u;
     gfx_draw_unit(this,unit,5,screen_x,screen_y,(int)(short)zoom_u,0);
@@ -2180,7 +2180,7 @@ void MapView::draw_tile(int x,int y,int civ)
   i32 screen_x;
   int near_city;
   
-  tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x,y);
+  tile_to_screen(&screen_x,&screen_y,x,y);
   draw_tile_terrain((iptr)this,screen_x,screen_y,x,y,civ,
                      (int)(short)zoom_u,-1);
   win_flush_pending_msgs();
@@ -2276,7 +2276,7 @@ void MapView::draw_city_names(i32 center_x,i32 center_y,int radius)
             visible2 = 1;
           }
           if (visible2 != 0) {
-            tile_to_screen((iptr)&screen_x,(iptr)&screen_y,x2,y2);
+            tile_to_screen(&screen_x,&screen_y,x2,y2);
             label_x = half_tile_width_u + screen_x;
             label_y = ((int)(tile_height_u * 3) >> 2) + screen_y;
             text_set_colors(10,0xffffffff,0xffffffff,0xffffffff);
@@ -2313,7 +2313,7 @@ void MapView::draw_city_names(i32 center_x,i32 center_y,int radius)
 }
 
 /* 0047c7aa auto */
-void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
+void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,RECT *out_rect)
 
 {
   i8 rect[16];
@@ -2321,12 +2321,12 @@ void MapView::tile_radius_rect(i32 tile_x,i32 tile_y,int radius,iptr out_rect)
   int top;
   int left;
   
-  tile_to_screen((iptr)&left,(iptr)&top,tile_x,tile_y);
+  tile_to_screen(&left,&top,tile_x,tile_y);
   top -= (radius * 2 + 1) * half_tile_height_u;
   left += half_tile_width_u * radius * -2;
   width2 = (radius * 2 + 1) * tile_width_u;
   rect_set_xywh((RECT *)rect,left,top,width2,(radius * 4 + 3) * half_tile_height_u);
-  rect_intersect_into((LPRECT)out_rect,(RECT *)rect,(RECT *)&client_rect);
+  rect_intersect_into(out_rect,(RECT *)rect,(RECT *)&client_rect);
   return;
 }
 
@@ -2344,7 +2344,7 @@ void MapView::draw_tile_radius(int center_x,int center_y,int radius,i32 civ)
   int row_extent;
   i8 clip_rect[16];
   
-  tile_radius_rect(center_x,center_y,radius,(iptr)clip_rect);
+  tile_radius_rect(center_x,center_y,radius,(RECT *)clip_rect);
   set_clip((RECT *)clip_rect);
   extent = radius * 2 + 2;
   for (dy = -extent; (int)dy <= (int)extent; dy++) {
@@ -2415,8 +2415,8 @@ void MapView::blit_tile_radius(i32 tile_x,i32 tile_y,i32 radius)
 {
   i8 rect[16];
   
-  tile_radius_rect(tile_x,tile_y,radius,(iptr)rect);
-  wnd_blit_surface_rect((iptr)rect);
+  tile_radius_rect(tile_x,tile_y,radius,(RECT *)rect);
+  wnd_blit_surface_rect((RECT *)rect);
   return;
 }
 
@@ -2466,7 +2466,7 @@ void MapView::redraw_area(i32 tile_x,i32 tile_y,i32 radius, int viewer_civ,int d
     if ((((moving_units_mode == 0) && (blink.unit_phase != '\0')) && (blink.unit_active != '\0')) &&
        ((map_view_index == 0 &&
         (in_view = tile_in_view((int)map_cursor.x[0],(int)map_cursor.y[0]), in_view != 0)))) {
-      tile_to_screen((iptr)&cursor_x,(iptr)&cursor_y,(int)map_cursor.x[0],(int)map_cursor.y[0]);
+      tile_to_screen(&cursor_x,&cursor_y,(int)map_cursor.x[0],(int)map_cursor.y[0]);
       apply_zoom();
       ((Sprite *)((i8 *)&map_cursor_sprite_block.map_cursor_sprite))->draw((RECT *)cursor_rect,this,cursor_x,cursor_y);
       gfx_reset_zoom_scale();

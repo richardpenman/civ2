@@ -2091,7 +2091,7 @@ void PortraitDialog::create_buttons()
   else {
     parent_a = (u8 *)this + 0x48;
   }
-  ok_button.create_with_callback((iptr)parent_a,0x65,(iptr)&button_rect,0x21,(const char *)&str_ok);
+  ok_button.create_with_callback((iptr)parent_a,0x65,&button_rect,0x21,(const char *)&str_ok);
   OffsetRect(&button_rect,((ui_metrics.border_width * 8 + 0x276 >> 1) + 2) - ui_metrics.border_width,0);
   if (this == (PortraitDialog *)0x0) {
     parent_b = (u8 *)0x0;
@@ -2099,7 +2099,7 @@ void PortraitDialog::create_buttons()
   else {
     parent_b = (u8 *)this + 0x48;
   }
-  cancel_button.create_with_callback((iptr)parent_b,100,(iptr)&button_rect,0x21,(const char *)&str_cancel);
+  cancel_button.create_with_callback((iptr)parent_b,100,&button_rect,0x21,(const char *)&str_cancel);
   cancel_button.set_callback(portrait_dlg_on_button);
   ok_button.set_callback(portrait_dlg_on_button);
   return;
@@ -2919,7 +2919,7 @@ i32 __cdecl gfx_dissolve_blit(DibSurface *surface,RECT *rect,uint cell_size,int 
           cell_right = right_edge;
         }
         SetRect(&cell_rect,cell_x,cell_y,cell_right,lo);
-        (surface)->wnd_blit_surface_rect((iptr)&cell_rect);
+        (surface)->wnd_blit_surface_rect(&cell_rect);
         remaining--;
         cells[pick].x = cells[remaining].x;
         cells[pick].y =
@@ -2946,7 +2946,7 @@ i32 __cdecl gfx_dissolve_blit(DibSurface *surface,RECT *rect,uint cell_size,int 
           cell_right = right_edge;
         }
         SetRect(&cell_rect,cell_x,cell_y,cell_right,lo);
-        (surface)->wnd_blit_surface_rect((iptr)&cell_rect);
+        (surface)->wnd_blit_surface_rect(&cell_rect);
         remaining--;
         cells[pick].x = cells[remaining].x;
         cells[pick].y =
@@ -3065,25 +3065,25 @@ gfx_draw_unit(DibSurface *surface,int unit,uint draw_flags,int px,int py,int zoo
       ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_stack_shadow,surface,
                  side + stack_dx + shield_x,stack_dy + shield_y + 1);
       rect_offset(&shield_rect,side,1);
-      (surface)->replace_color((iptr)&shield_rect.left,0x106,0xf);
-      (surface)->replace_color((iptr)&shield_rect.left,0x105,0xf);
+      (surface)->replace_color((RECT *)&shield_rect.left,0x106,0xf);
+      (surface)->replace_color((RECT *)&shield_rect.left,0x105,0xf);
       rect_offset(&shield_rect,-side,0xffffffff);
     }
     ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_stack,surface,stack_dx + shield_x,
                stack_dy + shield_y);
-    (surface)->replace_color((iptr)&shield_rect.left,0x106,color_mid);
-    (surface)->replace_color((iptr)&shield_rect.left,0x105,color_mid);
+    (surface)->replace_color((RECT *)&shield_rect.left,0x106,color_mid);
+    (surface)->replace_color((RECT *)&shield_rect.left,0x105,color_mid);
   }
   rect_set_xywh(&shield_rect,shield_x,shield_y,shield_width,shield_height);
   ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_shield_shadow,surface,side + shield_x,shield_y + 1
             );
   rect_offset(&shield_rect,side,1);
-  (surface)->replace_color((iptr)&shield_rect.left,0x106,0x10);
-  (surface)->replace_color((iptr)&shield_rect.left,0x105,0x10);
+  (surface)->replace_color((RECT *)&shield_rect.left,0x106,0x10);
+  (surface)->replace_color((RECT *)&shield_rect.left,0x105,0x10);
   rect_offset(&shield_rect,-side,0xffffffff);
   ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_shield,surface,shield_x,shield_y);
-  (surface)->replace_color((iptr)&shield_rect.left,0x106,color_primary);
-  (surface)->replace_color((iptr)&shield_rect.left,0x105,color_mid);
+  (surface)->replace_color((RECT *)&shield_rect.left,0x106,color_primary);
+  (surface)->replace_color((RECT *)&shield_rect.left,0x105,color_mid);
   scaled = gfx_zoom_scale(2,zoom);
   rect_set_xywh(&band_rect,shield_x,shield_y,shield_width,scaled);
   gfx_fill_rect(surface,&band_rect,10);
@@ -3427,7 +3427,7 @@ gfx_draw_city(DibSurface *surface,int city,uint draw_flags,int px,int py,int zoo
     }
     else {
       ((Sprite *)((i8 *)&fortify_overlay_sprites_block.city_disorder_icon_sprite))->draw((RECT *)clip_disorder,surface,px,py);
-      (surface)->replace_color((iptr)&label_rect.left,0x106,color_primary);
+      (surface)->replace_color((RECT *)&label_rect.left,0x106,color_primary);
     }
   }
   gfx_reset_zoom_scale();
@@ -4513,7 +4513,7 @@ void __cdecl sprite_editor_ok_clicked(void)
   
   rect_set_xywh((RECT *)rect,0,0,sprite_editor.width,sprite_editor.height);
   ((DibSurface *)((i8 *)&sprite_editor.surface))->replace_color_clip(0x109,0x107);
-  sprite_editor.target_sprite->grab_surface_rect((iptr)&sprite_editor.surface,(iptr)rect);
+  sprite_editor.target_sprite->grab_surface_rect((iptr)&sprite_editor.surface,(RECT *)rect);
   road_sprites_block.unit_shield_x_offsets[editor_active.wnd->item] = sprite_editor.flag_x;
   road_sprites_block.unit_shield_y_offsets[editor_active.wnd->item] = sprite_editor.flag_y;
   if (sprite_editor.ok_callback != 0) {
@@ -4542,7 +4542,7 @@ void __cdecl sprite_editor_rebuild_sprite(void)
   
   ((Sprite *)((i8 *)&sprite_editor.result_sprite))->free();
   rect_set_xywh((RECT *)rect,0,0,sprite_editor.width,sprite_editor.height);
-  ((Sprite *)((i8 *)&sprite_editor.result_sprite))->grab_rect((iptr)&sprite_editor.surface,0xfe,(iptr)rect);
+  ((Sprite *)((i8 *)&sprite_editor.result_sprite))->grab_rect((iptr)&sprite_editor.surface,0xfe,(RECT *)rect);
   sprite_editor.undo_flag_x = sprite_editor.flag_x;
   sprite_editor.undo_flag_y = sprite_editor.flag_y;
   return;
@@ -4593,7 +4593,7 @@ void __cdecl sprite_editor_draw_swatches(void)
     gfx_draw_frame_rect(&sprite_editor.window,sprite_editor.origin_x + 0x166,sprite_editor.origin_y + 0xac,0x20,0x20,10);
   }
   rect_set_xywh((RECT *)rect,sprite_editor.origin_x + 0x11e,sprite_editor.origin_y + 0xac,0x68,0x20);
-  ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect((iptr)rect);
+  ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect((RECT *)rect);
   return;
 }
 
@@ -4621,7 +4621,7 @@ void __cdecl sprite_editor_draw_palette_cell(DibSurface *surface,int origin_x,in
     else {
       gfx_draw_bevel_rect(surface,(RECT *)rect,0x1d,0x1d);
     }
-    (surface)->wnd_blit_surface_rect((iptr)rect);
+    (surface)->wnd_blit_surface_rect((RECT *)rect);
   }
   return;
 }
@@ -4718,7 +4718,7 @@ i8 * __cdecl sprite_editor_plot_pixel(int px,int py)
     else {
       color1 = sprite_editor.paint_color;
     }
-    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((iptr)&sprite_editor.plot_rect,color1);
+    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((RECT *)&sprite_editor.plot_rect,color1);
     rect_set_xywh((RECT *)&sprite_editor.plot_rect,px * 4 + sprite_editor.origin_x + 0xc,sprite_editor.origin_y + py * 4 + 0x10,
                        0xc,4);
     if (sprite_editor.paint_color == 0) {
@@ -4735,7 +4735,7 @@ i8 * __cdecl sprite_editor_plot_pixel(int px,int py)
     else {
       color3 = sprite_editor.paint_color;
     }
-    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((iptr)&sprite_editor.plot_rect,color3);
+    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((RECT *)&sprite_editor.plot_rect,color3);
     rect_set_xywh((RECT *)&sprite_editor.plot_rect,px * 4 + sprite_editor.origin_x + 0x10,py * 4 + sprite_editor.origin_y + 0xc,4
                        ,0xc);
     if (sprite_editor.paint_color == 0) {
@@ -4761,7 +4761,7 @@ i8 * __cdecl sprite_editor_plot_pixel(int px,int py)
     else {
       color5 = sprite_editor.paint_color;
     }
-    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((iptr)&sprite_editor.plot_rect,color5);
+    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((RECT *)&sprite_editor.plot_rect,color5);
     rect_set_xywh((RECT *)&sprite_editor.plot_rect,px * 4 + sprite_editor.origin_x + 0xc,sprite_editor.origin_y + py * 4 + 0x10,
                        0x10,8);
     if (sprite_editor.paint_color == 0) {
@@ -4778,7 +4778,7 @@ i8 * __cdecl sprite_editor_plot_pixel(int px,int py)
     else {
       color7 = sprite_editor.paint_color;
     }
-    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((iptr)&sprite_editor.plot_rect,color7);
+    ((DibSurface *)((i8 *)&sprite_editor.surface))->fill_rect((RECT *)&sprite_editor.plot_rect,color7);
     rect_set_xywh((RECT *)&sprite_editor.plot_rect,px * 4 + sprite_editor.origin_x + 0x10,py * 4 + sprite_editor.origin_y + 0xc,8
                        ,0x10);
     if (sprite_editor.paint_color == 0) {
@@ -4894,7 +4894,7 @@ static void sprite_editor_tool_click(i32 tool_index,iptr old_flag_x,iptr old_fla
     sprite_editor.undo_flag_y = old_flag_y;
     temp_sprite.free();
     rect_set_xywh((RECT *)grab_rect,0,0,sprite_editor.width,sprite_editor.height);
-    temp_sprite.grab_rect((iptr)&sprite_editor.surface,0xfe,(iptr)grab_rect);
+    temp_sprite.grab_rect((iptr)&sprite_editor.surface,0xfe,(RECT *)grab_rect);
     ((Sprite *)((i8 *)&sprite_editor.result_sprite))->draw_keyed((RECT *)draw_rect,&sprite_editor.surface,0xfe,0,0);
     ((Sprite *)((i8 *)&sprite_editor.result_sprite))->free();
     temp_sprite.merge_onto((iptr)&sprite_editor.result_sprite);
@@ -5101,7 +5101,7 @@ static void sprite_editor_canvas_click(int x,int y,int &old_color,int &new_color
       sprite_editor.paint_color = sprite_editor_colors.left;
     }
     dirty_rect = (iptr)sprite_editor_plot_pixel(temp_x,temp_y);
-    ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect(dirty_rect);
+    ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect((RECT *)dirty_rect);
     break;
   case 3:
     sprite_editor_rebuild_sprite();
@@ -5268,7 +5268,7 @@ void __cdecl sprite_editor_on_mouse_move(int x,int y)
         }
         else if (sprite_editor.tool == 2) {
           dirty_rect = (iptr)sprite_editor_plot_pixel(px,py);
-          ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect(dirty_rect);
+          ((DibSurface *)((i8 *)&sprite_editor.window))->wnd_blit_surface_rect((RECT *)dirty_rect);
         }
       }
     }
@@ -5344,12 +5344,12 @@ void __cdecl sprite_editor_run(Sprite *sprite,const char *title,i32 sheet_mode,S
   button_x = sprite_editor.origin_x + 2;
   rect_set_xywh((RECT *)button_rect,button_x,button_y2,button_width2,button_height);
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)&sprite_editor.wnd,0x65,(iptr)button_rect,(const char *)label);
+  ok_button.create((iptr)&sprite_editor.wnd,0x65,(RECT *)button_rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)sprite_editor_ok_clicked);
   button_x = button_x + button_width2 + 2;
   rect_set_xywh((RECT *)button_rect,button_x,button_y2,button_width2,button_height);
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)&sprite_editor.wnd,0x66,(iptr)button_rect,(const char *)label);
+  cancel_button.create((iptr)&sprite_editor.wnd,0x66,(RECT *)button_rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)sprite_editor_cancel_clicked);
   cancel_button.set_cancel_button();
   ((WndHandlers *)((i8 *)&sprite_editor.wnd_events))->set_lbuttondown_handler(sprite_editor_on_mouse_down);
@@ -5393,7 +5393,7 @@ void __cdecl sprite_editor_redraw(void)
   width2 = sprite_editor.width << 2;
   height2 = sprite_editor.height << 2;
   rect_set_xywh((RECT *)grab_rect,0,0,sprite_editor.width,sprite_editor.height);
-  ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->grab_surface_rect((iptr)&sprite_editor.surface,(iptr)grab_rect);
+  ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->grab_surface_rect((iptr)&sprite_editor.surface,(RECT *)grab_rect);
   key_color = ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->get_key_color();
   sprite_editor.key_color = (uint)key_color;
   gfx_fill_rect_xywh(&sprite_editor.window,x2,y2,width2,height2,sprite_editor.key_color);
@@ -5721,7 +5721,7 @@ void __cdecl sprite_picker_ok_clicked(void)
   ((Sprite *)((i8 *)&sprite_picker_sprite_block.sprite_picker_sprite))->draw((RECT *)draw_rect,&sprite_editor.surface,0,0);
   ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->free();
   rect_set_xywh((RECT *)grab_rect,0,0,width2,height2);
-  ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->grab_surface_rect((iptr)&sprite_editor.surface,(iptr)grab_rect);
+  ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->grab_surface_rect((iptr)&sprite_editor.surface,(RECT *)grab_rect);
   sprite_editor.sprite_picker_running = 0;
   sprite_editor.sprite_picker_dialog->window.end_modal_loop();
   return;
@@ -6028,7 +6028,7 @@ void SpritePicker::run()
   else {
     scroll_parent = (u8 *)&window;
   }
-  scrollbar.create((iptr)scroll_parent,0x65,(iptr)rect,0);
+  scrollbar.create((iptr)scroll_parent,0x65,(RECT *)rect,0);
   scrollbar.set_range(0,sprite_editor.sprite_sheet_cell_count - 1);
   scrollbar.set_pos(0);
   scrollbar.set_callback(sprite_picker_select_cell);
@@ -6045,7 +6045,7 @@ void SpritePicker::run()
     ok_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  button_1.create((iptr)ok_parent,0xc9,(iptr)rect,(const char *)label);
+  button_1.create((iptr)ok_parent,0xc9,(RECT *)rect,(const char *)label);
   button_1.set_callback((CtrlNotifyFn)sprite_picker_ok_clicked);
   button_1.set_default_button();
   x2 = x2 + init_lux_rate + 2;
@@ -6057,7 +6057,7 @@ void SpritePicker::run()
     import_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x255]);
-  button_2.create((iptr)import_parent,0xc9,(iptr)rect,(const char *)label);
+  button_2.create((iptr)import_parent,0xc9,(RECT *)rect,(const char *)label);
   button_2.set_callback((CtrlNotifyFn)sprite_picker_import_all_clicked);
   button_2.set_default_button();
   if (sprite_picker_sprite_block.sprite_sheet_mode == 5) {
@@ -6072,7 +6072,7 @@ void SpritePicker::run()
     cancel_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  button_3.create((iptr)cancel_parent,0xca,(iptr)rect,(const char *)label);
+  button_3.create((iptr)cancel_parent,0xca,(RECT *)rect,(const char *)label);
   button_3.set_callback((CtrlNotifyFn)sprite_picker_cancel_clicked);
   button_3.set_cancel_button();
   set_redraw_callback(sprite_picker_redraw_cb);
@@ -6386,7 +6386,7 @@ gfx_fill_rect_xywh(DibSurface *surface,i32 x,i32 y,int width,int height,
   i8 rect[16];
   
   rect_set_xywh((RECT *)rect,x,y,width,height);
-  (surface)->fill_rect((iptr)rect,color);
+  (surface)->fill_rect((RECT *)rect,color);
   return;
 }
 
@@ -6723,7 +6723,7 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
                 dbg_log((const char *)&str_warning_skipping_local_color_table);
               }
               SetRect(&rect,0,0,width2,height2);
-              result = resize((iptr)&rect);
+              result = resize(&rect);
               if (result == 0) {
                 mem_handle_unlock(mem);
                 mem_handle_free(mem);
@@ -6838,7 +6838,7 @@ i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,i
           dbg_log((const char *)&str_warning_skipping_local_color_table_2);
         }
         SetRect(&rect,0,0,width2,height2);
-        resize((iptr)&rect);
+        resize(&rect);
         lzw_min_code = image_desc[9];
         image_data = image_desc + 10;
         win_flush_pending_msgs();
@@ -6921,12 +6921,12 @@ i32 __thiscall surface_alloc_dib_by_bpp(DibSurface *self,RECT *rect)
 }
 
 /* 005c019d auto */
-i32 DibSurface::resize(iptr rect)
+i32 DibSurface::resize(RECT *rect)
 
 {
   i32 result;
   
-  result = alloc_dib8((RECT *)rect);
+  result = alloc_dib8(rect);
   return result;
 }
 
@@ -6980,7 +6980,7 @@ void DibSurface::unlock()
 }
 
 /* 005c0333 auto */
-void DibSurface::fill_rect(iptr rect,i32 color)
+void DibSurface::fill_rect(RECT *rect,i32 color)
 
 {
   char locked;
@@ -7000,7 +7000,7 @@ void DibSurface::fill_rect(iptr rect,i32 color)
     was_locked = 0;
     lock();
   }
-  IntersectRect(&clipped,(RECT *)rect,(RECT *)&clip_left);
+  IntersectRect(&clipped,rect,(RECT *)&clip_left);
   width2 = rect_width(&clipped);
   if ((width2 != 0) && (height2 = rect_height(&clipped), height2 != 0)) {
     surf_height = surface_height();
@@ -7017,7 +7017,7 @@ void DibSurface::fill_rect(iptr rect,i32 color)
 void DibSurface::fill(i32 color)
 
 {
-  fill_rect((iptr)&clip_left,color);
+  fill_rect((RECT *)&clip_left,color);
   return;
 }
 
@@ -7025,12 +7025,12 @@ void DibSurface::fill(i32 color)
 void DibSurface::replace_color_clip(i32 from_color,i32 to_color)
 
 {
-  replace_color((iptr)&clip_left,from_color,to_color);
+  replace_color((RECT *)&clip_left,from_color,to_color);
   return;
 }
 
 /* 005c0479 auto */
-void DibSurface::replace_color(iptr rect,i32 from_color,i32 to_color)
+void DibSurface::replace_color(RECT *rect,i32 from_color,i32 to_color)
 
 {
   char locked;
@@ -7051,7 +7051,7 @@ void DibSurface::replace_color(iptr rect,i32 from_color,i32 to_color)
     was_locked = 0;
     lock();
   }
-  IntersectRect(&clipped,(RECT *)rect,(RECT *)&clip_left);
+  IntersectRect(&clipped,rect,(RECT *)&clip_left);
   width2 = rect_width(&clipped);
   pixel = (char *)pixel_ptr(clipped.left,clipped.top);
   row = 0;
@@ -7341,11 +7341,11 @@ void DibSurface::draw_text_in_rect(iptr font,const char *text,RECT *rect,uint fl
 }
 
 /* 005c1167 auto */
-void DibSurface::draw_text_rect(iptr font,const char *text,iptr rect,i32 flags)
+void DibSurface::draw_text_rect(iptr font,const char *text,RECT *rect,i32 flags)
 
 {
   if (dib != 0) {
-    dib_draw_text_wrap(dib,*(i32 *)font,(char *)text,(LPRECT)rect,flags);
+    dib_draw_text_wrap(dib,*(i32 *)font,(char *)text,rect,flags);
   }
   return;
 }
@@ -8350,12 +8350,12 @@ void Sprite::free()
 }
 
 /* 005cebb4 auto */
-void Sprite::grab_surface_rect(iptr surface,iptr rect)
+void Sprite::grab_surface_rect(iptr surface,RECT *rect)
 
 {
   u32 handle;
   
-  handle = encode_from_surface((DibSurface *)surface,0xffffffff,(RECT *)rect);
+  handle = encode_from_surface((DibSurface *)surface,0xffffffff,rect);
   data_handle = handle;
   lock();
   return;
@@ -8376,12 +8376,12 @@ void Sprite::encode_rect(iptr surface,int x,int y,int width,int height)
 }
 
 /* 005cec44 auto */
-void Sprite::grab_rect(iptr surface,uint key_color,iptr rect)
+void Sprite::grab_rect(iptr surface,uint key_color,RECT *rect)
 
 {
   u32 handle;
   
-  handle = encode_from_surface((DibSurface *)surface,key_color & 0xff,(RECT *)rect);
+  handle = encode_from_surface((DibSurface *)surface,key_color & 0xff,rect);
   data_handle = handle;
   lock();
   return;
@@ -8476,7 +8476,7 @@ void Sprite::set_origin(u32 x,u32 y)
 }
 
 /* 005cf3c5 auto */
-void Sprite::get_origin(iptr out_x,iptr out_y)
+void Sprite::get_origin(i32 *out_x,i32 *out_y)
 
 {
   *(u32 *)out_x = offset_x;

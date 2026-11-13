@@ -84,7 +84,7 @@ void Control::destroy()
 }
 
 /* 0040f680 auto */
-void Button::create(iptr parent,i32 ctrl_id,iptr rect,const char *label)
+void Button::create(iptr parent,i32 ctrl_id,RECT *rect,const char *label)
 
 {
   u32 new_hwnd;
@@ -93,7 +93,7 @@ void Button::create(iptr parent,i32 ctrl_id,iptr rect,const char *label)
     destroy();
   }
   font = (u32)(*(i8 * *)draw_target.font_rest);
-  init(parent,6,ctrl_id,(RECT *)rect);
+  init(parent,6,ctrl_id,rect);
   on_click = 0;
   new_hwnd = button_create_hwnd((int *)rect,this,label,1,(GameFont *)font);
   hwnd = new_hwnd;
@@ -245,7 +245,7 @@ void Scrollbar::destruct()
 }
 
 /* 0040fc50 auto */
-void Scrollbar::create(iptr parent,int ctrl_id,iptr rect,i32 style)
+void Scrollbar::create(iptr parent,int ctrl_id,RECT *rect,i32 style)
 
 {
   u32 new_hwnd;
@@ -253,7 +253,7 @@ void Scrollbar::create(iptr parent,int ctrl_id,iptr rect,i32 style)
   if (hwnd != 0) {
     destroy();
   }
-  init(parent,8,ctrl_id,(RECT *)rect);
+  init(parent,8,ctrl_id,rect);
   new_hwnd = scrollbar_create_hwnd((int *)rect,this,style,1);
   hwnd = new_hwnd;
   scrollbar_hwnd_set_range(hwnd,1,100);
@@ -331,7 +331,7 @@ void __thiscall edit_dtor(EditControl *self)
 }
 
 /* 00418910 auto */
-void EditControl::create(iptr parent,i32 ctrl_id,iptr rect,const char *text)
+void EditControl::create(iptr parent,i32 ctrl_id,RECT *rect,const char *text)
 
 {
   u32 new_hwnd;
@@ -340,7 +340,7 @@ void EditControl::create(iptr parent,i32 ctrl_id,iptr rect,const char *text)
     destroy();
   }
   edit_font = (u32)(*(i8 * *)(draw_target.font_rest + 12));
-  init(parent,4,ctrl_id,(RECT *)rect);
+  init(parent,4,ctrl_id,rect);
   new_hwnd = edit_create_window((int *)rect,this,1,1,(GameFont *)edit_font);
   hwnd = new_hwnd;
   hwnd_send_settext(hwnd,(LPARAM)(text));
@@ -406,7 +406,7 @@ void __thiscall combo_dtor(ComboBox *self)
 }
 
 /* 00418bf0 auto */
-void ComboBox::create(iptr parent,i32 ctrl_id,iptr rect)
+void ComboBox::create(iptr parent,i32 ctrl_id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -414,7 +414,7 @@ void ComboBox::create(iptr parent,i32 ctrl_id,iptr rect)
   if (hwnd != 0) {
     destroy();
   }
-  init(parent,10,ctrl_id,(RECT *)rect);
+  init(parent,10,ctrl_id,rect);
   new_hwnd = combo_create_window((int *)rect,this,1);
   hwnd = new_hwnd;
   item_count = 0;
@@ -503,7 +503,7 @@ void ListBox::destruct()
 }
 
 /* 00418f40 auto */
-void ListBox::create(iptr parent,i32 ctrl_id,iptr rect)
+void ListBox::create(iptr parent,i32 ctrl_id,RECT *rect)
 
 {
   u32 new_hwnd;
@@ -512,7 +512,7 @@ void ListBox::create(iptr parent,i32 ctrl_id,iptr rect)
     destroy();
   }
   font = (u32)(*(i8 * *)(draw_target.font_rest + 16));
-  init(parent,7,ctrl_id,(RECT *)rect);
+  init(parent,7,ctrl_id,rect);
   new_hwnd = listbox_create_hwnd((int *)rect,this,1,0,(GameFont *)font);
   hwnd = new_hwnd;
   item_count = 0;
@@ -746,7 +746,7 @@ void EditControl::set_sel(i32 sel_start,i32 sel_end)
 }
 
 /* 00497d40 auto */
-void Button::create_with_callback(iptr parent,i32 ctrl_id,iptr rect,u32 callback,const char *label)
+void Button::create_with_callback(iptr parent,i32 ctrl_id,RECT *rect,u32 callback,const char *label)
 
 {
   on_select = callback;
@@ -829,7 +829,7 @@ void Control::set_focus()
 }
 
 /* 004bb620 auto */
-void EditControl::create_styled(iptr parent,i32 ctrl_id,iptr rect,const char *text, i32 multiline,i32 style)
+void EditControl::create_styled(iptr parent,i32 ctrl_id,RECT *rect,const char *text, i32 multiline,i32 style)
 
 {
   u32 new_hwnd;
@@ -838,7 +838,7 @@ void EditControl::create_styled(iptr parent,i32 ctrl_id,iptr rect,const char *te
     destroy();
   }
   edit_font = (u32)(*(i8 * *)(draw_target.font_rest + 12));
-  init(parent,4,ctrl_id,(RECT *)rect);
+  init(parent,4,ctrl_id,rect);
   new_hwnd = edit_create_window((int *)rect,this,multiline,style,(GameFont *)edit_font);
   hwnd = new_hwnd;
   hwnd_send_settext(hwnd,(LPARAM)(text));
@@ -1072,7 +1072,7 @@ RadioGroup *RadioGroup::construct()
 }
 
 /* 005310a0 auto */
-void RadioGroup::create(iptr parent,i32 ctrl_id,iptr rect,u32 columns,u32 item_count, iptr labels)
+void RadioGroup::create(iptr parent,i32 ctrl_id,RECT *rect,u32 columns,u32 item_count, iptr labels)
 
 {
   u32 handle;
@@ -1081,7 +1081,7 @@ void RadioGroup::create(iptr parent,i32 ctrl_id,iptr rect,u32 columns,u32 item_c
     destroy();
   }
   radio_font = (u32)(*(i8 * *)(draw_target.font_rest + 4));
-  init(parent,3,ctrl_id,(RECT *)rect);
+  init(parent,3,ctrl_id,rect);
   on_select = 0;
   on_dblclick = 0;
   on_rclick = 0;
@@ -2863,7 +2863,7 @@ void EditControl::create_at(iptr parent,i32 ctrl_id,int x,int y,int width, const
   edit_font = (u32)(*(i8 * *)(draw_target.font_rest + 12));
   on_change = 0;
   SetRect(&rect,x,y,width + x,y + 0x1e);
-  create(parent,ctrl_id,(iptr)&rect,text);
+  create(parent,ctrl_id,&rect,text);
   return;
 }
 
@@ -3715,7 +3715,7 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   face_surface.fill(bg_color & 0xff);
   center_x = width >> 1;
   center_y = height >> 1;
-  ((Sprite *)sprite)->get_origin((iptr)&origin_x2,(iptr)&origin_y2);
+  ((Sprite *)sprite)->get_origin(&origin_x2,&origin_y2);
   half_w = ((Sprite *)sprite)->get_width();
   half_w = half_w >> 1;
   half_h = ((Sprite *)sprite)->get_height();
@@ -4570,7 +4570,7 @@ void Scrollbar::set_page_size(u32 page_size)
   int min_pos;
   int max_pos;
   
-  get_ctl_range((iptr)&min_pos,(iptr)&max_pos);
+  get_ctl_range(&min_pos,&max_pos);
   if ((int)page_size <= max_pos - min_pos) {
     this->page_size = page_size;
   }
@@ -4578,10 +4578,10 @@ void Scrollbar::set_page_size(u32 page_size)
 }
 
 /* 005db110 auto */
-void Scrollbar::get_ctl_range(iptr min_out,iptr max_out)
+void Scrollbar::get_ctl_range(i32 *min_out,i32 *max_out)
 
 {
-  scrollbar_hwnd_get_range(hwnd,(LPINT)min_out,(LPINT)max_out);
+  scrollbar_hwnd_get_range(hwnd,min_out,max_out);
   return;
 }
 

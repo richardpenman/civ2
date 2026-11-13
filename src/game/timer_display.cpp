@@ -37,7 +37,7 @@ void __cdecl mp_turn_timer_tick(void)
         rect.top = (*(int *)((u8 *)&map_views_block.main_view_frame_top));
         rect.right = (*(int *)((u8 *)&map_views_block.main_view_frame_right));
         rect.bottom = (*(int *)((u8 *)&map_views_block.main_view_client_top));
-        ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect( (iptr)&rect);
+        ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect( &rect);
     }
     percent = (mp_timer.seconds_left * 100000) / civ_saved_cursor_x_block.mp_turn_time_limit_ms;
     if (percent < 0x21)

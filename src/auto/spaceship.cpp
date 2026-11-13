@@ -698,7 +698,7 @@ uint SpaceshipWindow::type_char(int allow_skip)
         }
         surface_wnd.draw_text_in_rect((iptr)&medium_font,
                    (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
-        surface_wnd.wnd_blit_surface_rect((iptr)(status_line_rect));
+        surface_wnd.wnd_blit_surface_rect(((RECT *)status_line_rect));
         wnd_flush_paint();
       }
       if (launch_state == 1) {
@@ -707,7 +707,7 @@ uint SpaceshipWindow::type_char(int allow_skip)
       }
       launched = 1;
     }
-    surface_wnd.wnd_blit_surface_rect((iptr)&dirty_rect);
+    surface_wnd.wnd_blit_surface_rect(&dirty_rect);
     result = (uint)(stats_text[type_index] != '\0');
   }
   else {
@@ -743,7 +743,7 @@ void SpaceshipWindow::init_starfield()
   value = surface_wnd.get_height();
   xRight = surface_wnd.get_width();
   SetRect(&fill_rect,0,0x14,xRight,value);
-  surface_wnd.fill_rect((iptr)&fill_rect,10);
+  surface_wnd.fill_rect(&fill_rect,10);
   for (star = 0; star < 0x50; star++) {
     star_x = stars[star].x /
                stars[star].depth + 0x140;
@@ -790,7 +790,7 @@ void SpaceshipWindow::init_starfield()
   gfx_set_text_color_index(0xfa);
   surface_wnd.draw_text_in_rect((iptr)&medium_font,
              (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
-  surface_wnd.wnd_blit_surface_rect((iptr)(status_line_rect));
+  surface_wnd.wnd_blit_surface_rect(((RECT *)status_line_rect));
   ship_image_sprite.draw((RECT *)clip_rect,&surface_wnd,0xaf,99);
   if (launch_state == 3) {
     type_y = 0x8c;
@@ -883,7 +883,7 @@ void SpaceshipWindow::draw_buttons()
   
   if ((launch_state != 1) && (launch_state != 0)) {
     SetRect(&btn_rect,0x1f5,0x1a1,0x229,0x1c5);
-    surface_wnd.fill_rect((iptr)&btn_rect,0);
+    surface_wnd.fill_rect(&btn_rect,0);
   }
   draw_close_btn(1,1);
   draw_launch_btn(0,1);
@@ -917,7 +917,7 @@ void SpaceshipWindow::draw_close_btn(int enabled,int raised)
     close_btn_normal_sprite.draw((RECT *)normal_clip,&surface_wnd,
                btn_rect.left,btn_rect.top);
   }
-  surface_wnd.wnd_blit_surface_rect((iptr)&btn_rect);
+  surface_wnd.wnd_blit_surface_rect(&btn_rect);
   wnd_flush_paint();
   return;
 }
@@ -946,7 +946,7 @@ void SpaceshipWindow::draw_launch_btn(int enabled,int raised)
       launch_btn_normal_sprite.draw((RECT *)normal_clip,&surface_wnd,
                  btn_rect.left,btn_rect.top);
     }
-    surface_wnd.wnd_blit_surface_rect((iptr)&btn_rect);
+    surface_wnd.wnd_blit_surface_rect(&btn_rect);
     wnd_flush_paint();
   }
   return;
@@ -971,7 +971,7 @@ void __cdecl spaceship_video_on_lbuttonup(i32 x,i32 y)
     spaceship_launch_sprite_xs_block.spaceship_wnd->launch_video_player->window.end_modal_loop();
   }
   else {
-    hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0);
+    hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,&hotspot_id,0);
     if (hit != -1) {
       if (hotspot_id == 0) {
         ship_wnd->draw_close_btn(1,0);
@@ -1155,7 +1155,7 @@ void __cdecl spaceship_wnd_on_lbuttondown(i32 x,i32 y)
   
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
   if (((spaceship_launch_sprite_xs_block.spaceship_wnd->launch_btn_pressed == 0) && (spaceship_launch_sprite_xs_block.spaceship_wnd->close_btn_pressed == 0)) &&
-     (hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0),
+     (hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,&hotspot_id,0),
      hit != -1)) {
     if (hotspot_id == 0) {
       (ship_wnd)->close_btn_pressed = 1;
@@ -1206,7 +1206,7 @@ void __cdecl spaceship_wnd_on_lbuttonup(i32 x,i32 y)
     if ((ship_wnd)->launch_btn_pressed != 0) {
       ship_wnd->draw_launch_btn(1,1);
     }
-    hit = ship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0);
+    hit = ship_wnd->hotspot_map.hit_test(x,y,&hotspot_id,0);
     if (hit != -1) {
       if (hotspot_id == 0) {
         if ((ship_wnd)->close_btn_pressed != 0) {
@@ -1258,7 +1258,7 @@ void __cdecl spaceship_wnd_on_mousemove(i32 x,i32 y)
   SpaceshipWindow *ship_wnd;
   
   ship_wnd = spaceship_launch_sprite_xs_block.spaceship_wnd;
-  hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,(iptr)&hotspot_id,0);
+  hit = spaceship_launch_sprite_xs_block.spaceship_wnd->hotspot_map.hit_test(x,y,&hotspot_id,0);
   if (hit == -1) {
     if ((((ship_wnd)->close_btn_pressed != 0) &&
         (ship_wnd->draw_close_btn(1,1), ship_wnd->launch_state == 1)) &&

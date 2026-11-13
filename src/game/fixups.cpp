@@ -722,8 +722,8 @@ uint __stdcall wnd_child_wndproc(HWND hwnd,uint msg,HWND wparam_hwnd,uint lparam
         int border_y, border_x;
         border_y = wnd_obj_frame_height(child2->get_window());
         border_x = wnd_obj_frame_width(child2->get_window());
-        child2->get_min_size( (iptr)&min_w, (iptr)&min_h);
-        child2->get_max_size( (iptr)&max_w, (iptr)&max_h);
+        child2->get_min_size( &min_w, &min_h);
+        child2->get_max_size( &max_w, &max_h);
         mmi[8] = border_x + max_w;        /* ptMaxTrackSize */
         mmi[9] = border_y + max_h;
         mmi[6] = border_x + min_w;       /* ptMinTrackSize */

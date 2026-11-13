@@ -5784,7 +5784,7 @@ void __cdecl unit_sound_editor_run(const char *title,i32 unit_type)
                ((int)(btn_width + (btn_width >> 0x1f & 3U)) >> 2) + unit_sound_editor.client_x;
     rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
     label = (iptr)label_string(label_table.string_ids[unit_sound_button_label_ids[i]]);
-    (slot_btns + i)->create((iptr)&unit_sound_editor.wnd,i + 0xc9,(iptr)rect,(const char *)label);
+    (slot_btns + i)->create((iptr)&unit_sound_editor.wnd,i + 0xc9,(RECT *)rect,(const char *)label);
     (slot_btns + i)->set_callback(unit_sound_editor_pick_wav);
   }
   unit_sound_editor_set_slots(unit_type,slot_btns);
@@ -5793,12 +5793,12 @@ void __cdecl unit_sound_editor_run(const char *title,i32 unit_type)
   btn_x = unit_sound_editor.client_x + 2;
   rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_btn.create((iptr)&unit_sound_editor.wnd,0x65,(iptr)rect,(const char *)label);
+  ok_btn.create((iptr)&unit_sound_editor.wnd,0x65,(RECT *)rect,(const char *)label);
   ok_btn.set_callback((CtrlNotifyFn)unit_sound_editor_ok_clicked);
   btn_x = btn_x + btn_width + 2;
   rect_set_xywh((RECT *)rect,btn_x,btn_y,btn_width,btn_height);
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_btn.create((iptr)&unit_sound_editor.wnd,0x66,(iptr)rect,(const char *)label);
+  cancel_btn.create((iptr)&unit_sound_editor.wnd,0x66,(RECT *)rect,(const char *)label);
   cancel_btn.set_callback((CtrlNotifyFn)unit_sound_editor_cancel_clicked);
   cancel_btn.set_cancel_button();
   ((WndHandlers *)((i8 *)&unit_sound_editor.wnd_handlers))->set_dblclick_handler(unit_sound_editor_on_dblclick);
@@ -8843,7 +8843,7 @@ void EditorWindow::unit_editor_create_combo(int index)
     parent2 = (u8 *)&window;
   }
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->create((iptr)parent2,x,
-             (iptr)rect);
+             (RECT *)rect);
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_callback(unit_editor_on_combo);
   switch(index) {
@@ -8912,7 +8912,7 @@ void EditorWindow::unit_editor_create_edit(int index)
     parent2 = (u8 *)&window;
   }
   ((EditControl *)(numeric_edit_controls_area + index * 0x48 - 0x2c))->create((iptr)parent2,ctrl_id,
-             (iptr)rect,(const char *)&str_empty_186);
+             (RECT *)rect,(const char *)&str_empty_186);
   ((EditControl *)(numeric_edit_controls_area + index * 0x48 - 0x2c))->set_max_len(3);
   ((EditControl *)(numeric_edit_controls_area + index * 0x48 - 0x2c))->set_callback(editor_numeric_edit_filter);
   return;
@@ -9110,7 +9110,7 @@ void EditorWindow::unit_editor_window_run()
     ok_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xfe]);
-  ok_button.create((iptr)ok_parent,0x65,(iptr)rect,(const char *)label);
+  ok_button.create((iptr)ok_parent,0x65,(RECT *)rect,(const char *)label);
   ok_button.set_callback((CtrlNotifyFn)unit_editor_on_ok);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -9121,7 +9121,7 @@ void EditorWindow::unit_editor_window_run()
     rename_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x2a]);
-  rename_button.create((iptr)rename_parent,0x66,(iptr)rect,(const char *)label);
+  rename_button.create((iptr)rename_parent,0x66,(RECT *)rect,(const char *)label);
   rename_button.set_callback((CtrlNotifyFn)unit_editor_on_rename);
   btn_x = btn_x + button_width_u + 2;
   rect_set_xywh((RECT *)rect,btn_x,btn_y,button_width_u,button_height_u);
@@ -9132,7 +9132,7 @@ void EditorWindow::unit_editor_window_run()
     help_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x23b]);
-  help_button.create((iptr)help_parent,0x66,(iptr)rect,(const char *)label);
+  help_button.create((iptr)help_parent,0x66,(RECT *)rect,(const char *)label);
   help_button.set_callback((CtrlNotifyFn)unit_editor_on_help);
   rect_set_xywh((RECT *)rect,btn_x + button_width_u + 2,btn_y,button_width_u,
                      button_height_u);
@@ -9143,7 +9143,7 @@ void EditorWindow::unit_editor_window_run()
     cancel_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0xff]);
-  cancel_button.create((iptr)cancel_parent,0x66,(iptr)rect,(const char *)label);
+  cancel_button.create((iptr)cancel_parent,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)unit_editor_on_cancel);
   cancel_button.set_cancel_button();
   btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
@@ -9161,7 +9161,7 @@ void EditorWindow::unit_editor_window_run()
     sprite_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x1f3]);
-  icon_button.create((iptr)sprite_parent,0x65,(iptr)rect,(const char *)label);
+  icon_button.create((iptr)sprite_parent,0x65,(RECT *)rect,(const char *)label);
   icon_button.set_callback((CtrlNotifyFn)unit_editor_edit_sprite);
   btn_x = btn_x + button_height_u + 2;
   rect_set_xywh((RECT *)rect,btn_y,btn_x,button_width_u,button_height_u);
@@ -9172,7 +9172,7 @@ void EditorWindow::unit_editor_window_run()
     sound_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[500]);
-  unit_sound_button.create((iptr)sound_parent,0x65,(iptr)rect,(const char *)label);
+  unit_sound_button.create((iptr)sound_parent,0x65,(RECT *)rect,(const char *)label);
   unit_sound_button.set_callback((CtrlNotifyFn)unit_editor_edit_sound);
   rect_set_xywh((RECT *)rect,btn_y,btn_x + button_height_u + 2,button_width_u,
                      button_height_u);
@@ -9183,7 +9183,7 @@ void EditorWindow::unit_editor_window_run()
     flags_parent = (u8 *)&window;
   }
   label = (iptr)label_string(label_table.string_ids[0x1f5]);
-  unit_flags_button.create((iptr)flags_parent,0x65,(iptr)rect,(const char *)label);
+  unit_flags_button.create((iptr)flags_parent,0x65,(RECT *)rect,(const char *)label);
   unit_flags_button.set_callback((CtrlNotifyFn)unit_editor_edit_flags);
   window.set_keyboard_nav(0);
   unit_editor_ctrl_kinds_block.unit_editor_move_max_i32 = (i32)(0x7f / (ulonglong)(longlong)(int)(uint)cosmic.road_move_mult);

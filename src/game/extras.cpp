@@ -727,7 +727,7 @@ static int wheel_message(const MSG *m, HWND under, POINT pt)
         int id = -1, kind = 0;
         POINT c = pt;
         ScreenToClient(frame_hwnd((SurfaceWindow *)&city_wnd.window), &c);
-        if (city_wnd.clickmap.hit_test( c.x, c.y, (iptr)&id, (iptr)&kind) >= 0 &&
+        if (city_wnd.clickmap.hit_test( c.x, c.y, &id, &kind) >= 0 &&
             kind == 2)
             return city_specialists(id, notches > 0 ? 1 : -1,
                                     (keys & MK_SHIFT) && extra_ui(X_MASS_SPECIALISTS)) || 1;
@@ -772,7 +772,7 @@ int extras_input(void *msg)
         /* X32: Shift+click on a specialist: all of them to its kind */
         int id = -1, kind = 0;
         if (city_wnd.clickmap.hit_test( (short)LOWORD(m->lParam),
-                              (short)HIWORD(m->lParam), (iptr)&id, (iptr)&kind) >= 0 && kind == 2)
+                              (short)HIWORD(m->lParam), &id, &kind) >= 0 && kind == 2)
             return city_specialists(id, 0, 1);
         return 0;
     }
@@ -813,7 +813,7 @@ int extras_input(void *msg)
         if (drag.moved < 5 && m->hwnd == map_hwnd) {
             /* a click: the map centred there */
             int x, y;
-            if (main_map()->screen_to_tile((iptr)&x, (iptr)&y, (short)LOWORD(m->lParam), (short)HIWORD(m->lParam)) == 0 &&
+            if (main_map()->screen_to_tile(&x, &y, (short)LOWORD(m->lParam), (short)HIWORD(m->lParam)) == 0 &&
                 (x != main_map()->center_x || y != main_map()->center_y))
                 map_center_on(x, y);
         }
@@ -895,7 +895,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
         support_city = w->city_index;
         support_scroll = 0;
     }
-    w->begin_draw((iptr)&w->supported_units_rect);
+    w->begin_draw((RECT *)&w->supported_units_rect);
     /* the upkeep of each in the game's order (the units away from home
        that make citizens unhappy are counted in that order) */
     for (i = 0; i < game.num_units; i++) {
@@ -1009,7 +1009,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
         }
         if (!support_bar->hwnd) {
             rect_set_xywh((RECT *)rect, left + area_w - sw - 1, top + label_h + 1, sw, area_h - label_h - 2);
-            support_bar->create((iptr)&city_wnd.wnd, 98, (iptr)rect, 1);
+            support_bar->create((iptr)&city_wnd.wnd, 98, (RECT *)rect, 1);
             support_bar->set_callback(support_on_scroll);
         }
         support_bar->set_range(0, support_rows_total - rows);
@@ -1018,7 +1018,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
     } else if (support_bar && support_bar->hwnd)
         support_bar->destroy();
     if (blit)
-        w->wnd_blit_surface_rect((iptr)&w->supported_units_rect);
+        w->wnd_blit_surface_rect((RECT *)&w->supported_units_rect);
 }
 
 /* X1: the wheel over the supported units (city window coordinates). */
@@ -1195,7 +1195,7 @@ void extras_city_status_draw(void)
     if (advisor_state.controls_created == 0) {
         rect_set((RECT *)scroll_rect, (advisor_state.client_right - advisor_state.vscroll_width) - 2, status_list_top,
                  advisor_state.client_right - 2, list_bottom);
-        advisor_state.scrollbar.create((iptr)&advisor_state.wnd, 200, (iptr)scroll_rect, 1);
+        advisor_state.scrollbar.create((iptr)&advisor_state.wnd, 200, (RECT *)scroll_rect, 1);
         advisor_state.scrollbar.set_range(0, max_row);
         advisor_state.scrollbar.set_pos(advisor_state.first_row);
         advisor_state.scrollbar.set_page_size(rows_per_page);
@@ -1375,7 +1375,7 @@ static void tip_show(int x, int y, POINT at)
         }
     }
     ((DibSurface *)m)->reset_clip();
-    ((DibSurface *)m)->wnd_blit_surface_rect((iptr)&r);
+    ((DibSurface *)m)->wnd_blit_surface_rect(&r);
     tip.shown = 1;
     tip.x = x;
     tip.y = y;
@@ -1397,7 +1397,7 @@ static int quickinfo_input(const MSG *m, HWND under, POINT pt)
         return 0;
     }
     ScreenToClient(map_hwnd, &c);
-    if (main_map()->screen_to_tile((iptr)&x, (iptr)&y, c.x, c.y) != 0 || !map_in_bounds(x, y)) {
+    if (main_map()->screen_to_tile(&x, &y, c.x, c.y) != 0 || !map_in_bounds(x, y)) {
         tip_hide();
         return 0;
     }
@@ -1501,7 +1501,7 @@ void extras_draw_map_messages(iptr surface, int blit)
     ((DibSurface *)m)->reset_clip();
     r.bottom = y + 2;
     if (blit && any)
-        ((DibSurface *)m)->wnd_blit_surface_rect((iptr)&r);
+        ((DibSurface *)m)->wnd_blit_surface_rect(&r);
 }
 
 int extras_popup_suppressed(Dialog *d)
@@ -1635,7 +1635,7 @@ static int unit_path(int unit, int tx, int ty, int *px, int *py, int max)
 
 static void tile_center(MapView *m, int x, int y, int *sx, int *sy)
 {
-    m->tile_to_screen((iptr)sx, (iptr)sy, x, y);
+    m->tile_to_screen(sx, sy, x, y);
     *sx += m->half_tile_width;
     *sy += m->half_tile_height;
 }
@@ -1658,7 +1658,7 @@ static void draw_path(const int *x, const int *y, int n, int color)
         gfx_draw_line_color(m, x1, y1 - 1, x2, y2 - 1, color);
     }
     ((DibSurface *)m)->reset_clip();
-    ((DibSurface *)m)->wnd_blit_surface_rect((iptr)&clip);
+    ((DibSurface *)m)->wnd_blit_surface_rect(&clip);
 }
 
 /* The squares from city to city2 where a road gives their trade route the
@@ -1731,7 +1731,7 @@ int extras_path_input(const MSG *m, HWND under, POINT pt)
         return 0;
     }
     ScreenToClient(map_hwnd, &c);
-    if (main_map()->screen_to_tile((iptr)&x, (iptr)&y, c.x, c.y) != 0 || !map_in_bounds(x, y)) {
+    if (main_map()->screen_to_tile(&x, &y, c.x, c.y) != 0 || !map_in_bounds(x, y)) {
         path_hide();
         return 0;
     }
