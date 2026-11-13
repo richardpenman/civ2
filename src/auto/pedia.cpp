@@ -433,11 +433,11 @@ void PediaWindow::add_link(int item_id,int x,int y,i32 link_kind, i32 rect_left,
     break;
   case 4:
     list_index = 0;
-    while (((int)list_index < (int)pedia_terrain_count_2 &&
+    while (((int)list_index < (int)pedia_terrain_count &&
            (pedia_terrain_ids[list_index] != item_id))) {
       list_index++;
     }
-    if (pedia_terrain_count_2 == list_index) return;
+    if (pedia_terrain_count == list_index) return;
     break;
   default:
     return;
@@ -1246,11 +1246,11 @@ void PediaWindow::show_terrain_modal(int terrain_id)
   
   if (pedia_wnd.closed != 0) {
     terrain_idx = 0;
-    while (((int)terrain_idx < (int)pedia_terrain_count_2 &&
+    while (((int)terrain_idx < (int)pedia_terrain_count &&
            (pedia_terrain_ids[terrain_idx] != terrain_id))) {
       terrain_idx++;
     }
-    if (pedia_terrain_count_2 != terrain_idx) {
+    if (pedia_terrain_count != terrain_idx) {
       open_category(5,1);
       resize_border = terrain_idx;
       list_selected_index = terrain_idx;
@@ -1259,7 +1259,7 @@ void PediaWindow::show_terrain_modal(int terrain_id)
       clear_links();
       update_controls();
       name_text = pedia_lookup_text(pedia_wnd.terrain_names,terrain_idx);
-      crt_strcpy((char *)pedia_title_text_2_618,name_text);
+      crt_strcpy((char *)page_title,name_text);
       draw_frame();
       draw_terrain_page();
       ((DibSurface *)((i8 *)&pedia_wnd.window))->wnd_blit_surface();
@@ -1396,49 +1396,49 @@ PediaWindow::PediaWindow()
   link_list_head = (PediaLink *)0x0;
   category = 0;
   for (i = 0; i < 100; i++) {
-    slot = pedia_list_init_area + i * 4 + 0x38;
+    slot = (u8 *)&pedia_advance_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x27; i++) {
-    slot = improvement_list_init_area + i * 4 - 0x28;
+    slot = (u8 *)&pedia_improve_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x1c; i++) {
-    slot = improvement_key_slots + i * 4 - 0x18;
+    slot = (u8 *)&pedia_wonder_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x3e; i++) {
-    slot = unit_key_init_slots + i * 4 + 0x10;
+    slot = (u8 *)&pedia_unit_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 7; i++) {
-    slot = pedia_key_init_slots + i * 4 + 0x68;
+    slot = (u8 *)&pedia_government_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x21; i++) {
-    slot = pedia_key_init_slots + i * 4 + 0xa4;
+    slot = (u8 *)&pedia_terrain_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x100; i++) {
-    slot = (u8 *)&advisor_opinions + i * 4 + 0x84;
+    slot = (u8 *)&pedia_concept_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
@@ -1847,7 +1847,7 @@ void PediaWindow::create()
   OffsetRect((LPRECT)&content_left,panel_layout.padding_x + panel_layout.margin_x,header_height + panel_layout.margin_y);
   left_x = main_frame_wnd_block.main_frame_wnd.client_width();
   col_width = main_frame_wnd_block.main_frame_wnd.client_height();
-  crt_strcpy((char *)pedia_title_text_2_618,((i8 *)&pedia_window_empty_title_str));
+  crt_strcpy((char *)page_title,((i8 *)&pedia_window_empty_title_str));
   wnd_create_with_surface(0,0xe02,left_x / 2 - (int)panel_width / 2,
              col_width / 2 - (int)panel_height / 2,panel_width,panel_height,(GamePalette *)&game_palette_block.game_palette,&main_frame_wnd_block.main_frame_wnd)
   ;
@@ -2169,16 +2169,16 @@ void PediaWindow::draw_frame()
   x2 += panel_width;
   font2 = ((i8 *)&font_size30);
   tmp_a = (frame_rect_right - x2) - panel_layout.padding_x;
-  tmp_b = ((GameFont *)((i8 *)&font_size30))->text_width((const char *)pedia_title_text_2);
+  tmp_b = ((GameFont *)((i8 *)&font_size30))->text_width((const char *)page_title);
   x2 += (tmp_a / 2 - (tmp_b >> 1));
   y2 = panel_layout.bevel_width + panel_layout.margin_y;
   gfx_set_text_color_index(10);
-  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2 + 2,
+  draw_text((GameFont *)font2,(const char *)page_title,x2 + 2,
              y2 + 1,5);
   gfx_set_text_color_index(0x1a);
-  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2 + 1,y2
+  draw_text((GameFont *)font2,(const char *)page_title,x2 + 1,y2
              ,5);
-  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2,y2,5);
+  draw_text((GameFont *)font2,(const char *)page_title,x2,y2,5);
   set_clip((RECT *)&content_left);
   return;
 }
@@ -2867,7 +2867,7 @@ void PediaWindow::set_category_title(i32 category)
   default:
     text_append((const char *)&str_this_should_not_happen_3);
   }
-  crt_strcpy((char *)pedia_title_text_2,((i8 *)&textbuf.buf));
+  crt_strcpy((char *)page_title,((i8 *)&textbuf.buf));
   return;
 }
 
@@ -2903,49 +2903,49 @@ void PediaWindow::clear_index_keys()
   int i;
 
   for (i = 0; i < 100; i++) {
-    slot = advance_sort_keys + i * 4;
+    slot = (u8 *)&pedia_advance_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x27; i++) {
-    slot = improvement_sort_keys + i * 4;
+    slot = (u8 *)&pedia_improve_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x1c; i++) {
-    slot = wonder_sort_keys_view + i * 4 + 0x4c;
+    slot = (u8 *)&pedia_wonder_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x3e; i++) {
-    slot = unit_key_slots + i * 4 + 0x1c;
+    slot = (u8 *)&pedia_unit_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 7; i++) {
-    slot = government_key_slots + i * 4 + 8;
+    slot = (u8 *)&pedia_government_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x21; i++) {
-    slot = terrain_key_slots + i * 4 - 0x18;
+    slot = (u8 *)&pedia_terrain_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
     slot[3] = 0xff;
   }
   for (i = 0; i < 0x100; i++) {
-    slot = concept_key_slots + i * 4 + 0x10;
+    slot = (u8 *)&pedia_concept_keys[i];
     slot[0] = 0xff;
     slot[1] = 0xff;
     slot[2] = 0xff;
@@ -3249,16 +3249,16 @@ void PediaWindow::load_terrain_index(PediaListNode *&prev_node2)
   if (status == 0) {
     text_read_line(1);
     sort_key = text_next_int();
-    pedia_terrain_count_2 = 0;
+    pedia_terrain_count = 0;
     improvement = 0;
     /* BF-220 (Peter Johnson's ledger): at most the game's terrain types (a longer
        DESCRIBE.TXT index filled the lists past their ends) */
     while ((sort_key != -2) && (improvement < 0x21)) {
       if (improvement != IMP_SUPERMARKET) {
-        pedia_terrain_keys[pedia_terrain_count_2] = sort_key;
-        pedia_terrain_ids[pedia_terrain_count_2] = improvement;
+        pedia_terrain_keys[pedia_terrain_count] = sort_key;
+        pedia_terrain_ids[pedia_terrain_count] = improvement;
         node2 = (PediaListNode *)operator_new(0xc);
-        node2->index = pedia_terrain_count_2;
+        node2->index = pedia_terrain_count;
         if (pedia_terrain_names == (PediaListNode *)0x0) {
           pedia_terrain_names = node2;
         }
@@ -3280,7 +3280,7 @@ void PediaWindow::load_terrain_index(PediaListNode *&prev_node2)
         node2->name = (char *)name_buf;
         crt_strcpy((char *)((void *)node2->name),((i8 *)&textbuf.buf));
         prev_node2 = node2;
-        pedia_terrain_count_2++;
+        pedia_terrain_count++;
       }
       improvement++;
       text_read_line(1);
@@ -3288,7 +3288,7 @@ void PediaWindow::load_terrain_index(PediaListNode *&prev_node2)
     }
     text_close_file();
     if (pedia_terrain_names != (PediaListNode *)0x0) {
-      sort_list(pedia_terrain_names,pedia_terrain_keys,pedia_terrain_ids,pedia_terrain_count_2);
+      sort_list(pedia_terrain_names,pedia_terrain_keys,pedia_terrain_ids,pedia_terrain_count);
     }
   }
 }
@@ -3762,7 +3762,7 @@ void PediaWindow::show_wonder_modal(int wonder_id)
       clear_links();
       update_controls();
       name_text = pedia_lookup_text(pedia_wnd.wonder_names,wonder_idx);
-      crt_strcpy((char *)pedia_title_text_2_618,name_text);
+      crt_strcpy((char *)page_title,name_text);
       draw_frame();
       draw_improvement();
       ((DibSurface *)((i8 *)&pedia_wnd.window))->wnd_blit_surface();
@@ -4308,7 +4308,7 @@ void PediaWindow::show_topic_modal(int advance_id)
       clear_links();
       update_controls();
       name_text = pedia_lookup_text(pedia_wnd.advance_names,advance_idx);
-      crt_strcpy((char *)pedia_title_text_2_618,name_text);
+      crt_strcpy((char *)page_title,name_text);
       draw_frame();
       draw_advance_page();
       this->SurfaceWindow::show();
@@ -4845,7 +4845,7 @@ void PediaWindow::show_improvement_modal(int improvement_id)
         clear_links();
         update_controls();
         name_text = pedia_lookup_text(pedia_wnd.improvement_names,improve_idx);
-        crt_strcpy((char *)pedia_title_text_2_618,name_text);
+        crt_strcpy((char *)page_title,name_text);
         draw_frame();
         draw_improvement_page();
         this->SurfaceWindow::show();
@@ -5133,7 +5133,7 @@ void PediaWindow::show_unit_modal(int unit_type)
       clear_links();
       update_controls();
       name_text = pedia_lookup_text(pedia_wnd.unit_names,unit_index);
-      crt_strcpy((char *)pedia_title_text_2_618,name_text);
+      crt_strcpy((char *)page_title,name_text);
       draw_frame();
       draw_unit_page();
       this->SurfaceWindow::show();

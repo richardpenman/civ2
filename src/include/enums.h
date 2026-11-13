@@ -448,6 +448,14 @@ enum MenuCommand : i32 {
     CMD_PEDIA_CONCEPTS = 0x90d, CMD_ABOUT = 0x9f0,
 };
 
+/* A dialog's standard buttons (DialogButton.kind; their labels
+ * dlg_style.button_labels[kind], POPUPS @LABELS): OK unless the style has
+ * none, Help with style 0x40 (pressed, it sets style 0x80), Cancel with
+ * style 1. */
+enum DialogButtonKind : i32 {
+    DLG_BUTTON_OK = 0, DLG_BUTTON_HELP = 1, DLG_BUTTON_CANCEL = 2,
+};
+
 /* Sound effects (snd_play_effect): the slot's WAV file in the original's
  * table (str_aircombt; the scenario's SOUND folder first).  Slots sharing a
  * file carry their number. */

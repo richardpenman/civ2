@@ -1268,8 +1268,8 @@ void Dialog::add_button(const char *label)
   if ((int)extra_button_count < 6) {
     len = _strlen((char *)label);
     buffer = memblock_alloc((MemBlock *)&(this)->string_pool,len + 1);
-    (&(this)->extra_button_labels)[extra_button_count] = buffer;
-    crt_strcpy((char *)((void *)((&(this)->extra_button_labels)[extra_button_count])),(const char *)((void *)label));
+    extra_button_labels[extra_button_count] = (char *)buffer;
+    crt_strcpy(extra_button_labels[extra_button_count],(const char *)((void *)label));
     extra_button_count++;
   }
   return;
@@ -1689,9 +1689,9 @@ void Dialog::layout_buttons(int sprites_height,int content_height)
     }
   }
   for (i = 0; (int)i < (int)extra_button_count; i++) {
-    value = button_width_for((const char *)((&(*&(this)->extra_button_labels))[i]));
+    value = button_width_for(extra_button_labels[i]);
     if ((int)button_width <= value) {
-      tmp = button_width_for((const char *)((&(*&(this)->extra_button_labels))[i]));
+      tmp = button_width_for(extra_button_labels[i]);
       button_width = tmp;
     }
   }
@@ -1735,7 +1735,7 @@ void Dialog::layout_buttons(int sprites_height,int content_height)
   tmp = std_button_count;
   while (i = tmp - 1, -1 < (int)i) {
     pos = button_x - button_width;
-    (&(this)->button_layout)[tmp * 2] = pos;
+    buttons[i].x = pos;
     button_x = pos - pad_x;
     for (remainder_acc = remainder_acc + extra_space; tmp = i,
         (int)(std_button_count + extra_button_count) <= remainder_acc;
@@ -1746,7 +1746,7 @@ void Dialog::layout_buttons(int sprites_height,int content_height)
   tmp = extra_button_count;
   while (i = tmp - 1, -1 < (int)i) {
     pos = button_x - button_width;
-    (&(this)->button_layout)[tmp * 2 + std_button_count * 2] = pos;
+    buttons[std_button_count + i].x = pos;
     button_x = pos - pad_x;
     for (remainder_acc = remainder_acc + extra_space; tmp = i,
         (int)(std_button_count + extra_button_count) <= remainder_acc;
@@ -1901,15 +1901,15 @@ i32 Dialog::compute_layout()
   }
   std_button_count = 0;
   if ((style_flags & 0x40) != 0) {
-    (&(this)->button_alignment)[std_button_count * 2] = 1;
+    buttons[std_button_count].kind = DLG_BUTTON_HELP;
     std_button_count++;
   }
   if (((style_flags & 8) == 0) && ((style_flags & 0x2000000) == 0)) {
-    (&(this)->button_alignment)[std_button_count * 2] = 0;
+    buttons[std_button_count].kind = DLG_BUTTON_OK;
     std_button_count++;
   }
   if ((style_flags & 1) != 0) {
-    (&(this)->button_alignment)[std_button_count * 2] = 2;
+    buttons[std_button_count].kind = DLG_BUTTON_CANCEL;
     std_button_count++;
   }
   if (edit_count + option_count + sprite_count + std_button_count + line_count == 0) {
@@ -1986,7 +1986,7 @@ i32 Dialog::compute_layout()
     button_y += origin_y;
     for (i = 0; (int)i < (int)(std_button_count + extra_button_count);
         i = i + 1) {
-      (&(this)->button_x_coords)[i * 2] = (&(this)->button_x_coords)[i * 2] + origin_x;
+      buttons[i].x = buttons[i].x + origin_x;
     }
     result = 0;
   }
@@ -2851,7 +2851,7 @@ void Dialog::create_edit_fields()
 void Dialog::create_buttons()
 {
   int count;
-  int *buttons;
+  int *controls;
   int i;
   iptr pos;
   i8 rect[16];
@@ -2861,29 +2861,29 @@ void Dialog::create_buttons()
 
   if (std_button_count + extra_button_count != 0) {
     count = std_button_count + extra_button_count;
-    buttons = (int *)operator_new(count * 0x3c + 4);
-    if (buttons == (int *)0x0) {
-      buttons = (int *)0x0;
+    controls = (int *)operator_new(count * 0x3c + 4);
+    if (controls == (int *)0x0) {
+      controls = (int *)0x0;
     }
     else {
-      *buttons = count;
-      crt_vector_ctor_iterator(buttons + 1,0x3c,*buttons,button_ctor,
+      *controls = count;
+      crt_vector_ctor_iterator(controls + 1,0x3c,*controls,button_ctor,
                    ctrl_dtor);
-      buttons++;
+      controls++;
     }
-    button_controls = (uptr)buttons;
+    button_controls = (uptr)controls;
   }
   for (i = 0; i < (int)(std_button_count + extra_button_count); i++) {
     if (i < (int)std_button_count) {
-      button_id = *(iptr *)((u8 *)&extra_button_labels + i * 8 + 0x18);
+      button_id = buttons[i].kind;
       label = (((i8 * *)&dlg_style.button_labels))[button_id];
     }
     else {
       button_id = -1;
-      label = *(i8 **)((int)this + (i - std_button_count) * 4 + 0x294);
+      label = extra_button_labels[i - std_button_count];
     }
     pos = line_height();
-    rect_set_xywh((RECT *)rect,*(i32 *)((u8 *)&extra_button_labels + i * 8 + 0x1c),
+    rect_set_xywh((RECT *)rect,buttons[i].x,
                        button_y,button_width,pos);
     if (surf_wnd == 0) {
       parent_198 = 0;
@@ -2893,10 +2893,10 @@ void Dialog::create_buttons()
     }
     ((Button *)(button_controls + i * 0x3c))->create((Wnd *)parent_198,i + 100,
                (RECT *)rect,(const char *)label);
-    if ((button_id == 2) || ((button_id == 0 && ((style_flags & 1) == 0)))) {
+    if ((button_id == DLG_BUTTON_CANCEL) || ((button_id == DLG_BUTTON_OK && ((style_flags & 1) == 0)))) {
       ((Button *)(button_controls + i * 0x3c))->set_cancel_button();
     }
-    if (button_id == 0) {
+    if (button_id == DLG_BUTTON_OK) {
       ((Button *)(button_controls + i * 0x3c))->set_default_button();
     }
     ((Button *)(button_controls + i * 0x3c))->set_callback(dialog_on_button_click);
@@ -3120,16 +3120,16 @@ void __cdecl dialog_on_button_click(int ctrl_id)
     dialog_state.timeout_start = timer_ticks();
     button_index = ctrl_id - 100;
     if (button_index < (int)dialog_state.active->std_button_count) {
-      button_id = *(int *)((iptr)dialog_state.active + 0x2ac + button_index * 8);
+      button_id = dialog_state.active->buttons[button_index].kind;
     }
     else {
       dialog_state.active->result_extra = (button_index - (int)dialog_state.active->std_button_count) + 1;
-      button_id = 0;
+      button_id = DLG_BUTTON_OK;
     }
-    if (button_id == 1) {
+    if (button_id == DLG_BUTTON_HELP) {
       dialog_state.active->style_flags = dialog_state.active->style_flags | 0x80;
     }
-    if (((button_id == 0) && ((((byte *)&dialog_state.active->style_flags)[2] & 2) != 0)) &&
+    if (((button_id == DLG_BUTTON_OK) && ((((byte *)&dialog_state.active->style_flags)[2] & 2) != 0)) &&
        (dialog_state.active->selected_sprite != 0)) {
       sprite = dialog_state.active->sprite_list;
       sprite_index = 0;
@@ -3141,7 +3141,7 @@ void __cdecl dialog_on_button_click(int ctrl_id)
         dialog_on_sprite_click(sprite_index + 300);
       }
     }
-    if (button_id == 2) {
+    if (button_id == DLG_BUTTON_CANCEL) {
       dialog_state.active->result_id = 0xffffffff;
     }
     else {
@@ -3459,7 +3459,7 @@ void __cdecl dialog_on_char(byte ch)
       if (dialog_state.active->extra_button_count != 0) {
         match_index = -1;
         for (counter2 = 0; counter2 < (int)dialog_state.active->extra_button_count; counter2++) {
-          first_ch = crt_toupper((int)**(char **)((iptr)dialog_state.active + 0x294 + counter2 * 4));
+          first_ch = crt_toupper((int)*dialog_state.active->extra_button_labels[counter2]);
           if (first_ch == (upper_ch & 0xff)) {
             match_index = counter2;
             break;

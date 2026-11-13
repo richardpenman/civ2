@@ -331,6 +331,13 @@ typedef i32 (*DialogOptionDrawFn)(struct Dialog *dialog, DibSurface *surface, i3
 typedef void (*DialogSelectFn)(struct Dialog *dialog, i32 option_id);   /* the selected option changed */
 typedef i32 (*DialogPollFn)(struct Dialog *dialog);   /* polled while modal: nonzero ends the dialog */
 
+/* A dialog's button (Dialog.buttons): compute_layout places them along the
+   bottom edge, right to left; create_controls makes a Button of each. */
+typedef struct DialogButton {
+    u32 kind;                       /* a standard button: DLG_BUTTON_OK/HELP/CANCEL (dlg_style.button_labels[kind]) */
+    u32 x;                          /* left edge */
+} DialogButton;
+
 /* The dialog: dialog_ctor (0059db08) on stack objects; its views (DialogCore,
    DialogTextView, DialogOptionList, ...) are folded in. */
 typedef struct Dialog {
@@ -455,7 +462,8 @@ typedef struct Dialog {
     union { uptr field_280; uptr sprite_hotspots; };
     union { struct { uptr field_284; uptr field_288; }; uptr list_vscroll[2]; };
     union { struct { uptr field_28c; uptr field_290; }; uptr list_hscroll[2]; };
-    union { u8 pad_294[96]; struct { uptr extra_button_labels; u8 gap_298[16]; u32 button_layout; u32 button_alignment; u32 button_x_coords; u8 gap_2b4[64]; }; };
+    char *extra_button_labels[6];   /* 0x294 add_button's labels (pooled) */
+    DialogButton buttons[9];        /* 0x2ac the standard buttons (OK, Help, Cancel as the style asks), then the added ones */
     /* methods */
     void reset(i32 flags);    /* 0040bc40 */
     i32 show_modal(int timeout_secs);    /* 0040bc80 */
@@ -550,6 +558,9 @@ typedef struct Dialog {
     void draw_text_default_font(const char *text,i32 x,i32 y, i32 flags);    /* 005a9730 */
 } Dialog;
 static_assert(sizeof(Dialog) == 0x2f4, "");
+static_assert(__builtin_offsetof(Dialog, extra_button_labels) == 0x294, "");
+static_assert(__builtin_offsetof(Dialog, buttons) == 0x2ac, "");
+static_assert(sizeof(DialogButton) == 8, "");
 
 /* The scenario's events (EVENTS.TXT): a Dialog, events_ctor (004fa4be) calls
    dialog_ctor first; one static instance (unit_types_block.scenario_events). */
@@ -2409,13 +2420,13 @@ typedef struct ParleyWindow : SurfaceWindow {
     u8 local_units_revealed;        /* 0x3bd */
     u8 local_cities_revealed;       /* 0x3be */
     u8 remote_cities_revealed;      /* 0x3bf */
-    u32 list_rects[8];              /* 0x3c0 RECT per pane */
+    RECT list_rects[2];             /* 0x3c0 per pane */
     u32 list_columns[2];            /* 0x3e0 */
     i32 list_counts[2];             /* 0x3e8 items in each pane */
-    u32 list_items[0x1002];         /* 0x3f0 [pane * 0x801 + i] */
-    u32 list_items_b[0x1002];       /* 0x43f8 */
-    u32 list_selected[0x1002];      /* 0x8400 */
-    u32 list_selected_b[0x1002];    /* 0xc408 */
+    u32 list_items[2][0x801];       /* 0x3f0 per pane */
+    u32 list_items_b[2][0x801];     /* 0x43f8 */
+    u32 list_selected[2][0x801];    /* 0x8400 */
+    u32 list_selected_b[2][0x801];  /* 0xc408 */
     i32 list_first_row[2];          /* 0x10410 scroll position, -1 empty */
     i32 list_anchor_row[2];         /* 0x10418 selection anchor */
     i32 list_rows[2];               /* 0x10420 rows shown */
@@ -2482,6 +2493,8 @@ typedef struct ParleyWindow : SurfaceWindow {
 } ParleyWindow;
 static_assert(sizeof(ParleyWindow) == 0x10430, "");
 static_assert(__builtin_offsetof(ParleyWindow, list_rects) == 0x3c0, "");
+static_assert(__builtin_offsetof(ParleyWindow, list_items) == 0x3f0 && __builtin_offsetof(ParleyWindow, list_items_b) == 0x43f8, "");
+static_assert(__builtin_offsetof(ParleyWindow, list_selected) == 0x8400 && __builtin_offsetof(ParleyWindow, list_selected_b) == 0xc408, "");
 
 /* The Civilopedia window (pedia_window_ctor 004f3feb; one instance,
    pedia_wnd.window, whose members after 0x114 the code also
@@ -2508,25 +2521,25 @@ typedef struct PediaWindow : SurfaceWindow {
     u32 content_right;
     u32 content_bottom;
     u8 pedia_body_blit_rect[16];
-    union { u8 pedia_title_text_2_618[64]; struct { u8 pedia_title_text_2[4]; u8 gap_61c_1[8]; u8 pedia_list_init_area[52]; }; };
+    char page_title[64];            /* 0x618 the page's title */
     u32 pedia_advance_count;
-    union { i32 pedia_advance_keys[100]; u8 advance_sort_keys[120]; };
+    i32 pedia_advance_keys[100];
     i32 pedia_advance_ids[100];
     u32 pedia_improve_count;
-    union { i32 pedia_improve_keys[39]; struct { u8 improvement_sort_keys[36]; u8 gap_9a4_1[4]; u8 improvement_list_init_area[56]; }; };
-    union { i32 pedia_improve_ids[39]; struct { u8 gap_a1c_1[84]; u8 wonder_sort_keys_view[36]; }; };
+    i32 pedia_improve_keys[39];
+    i32 pedia_improve_ids[39];
     i32 pedia_wonder_count;
-    union { i32 pedia_wonder_keys[28]; struct { u8 gap_abc_1[24]; u8 improvement_key_slots[56]; }; };
-    union { i32 pedia_wonder_ids[28]; struct { u8 gap_b2c_1[88]; u8 unit_key_slots[12]; u8 unit_key_init_slots[12]; }; };
+    i32 pedia_wonder_keys[28];
+    i32 pedia_wonder_ids[28];
     i32 pedia_unit_count;
     i32 pedia_unit_keys[62];
-    union { i32 pedia_unit_ids[62]; struct { u8 gap_c98_1[148]; u8 pedia_key_init_slots[32]; u8 gap_d4c_1[64]; u8 government_key_slots[4]; }; };
+    i32 pedia_unit_ids[62];
     i32 pedia_government_count;
     i32 pedia_government_keys[7];
     i32 pedia_government_ids[7];
-    union { i32 pedia_terrain_count; uptr pedia_terrain_count_2; };
-    union { i32 pedia_terrain_keys[33]; struct { u8 gap_dd0_1[24]; u8 terrain_key_slots[72]; }; };
-    union { i32 pedia_terrain_ids[33]; struct { u8 gap_e54_1[4]; u32 advisor_opinions[5]; u8 gap_e6c_1[96]; u8 concept_key_slots[12]; }; };
+    i32 pedia_terrain_count;
+    i32 pedia_terrain_keys[33];
+    i32 pedia_terrain_ids[33];
     i32 pedia_concept_count;
     i32 pedia_concept_keys[256];
     i32 pedia_concept_ids[256];
@@ -2637,6 +2650,10 @@ typedef struct PediaWindow : SurfaceWindow {
     void load_description(int topic2);
 } PediaWindow;
 static_assert(sizeof(PediaWindow) == 0x1f44, "");
+static_assert(__builtin_offsetof(PediaWindow, page_title) == 0x618 && __builtin_offsetof(PediaWindow, pedia_advance_keys) == 0x65c, "");
+static_assert(__builtin_offsetof(PediaWindow, pedia_improve_keys) == 0x980 && __builtin_offsetof(PediaWindow, pedia_wonder_keys) == 0xabc, "");
+static_assert(__builtin_offsetof(PediaWindow, pedia_unit_keys) == 0xba0 && __builtin_offsetof(PediaWindow, pedia_government_keys) == 0xd94, "");
+static_assert(__builtin_offsetof(PediaWindow, pedia_terrain_keys) == 0xdd0 && __builtin_offsetof(PediaWindow, pedia_concept_keys) == 0xedc, "");
 static_assert(__builtin_offsetof(PediaWindow, list_describe_button) == 0x1714, "");
 static_assert(__builtin_offsetof(PediaWindow, list_close_button) == 0x1750, "");
 static_assert(__builtin_offsetof(PediaWindow, detail_back_button) == 0x178c, "");

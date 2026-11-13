@@ -43,8 +43,8 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
       result = civ_has_advance(human_civ[0],advance);
       if ((result != 0) &&
          ((can_see_other == 0 || (result = civ_has_advance(parley_wnd_block.other_civ,advance), result == 0)))) {
-        list_items[(u32)list_counts[pane] + pane * 0x801] = advance;
-        list_selected[(u32)list_counts[pane] + pane * 0x801] = 0;
+        list_items[pane][(u32)list_counts[pane]] = advance;
+        list_selected[pane][(u32)list_counts[pane]] = 0;
         list_counts[pane]++;
       }
     }
@@ -54,14 +54,14 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
       if (((human_civ[0] == civ) &&
           (result = civ_has_advance(human_civ[0],advance), result == 0)) &&
          (((int)advance < 0x59 && (advances[advance].enabled == 1)))) {
-        list_items[(u32)list_counts[pane] + pane * 0x801] = advance;
-        list_selected[(u32)list_counts[pane] + pane * 0x801] = 0;
+        list_items[pane][(u32)list_counts[pane]] = advance;
+        list_selected[pane][(u32)list_counts[pane]] = 0;
         list_counts[pane]++;
       }
     }
     else {
-      list_items[(u32)list_counts[pane] + pane * 0x801] = advance;
-      list_selected[(u32)list_counts[pane] + pane * 0x801] = 0;
+      list_items[pane][(u32)list_counts[pane]] = advance;
+      list_selected[pane][(u32)list_counts[pane]] = 0;
       list_counts[pane]++;
     }
   }
@@ -72,14 +72,14 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
     list_first_row[pane] = 0;
   }
   list_columns[pane] = 3;
-  list_rects[pane * 4] = (u32)rect->left;
-  list_rects[pane * 4 + 1] = (u32)rect->top;
-  list_rects[pane * 4 + 2] = (u32)rect->right;
-  list_rects[pane * 4 + 3] = (u32)rect->bottom;
+  list_rects[pane].left = (u32)rect->left;
+  list_rects[pane].top = (u32)rect->top;
+  list_rects[pane].right = (u32)rect->right;
+  list_rects[pane].bottom = (u32)rect->bottom;
   if ((int)(u32)list_rows[pane] < (int)(u32)list_counts[pane]) {
     scroll_width = GetSystemMetrics(2);
     result = sb_rect.right;
-    list_rects[pane * 4 + 2] -= scroll_width;
+    list_rects[pane].right -= scroll_width;
     sb_rect.left = GetSystemMetrics(2);
     sb_rect.left = result - sb_rect.left;
     new_ctrl = (Button *)(operator_new(0x40));
@@ -122,7 +122,7 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
     parent22 = &window;
   }
   ((Hotspot *)list_hotspots[pane])->create(parent22,pane + 0x413,
-             ((RECT *)((u8 *)this + pane * 0x10 + 0x3c0)));
+             &list_rects[pane]);
   ((Hotspot *)list_hotspots[pane])->set_click_callback(parley_advance_list_on_click);
   ((Hotspot *)list_hotspots[pane])->set_dblclick_callback(parley_advance_list_on_click);
   parley_draw_advance_list(pane);
@@ -199,23 +199,23 @@ void __cdecl parley_advance_list_on_click(int control_id)
         for (i = 0; i < window->list_counts[pane];
             i = i + 1) {
           if (i != row) {
-            window->list_selected[i + pane * 0x801] = 0;
+            window->list_selected[pane][i] = 0;
           }
         }
         window->list_anchor_row[pane] = row;
-        sel_flag = (uint *)(row * 4 + pane * 0x2004 + 0x8400 + (iptr)window);
+        sel_flag = &window->list_selected[pane][row];
         *sel_flag = *sel_flag ^ 1;
       }
       else {
         window->list_anchor_row[pane] = row;
-        sel_flag = (uint *)(row * 4 + pane * 0x2004 + 0x8400 + (iptr)window);
+        sel_flag = &window->list_selected[pane][row];
         *sel_flag = *sel_flag ^ 1;
       }
     }
     else {
       for (i = 0; i < window->list_counts[pane]; i++)
       {
-        window->list_selected[i + pane * 0x801] = 0;
+        window->list_selected[pane][i] = 0;
       }
       if (window->list_anchor_row[pane] < row) {
         i = window->list_anchor_row[pane];
@@ -226,7 +226,7 @@ void __cdecl parley_advance_list_on_click(int control_id)
         i = row;
       }
       for (; i <= range_end; i++) {
-        window->list_selected[i + pane * 0x801] = 1;
+        window->list_selected[pane][i] = 1;
       }
     }
     parley_draw_advance_list(pane);
@@ -250,16 +250,16 @@ int __cdecl parley_advance_list_hit_test(int px,int py,int pane)
   else {
     window = (ParleyWindow *)(child - 0x48);
   }
-  if (py < (int)window->list_rects[pane * 4 + 1]) {
+  if (py < (int)window->list_rects[pane].top) {
     result = -1;
   }
-  else if (py < (int)window->list_rects[pane * 4 + 3]) {
-    if (px < (int)window->list_rects[pane * 4]) {
+  else if (py < (int)window->list_rects[pane].bottom) {
+    if (px < (int)window->list_rects[pane].left) {
       result = -3;
     }
-    else if (px < (int)window->list_rects[pane * 4 + 2]) {
-      result = (int)window->list_rects[pane * 4 + 1];
-      list_height = rect_height((RECT *)&window->list_rects[pane * 4]);
+    else if (px < (int)window->list_rects[pane].right) {
+      result = (int)window->list_rects[pane].top;
+      list_height = rect_height(&window->list_rects[pane]);
       result = (py - result) / (list_height / (window->list_rows[pane] + 1)) +
               window->list_first_row[pane];
     }
@@ -310,17 +310,17 @@ void __cdecl parley_draw_advance_list(int pane)
     window = (ParleyWindow *)(tmp - 0x48);
   }
   window->get_clip((RECT *)saved_clip);
-  window->set_clip((RECT *)(iptr)(((u8 *)window + 0x3c0) + pane * 0x10));
-  window->fill_rect(((RECT *)(((u8 *)window + 0x3c0) + pane * 0x10)),dlg_style.list_bg);
+  window->set_clip(&window->list_rects[pane]);
+  window->fill_rect(&window->list_rects[pane],dlg_style.list_bg);
   if (window->large_layout == 0) {
     font2 = (GameFont *)((i8 *)&font_size14);
   }
   else {
     font2 = (GameFont *)((i8 *)&font_size21);
   }
-  list_left = (int)window->list_rects[pane * 4];
-  list_width2 = rect_width((RECT *)(iptr)(((u8 *)window + 0x3c0) + pane * 0x10));
-  row_height = rect_height((RECT *)(iptr)(((u8 *)window + 0x3c0) + pane * 0x10));
+  list_left = (int)window->list_rects[pane].left;
+  list_width2 = rect_width(&window->list_rects[pane]);
+  row_height = rect_height(&window->list_rects[pane]);
   row_height = row_height / (window->list_rows[pane] + 1);
   tmp = row_height / 2;
   tmp2 = font2->font_cached_height();
@@ -331,7 +331,7 @@ void __cdecl parley_draw_advance_list(int pane)
   has_sel[2] = '\0';
   has_sel[3] = '\0';
   for (row = 0; row < window->list_counts[pane]; row++) {
-    if (window->list_selected[pane * 0x801 + row] != 0) {
+    if (window->list_selected[pane][row] != 0) {
       has_sel = (u8 *)&window->side_selected[pane];
       has_sel[0] = 1;
       has_sel[1] = '\0';
@@ -342,13 +342,13 @@ void __cdecl parley_draw_advance_list(int pane)
   }
   for (row = 0; row < window->list_rows[pane] + 1;
       row = row + 1) {
-    row_top = (int)window->list_rects[pane * 4 + 1] + row * row_height +
+    row_top = (int)window->list_rects[pane].top + row * row_height +
                panel_layout.margin_y;
     SetRect(&row_rect,list_left,row_top,list_left + list_width2,row_top + row_height);
     if (((row == 0) || (window->list_first_row[pane] != -1)) &&
        (window->list_first_row[pane] + row <
         window->list_counts[pane])) {
-      selected2 = (int)window->list_selected[pane * 0x801 + (window->list_first_row[pane] + row)];
+      selected2 = (int)window->list_selected[pane][window->list_first_row[pane] + row];
       if (selected2 == 0) {
         text_color2 = dlg_style.list_text;
         shadow_color2 = dlg_style.list_shadow;
@@ -357,7 +357,7 @@ void __cdecl parley_draw_advance_list(int pane)
         text_color2 = dlg_style.sel_text_color;
         shadow_color2 = dlg_style.sel_text_shadow_color;
       }
-      advance = (int)window->list_items[pane * 0x801 + (window->list_first_row[pane] + row)];
+      advance = (int)window->list_items[pane][window->list_first_row[pane] + row];
       icon_sprite = (Sprite *)
                  (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                  (char)advances[advance].category * 0xf0 +
@@ -385,7 +385,7 @@ void __cdecl parley_draw_advance_list(int pane)
         has_sel[1] = '\0';
         has_sel[2] = '\0';
         has_sel[3] = '\0';
-        tmp = rect_width((RECT *)(iptr)(((u8 *)window + 0x3c0) + pane * 0x10));
+        tmp = rect_width(&window->list_rects[pane]);
         tmp2 = font2->text_width((const char *)&textbuf.buf);
         text_x_offset = (tmp - tmp2) / 2;
       }
@@ -469,16 +469,16 @@ void ParleyWindow::create_unit_list_pane(RECT *rect,int pane,i32 own_side)
   field[1] = '\0';
   field[2] = '\0';
   field[3] = '\0';
-  list_rects[pane * 4] = rect->left;
-  list_rects[pane * 4 + 1] = rect->top;
-  list_rects[pane * 4 + 2] = rect->right;
-  list_rects[pane * 4 + 3] = rect->bottom;
+  list_rects[pane].left = rect->left;
+  list_rects[pane].top = rect->top;
+  list_rects[pane].right = rect->right;
+  list_rects[pane].bottom = rect->bottom;
   if (list_rows[pane] <
       list_counts[pane]) {
     scroll_width = GetSystemMetrics(2);
     sb_right_orig = sb_rect.right;
-    list_rects[pane * 4 + 2] =
-         (int)list_rects[pane * 4 + 2] - scroll_width;
+    list_rects[pane].right =
+         (int)list_rects[pane].right - scroll_width;
     sb_rect.left = GetSystemMetrics(2);
     sb_rect.left = sb_right_orig - sb_rect.left;
     new_ctrl = (Button *)(operator_new(0x40));
@@ -523,7 +523,7 @@ void ParleyWindow::create_unit_list_pane(RECT *rect,int pane,i32 own_side)
     parent22 = ((u8 *)this + 0x48);
   }
   ((Hotspot *)list_hotspots[pane])->create((Wnd *)parent22,
-             pane + 0x3fc,((RECT *)(((u8 *)this + 0x39c) + pane * 0x10 + 0x24)));
+             pane + 0x3fc,&list_rects[pane]);
   ((Hotspot *)list_hotspots[pane])->set_click_callback(parley_unit_list_on_click);
   ((Hotspot *)list_hotspots[pane])->set_dblclick_callback(parley_unit_list_on_click);
   parley_draw_unit_list(pane);
@@ -600,23 +600,23 @@ void __cdecl parley_unit_list_on_click(int control_id)
         for (i = 0; i < window->list_counts[pane];
             i = i + 1) {
           if (i != row) {
-            window->list_selected[pane * 0x801 + i] = 0;
+            window->list_selected[pane][i] = 0;
           }
         }
         window->list_anchor_row[pane] = row;
-        sel_flag = (uint *)(pane * 0x2004 + row * 4 + 0x8400 + (iptr)window);
+        sel_flag = &window->list_selected[pane][row];
         *sel_flag = *sel_flag ^ 1;
       }
       else {
         window->list_anchor_row[pane] = row;
-        sel_flag = (uint *)(pane * 0x2004 + row * 4 + 0x8400 + (iptr)window);
+        sel_flag = &window->list_selected[pane][row];
         *sel_flag = *sel_flag ^ 1;
       }
     }
     else {
       for (i = 0; i < window->list_counts[pane]; i++)
       {
-        window->list_selected[pane * 0x801 + i] = 0;
+        window->list_selected[pane][i] = 0;
       }
       if (window->list_anchor_row[pane] < row) {
         i = window->list_anchor_row[pane];
@@ -627,7 +627,7 @@ void __cdecl parley_unit_list_on_click(int control_id)
         i = row;
       }
       for (; i <= range_end; i++) {
-        window->list_selected[pane * 0x801 + i] = 1;
+        window->list_selected[pane][i] = 1;
       }
     }
     parley_draw_unit_list(pane);
@@ -651,16 +651,16 @@ int __cdecl parley_unit_list_hit_test(int px,int py,int pane)
   else {
     window = (ParleyWindow *)(child - 0x48);
   }
-  if (py < (int)window->list_rects[pane * 4 + 1]) {
+  if (py < (int)window->list_rects[pane].top) {
     result = -1;
   }
-  else if (py < (int)window->list_rects[pane * 4 + 3]) {
-    if (px < (int)window->list_rects[pane * 4]) {
+  else if (py < (int)window->list_rects[pane].bottom) {
+    if (px < (int)window->list_rects[pane].left) {
       result = -3;
     }
-    else if (px < (int)window->list_rects[pane * 4 + 2]) {
-      result = (int)window->list_rects[pane * 4 + 1];
-      list_height = rect_height((RECT *)&window->list_rects[pane * 4]);
+    else if (px < (int)window->list_rects[pane].right) {
+      result = (int)window->list_rects[pane].top;
+      list_height = rect_height(&window->list_rects[pane]);
       result = (py - result) / (list_height / window->list_rows[pane]) +
               window->list_first_row[pane];
     }
@@ -715,18 +715,18 @@ void __cdecl parley_draw_unit_list(int pane)
     this2 = (ParleyWindow *)(tmp - 0x48);
   }
   this2->get_clip((RECT *)saved_clip);
-  this2->set_clip((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
+  this2->set_clip(&this2->list_rects[pane]);
   for (;;) {
-    this2->fill_rect(((RECT *)(((u8 *)this2 + 0x3c0) + pane * 0x10)),dlg_style.list_bg);
+    this2->fill_rect(&this2->list_rects[pane],dlg_style.list_bg);
     if (this2->large_layout == 0) {
       font2 = (GameFont *)((i8 *)&font_size14);
     }
     else {
       font2 = (GameFont *)((i8 *)&font_size21);
     }
-    list_left = (int)this2->list_rects[pane * 4];
-    list_width2 = rect_width((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
-    row_height = rect_height((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
+    list_left = (int)this2->list_rects[pane].left;
+    list_width2 = rect_width(&this2->list_rects[pane]);
+    row_height = rect_height(&this2->list_rects[pane]);
     row_height = row_height / this2->list_rows[pane];
     tmp = row_height / 2;
     tmp2 = font2->font_cached_height();
@@ -738,7 +738,7 @@ void __cdecl parley_draw_unit_list(int pane)
     has_sel[3] = '\0';
     for (row = 0; row < this2->list_counts[pane];
         row = row + 1) {
-      if (this2->list_selected[row + pane * 0x801] != 0) {
+      if (this2->list_selected[pane][row] != 0) {
         has_sel = (u8 *)&this2->side_selected[pane];
         has_sel[0] = 1;
         has_sel[1] = '\0';
@@ -749,14 +749,14 @@ void __cdecl parley_draw_unit_list(int pane)
     }
     stale = 0;
     for (row = 0; row < this2->list_rows[pane]; row++) {
-      row_top = (int)this2->list_rects[pane * 4 + 1] + row_height * row;
+      row_top = (int)this2->list_rects[pane].top + row_height * row;
       SetRect(&row_rect,list_left,row_top,list_width2 + list_left,row_height + row_top);
       if ((row != 0) && (this2->list_first_row[pane] == -1)) {
         break;
       }
       if (this2->list_first_row[pane] + row <
           this2->list_counts[pane]) {
-        selected2 = (int)this2->list_selected[pane * 0x801 + (this2->list_first_row[pane] + row)];
+        selected2 = (int)this2->list_selected[pane][this2->list_first_row[pane] + row];
         if (selected2 == 0) {
           text_color2 = dlg_style.list_text;
           shadow_color2 = dlg_style.list_shadow;
@@ -768,7 +768,7 @@ void __cdecl parley_draw_unit_list(int pane)
         unit = 0;
         if ((0 < this2->list_counts[pane]) &&
            (unit = this2->find_unit_by_id(
-                                  (i32)this2->list_items_b[pane * 0x801 + (this2->list_first_row[pane] + row)]), unit < 0)) {
+                                  (i32)this2->list_items_b[pane][this2->list_first_row[pane] + row]), unit < 0)) {
           stale = 1;  /* not found: the list is rebuilt and drawn again */
           break;
         }
@@ -798,7 +798,7 @@ void __cdecl parley_draw_unit_list(int pane)
           has_sel[1] = '\0';
           has_sel[2] = '\0';
           has_sel[3] = '\0';
-          tmp = rect_width((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
+          tmp = rect_width(&this2->list_rects[pane]);
           tmp2 = font2->text_width((const char *)&textbuf.buf);
           text_x_offset = (tmp - tmp2) / 2;
         }
@@ -1046,22 +1046,22 @@ void ParleyWindow::sort_unit_list(int first,int last,int pane)
     for (i = first; j = i, i < last; i++) {
       while (j = j + 1, j <= last) {
         cmp = _strcmp(*(char **)(((i8 *)&prefs_main_menu_choice_block.unit_type_name_ptrs) +
-                                  (uint)units[(int)window->list_items[i + pane * 0x801]].type * 4),
+                                  (uint)units[(int)window->list_items[pane][i]].type * 4),
                         *(char **)(((i8 *)&prefs_main_menu_choice_block.unit_type_name_ptrs) +
-                                  (uint)units[(int)window->list_items[j + pane * 0x801]].type * 4));
+                                  (uint)units[(int)window->list_items[pane][j]].type * 4));
         if (0 < cmp) {
-          swap = (i32)window->list_items[i + pane * 0x801];
-          window->list_items[i + pane * 0x801] =
-               (i32)window->list_items[j + pane * 0x801];
-          window->list_items[j + pane * 0x801] = swap;
-          swap = (i32)window->list_items_b[i + pane * 0x801];
-          window->list_items_b[i + pane * 0x801] =
-               (i32)window->list_items_b[j + pane * 0x801];
-          window->list_items_b[j + pane * 0x801] = swap;
-          swap = (i32)window->list_selected[i + pane * 0x801];
-          window->list_selected[i + pane * 0x801] =
-               (i32)window->list_selected[j + pane * 0x801];
-          window->list_selected[j + pane * 0x801] = swap;
+          swap = (i32)window->list_items[pane][i];
+          window->list_items[pane][i] =
+               (i32)window->list_items[pane][j];
+          window->list_items[pane][j] = swap;
+          swap = (i32)window->list_items_b[pane][i];
+          window->list_items_b[pane][i] =
+               (i32)window->list_items_b[pane][j];
+          window->list_items_b[pane][j] = swap;
+          swap = (i32)window->list_selected[pane][i];
+          window->list_selected[pane][i] =
+               (i32)window->list_selected[pane][j];
+          window->list_selected[pane][j] = swap;
         }
       }
     }
@@ -1097,25 +1097,25 @@ void ParleyWindow::sort_units_by_city(int first,int last,int pane)
     for (;;) {
       j++;
       if (last < j) break;
-      if (units[(int)window->list_items[i + pane * 0x801]].home_city != -1) {
-        if (units[(int)window->list_items[j + pane * 0x801]].home_city != -1) {
-          _Str2 = (char *)unit_home_city_name(window->list_items[j + pane * 0x801]);
-          _Str1 = (char *)unit_home_city_name(window->list_items[i + pane * 0x801]);
+      if (units[(int)window->list_items[pane][i]].home_city != -1) {
+        if (units[(int)window->list_items[pane][j]].home_city != -1) {
+          _Str2 = (char *)unit_home_city_name(window->list_items[pane][j]);
+          _Str1 = (char *)unit_home_city_name(window->list_items[pane][i]);
           cmp = _strcmp(_Str1,_Str2);
           if (cmp < 1) continue;
         }
-        swap = (i32)window->list_items[i + pane * 0x801];
-        window->list_items[i + pane * 0x801] =
-             (i32)window->list_items[j + pane * 0x801];
-        window->list_items[j + pane * 0x801] = swap;
-        swap = (i32)window->list_items_b[i + pane * 0x801];
-        window->list_items_b[i + pane * 0x801] =
-             (i32)window->list_items_b[j + pane * 0x801];
-        window->list_items_b[j + pane * 0x801] = swap;
-        swap = (i32)window->list_selected[i + pane * 0x801];
-        window->list_selected[i + pane * 0x801] =
-             (i32)window->list_selected[j + pane * 0x801];
-        window->list_selected[j + pane * 0x801] = swap;
+        swap = (i32)window->list_items[pane][i];
+        window->list_items[pane][i] =
+             (i32)window->list_items[pane][j];
+        window->list_items[pane][j] = swap;
+        swap = (i32)window->list_items_b[pane][i];
+        window->list_items_b[pane][i] =
+             (i32)window->list_items_b[pane][j];
+        window->list_items_b[pane][j] = swap;
+        swap = (i32)window->list_selected[pane][i];
+        window->list_selected[pane][i] =
+             (i32)window->list_selected[pane][j];
+        window->list_selected[pane][j] = swap;
       }
     }
   }
@@ -1157,12 +1157,12 @@ void ParleyWindow::build_unit_list(int pane,int keep_selection)
     else {
       old_count = window->list_counts[pane];
       for (unit = 0; unit < old_count; unit++) {
-        if (window->list_selected[pane * 0x801 + unit] == 0) {
+        if (window->list_selected[pane][unit] == 0) {
           *(i32 *)((int)selected_ids + unit * 4) = 0xffffffff;
         }
         else {
           *(i32 *)((int)selected_ids + unit * 4) =
-               (i32)window->list_items_b[pane * 0x801 + unit];
+               (i32)window->list_items_b[pane][unit];
         }
       }
     }
@@ -1201,21 +1201,21 @@ void ParleyWindow::build_unit_list(int pane,int keep_selection)
         }
       }
       if ((near_land) || (y = unit_stack_sum(unit,2), y == 1)) {
-        window->list_items[pane * 0x801 + window->list_counts[pane]] =
+        window->list_items[pane][window->list_counts[pane]] =
              unit;
-        window->list_items_b[pane * 0x801 + window->list_counts[pane]] =
+        window->list_items_b[pane][window->list_counts[pane]] =
              units[unit].id;
-        window->list_selected[pane * 0x801 + window->list_counts[pane]] = 0;
+        window->list_selected[pane][window->list_counts[pane]] = 0;
         if ((keep_selection == 1) && (selected_ids != (void *)0x0)) {
           for (k = 0; k < old_count; k++) {
             if (units[unit].id == *(int *)((int)selected_ids + k * 4)) {
-              window->list_selected[pane * 0x801 + window->list_counts[pane]] =
+              window->list_selected[pane][window->list_counts[pane]] =
                    1;
               break;
             }
           }
         }
-        count_ptr = (int *)((iptr)window + 1000 + pane * 4);
+        count_ptr = &window->list_counts[pane];
         *count_ptr = *count_ptr + 1;
       }
     }
@@ -1259,8 +1259,8 @@ void ParleyWindow::build_civ_list(RECT *rect,int side)
     if (((human_civ[0] != other_civ) && (this->other_civ != other_civ)) &&
        ((all_contact != 0 || ((*(byte *)&civs[human_civ[0]].treaties[other_civ] & TREATY_CONTACT) != 0))))
     {
-      list_items[side * 0x801 + list_counts[side]] = other_civ;
-      list_selected[side * 0x801 + list_counts[side]] =
+      list_items[side][list_counts[side]] = other_civ;
+      list_selected[side][list_counts[side]] =
            0;
       list_counts[side] =
            list_counts[side] + 1;
@@ -1285,16 +1285,16 @@ void ParleyWindow::build_civ_list(RECT *rect,int side)
   field[1] = '\0';
   field[2] = '\0';
   field[3] = '\0';
-  list_rects[side * 4] = rect->left;
-  list_rects[side * 4 + 1] = rect->top;
-  list_rects[side * 4 + 2] = rect->right;
-  list_rects[side * 4 + 3] = rect->bottom;
+  list_rects[side].left = rect->left;
+  list_rects[side].top = rect->top;
+  list_rects[side].right = rect->right;
+  list_rects[side].bottom = rect->bottom;
   if (list_rows[side] <
       list_counts[side]) {
     scroll_width = GetSystemMetrics(2);
     has_wonder = rect2.right;
-    list_rects[side * 4 + 2] =
-         (int)list_rects[side * 4 + 2] - scroll_width;
+    list_rects[side].right =
+         (int)list_rects[side].right - scroll_width;
     rect2.left = GetSystemMetrics(2);
     rect2.left = has_wonder - rect2.left;
     new_ctrl = (Button *)(operator_new(0x40));
@@ -1339,7 +1339,7 @@ void ParleyWindow::build_civ_list(RECT *rect,int side)
     hotspot_parent = ((u8 *)this + 0x48);
   }
   ((Hotspot *)list_hotspots[side])->create((Wnd *)hotspot_parent,
-             side + 0x40f,((RECT *)(((u8 *)this + 0x39c) + side * 0x10 + 0x24)));
+             side + 0x40f,&list_rects[side]);
   ((Hotspot *)list_hotspots[side])->set_click_callback(parley_civ_list_click);
   ((Hotspot *)list_hotspots[side])->set_dblclick_callback(parley_civ_list_click);
   parley_draw_civ_list(side);
@@ -1416,23 +1416,23 @@ void __cdecl parley_civ_list_click(int ctrl_id)
         for (i = 0; i < wnd2->list_counts[side];
             i = i + 1) {
           if (i != row) {
-            wnd2->list_selected[i + side * 0x801] = 0;
+            wnd2->list_selected[side][i] = 0;
           }
         }
         wnd2->list_anchor_row[side] = row;
-        sel_flag = (uint *)(row * 4 + side * 0x2004 + 0x8400 + (iptr)wnd2);
+        sel_flag = &wnd2->list_selected[side][row];
         *sel_flag = *sel_flag ^ 1;
       }
       else {
         wnd2->list_anchor_row[side] = row;
-        sel_flag = (uint *)(row * 4 + side * 0x2004 + 0x8400 + (iptr)wnd2);
+        sel_flag = &wnd2->list_selected[side][row];
         *sel_flag = *sel_flag ^ 1;
       }
     }
     else {
       for (i = 0; i < wnd2->list_counts[side]; i++)
       {
-        wnd2->list_selected[i + side * 0x801] = 0;
+        wnd2->list_selected[side][i] = 0;
       }
       if (wnd2->list_anchor_row[side] < row) {
         i = wnd2->list_anchor_row[side];
@@ -1443,7 +1443,7 @@ void __cdecl parley_civ_list_click(int ctrl_id)
         i = row;
       }
       for (; i <= range_end; i++) {
-        wnd2->list_selected[i + side * 0x801] = 1;
+        wnd2->list_selected[side][i] = 1;
       }
     }
     parley_draw_civ_list(side);
@@ -1467,16 +1467,16 @@ int __cdecl parley_civ_list_hit_test(int x,int y,int side)
   else {
     wnd2 = (ParleyWindow *)(active - 0x48);
   }
-  if (y < (int)wnd2->list_rects[side * 4 + 1]) {
+  if (y < (int)wnd2->list_rects[side].top) {
     row = -1;
   }
-  else if (y < (int)wnd2->list_rects[side * 4 + 3]) {
-    if (x < (int)wnd2->list_rects[side * 4]) {
+  else if (y < (int)wnd2->list_rects[side].bottom) {
+    if (x < (int)wnd2->list_rects[side].left) {
       row = -3;
     }
-    else if (x < (int)wnd2->list_rects[side * 4 + 2]) {
-      row = (int)wnd2->list_rects[side * 4 + 1];
-      list_height = rect_height((RECT *)(side * 0x10 + (iptr)wnd2 + 0x3c0));
+    else if (x < (int)wnd2->list_rects[side].right) {
+      row = (int)wnd2->list_rects[side].top;
+      list_height = rect_height(&wnd2->list_rects[side]);
       row = (y - row) / (list_height / wnd2->list_rows[side]) +
               wnd2->list_first_row[side];
     }
@@ -1522,17 +1522,17 @@ void __cdecl parley_draw_civ_list(int side)
     wnd2 = (ParleyWindow *)(active - 0x48);
   }
   wnd2->get_clip((RECT *)saved_clip);
-  wnd2->set_clip((RECT *)(iptr)(((u8 *)wnd2 + 0x3c0) + side * 0x10));
-  wnd2->fill_rect(((RECT *)(((u8 *)wnd2 + 0x3c0) + side * 0x10)),dlg_style.list_bg);
+  wnd2->set_clip(&wnd2->list_rects[side]);
+  wnd2->fill_rect(&wnd2->list_rects[side],dlg_style.list_bg);
   if (wnd2->large_layout == 0) {
     font2 = (GameFont *)((i8 *)&font_size14);
   }
   else {
     font2 = (GameFont *)((i8 *)&font_size21);
   }
-  xLeft = (int)wnd2->list_rects[side * 4];
-  list_width = rect_width((RECT *)(iptr)(((u8 *)wnd2 + 0x3c0) + side * 0x10));
-  row_height = rect_height((RECT *)(iptr)(((u8 *)wnd2 + 0x3c0) + side * 0x10));
+  xLeft = (int)wnd2->list_rects[side].left;
+  list_width = rect_width(&wnd2->list_rects[side]);
+  row_height = rect_height(&wnd2->list_rects[side]);
   row_height = row_height / wnd2->list_rows[side];
   text_dy = row_height / 2;
   row_top = font2->font_cached_height();
@@ -1543,7 +1543,7 @@ void __cdecl parley_draw_civ_list(int side)
   field[2] = '\0';
   field[3] = '\0';
   for (row = 0; row < wnd2->list_counts[side]; row++) {
-    if (wnd2->list_selected[side * 0x801 + row] != 0) {
+    if (wnd2->list_selected[side][row] != 0) {
       field = (u8 *)&wnd2->side_selected[side];
       field[0] = 1;
       field[1] = '\0';
@@ -1554,12 +1554,12 @@ void __cdecl parley_draw_civ_list(int side)
   }
   for (row = 0; row < wnd2->list_rows[side];
       row = row + 1) {
-    row_top = (int)wnd2->list_rects[side * 4 + 1] + row_height * row;
+    row_top = (int)wnd2->list_rects[side].top + row_height * row;
     SetRect(&row_rect,xLeft,row_top,list_width + xLeft,row_height + row_top);
     if (((row == 0) || (wnd2->list_first_row[side] != -1)) &&
        (wnd2->list_first_row[side] + row <
         wnd2->list_counts[side])) {
-      selected = (int)wnd2->list_selected[side * 0x801 + (wnd2->list_first_row[side] + row)];
+      selected = (int)wnd2->list_selected[side][wnd2->list_first_row[side] + row];
       if (selected == 0) {
         text_color2 = dlg_style.list_text;
         shadow_color2 = dlg_style.list_shadow;
@@ -1589,15 +1589,15 @@ void __cdecl parley_draw_civ_list(int side)
       }
       else {
         font_height = font2->font_cached_height();
-        parley_draw_civ_capital((i32)wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)],
+        parley_draw_civ_capital((i32)wnd2->list_items[side][wnd2->list_first_row[side] + row],
                            wnd2->list_first_row[side] + row,
                            xLeft + 2,row_top,font_height);
         text_clear();
-        text = civ_name_plural(wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
+        text = civ_name_plural(wnd2->list_items[side][wnd2->list_first_row[side] + row]);
         text_append(text);
         text_append_space();
         text_append_lparen();
-        text = civ_leader_name(wnd2->list_items[side * 0x801 + (wnd2->list_first_row[side] + row)]);
+        text = civ_leader_name(wnd2->list_items[side][wnd2->list_first_row[side] + row]);
         text_append(text);
         text_append_rparen();
       }
@@ -4291,16 +4291,16 @@ void ParleyWindow::create_city_list_pane(RECT *rect,int pane,i32 own_cities)
   field_ptr[1] = '\0';
   field_ptr[2] = '\0';
   field_ptr[3] = '\0';
-  list_rects[pane * 4] = rect->left;
-  list_rects[pane * 4 + 1] = rect->top;
-  list_rects[pane * 4 + 2] = rect->right;
-  list_rects[pane * 4 + 3] = rect->bottom;
+  list_rects[pane].left = rect->left;
+  list_rects[pane].top = rect->top;
+  list_rects[pane].right = rect->right;
+  list_rects[pane].bottom = rect->bottom;
   if (list_rows[pane] <
       list_counts[pane]) {
     scroll_width = GetSystemMetrics(2);
     right = rect2.right;
-    list_rects[pane * 4 + 2] =
-         (int)list_rects[pane * 4 + 2] - scroll_width;
+    list_rects[pane].right =
+         (int)list_rects[pane].right - scroll_width;
     rect2.left = GetSystemMetrics(2);
     rect2.left = right - rect2.left;
     new_ctrl = (Button *)(operator_new(0x40));
@@ -4345,7 +4345,7 @@ void ParleyWindow::create_city_list_pane(RECT *rect,int pane,i32 own_cities)
     hotspot_parent = ((u8 *)this + 0x48);
   }
   ((Hotspot *)list_hotspots[pane])->create((Wnd *)hotspot_parent,
-             pane + 0x422,((RECT *)(((u8 *)this + 0x39c) + pane * 0x10 + 0x24)));
+             pane + 0x422,&list_rects[pane]);
   ((Hotspot *)list_hotspots[pane])->set_click_callback(parley_city_list_click);
   ((Hotspot *)list_hotspots[pane])->set_dblclick_callback(parley_city_list_click);
   parley_draw_city_list(pane);
@@ -4493,23 +4493,23 @@ void __cdecl parley_city_list_click(int control_id)
         for (row = 0; row < parley_wnd2->list_counts[pane];
             row = row + 1) {
           if (row != hit_row) {
-            parley_wnd2->list_selected[pane * 0x801 + row] = 0;
+            parley_wnd2->list_selected[pane][row] = 0;
           }
         }
         parley_wnd2->list_anchor_row[pane] = hit_row;
-        sel_flag = (uint *)(pane * 0x2004 + hit_row * 4 + 0x8400 + (iptr)parley_wnd2);
+        sel_flag = &parley_wnd2->list_selected[pane][hit_row];
         *sel_flag = *sel_flag ^ 1;
       }
       else {
         parley_wnd2->list_anchor_row[pane] = hit_row;
-        sel_flag = (uint *)(pane * 0x2004 + hit_row * 4 + 0x8400 + (iptr)parley_wnd2);
+        sel_flag = &parley_wnd2->list_selected[pane][hit_row];
         *sel_flag = *sel_flag ^ 1;
       }
     }
     else {
       for (row = 0; row < parley_wnd2->list_counts[pane]; row++)
       {
-        parley_wnd2->list_selected[pane * 0x801 + row] = 0;
+        parley_wnd2->list_selected[pane][row] = 0;
       }
       if (parley_wnd2->list_anchor_row[pane] < hit_row) {
         row = parley_wnd2->list_anchor_row[pane];
@@ -4521,7 +4521,7 @@ void __cdecl parley_city_list_click(int control_id)
       }
       for (; row <= sel_end; row++) {
         if (0 < row) {
-          parley_wnd2->list_selected[pane * 0x801 + row] = 1;
+          parley_wnd2->list_selected[pane][row] = 1;
         }
       }
     }
@@ -4546,16 +4546,16 @@ int __cdecl parley_city_list_hit_test(int x,int y,int pane)
   else {
     parley_wnd2 = (ParleyWindow *)(child - 0x48);
   }
-  if (y < (int)parley_wnd2->list_rects[pane * 4 + 1]) {
+  if (y < (int)parley_wnd2->list_rects[pane].top) {
     result = -1;
   }
-  else if (y < (int)parley_wnd2->list_rects[pane * 4 + 3]) {
-    if (x < (int)parley_wnd2->list_rects[pane * 4]) {
+  else if (y < (int)parley_wnd2->list_rects[pane].bottom) {
+    if (x < (int)parley_wnd2->list_rects[pane].left) {
       result = -3;
     }
-    else if (x < (int)parley_wnd2->list_rects[pane * 4 + 2]) {
-      result = (int)parley_wnd2->list_rects[pane * 4 + 1];
-      height = rect_height((RECT *)(pane * 0x10 + (iptr)parley_wnd2 + 0x3c0));
+    else if (x < (int)parley_wnd2->list_rects[pane].right) {
+      result = (int)parley_wnd2->list_rects[pane].top;
+      height = rect_height(&parley_wnd2->list_rects[pane]);
       result = (y - result) / (height / parley_wnd2->list_rows[pane]) +
               parley_wnd2->list_first_row[pane];
     }
@@ -4590,29 +4590,29 @@ void ParleyWindow::sort_city_list(int first,int last,int pane)
   if (1 < parley_wnd2->list_counts[pane]) {
     for (i = first; j = i, i < last; i++) {
       while (j = j + 1, j <= last) {
-        cmp = city_has_improvement(parley_wnd2->list_items[j + pane * 0x801],IMP_PALACE);
+        cmp = city_has_improvement(parley_wnd2->list_items[pane][j],IMP_PALACE);
         if ((cmp != 0) ||
-           ((cmp = city_has_improvement(parley_wnd2->list_items[i + pane * 0x801]
+           ((cmp = city_has_improvement(parley_wnd2->list_items[pane][i]
                                         ,IMP_PALACE), cmp == 0 &&
-            (cmp = _strcmp(cities[(int)parley_wnd2->list_items[i + pane * 0x801]].
-                             name,cities[(int)parley_wnd2->list_items[j + pane * 0x801]
+            (cmp = _strcmp(cities[(int)parley_wnd2->list_items[pane][i]].
+                             name,cities[(int)parley_wnd2->list_items[pane][j]
                                         ].name), 0 < cmp)))) {
-          tmp = (i32)parley_wnd2->list_items[i + pane * 0x801];
-          parley_wnd2->list_items[i + pane * 0x801] =
-               (i32)parley_wnd2->list_items[j + pane * 0x801];
-          parley_wnd2->list_items[j + pane * 0x801] = tmp;
-          tmp = (i32)parley_wnd2->list_selected[i + pane * 0x801];
-          parley_wnd2->list_selected[i + pane * 0x801] =
-               (i32)parley_wnd2->list_selected[j + pane * 0x801];
-          parley_wnd2->list_selected[j + pane * 0x801] = tmp;
-          tmp = (i32)parley_wnd2->list_selected_b[i + pane * 0x801];
-          parley_wnd2->list_selected_b[i + pane * 0x801] =
-               (i32)parley_wnd2->list_selected_b[j + pane * 0x801];
-          parley_wnd2->list_selected_b[j + pane * 0x801] = tmp;
-          tmp = (i32)parley_wnd2->list_items_b[i + pane * 0x801];
-          parley_wnd2->list_items_b[i + pane * 0x801] =
-               (i32)parley_wnd2->list_items_b[j + pane * 0x801];
-          parley_wnd2->list_items_b[j + pane * 0x801] = tmp;
+          tmp = (i32)parley_wnd2->list_items[pane][i];
+          parley_wnd2->list_items[pane][i] =
+               (i32)parley_wnd2->list_items[pane][j];
+          parley_wnd2->list_items[pane][j] = tmp;
+          tmp = (i32)parley_wnd2->list_selected[pane][i];
+          parley_wnd2->list_selected[pane][i] =
+               (i32)parley_wnd2->list_selected[pane][j];
+          parley_wnd2->list_selected[pane][j] = tmp;
+          tmp = (i32)parley_wnd2->list_selected_b[pane][i];
+          parley_wnd2->list_selected_b[pane][i] =
+               (i32)parley_wnd2->list_selected_b[pane][j];
+          parley_wnd2->list_selected_b[pane][j] = tmp;
+          tmp = (i32)parley_wnd2->list_items_b[pane][i];
+          parley_wnd2->list_items_b[pane][i] =
+               (i32)parley_wnd2->list_items_b[pane][j];
+          parley_wnd2->list_items_b[pane][j] = tmp;
         }
       }
     }
@@ -4655,18 +4655,18 @@ void __cdecl parley_draw_city_list(int pane)
     this2 = (ParleyWindow *)(child - 0x48);
   }
   this2->get_clip((RECT *)saved_clip);
-  this2->set_clip((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
+  this2->set_clip(&this2->list_rects[pane]);
   for (;;) {
-    this2->fill_rect(((RECT *)(((u8 *)this2 + 0x3c0) + pane * 0x10)),dlg_style.list_bg);
+    this2->fill_rect(&this2->list_rects[pane],dlg_style.list_bg);
     if (this2->large_layout == 0) {
       font2 = (GameFont *)((i8 *)&font_size14);
     }
     else {
       font2 = (GameFont *)((i8 *)&font_size21);
     }
-    xLeft = (int)this2->list_rects[pane * 4];
-    width = rect_width((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
-    row_height = rect_height((RECT *)(iptr)(((u8 *)this2 + 0x3c0) + pane * 0x10));
+    xLeft = (int)this2->list_rects[pane].left;
+    width = rect_width(&this2->list_rects[pane]);
+    row_height = rect_height(&this2->list_rects[pane]);
     row_height = row_height / this2->list_rows[pane];
     text_offset_y = row_height / 2;
     row_y = font2->font_cached_height();
@@ -4678,7 +4678,7 @@ void __cdecl parley_draw_city_list(int pane)
     field_ptr[3] = '\0';
     for (row = 0; row < this2->list_counts[pane];
         row = row + 1) {
-      if (this2->list_selected[pane * 0x801 + row] != 0) {
+      if (this2->list_selected[pane][row] != 0) {
         field_ptr = (u8 *)&this2->side_selected[pane];
         field_ptr[0] = 1;
         field_ptr[1] = '\0';
@@ -4689,14 +4689,14 @@ void __cdecl parley_draw_city_list(int pane)
     }
     stale = 0;
     for (row = 0; row < this2->list_rows[pane]; row++) {
-      row_y = (int)this2->list_rects[pane * 4 + 1] + row * row_height;
+      row_y = (int)this2->list_rects[pane].top + row * row_height;
       SetRect(&row_rect,xLeft,row_y,width + xLeft,row_y + row_height);
       if ((row != 0) && (this2->list_first_row[pane] == -1)) {
         break;
       }
       if (this2->list_first_row[pane] + row <
           this2->list_counts[pane]) {
-        selected = (int)this2->list_selected[pane * 0x801 + (this2->list_first_row[pane] + row)];
+        selected = (int)this2->list_selected[pane][this2->list_first_row[pane] + row];
         if (selected == 0) {
           if (this2->list_first_row[pane] + row == 0) {
             text_color2 = (uint)dlg_style.highlight_text_color;
@@ -4714,7 +4714,7 @@ void __cdecl parley_draw_city_list(int pane)
         city = 0;
         if ((0 < this2->list_counts[pane]) &&
            (city = this2->find_city_by_id(
-                                  (i32)this2->list_items_b[pane * 0x801 + (this2->list_first_row[pane] + row)]), city == -1)) {
+                                  (i32)this2->list_items_b[pane][this2->list_first_row[pane] + row]), city == -1)) {
           stale = 1;  /* not found: the list is rebuilt and drawn again */
           break;
         }
@@ -4765,11 +4765,9 @@ void __cdecl parley_draw_city_list(int pane)
           selected = city_has_improvement(city,IMP_PALACE);
           if ((selected == 0) && (sprite_style == 0)) {
             text_append_lparen();
-            text_append_int(*(iptr *)(pane * 0x2004 +
-                                         (this2->list_first_row[pane] +
-                                         row) * 4 + 0xc408 + (int)this2));
+            text_append_int((iptr)this2->list_selected_b[pane][this2->list_first_row[pane] + row]);
             text_append_space();
-            if ((int)this2->list_selected_b[pane * 0x801 + (this2->list_first_row[pane] + row)] < 2) {
+            if ((int)this2->list_selected_b[pane][this2->list_first_row[pane] + row] < 2) {
               label = (label_string(label_table.string_ids[0x2dc]));
               text_append(label);
             }
@@ -4888,12 +4886,12 @@ void ParleyWindow::build_city_list(int pane,int keep_selection)
     else {
       old_count = parley_wnd2->list_counts[pane];
       for (city = 0; city < old_count; city++) {
-        if (parley_wnd2->list_selected[pane * 0x801 + city] == 0) {
+        if (parley_wnd2->list_selected[pane][city] == 0) {
           *(i32 *)((int)old_selection + city * 4) = 0xffffffff;
         }
         else {
           *(i32 *)((int)old_selection + city * 4) =
-               (i32)parley_wnd2->list_items_b[pane * 0x801 + city];
+               (i32)parley_wnd2->list_items_b[pane][city];
         }
       }
     }
@@ -4914,32 +4912,31 @@ void ParleyWindow::build_city_list(int pane,int keep_selection)
              ((int)cities[city].owner == other_civ)) &&
             (((1 << ((byte)(*(i8 *)&human_civ) & 0x1f) & (int)(char)cities[city].known_to) != 0 ||
              ((int)cities[city].owner == ((*(i8 *)&human_civ) & 0xffU))))))))) {
-      parley_wnd2->list_items[pane * 0x801 + parley_wnd2->list_counts[pane]] =
+      parley_wnd2->list_items[pane][parley_wnd2->list_counts[pane]] =
            city;
-      parley_wnd2->list_items_b[pane * 0x801 + parley_wnd2->list_counts[pane]] =
+      parley_wnd2->list_items_b[pane][parley_wnd2->list_counts[pane]] =
            cities[city].id;
       if (keep_selection == 0) {
-        parley_wnd2->list_selected[pane * 0x801 + parley_wnd2->list_counts[pane]] = 0;
+        parley_wnd2->list_selected[pane][parley_wnd2->list_counts[pane]] = 0;
       }
       else {
-        parley_wnd2->list_selected[pane * 0x801 + parley_wnd2->list_counts[pane]] = 0;
+        parley_wnd2->list_selected[pane][parley_wnd2->list_counts[pane]] = 0;
         for (unit = 0; unit < old_count; unit++) {
           if (cities[city].id == *(int *)((int)old_selection + unit * 4)) {
-            parley_wnd2->list_selected[pane * 0x801 + parley_wnd2->list_counts[pane]] = 1;
+            parley_wnd2->list_selected[pane][parley_wnd2->list_counts[pane]] = 1;
             break;
           }
         }
       }
-      parley_wnd2->list_selected_b[pane * 0x801 + parley_wnd2->list_counts[pane]] = 0;
+      parley_wnd2->list_selected_b[pane][parley_wnd2->list_counts[pane]] = 0;
       for (unit = 0; unit < game.num_units; unit++) {
         if (((units[unit].id != 0) && (cities[city].x == units[unit].x)) &&
            (cities[city].y == units[unit].y)) {
-          count_ptr = (int *)(pane * 0x2004 + parley_wnd2->list_counts[pane] * 4 + 0xc408 +
-                          (iptr)parley_wnd2);
+          count_ptr = (int *)&parley_wnd2->list_selected_b[pane][parley_wnd2->list_counts[pane]];
           *count_ptr = *count_ptr + 1;
         }
       }
-      count_ptr = (int *)((iptr)parley_wnd2 + 1000 + pane * 4);
+      count_ptr = &parley_wnd2->list_counts[pane];
       *count_ptr = *count_ptr + 1;
     }
     city++;

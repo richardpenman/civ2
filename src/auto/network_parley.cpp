@@ -2479,7 +2479,7 @@ i32 *ParleyWindow::send_offer(int mode)
   case 8:
   case 0xc:
     for (i = 0; i < parley_wnd_block.list_counts[1]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + 2049] == 1) {
+      if ((int)parley_wnd_block.list_selected[1][i] == 1) {
         parley_wnd_block.offer_counts[1]++;
       }
     }
@@ -2488,7 +2488,7 @@ i32 *ParleyWindow::send_offer(int mode)
   case 10:
   case 0x11:
     for (i = 0; i < parley_wnd_block.list_counts[1]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + 2049] == 1) {
+      if ((int)parley_wnd_block.list_selected[1][i] == 1) {
         parley_wnd_block.offer_counts[1]++;
       }
     }
@@ -2504,7 +2504,7 @@ i32 *ParleyWindow::send_offer(int mode)
     case 8:
     case 0xc:
       for (i = 0; i < parley_wnd_block.list_counts[0]; i++) {
-        if ((int)parley_wnd_block.list_selected[i] == 1) {
+        if ((int)parley_wnd_block.list_selected[0][i] == 1) {
           parley_wnd_block.offer_counts[0]++;
         }
       }
@@ -2513,7 +2513,7 @@ i32 *ParleyWindow::send_offer(int mode)
     case 10:
     case 0x11:
       for (i = 0; i < parley_wnd_block.list_counts[0]; i++) {
-        if ((int)parley_wnd_block.list_selected[i] == 1) {
+        if ((int)parley_wnd_block.list_selected[0][i] == 1) {
           parley_wnd_block.offer_counts[0]++;
         }
       }
@@ -2579,8 +2579,8 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     item_ptr2 = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
-        *item_ptr2 = (i32)list_items[side * 0x801 + i];
+      if ((int)parley_wnd_block.list_selected[side][i] == 1) {
+        *item_ptr2 = (i32)list_items[side][i];
         item_ptr2++;
         packed_count++;
         if ((int)offer_counts[side] == packed_count) {
@@ -2603,8 +2603,8 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     pair_ptr = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
-        *pair_ptr = (i32)list_items_b[side * 0x801 + i];
+      if ((int)parley_wnd_block.list_selected[side][i] == 1) {
+        *pair_ptr = (i32)list_items_b[side][i];
         pair_ptr++;
         packed_count++;
         if ((int)offer_counts[side] == packed_count) {
@@ -2620,8 +2620,8 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     item_ptr2 = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
-        *item_ptr2 = (i32)list_items[side * 0x801 + i];
+      if ((int)parley_wnd_block.list_selected[side][i] == 1) {
+        *item_ptr2 = (i32)list_items[side][i];
         item_ptr2++;
         packed_count++;
         if ((int)offer_counts[side] == packed_count) {
@@ -2642,9 +2642,9 @@ void ParleyWindow::pack_offer_items(ParleyOfferItem *dest,i32 item_type,i32 item
     pair_ptr = (i32 *)(dest + 1);   /* the ids after the item */
     packed_count = 0;
     for (i = 0; i < parley_wnd_block.list_counts[side]; i++) {
-      if ((int)parley_wnd_block.list_selected[i + side * 0x801] == 1) {
-        *pair_ptr = (i32)list_items_b[side * 0x801 + i];
-        pair_ptr[1] = (i32)list_selected_b[side * 0x801 + i];
+      if ((int)parley_wnd_block.list_selected[side][i] == 1) {
+        *pair_ptr = (i32)list_items_b[side][i];
+        pair_ptr[1] = (i32)list_selected_b[side][i];
         pair_ptr += 2;
         packed_count++;
         if ((int)offer_counts[side] == packed_count) {
