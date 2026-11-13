@@ -167,3 +167,66 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
   function whose arguments change (a free function whose parameter types change but whose argument
   words mean the same, `int` -> `RECT *`, is still found by its name).  A failing case after an intended change of behaviour: check it
   against the replays (which compare with the original), then record again.
+
+## Browser version
+
+`make web` builds `build/web`, a static site that plays single-player games in a browser
+(README "Browser version"); all of it is in `src/web` and `tools/build_web.py`, and the native
+builds do not use it.
+
+* **The module**: the portable build's `build/wasm/civ2.wasm` (the same game and platform layer,
+  `tools/build_port.py module`), passed through Binaryen's `wasm-opt` (`tools/fetch-toolchain.sh
+  web`, version 130) with `--fpcast-emu` and `--asyncify`, then `-O2` without the debugging
+  information: 2.9 MB (1 MB gzipped).  `--fpcast-emu`: the decompiled code calls through function
+  pointers of other types than their targets, which wasm traps on; the native port patches wasm2c's
+  check out (tools/build_port.py), the browser cannot, so every function in the table gets a thunk
+  of one common type (indirect calls are a little slower).
+* **Blocking, the decision**: the game's loop blocks (`GetMessage` waits for input, `Sleep`, message
+  boxes, and busy loops that only peek at their input).  Two ways were weighed: (A) asyncify, the JS
+  host on the page's main thread, where the module's stack is unwound at the imports that wait and
+  wound back once the page's event loop has run; (B) the module in a Web Worker blocking on
+  `Atomics.wait`, frames, input, audio and message boxes passed to and from the page, which needs
+  cross-origin isolation (COOP/COEP headers; on static hosting such as GitHub Pages, a
+  service-worker shim).  A was built first and kept: its cost is size (the code doubles: 1.4 MB
+  without asyncify, 2.9 MB with) and about 25% speed in the game's own code, against B's isolation
+  headers, a second thread's plumbing for every host function, and audio and the cursor from a
+  worker.  The imports that unwind are `host_wait_event`, `host_delay_ms`, `host_message_box` and
+  `host_poll_event` (src/web/host.js: `blocking`): a poll yields to the page when the game has run
+  25 ms without one, through a message to itself (setTimeout's nesting clamp would add 4 ms each
+  time); short sleeps likewise.
+* **Speed** (this machine; Chrome 156 headless, replays on the virtual clock, so all of it is the
+  game's code): `harness/scripts/newgame.txt` 0.8 s, `long50.txt` (50 turns) 2.4-2.8 s, against
+  0.4 s and 1.4-1.8 s for build/OpenCiv2 (wasm2c, -O2), and 0.5 s / 2.0 s for the same module
+  without asyncify.  The page loads the game's files from IndexedDB in about 1 s (88 MB) and shows
+  its first picture about 1.8 s after loading.
+* **Host** (src/web/host.js): the desktop on a `<canvas>` of its size in desktop pixels, shown at a
+  whole number of device pixels each where it fits (`image-rendering: pixelated`), else shrunk; the
+  desktop follows the window (`host_open_maximized_window`, `HOST_EV_RESIZE`), its scale chosen as
+  natively (`host_desktop_scale`).  The game draws its own menu bar (as on Linux: no native menu, no
+  `host_menu_*`).  Keys by `KeyboardEvent` (letters by `key`, the rest by `code`, the keypad by Num
+  Lock as SDL does), the wheel's fractions added up as host_sdl.c does, cursors as CSS cursors
+  (the game's images scaled to the desktop), sound effects as WebAudio buffers queued one after
+  another, music decoded by the browser (`decodeAudioData`: Ogg Vorbis or WAV), message boxes as
+  an in-page `<dialog>`.  The `host_net_*` imports fail: no network games.
+* **Files** (src/web/wasi.js): WASI preview 1 over a file system in memory: the player's files at
+  `/civ2` (the game's folder, `argv[1]`), the fonts at `/data` (`CIV2_DATA`, fetched gzipped and
+  inflated by the page), the platform's log to `/dev/null` (`?log`: to the console).
+  src/web/store.js keeps the game's folder in IndexedDB: copied in once from the folder or `.zip`
+  the player chooses (src/web/main.js; src/web/zip.js reads the archive with the browser's
+  `DecompressionStream`), written back a second after the game writes a file (saved games,
+  `CIV.INI`, `CIV2.DAT`).
+* **By hand**: sound and music (the headless browser has no audio device), the cursors, resizing the
+  window and other browsers than Chrome are checked by playing: `make web`, `python3 -m http.server
+  -d build/web`, open `http://localhost:8000/?setup`.
+* **Limits**: no network games; no set-up from the CD or a disc image (unshield and the disc
+  reader would have to be compiled to wasm as well): an installed folder is needed.  Videos play
+  as natively (the Indeo decoder is part of the module).
+* **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
+  wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading; no browser, no game
+  files), then `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
+  from `tools/fetch-toolchain.sh browser`; Linux x86-64) zips the game folder, gives it to the page
+  through its file input, then plays: the menu, a new game with the default choices, a save
+  (Ctrl+S) kept in IndexedDB, and the saved game loaded again after reloading the page;
+  screenshots in `run/web-smoke`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
+  scenario in the browser as the native suite does and compares it with the original's recording
+  (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).

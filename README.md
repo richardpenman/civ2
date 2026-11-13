@@ -69,6 +69,29 @@ What to install first:
 `make windows` cross-compiles `build/OpenCiv2.exe` on Linux (it also downloads SDL2's MinGW
 release): the one file the release has, SDL2 and the fonts built in.
 
+## Browser version
+
+`make web` builds the game for web browsers into `build/web`: a static site (a page, its
+scripts, the game as a 2.9 MB WebAssembly module, the fonts) with no server-side code. Serve
+that folder from any web server, e.g.
+
+```sh
+make web                                   # first time: downloads Binaryen into tools/toolchain
+python3 -m http.server -d build/web 8000   # then open http://localhost:8000
+```
+
+It plays single-player games with the original graphics and your own copy of the game: the first
+time, the page asks for the folder Civilization II is installed in (or a `.zip` of it; both can be
+dropped on the page) and copies it into the browser's storage (IndexedDB); later visits start the
+game at once (`?setup` shows the page again, to replace or remove the files). Saved games,
+`CIV.INI` and the Hall of Fame are kept there too. The game must be installed: the browser
+version cannot set it up from the CD or a disc image (the desktop version can, and its game
+folder, `GameData`, can then be chosen). Music plays where the folder has it (`Music/TrackNN.ogg`,
+as the desktop version's set-up makes from the CD). Network games are not available in the browser.
+Tested in Chrome; it should run in any browser from 2023 on (Edge 103, Firefox 113,
+Safari 16.4). The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T, Ctrl+N close or
+open tabs and windows): use the game's menus for those commands.
+
 ## Status
 
 Playable. Every function of the game that can run has source; the only parts not reconstructed
