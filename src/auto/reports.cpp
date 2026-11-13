@@ -1548,6 +1548,218 @@ void __cdecl intel_report_show(int report_civ,int target_civ)
   return;
 }
 
+/* Part of foreign_minister_show (004308ae): a civ's row in the list: its
+   leader, attitude, treaty, and (with an embassy) its gold and, below Prince,
+   its military units.  HAS_EMBASSY_WONDER: CIV has the United Nations or
+   Marco Polo's. */
+static void foreign_minister_add_row(Dialog &dlg,int civ,iptr civ2,int has_embassy_wonder)
+{
+  iptr text;
+  iptr choice;
+
+  text_clear();
+  text = civ_leader_title(civ2);
+  text_append((const char *)text);
+  text_append_space();
+  text = (iptr)(civ_leader_name(civ2));
+  text_append((const char *)text);
+  text_append_space();
+  text_append_label(0x8c);
+  text_append_space();
+  text = (iptr)(civ_name_plural(civ2));
+  text_append((const char *)text);
+  text_append_space();
+  diplo_eval_ai_stance(civ,civ2);
+  choice = diplo_attitude_level(diplo_eval.cur_attitude);
+  text_append_lparen();
+  text_append_string_id(attitude_names[choice]);
+  if ((*(byte *)(civ * 0x594 + (iptr)((u8 *)&civs + 33) + civ2 * 4) & 0x20) == 0) {
+    if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
+      if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) == 0) {
+        if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CEASEFIRE) != 0) {
+          text_append_comma();
+          text_append_label(0x8f);
+        }
+      }
+      else {
+        text_append_comma();
+        text_append_label(0x8e);
+      }
+    }
+    else {
+      text_append_comma();
+      text_append_label(0x8d);
+    }
+  }
+  else {
+    text_append_comma();
+    text_append_label(0x90);
+  }
+  if (((*(byte *)&civs[civ].treaties[civ2] & TREATY_EMBASSY) == 0) &&
+     (has_embassy_wonder == 0)) {
+    text_append_comma();
+    text_append_label(0x91);
+  }
+  else {
+    text_append_comma();
+    if (extra_ui(X_FOREIGN_GOLD)) {
+      /* X37: the gold with a coin */
+      text_append_int(civs[civ2].gold);
+      text_append(EXTRAS_ICON_S "g");
+    }
+    else
+    text_append_gold(civs[civ2].gold);
+    if (game.difficulty < DIFF_PRINCE) {
+      text_append_comma();
+      text_append_int(civs[civ2].num_military_units);
+      text_append_space();
+      text_append_label(0x19);
+    }
+  }
+  text_append_rparen();
+  dlg.add_option((const char *)&textbuf.buf,civ2,0);
+}
+
+/* Part of foreign_minister_show (004308ae): the player sets the attitude a
+   civ is shown towards another player (multiplayer), and the others are
+   told. */
+static void foreign_minister_set_attitude(Dialog &dlg,int civ,iptr civ2)
+{
+  iptr text;
+  iptr choice;
+  i32 option_flags;
+  iptr option_id;
+  iptr cur_level;
+  byte attitude_values[12];
+
+  text_clear();
+  text = civ_leader_title(civ2);
+  text_append((const char *)text);
+  text_append_space();
+  text = (iptr)(civ_leader_name(civ2));
+  text_append((const char *)text);
+  text_append_space();
+  text_append_label(0x8c);
+  text_append_space();
+  text = (iptr)(civ_name_plural(civ2));
+  text_append((const char *)text);
+  text_set_string_arg(0,(const char *)&textbuf.buf);
+  choice = dlg.load_text((const char *)&str_game_2,(const char *)&str_attitudemulti,1);
+  if (choice == 0) {
+    dlg.set_columns(3);
+    for (choice = 0; choice < 9; choice++) {
+      option_flags = 0;
+      option_id = choice;
+      text = (iptr)label_string(attitude_names[choice]);
+      dlg.add_option((const char *)text,option_id,option_flags);
+    }
+    if (*(char *)&civs[civ].attitude[civ2] == '\0') {
+      cur_level = 0;
+    }
+    else {
+      cur_level = diplo_attitude_level((uint)civs[civ].attitude[civ2]);
+    }
+    dlg.set_default_choice(cur_level);
+    choice = dlg.show_modal(0);
+    /* BF-103: a choice past the nine attitudes (a row added to GAME.TXT's
+       @ATTITUDEMULTI) is no choice (the original read past them) */
+    if ((-1 < choice) && (choice < 9)) {
+      attitude_values[0] = 0;
+      attitude_values[1] = 5;
+      attitude_values[2] = 0x11;
+      attitude_values[3] = 0x1f;
+      attitude_values[4] = 0x32;
+      attitude_values[5] = 0x44;
+      attitude_values[6] = 0x52;
+      attitude_values[7] = 0x5f;
+      attitude_values[8] = 100;
+      civs[civ].attitude[civ2] = attitude_values[choice];
+      net_send_message(NM_SET_ATTITUDE,0xff,civ,civ2,attitude_values[choice],0,0,0,0,0);
+    }
+  }
+}
+
+/* Part of foreign_minister_show (004308ae): an audience asked of another
+   human player in a network game: the request sent, its answer waited for,
+   the parley opened if granted. */
+static void foreign_minister_request_audience(int civ,iptr civ2)
+{
+  iptr text;
+  int popup_result;
+
+  diplo_set_treaty_flags(civ,civ2,0x401);
+  advisor_window_block.mp_meeting_reply = -1;
+  diplo_meeting.mp_pending = 1;
+  if (bugfix_ui()) {
+    net.nm_parley_cancel_count = 0;  /* B6: a cancel left from an earlier audience does not end this one (docs/BUGS.md) */
+  }
+  net_send_text_args(0x3d,net.net_slots[net.net_civ_slots[civ2]].id,0
+                     ,0,civ,0);
+  text = (iptr)(civ_leader_name(civ2));
+  text_set_string_arg(1,(const char *)text);
+  text = (iptr)(civ_name_plural(civ2));
+  text_set_string_arg(2,(const char *)text);
+  dlg_style.pending_idle_callback = mp_meeting_wait_idle;
+  civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
+  popup_result = popup_game_sprite_flags(str_parleywaiting,0x2000001,(Sprite *)&popup_info_icon_sprite,0);
+  if (net.nm_parley_cancel_count == 0) {
+    if (popup_result == -1) {
+      net_send_message(NM_PARLEYREQUEST_CANCEL,net.net_slots[net.net_civ_slots[civ2]].id,0,0,0,0,0,0,0,
+                         0);
+      parley_wnd_block.other_civ = -1;
+      diplo_meeting.mp_pending = 0;
+    }
+    else if (advisor_window_block.mp_meeting_reply < 1) {
+      dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+      popup_game_with_sprite(str_parleygoaway,(Sprite *)&popup_info_icon_sprite,0);
+      diplo_meeting.mp_pending = 0;
+    }
+    else if (advisor_window_block.mp_meeting_reply == 1) {
+      advisor_window_block.mp_meeting_reply = -1;
+      parley_wnd_block.other_civ = civ2;
+      dlg_style.pending_idle_callback = mp_meeting_wait_idle;
+      civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
+      text = (iptr)(civ_name_plural(civ));
+      text_set_string_arg(0,(const char *)text);
+      popup_game_with_sprite(str_parleyok,(Sprite *)&popup_info_icon_sprite,0);
+      if (net.host_handoff_stage == '\0') {
+        if (net.nm_parley_cancel_count == 0) {
+          parley_wnd_block.open(civ2,3);
+        }
+        else {
+          parley_wnd_block.other_civ = -1;
+          net.nm_parley_cancel_count = 0;
+          text = (iptr)(civ_name_plural(civ2));
+          text_set_string_arg(0,(const char *)text);
+          dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+          popup_game_with_sprite(str_parleycancel_2,(Sprite *)&popup_info_icon_sprite,0);
+          diplo_meeting.mp_pending = 0;
+        }
+      }
+      else {
+        parley_wnd_block.other_civ = -1;
+        dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+        popup_game_with_sprite(str_parleybusy,(Sprite *)&popup_info_icon_sprite,0);
+        diplo_meeting.mp_pending = 0;
+      }
+    }
+    else {
+      dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+      popup_game_with_sprite(str_parleybusy_2,(Sprite *)&popup_info_icon_sprite,0);
+      diplo_meeting.mp_pending = 0;
+    }
+  }
+  else {
+    net.nm_parley_cancel_count = 0;
+    text = (iptr)(civ_name_plural(civ2));
+    text_set_string_arg(0,(const char *)text);
+    dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+    popup_game_with_sprite(str_parleycancel,(Sprite *)&popup_info_icon_sprite,0);
+    parley_wnd_block.other_civ = -1;
+    diplo_meeting.mp_pending = 0;
+  }
+}
+
 /* 004308ae auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
@@ -1556,14 +1768,7 @@ void __cdecl foreign_minister_show(int civ)
 {
   NativeWindow *parley_hwnd_obj;
   int value;
-  iptr text;
-  i32 option_flags;
-  iptr option_id;
-  iptr cur_level;
-  byte attitude_values[12];
-  int popup_result;
   int has_embassy_wonder;
-  iptr choice;
   int contact_count;
   Dialog dialog2;
   int both_human;
@@ -1616,67 +1821,7 @@ void __cdecl foreign_minister_show(int civ)
             if (((sees_all != 0) || (both_human != 0)) ||
                ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CONTACT) != 0)) {
               contact_count++;
-              text_clear();
-              text = civ_leader_title(civ2);
-              text_append((const char *)text);
-              text_append_space();
-              text = (iptr)(civ_leader_name(civ2));
-              text_append((const char *)text);
-              text_append_space();
-              text_append_label(0x8c);
-              text_append_space();
-              text = (iptr)(civ_name_plural(civ2));
-              text_append((const char *)text);
-              text_append_space();
-              diplo_eval_ai_stance(civ,civ2);
-              choice = diplo_attitude_level(diplo_eval.cur_attitude);
-              text_append_lparen();
-              text_append_string_id(attitude_names[choice]);
-              if ((*(byte *)(civ * 0x594 + (iptr)((u8 *)&civs + 33) + civ2 * 4) & 0x20) == 0) {
-                if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
-                  if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) == 0) {
-                    if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CEASEFIRE) != 0) {
-                      text_append_comma();
-                      text_append_label(0x8f);
-                    }
-                  }
-                  else {
-                    text_append_comma();
-                    text_append_label(0x8e);
-                  }
-                }
-                else {
-                  text_append_comma();
-                  text_append_label(0x8d);
-                }
-              }
-              else {
-                text_append_comma();
-                text_append_label(0x90);
-              }
-              if (((*(byte *)&civs[civ].treaties[civ2] & TREATY_EMBASSY) == 0) &&
-                 (has_embassy_wonder == 0)) {
-                text_append_comma();
-                text_append_label(0x91);
-              }
-              else {
-                text_append_comma();
-                if (extra_ui(X_FOREIGN_GOLD)) {
-                  /* X37: the gold with a coin */
-                  text_append_int(civs[civ2].gold);
-                  text_append(EXTRAS_ICON_S "g");
-                }
-                else
-                text_append_gold(civs[civ2].gold);
-                if (game.difficulty < DIFF_PRINCE) {
-                  text_append_comma();
-                  text_append_int(civs[civ2].num_military_units);
-                  text_append_space();
-                  text_append_label(0x19);
-                }
-              }
-              text_append_rparen();
-              dialog2.add_option((const char *)&textbuf.buf,civ2,0);
+              foreign_minister_add_row(dialog2,civ,civ2,has_embassy_wonder);
             }
           }
         }
@@ -1708,51 +1853,7 @@ void __cdecl foreign_minister_show(int civ)
       if (dialog2.result_extra != 3) {
         return;
       }
-      text_clear();
-      text = civ_leader_title(civ2);
-      text_append((const char *)text);
-      text_append_space();
-      text = (iptr)(civ_leader_name(civ2));
-      text_append((const char *)text);
-      text_append_space();
-      text_append_label(0x8c);
-      text_append_space();
-      text = (iptr)(civ_name_plural(civ2));
-      text_append((const char *)text);
-      text_set_string_arg(0,(const char *)&textbuf.buf);
-      choice = dialog2.load_text((const char *)&str_game_2,(const char *)&str_attitudemulti,1);
-      if (choice == 0) {
-        dialog2.set_columns(3);
-        for (choice = 0; choice < 9; choice++) {
-          option_flags = 0;
-          option_id = choice;
-          text = (iptr)label_string(attitude_names[choice]);
-          dialog2.add_option((const char *)text,option_id,option_flags);
-        }
-        if (*(char *)&civs[civ].attitude[civ2] == '\0') {
-          cur_level = 0;
-        }
-        else {
-          cur_level = diplo_attitude_level((uint)civs[civ].attitude[civ2]);
-        }
-        dialog2.set_default_choice(cur_level);
-        choice = dialog2.show_modal(0);
-        /* BF-103: a choice past the nine attitudes (a row added to GAME.TXT's
-           @ATTITUDEMULTI) is no choice (the original read past them) */
-        if ((-1 < choice) && (choice < 9)) {
-          attitude_values[0] = 0;
-          attitude_values[1] = 5;
-          attitude_values[2] = 0x11;
-          attitude_values[3] = 0x1f;
-          attitude_values[4] = 0x32;
-          attitude_values[5] = 0x44;
-          attitude_values[6] = 0x52;
-          attitude_values[7] = 0x5f;
-          attitude_values[8] = 100;
-          civs[civ].attitude[civ2] = attitude_values[choice];
-          net_send_message(NM_SET_ATTITUDE,0xff,civ,civ2,attitude_values[choice],0,0,0,0,0);
-        }
-      }
+      foreign_minister_set_attitude(dialog2,civ,civ2);
     }
     if ((scenario_events_loaded == 0) ||
        (value = ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->check_negotiation(civ,civ2)
@@ -1764,77 +1865,7 @@ void __cdecl foreign_minister_show(int civ)
         if ((((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) &&
             ((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) != 0)) &&
            (2 < game.multiplayer)) {
-          diplo_set_treaty_flags(civ,civ2,0x401);
-          advisor_window_block.mp_meeting_reply = -1;
-          diplo_meeting.mp_pending = 1;
-          if (bugfix_ui()) {
-            net.nm_parley_cancel_count = 0;  /* B6: a cancel left from an earlier audience does not end this one (docs/BUGS.md) */
-          }
-          net_send_text_args(0x3d,net.net_slots[net.net_civ_slots[civ2]].id,0
-                             ,0,civ,0);
-          text = (iptr)(civ_leader_name(civ2));
-          text_set_string_arg(1,(const char *)text);
-          text = (iptr)(civ_name_plural(civ2));
-          text_set_string_arg(2,(const char *)text);
-          dlg_style.pending_idle_callback = mp_meeting_wait_idle;
-          civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
-          popup_result = popup_game_sprite_flags(str_parleywaiting,0x2000001,(Sprite *)&popup_info_icon_sprite,0);
-          if (net.nm_parley_cancel_count == 0) {
-            if (popup_result == -1) {
-              net_send_message(NM_PARLEYREQUEST_CANCEL,net.net_slots[net.net_civ_slots[civ2]].id,0,0,0,0,0,0,0,
-                                 0);
-              parley_wnd_block.other_civ = -1;
-              diplo_meeting.mp_pending = 0;
-            }
-            else if (advisor_window_block.mp_meeting_reply < 1) {
-              dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-              popup_game_with_sprite(str_parleygoaway,(Sprite *)&popup_info_icon_sprite,0);
-              diplo_meeting.mp_pending = 0;
-            }
-            else if (advisor_window_block.mp_meeting_reply == 1) {
-              advisor_window_block.mp_meeting_reply = -1;
-              parley_wnd_block.other_civ = civ2;
-              dlg_style.pending_idle_callback = mp_meeting_wait_idle;
-              civ_rating_title_font_block.mp_meeting_wait_start_i32 = timer_ticks();
-              text = (iptr)(civ_name_plural(civ));
-              text_set_string_arg(0,(const char *)text);
-              popup_game_with_sprite(str_parleyok,(Sprite *)&popup_info_icon_sprite,0);
-              if (net.host_handoff_stage == '\0') {
-                if (net.nm_parley_cancel_count == 0) {
-                  parley_wnd_block.open(civ2,3);
-                }
-                else {
-                  parley_wnd_block.other_civ = -1;
-                  net.nm_parley_cancel_count = 0;
-                  text = (iptr)(civ_name_plural(civ2));
-                  text_set_string_arg(0,(const char *)text);
-                  dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-                  popup_game_with_sprite(str_parleycancel_2,(Sprite *)&popup_info_icon_sprite,0);
-                  diplo_meeting.mp_pending = 0;
-                }
-              }
-              else {
-                parley_wnd_block.other_civ = -1;
-                dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-                popup_game_with_sprite(str_parleybusy,(Sprite *)&popup_info_icon_sprite,0);
-                diplo_meeting.mp_pending = 0;
-              }
-            }
-            else {
-              dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-              popup_game_with_sprite(str_parleybusy_2,(Sprite *)&popup_info_icon_sprite,0);
-              diplo_meeting.mp_pending = 0;
-            }
-          }
-          else {
-            net.nm_parley_cancel_count = 0;
-            text = (iptr)(civ_name_plural(civ2));
-            text_set_string_arg(0,(const char *)text);
-            dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-            popup_game_with_sprite(str_parleycancel,(Sprite *)&popup_info_icon_sprite,0);
-            parley_wnd_block.other_civ = -1;
-            diplo_meeting.mp_pending = 0;
-          }
+          foreign_minister_request_audience(civ,civ2);
         }
       }
       else {

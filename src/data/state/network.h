@@ -599,6 +599,12 @@ typedef struct NetSession {
     struct MsgArgs;    /* part of process_messages */
     void run_blocked_input();    /* part of process_messages */
     void dispatch_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_session_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_state_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_call_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_turn_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_display_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
+    int dispatch_diplomacy_message(int *&msg,int *msg_hdr,uint *payload,int sender,uint msg_size,char &gamelist_dirty,MsgArgs &a);    /* part of process_messages */
     void recv_hello(int *msg,char &gamelist_dirty);    /* part of process_messages */
     void recv_server_info(int *msg,int *msg_hdr);    /* part of process_messages */
     void recv_state_diff(int *msg,uint *payload,MsgArgs &a);    /* part of process_messages */

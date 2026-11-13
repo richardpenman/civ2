@@ -591,714 +591,115 @@ void SpaceshipWindow::render_ship_construct_surfaces(ShipSurfaces &sf,int &unwin
   surface_ctor((DibSurface *)sf.surf_1d7);
 }
 
+/* The spaceship structure rows render_ship draws (kind, count needed, GIF
+   resource, position, size, source x), as the original wrote them field by
+   field into its frame. */
+static const SpaceshipWindow::ShipPartRow ship_part_rows[88] = {
+  {2,  6, {0, 0}, {0x1cf, 0xb2, 0xaa, 0x2b, 0x33, 0x204}},
+  {2,  6, {0, 0}, {0x1d0, 0x189, 0x68, 0x3d, 0x28, 0x230}},
+  {0,  7, {0, 0}, {0x197, 0x1df, 0x13c, 0x3a, 0x22, 0x44}},
+  {2,  2, {0, 0}, {0x1c9, 0x1de, 0x144, 0x19, 0x36, 0x92}},
+  {2,  2, {0, 0}, {0x1ca, 0x1fa, 0x139, 0x26, 0x27, 0xac}},
+  {0,  9, {0, 0}, {0x199, 0x1e2, 0x145, 0x42, 0x37, 0x7f}},
+  {1,  2, {0, 0}, {0x1bb, 0x1df, 0x13f, 0x4d, 0x4e, 0x69}},
+  {0,  0, {0, 0}, {0x190, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  1, {0, 0}, {0x191, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  2, {0, 0}, {0x192, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  3, {0, 0}, {0x193, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  4, {0, 0}, {0x194, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  6, {0, 0}, {0x196, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0,  8, {0, 0}, {0x198, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0, 10, {0, 0}, {0x19a, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0, 12, {0, 0}, {0x19c, 0x138, 0x9d, 0xfd, 0xf0, 0x0}},
+  {0, 14, {0, 0}, {0x19e, 0x137, 0x9d, 0xfe, 0xf0, 0x0}},
+  {0, 16, {0, 0}, {0x1a0, 0x137, 0x9d, 0xfe, 0xf0, 0x0}},
+  {0, 18, {0, 0}, {0x1a2, 0x137, 0x9d, 0xfe, 0xf0, 0x0}},
+  {0, 20, {0, 0}, {0x1a5, 0x137, 0x9d, 0xfe, 0xf0, 0x0}},
+  {0, 22, {0, 0}, {0x1a8, 0x137, 0x9d, 0x115, 0xf0, 0x0}},
+  {0, 23, {0, 0}, {0x1a9, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 24, {0, 0}, {0x1aa, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 25, {0, 0}, {0x1ab, 0xba, 0x72, 0x192, 0x11b, 0x0}},
+  {0, 26, {0, 0}, {0x1ac, 0xba, 0x72, 0x192, 0x11b, 0x0}},
+  {0, 27, {0, 0}, {0x1ad, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 28, {0, 0}, {0x1ae, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 30, {0, 0}, {0x1b1, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 32, {0, 0}, {0x1b4, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 36, {0, 0}, {0x1b7, 0xbb, 0x72, 0x191, 0x11b, 0x0}},
+  {0, 38, {0, 0}, {0x1b8, 0xba, 0x72, 0x192, 0x11b, 0x0}},
+  {1,  6, {0, 0}, {0x1c1, 0x1ba, 0x75, 0x21, 0x2b, 0x1ce}},
+  {5,  4, {0, 0}, {0x1f0, 0x18e, 0xa5, 0x30, 0x16, 0x190}},
+  {3,  3, {0, 0}, {0x1d9, 0x17d, 0xa4, 0x3e, 0x35, 0xd2}},
+  {4,  4, {0, 0}, {0x1e7, 0x1c5, 0xa9, 0x30, 0x24, 0x168}},
+  {4,  3, {0, 0}, {0x1e5, 0x1e0, 0xbd, 0x32, 0x24, 0x103}},
+  {5,  4, {0, 0}, {0x1f1, 0x1ad, 0xb4, 0x47, 0x26, 0x1c1}},
+  {4,  1, {0, 0}, {0x1e1, 0x1fc, 0xd2, 0x2b, 0x20, 0x30}},
+  {4,  2, {0, 0}, {0x1e3, 0x211, 0xe1, 0x37, 0x2a, 0x96}},
+  {5,  2, {0, 0}, {0x1ec, 0x1af, 0xc7, 0x4a, 0x24, 0x97}},
+  {3,  2, {0, 0}, {0x1d7, 0x1af, 0xce, 0x45, 0x3a, 0x4a}},
+  {5,  2, {0, 0}, {0x1ed, 0x1ca, 0xe9, 0x50, 0x2f, 0xe2}},
+  {1,  6, {0, 0}, {0x1c0, 0xb2, 0xc8, 0x3e, 0x28, 0x18f}},
+  {5,  3, {0, 0}, {0x1ee, 0x12c, 0xc5, 0x12, 0x18, 0x133}},
+  {3,  4, {0, 0}, {0x1d8, 0x136, 0xbc, 0x41, 0x38, 0x90}},
+  {5,  1, {0, 0}, {0x1ea, 0x153, 0xe8, 0x25, 0x29, 0x1}},
+  {5,  3, {0, 0}, {0x1ef, 0x12c, 0xd9, 0x49, 0x3c, 0x146}},
+  {3,  1, {0, 0}, {0x1d6, 0x164, 0xe9, 0x48, 0x40, 0x1}},
+  {5,  1, {0, 0}, {0x1eb, 0x15e, 0xfb, 0x6f, 0x45, 0x27}},
+  {4,  4, {0, 0}, {0x1e6, 0x109, 0xed, 0x31, 0x2c, 0x136}},
+  {4,  3, {0, 0}, {0x1e4, 0x11f, 0x107, 0x34, 0x2e, 0xce}},
+  {4,  1, {0, 0}, {0x1e0, 0x137, 0x122, 0x2e, 0x28, 0x1}},
+  {4,  2, {0, 0}, {0x1e2, 0x148, 0x136, 0x39, 0x35, 0x5c}},
+  {2,  8, {0, 0}, {0x1d4, 0x20e, 0xf6, 0x51, 0x36, 0x334}},
+  {0, 33, {0, 0}, {0x1b6, 0x24b, 0x114, 0x15, 0x19, 0x2d1}},
+  {1,  8, {0, 0}, {0x1c5, 0x246, 0x111, 0x2f, 0x2b, 0x285}},
+  {0, 31, {0, 0}, {0x1b3, 0x210, 0xfd, 0x30, 0x26, 0x282}},
+  {2,  7, {0, 0}, {0x1d2, 0x1f7, 0x102, 0x4d, 0x3a, 0x2ab}},
+  {0, 29, {0, 0}, {0x1b0, 0x22d, 0x123, 0x19, 0x19, 0x243}},
+  {1,  7, {0, 0}, {0x1c3, 0x228, 0x11d, 0x2f, 0x2e, 0x222}},
+  {2,  5, {0, 0}, {0x1ce, 0x1f1, 0xfd, 0x4e, 0x39, 0x1b5}},
+  {0, 21, {0, 0}, {0x1a7, 0x228, 0x11d, 0x18, 0x1a, 0x20c}},
+  {1,  5, {0, 0}, {0x1bf, 0x224, 0x118, 0x31, 0x2e, 0x15d}},
+  {0, 19, {0, 0}, {0x1a4, 0x1f0, 0x107, 0x34, 0x35, 0x1b9}},
+  {2,  1, {0, 0}, {0x1c8, 0x1da, 0x10b, 0x4b, 0x41, 0x46}},
+  {0, 11, {0, 0}, {0x19b, 0x1cf, 0x108, 0x42, 0x3d, 0xc2}},
+  {2,  3, {0, 0}, {0x1cb, 0x1ce, 0x109, 0x4d, 0x40, 0xd3}},
+  {2,  1, {0, 0}, {0x1c7, 0x1bc, 0x11b, 0x44, 0x44, 0x1}},
+  {0,  5, {0, 0}, {0x195, 0x1e4, 0x12f, 0x42, 0x31, 0x1}},
+  {0, 13, {0, 0}, {0x19d, 0x1fb, 0x12b, 0x20, 0x1f, 0x105}},
+  {1,  1, {0, 0}, {0x1ba, 0x204, 0x129, 0x2f, 0x33, 0x39}},
+  {1,  3, {0, 0}, {0x1bc, 0x1f9, 0x125, 0x37, 0x35, 0xb7}},
+  {1,  1, {0, 0}, {0x1b9, 0x1df, 0x13e, 0x33, 0x34, 0x1}},
+  {0, 19, {0, 0}, {0x1a3, 0x1be, 0x11f, 0x2c, 0x40, 0x18c}},
+  {2,  5, {0, 0}, {0x1cd, 0x1ac, 0x117, 0x42, 0x46, 0x172}},
+  {0, 21, {0, 0}, {0x1a6, 0x1d1, 0x142, 0x1d, 0x1d, 0x1ee}},
+  {1,  5, {0, 0}, {0x1be, 0x1cd, 0x13c, 0x34, 0x33, 0x128}},
+  {2,  7, {0, 0}, {0x1d1, 0x19d, 0x12c, 0x3c, 0x4b, 0x26e}},
+  {0, 31, {0, 0}, {0x1b2, 0x19e, 0x12b, 0x24, 0x41, 0x25d}},
+  {0, 29, {0, 0}, {0x1af, 0x1bd, 0x15c, 0x1d, 0x1d, 0x225}},
+  {1,  7, {0, 0}, {0x1c2, 0x1b9, 0x157, 0x31, 0x34, 0x1f0}},
+  {2,  8, {0, 0}, {0x1d3, 0x188, 0x129, 0x3a, 0x4e, 0x2f9}},
+  {0, 33, {0, 0}, {0x1b5, 0x1a5, 0x15c, 0x1c, 0x1e, 0x2b3}},
+  {1,  8, {0, 0}, {0x1c4, 0x1a0, 0x156, 0x32, 0x35, 0x252}},
+  {0, 15, {0, 0}, {0x19f, 0x1d1, 0x107, 0x43, 0x2a, 0x126}},
+  {2,  4, {0, 0}, {0x1cc, 0x1cf, 0x101, 0x50, 0x32, 0x121}},
+  {0, 17, {0, 0}, {0x1a1, 0x201, 0x11a, 0x21, 0x1a, 0x16a}},
+  {1,  4, {0, 0}, {0x1bd, 0x1fb, 0x116, 0x38, 0x2d, 0xef}},
+};
+
 /* Part of SpaceshipWindow::render_ship (004d17bf): the spaceship structure rows
    (kind, count needed, GIF resource, position, size, source x). */
 void SpaceshipWindow::render_ship_init_rows(ShipPartRow *part_rows)
 {
-  part_rows[0].kind = 2;
-  part_rows[0].count = 6;
-  part_rows[0].v[0] = 0x1cf;
-  part_rows[0].v[1] = 0xb2;
-  part_rows[0].v[2] = 0xaa;
-  part_rows[0].v[3] = 0x2b;
-  part_rows[0].v[4] = 0x33;
-  part_rows[0].v[5] = 0x204;
-  part_rows[1].kind = 2;
-  part_rows[1].count = 6;
-  part_rows[1].v[0] = 0x1d0;
-  part_rows[1].v[1] = 0x189;
-  part_rows[1].v[2] = 0x68;
-  part_rows[1].v[3] = 0x3d;
-  part_rows[1].v[4] = 0x28;
-  part_rows[1].v[5] = 0x230;
-  part_rows[2].kind = 0;
-  part_rows[2].count = 7;
-  part_rows[2].v[0] = 0x197;
-  part_rows[2].v[1] = 0x1df;
-  part_rows[2].v[2] = 0x13c;
-  part_rows[2].v[3] = 0x3a;
-  part_rows[2].v[4] = 0x22;
-  part_rows[2].v[5] = 0x44;
-  part_rows[3].kind = 2;
-  part_rows[3].count = 2;
-  part_rows[3].v[0] = 0x1c9;
-  part_rows[3].v[1] = 0x1de;
-  part_rows[3].v[2] = 0x144;
-  part_rows[3].v[3] = 0x19;
-  part_rows[3].v[4] = 0x36;
-  part_rows[3].v[5] = 0x92;
-  part_rows[4].kind = 2;
-  part_rows[4].count = 2;
-  part_rows[4].v[0] = 0x1ca;
-  part_rows[4].v[1] = 0x1fa;
-  part_rows[4].v[2] = 0x139;
-  part_rows[4].v[3] = 0x26;
-  part_rows[4].v[4] = 0x27;
-  part_rows[4].v[5] = 0xac;
-  part_rows[5].kind = 0;
-  part_rows[5].count = 9;
-  part_rows[5].v[0] = 0x199;
-  part_rows[5].v[1] = 0x1e2;
-  part_rows[5].v[2] = 0x145;
-  part_rows[5].v[3] = 0x42;
-  part_rows[5].v[4] = 0x37;
-  part_rows[5].v[5] = 0x7f;
-  part_rows[6].kind = 1;
-  part_rows[6].count = 2;
-  part_rows[6].v[0] = 0x1bb;
-  part_rows[6].v[1] = 0x1df;
-  part_rows[6].v[2] = 0x13f;
-  part_rows[6].v[3] = 0x4d;
-  part_rows[6].v[4] = 0x4e;
-  part_rows[6].v[5] = 0x69;
-  part_rows[7].kind = 0;
-  part_rows[7].count = 0;
-  part_rows[7].v[0] = 0x190;
-  part_rows[7].v[1] = 0x138;
-  part_rows[7].v[2] = 0x9d;
-  part_rows[7].v[3] = 0xfd;
-  part_rows[7].v[4] = 0xf0;
-  part_rows[7].v[5] = 0x0;
-  part_rows[8].kind = 0;
-  part_rows[8].count = 1;
-  part_rows[8].v[0] = 0x191;
-  part_rows[8].v[1] = 0x138;
-  part_rows[8].v[2] = 0x9d;
-  part_rows[8].v[3] = 0xfd;
-  part_rows[8].v[4] = 0xf0;
-  part_rows[8].v[5] = 0x0;
-  part_rows[9].kind = 0;
-  part_rows[9].count = 2;
-  part_rows[9].v[0] = 0x192;
-  part_rows[9].v[1] = 0x138;
-  part_rows[9].v[2] = 0x9d;
-  part_rows[9].v[3] = 0xfd;
-  part_rows[9].v[4] = 0xf0;
-  part_rows[9].v[5] = 0x0;
-  part_rows[10].kind = 0;
-  part_rows[10].count = 3;
-  part_rows[10].v[0] = 0x193;
-  part_rows[10].v[1] = 0x138;
-  part_rows[10].v[2] = 0x9d;
-  part_rows[10].v[3] = 0xfd;
-  part_rows[10].v[4] = 0xf0;
-  part_rows[10].v[5] = 0x0;
-  part_rows[11].kind = 0;
-  part_rows[11].count = 4;
-  part_rows[11].v[0] = 0x194;
-  part_rows[11].v[1] = 0x138;
-  part_rows[11].v[2] = 0x9d;
-  part_rows[11].v[3] = 0xfd;
-  part_rows[11].v[4] = 0xf0;
-  part_rows[11].v[5] = 0x0;
-  part_rows[12].kind = 0;
-  part_rows[12].count = 6;
-  part_rows[12].v[0] = 0x196;
-  part_rows[12].v[1] = 0x138;
-  part_rows[12].v[2] = 0x9d;
-  part_rows[12].v[3] = 0xfd;
-  part_rows[12].v[4] = 0xf0;
-  part_rows[12].v[5] = 0x0;
-  part_rows[13].kind = 0;
-  part_rows[13].count = 8;
-  part_rows[13].v[0] = 0x198;
-  part_rows[13].v[1] = 0x138;
-  part_rows[13].v[2] = 0x9d;
-  part_rows[13].v[3] = 0xfd;
-  part_rows[13].v[4] = 0xf0;
-  part_rows[13].v[5] = 0x0;
-  part_rows[14].kind = 0;
-  part_rows[14].count = 10;
-  part_rows[14].v[0] = 0x19a;
-  part_rows[14].v[1] = 0x138;
-  part_rows[14].v[2] = 0x9d;
-  part_rows[14].v[3] = 0xfd;
-  part_rows[14].v[4] = 0xf0;
-  part_rows[14].v[5] = 0x0;
-  part_rows[15].kind = 0;
-  part_rows[15].count = 12;
-  part_rows[15].v[0] = 0x19c;
-  part_rows[15].v[1] = 0x138;
-  part_rows[15].v[2] = 0x9d;
-  part_rows[15].v[3] = 0xfd;
-  part_rows[15].v[4] = 0xf0;
-  part_rows[15].v[5] = 0x0;
-  part_rows[16].kind = 0;
-  part_rows[16].count = 14;
-  part_rows[16].v[0] = 0x19e;
-  part_rows[16].v[1] = 0x137;
-  part_rows[16].v[2] = 0x9d;
-  part_rows[16].v[3] = 0xfe;
-  part_rows[16].v[4] = 0xf0;
-  part_rows[16].v[5] = 0x0;
-  part_rows[17].kind = 0;
-  part_rows[17].count = 16;
-  part_rows[17].v[0] = 0x1a0;
-  part_rows[17].v[1] = 0x137;
-  part_rows[17].v[2] = 0x9d;
-  part_rows[17].v[3] = 0xfe;
-  part_rows[17].v[4] = 0xf0;
-  part_rows[17].v[5] = 0x0;
-  part_rows[18].kind = 0;
-  part_rows[18].count = 18;
-  part_rows[18].v[0] = 0x1a2;
-  part_rows[18].v[1] = 0x137;
-  part_rows[18].v[2] = 0x9d;
-  part_rows[18].v[3] = 0xfe;
-  part_rows[18].v[4] = 0xf0;
-  part_rows[18].v[5] = 0x0;
-  part_rows[19].kind = 0;
-  part_rows[19].count = 20;
-  part_rows[19].v[0] = 0x1a5;
-  part_rows[19].v[1] = 0x137;
-  part_rows[19].v[2] = 0x9d;
-  part_rows[19].v[3] = 0xfe;
-  part_rows[19].v[4] = 0xf0;
-  part_rows[19].v[5] = 0x0;
-  part_rows[20].kind = 0;
-  part_rows[20].count = 22;
-  part_rows[20].v[0] = 0x1a8;
-  part_rows[20].v[1] = 0x137;
-  part_rows[20].v[2] = 0x9d;
-  part_rows[20].v[3] = 0x115;
-  part_rows[20].v[4] = 0xf0;
-  part_rows[20].v[5] = 0x0;
-  part_rows[21].kind = 0;
-  part_rows[21].count = 23;
-  part_rows[21].v[0] = 0x1a9;
-  part_rows[21].v[1] = 0xbb;
-  part_rows[21].v[2] = 0x72;
-  part_rows[21].v[3] = 0x191;
-  part_rows[21].v[4] = 0x11b;
-  part_rows[21].v[5] = 0x0;
-  part_rows[22].kind = 0;
-  part_rows[22].count = 24;
-  part_rows[22].v[0] = 0x1aa;
-  part_rows[22].v[1] = 0xbb;
-  part_rows[22].v[2] = 0x72;
-  part_rows[22].v[3] = 0x191;
-  part_rows[22].v[4] = 0x11b;
-  part_rows[22].v[5] = 0x0;
-  part_rows[23].kind = 0;
-  part_rows[23].count = 25;
-  part_rows[23].v[0] = 0x1ab;
-  part_rows[23].v[1] = 0xba;
-  part_rows[23].v[2] = 0x72;
-  part_rows[23].v[3] = 0x192;
-  part_rows[23].v[4] = 0x11b;
-  part_rows[23].v[5] = 0x0;
-  part_rows[24].kind = 0;
-  part_rows[24].count = 26;
-  part_rows[24].v[0] = 0x1ac;
-  part_rows[24].v[1] = 0xba;
-  part_rows[24].v[2] = 0x72;
-  part_rows[24].v[3] = 0x192;
-  part_rows[24].v[4] = 0x11b;
-  part_rows[24].v[5] = 0x0;
-  part_rows[25].kind = 0;
-  part_rows[25].count = 27;
-  part_rows[25].v[0] = 0x1ad;
-  part_rows[25].v[1] = 0xbb;
-  part_rows[25].v[2] = 0x72;
-  part_rows[25].v[3] = 0x191;
-  part_rows[25].v[4] = 0x11b;
-  part_rows[25].v[5] = 0x0;
-  part_rows[26].kind = 0;
-  part_rows[26].count = 28;
-  part_rows[26].v[0] = 0x1ae;
-  part_rows[26].v[1] = 0xbb;
-  part_rows[26].v[2] = 0x72;
-  part_rows[26].v[3] = 0x191;
-  part_rows[26].v[4] = 0x11b;
-  part_rows[26].v[5] = 0x0;
-  part_rows[27].kind = 0;
-  part_rows[27].count = 30;
-  part_rows[27].v[0] = 0x1b1;
-  part_rows[27].v[1] = 0xbb;
-  part_rows[27].v[2] = 0x72;
-  part_rows[27].v[3] = 0x191;
-  part_rows[27].v[4] = 0x11b;
-  part_rows[27].v[5] = 0x0;
-  part_rows[28].kind = 0;
-  part_rows[28].count = 32;
-  part_rows[28].v[0] = 0x1b4;
-  part_rows[28].v[1] = 0xbb;
-  part_rows[28].v[2] = 0x72;
-  part_rows[28].v[3] = 0x191;
-  part_rows[28].v[4] = 0x11b;
-  part_rows[28].v[5] = 0x0;
-  part_rows[29].kind = 0;
-  part_rows[29].count = 36;
-  part_rows[29].v[0] = 0x1b7;
-  part_rows[29].v[1] = 0xbb;
-  part_rows[29].v[2] = 0x72;
-  part_rows[29].v[3] = 0x191;
-  part_rows[29].v[4] = 0x11b;
-  part_rows[29].v[5] = 0x0;
-  part_rows[30].kind = 0;
-  part_rows[30].count = 38;
-  part_rows[30].v[0] = 0x1b8;
-  part_rows[30].v[1] = 0xba;
-  part_rows[30].v[2] = 0x72;
-  part_rows[30].v[3] = 0x192;
-  part_rows[30].v[4] = 0x11b;
-  part_rows[30].v[5] = 0x0;
-  part_rows[31].kind = 1;
-  part_rows[31].count = 6;
-  part_rows[31].v[0] = 0x1c1;
-  part_rows[31].v[1] = 0x1ba;
-  part_rows[31].v[2] = 0x75;
-  part_rows[31].v[3] = 0x21;
-  part_rows[31].v[4] = 0x2b;
-  part_rows[31].v[5] = 0x1ce;
-  part_rows[32].kind = 5;
-  part_rows[32].count = 4;
-  part_rows[32].v[0] = 0x1f0;
-  part_rows[32].v[1] = 0x18e;
-  part_rows[32].v[2] = 0xa5;
-  part_rows[32].v[3] = 0x30;
-  part_rows[32].v[4] = 0x16;
-  part_rows[32].v[5] = 0x190;
-  part_rows[33].kind = 3;
-  part_rows[33].count = 3;
-  part_rows[33].v[0] = 0x1d9;
-  part_rows[33].v[1] = 0x17d;
-  part_rows[33].v[2] = 0xa4;
-  part_rows[33].v[3] = 0x3e;
-  part_rows[33].v[4] = 0x35;
-  part_rows[33].v[5] = 0xd2;
-  part_rows[34].kind = 4;
-  part_rows[34].count = 4;
-  part_rows[34].v[0] = 0x1e7;
-  part_rows[34].v[1] = 0x1c5;
-  part_rows[34].v[2] = 0xa9;
-  part_rows[34].v[3] = 0x30;
-  part_rows[34].v[4] = 0x24;
-  part_rows[34].v[5] = 0x168;
-  part_rows[35].kind = 4;
-  part_rows[35].count = 3;
-  part_rows[35].v[0] = 0x1e5;
-  part_rows[35].v[1] = 0x1e0;
-  part_rows[35].v[2] = 0xbd;
-  part_rows[35].v[3] = 0x32;
-  part_rows[35].v[4] = 0x24;
-  part_rows[35].v[5] = 0x103;
-  part_rows[36].kind = 5;
-  part_rows[36].count = 4;
-  part_rows[36].v[0] = 0x1f1;
-  part_rows[36].v[1] = 0x1ad;
-  part_rows[36].v[2] = 0xb4;
-  part_rows[36].v[3] = 0x47;
-  part_rows[36].v[4] = 0x26;
-  part_rows[36].v[5] = 0x1c1;
-  part_rows[37].kind = 4;
-  part_rows[37].count = 1;
-  part_rows[37].v[0] = 0x1e1;
-  part_rows[37].v[1] = 0x1fc;
-  part_rows[37].v[2] = 0xd2;
-  part_rows[37].v[3] = 0x2b;
-  part_rows[37].v[4] = 0x20;
-  part_rows[37].v[5] = 0x30;
-  part_rows[38].kind = 4;
-  part_rows[38].count = 2;
-  part_rows[38].v[0] = 0x1e3;
-  part_rows[38].v[1] = 0x211;
-  part_rows[38].v[2] = 0xe1;
-  part_rows[38].v[3] = 0x37;
-  part_rows[38].v[4] = 0x2a;
-  part_rows[38].v[5] = 0x96;
-  part_rows[39].kind = 5;
-  part_rows[39].count = 2;
-  part_rows[39].v[0] = 0x1ec;
-  part_rows[39].v[1] = 0x1af;
-  part_rows[39].v[2] = 0xc7;
-  part_rows[39].v[3] = 0x4a;
-  part_rows[39].v[4] = 0x24;
-  part_rows[39].v[5] = 0x97;
-  part_rows[40].kind = 3;
-  part_rows[40].count = 2;
-  part_rows[40].v[0] = 0x1d7;
-  part_rows[40].v[1] = 0x1af;
-  part_rows[40].v[2] = 0xce;
-  part_rows[40].v[3] = 0x45;
-  part_rows[40].v[4] = 0x3a;
-  part_rows[40].v[5] = 0x4a;
-  part_rows[41].kind = 5;
-  part_rows[41].count = 2;
-  part_rows[41].v[0] = 0x1ed;
-  part_rows[41].v[1] = 0x1ca;
-  part_rows[41].v[2] = 0xe9;
-  part_rows[41].v[3] = 0x50;
-  part_rows[41].v[4] = 0x2f;
-  part_rows[41].v[5] = 0xe2;
-  part_rows[42].kind = 1;
-  part_rows[42].count = 6;
-  part_rows[42].v[0] = 0x1c0;
-  part_rows[42].v[1] = 0xb2;
-  part_rows[42].v[2] = 0xc8;
-  part_rows[42].v[3] = 0x3e;
-  part_rows[42].v[4] = 0x28;
-  part_rows[42].v[5] = 0x18f;
-  part_rows[43].kind = 5;
-  part_rows[43].count = 3;
-  part_rows[43].v[0] = 0x1ee;
-  part_rows[43].v[1] = 0x12c;
-  part_rows[43].v[2] = 0xc5;
-  part_rows[43].v[3] = 0x12;
-  part_rows[43].v[4] = 0x18;
-  part_rows[43].v[5] = 0x133;
-  part_rows[44].kind = 3;
-  part_rows[44].count = 4;
-  part_rows[44].v[0] = 0x1d8;
-  part_rows[44].v[1] = 0x136;
-  part_rows[44].v[2] = 0xbc;
-  part_rows[44].v[3] = 0x41;
-  part_rows[44].v[4] = 0x38;
-  part_rows[44].v[5] = 0x90;
-  part_rows[45].kind = 5;
-  part_rows[45].count = 1;
-  part_rows[45].v[0] = 0x1ea;
-  part_rows[45].v[1] = 0x153;
-  part_rows[45].v[2] = 0xe8;
-  part_rows[45].v[3] = 0x25;
-  part_rows[45].v[4] = 0x29;
-  part_rows[45].v[5] = 0x1;
-  part_rows[46].kind = 5;
-  part_rows[46].count = 3;
-  part_rows[46].v[0] = 0x1ef;
-  part_rows[46].v[1] = 0x12c;
-  part_rows[46].v[2] = 0xd9;
-  part_rows[46].v[3] = 0x49;
-  part_rows[46].v[4] = 0x3c;
-  part_rows[46].v[5] = 0x146;
-  part_rows[47].kind = 3;
-  part_rows[47].count = 1;
-  part_rows[47].v[0] = 0x1d6;
-  part_rows[47].v[1] = 0x164;
-  part_rows[47].v[2] = 0xe9;
-  part_rows[47].v[3] = 0x48;
-  part_rows[47].v[4] = 0x40;
-  part_rows[47].v[5] = 0x1;
-  part_rows[48].kind = 5;
-  part_rows[48].count = 1;
-  part_rows[48].v[0] = 0x1eb;
-  part_rows[48].v[1] = 0x15e;
-  part_rows[48].v[2] = 0xfb;
-  part_rows[48].v[3] = 0x6f;
-  part_rows[48].v[4] = 0x45;
-  part_rows[48].v[5] = 0x27;
-  part_rows[49].kind = 4;
-  part_rows[49].count = 4;
-  part_rows[49].v[0] = 0x1e6;
-  part_rows[49].v[1] = 0x109;
-  part_rows[49].v[2] = 0xed;
-  part_rows[49].v[3] = 0x31;
-  part_rows[49].v[4] = 0x2c;
-  part_rows[49].v[5] = 0x136;
-  part_rows[50].kind = 4;
-  part_rows[50].count = 3;
-  part_rows[50].v[0] = 0x1e4;
-  part_rows[50].v[1] = 0x11f;
-  part_rows[50].v[2] = 0x107;
-  part_rows[50].v[3] = 0x34;
-  part_rows[50].v[4] = 0x2e;
-  part_rows[50].v[5] = 0xce;
-  part_rows[51].kind = 4;
-  part_rows[51].count = 1;
-  part_rows[51].v[0] = 0x1e0;
-  part_rows[51].v[1] = 0x137;
-  part_rows[51].v[2] = 0x122;
-  part_rows[51].v[3] = 0x2e;
-  part_rows[51].v[4] = 0x28;
-  part_rows[51].v[5] = 0x1;
-  part_rows[52].kind = 4;
-  part_rows[52].count = 2;
-  part_rows[52].v[0] = 0x1e2;
-  part_rows[52].v[1] = 0x148;
-  part_rows[52].v[2] = 0x136;
-  part_rows[52].v[3] = 0x39;
-  part_rows[52].v[4] = 0x35;
-  part_rows[52].v[5] = 0x5c;
-  part_rows[53].kind = 2;
-  part_rows[53].count = 8;
-  part_rows[53].v[0] = 0x1d4;
-  part_rows[53].v[1] = 0x20e;
-  part_rows[53].v[2] = 0xf6;
-  part_rows[53].v[3] = 0x51;
-  part_rows[53].v[4] = 0x36;
-  part_rows[53].v[5] = 0x334;
-  part_rows[54].kind = 0;
-  part_rows[54].count = 33;
-  part_rows[54].v[0] = 0x1b6;
-  part_rows[54].v[1] = 0x24b;
-  part_rows[54].v[2] = 0x114;
-  part_rows[54].v[3] = 0x15;
-  part_rows[54].v[4] = 0x19;
-  part_rows[54].v[5] = 0x2d1;
-  part_rows[55].kind = 1;
-  part_rows[55].count = 8;
-  part_rows[55].v[0] = 0x1c5;
-  part_rows[55].v[1] = 0x246;
-  part_rows[55].v[2] = 0x111;
-  part_rows[55].v[3] = 0x2f;
-  part_rows[55].v[4] = 0x2b;
-  part_rows[55].v[5] = 0x285;
-  part_rows[56].kind = 0;
-  part_rows[56].count = 31;
-  part_rows[56].v[0] = 0x1b3;
-  part_rows[56].v[1] = 0x210;
-  part_rows[56].v[2] = 0xfd;
-  part_rows[56].v[3] = 0x30;
-  part_rows[56].v[4] = 0x26;
-  part_rows[56].v[5] = 0x282;
-  part_rows[57].kind = 2;
-  part_rows[57].count = 7;
-  part_rows[57].v[0] = 0x1d2;
-  part_rows[57].v[1] = 0x1f7;
-  part_rows[57].v[2] = 0x102;
-  part_rows[57].v[3] = 0x4d;
-  part_rows[57].v[4] = 0x3a;
-  part_rows[57].v[5] = 0x2ab;
-  part_rows[58].kind = 0;
-  part_rows[58].count = 29;
-  part_rows[58].v[0] = 0x1b0;
-  part_rows[58].v[1] = 0x22d;
-  part_rows[58].v[2] = 0x123;
-  part_rows[58].v[3] = 0x19;
-  part_rows[58].v[4] = 0x19;
-  part_rows[58].v[5] = 0x243;
-  part_rows[59].kind = 1;
-  part_rows[59].count = 7;
-  part_rows[59].v[0] = 0x1c3;
-  part_rows[59].v[1] = 0x228;
-  part_rows[59].v[2] = 0x11d;
-  part_rows[59].v[3] = 0x2f;
-  part_rows[59].v[4] = 0x2e;
-  part_rows[59].v[5] = 0x222;
-  part_rows[60].kind = 2;
-  part_rows[60].count = 5;
-  part_rows[60].v[0] = 0x1ce;
-  part_rows[60].v[1] = 0x1f1;
-  part_rows[60].v[2] = 0xfd;
-  part_rows[60].v[3] = 0x4e;
-  part_rows[60].v[4] = 0x39;
-  part_rows[60].v[5] = 0x1b5;
-  part_rows[61].kind = 0;
-  part_rows[61].count = 21;
-  part_rows[61].v[0] = 0x1a7;
-  part_rows[61].v[1] = 0x228;
-  part_rows[61].v[2] = 0x11d;
-  part_rows[61].v[3] = 0x18;
-  part_rows[61].v[4] = 0x1a;
-  part_rows[61].v[5] = 0x20c;
-  part_rows[62].kind = 1;
-  part_rows[62].count = 5;
-  part_rows[62].v[0] = 0x1bf;
-  part_rows[62].v[1] = 0x224;
-  part_rows[62].v[2] = 0x118;
-  part_rows[62].v[3] = 0x31;
-  part_rows[62].v[4] = 0x2e;
-  part_rows[62].v[5] = 0x15d;
-  part_rows[63].kind = 0;
-  part_rows[63].count = 19;
-  part_rows[63].v[0] = 0x1a4;
-  part_rows[63].v[1] = 0x1f0;
-  part_rows[63].v[2] = 0x107;
-  part_rows[63].v[3] = 0x34;
-  part_rows[63].v[4] = 0x35;
-  part_rows[63].v[5] = 0x1b9;
-  part_rows[64].kind = 2;
-  part_rows[64].count = 1;
-  part_rows[64].v[0] = 0x1c8;
-  part_rows[64].v[1] = 0x1da;
-  part_rows[64].v[2] = 0x10b;
-  part_rows[64].v[3] = 0x4b;
-  part_rows[64].v[4] = 0x41;
-  part_rows[64].v[5] = 0x46;
-  part_rows[65].kind = 0;
-  part_rows[65].count = 11;
-  part_rows[65].v[0] = 0x19b;
-  part_rows[65].v[1] = 0x1cf;
-  part_rows[65].v[2] = 0x108;
-  part_rows[65].v[3] = 0x42;
-  part_rows[65].v[4] = 0x3d;
-  part_rows[65].v[5] = 0xc2;
-  part_rows[66].kind = 2;
-  part_rows[66].count = 3;
-  part_rows[66].v[0] = 0x1cb;
-  part_rows[66].v[1] = 0x1ce;
-  part_rows[66].v[2] = 0x109;
-  part_rows[66].v[3] = 0x4d;
-  part_rows[66].v[4] = 0x40;
-  part_rows[66].v[5] = 0xd3;
-  part_rows[67].kind = 2;
-  part_rows[67].count = 1;
-  part_rows[67].v[0] = 0x1c7;
-  part_rows[67].v[1] = 0x1bc;
-  part_rows[67].v[2] = 0x11b;
-  part_rows[67].v[3] = 0x44;
-  part_rows[67].v[4] = 0x44;
-  part_rows[67].v[5] = 0x1;
-  part_rows[68].kind = 0;
-  part_rows[68].count = 5;
-  part_rows[68].v[0] = 0x195;
-  part_rows[68].v[1] = 0x1e4;
-  part_rows[68].v[2] = 0x12f;
-  part_rows[68].v[3] = 0x42;
-  part_rows[68].v[4] = 0x31;
-  part_rows[68].v[5] = 0x1;
-  part_rows[69].kind = 0;
-  part_rows[69].count = 13;
-  part_rows[69].v[0] = 0x19d;
-  part_rows[69].v[1] = 0x1fb;
-  part_rows[69].v[2] = 0x12b;
-  part_rows[69].v[3] = 0x20;
-  part_rows[69].v[4] = 0x1f;
-  part_rows[69].v[5] = 0x105;
-  part_rows[70].kind = 1;
-  part_rows[70].count = 1;
-  part_rows[70].v[0] = 0x1ba;
-  part_rows[70].v[1] = 0x204;
-  part_rows[70].v[2] = 0x129;
-  part_rows[70].v[3] = 0x2f;
-  part_rows[70].v[4] = 0x33;
-  part_rows[70].v[5] = 0x39;
-  part_rows[71].kind = 1;
-  part_rows[71].count = 3;
-  part_rows[71].v[0] = 0x1bc;
-  part_rows[71].v[1] = 0x1f9;
-  part_rows[71].v[2] = 0x125;
-  part_rows[71].v[3] = 0x37;
-  part_rows[71].v[4] = 0x35;
-  part_rows[71].v[5] = 0xb7;
-  part_rows[72].kind = 1;
-  part_rows[72].count = 1;
-  part_rows[72].v[0] = 0x1b9;
-  part_rows[72].v[1] = 0x1df;
-  part_rows[72].v[2] = 0x13e;
-  part_rows[72].v[3] = 0x33;
-  part_rows[72].v[4] = 0x34;
-  part_rows[72].v[5] = 0x1;
-  part_rows[73].kind = 0;
-  part_rows[73].count = 19;
-  part_rows[73].v[0] = 0x1a3;
-  part_rows[73].v[1] = 0x1be;
-  part_rows[73].v[2] = 0x11f;
-  part_rows[73].v[3] = 0x2c;
-  part_rows[73].v[4] = 0x40;
-  part_rows[73].v[5] = 0x18c;
-  part_rows[74].kind = 2;
-  part_rows[74].count = 5;
-  part_rows[74].v[0] = 0x1cd;
-  part_rows[74].v[1] = 0x1ac;
-  part_rows[74].v[2] = 0x117;
-  part_rows[74].v[3] = 0x42;
-  part_rows[74].v[4] = 0x46;
-  part_rows[74].v[5] = 0x172;
-  part_rows[75].kind = 0;
-  part_rows[75].count = 21;
-  part_rows[75].v[0] = 0x1a6;
-  part_rows[75].v[1] = 0x1d1;
-  part_rows[75].v[2] = 0x142;
-  part_rows[75].v[3] = 0x1d;
-  part_rows[75].v[4] = 0x1d;
-  part_rows[75].v[5] = 0x1ee;
-  part_rows[76].kind = 1;
-  part_rows[76].count = 5;
-  part_rows[76].v[0] = 0x1be;
-  part_rows[76].v[1] = 0x1cd;
-  part_rows[76].v[2] = 0x13c;
-  part_rows[76].v[3] = 0x34;
-  part_rows[76].v[4] = 0x33;
-  part_rows[76].v[5] = 0x128;
-  part_rows[77].kind = 2;
-  part_rows[77].count = 7;
-  part_rows[77].v[0] = 0x1d1;
-  part_rows[77].v[1] = 0x19d;
-  part_rows[77].v[2] = 0x12c;
-  part_rows[77].v[3] = 0x3c;
-  part_rows[77].v[4] = 0x4b;
-  part_rows[77].v[5] = 0x26e;
-  part_rows[78].kind = 0;
-  part_rows[78].count = 31;
-  part_rows[78].v[0] = 0x1b2;
-  part_rows[78].v[1] = 0x19e;
-  part_rows[78].v[2] = 0x12b;
-  part_rows[78].v[3] = 0x24;
-  part_rows[78].v[4] = 0x41;
-  part_rows[78].v[5] = 0x25d;
-  part_rows[79].kind = 0;
-  part_rows[79].count = 29;
-  part_rows[79].v[0] = 0x1af;
-  part_rows[79].v[1] = 0x1bd;
-  part_rows[79].v[2] = 0x15c;
-  part_rows[79].v[3] = 0x1d;
-  part_rows[79].v[4] = 0x1d;
-  part_rows[79].v[5] = 0x225;
-  part_rows[80].kind = 1;
-  part_rows[80].count = 7;
-  part_rows[80].v[0] = 0x1c2;
-  part_rows[80].v[1] = 0x1b9;
-  part_rows[80].v[2] = 0x157;
-  part_rows[80].v[3] = 0x31;
-  part_rows[80].v[4] = 0x34;
-  part_rows[80].v[5] = 0x1f0;
-  part_rows[81].kind = 2;
-  part_rows[81].count = 8;
-  part_rows[81].v[0] = 0x1d3;
-  part_rows[81].v[1] = 0x188;
-  part_rows[81].v[2] = 0x129;
-  part_rows[81].v[3] = 0x3a;
-  part_rows[81].v[4] = 0x4e;
-  part_rows[81].v[5] = 0x2f9;
-  part_rows[82].kind = 0;
-  part_rows[82].count = 33;
-  part_rows[82].v[0] = 0x1b5;
-  part_rows[82].v[1] = 0x1a5;
-  part_rows[82].v[2] = 0x15c;
-  part_rows[82].v[3] = 0x1c;
-  part_rows[82].v[4] = 0x1e;
-  part_rows[82].v[5] = 0x2b3;
-  part_rows[83].kind = 1;
-  part_rows[83].count = 8;
-  part_rows[83].v[0] = 0x1c4;
-  part_rows[83].v[1] = 0x1a0;
-  part_rows[83].v[2] = 0x156;
-  part_rows[83].v[3] = 0x32;
-  part_rows[83].v[4] = 0x35;
-  part_rows[83].v[5] = 0x252;
-  part_rows[84].kind = 0;
-  part_rows[84].count = 15;
-  part_rows[84].v[0] = 0x19f;
-  part_rows[84].v[1] = 0x1d1;
-  part_rows[84].v[2] = 0x107;
-  part_rows[84].v[3] = 0x43;
-  part_rows[84].v[4] = 0x2a;
-  part_rows[84].v[5] = 0x126;
-  part_rows[85].kind = 2;
-  part_rows[85].count = 4;
-  part_rows[85].v[0] = 0x1cc;
-  part_rows[85].v[1] = 0x1cf;
-  part_rows[85].v[2] = 0x101;
-  part_rows[85].v[3] = 0x50;
-  part_rows[85].v[4] = 0x32;
-  part_rows[85].v[5] = 0x121;
-  part_rows[86].kind = 0;
-  part_rows[86].count = 17;
-  part_rows[86].v[0] = 0x1a1;
-  part_rows[86].v[1] = 0x201;
-  part_rows[86].v[2] = 0x11a;
-  part_rows[86].v[3] = 0x21;
-  part_rows[86].v[4] = 0x1a;
-  part_rows[86].v[5] = 0x16a;
-  part_rows[87].kind = 1;
-  part_rows[87].count = 4;
-  part_rows[87].v[0] = 0x1bd;
-  part_rows[87].v[1] = 0x1fb;
-  part_rows[87].v[2] = 0x116;
-  part_rows[87].v[3] = 0x38;
-  part_rows[87].v[4] = 0x2d;
-  part_rows[87].v[5] = 0xef;
+  int row;
+  int i;
+
+  /* field by field, as the original: the rows' padding keeps what the stack held */
+  for (row = 0; row < 88; row++) {
+    part_rows[row].kind = ship_part_rows[row].kind;
+    part_rows[row].count = ship_part_rows[row].count;
+    for (i = 0; i < 6; i++) {
+      part_rows[row].v[i] = ship_part_rows[row].v[i];
+    }
+  }
 }
 
 /* Part of SpaceshipWindow::render_ship (004d17bf): destroys the surfaces (the
