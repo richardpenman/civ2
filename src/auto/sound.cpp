@@ -3218,6 +3218,46 @@ static void moviewnd_on_vscroll(HWND hwnd,WndOnMciDoneView *wnd2,uint wparam,sho
   }
 }
 
+/* Part of moviewnd_wndproc (005ec317): WM_SIZE, and the MCI notification
+   that is not a successful end (0x3b9, wparam other than 1): the size
+   handlers unless the window is minimized, then the default handling. */
+static i32 moviewnd_on_size(HWND hwnd,uint msg,uint wparam,uint lparam,WndOnMciDoneView *wnd2)
+
+{
+  i32 result;
+  BOOL is_iconic;
+
+  (*(WndOnMciDoneView * *)&modal_wnd.active_child) = wnd2;
+  is_iconic = IsIconic(hwnd);
+  if (is_iconic == 0) {
+    ((ModalMenuWindow *)wnd2)->on_size_nop(lparam & 0xffff,lparam >> 0x10);
+    ((WndHandlers *)wnd2->handlers)->call_size(wparam);
+  }
+  result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
+  return result;
+}
+
+/* Part of moviewnd_wndproc (005ec317): WM_ACTIVATE and the palette messages
+   (0x30f, 0x311): the video's palette realized (MCI 0x840) when the window
+   has an MCI device, else the default handling.  The parameter block is
+   passed uninitialized, as in the original (the device reads none of it). */
+static i32 moviewnd_on_realize(HWND hwnd,uint msg,uint wparam,uint lparam,WndOnMciDoneView *wnd2)
+
+{
+  i32 result;
+  i8 generic_parms[4];
+  iptr mci_device2;
+
+  mci_device2 = wnd_get_mci_device((WndMciDeviceView *)wnd2);
+  if (mci_device2 == 0) {
+    result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
+    return result;
+  }
+  mciSendCommandA(*(MCIDEVICEID *)(mci_device2 + 8),0x840,*(DWORD_PTR *)(mci_device2 + 0x10),
+                  (DWORD_PTR)generic_parms);
+  return 0;
+}
+
 /* 005ec317 auto */
 i32 __stdcall moviewnd_wndproc(HWND hwnd,uint msg,uint wparam,uint lparam)
 
@@ -3225,12 +3265,9 @@ i32 __stdcall moviewnd_wndproc(HWND hwnd,uint msg,uint wparam,uint lparam)
   short thumb_pos;
   i32 result;
   WndBase *wnd_obj;
-  BOOL is_iconic;
   int value;
-  i8 generic_parms[4];
   NativeWindow *parent_window;
   WndOnMciDoneView *wnd2;
-  iptr mci_device2;
   
   wnd2 = (WndOnMciDoneView *)GetWindowLongA(hwnd,4);
   if (wnd2 == (WndOnMciDoneView *)0x0) {
@@ -3249,17 +3286,9 @@ i32 __stdcall moviewnd_wndproc(HWND hwnd,uint msg,uint wparam,uint lparam)
         result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
         return result;
       case 5:
-handle_size:
-        (*(WndOnMciDoneView * *)&modal_wnd.active_child) = wnd2;
-        is_iconic = IsIconic(hwnd);
-        if (is_iconic == 0) {
-          ((ModalMenuWindow *)wnd2)->on_size_nop(lparam & 0xffff,lparam >> 0x10);
-          ((WndHandlers *)wnd2->handlers)->call_size(wparam);
-        }
-        result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
-        return result;
+        return moviewnd_on_size(hwnd,msg,wparam,lparam,wnd2);
       case 6:
-        goto handle_mci;
+        return moviewnd_on_realize(hwnd,msg,wparam,lparam,wnd2);
       case 7:
         (*(WndOnMciDoneView * *)&modal_wnd.active_child) = wnd2;
         ((WndHandlers *)wnd2->handlers)->call_setfocus();
@@ -3425,19 +3454,12 @@ handle_size:
           wnd_call_mci_done(wnd2);
           return 0;
         }
-        goto handle_size;
+        return moviewnd_on_size(hwnd,msg,wparam,lparam,wnd2);
       }
       result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
       return result;
     }
-handle_mci:
-    mci_device2 = wnd_get_mci_device((WndMciDeviceView *)wnd2);
-    if (mci_device2 == 0) {
-      result = wnd_base_wndproc(hwnd,msg,wparam,lparam);
-      return result;
-    }
-    mciSendCommandA(*(MCIDEVICEID *)(mci_device2 + 8),0x840,*(DWORD_PTR *)(mci_device2 + 0x10),
-                    (DWORD_PTR)generic_parms);
+    return moviewnd_on_realize(hwnd,msg,wparam,lparam,wnd2);
   }
   return 0;
 }

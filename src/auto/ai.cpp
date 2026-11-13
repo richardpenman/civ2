@@ -1613,7 +1613,8 @@ void __cdecl ai_civ_turn_assess(uptr civ)
 }
 
 /* Where ai_barbarian_unit_move goes on after one of its parts: NEXT is the
-   line after the call, the others its labels or its return value. */
+   line after the call, the others the parts that end it
+   (ai_barb_finalize_dir, ai_barb_clear_goto_done) or its return value. */
 enum AiBarbNext {
   AI_BARB_NEXT,
   AI_BARB_FINALIZE_DIR,
@@ -2103,6 +2104,45 @@ static int ai_barb_ship_land(AiBarbMove *o)
   return AI_BARB_NEXT;
 }
 
+/* Part of ai_barbarian_unit_move (005351aa), its ending: a goto that has
+   arrived (the unit's own tile) is cleared.  Returns its return value. */
+static i32 ai_barb_clear_goto_done(AiBarbMove *o)
+{
+  iptr &unit = o->unit; int &x2 = o->x2; iptr &y = o->y;
+  if (((units[unit].orders == ORDER_GOTO) && (units[unit].goto_x == x2)) &&
+     (units[unit].goto_y == y)) {
+    units[unit].orders = ORDER_NONE;
+  }
+  return 0;
+}
+
+/* Part of ai_barbarian_unit_move (005351aa): the direction chosen (BEST_DIR)
+   becomes the unit's orders: none (8) fortifies a defender or a unit on a
+   fortress (fortified if it garrisons) and ends its moves, else an AI goto
+   to the next tile that way; then the ending (ai_barb_clear_goto_done).
+   Y4: the unit's y as the short it was read as. */
+static i32 ai_barb_finalize_dir(AiBarbMove *o,short y4)
+{
+  iptr &unit = o->unit; int &x2 = o->x2; iptr &y = o->y; i32 &misc = o->misc;
+  uptr &unit_type = o->unit_type; iptr &best_dir = o->best_dir;
+  if (best_dir == 8) {
+    units[unit].last_dir = 0xff;
+    unit_exhaust_moves(unit);
+    if (((unit_types[unit_type].role == ROLE_DEFEND) ||
+        (misc = tile_improvements(x2,y), ((byte)misc & 0x42) == 0x40)) &&
+       (units[unit].orders = ORDER_FORTIFYING, (units[unit].flags & UNITF_AI_GARRISON) != 0)) {
+      units[unit].orders = ORDER_FORTIFIED;
+    }
+  }
+  else {
+    units[unit].orders = ORDER_AI_GOTO;
+    misc = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
+    units[unit].goto_x = (i16)misc;
+    units[unit].goto_y = (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir] + y4;
+  }
+  return ai_barb_clear_goto_done(o);
+}
+
 /* 005351aa auto */
 i32 __cdecl ai_barbarian_unit_move(void)
 
@@ -2163,12 +2203,12 @@ i32 __cdecl ai_barbarian_unit_move(void)
       return 1;
     }
     switch (ai_barb_ship_land(&st)) {
-    case AI_BARB_CLEAR_GOTO_DONE: goto clear_goto_done;
-    case AI_BARB_FINALIZE_DIR: goto finalize_dir;
+    case AI_BARB_CLEAR_GOTO_DONE: return ai_barb_clear_goto_done(&st);
+    case AI_BARB_FINALIZE_DIR: return ai_barb_finalize_dir(&st,y4);
     default: break;
     }
     if (ai_barb_ship_target(&st) == AI_BARB_RETURN_1) return 1;
-    goto clear_goto_done;
+    return ai_barb_clear_goto_done(&st);
   }
   if (((advisor_window_block.nearest_city_dist == 0) ||
       (misc = tile_improvements(x2,y), ((byte)misc & 0x42) == 0x40)) &&
@@ -2193,8 +2233,8 @@ i32 __cdecl ai_barbarian_unit_move(void)
     ai_barb_head_for_city(&st);
     if (4 < (char)unit_types[unit_type].role) {
       switch (ai_barb_leader(&st)) {
-      case AI_BARB_CLEAR_GOTO_DONE: goto clear_goto_done;
-      case AI_BARB_FINALIZE_DIR: goto finalize_dir;
+      case AI_BARB_CLEAR_GOTO_DONE: return ai_barb_clear_goto_done(&st);
+      case AI_BARB_FINALIZE_DIR: return ai_barb_finalize_dir(&st,y4);
       case AI_BARB_RETURN_1: return 1;
       default: break;
       }
@@ -2202,8 +2242,8 @@ i32 __cdecl ai_barbarian_unit_move(void)
     best_score = -999;
     for (dir = 0; dir < 8; dir++) {
       switch (ai_barb_score_dir(&st)) {
-      case AI_BARB_CLEAR_GOTO_DONE: goto clear_goto_done;
-      case AI_BARB_FINALIZE_DIR: goto finalize_dir;
+      case AI_BARB_CLEAR_GOTO_DONE: return ai_barb_clear_goto_done(&st);
+      case AI_BARB_FINALIZE_DIR: return ai_barb_finalize_dir(&st,y4);
       case AI_BARB_RETURN_1: return 1;
       default: break;
       }
@@ -2219,7 +2259,7 @@ i32 __cdecl ai_barbarian_unit_move(void)
            ((unit_type == UNIT_PARTISANS && ((map_tile->improvements & TILE_ROAD) != 0)))) {
           unit_pillage(unit,0);
           unit_exhaust_moves(unit);
-          goto clear_goto_done;
+          return ai_barb_clear_goto_done(&st);
         }
       }
     }
@@ -2227,28 +2267,7 @@ i32 __cdecl ai_barbarian_unit_move(void)
       best_dir = 8;
     }
   }
-finalize_dir:
-  if (best_dir == 8) {
-    units[unit].last_dir = 0xff;
-    unit_exhaust_moves(unit);
-    if (((unit_types[unit_type].role == ROLE_DEFEND) ||
-        (misc = tile_improvements(x2,y), ((byte)misc & 0x42) == 0x40)) &&
-       (units[unit].orders = ORDER_FORTIFYING, (units[unit].flags & UNITF_AI_GARRISON) != 0)) {
-      units[unit].orders = ORDER_FORTIFIED;
-    }
-  }
-  else {
-    units[unit].orders = ORDER_AI_GOTO;
-    misc = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
-    units[unit].goto_x = (i16)misc;
-    units[unit].goto_y = (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir] + y4;
-  }
-clear_goto_done:
-  if (((units[unit].orders == ORDER_GOTO) && (units[unit].goto_x == x2)) &&
-     (units[unit].goto_y == y)) {
-    units[unit].orders = ORDER_NONE;
-  }
-  return 0;
+  return ai_barb_finalize_dir(&st,y4);
 }
 
 /* 005369f3 auto */
@@ -2941,8 +2960,10 @@ ai_air_unit_orders(int unit,int unit_type,i32 *x,i32 *y,int mode,i32 *out_flag,
 }
 
 /* Where ai_unit_choose_orders goes on after one of its parts: NEXT is the
-   line after the call, the others its labels (finish_orders, apply_dir...),
-   a break or continue of its transport loop, or its return value. */
+   line after the call, the others the parts that end it (ai_orders_finish,
+   ai_orders_apply_dir, ai_orders_plan_then_apply, ai_orders_guard,
+   ai_orders_by_kind), a break or continue of its transport loop, or its
+   return value. */
 enum AiOrdersNext {
   AI_ORDERS_NEXT,
   AI_ORDERS_FINISH_ORDERS,
@@ -6020,6 +6041,290 @@ static i32 ai_orders_finish(AiUnitOrders *o)
   return 0;
 }
 
+/* Part of ai_unit_choose_orders (00538a29), its ending: the direction
+   chosen (CITY3; 8: none) becomes the unit's orders (an AI goto to the next
+   tile that way; none with no direction or off the map), then the orders
+   are finished (ai_orders_finish).  Returns ai_unit_choose_orders' value. */
+static i32 ai_orders_apply_dir(AiUnitOrders *o)
+{
+  int &near_dist = o->near_dist; uptr &city3 = o->city3; iptr &unit = o->unit;
+  int &y3 = o->y3; int &x2 = o->x2; uptr &best_dir = o->best_dir;
+  best_dir = city3;
+  if (best_dir == 8) {
+    units[unit].last_dir = 0xff;
+    units[unit].orders = ORDER_NONE;
+  }
+  else {
+    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
+    y3 += (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir];
+    near_dist = map_in_bounds(x2,y3);
+    if (near_dist == 0) {
+      units[unit].orders = ORDER_NONE;
+      unit_exhaust_moves(unit);
+    }
+    else {
+      units[unit].orders = ORDER_AI_GOTO;
+      units[unit].goto_x = (i16)x2;
+      units[unit].goto_y = (i16)y3;
+    }
+  }
+  return ai_orders_finish(o);
+}
+
+/* Part of ai_unit_choose_orders (00538a29): the move planned
+   (ai_orders_plan_move), then the ending: its direction applied
+   (ai_orders_apply_dir) unless the plan finished the orders. */
+static i32 ai_orders_plan_then_apply(AiUnitOrders *o)
+{
+  if (ai_orders_plan_move(o) == AI_ORDERS_FINISH_ORDERS) return ai_orders_finish(o);
+  return ai_orders_apply_dir(o);
+}
+
+/* Part of ai_unit_choose_orders (00538a29): what a unit not held in place
+   does, a pass again for each goto it keeps: a ship's cargo and goals,
+   pillage, partisans, fortress sites, settlers' and engineers' work, a goto
+   kept, a defender fortified, a settler joining a city; then the move
+   planned.  A transport with no moves left starts here too (NO_MOVES).
+   Returns ai_unit_choose_orders' value. */
+static i32 ai_orders_transport_loop(AiUnitOrders *o)
+{
+  uptr &civ = o->civ; iptr &landmass = o->landmass; int &city7 = o->city7;
+  int &y3 = o->y3; bool &forced_attack = o->forced_attack; bool &is_settler = o->is_settler;
+  bool &settler_type = o->settler_type; iptr &unit = o->unit; int &in_enemy_zoc = o->in_enemy_zoc;
+  int &unit_domain = o->unit_domain; uint &ai_role = o->ai_role; int &x2 = o->x2;
+  int &own_landmass = o->own_landmass; uptr &city2 = o->city2; int &own_dist = o->own_dist;
+  int &no_moves = o->no_moves;
+  int goto_city;
+  int next;  /* where a part says to go on */
+
+  goto_city = 0;
+  for (;;) {
+    if (unit_domain == DOMAIN_SEA) {
+      ai_orders_transport_cargo(o);
+      if (ai_role == 2) {
+        civ_clear_standing_goals_near(civ,ROLE_NAVAL_SUPERIORITY,x2,y3,0);
+        civ_clear_standing_goals_near(civ,0x12,x2,y3,0);
+      }
+      if (ai_role == 4) {
+        switch (ai_orders_transport(o)) {
+        case AI_ORDERS_APPLY_DIR: return ai_orders_apply_dir(o);
+        case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(o);
+        default: break;
+        }
+      }
+      if (no_moves != 0) {
+        return 1;
+      }
+      if ((ai_role == 4) || (in_enemy_zoc == 0)) {
+        ai_orders_ship_goal_war(o);
+        ai_orders_ship_goal_trade(o);
+        ai_orders_ship_goal_land(o);
+      }
+    }
+    if (ai_orders_pillage(o) == AI_ORDERS_FINISH_ORDERS) return ai_orders_finish(o);
+    next = ai_orders_partisan(o);
+    if (next == AI_ORDERS_APPLY_DIR) return ai_orders_apply_dir(o);
+    if (next == AI_ORDERS_BREAK) break;
+    ai_orders_fortress_site(o);
+    if (((ai_role == 5) && (units[unit].orders == ORDER_GOTO)) &&
+       (city7 = tile_city_owner(units[unit].goto_x,
+                                 units[unit].goto_y), -1 < city7)) {
+      goto_city = 1;
+    }
+    if (((settler_type) && (!forced_attack)) &&
+       ((goto_city == 0 &&
+        ((city7 = tile_is_ocean(x2,y3), city7 == 0 &&
+         (city7 = tile_city_owner(x2,y3), city7 < 0)))))) {
+      switch (ai_orders_settler_work(o)) {
+      case AI_ORDERS_APPLY_DIR: return ai_orders_apply_dir(o);
+      case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(o);
+      default: break;
+      }
+    }
+    if (((ai_role == 0x15) && (units[unit].orders != ORDER_GOTO)) &&
+       ((!forced_attack &&
+        (((goto_city == 0 && (own_dist != 0)) &&
+         (city7 = tile_is_ocean(x2,y3), city7 == 0)))))) {
+      if (ai_orders_terraformer(o) == AI_ORDERS_FINISH_ORDERS) return ai_orders_finish(o);
+    }
+    next = ai_orders_keep_goto(o);
+    if (next == AI_ORDERS_CONTINUE) continue;
+    if (next == AI_ORDERS_FINISH_ORDERS) return ai_orders_finish(o);
+    next = ai_orders_defender_fortify(o);
+    if (next == AI_ORDERS_APPLY_DIR) return ai_orders_apply_dir(o);
+    if (next == AI_ORDERS_BREAK) break;
+    if (((is_settler) &&
+        (landmass_table_block.landmass_recs[landmass].fertile_tiles >> 3 <
+         (short)(ushort)civs[civ].continent_cities[landmass])) &&
+       (units[unit].home_city != -1)) {
+      if ((own_dist == 0) && (cities[city2].size < '\n')) {
+        cities[city2].size++;
+        unit_destroy_redraw(unit,1);
+        ((CityWindow *)((i8 *)&city_wnd.window))->refresh_if_city(city2);
+        map_redraw_area_all_views(x2,y3,1,1,1);
+        return 1;
+      }
+      if (((-1 < (int)city2) && (landmass == own_landmass)) && (cities[city2].size < '\n')) {
+        unit_set_goto(unit,0x42,(int)cities[city2].x,(int)cities[city2].y);
+        return ai_orders_finish(o);
+      }
+    }
+    break;
+  }
+  return ai_orders_plan_then_apply(o);
+}
+
+/* Part of ai_unit_choose_orders (00538a29): a unit near a city of its own
+   (ai_orders_city_guard): a guard (IS_GUARD) stays to defend the city if it
+   defends better than it attacks, else holds; any other unit not held
+   (STAY_HOME, HOLD_POS) goes on to ai_orders_transport_loop.  Then the move
+   planned.  Returns ai_unit_choose_orders' value. */
+static i32 ai_orders_guard(AiUnitOrders *o)
+{
+  bool &stay_home = o->stay_home; int &city7 = o->city7; uptr &city3 = o->city3;
+  iptr &unit = o->unit; uptr &unit4 = o->unit4; uptr &best_dir = o->best_dir;
+  int &hold_pos = o->hold_pos; int &is_guard = o->is_guard; uptr &city2 = o->city2;
+  ai_orders_city_guard(o);
+  if (is_guard == 0) {
+    if (stay_home) {
+      hold_pos = 1;
+    }
+    if (hold_pos == 0) {
+      return ai_orders_transport_loop(o);
+    }
+  }
+  else {
+    unit4 = (uptr)(char)unit_types[units[unit].type].defense;
+    city7 = city_has_improvement(city2,IMP_CITY_WALLS);
+    if (city7 == 0) {
+      if ((units[unit].flags & UNITF_AI_GARRISON) != 0) {
+        unit4 = (int)(unit4 * 3) / 2;
+      }
+    }
+    else {
+      unit4 = unit4 << 1;
+    }
+    if ((int)(char)unit_types[units[unit].type].attack < (int)unit4) {
+      units[unit].ai_task = 'F';
+      units[unit].home_city = (i8)city2;
+      stay_home = false;
+      best_dir = 8;
+      city3 = best_dir;
+      return ai_orders_apply_dir(o);
+    }
+    hold_pos = 1;
+  }
+  return ai_orders_plan_then_apply(o);
+}
+
+/* Part of ai_unit_choose_orders (00538a29): a unit fit to act (or a badly
+   damaged one with nowhere to go): unless it is the scenario's first-turn
+   force held back, the orders by kind (air units, nukes, diplomats,
+   caravans, settlers' city sites, paratroopers); then a guard check where
+   the tile is safe (ai_orders_guard), units by their role elsewhere; then
+   the move planned.  Returns ai_unit_choose_orders' value. */
+static i32 ai_orders_by_kind(AiUnitOrders *o)
+{
+  bool &stay_home = o->stay_home; uptr &civ = o->civ; iptr &landmass = o->landmass;
+  int &city7 = o->city7; uptr &city3 = o->city3; int &y3 = o->y3;
+  uptr &unit_type = o->unit_type; uint &policy = o->policy; iptr &unit = o->unit;
+  int &in_enemy_zoc = o->in_enemy_zoc; int &unit_domain = o->unit_domain;
+  uint &ai_role = o->ai_role; int &x2 = o->x2; uptr &unit4 = o->unit4;
+  uptr &best_dir = o->best_dir; uint &on_fortress = o->on_fortress;
+  int &has_orders = o->has_orders; int &hold_pos = o->hold_pos; uptr &city2 = o->city2;
+  int &own_dist = o->own_dist;
+  if (((((game.game_flags & GAME_SCENARIO) == 0) || (((int)(short)scenario.flags[0] & 0x8000U) == 0)) ||
+      (civ != 1)) ||
+     (((((*((char *)&civs[1].treaties[3] + 1)) & (TREATY_WAR >> 8)) != 0 || (5 < game.turn)) ||
+      (0x4f < units[unit].x)))) {
+    if (((unit_domain == DOMAIN_LAND) && (own_dist == 0)) &&
+       (((units[unit].flags & UNITF_AI_GARRISON) == 0 &&
+        (((cities[city2].flags & CITYF_AI_FERRY_PORT) != 0 && (policy != ai_role)))))) {
+      stay_home = true;
+    }
+    else {
+      if (unit_domain == DOMAIN_AIR) {
+        unit4 = ai_air_unit_orders(unit,unit_type,&x2,&y3,ai_role,
+                                      &has_orders,own_dist,landmass,in_enemy_zoc);
+        if (unit4 == 0xfffffffe) return ai_orders_plan_then_apply(o);
+        if (unit4 == 0xffffffff) return ai_orders_finish(o);
+        city3 = unit4;
+        if (-1 < (int)unit4) return ai_orders_apply_dir(o);
+      }
+      if ('b' < (char)unit_types[unit_type].attack) {
+        city3 = ai_nuke_pick_target(unit);
+        x2 = (int)units[unit].x;
+        y3 = (int)units[unit].y;
+        return ai_orders_apply_dir(o);
+      }
+      if (ai_role == 6) {
+        switch (ai_orders_diplomat(o)) {
+        case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(o);
+        case AI_ORDERS_PLAN_MOVE: return ai_orders_plan_then_apply(o);
+        case AI_ORDERS_RETURN_1: return 1;
+        default: break;
+        }
+      }
+      if (ai_role == 7) {
+        switch (ai_orders_caravan(o)) {
+        case AI_ORDERS_APPLY_DIR: return ai_orders_apply_dir(o);
+        case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(o);
+        case AI_ORDERS_RETURN_1: return 1;
+        default: break;
+        }
+      }
+      switch (ai_orders_city_site(o)) {
+      case AI_ORDERS_APPLY_DIR: return ai_orders_apply_dir(o);
+      case AI_ORDERS_RETURN_1: return 1;
+      default: break;
+      }
+      if ((unit_types[units[unit].type].flags & UTYPE_PARADROP) != 0) {
+        switch (ai_orders_paratrooper(o)) {
+        case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(o);
+        case AI_ORDERS_PLAN_MOVE: return ai_orders_plan_then_apply(o);
+        case AI_ORDERS_RETURN_0: return 0;
+        default: break;
+        }
+      }
+    }
+    ai_orders_partisan_fortress(o);
+    if ((((on_fortress == 0) || (unit4 = tile_radius_civ(x2,y3), (int)unit4 < 1))
+        || (unit4 == civ)) ||
+       ((((*(byte *)&civs[civ].treaties[unit4] & TREATY_PEACE) != 0 &&
+         ((int)((uint)civs[unit4].reputation -
+               (int)civs[civ].reputation_credit[unit4]) < 7)) &&
+        (((*(byte *)&civs[civ].treaties[unit4] & TREATY_ALLIANCE) != 0 || (2 < own_dist)))))) {
+      return ai_orders_guard(o);
+    }
+    else {
+      if (ai_role != 1) {
+        if (ai_role == 0) {
+          if (in_enemy_zoc != 0) {
+            hold_pos = 1;
+          }
+          city7 = unit_stack_sum(unit,2);
+          if (((city7 == 1) && (-1 < unit_types[units[unit].type].obsolete_by)) &&
+             (game.advance_known_by[unit_types[units[unit].type].obsolete_by] != '\0')) {
+            hold_pos = 1;
+          }
+          if (hold_pos != 0) return ai_orders_plan_then_apply(o);
+        }
+        return ai_orders_guard(o);
+      }
+      city7 = unit_stack_count_role(unit,ROLE_DEFEND);
+      if ((1 < city7) && (units[unit].orders == ORDER_GOTO)) return ai_orders_guard(o);
+      units[unit].ai_task = 'F';
+      hold_pos = 1;
+    }
+    return ai_orders_plan_then_apply(o);
+  }
+  else {
+    best_dir = 8;
+    city3 = best_dir;
+  }
+  return ai_orders_apply_dir(o);
+}
+
 /* 00538a29 auto */
 i32 __cdecl ai_unit_choose_orders(void)
 
@@ -6073,7 +6378,6 @@ i32 __cdecl ai_unit_choose_orders(void)
   uptr best_dir;
   uint flag;
   uint on_fortress;
-  int goto_city;
   int attack_bonus;
   uint room_aboard;
   int has_orders;
@@ -6106,7 +6410,6 @@ i32 __cdecl ai_unit_choose_orders(void)
   int score;
   uint tile_flags;
   uint tasks_mask;
-  int next;  /* where a part says to go on */
   AiUnitOrders st = {map_tile, stat, military, forced_attack, stay_home,
     tile_byte, civ, result, landmass, city7, city3, x, x5, y, owner_byte,
     terrain, tile, check, near_dist, unit_type, policy, is_settler,
@@ -6138,7 +6441,6 @@ i32 __cdecl ai_unit_choose_orders(void)
   forced_attack = false;
   no_moves = 0;
   is_guard = 0;
-  goto_city = 0;
   unit = (iptr)game.active_unit;
   owner_byte = units[unit].owner;
   civ = (uptr)(char)owner_byte;
@@ -6146,7 +6448,7 @@ i32 __cdecl ai_unit_choose_orders(void)
     result = ai_barbarian_unit_move();
     return result;
   }
-  if ((3 < units[unit].orders) && (units[unit].orders < '\n')) goto finish_orders;
+  if ((3 < units[unit].orders) && (units[unit].orders < '\n')) return ai_orders_finish(&st);
   x2 = (int)units[unit].x;
   y3 = (int)units[unit].y;
   unit_type = (uptr)units[unit].type;
@@ -6154,7 +6456,7 @@ i32 __cdecl ai_unit_choose_orders(void)
   near_dist = map_in_bounds(x2,y3);
   if (near_dist == 0) {
     unit_set_sleep(unit);
-    goto finish_orders;
+    return ai_orders_finish(&st);
   }
   in_enemy_zoc = tile_in_enemy_zoc(x2,y3,civ);
   city4 = city_find_nearest(x2,y3,-1,0xffffffff,-1);
@@ -6201,7 +6503,7 @@ i32 __cdecl ai_unit_choose_orders(void)
   if ((unit_types[units[unit].type].hold != '\0') &&
      (city7 = unit_moves_left(unit), city7 == 0)) {
     no_moves = 1;
-    goto load_transport_loop;
+    return ai_orders_transport_loop(&st);
   }
   if (damage_level != 0) {
     ally_territory = 0;
@@ -6215,12 +6517,12 @@ i32 __cdecl ai_unit_choose_orders(void)
     if (near_dist == 0) {
       hold_pos = 1;
       is_guard = 1;
-      goto guard_check;
+      return ai_orders_guard(&st);
     }
     if (near_dist == 1) {
       if (city4 == city2) {
         unit_set_goto(unit,100,(int)cities[city4].x,(int)cities[city4].y);
-        goto finish_orders;
+        return ai_orders_finish(&st);
       }
       if (forced_attack) {
         damage_level = 0;
@@ -6234,213 +6536,20 @@ i32 __cdecl ai_unit_choose_orders(void)
      (((damage_level != 2 && ((units[unit].flags & UNITF_AI_RETREATING) == 0)) &&
       ((((damage_level != 3 || (own_dist == 0)) || (own_dist < 0x18)) || (near_dist < 9)))))) {
     switch (ai_orders_damaged(&st)) {
-    case AI_ORDERS_APPLY_DIR: goto apply_dir;
-    case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-    case AI_ORDERS_PLAN_MOVE: goto plan_move;
+    case AI_ORDERS_APPLY_DIR: return ai_orders_apply_dir(&st);
+    case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(&st);
+    case AI_ORDERS_PLAN_MOVE: return ai_orders_plan_then_apply(&st);
     default: break;
     }
     if (damage_level == 3) {
       switch (ai_orders_badly_damaged(&st)) {
-      case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-      case AI_ORDERS_SCENARIO_GUARD_CHECK: goto scenario_guard_check;
+      case AI_ORDERS_FINISH_ORDERS: return ai_orders_finish(&st);
+      case AI_ORDERS_SCENARIO_GUARD_CHECK: return ai_orders_by_kind(&st);
       default: break;
       }
     }
     else {
-scenario_guard_check:
-      if (((((game.game_flags & GAME_SCENARIO) == 0) || (((int)(short)scenario.flags[0] & 0x8000U) == 0)) ||
-          (civ != 1)) ||
-         (((((*((char *)&civs[1].treaties[3] + 1)) & (TREATY_WAR >> 8)) != 0 || (5 < game.turn)) ||
-          (0x4f < units[unit].x)))) {
-        if (((unit_domain == DOMAIN_LAND) && (own_dist == 0)) &&
-           (((units[unit].flags & UNITF_AI_GARRISON) == 0 &&
-            (((cities[city2].flags & CITYF_AI_FERRY_PORT) != 0 && (policy != ai_role)))))) {
-          stay_home = true;
-        }
-        else {
-          if (unit_domain == DOMAIN_AIR) {
-            unit4 = ai_air_unit_orders(unit,unit_type,&x2,&y3,ai_role,
-                                          &has_orders,own_dist,landmass,in_enemy_zoc);
-            if (unit4 == 0xfffffffe) goto plan_move;
-            if (unit4 == 0xffffffff) goto finish_orders;
-            city3 = unit4;
-            if (-1 < (int)unit4) goto apply_dir;
-          }
-          if ('b' < (char)unit_types[unit_type].attack) {
-            city3 = ai_nuke_pick_target(unit);
-            x2 = (int)units[unit].x;
-            y3 = (int)units[unit].y;
-            goto apply_dir;
-          }
-          if (ai_role == 6) {
-            switch (ai_orders_diplomat(&st)) {
-            case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-            case AI_ORDERS_PLAN_MOVE: goto plan_move;
-            case AI_ORDERS_RETURN_1: return 1;
-            default: break;
-            }
-          }
-          if (ai_role == 7) {
-            switch (ai_orders_caravan(&st)) {
-            case AI_ORDERS_APPLY_DIR: goto apply_dir;
-            case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-            case AI_ORDERS_RETURN_1: return 1;
-            default: break;
-            }
-          }
-          switch (ai_orders_city_site(&st)) {
-          case AI_ORDERS_APPLY_DIR: goto apply_dir;
-          case AI_ORDERS_RETURN_1: return 1;
-          default: break;
-          }
-          if ((unit_types[units[unit].type].flags & UTYPE_PARADROP) != 0) {
-            switch (ai_orders_paratrooper(&st)) {
-            case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-            case AI_ORDERS_PLAN_MOVE: goto plan_move;
-            case AI_ORDERS_RETURN_0: return 0;
-            default: break;
-            }
-          }
-        }
-        ai_orders_partisan_fortress(&st);
-        if ((((on_fortress == 0) || (unit4 = tile_radius_civ(x2,y3), (int)unit4 < 1))
-            || (unit4 == civ)) ||
-           ((((*(byte *)&civs[civ].treaties[unit4] & TREATY_PEACE) != 0 &&
-             ((int)((uint)civs[unit4].reputation -
-                   (int)civs[civ].reputation_credit[unit4]) < 7)) &&
-            (((*(byte *)&civs[civ].treaties[unit4] & TREATY_ALLIANCE) != 0 || (2 < own_dist)))))) {
-guard_check:
-          ai_orders_city_guard(&st);
-          if (is_guard == 0) {
-            if (stay_home) {
-              hold_pos = 1;
-            }
-            if (hold_pos == 0) {
-load_transport_loop:
-              for (;;) {
-                if (unit_domain == DOMAIN_SEA) {
-                  ai_orders_transport_cargo(&st);
-                  if (ai_role == 2) {
-                    civ_clear_standing_goals_near(civ,ROLE_NAVAL_SUPERIORITY,x2,y3,0);
-                    civ_clear_standing_goals_near(civ,0x12,x2,y3,0);
-                  }
-                  if (ai_role == 4) {
-                    switch (ai_orders_transport(&st)) {
-                    case AI_ORDERS_APPLY_DIR: goto apply_dir;
-                    case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-                    default: break;
-                    }
-                  }
-                  if (no_moves != 0) {
-                    return 1;
-                  }
-                  if ((ai_role == 4) || (in_enemy_zoc == 0)) {
-                    ai_orders_ship_goal_war(&st);
-                    ai_orders_ship_goal_trade(&st);
-                    ai_orders_ship_goal_land(&st);
-                  }
-                }
-                if (ai_orders_pillage(&st) == AI_ORDERS_FINISH_ORDERS) goto finish_orders;
-                next = ai_orders_partisan(&st);
-                if (next == AI_ORDERS_APPLY_DIR) goto apply_dir;
-                if (next == AI_ORDERS_BREAK) break;
-                ai_orders_fortress_site(&st);
-                if (((ai_role == 5) && (units[unit].orders == ORDER_GOTO)) &&
-                   (city7 = tile_city_owner(units[unit].goto_x,
-                                             units[unit].goto_y), -1 < city7)) {
-                  goto_city = 1;
-                }
-                if (((settler_type) && (!forced_attack)) &&
-                   ((goto_city == 0 &&
-                    ((city7 = tile_is_ocean(x2,y3), city7 == 0 &&
-                     (city7 = tile_city_owner(x2,y3), city7 < 0)))))) {
-                  switch (ai_orders_settler_work(&st)) {
-                  case AI_ORDERS_APPLY_DIR: goto apply_dir;
-                  case AI_ORDERS_FINISH_ORDERS: goto finish_orders;
-                  default: break;
-                  }
-                }
-                if (((ai_role == 0x15) && (units[unit].orders != ORDER_GOTO)) &&
-                   ((!forced_attack &&
-                    (((goto_city == 0 && (own_dist != 0)) &&
-                     (city7 = tile_is_ocean(x2,y3), city7 == 0)))))) {
-                  if (ai_orders_terraformer(&st) == AI_ORDERS_FINISH_ORDERS) goto finish_orders;
-                }
-                next = ai_orders_keep_goto(&st);
-                if (next == AI_ORDERS_CONTINUE) continue;
-                if (next == AI_ORDERS_FINISH_ORDERS) goto finish_orders;
-                next = ai_orders_defender_fortify(&st);
-                if (next == AI_ORDERS_APPLY_DIR) goto apply_dir;
-                if (next == AI_ORDERS_BREAK) break;
-                if (((is_settler) &&
-                    (landmass_table_block.landmass_recs[landmass].fertile_tiles >> 3 <
-                     (short)(ushort)civs[civ].continent_cities[landmass])) &&
-                   (units[unit].home_city != -1)) {
-                  if ((own_dist == 0) && (cities[city2].size < '\n')) {
-                    cities[city2].size++;
-                    unit_destroy_redraw(unit,1);
-                    ((CityWindow *)((i8 *)&city_wnd.window))->refresh_if_city(city2);
-                    map_redraw_area_all_views(x2,y3,1,1,1);
-                    return 1;
-                  }
-                  if (((-1 < (int)city2) && (landmass == own_landmass)) && (cities[city2].size < '\n')) {
-                    unit_set_goto(unit,0x42,(int)cities[city2].x,(int)cities[city2].y);
-                    goto finish_orders;
-                  }
-                }
-                break;
-              }
-            }
-          }
-          else {
-            unit4 = (uptr)(char)unit_types[units[unit].type].defense;
-            city7 = city_has_improvement(city2,IMP_CITY_WALLS);
-            if (city7 == 0) {
-              if ((units[unit].flags & UNITF_AI_GARRISON) != 0) {
-                unit4 = (int)(unit4 * 3) / 2;
-              }
-            }
-            else {
-              unit4 = unit4 << 1;
-            }
-            if ((int)(char)unit_types[units[unit].type].attack < (int)unit4) {
-              units[unit].ai_task = 'F';
-              units[unit].home_city = (i8)city2;
-              stay_home = false;
-              best_dir = 8;
-              city3 = best_dir;
-              goto apply_dir;
-            }
-            hold_pos = 1;
-          }
-        }
-        else {
-          if (ai_role != 1) {
-            if (ai_role == 0) {
-              if (in_enemy_zoc != 0) {
-                hold_pos = 1;
-              }
-              city7 = unit_stack_sum(unit,2);
-              if (((city7 == 1) && (-1 < unit_types[units[unit].type].obsolete_by)) &&
-                 (game.advance_known_by[unit_types[units[unit].type].obsolete_by] != '\0')) {
-                hold_pos = 1;
-              }
-              if (hold_pos != 0) goto plan_move;
-            }
-            goto guard_check;
-          }
-          city7 = unit_stack_count_role(unit,ROLE_DEFEND);
-          if ((1 < city7) && (units[unit].orders == ORDER_GOTO)) goto guard_check;
-          units[unit].ai_task = 'F';
-          hold_pos = 1;
-        }
-plan_move:
-        if (ai_orders_plan_move(&st) == AI_ORDERS_FINISH_ORDERS) goto finish_orders;
-      }
-      else {
-        best_dir = 8;
-        city3 = best_dir;
-      }
+      return ai_orders_by_kind(&st);
     }
   }
   else {
@@ -6449,28 +6558,7 @@ plan_move:
     best_dir = 8;
     city3 = best_dir;
   }
-apply_dir:
-  best_dir = city3;
-  if (best_dir == 8) {
-    units[unit].last_dir = 0xff;
-    units[unit].orders = ORDER_NONE;
-  }
-  else {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
-    y3 += (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir];
-    near_dist = map_in_bounds(x2,y3);
-    if (near_dist == 0) {
-      units[unit].orders = ORDER_NONE;
-      unit_exhaust_moves(unit);
-    }
-    else {
-      units[unit].orders = ORDER_AI_GOTO;
-      units[unit].goto_x = (i16)x2;
-      units[unit].goto_y = (i16)y3;
-    }
-  }
-finish_orders:
-  return ai_orders_finish(&st);
+  return ai_orders_apply_dir(&st);
 }
 
 /* 00543cd6 auto */

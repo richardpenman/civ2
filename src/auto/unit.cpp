@@ -7935,180 +7935,80 @@ static void unit_move_dir_not_moved(iptr unit,byte civ3)
   }
 }
 
-/* 0059062c auto */
-/* WARNING: Removing unreachable block (ram,0x0059103e) */
-/* WARNING: Removing unreachable block (ram,0x0059104b) */
-/* WARNING: Removing unreachable block (ram,0x00590f5a) */
-/* WARNING: Removing unreachable block (ram,0x0059100a) */
-/* WARNING: Removing unreachable block (ram,0x00591023) */
-/* WARNING: Removing unreachable block (ram,0x00591027) */
-/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+/* Where unit_move_dir goes on after the checks in its loop: on with the
+   move (unit_move_dir_step), to its finish (unit_move_dir_finish_move:
+   the attack and the no-direction paths too), to the map's unlock, or
+   straight to telling the network (the map lock refused). */
+enum UnitMoveNext {
+  UMD_CHECKS,
+  UMD_FINISH_MOVE,
+  UMD_UNLOCK_MAP,
+  UMD_SEND_UPDATE
+};
 
-i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
+/* The locals of unit_move_dir that its move and finish share: references to
+   the entry point's own. */
+struct UnitMoveDir {
+  int &unit;
+  iptr &orig_unit;
+  uptr &dir;
+  uptr &civ;
+  uptr &civ2;
+  byte &civ3;
+  iptr &x2;
+  int &y2;
+  int &x3;
+  int &y3;
+  uptr &city;
+  iptr &unit2;
+  iptr &unit3;
+  u8 &unit_domain;
+  uptr &terrain2;
+  uint &src_is_ocean;
+  uint &dst_is_ocean;
+  uint &result;
+  int &has_hut;
+  bool &flag;
+  bool &map_locked;
+  int &lock_id;
+  bool &boarding;
+  int &attack_done;
+  int *civ_sees;
+  int *civ_animates;
+};
 
+/* Part of unit_move_dir (0059062c): the move itself, once the loop's checks
+   let it through: an enemy city entered (unit_move_dir_enemy_city), the
+   moves it costs (a land unit short of them may still make it, at random),
+   an AI unit holding back, who sees it, the unit moved (by the host in a
+   network game), a landing counted, a city captured, a ship's sleeping
+   cargo woken.  Returns UMD_FINISH_MOVE, or UMD_UNLOCK_MAP when the unit
+   does not move. */
+static int unit_move_dir_step(UnitMoveDir *m)
 {
+  int &unit = m->unit; iptr &orig_unit = m->orig_unit; uptr &dir = m->dir;
+  uptr &civ = m->civ; uptr &civ2 = m->civ2; byte &civ3 = m->civ3;
+  iptr &x2 = m->x2; int &y2 = m->y2; int &x3 = m->x3; int &y3 = m->y3;
+  uptr &city = m->city; iptr &unit2 = m->unit2; iptr &unit3 = m->unit3;
+  u8 &unit_domain = m->unit_domain; uptr &terrain2 = m->terrain2;
+  uint &src_is_ocean = m->src_is_ocean; uint &dst_is_ocean = m->dst_is_ocean;
+  uint &result = m->result; int &has_hut = m->has_hut; bool &flag = m->flag;
+  bool &map_locked = m->map_locked; int &lock_id = m->lock_id;
+  int *civ_sees = m->civ_sees; int *civ_animates = m->civ_animates;
   short *continent_count;
-  u8 unit_domain;
-  byte civ3;
-  bool flag;
-  bool boarding;
-  bool map_locked;
-  char src_terrain;
-  SHORT shift_state;
-  uptr civ;
-  iptr src_city;
-  iptr in_bounds;
   byte unit_type;
   int city3;
-  uptr city;
-  iptr unit3;
-  iptr orig_unit;
   int move_roll;
-  int y2;
-  uint result;
-  iptr x2;
-  int answer;
-  int y3;
-  int x3;
-  /* has_hut, civ_sees[8], civ_animates[8] in a row, as in the original's
-     frame: with no player here (human_civ -1) civ_sees[-1] is has_hut and
-     civ_animates[-1] is civ_sees[7] (unit_move_dir_local_view) */
-  int views[17];
-  int &has_hut = views[0];
-  int *civ_sees = views + 1;
-  int *civ_animates = views + 9;
-  uptr terrain2;
-  uint src_is_ocean;
-  int attack_done;
-  uptr civ2;
-  uint dst_is_ocean;
-  int lock_id;
-  int unit_count;
-  iptr unit2;
   uint step_cost;
   uint prev_moves_used;
-  i32 unused_c;
-  /* the Barbarians' entries (human_civ 0 after Reveal Map), which the
-     original leaves as its stack held them (B22) */
-  civ_sees[0] = civ_animates[0] = 0;
-  if (bugfix_ui()) {
-    /* B14: a unit that does not move pauses as if the player saw it (docs/BUGS.md) */
-    memset(civ_sees,0,8 * sizeof civ_sees[0]);
-  }
-  else {
-    /* stale stack the original reads (FRAME_PRESETS; CIV2_STACKPROBE=59062c:a0:20
-       in the Rome scenario: entries 1 to 5 non-zero, 6 and 7 zero) */
-    civ_sees[1] = civ_sees[2] = civ_sees[3] = civ_sees[4] = civ_sees[5] = 1;
-    civ_sees[6] = civ_sees[7] = 0;
-  }
-  
-  attack_done = 0;
-  map_locked = false;
-  unused_c = 0;
-  lock_id = 1;
-  flag = false;
-  if ((((unit_move.in_progress != 0) || (units[unit].id == 0)) || (units[unit].x < 0)) ||
-     (units[unit].y < 0)) {
-    return 0;
-  }
-  unit_move.in_progress = 1;
-  unit_sound_editor_window_block.unit_move_flags = (byte)move_flags;
-  win_flush_pending_msgs();
-  while( true ) {
-    orig_unit = unit;
-    unit_move.unanimated_state = '\0';
-    boarding = false;
-    has_hut = 0;
-    result = 0;
-    if ((unit_sound_editor_window_block.unit_move_flags & 1) != 0) {
-      blink.unit_active = 0;
-    }
-    unit_count = (int)game.num_units;
-    game.transient_flags = game.transient_flags | TRANSIENT_ATTITUDE_DIRTY;
-    x3 = (int)units[unit].x;
-    y3 = (int)units[unit].y;
-    y2 = y3;
-    x2 = x3;
-    if (-1 < (int)dir) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
-    }
-    unit_domain = unit_types[units[unit].type].domain;
-    civ3 = units[unit].owner;
-    civ = (uptr)(char)civ3;
-    src_city = city_at(x3,y3);
-    if (src_city < 0) {
-      tile_set_owner(x3,y3,civ,1);
-    }
-    unit_sound_editor_window_block.unit_move_by_local_human = autoplay.active == 0 && human_civ[0] == civ;
-    in_bounds = map_in_bounds(x2,y2);
-    if (in_bounds == 0) {
-      if (((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
-        popup_game_with_sprite(str_notonmap,(Sprite *)&popup_info_icon_sprite,0);
-      }
-      unit = orig_unit;
-      if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
-        unit_exhaust_moves(unit);
-      }
-      goto unlock_map;
-    }
-    if (((2 < game.multiplayer) && (net.mp_simultaneous_moves != '\0')) &&
-       (((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0 && (-1 < (int)dir)))) {
-      city3 = net_lock_map(civ,x3,y3,x2,y2,lock_id);
-      if (city3 == 0) {
-        if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
-          unit_exhaust_moves(unit);
-        }
-        goto send_net_update;
-      }
-      map_locked = true;
-    }
-    src_terrain = tile_terrain(x3,y3);
-    unit_type = tile_terrain(x2,y2);
-    terrain2 = (uptr)unit_type;
-    src_is_ocean = (uint)(src_terrain == TERRAIN_OCEAN);
-    dst_is_ocean = (uint)(terrain2 == UNIT_ALPINE_TROOPS);
-    civ2 = tile_city_or_unit_owner(x2,y2);
-    unit2 = tile_first_unit(x2,y2);
-    if (-1 < unit2) {
-      civ2 = (uptr)units[unit2].owner;
-    }
-    city = city_at(x2,y2);
-    if (-1 < (int)city) {
-      civ2 = (uptr)cities[city].owner;
-    }
-    if ((int)dir < 0) {
-      unit_exhaust_moves(unit);
-      unit3 = unit;
-      goto finish_move;
-    }
-    units[unit].flags = units[unit].flags | UNITF_MOVED;
-    if (unit_domain == DOMAIN_LAND) {
-      if (unit_move_dir_land_unit_checks(unit,orig_unit,dir,civ,civ2,civ3,x2,y2,x3,y3,city,unit2,
-                                         src_is_ocean) != 0) goto unlock_map;
-    }
-    if ((unit_domain == DOMAIN_LAND) && (dst_is_ocean != 0)) {
-      unit = orig_unit;
-      if ((civ2 != civ) || (city3 = unit_stack_sum(unit2,6), city3 < 1))
-      goto unlock_map;
-      boarding = true;
-    }
-    if ((-1 < unit2) && ((int)units[unit2].owner != civ)) {
-      if (unit_move_dir_attack_unit(unit,orig_unit,dir,civ,civ2,civ3,x2,y2,x3,y3,city,unit2,unit_domain,
-                                    src_is_ocean,dst_is_ocean,result,attack_done,unit3,answer) != 0)
-      goto finish_move;
-      goto unlock_map;
-    }
-    if (((dst_is_ocean != 0) || (-1 < (int)city)) || (unit_domain != DOMAIN_SEA)) break;
-    if (unit_move_dir_pick_landing_unit(unit,orig_unit,x3,y3,unit_count,answer) != 0) goto unlock_map;
-  }
+
   if ((-1 < (int)city) && ((int)cities[city].owner != civ)) {
     if (unit_move_dir_enemy_city(unit,orig_unit,civ,civ2,civ3,x2,y2,x3,y3,city,unit_domain,result) != 0)
-    goto unlock_map;
+    return UMD_UNLOCK_MAP;
   }
   city3 = unit_moves_left(unit);
   unit = orig_unit;
-  if (city3 == 0) goto unlock_map;
+  if (city3 == 0) return UMD_UNLOCK_MAP;
   step_cost = unit_move_dir_step_cost(unit,x3,y3,x2,y2,terrain2,unit_domain);
   city3 = unit_moves_left(unit);
   if ((((city3 < (int)step_cost) && (unit_domain == DOMAIN_LAND)) && (units[unit].moves_used != '\0')) &&
@@ -8119,26 +8019,26 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
       move_roll = 0;
     }
     else {
-      move_roll = _rand();
+      move_roll = crt_rand_at("unit_move_dir");
       move_roll = move_roll % (int)step_cost;
     }
     city3 = unit_moves_left(unit);
     if (city3 <= move_roll) {
       unit_exhaust_moves(unit);
       result = 1;
-      goto unlock_map;
+      return UMD_UNLOCK_MAP;
     }
   }
   if ((unit_sound_editor_window_block.unit_move_flags & 2) == 0) {
     result = 1;
-    goto unlock_map;
+    return UMD_UNLOCK_MAP;
   }
   unit_type = units[unit].moves_used;
   prev_moves_used = (uint)unit_type;
   units[unit].moves_used += (char)step_cost;
   if ((1 << (civ3 & 0x1f) & (uint)game.human_players) == 0) {
     if (unit_move_dir_ai_holds_back(unit,dir,civ,civ2,unit2,city,x2,y2,x3,y3,unit_domain,step_cost,
-                                    unit_type,prev_moves_used) != 0) goto unlock_map;
+                                    unit_type,prev_moves_used) != 0) return UMD_UNLOCK_MAP;
   }
   if (((civ == 0) && (dst_is_ocean == 0)) &&
      (((city3 = tile_visible_to(x3,y3,(*(i8 *)&human_civ)), city3 != 0 &&
@@ -8196,7 +8096,23 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
       }
     }
   }
-finish_move:
+  return UMD_FINISH_MOVE;
+}
+
+/* Part of unit_move_dir (0059062c): a move's finish (the attack and the
+   no-direction paths too): the unit to its stack's bottom, the view
+   around it, a pause where the player sees an enemy move, air units' fuel,
+   triremes lost at sea, huts, settlers woken, boarding, a long move's
+   continuation.  The move is made (RESULT 1) unless the unit was lost. */
+static void unit_move_dir_finish_move(UnitMoveDir *m)
+{
+  int &unit = m->unit; uptr &dir = m->dir; uptr &civ = m->civ; byte &civ3 = m->civ3;
+  iptr &x2 = m->x2; int &y2 = m->y2; int &x3 = m->x3; int &y3 = m->y3;
+  iptr &unit3 = m->unit3; u8 &unit_domain = m->unit_domain; uint &result = m->result;
+  int &has_hut = m->has_hut; bool &flag = m->flag; bool &boarding = m->boarding;
+  int &attack_done = m->attack_done; int *civ_sees = m->civ_sees;
+  SHORT shift_state;
+
   unit = unit3;
   unit3 = unit;
   if ((((game.multiplayer < 3) || (net.host_flag != '\0')) || (!flag)) &&
@@ -8216,9 +8132,9 @@ finish_move:
     }
   }
   if (unit_types[units[unit].type].domain == DOMAIN_AIR) {
-    if (unit_move_dir_air_fuel(unit,x2,y2,attack_done,flag,x3,y3) != 0) goto unlock_map;
+    if (unit_move_dir_air_fuel(unit,x2,y2,attack_done,flag,x3,y3) != 0) return;
   }
-  if (unit_move_dir_trireme_loss(unit,civ,x2,y2,flag,x3,y3) != 0) goto unlock_map;
+  if (unit_move_dir_trireme_loss(unit,civ,x2,y2,flag,x3,y3) != 0) return;
   if ((has_hut != 0) && (unit_types[units[unit].type].domain == DOMAIN_LAND)) {
     unit_enter_hut(unit);
   }
@@ -8230,11 +8146,200 @@ finish_move:
   units[unit3].last_dir = (u8)dir;
   result = 1;
   unit = unit3;
-unlock_map:
-  if (map_locked) {
+}
+
+
+/* 0059062c auto */
+/* WARNING: Removing unreachable block (ram,0x0059103e) */
+/* WARNING: Removing unreachable block (ram,0x0059104b) */
+/* WARNING: Removing unreachable block (ram,0x00590f5a) */
+/* WARNING: Removing unreachable block (ram,0x0059100a) */
+/* WARNING: Removing unreachable block (ram,0x00591023) */
+/* WARNING: Removing unreachable block (ram,0x00591027) */
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
+
+{
+  u8 unit_domain;
+  byte civ3;
+  bool flag;
+  bool boarding;
+  bool map_locked;
+  char src_terrain;
+  uptr civ;
+  iptr src_city;
+  iptr in_bounds;
+  byte unit_type;
+  int city3;
+  uptr city;
+  iptr unit3;
+  iptr orig_unit;
+  int y2;
+  uint result;
+  iptr x2;
+  int answer;
+  int y3;
+  int x3;
+  /* has_hut, civ_sees[8], civ_animates[8] in a row, as in the original's
+     frame: with no player here (human_civ -1) civ_sees[-1] is has_hut and
+     civ_animates[-1] is civ_sees[7] (unit_move_dir_local_view) */
+  int views[17];
+  int &has_hut = views[0];
+  int *civ_sees = views + 1;
+  int *civ_animates = views + 9;
+  uptr terrain2;
+  uint src_is_ocean;
+  int attack_done;
+  uptr civ2;
+  uint dst_is_ocean;
+  int lock_id;
+  int unit_count;
+  iptr unit2;
+  i32 unused_c;
+  int next;  /* where the move goes on after its checks */
+  UnitMoveDir m = {unit, orig_unit, dir, civ, civ2, civ3, x2, y2, x3, y3, city, unit2, unit3,
+    unit_domain, terrain2, src_is_ocean, dst_is_ocean, result, has_hut, flag, map_locked, lock_id,
+    boarding, attack_done, civ_sees, civ_animates};
+  /* the Barbarians' entries (human_civ 0 after Reveal Map), which the
+     original leaves as its stack held them (B22) */
+  civ_sees[0] = civ_animates[0] = 0;
+  if (bugfix_ui()) {
+    /* B14: a unit that does not move pauses as if the player saw it (docs/BUGS.md) */
+    memset(civ_sees,0,8 * sizeof civ_sees[0]);
+  }
+  else {
+    /* stale stack the original reads (FRAME_PRESETS; CIV2_STACKPROBE=59062c:a0:20
+       in the Rome scenario: entries 1 to 5 non-zero, 6 and 7 zero) */
+    civ_sees[1] = civ_sees[2] = civ_sees[3] = civ_sees[4] = civ_sees[5] = 1;
+    civ_sees[6] = civ_sees[7] = 0;
+  }
+  
+  attack_done = 0;
+  map_locked = false;
+  unused_c = 0;
+  lock_id = 1;
+  flag = false;
+  if ((((unit_move.in_progress != 0) || (units[unit].id == 0)) || (units[unit].x < 0)) ||
+     (units[unit].y < 0)) {
+    return 0;
+  }
+  unit_move.in_progress = 1;
+  unit_sound_editor_window_block.unit_move_flags = (byte)move_flags;
+  win_flush_pending_msgs();
+  next = UMD_CHECKS;
+  while( true ) {
+    orig_unit = unit;
+    unit_move.unanimated_state = '\0';
+    boarding = false;
+    has_hut = 0;
+    result = 0;
+    if ((unit_sound_editor_window_block.unit_move_flags & 1) != 0) {
+      blink.unit_active = 0;
+    }
+    unit_count = (int)game.num_units;
+    game.transient_flags = game.transient_flags | TRANSIENT_ATTITUDE_DIRTY;
+    x3 = (int)units[unit].x;
+    y3 = (int)units[unit].y;
+    y2 = y3;
+    x2 = x3;
+    if (-1 < (int)dir) {
+      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3);
+      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+    }
+    unit_domain = unit_types[units[unit].type].domain;
+    civ3 = units[unit].owner;
+    civ = (uptr)(char)civ3;
+    src_city = city_at(x3,y3);
+    if (src_city < 0) {
+      tile_set_owner(x3,y3,civ,1);
+    }
+    unit_sound_editor_window_block.unit_move_by_local_human = autoplay.active == 0 && human_civ[0] == civ;
+    in_bounds = map_in_bounds(x2,y2);
+    if (in_bounds == 0) {
+      if (((unit_sound_editor_window_block.unit_move_flags & 1) != 0) && (unit_sound_editor_window_block.unit_move_by_local_human != '\0')) {
+        popup_game_with_sprite(str_notonmap,(Sprite *)&popup_info_icon_sprite,0);
+      }
+      unit = orig_unit;
+      if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
+        unit_exhaust_moves(unit);
+      }
+      next = UMD_UNLOCK_MAP;
+      break;
+    }
+    if (((2 < game.multiplayer) && (net.mp_simultaneous_moves != '\0')) &&
+       (((1 << (civ3 & 0x1f) & (uint)game.human_players) != 0 && (-1 < (int)dir)))) {
+      city3 = net_lock_map(civ,x3,y3,x2,y2,lock_id);
+      if (city3 == 0) {
+        if ((units[unit].flags & UNITF_AUTOMATED) != 0) {
+          unit_exhaust_moves(unit);
+        }
+        next = UMD_SEND_UPDATE;
+        break;
+      }
+      map_locked = true;
+    }
+    src_terrain = tile_terrain(x3,y3);
+    unit_type = tile_terrain(x2,y2);
+    terrain2 = (uptr)unit_type;
+    src_is_ocean = (uint)(src_terrain == TERRAIN_OCEAN);
+    dst_is_ocean = (uint)(terrain2 == UNIT_ALPINE_TROOPS);
+    civ2 = tile_city_or_unit_owner(x2,y2);
+    unit2 = tile_first_unit(x2,y2);
+    if (-1 < unit2) {
+      civ2 = (uptr)units[unit2].owner;
+    }
+    city = city_at(x2,y2);
+    if (-1 < (int)city) {
+      civ2 = (uptr)cities[city].owner;
+    }
+    if ((int)dir < 0) {
+      unit_exhaust_moves(unit);
+      unit3 = unit;
+      next = UMD_FINISH_MOVE;
+      break;
+    }
+    units[unit].flags = units[unit].flags | UNITF_MOVED;
+    if (unit_domain == DOMAIN_LAND) {
+      if (unit_move_dir_land_unit_checks(unit,orig_unit,dir,civ,civ2,civ3,x2,y2,x3,y3,city,unit2,
+                                         src_is_ocean) != 0) {
+        next = UMD_UNLOCK_MAP;
+        break;
+      }
+    }
+    if ((unit_domain == DOMAIN_LAND) && (dst_is_ocean != 0)) {
+      unit = orig_unit;
+      if ((civ2 != civ) || (city3 = unit_stack_sum(unit2,6), city3 < 1)) {
+        next = UMD_UNLOCK_MAP;
+        break;
+      }
+      boarding = true;
+    }
+    if ((-1 < unit2) && ((int)units[unit2].owner != civ)) {
+      if (unit_move_dir_attack_unit(unit,orig_unit,dir,civ,civ2,civ3,x2,y2,x3,y3,city,unit2,unit_domain,
+                                    src_is_ocean,dst_is_ocean,result,attack_done,unit3,answer) != 0) {
+        next = UMD_FINISH_MOVE;
+      }
+      else {
+        next = UMD_UNLOCK_MAP;
+      }
+      break;
+    }
+    if (((dst_is_ocean != 0) || (-1 < (int)city)) || (unit_domain != DOMAIN_SEA)) break;
+    if (unit_move_dir_pick_landing_unit(unit,orig_unit,x3,y3,unit_count,answer) != 0) {
+      next = UMD_UNLOCK_MAP;
+      break;
+    }
+  }
+  if (next == UMD_CHECKS) {
+    next = unit_move_dir_step(&m);
+  }
+  if (next == UMD_FINISH_MOVE) {
+    unit_move_dir_finish_move(&m);
+  }
+  if ((next != UMD_SEND_UPDATE) && (map_locked)) {
     net_unlock_map(civ,lock_id);
   }
-send_net_update:
   if (2 < game.multiplayer) {
     net_send_state_diff(0xff,2,0,0,0);
     net_send_message(NM_DRAW_AREA,0xff,x3,y3,0,0,0,0,0,0);

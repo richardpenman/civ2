@@ -3852,6 +3852,175 @@ static void diplo_meet_ally_war_talk(iptr civ2,iptr civ)
   }
 }
 
+/* Part of diplo_ai_meet_player (00460129): the meeting itself, from the
+   emissary's reception to the player's proposals; returning ends the
+   meeting (diplo_ai_meet_player's ending: treaty flags, the request count,
+   the expired ceasefire, the ambassadors, the schism).  ENDED: the meeting
+   was refused or the player left; EMISSARY_SENT, HOSTILE and CONCEDED tell
+   the ending how it went. */
+static void diplo_ai_meet_player_talk(int civ2,int civ,i32 x,i32 y,int player_initiated,bool no_contact,
+                                      bool &ended,bool &emissary_sent,uint &hostile,bool &conceded)
+
+{
+  char patience;
+  bool propose;
+  bool tech_gap;
+  bool paid;
+  bool declared_war;
+  bool senate_blocked;
+  bool treaty_made;
+  iptr str;
+  int advance2;
+
+  declared_war = false;
+  paid = false;
+  propose = false;
+  treaty_made = false;
+  tech_gap = false;
+  senate_blocked = false;
+  (*(uint *)&diplo_meeting.emissary_response) = (uint)(player_initiated != 0);
+  if (player_initiated != 0) {
+    if (diplo_meet_refuses_audience(civ2,civ)) {
+      ended = true;
+      return;
+    }
+    diplo_ask_receive_emissary(civ2,civ,x,y);
+  }
+  diplo_set_treaty_flags(civ2,civ,0x800000);
+  emissary_sent = true;
+  hostile = (uint)(((byte)(civs[civ].treaties[civ2] >> 16) & (TREATY_CITY_CAPTURED >> 16)) != 0);
+  diplo_clear_treaty_flags(civ,civ2,0x400000);
+  if (((game.game_flags & GAME_SCENARIO) != 0) && (((int)(*(short *)&scenario.flags) & 0x8000U) != 0)) {
+    if (((civ == 3) && (civ2 == 6)) || ((civ == 6 && (civ2 == 3)))) {
+      diplo_eval.war_target_civ = 0;
+      diplo_eval.offer_tech_best = -1;
+      diplo_eval.tribute_demand = 0;
+      hostile = 0;
+    }
+    if (((civ == 3) && (civ2 == 1)) || ((civ == 1 && (civ2 == 3)))) {
+      diplo_eval.offer_tech_best = -1;
+      diplo_eval.war_target_civ = 0;
+      hostile = 0;
+    }
+  }
+  diplo_tech_exchange(civ2,civ,x,y,1,0);
+  if ((((diplo_eval.ai_aggressive == 0) && (player_initiated == 0)) &&
+      ((*(byte *)&civs[civ].treaties[civ2] & (TREATY_CEASEFIRE | TREATY_PEACE)) != 0)) && (2 < diplo_eval.ai_fear_level))
+  return;
+  diplo_set_attitude_arg(civ2,civ);
+  if (((0 < diplo_eval.war_target_civ) && (diplo_eval.war_target_civ < 8)) &&
+     ((1 << ((byte)diplo_eval.war_target_civ & 0x1f) & (uint)game.civs_alive) == 0)) {
+    diplo_eval.war_target_civ = -1;
+  }
+  if ((((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) != 0) && (diplo_eval.space_race_threat != 0)) &&
+     ((*(int *)&diplo_eval.ai_outranks_target) != 0)) {
+    diplo_eval.war_target_civ = -1;
+  }
+  diplo_meet_ask_war_on_target(civ2,civ,x,y,propose,declared_war,paid);
+  diplo_meet_ally_eases_demands(civ2,civ,paid,propose);
+  diplo_meet_tech_gap(civ2,civ,tech_gap);
+  diplo_meet_demand_tribute(civ2,civ,x,y,propose,tech_gap,paid);
+  if (((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) != 0) &&
+     (advance2 = diplo_attitude_level(diplo_eval.cur_attitude), 3 < advance2)) {
+    propose = true;
+  }
+  diplo_meet_demand_tech(civ2,civ,x,y,propose,tech_gap,paid);
+  if (diplo_meet_ally_dismissed(civ2,civ,x,y,paid)) return;
+  if ((hostile == 0) || (diplo_eval.ai_aggressive == 0)) {
+    hostile = 0;
+  }
+  else {
+    hostile = 1;
+  }
+  if (hostile != 0) {
+    diplo_eval.ai_aggressive = 0;
+  }
+  diplo_meet_turn_aggressive(civ2,civ,no_contact,paid);
+  if (diplo_meet_threaten_war(civ2,civ,x,y,player_initiated)) return;
+  if (diplo_eval.ai_aggressive != 0) return;
+  if (((diplo_eval.suppressed_aggression != 0) && ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0)) &&
+     (advance2 = diplo_ask_receive_emissary(civ2,civ,x,y), advance2 != ADV_ADVANCED_FLIGHT)) {
+    diplo_leader_play_reaction(4);
+    advance2 = civ_has_wonder(civ2,WONDER_GREAT_WALL);
+    if (advance2 == ADV_ADVANCED_FLIGHT) {
+      popup_game((const char *)&str_accursedun);
+    }
+    else {
+      popup_game((const char *)&str_accursedwall);
+    }
+  }
+  diplo_meet_propose_alliance(civ2,civ,x,y,declared_war,propose,tech_gap,treaty_made);
+  if (diplo_meet_offer_ceasefire(civ2,civ,x,y,paid,hostile,senate_blocked,conceded,treaty_made)) return;
+  diplo_meet_offer_peace(civ2,civ,x,y,paid,no_contact,senate_blocked,conceded,treaty_made);
+  if (((diplo_meeting.emissary_asked != 0) || (player_initiated != 0)) ||
+     (((*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) == 0 &&
+      (((diplo_eval.ai_fear_level != 0 || (((byte)(civs[civ].treaties[civ2] >> 8) & (TREATY_WAR >> 8)) != 0))
+       || ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CONTACT) == 0)))))) {
+    diplo_meet_reputation_war(civ2,civ);
+    if (no_contact) {
+      diplo_ask_receive_emissary(civ2,civ,x,y);
+    }
+    if (((diplo_meeting.emissary_asked == 0) || ((*(uint *)&diplo_meeting.emissary_response) == 0xffffffff)) && (player_initiated == 0)) {
+      diplo_meet_senate_forces_treaty(civ2,civ);
+    }
+    else {
+      if (diplo_meeting.emissary_asked == 0) {
+        diplo_set_attitude_arg(civ2,civ);
+      }
+      if (treaty_made) {
+        diplo_meet_denounce_notorious(civ2,civ,player_initiated);
+      }
+      else {
+        diplo_meet_greet(civ2,civ,player_initiated,paid);
+      }
+      if (((*(byte *)&civs[civ].treaties[civ2] & (TREATY_PEACE | TREATY_ALLIANCE)) == 0) &&
+         (diplo_count_border_intruders(civ,civ2), border_intruders.intruder_count != 0)) {
+        text_set_string_arg(1,(const char *)&cities[border_intruders.intruder_city].name);
+        str = civ_get_adjective(civ);
+        text_set_string_arg(2,(const char *)str);
+        if (border_intruders.intruder_city < 2) {
+          popup_game((const char *)&str_pleasecity);
+        }
+        else {
+          popup_game((const char *)&str_pleasecities);
+        }
+      }
+      diplo_meet_ally_war_talk(civ2,civ);
+      do {
+        if (civs[civ].diplo_request_count < '\0') {
+          civs[civ].diplo_request_count = '\0';
+        }
+        advance2 = diplo_proposal_menu(civ2,civ);
+        if (advance2 == ADV_ADVANCED_FLIGHT) {
+          ended = true;
+          return;
+        }
+        if (advance2 == ADV_BRIDGE_BUILDING) {
+          diplo_favor_menu(civ2,civ);
+        }
+        else if (advance2 == ADV_BRONZE_WORKING) {
+          diplo_gift_menu(civ2,civ);
+        }
+        else {
+          advance2 = diplo_ai_answer_proposal(civ2,civ,advance2);
+          if (advance2 != ADV_ADVANCED_FLIGHT) return;
+        }
+        civs[civ].diplo_request_count++;
+        patience = civs[civ].diplo_request_count;
+        advance2 = diplo_patience_limit(civ2,civ);
+      } while (patience < advance2);
+      diplo_set_attitude_arg(civ2,civ);
+      diplo_leader_play_reaction(3);
+      if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
+        popup_game((const char *)&str_patience);
+      }
+      else {
+        popup_game((const char *)&str_patienceally);
+      }
+    }
+  }
+}
+
 /* 00460129 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
@@ -3860,13 +4029,6 @@ diplo_ai_meet_player(int civ2,int civ,i32 x,i32 y,int player_initiated)
 
 {
   uint *treaty;
-  char patience;
-  bool propose;
-  bool tech_gap;
-  bool paid;
-  bool declared_war;
-  bool senate_blocked;
-  bool treaty_made;
   bool ended;
   bool conceded;
   bool emissary_sent;
@@ -3878,15 +4040,9 @@ diplo_ai_meet_player(int civ2,int civ,i32 x,i32 y,int player_initiated)
   bool no_contact;
   uint hostile;
   
-  declared_war = false;
   ended = false;
-  paid = false;
-  propose = false;
-  treaty_made = false;
   conceded = false;
   hostile = 0;
-  tech_gap = false;
-  senate_blocked = false;
   emissary_sent = false;
   diplo_meeting.ai_meeting_active = 1;
   if ((scenario_events_loaded != 0) &&
@@ -3933,148 +4089,7 @@ diplo_ai_meet_player(int civ2,int civ,i32 x,i32 y,int player_initiated)
       diplo_clear_treaty_flags(civ,civ2,0x200000);
     }
   }
-  (*(uint *)&diplo_meeting.emissary_response) = (uint)(player_initiated != 0);
-  if (player_initiated != 0) {
-    if (diplo_meet_refuses_audience(civ2,civ)) {
-      ended = true;
-      goto end_meeting;
-    }
-    diplo_ask_receive_emissary(civ2,civ,x,y);
-  }
-  diplo_set_treaty_flags(civ2,civ,0x800000);
-  emissary_sent = true;
-  hostile = (uint)(((byte)(civs[civ].treaties[civ2] >> 16) & (TREATY_CITY_CAPTURED >> 16)) != 0);
-  diplo_clear_treaty_flags(civ,civ2,0x400000);
-  if (((game.game_flags & GAME_SCENARIO) != 0) && (((int)(*(short *)&scenario.flags) & 0x8000U) != 0)) {
-    if (((civ == 3) && (civ2 == 6)) || ((civ == 6 && (civ2 == 3)))) {
-      diplo_eval.war_target_civ = 0;
-      diplo_eval.offer_tech_best = -1;
-      diplo_eval.tribute_demand = 0;
-      hostile = 0;
-    }
-    if (((civ == 3) && (civ2 == 1)) || ((civ == 1 && (civ2 == 3)))) {
-      diplo_eval.offer_tech_best = -1;
-      diplo_eval.war_target_civ = 0;
-      hostile = 0;
-    }
-  }
-  diplo_tech_exchange(civ2,civ,x,y,1,0);
-  if ((((diplo_eval.ai_aggressive == 0) && (player_initiated == 0)) &&
-      ((*(byte *)&civs[civ].treaties[civ2] & (TREATY_CEASEFIRE | TREATY_PEACE)) != 0)) && (2 < diplo_eval.ai_fear_level))
-  goto end_meeting;
-  diplo_set_attitude_arg(civ2,civ);
-  if (((0 < diplo_eval.war_target_civ) && (diplo_eval.war_target_civ < 8)) &&
-     ((1 << ((byte)diplo_eval.war_target_civ & 0x1f) & (uint)game.civs_alive) == 0)) {
-    diplo_eval.war_target_civ = -1;
-  }
-  if ((((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) != 0) && (diplo_eval.space_race_threat != 0)) &&
-     ((*(int *)&diplo_eval.ai_outranks_target) != 0)) {
-    diplo_eval.war_target_civ = -1;
-  }
-  diplo_meet_ask_war_on_target(civ2,civ,x,y,propose,declared_war,paid);
-  diplo_meet_ally_eases_demands(civ2,civ,paid,propose);
-  diplo_meet_tech_gap(civ2,civ,tech_gap);
-  diplo_meet_demand_tribute(civ2,civ,x,y,propose,tech_gap,paid);
-  if (((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) != 0) &&
-     (advance2 = diplo_attitude_level(diplo_eval.cur_attitude), 3 < advance2)) {
-    propose = true;
-  }
-  diplo_meet_demand_tech(civ2,civ,x,y,propose,tech_gap,paid);
-  if (diplo_meet_ally_dismissed(civ2,civ,x,y,paid)) goto end_meeting;
-  if ((hostile == 0) || (diplo_eval.ai_aggressive == 0)) {
-    hostile = 0;
-  }
-  else {
-    hostile = 1;
-  }
-  if (hostile != 0) {
-    diplo_eval.ai_aggressive = 0;
-  }
-  diplo_meet_turn_aggressive(civ2,civ,no_contact,paid);
-  if (diplo_meet_threaten_war(civ2,civ,x,y,player_initiated)) goto end_meeting;
-  if (diplo_eval.ai_aggressive != 0) goto end_meeting;
-  if (((diplo_eval.suppressed_aggression != 0) && ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0)) &&
-     (advance2 = diplo_ask_receive_emissary(civ2,civ,x,y), advance2 != ADV_ADVANCED_FLIGHT)) {
-    diplo_leader_play_reaction(4);
-    advance2 = civ_has_wonder(civ2,WONDER_GREAT_WALL);
-    if (advance2 == ADV_ADVANCED_FLIGHT) {
-      popup_game((const char *)&str_accursedun);
-    }
-    else {
-      popup_game((const char *)&str_accursedwall);
-    }
-  }
-  diplo_meet_propose_alliance(civ2,civ,x,y,declared_war,propose,tech_gap,treaty_made);
-  if (diplo_meet_offer_ceasefire(civ2,civ,x,y,paid,hostile,senate_blocked,conceded,treaty_made)) goto end_meeting;
-  diplo_meet_offer_peace(civ2,civ,x,y,paid,no_contact,senate_blocked,conceded,treaty_made);
-  if (((diplo_meeting.emissary_asked != 0) || (player_initiated != 0)) ||
-     (((*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) == 0 &&
-      (((diplo_eval.ai_fear_level != 0 || (((byte)(civs[civ].treaties[civ2] >> 8) & (TREATY_WAR >> 8)) != 0))
-       || ((*(byte *)&civs[civ].treaties[civ2] & TREATY_CONTACT) == 0)))))) {
-    diplo_meet_reputation_war(civ2,civ);
-    if (no_contact) {
-      diplo_ask_receive_emissary(civ2,civ,x,y);
-    }
-    if (((diplo_meeting.emissary_asked == 0) || ((*(uint *)&diplo_meeting.emissary_response) == 0xffffffff)) && (player_initiated == 0)) {
-      diplo_meet_senate_forces_treaty(civ2,civ);
-    }
-    else {
-      if (diplo_meeting.emissary_asked == 0) {
-        diplo_set_attitude_arg(civ2,civ);
-      }
-      if (treaty_made) {
-        diplo_meet_denounce_notorious(civ2,civ,player_initiated);
-      }
-      else {
-        diplo_meet_greet(civ2,civ,player_initiated,paid);
-      }
-      if (((*(byte *)&civs[civ].treaties[civ2] & (TREATY_PEACE | TREATY_ALLIANCE)) == 0) &&
-         (diplo_count_border_intruders(civ,civ2), border_intruders.intruder_count != 0)) {
-        text_set_string_arg(1,(const char *)&cities[border_intruders.intruder_city].name);
-        str = civ_get_adjective(civ);
-        text_set_string_arg(2,(const char *)str);
-        if (border_intruders.intruder_city < 2) {
-          popup_game((const char *)&str_pleasecity);
-        }
-        else {
-          popup_game((const char *)&str_pleasecities);
-        }
-      }
-      diplo_meet_ally_war_talk(civ2,civ);
-      do {
-        if (civs[civ].diplo_request_count < '\0') {
-          civs[civ].diplo_request_count = '\0';
-        }
-        advance2 = diplo_proposal_menu(civ2,civ);
-        if (advance2 == ADV_ADVANCED_FLIGHT) {
-          ended = true;
-          goto end_meeting;
-        }
-        if (advance2 == ADV_BRIDGE_BUILDING) {
-          diplo_favor_menu(civ2,civ);
-        }
-        else if (advance2 == ADV_BRONZE_WORKING) {
-          diplo_gift_menu(civ2,civ);
-        }
-        else {
-          advance2 = diplo_ai_answer_proposal(civ2,civ,advance2);
-          if (advance2 != ADV_ADVANCED_FLIGHT) goto end_meeting;
-        }
-        civs[civ].diplo_request_count++;
-        patience = civs[civ].diplo_request_count;
-        advance2 = diplo_patience_limit(civ2,civ);
-      } while (patience < advance2);
-      diplo_set_attitude_arg(civ2,civ);
-      diplo_leader_play_reaction(3);
-      if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
-        popup_game((const char *)&str_patience);
-      }
-      else {
-        popup_game((const char *)&str_patienceally);
-      }
-    }
-  }
-end_meeting:
+  diplo_ai_meet_player_talk(civ2,civ,x,y,player_initiated,no_contact,ended,emissary_sent,hostile,conceded);
   diplo_clear_treaty_flags(civ,civ2,0x10000);
   if ((diplo_eval.ai_declare_war == 0) || ((civs[civ2].treaties[civ] & (TREATY_ALLIANCE | TREATY_WAR)) != 0))
   {
