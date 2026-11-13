@@ -698,6 +698,25 @@ static void map_drag_to(POINT pt)
     map_center_on(x, y);
 }
 
+/* A multi-line edit (the Civilopedia's description) or a list box under
+   the pointer scrolls itself: its scroll bar is its own, not a control
+   wheel_scrollbar finds.  (The game's are of its own classes on top of
+   them: MSEditBoxClass.) */
+static int wheel_to_control(HWND under, WPARAM wp, LPARAM lp)
+{
+    char cls[32];
+    int i;
+    if (!under || !IsWindowVisible(under) || !GetClassNameA(under, cls, sizeof cls))
+        return 0;
+    for (i = 0; cls[i]; i++)
+        cls[i] = (char)tolower((unsigned char)cls[i]);
+    if ((strstr(cls, "edit") && (GetWindowLongA(under, GWL_STYLE) & ES_MULTILINE)) || strstr(cls, "listbox")) {
+        SendMessageA(under, WM_MOUSEWHEEL, wp, lp);
+        return 1;
+    }
+    return 0;
+}
+
 static int wheel_message(const MSG *m, HWND under, POINT pt)
 {
     int notches = (short)HIWORD(m->wParam) / 120, keys = LOWORD(m->wParam);
@@ -715,6 +734,8 @@ static int wheel_message(const MSG *m, HWND under, POINT pt)
         if (extras_city_support_wheel(c.x, c.y, notches))
             return 1;
     }
+    if (wheel_to_control(under, m->wParam, m->lParam))
+        return 1;
     bar = wheel_scrollbar(under);
     if (bar) {
         int vertical = (GetWindowLongA(bar, GWL_STYLE) & SBS_VERT) != 0;

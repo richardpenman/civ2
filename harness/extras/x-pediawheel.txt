@@ -1,0 +1,27 @@
+# The mouse wheel (X1) over a Civilopedia description longer than its box
+# (Republic): the description scrolls (its scroll bar is the edit's own),
+# down two notches, then back up one.
+# test: CIV2_TEST_EXTRAS=1
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_command 4e2803 0 2313     # Civilopedia: governments
+wait 3000
+click 42 260                # Republic
+wait 1000
+click 144 382               # Info
+wait 3000
+shot p0
+wheel 450 300 -1            # over the description: down
+wait 1000
+wheel 450 300 -1
+wait 1000
+shot p1
+wheel 450 300 1             # up
+wait 1000
+shot p2
