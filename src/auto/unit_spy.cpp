@@ -911,11 +911,9 @@ void __cdecl spy_city_mission(int unit,int city)
   int choice;
   uint unit_type3;
   uint is_spy;
-  Dialog dlg;
   uptr civ2;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   blink.unit_active = 0;
   civ = (uptr)units[unit].owner;
   civ2 = (uptr)cities[city].owner;

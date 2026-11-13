@@ -131,11 +131,9 @@ void __cdecl unit_sound_editor_pick_wav(int slot)
   i8 wav_path[256];
   char dest_path[0x140];  /* (port) 256 in the original: scenario_dir_path (264),
                              SOUND\ and the name (BF-296) */
-  Dialog dlg;
   int choice;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (sprite_picker_sprite_block.unit_sound_effects_by_ctrl[slot] >= 0) {
     dlg_set_parent_window((iptr)&unit_sound_editor.wnd);
     do {

@@ -839,11 +839,9 @@ void __cdecl map_generate(int keep_map)
   iptr north_ocean;
   i8 *tile_byte;
   iptr south_ocean;
-  Dialog dialog2;
   uint x2;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.Dialog::reset(8);
   dialog2.set_position(
              -(((int)(caption_font_block.screen_width - 0x280 + (caption_font_block.screen_width - 0x280 >> 0x1f & 7U)) >> 3) + 1),

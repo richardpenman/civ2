@@ -2505,11 +2505,9 @@ void __cdecl city_window_supported_unit_menu(int unit)
   int window_city;
   iptr option_id;
   i32 arg;
-  Dialog dialog2;
   Sprite sprite;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
   if (city_wnd_state.unit_dialog_busy == 0) {
@@ -2600,11 +2598,9 @@ void __cdecl city_window_present_unit_menu(int stack_idx)
   int city2;
   iptr option_id;
   i32 unit2;
-  Dialog dialog2;
   Sprite sprite;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
   if (city_wnd_state.unit_dialog_busy != 0) {
@@ -3853,12 +3849,10 @@ void __cdecl city_button_buy(i32 control_id)
   i32 clamp_max;
   uint cost2;
   int price;
-  Dialog dialog2;
   i8 text_key[80];
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   cur_city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
   if (cur_city != -1) {
     flushing = XD_InFlushSendBuffer();
@@ -4222,21 +4216,15 @@ void __cdecl city_button_change(i32 control_id)
   iptr city8;
   i32 on;
   iptr unit_type3;
-  Dialog unit_dialog;
   int option_count2;
   iptr current_build;
-  Dialog change_dialog;
-  Dialog improvement_dialog;
   int new_shields;
   iptr unit_type2;
   int confirmed;
   
-  change_dialog.Dialog::construct(0x8000);
-  ON_SCOPE_EXIT(change_dialog.Dialog::destruct());
-  unit_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(unit_dialog.Dialog::destruct());
-  improvement_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(improvement_dialog.Dialog::destruct());
+  Dialog change_dialog(0x8000);
+  Dialog unit_dialog(0x4000);
+  Dialog improvement_dialog(0x4000);
   cur_city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
   if (cur_city != -1) {
     flushing = XD_InFlushSendBuffer();

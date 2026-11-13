@@ -3988,12 +3988,10 @@ void __cdecl civ_change_password_dialog(int civ)
 
 {
   char entered[32];
-  Dialog dialog2;
   char current_password[32];
   int result;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   mp_turn_timer_stop(1);
   ON_SCOPE_EXIT(
     passwords_refresh_flags();
@@ -4039,11 +4037,9 @@ i32 __cdecl civ_password_prompt(int civ)
 {
   i32 status;
   char entered[32];
-  Dialog dialog2;
   int result;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.load_text_section((const char *)&str_game_7,(const char *)&str_password1_4,0x1f,(const char*)&str_empty_113,0,0,0,1);
   password_dialog_set_title(&dialog2,civ,0x26b);
   entered[0] = '\0';
@@ -5433,15 +5429,13 @@ void __cdecl civ_give_advance(uptr civ,int advance,int civ2,int skip_pedia,int f
   uptr civ3;
   int advance3;
   byte bit_mask[4];
-  Dialog dialog2;
   iptr advance2;
   int civ4;
   int first_discovery;
   int count;
   
   first_discovery = 0;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if ((((game.multiplayer < 3) || (from_network != 0)) ||
       ((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) == 0)) ||
      (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0 || ((*(i8 *)&human_civ) == civ)))
@@ -5900,11 +5894,9 @@ void __cdecl civ_research_goal_dialog(int civ,int exclude_current,int civ2)
   int option_count2;
   iptr path_count;
   iptr button_count;
-  Dialog dialog2;
   iptr i;
   
-  dialog2.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x2000);
   mode_state[1] = 0;
   while( true ) {
     while( true ) {
@@ -6034,15 +6026,11 @@ int __cdecl civ_choose_research_dialog(int civ,int forced)
   iptr hint_items[5];
   iptr unit_type;
   iptr chosen;
-  Dialog choice_dialog;
   iptr advance3;
-  Dialog info_dialog;
   iptr i;
   
-  choice_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(choice_dialog.Dialog::destruct());
-  info_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(info_dialog.Dialog::destruct());
+  Dialog choice_dialog(0x4000);
+  Dialog info_dialog(0x4000);
   chosen = civ_pick_research_advance(civ);
   if ((forced != 0) ||
      (((advance2 = chosen, game.turn != 0 &&
@@ -6199,10 +6187,8 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
   iptr adjective;
   int has_philosophy;
   iptr advance;
-  Dialog dialog2;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   current_research = civs[civ].researching;
   if (civs[civ].researching < 0) {
     civ_choose_research(civ);
@@ -7276,14 +7262,12 @@ void __cdecl civ_steal_advance(int civ,int civ2)
   iptr option_id;
   iptr best_advance;
   iptr advance;
-  Dialog dialog2;
   int best_value;
   int value;
   
   best_advance = -1;
   best_value = -999;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (!((civ == 0) || (civ2 == 0))) {
     interactive = human_civ[0] == civ;
     if (autoplay.active != 0) {

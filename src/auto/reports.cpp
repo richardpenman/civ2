@@ -1457,11 +1457,9 @@ void __cdecl intel_report_on_cities_clicked(void)
   int has_palace;
   iptr improvement;
   iptr city;
-  Dialog dialog2;
   iptr civ;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   civ = advisor_state.report_param;
   civ_name = (iptr)(civ_name_plural(advisor_state.report_param));
   text_set_string_arg(0,(const char *)civ_name);
@@ -1770,13 +1768,11 @@ void __cdecl foreign_minister_show(int civ)
   int value;
   int has_embassy_wonder;
   int contact_count;
-  Dialog dialog2;
   int both_human;
   iptr civ2;
   int sees_all;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if ((game.multiplayer < 3) || (parley_wnd_block.closed != 0)) {
     while( true ) {
       while( true ) {
@@ -1913,7 +1909,6 @@ void __cdecl powergraph_show(void)
   int prev_x;
   int grid_x;
   PowerGraphWindow graph_wnd;
-  Dialog dialog2;
   i32 year2;
   i32 civ_color;
   int point_y;
@@ -1935,155 +1930,156 @@ void __cdecl powergraph_show(void)
   (*((char *)&seh_state + 0)) = 1;
   legend_font.init_empty();
   (*((char *)&seh_state + 0)) = 2;
-  dialog2.Dialog::construct(0x4000);
-  (*((char *)&seh_state + 0)) = 3;
-  bg_surface2 = (DibSurface *)0x0;
-  bg_palette = (GamePalette *)0x0;
-  graph_wnd.font.set_styled(0,0xc,1);
-  legend_font.set_styled(0,0xe,1);
-  self = (DibSurface *)operator_new(0x48);
-  (*((char *)&seh_state + 0)) = 4;
-  if (self == (DibSurface *)0x0) {
-    surface = (DibSurface *)0x0;
-  }
-  else {
-    surface = surface_ctor(self);
-  }
-  (*((char *)&seh_state + 0)) = 3;
-  bg_surface2 = surface;
-  this_00 = (GamePalette *)operator_new(0x434);
-  (*((char *)&seh_state + 0)) = 5;
-  if (this_00 == (GamePalette *)0x0) {
-    palette = (GamePalette *)0x0;
-  }
-  else {
-    palette = this_00->init();
-  }
-  seh_state = (seh_state & 0xffffff00 | (byte)(3));
-  bg_palette = palette;
-  bg_surface2->load_gif_resource(0x33,10,0xc0,palette);
-  wnd_arg8 = 0;
-  wnd_arg7 = 0;
-  wnd_arg6 = 0;
-  wnd_height = 0x1a9;
-  wnd_width = 600;
-  wnd_y = 0x14;
-  wnd_x = 0;
-  wnd_style = 0xd;
-  title = (iptr)label_string(label_table.string_ids[0xd6]);
-  graph_wnd.FrameWindow::create((const char *)title,wnd_style,wnd_x,wnd_y,wnd_width,wnd_height,wnd_arg6,wnd_arg7,wnd_arg8);
-  text_set_surface(&graph_wnd);
-  text_set_font(&graph_wnd.font);
-  origin_x2 = graph_wnd.client_origin_x;
-  origin_y2 = graph_wnd.client_origin_y;
-  graph_wnd.layout();
-  graph_wnd.FrameWindow::draw_caption();
-  gfx_copy_rect_xywh(bg_surface2,&graph_wnd,0,0,origin_x2,origin_y2,600,400);
-  rect2.left = graph_wnd.client_rect;
-  rect2.right = graph_wnd.client_right;
-  rect2.bottom = graph_wnd.client_bottom;
-  rect2.top = graph_wnd.client_top + 400;
-  gfx_fill_rect(&graph_wnd,(RECT *)&rect2,0x14);
-  rect_set_xywh((RECT *)&rect2,origin_x2 + 8,origin_y2 + 2,0x248,0x16e);
-  gfx_draw_rect_frame(&graph_wnd,(RECT *)&rect2,10);
-  if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
-    sample_count = (int)((int)game.turn + ((int)game.turn >> 0x1f & 3U)) >> 2;
-  }
-  else {
-    sample_count = (int)game.turn / 2;
-  }
-  sample_count = int_clamp(sample_count,0,0x96);
-  if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
-    grid_step = 0x32;
-  }
-  else {
-    grid_step = 0x19;
-  }
-  max_power = 0x32;
-  for (civ = 1; civ < 8; civ++) {
-    for (sample = 0; sample < sample_count; sample++) {
-      if (max_power < (byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ]) {
-        max_power = (uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ];
-      }
-    }
-  }
-  for (sample = 0; (sample <= game.turn && (sample < 0x259)); sample += grid_step)
   {
-    if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
-      grid_x = sample;
+    Dialog dialog2(0x4000);
+    (*((char *)&seh_state + 0)) = 3;
+    bg_surface2 = (DibSurface *)0x0;
+    bg_palette = (GamePalette *)0x0;
+    graph_wnd.font.set_styled(0,0xc,1);
+    legend_font.set_styled(0,0xe,1);
+    self = (DibSurface *)operator_new(0x48);
+    (*((char *)&seh_state + 0)) = 4;
+    if (self == (DibSurface *)0x0) {
+      surface = (DibSurface *)0x0;
     }
     else {
-      grid_x = sample * 2;
+      surface = surface_ctor(self);
     }
-    gfx_draw_line_color(&graph_wnd,grid_x + origin_x2 + 8,origin_y2 + 2,
-                       grid_x + origin_x2 + 8,origin_y2 + 0x170,10);
-    if (sample % (grid_step * 2) == 0) {
-      year2 = game_turn_to_year(sample + 1);
-      text_clear();
-      text_append_year(year2);
-      text_set_colors(0x25,10,2,1);
-      gfx_draw_text((const char *)&textbuf.buf,grid_x + origin_x2,origin_y2 + 0x172);
+    (*((char *)&seh_state + 0)) = 3;
+    bg_surface2 = surface;
+    this_00 = (GamePalette *)operator_new(0x434);
+    (*((char *)&seh_state + 0)) = 5;
+    if (this_00 == (GamePalette *)0x0) {
+      palette = (GamePalette *)0x0;
     }
-  }
-  graph_wnd.set_clip((RECT *)&rect2);
-  for (civ = 1; civ < 8; civ++) {
-    if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
-       ((1 << ((byte)civ & 0x1f) & (uint)game.civs_at_start) != 0)) {
-      prev_x = 0;
-      prev_y = 0;
-      for (sample = 0; (sample < sample_count && (sample < 0x96)); sample++) {
-        point_x = sample * 4;
-        point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
-                   (int)max_power;
-        gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 9,(origin_y2 - prev_y) + 0x171,
-                           point_x + origin_x2 + 9,(origin_y2 - point_y) + 0x171,0x12);
-        prev_x = point_x;
-        prev_y = point_y;
+    else {
+      palette = this_00->init();
+    }
+    seh_state = (seh_state & 0xffffff00 | (byte)(3));
+    bg_palette = palette;
+    bg_surface2->load_gif_resource(0x33,10,0xc0,palette);
+    wnd_arg8 = 0;
+    wnd_arg7 = 0;
+    wnd_arg6 = 0;
+    wnd_height = 0x1a9;
+    wnd_width = 600;
+    wnd_y = 0x14;
+    wnd_x = 0;
+    wnd_style = 0xd;
+    title = (iptr)label_string(label_table.string_ids[0xd6]);
+    graph_wnd.FrameWindow::create((const char *)title,wnd_style,wnd_x,wnd_y,wnd_width,wnd_height,wnd_arg6,wnd_arg7,wnd_arg8);
+    text_set_surface(&graph_wnd);
+    text_set_font(&graph_wnd.font);
+    origin_x2 = graph_wnd.client_origin_x;
+    origin_y2 = graph_wnd.client_origin_y;
+    graph_wnd.layout();
+    graph_wnd.FrameWindow::draw_caption();
+    gfx_copy_rect_xywh(bg_surface2,&graph_wnd,0,0,origin_x2,origin_y2,600,400);
+    rect2.left = graph_wnd.client_rect;
+    rect2.right = graph_wnd.client_right;
+    rect2.bottom = graph_wnd.client_bottom;
+    rect2.top = graph_wnd.client_top + 400;
+    gfx_fill_rect(&graph_wnd,(RECT *)&rect2,0x14);
+    rect_set_xywh((RECT *)&rect2,origin_x2 + 8,origin_y2 + 2,0x248,0x16e);
+    gfx_draw_rect_frame(&graph_wnd,(RECT *)&rect2,10);
+    if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
+      sample_count = (int)((int)game.turn + ((int)game.turn >> 0x1f & 3U)) >> 2;
+    }
+    else {
+      sample_count = (int)game.turn / 2;
+    }
+    sample_count = int_clamp(sample_count,0,0x96);
+    if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
+      grid_step = 0x32;
+    }
+    else {
+      grid_step = 0x19;
+    }
+    max_power = 0x32;
+    for (civ = 1; civ < 8; civ++) {
+      for (sample = 0; sample < sample_count; sample++) {
+        if (max_power < (byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ]) {
+          max_power = (uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ];
+        }
       }
     }
-  }
-  graph_wnd.set_clip((RECT *)&graph_wnd.client_rect);
-  text_set_font(&legend_font);
-  legend_row = 0;
-  for (civ = 1; civ < 8; civ++) {
-    if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
-       ((1 << ((byte)civ & 0x1f) & (uint)game.civs_at_start) != 0)) {
-      civ_color = civ_color_primary(civ);
-      text_set_colors(civ_color,10,2,1);
-      next_row = legend_row + 1;
-      text_y = legend_row * 0xe + origin_y2 + 1;
-      text_x = origin_x2 + 10;
-      civ_name = (iptr)(civ_name_plural(civ));
-      gfx_draw_text((const char *)civ_name,text_x,text_y);
-      prev_x = 0;
-      prev_y = 0;
-      for (sample = 0; (legend_row = next_row, sample < sample_count && (sample < 0x96));
-          sample = sample + 1) {
-        point_x = sample * 4;
-        point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
-                   (int)max_power;
-        gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 8,(origin_y2 + 0x170) - prev_y,
-                           point_x + origin_x2 + 8,(origin_y2 + 0x170) - point_y,civ_color);
-        prev_x = point_x;
-        prev_y = point_y;
+    for (sample = 0; (sample <= game.turn && (sample < 0x259)); sample += grid_step)
+    {
+      if (((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 2) == 0)) {
+        grid_x = sample;
+      }
+      else {
+        grid_x = sample * 2;
+      }
+      gfx_draw_line_color(&graph_wnd,grid_x + origin_x2 + 8,origin_y2 + 2,
+                         grid_x + origin_x2 + 8,origin_y2 + 0x170,10);
+      if (sample % (grid_step * 2) == 0) {
+        year2 = game_turn_to_year(sample + 1);
+        text_clear();
+        text_append_year(year2);
+        text_set_colors(0x25,10,2,1);
+        gfx_draw_text((const char *)&textbuf.buf,grid_x + origin_x2,origin_y2 + 0x172);
       }
     }
-  }
-  graph_wnd.SurfaceWindow::show();
-  dialog2.init(&graph_wnd,0,0,0x114000);
-  dialog2.wnd_width = graph_wnd.client_width;
-  dialog2.wnd_height = graph_wnd.client_height;
-  dialog2.origin_x = graph_wnd.client_origin_x;
-  dialog2.origin_y = graph_wnd.client_origin_y;
-  dialog2.show_modal(0);
-  if (bg_surface2 != (DibSurface *)0x0) {
-    bg_surface2->surface_delete(1);
-  }
-  if (bg_palette != (GamePalette *)0x0) {
-    bg_palette->scalar_destruct(1);
-  }
-  (*((char *)&seh_state + 0)) = 2;
-  /* inlined unwind funclet 004325c9 */ { dialog2.Dialog::destruct(); }
+    graph_wnd.set_clip((RECT *)&rect2);
+    for (civ = 1; civ < 8; civ++) {
+      if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
+         ((1 << ((byte)civ & 0x1f) & (uint)game.civs_at_start) != 0)) {
+        prev_x = 0;
+        prev_y = 0;
+        for (sample = 0; (sample < sample_count && (sample < 0x96)); sample++) {
+          point_x = sample * 4;
+          point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
+                     (int)max_power;
+          gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 9,(origin_y2 - prev_y) + 0x171,
+                             point_x + origin_x2 + 9,(origin_y2 - point_y) + 0x171,0x12);
+          prev_x = point_x;
+          prev_y = point_y;
+        }
+      }
+    }
+    graph_wnd.set_clip((RECT *)&graph_wnd.client_rect);
+    text_set_font(&legend_font);
+    legend_row = 0;
+    for (civ = 1; civ < 8; civ++) {
+      if (((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) ||
+         ((1 << ((byte)civ & 0x1f) & (uint)game.civs_at_start) != 0)) {
+        civ_color = civ_color_primary(civ);
+        text_set_colors(civ_color,10,2,1);
+        next_row = legend_row + 1;
+        text_y = legend_row * 0xe + origin_y2 + 1;
+        text_x = origin_x2 + 10;
+        civ_name = (iptr)(civ_name_plural(civ));
+        gfx_draw_text((const char *)civ_name,text_x,text_y);
+        prev_x = 0;
+        prev_y = 0;
+        for (sample = 0; (legend_row = next_row, sample < sample_count && (sample < 0x96));
+            sample = sample + 1) {
+          point_x = sample * 4;
+          point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
+                     (int)max_power;
+          gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 8,(origin_y2 + 0x170) - prev_y,
+                             point_x + origin_x2 + 8,(origin_y2 + 0x170) - point_y,civ_color);
+          prev_x = point_x;
+          prev_y = point_y;
+        }
+      }
+    }
+    graph_wnd.SurfaceWindow::show();
+    dialog2.init(&graph_wnd,0,0,0x114000);
+    dialog2.wnd_width = graph_wnd.client_width;
+    dialog2.wnd_height = graph_wnd.client_height;
+    dialog2.origin_x = graph_wnd.client_origin_x;
+    dialog2.origin_y = graph_wnd.client_origin_y;
+    dialog2.show_modal(0);
+    if (bg_surface2 != (DibSurface *)0x0) {
+      bg_surface2->surface_delete(1);
+    }
+    if (bg_palette != (GamePalette *)0x0) {
+      bg_palette->scalar_destruct(1);
+    }
+    (*((char *)&seh_state + 0)) = 2;
+  }   /* (unwind funclet 004325c9: dialog2 destroyed) */
   (*((char *)&seh_state + 0)) = 1;
   /* inlined unwind funclet 004325d5 */ { legend_font.destroy(); }
   seh_state = seh_state & 0xffffff00;
@@ -2105,15 +2101,13 @@ void __cdecl historian_report_show(void)
   int i;
   iptr city;
   int advance;
-  Dialog dialog2;
   int quote_index;
   int rank;
   i8 title_buf[80];
   int best_score;
   int scores[8];
   
-  dialog2.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x2000);
   category = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_historians);
   if (category == 0) {
     text_read_line(1);
@@ -3919,7 +3913,7 @@ ThroneRoomWindow::ThroneRoomWindow(int civ)
   throne_surface_wnd.SurfaceWindow::construct();
   surface_ctor(&throne_backbuffer);
   choice_clickmap.construct();
-  choice_dialog_2.Dialog::construct(0x4000);
+  new (&choice_dialog_2, GameNewAt()) Dialog(0x4000);
   click_prompt_font.init_empty();
   gfx_get_screen_rect(((RECT *)media_wnd));
   throne_civ = civ;
@@ -3947,7 +3941,7 @@ ThroneRoomWindow::~ThroneRoomWindow()
   (*((char *)&try_level + 0)) = 6;
   /* inlined unwind funclet 0044d0d8 */ { click_prompt_font.destroy(); }
   (*((char *)&try_level + 0)) = 5;
-  /* inlined unwind funclet 0044d0e7 */ { choice_dialog_2.Dialog::destruct(); }
+  /* inlined unwind funclet 0044d0e7 */ { choice_dialog_2.~Dialog(); }
   (*((char *)&try_level + 0)) = 4;
   /* inlined unwind funclet 0044d0f6 */ { choice_clickmap.destruct(); }
   (*((char *)&try_level + 0)) = 3;
@@ -5026,7 +5020,6 @@ void __cdecl endgame_spaceship_arrival(int civ)
   int created;
   iptr str;
   EndgameMovieWindow *window;
-  Dialog dialog2;
   
   if (civ < 0) {
     endgame_show_centauri_beaten(civ);
@@ -5058,8 +5051,7 @@ void __cdecl endgame_spaceship_arrival(int civ)
         text_set_number_arg(3,(int)civs[civ].spaceship_arrival_year);
         str = (iptr)(civ_leader_name(civ));
         text_set_string_arg(4,(const char *)str);
-        dialog2.Dialog::construct(0x4000);
-        ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+        Dialog dialog2(0x4000);
         dialog2.load_game_text((const char *)&str_centauri);
         dialog2.add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
         dialog2.show_modal(0);
@@ -6381,7 +6373,7 @@ CouncilWindow::CouncilWindow()
   
   this->SurfaceWindow::construct();
   video.construct();
-  dialog.Dialog::construct(0x4000);
+  new (&dialog, GameNewAt()) Dialog(0x4000);
   dll.init();
   button_ctor(&advisor_button_1);
   button_ctor(&advisor_button_4);
@@ -6423,7 +6415,7 @@ CouncilWindow::~CouncilWindow()
   (*((char *)&try_level + 0)) = 2;
   /* inlined unwind funclet 005168f9 */ { dll.free(); }
   (*((char *)&try_level + 0)) = 1;
-  /* inlined unwind funclet 00516908 */ { dialog.Dialog::destruct(); }
+  /* inlined unwind funclet 00516908 */ { dialog.~Dialog(); }
   try_level = try_level & 0xffffff00;
   /* inlined unwind funclet 00516917 */ { video.destruct(); }
   try_level = 0xffffffff;

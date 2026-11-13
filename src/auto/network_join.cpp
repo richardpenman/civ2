@@ -126,14 +126,9 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
   int bit;
   size_t len1;
   size_t len2;
-  Dialog *list_dialog;
   
   net.free_game_list();
-  list_dialog = (Dialog *)operator_new(0x2f4);
-  if (list_dialog != (Dialog *)0x0) {
-    list_dialog = list_dialog->Dialog::construct(0x4000);
-  }
-  self->list_dialog = list_dialog;
+  self->list_dialog = game_new<Dialog>(0x4000);
   if (self->list_dialog == 0) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)((iptr)"pJoinPopup != NULL"),(const char*)((iptr)"D:\\Ss\\Franklinton\\startup joinbox.cpp"),0xdc);
   }
@@ -245,10 +240,22 @@ static int net_join_from_list(NetGamelistView *self,int conn_type)
   return 1;
 }
 
+/* Part of net_session_init (00421fcd): the scenario's intro cancelled: out of
+   the game (then the palette and the dialog destroyed, as the original did
+   on its return). */
+static void net_join_cancel_scenario(GamePalette &scen_palette)
+{
+  net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
+  net_send_message(NM_UNLOCK_NATION,0,0,human_civ[0],0,0,0,0,0,0);
+  XD_FlushSendBuffer(180000);
+  scen_palette.destroy();
+}
+
 /* Part of net_session_init (00421fcd): a scenario: its directory, its intro.
    Returns where the caller goes on. */
-static NetJoinScenario net_join_load_scenario(Dialog &scen_dlg,GamePalette &scen_palette)
+static NetJoinScenario net_join_load_scenario(void)
 {
+  GamePalette scen_palette;
   int civ;
   int gov;
   int sex;
@@ -280,7 +287,7 @@ static NetJoinScenario net_join_load_scenario(Dialog &scen_dlg,GamePalette &scen
   crt_strcat(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&net.loaded_file_subdir));
   rules_load(0);
   if ((net.loaded_file_kind == 2) || ((game.game_flags & GAME_SCENARIO) != 0)) {
-    scen_dlg.Dialog::construct(0x4000);
+    Dialog scen_dlg(0x4000);
     scen_palette.init();
     for (civ = 1; civ < 8; civ++) {
       if ((civs[civ].flags & CIVF_FEMALE_LEADER) == 0) {
@@ -374,14 +381,15 @@ static NetJoinScenario net_join_load_scenario(Dialog &scen_dlg,GamePalette &scen
         main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
         main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
         wnd_flush_paint();
+        net_join_cancel_scenario(scen_palette);
         return JOIN_SCENARIO_CANCELLED;
       }
     }
     else if (popup_game_flags("SCENARIOLOADED",1) < 0) {
+      net_join_cancel_scenario(scen_palette);
       return JOIN_SCENARIO_CANCELLED;
     }
     scen_palette.destroy();
-    scen_dlg.Dialog::destruct();
   }
   return JOIN_GO_ON;
 }
@@ -416,13 +424,9 @@ i32 NetGamelistView::net_session_init(int conn_type)
   int result;
   int popup;
   int retries;
-  Dialog scen_dlg;
-  GamePalette scen_palette;
   GamePalette palette;
-  Dialog dlg;
 
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   retries = 0;
@@ -505,18 +509,13 @@ i32 NetGamelistView::net_session_init(int conn_type)
   }
   /* a scenario: its directory, its intro */
   if ((0 < net.loaded_file_kind) && (_strlen(((i8 *)&net.loaded_file_subdir)) != 0)) {
-    switch (net_join_load_scenario(scen_dlg,scen_palette)) {
+    switch (net_join_load_scenario()) {
     case JOIN_GO_ON:
       break;
     case JOIN_FAIL:
       return 0;
     case JOIN_SCENARIO_CANCELLED:
-      /* the scenario's intro cancelled: out of the game */
-      net_send_message(NM_CLIENT_CANCELED_START,0,0,0,0,0,0,0,0,0);
-      net_send_message(NM_UNLOCK_NATION,0,0,human_civ[0],0,0,0,0,0,0);
-      XD_FlushSendBuffer(180000);
-      scen_palette.destroy();
-      scen_dlg.Dialog::destruct();
+      /* the scenario's intro cancelled: out of the game (net_join_cancel_scenario) */
       return 0;
     }
   }
@@ -1270,11 +1269,9 @@ i32 __cdecl net_prompt_ip_address(void)
   size_t input_len;
   i32 result;
   char input[260];
-  Dialog dlg;
   int choice;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if ((net.lobby_launch_mode == -1) || (net.lobby_launch_mode == 1)) {
     proto_addr = XD_GetCurrentProtoAddr(net.adapter_index,net.net_protocol);
     if (proto_addr == (char *)0x0) {
@@ -1308,11 +1305,9 @@ i32 __cdecl net_prompt_player_name(void)
   size_t input_len;
   i32 result;
   char input[260];
-  Dialog dlg;
   int choice;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (net.lobby_launch_mode == -1) {
     do {
       dlg.load_text_section((const char *)&str_game_7,(const char *)&str_netname,0x1f,(const char*)&menu_prefs.net_player_name,0,0,0,1);
@@ -1341,11 +1336,9 @@ i32 __cdecl net_prompt_game_name(void)
   size_t input_len;
   i32 result;
   char input[260];
-  Dialog dlg;
   int choice;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (net.lobby_launch_mode == -1) {
     do {
       dlg.load_text_section((const char *)&str_game_7,(const char *)&str_gamename,0x1f,(const char*)&menu_prefs.net_game_name,0,0,0,1);
@@ -1389,13 +1382,11 @@ i32 __cdecl net_choose_civ_dialog(int title_offset)
   int available_count;
   int option_count2;
   iptr selected2;
-  Dialog dlg;
   DialogOption *option;
   iptr option_civs[8];
   int wait_start;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   selected2 = 0;
   net.player_info_has_names = 0;
   net.player_info_has_titles = 0;
@@ -1633,12 +1624,10 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
 
 {
   uint *flags_ptr;
-  Dialog *this_00;
   int result;
   DialogOption *entry;
   DialogOption *waiting_entry;
   i32 ret;
-  uptr new_dialog;
   i32 seh_frame;
   
   if ((launch_mode == 2) || (launch_mode == 3)) {
@@ -1650,14 +1639,7 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
     crt_strcpy(((i8 *)&net.host_player_name),((i8 *)&menu_prefs.net_player_name));
   }
   else {
-    this_00 = (Dialog *)(operator_new(0x2f4));
-    if (this_00 == (Dialog *)0x0) {
-      new_dialog = 0;
-    }
-    else {
-      new_dialog = (uptr)(this_00->Dialog::construct(0x4000));
-    }
-    dialog = (Dialog *)new_dialog;
+    dialog = game_new<Dialog>(0x4000);
     if (dialog == 0) {
       ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_pplayerpopup_null,(const char*)&str_d_ss_franklinton_startup_playerbox_cpp,0x34);
     }

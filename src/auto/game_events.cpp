@@ -15,7 +15,7 @@ void __cdecl scenario_events_global_init(void)
 void __cdecl scenario_events_static_init(void)
 
 {
-  ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->construct(50000);
+  new (&unit_types_block.scenario_events, GameNewAt()) ScenarioEvents(50000);
   return;
 }
 
@@ -31,7 +31,7 @@ void __cdecl scenario_events_reg_atexit(void)
 void __cdecl scenario_events_static_dtor(void)
 
 {
-  ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->destruct();
+  ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->~ScenarioEvents();
   return;
 }
 
@@ -478,11 +478,8 @@ static void events_reset_keep_block(ScenarioEvents *events,uint pool_size)
 void __cdecl events_compact(void)
 
 {
-  ScenarioEvents temp_events;
-  i32 eh_next;
+  ScenarioEvents temp_events(50000);
   
-  temp_events.construct(50000);
-  ON_SCOPE_EXIT(temp_events.destruct());
   temp_events.reset(50000);
   events_copy(&temp_events,(ScenarioEvents *)&unit_types_block.scenario_events);
   events_reset_keep_block((ScenarioEvents *)&unit_types_block.scenario_events,50000);
@@ -618,32 +615,22 @@ void ScenarioEvents::init_string_pool(uint pool_size)
 }
 
 /* 004fa4be auto */
-ScenarioEvents *ScenarioEvents::construct(i32 pool_size)
+ScenarioEvents::ScenarioEvents(i32 pool_size) : Dialog(0x4000)
 
 {
-  i32 eh_next;
-  
-  Dialog::construct(0x4000);
   ((MemBlock *)events_string_pool)->construct();
   events_pool_valid = '\0';
   event_list = 0;
   event_count = 0;
   reset(pool_size);
-  return this;
 }
 
 /* 004fa569 auto */
-void ScenarioEvents::destruct()
+ScenarioEvents::~ScenarioEvents()
 
 {
-  i32 eh_next;
-  i32 eh_state;
-  
-  eh_state = 0;
   memblock_free((MemBlock *)events_string_pool);
-  eh_state = 0xffffffff;
-  /* inlined unwind funclet 004fa5b8 */ { Dialog::destruct(); }
-  return;
+  /* then the Dialog base's destructor (the unwind funclet 004fa5b8) */
 }
 
 /* 004fa5d9 auto */
@@ -3785,7 +3772,7 @@ i32 __cdecl events_write_file(void)
 ScenarioEvents *ScenarioEvents::events_delete(uint flags)
 
 {
-  destruct();
+  this->~ScenarioEvents();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }

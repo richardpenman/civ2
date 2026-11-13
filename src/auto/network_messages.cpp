@@ -1394,7 +1394,6 @@ void NetSession::recv_join_request(int *msg_hdr,int sender)
   u8 *civ_flag;
   int city;
   int slot;
-  Dialog join_dialog;
   int wait_start;
   
   if (net.host_flag == '\0') {
@@ -1408,8 +1407,7 @@ void NetSession::recv_join_request(int *msg_hdr,int sender)
     else {
       net.nm_lock_nation_count++;
       if (2 < (int)(*(uptr *)&net.session_phase)) {
-        join_dialog.Dialog::construct(0x4000);
-        ON_SCOPE_EXIT(join_dialog.Dialog::destruct());
+        Dialog join_dialog(0x4000);
         net_send_message(NM_HOLD_FOR_JOIN,0xff,0,0,0,0,0,0,0,0);
         mp_turn_timer_stop(0);
         join_dialog.load_game_section((const char *)&str_waitongamexmit_2,0x2000000);
@@ -1567,11 +1565,9 @@ void NetSession::recv_unit_bribed(int *msg,MsgArgs &a)
    wait-while-the-game-is-sent dialog (0x65), modal until the host is done. */
 void NetSession::recv_wait_game_xmit()
 {
-  Dialog wait_dialog;
   u32 saved_busy;
   
-  wait_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(wait_dialog.Dialog::destruct());
+  Dialog wait_dialog(0x4000);
   saved_busy = (u32)popup_in_progress;
   popup_in_progress = 1;
   mp_turn_timer_stop(0);

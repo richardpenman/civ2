@@ -2917,7 +2917,6 @@ void __cdecl unit_cmd_pillage(void)
   iptr tile;
   int city;
   byte option_count;
-  Dialog dialog2;
   int civ2;
   int choice;
   uint improvements_mask;
@@ -2925,8 +2924,7 @@ void __cdecl unit_cmd_pillage(void)
   Tile *map_tile;
   
   choice = 0;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   unit = (iptr)game.active_unit;
   civ = (int)units[unit].owner;
   x = (iptr)units[unit].x;
@@ -3055,7 +3053,6 @@ void __cdecl unit_cmd_goto_city(void)
   iptr city;
   int option_count2;
   int improved_tiles;
-  Dialog dialog2;
   int on_ocean;
   int y2;
   uint show_all;
@@ -3063,8 +3060,7 @@ void __cdecl unit_cmd_goto_city(void)
   iptr city3;
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x2000);
   unit = (iptr)game.active_unit;
   civ = (iptr)units[unit].owner;
   x = (int)units[unit].x;
@@ -3236,14 +3232,12 @@ void __cdecl unit_cmd_airlift(void)
   iptr unit;
   int threat_count;
   int option_count2;
-  Dialog dialog2;
   iptr active;
   int civ2;
   iptr city;
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x2000);
   unit2 = (iptr)game.active_unit;
   if (unit2 >= 0) {
     civ = (int)units[unit2].owner;
@@ -3346,13 +3340,11 @@ i32 __cdecl unit_caravan_enter_city(int unit,uptr city)
   int choice;
   iptr improvement;
   int shields_left;
-  Dialog dialog2;
   iptr k;
   int in_demand;
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (autoplay.active == 0) {
     civ2 = units[unit].owner;
     civ = (int)(char)civ2;
@@ -5058,14 +5050,12 @@ i32 __cdecl unit_stack_select_dialog(int unit,const char *title,int allow_cancel
 {
   i32 choice;
   int count;
-  Dialog dialog2;
   Sprite sprite;
   i8 *seh_scope;
   
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (extra_ui(X_UNIT_LIST) && unit_stack_sum(unit,2) > 9) {
     /* X2, X28: more than 9 units: all of them, in a list that scrolls */
     dialog2.Dialog::reset(allow_cancel != 0);

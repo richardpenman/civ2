@@ -51,7 +51,7 @@ CityPicturePopup::~CityPicturePopup()
 
     /* funclet 004f3ebb */
     member = (this != NULL) ? &dialog : NULL;
-    member->Dialog::destruct();
+    member->~Dialog();
     /* funclet 004f3ee5 */
     PictureWindow::destruct();
 }
@@ -79,10 +79,9 @@ void __cdecl civ_select_government_dialog(int civ2, int all_govs)
 {
     i32 text_arg;
     int choice2;
-    Dialog dlg;
     int gov;
 
-    dlg.Dialog::construct( 0x4000);
+    Dialog dlg(0x4000);
     if ((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) == 0) {
         /* nothing */
     }
@@ -120,8 +119,7 @@ void __cdecl civ_select_government_dialog(int civ2, int all_govs)
         net_send_message(NM_PICK_GOVT, net.net_slots[net.net_civ_slots[civ2]].id,
                            all_govs, 0, 0, 0, 0, 0, 0, 0);
     }
-    /* funclet 0055c679 */
-    dlg.Dialog::destruct();
+    /* funclet 0055c679: dlg's destructor */
 }
 
 /* 0x00493e83: builds a temporary object, stores civ in it, runs it if

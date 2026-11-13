@@ -289,10 +289,8 @@ i32 __cdecl dbg_pick_player(int include_barbarians)
   iptr adjective;
   i32 choice;
   uint civ;
-  Dialog dlg;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   dlg.load_text((const char *)&str_debug_2,(const char *)&str_pickplayer,1);
   for (civ = (uint)(include_barbarians == 0); (int)civ < 8; civ++) {
     if ((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) {

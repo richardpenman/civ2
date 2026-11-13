@@ -10,14 +10,12 @@ void __cdecl city_info_popup(int city)
   int objective_value;
   uptr commodity;
   iptr i;
-  Dialog dialog2;
   Sprite sprite;
   uptr demand;
   
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   sprite.create_solid(0x40,0x30,0);
   text_set_string_arg(0,(const char *)&cities[city].name);
   text_clear();
@@ -1468,7 +1466,6 @@ void __cdecl city_set_production(int city,int production)
   int old_count;
   iptr improvement;
   iptr old_wonder;
-  Dialog dialog2;
   int new_count;
   iptr wonder;
   int civ3;
@@ -1477,8 +1474,7 @@ void __cdecl city_set_production(int city,int production)
   iptr wonder_group;
   iptr city2;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   old_building = cities[city].building;
   civ2 = cities[city].owner;
   civ = (int)(char)civ2;
@@ -3901,10 +3897,8 @@ int __cdecl city_notify_dialog_ex(const char *msg_key,int city,int force,Sprite 
   iptr label;
   iptr option_id;
   i32 option_flags;
-  Dialog dialog2;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (autoplay.active == 0) {
     if ((city_calc.notify_enabled == 0) && (force == 0)) {
       result = 0;
@@ -4662,7 +4656,7 @@ CityPicturePopup::CityPicturePopup()
 {
   
   PictureWindow::construct();
-  dialog.Dialog::construct(0x4000);
+  new (&dialog, GameNewAt()) Dialog(0x4000);
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 3);
 }
 
@@ -5398,7 +5392,6 @@ void __cdecl city_capture_aftermath(uptr city,int civ,int capture_mode)
   int improvement2;
   uptr wonder_city;
   iptr city4;
-  Dialog dialog2;
   uint founded_count;
   iptr civ2;
   uint was_founder;
@@ -5407,8 +5400,7 @@ void __cdecl city_capture_aftermath(uptr city,int civ,int capture_mode)
   i8 city_name[80];
   uptr city2;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   civ2 = (iptr)cities[city].owner;
   x2 = (int)cities[city].x;
   y = (int)cities[city].y;

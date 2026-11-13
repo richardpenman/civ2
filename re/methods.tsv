@@ -437,8 +437,8 @@ addr	old	class	member	file	why
 004fa0f0	pedia_link_scalar_dtor	PediaLink	scalar_destruct	src/auto/pedia.cpp	
 004fa140	pedia_link_dtor	PediaLink	destruct	src/auto/pedia.cpp	
 004fa47e	events_init_string_pool	ScenarioEvents	init_string_pool	src/auto/game_events.cpp	
-004fa4be	events_ctor	ScenarioEvents	construct	src/auto/game_events.cpp	
-004fa569	events_dtor	ScenarioEvents	destruct	src/auto/game_events.cpp	
+004fa4be	events_ctor	ScenarioEvents	ScenarioEvents	src/auto/game_events.cpp	
+004fa569	events_dtor	ScenarioEvents	~ScenarioEvents	src/auto/game_events.cpp	
 004fa5d9	events_reset	ScenarioEvents	reset	src/auto/game_events.cpp	
 004fa617	events_alloc	ScenarioEvents	alloc	src/auto/game_events.cpp	
 004fa707	events_action_play_wave	ScenarioEvents	action_play_wave	src/auto/game_events.cpp	
@@ -676,9 +676,9 @@ addr	old	class	member	file	why
 0059d080	net_msg_player_info_init	NetPlayerInfoMsg	init	src/auto/network.cpp	
 0059d5b5	dialog_reset_string_pool	Dialog	reset_string_pool	src/auto/window_dialog.cpp	
 0059d5f5	dialog_init_defaults	Dialog	init_defaults	src/auto/window_dialog.cpp	
-0059db08	dialog_ctor	Dialog	construct	src/auto/window_dialog.cpp	
+0059db08	dialog_ctor	Dialog	Dialog	src/auto/window_dialog.cpp	
 0059db65	dialog_close	Dialog	close	src/auto/window_dialog.cpp	
-0059df8a	dialog_dtor	Dialog	destruct	src/auto/window_dialog.cpp	
+0059df8a	dialog_dtor	Dialog	~Dialog	src/auto/window_dialog.cpp	
 0059dfb9	dialog_init	Dialog	init	src/auto/window_dialog.cpp	
 0059e0eb	dialog_set_item_text	Dialog	set_item_text	src/auto/window_dialog.cpp	
 0059e18b	dialog_add_line	Dialog	add_line	src/auto/window_dialog.cpp	

@@ -299,7 +299,6 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
   i32 result;
   int enemies_choice;
   int accel_choice;
-  Dialog dlg;
   int pick_opponents;
   int title_i;
   int tribe_choice;
@@ -310,8 +309,7 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
   result = 1;
   pick_opponents = 0;
   accel_choice = 0;
-  dlg.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x2000);
   leaders_fixup_names();
   game.field_0e = 0;
   for (;;) {
@@ -1215,11 +1213,9 @@ void __cdecl net_host_turn_loop(void)
 {
   int result;
   int civ;
-  Dialog dlg;
   i32 unused_pad;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   net_host_begin();
   do {
     game.human_players = net.pending_human_players | game.human_players;

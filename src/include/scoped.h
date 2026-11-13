@@ -45,7 +45,7 @@ static SCOPED_INLINE ScopeExit<F> scope_exit(F f) { return ScopeExit<F>(f); }
 
 #define SCOPED_CAT2(a, b) a##b
 #define SCOPED_CAT(a, b) SCOPED_CAT2(a, b)
-/* ON_SCOPE_EXIT(dlg.Dialog::destruct());  runs the statement at scope exit */
+/* ON_SCOPE_EXIT(palette.destroy());  runs the statement at scope exit */
 #define ON_SCOPE_EXIT(...) \
     auto SCOPED_CAT(scope_exit_, __LINE__) = scope_exit([&]() __attribute__((always_inline)) { __VA_ARGS__; })
 

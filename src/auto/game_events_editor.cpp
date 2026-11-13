@@ -25,11 +25,9 @@ i32 __cdecl events_editor_pick_item(int default_choice,const char *title,i32 kin
   iptr parent_wnd2;
   iptr advance;
   iptr civ;
-  Dialog dlg;
   iptr terrain2;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   dlg.Dialog::reset(0x1001);
   dlg.set_title(title);
   dlg.set_width(0xdc);
@@ -1896,7 +1894,6 @@ void EditorWindow::events_editor_draw()
 void EditorWindow::events_editor_run()
 
 {
-  ScenarioEvents *this_00;
   uptr font_height;
   i32 title;
   int x;
@@ -1930,13 +1927,7 @@ void EditorWindow::events_editor_run()
   ON_SCOPE_EXIT(palette.destroy());
   editor_lists.running = 1;
   editor_active.wnd = this;
-  this_00 = (ScenarioEvents *)operator_new(0x310);
-  if (this_00 == (ScenarioEvents *)0x0) {
-    backup = (ScenarioEvents *)0x0;
-  }
-  else {
-    backup = this_00->construct(50000);
-  }
+  backup = game_new<ScenarioEvents>(50000);
   (*(ScenarioEvents * *)&events_editor_backup) = backup;
   backup->reset(50000);
   events_copy((ScenarioEvents *)(iptr)(*(ScenarioEvents * *)&events_editor_backup),(ScenarioEvents *)&unit_types_block.scenario_events);

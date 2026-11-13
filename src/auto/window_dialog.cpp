@@ -415,7 +415,7 @@ void Dialog::init_defaults()
 }
 
 /* 0059db08 auto */
-Dialog *Dialog::construct(i32 size)
+Dialog::Dialog(i32 size)
 
 {
   ((MemBlock *)string_pool)->construct();
@@ -423,7 +423,6 @@ Dialog *Dialog::construct(i32 size)
   pool_handle = pool_ptr;
   init_defaults();
   pool_size = (u16)size;
-  return this;
 }
 
 /* 0059db65 auto */
@@ -526,14 +525,11 @@ void Dialog::close()
 }
 
 /* 0059df8a auto */
-i32 Dialog::destruct()
+Dialog::~Dialog()
 
 {
-  i32 result;
-  
   close();
-  result = (i32)memblock_free((MemBlock *)string_pool);
-  return result;
+  memblock_free((MemBlock *)string_pool);
 }
 
 /* 0059dfb9 auto */

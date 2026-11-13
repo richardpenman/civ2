@@ -508,11 +508,9 @@ void __cdecl diplo_greet_emissary(int civ2,int civ)
   int offset_x;
   int offset_y;
   iptr str;
-  Dialog dlg;
   RECT screen_rect2;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   diplo_meeting.session_active = 1;
   if (((*((char *)&game.game_options + 2)) & (OPT_DIPLOMACY_SCREEN >> 16)) != 0) {
     gfx_get_screen_rect(&screen_rect2);
@@ -569,12 +567,10 @@ uint __cdecl diplo_ask_receive_emissary(int civ2,int civ,int x,int y)
   i32 option_flags;
   uint accepted;
   uint result;
-  Dialog dlg;
   int refused;
   
   refused = 0;
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (autoplay.active == 0) {
     if (diplo_meeting.emissary_asked == 0) {
       diplo_meeting.emissary_asked = 1;
@@ -854,13 +850,11 @@ diplo_tech_exchange(int civ2,int civ,i32 x,i32 y,int mode,int eval_only
   int offer2_value;
   int offer_value;
   iptr advance2;
-  Dialog dlg;
   int civ_tech_count;
   iptr blocking_wonder;
   int attitude_cost;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if ((*(byte *)&civs[civ].treaties[civ2] & TREATY_ALLIANCE) == 0) {
     allied = false;
   }
@@ -2379,11 +2373,9 @@ void __cdecl diplo_favor_menu(int civ2,int civ)
   int civ4;
   int choice;
   int distrust;
-  Dialog dlg;
   int price;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   while( true ) {
     diplo_set_attitude_arg(civ2,civ);
     menu_choice = popup_game((const char *)&str_favormenu);
@@ -2516,15 +2508,13 @@ void __cdecl diplo_gift_menu(int civ2,int civ)
   int city_count;
   int advance2;
   int attitude_cost;
-  Dialog dlg;
   int gold_amount;
   int i;
   int prev_amount;
   iptr city4;
   int value;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   diplo_set_attitude_arg(civ2,civ);
   menu_choice = popup_game((const char *)&str_giftmenu);
   if (menu_choice == 0) {
@@ -2745,11 +2735,9 @@ i32 __cdecl diplo_proposal_menu(int civ2,int civ)
   bool allied;
   int err;
   i32 choice;
-  Dialog dlg;
   
   choice = 0;
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   diplo_set_attitude_arg(civ2,civ);
   dlg.load_game_text((const char *)&str_diplomacy);
   err = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_diplomacymenu);

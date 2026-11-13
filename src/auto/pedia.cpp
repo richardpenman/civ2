@@ -3564,7 +3564,7 @@ void __cdecl notice_dlg_global_init(void)
 void __cdecl notice_dlg_static_init(void)
 
 {
-  ((Dialog *)((i8 *)&game_section_dialog_block.game_section_dialog))->Dialog::construct(0x4000);
+  new (&game_section_dialog_block.game_section_dialog, GameNewAt()) Dialog(0x4000);
   return;
 }
 
@@ -3580,7 +3580,7 @@ void __cdecl notice_dlg_reg_atexit(void)
 void __cdecl notice_dlg_static_dtor(void)
 
 {
-  ((Dialog *)((i8 *)&game_section_dialog_block.game_section_dialog))->Dialog::destruct();
+  ((Dialog *)((i8 *)&game_section_dialog_block.game_section_dialog))->~Dialog();
   return;
 }
 

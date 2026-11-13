@@ -10,12 +10,10 @@ i32 __cdecl setup_hotseat_game(void)
   i32 result;
   GamePalette palette;
   int i;
-  Dialog dlg;
   i32 map_source;
   int num_players;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   for (i = 0; i < 8; i++) {
@@ -256,14 +254,12 @@ i32 __cdecl setup_choose_map_size(void)
 {
   int choice;
   i32 result;
-  Dialog dlg;
   int rc;
   int chosen;
   
   result = 1;
   chosen = 0;
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   game.game_flags = 0;
   do {
     ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(2,6,2);
@@ -337,11 +333,9 @@ int __cdecl setup_custom_world(void)
 {
   int choice;
   int result;
-  Dialog dlg;
   
   result = 1;
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(2,6,2);
   dlg.load_game_section((const char *)&str_customland,1);
   dlg.set_default_choice(prefs.world_params[0] + 1);
@@ -472,7 +466,6 @@ int __cdecl setup_start_scenario(void)
   i8 name_buf[260];
   GamePalette palette;
   int result;
-  Dialog dlg;
   DialogOption *option;
   iptr gov;
   i8 dst[256];
@@ -480,8 +473,7 @@ int __cdecl setup_start_scenario(void)
   int option_civs[8];
   int started;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   started = 0;
@@ -642,12 +634,10 @@ i32 __cdecl load_game_pick_civ(int title_offset)
   int option_idx;
   int enabled_count;
   int option_count2;
-  Dialog dlg;
   DialogOption *option;
   iptr option_civs[8];
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   while( true ) {
     game.human_players = '\0';
     dlg.Dialog::reset(1);
@@ -1015,14 +1005,12 @@ i32 __cdecl setup_network_game(int conn_type)
   char ip_buf[260];
   GamePalette palette;
   int first_pass;
-  Dialog dlg;
   i32 map_source;
   int saved_open_game;
   int rc;
   uint eh_state;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   first_pass = 1;
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
@@ -1193,13 +1181,11 @@ i32 __cdecl setup_mp_load_scenario(i32 mp_mode)
   iptr load_rc;
   int unit;
   GamePalette palette;
-  Dialog dlg;
   int i;
   i8 dst[260];
   int level;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   for (;;) {
@@ -1357,11 +1343,9 @@ i32 __cdecl setup_choose_multiplayer_type(void)
   i32 result;
   int choice;
   UINT max_players;
-  Dialog dialog2;
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   adapter = GetPrivateProfileIntA
                     (str_civilization_gold_10,str_nettimeout,-1,str_civ_ini_10);
   if (adapter == 0xffffffff) {
@@ -1644,13 +1628,11 @@ i32 __cdecl setup_choose_game_options(int rules_mode,int mp_mode)
   int choice;
   i32 value;
   u8 barbarity;
-  Dialog dialog2;
   int i;
   int difficulty2;
   i32 eh_next;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   setup_dlg.select_opponents = 0;
   setup_dlg.accelerated_start = 0;
   leaders_fixup_names();
@@ -1796,13 +1778,11 @@ i32 __cdecl setup_choose_game_timer(int in_game)
   int seconds;
   int choice;
   char custom_text[16];
-  Dialog dlg;
   int custom_seconds;
   short saved_choice;
   int saved_limit;
   
-  dlg.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x2000);
   saved_choice = menu_prefs.turn_timer_choice;
   saved_limit = civ_saved_cursor_x_block.mp_turn_time_limit_ms;
   for (;;) {
@@ -2372,7 +2352,6 @@ int __cdecl setup_choose_tribe(int player_slot,int game_mode,int in_game)
   int avail_count;
   int result;
   iptr sel_tribe;
-  Dialog dlg;
   iptr retry_tribe;
   iptr leader2;
   iptr title;
@@ -2384,8 +2363,7 @@ int __cdecl setup_choose_tribe(int player_slot,int game_mode,int in_game)
   leader2 = -1;
   result = 1;
   retry_tribe = -1;
-  dlg.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x2000);
   sel_tribe = 0;
   do {
     if (-1 < leader2) {
@@ -2616,13 +2594,11 @@ i32 __cdecl scenario_start_dialog(int game_mode)
   iptr text_result;
   int unit;
   GamePalette palette;
-  Dialog dlg;
   int opt;
   i8 dst[260];
   int difficulty2;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   for (;;) {
@@ -2779,13 +2755,11 @@ i32 __cdecl scenario_pick_human_civs(int num_players)
   i8 name_text[260];
   int has_default;
   int player_idx;
-  Dialog dlg;
   DialogOption *option;
   iptr govt;
   uptr option_civs[8];
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   game.human_players = '\0';
   (*(byte *)&turn_loop.resume_civ) = 0;
   player_idx = 0;
@@ -2953,11 +2927,9 @@ int __cdecl setup_choose_hotseat_players(void)
 {
   int result;
   int civ;
-  Dialog dlg;
   int num_players;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (game.multiplayer < 3) {
     setup_show_side_picture(0xffffffff,0);
     dlg.load_game_section((const char *)&str_hotseat2,1);
@@ -3032,15 +3004,13 @@ void __cdecl game_join_dialog(void)
   iptr saved_human_civ;
   int human_count;
   int civ;
-  Dialog dlg;
   uint saved_humans;
   int saved_player_civ;
   int ai_count;
   int alive_count;
   int view_idx;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   saved_human_civ = human_civ[0];
   saved_player_civ = (int)game.player_civ;
   saved_humans = (uint)game.human_players;
@@ -3107,13 +3077,11 @@ void __cdecl setup_choose_opponents(int num_humans)
   int rnd;
   i32 dlg_x;
   iptr civ;
-  Dialog dlg;
   iptr leader;
   int i;
   int opponent_num;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   game.civs_alive = game.human_players | 1;
   for (leader = 1; leader < 8; leader++) {
     if ((1 << ((byte)leader & 0x1f) & (uint)game.human_players) == 0) {
@@ -3209,13 +3177,11 @@ i32 __cdecl setup_join_pick_civ(int player_idx)
   int avail_count;
   int opt_count;
   int sel_idx;
-  Dialog dlg;
   DialogOption *option;
   iptr govt;
   iptr option_civs[8];
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   sel_idx = 0;
   do {
     dlg.Dialog::reset(1);
@@ -3773,12 +3739,10 @@ i32 __cdecl setup_pbem_game(void)
   int choice;
   i32 result;
   int i;
-  Dialog dialog2;
   i32 map_mode;
   int num_players;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   for (i = 0; i < 8; i++) {
     civ_view.intro_shown[i] = 0;
     (((i8 *)&civ_saved_cursor_x_block.civ_email_addresses))[i * 0x20] = 0;

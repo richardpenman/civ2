@@ -840,7 +840,7 @@ void __cdecl net_popup_idle_autoclose(void)
 
 /* Part of net_popup_queue_show_next (00511ba2): a request to meet (0x3d):
    accepted, the parley window opens (returns 1: the entry is freed and the
-   dialog destroyed, the caller returns); refused or cancelled, the answer is
+   caller returns, destroying the dialog); refused or cancelled, the answer is
    sent. */
 static int net_popup_parley_request(int *entry,Dialog &dlg)
 {
@@ -889,9 +889,7 @@ static int net_popup_parley_request(int *entry,Dialog &dlg)
           operator_delete(entry);
           net.popup_in_progress = 0;
           parley_wnd_block.open(text,2);
-          eh_state = 0xffffffff;
-          /* inlined unwind funclet 0051399d */ { dlg.Dialog::destruct(); }
-          return 1;
+          return 1;     /* (the caller returns: dlg destroyed) */
         }
       }
       else {
@@ -1539,13 +1537,9 @@ void __cdecl net_popup_queue_show_next(void)
 
 {
   int *entry;
-  Dialog dlg;
-  i32 eh_state;
   
-  eh_state = 0xffffffff;
   entry = (*(int * *)&net_popups.head);
-  dlg.Dialog::construct(0x4000);
-  eh_state = 0;
+  Dialog dlg(0x4000);
   if (entry != (int *)0x0) {
     net.popup_in_progress = 1;
     (*(int * *)&net_popups.head) = (int *)*entry;
@@ -1560,8 +1554,6 @@ void __cdecl net_popup_queue_show_next(void)
     operator_delete(entry);
     net.popup_in_progress = 0;
   }
-  eh_state = 0xffffffff;
-  /* inlined unwind funclet 0051399d */ { dlg.Dialog::destruct(); }
   return;
 }
 
@@ -3101,13 +3093,12 @@ void __cdecl net_client_hotwait_idle(void)
 /* Part of net_client_turn_loop (005ab2d5): our turn played by the player:
    production, the wait for the AI's and the other humans' moves, the
    our-turn-to-move popup (with the casualties), then the moves. 1: a
-   connection lost (dialog2 destroyed; the caller returns 0). */
+   connection lost (the caller returns 0: dialog2 destroyed). */
 static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
 {
   iptr str;
   int status;
   int new_casualties;
-  i32 seh_state;
   
   if (turn_loop.resume_civ == '\0') {
     civ_check_throne_room_upgrade();
@@ -3127,8 +3118,6 @@ static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
     net_heartbeat_check(net.slot_civs[0]);
     status = net_check_lost_connections();
     if (status != 0) {
-      seh_state = 0xffffffff;
-      /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
       return 1;
     }
   }
@@ -3142,8 +3131,6 @@ static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
       net_heartbeat_check(net.slot_civs[0]);
       status = net_check_lost_connections();
       if (status != 0) {
-        seh_state = 0xffffffff;
-        /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
         return 1;
       }
     }
@@ -3205,13 +3192,12 @@ static int net_client_human_turn(Dialog &dialog2,i8 &turn_ok)
 }
 
 /* Part of net_client_turn_loop (005ab2d5): our turn played by the AI
-   (autoplay). 1: a connection lost (dialog2 destroyed; the caller returns 0).
+   (autoplay). 1: a connection lost (the caller returns 0: dialog2 destroyed).
    */
 static int net_client_autoplay_turn(Dialog &dialog2,i8 &turn_ok)
 {
   SHORT esc_state;
   int status;
-  i32 seh_state;
   
   map_views_block.saved_human_players = (uint)game.human_players;
   game.human_players = '\0';
@@ -3227,8 +3213,6 @@ static int net_client_autoplay_turn(Dialog &dialog2,i8 &turn_ok)
     net_heartbeat_check(net.slot_civs[0]);
     status = net_check_lost_connections();
     if (status != 0) {
-      seh_state = 0xffffffff;
-      /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
       return 1;
     }
   }
@@ -3263,16 +3247,12 @@ i32 __cdecl net_client_turn_loop(void)
   iptr slot_civ;
   int civ;
   iptr unit;
-  Dialog dialog2;
   i8 turn_ok;
   int centered;
   int is_first_turn;
-  i32 seh_state;
   
-  seh_state = 0xffffffff;
   is_first_turn = 1;
-  dialog2.Dialog::construct(0x4000);
-  seh_state = 0;
+  Dialog dialog2(0x4000);
   turn_ok = 1;
   slot_civ = net.slot_civs[0];
   str = (iptr)(civ_name_plural(net.slot_civs[0]));
@@ -3342,8 +3322,6 @@ i32 __cdecl net_client_turn_loop(void)
       net_heartbeat_check(net.slot_civs[0]);
       status = net_check_lost_connections();
       if (status != 0) {
-        seh_state = 0xffffffff;
-        /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
         ret = 0;
         return ret;
       }
@@ -3351,14 +3329,10 @@ i32 __cdecl net_client_turn_loop(void)
     if (net.host_handoff_stage != '\0') {
       status = net_client_transfer_server();
       if (status == 0) {
-        seh_state = 0xffffffff;
-        /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
         ret = 0;
         return ret;
       }
       if (net.host_flag != '\0') {
-        seh_state = 0xffffffff;
-        /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
         ret = 1;
         return ret;
       }
@@ -3422,8 +3396,6 @@ i32 __cdecl net_client_turn_loop(void)
       if (game_over_reason != 0) {
         game_handle_game_over();
       }
-      seh_state = 0xffffffff;
-      /* inlined unwind funclet 005abfdb */ { dialog2.Dialog::destruct(); }
       ret = 0;
       return ret;
     }

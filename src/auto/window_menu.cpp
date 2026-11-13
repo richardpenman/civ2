@@ -10,13 +10,11 @@ void __cdecl menu_wonder_movies(void)
   iptr wonder_name;
   i32 flags;
   iptr wonder_id;
-  Dialog dialog2;
   iptr wonder;
   iptr last_choice;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   last_choice = 0;
   while( true ) {
     dialog2.Dialog::reset(0x1001);
@@ -527,13 +525,11 @@ void __cdecl menu_select_music(void)
 
 {
   int choice;
-  Dialog dialog2;
   int track_count;
   int tries;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   tries = 0;
   while (tries < 5) {
     tries++;

@@ -2679,13 +2679,11 @@ void __cdecl sprite_editor_import_sheet(void)
   const char *sheet_name;
   char filter[260];
   GamePalette palette;
-  Dialog dialog2;
   char *file_name;
   
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   ON_SCOPE_EXIT(((DibSurface *)((i8 *)&sprite_editor.sprite_sheet_surface))->release());
   switch(sprite_picker_sprite_block.sprite_sheet_mode) {
   case 0:

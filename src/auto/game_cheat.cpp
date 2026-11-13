@@ -121,13 +121,11 @@ void __cdecl cheat_edit_technologies(void)
   iptr advance;
   int advance2;
   i8 bit_mask[4];
-  Dialog dialog2;
   int last_choice;
   i8 *seh_scope;
   
   last_choice = -1;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   blink.unit_active = 0;
   civ = dbg_pick_player(0);
   if ((int)civ >= 0) {
@@ -216,15 +214,13 @@ void __cdecl cheat_change_terrain(void)
   uptr first_terrain;
   int civ;
   int min_landmass;
-  Dialog dialog2;
   uptr terrain2;
   int y2;
   iptr dir;
   byte improvements2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   result = map_in_bounds(map_cursor.x[0],map_cursor.y[0]);
   if (result != 0) {
     result = tile_city_owner(map_cursor.x[0],map_cursor.y[0]);
@@ -386,11 +382,9 @@ void __cdecl cheat_create_unit(void)
   i32 option_flags;
   iptr option_civ;
   iptr unit_type;
-  Dialog dialog2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (human_civ[0] != cheat_unit.last_human_civ) {
     cheat_unit.last_human_civ = human_civ[0];
     cheat_unit.owner_civ = 0xffffffff;
@@ -477,11 +471,9 @@ void __cdecl cheat_reveal_map(void)
   i32 option_flags;
   int civ;
   i8 view_civ_byte;
-  Dialog dialog2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.load_text((const char *)&str_debug_7,(const char *)&str_revealmap,1);
   for (civ = 0; civ < 8; civ++) {
     text_clear();
@@ -538,11 +530,9 @@ void __cdecl cheat_set_human_player(void)
   i32 option_flags;
   int civ;
   byte civ_byte;
-  Dialog dialog2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.load_text((const char *)&str_debug_8,(const char *)&str_sethuman,1);
   for (civ = 1; civ < 8; civ++) {
     if ((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0) {
@@ -603,11 +593,9 @@ void __cdecl cheat_kill_civ(void)
   int civ;
   int civ2;
   uptr city;
-  Dialog dialog2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.load_text((const char *)&str_debug_9,(const char *)&str_killciv,1);
   for (civ2 = 1; civ2 < 8; civ2++) {
     if ((1 << ((byte)civ2 & 0x1f) & (uint)game.civs_alive) != 0) {
@@ -690,13 +678,11 @@ void __cdecl cheat_edit_unit(void)
   u8 byte_value;
   iptr city;
   int city_count;
-  Dialog dialog2;
   u8 damage_input[4];
   iptr commodity;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   choice = map_in_bounds(map_cursor.x[0],map_cursor.y[0]);
   if (choice != 0) {
     unit = tile_first_unit((int)map_cursor.x[0],(int)map_cursor.y[0]);
@@ -844,15 +830,13 @@ void __cdecl cheat_edit_city(void)
   iptr adjective;
   int choice;
   i32 on;
-  Dialog dialog2;
   iptr wonder;
   i8 number_input[4];
   iptr improvement;
   iptr city2;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   in_bounds = map_in_bounds(map_cursor.x[0],map_cursor.y[0]);
   if (in_bounds != 0) {
     city = city_at((int)map_cursor.x[0],map_cursor.y[0]);
@@ -943,15 +927,13 @@ void __cdecl cheat_edit_king(void)
   i32 value;
   iptr advance;
   iptr gender;
-  Dialog dialog2;
   u8 number_input[4];
   iptr civ2;
   iptr gov;
   int other_civ;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   civ = dbg_pick_player(0);
   if (civ >= 0) {
     while( true ) {
@@ -1161,14 +1143,12 @@ void __cdecl cheat_edit_victory(void)
   i32 option_flags;
   int civ;
   iptr city;
-  Dialog dialog2;
   i8 number_input[4];
   int total_value;
   int objective_value;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   while( true ) {
     total_value = 0;
     objective_value = 0;

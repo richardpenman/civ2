@@ -1921,12 +1921,10 @@ static void setting_write(const char *key, int value)
 static int options_checks(const char *title, const char *note, const KeyItem *keys, int n, uint64_t *bits,
                           int columns)
 {
-    Dialog d;
     char k[64];
     int i, result;
     uint64_t now = *bits;
-    d.Dialog::construct(0x4000);
-    ON_SCOPE_EXIT(d.Dialog::destruct());
+    Dialog d(0x4000);
     d.init(0, 0, 0, 1);
     d.set_width(columns > 1 ? 600 : 400);
     d.set_title(title);
@@ -1958,11 +1956,9 @@ static int options_checks(const char *title, const char *note, const KeyItem *ke
 static int options_fields(const char *title, const char *note, const char *const *keys, int n,
                           char shown[][256], int is_text, int *value, int *changed_field)
 {
-    Dialog d;
     char k[64];
     int i, result;
-    d.Dialog::construct(0x4000);
-    ON_SCOPE_EXIT(d.Dialog::destruct());
+    Dialog d(0x4000);
     d.init(0, 0, 0, 1);
     d.set_width(400);
     d.set_title(title);
@@ -2085,9 +2081,7 @@ void extras_options_dialog(void)
     for (;;) {
         uint64_t before = extras_enabled;
         {
-            Dialog d;
-            d.Dialog::construct(0x4000);
-            ON_SCOPE_EXIT(d.Dialog::destruct());
+            Dialog d(0x4000);
             d.init(0, 0, 0, 1);
             d.set_width(320);
             d.set_title(extras_text("options.title"));

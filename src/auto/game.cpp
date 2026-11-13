@@ -164,7 +164,6 @@ int __cdecl game_main_menu_loop(void)
   int xd_major;
   GamePalette palette;
   int result;
-  Dialog dlg;
   i32 map_source;
   int xd_minor;
   int retry;
@@ -174,8 +173,7 @@ int __cdecl game_main_menu_loop(void)
   result = 1;
   retry = 1;
   lobby_failed = 0;
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   __chdir(((i8 *)&game_dirs.home));
@@ -439,10 +437,8 @@ void __cdecl game_main(void)
   iptr city;
   UINT ini_value;
   GamePalette palette;
-  Dialog dlg;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   dbg_log((const char *)str_ptr_5_4_0f_multiplayer_26_march_99);
@@ -2431,7 +2427,6 @@ void __cdecl game_play_loop(void)
   uptr civ;
   byte saved_human_civ;
   int human_civ_saved;  /* B34: 0 never, 1 in an earlier civ's turn, 2 in this one */
-  Dialog dialog2;
   int views_hidden;
   int human_count;
   int quit;
@@ -2440,8 +2435,7 @@ void __cdecl game_play_loop(void)
   pbem_saved = false;
   saved_human_civ = 0;
   human_civ_saved = 0;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   ((PictureWindow *)((i8 *)&advisor_state.window))->close();
   ((PictureWindow *)((i8 *)&casualty.window))->close();
   menu_update_states();
@@ -2600,15 +2594,13 @@ i32 __cdecl game_mp_client_turn_loop(void)
   iptr slot_civ;
   int civ;
   iptr unit;
-  Dialog dialog2;
   i8 still_playing;
   int found_unit;
   int casualties;
   i32 first_turn;
   
   first_turn = 1;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   still_playing = 1;
   slot_civ = net.slot_civs[0];
   name_str = civ_name_plural(net.slot_civs[0]);
@@ -3020,11 +3012,9 @@ void __cdecl game_mp_host_turn_loop(i32 force_process)
   uptr civ;
   iptr city;
   iptr unit;
-  Dialog dialog2;
   int found_unit;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   host_civ = human_civ[0];
   name_str = civ_name_plural(human_civ[0]);
   dbg_logf_str_int((const char *)&str_server_s_d_2,(const char *)name_str,host_civ);

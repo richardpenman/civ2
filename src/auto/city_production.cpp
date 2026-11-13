@@ -2298,7 +2298,6 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
   iptr str;
   i8 *built_sprite;
   i8 *notify_sprite;
-  Dialog built_dialog;
   int announce;
   uptr city3;
   iptr sound;
@@ -2387,8 +2386,7 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
     if ((autoplay.active == 0) && (2 < game.multiplayer)) {
       net_send_text_args(0x47,0xff,4,0,wonder,improvement);
     }
-    built_dialog.Dialog::construct(0x4000);
-    ON_SCOPE_EXIT(built_dialog.Dialog::destruct());
+    Dialog built_dialog(0x4000);
     built_dialog.load_game_text((const char *)&str_built2);
     if (wonder < 0) {
       built_sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
@@ -2615,12 +2613,10 @@ static void city_process_production_caravan_dialog(uptr city,uptr civ,iptr unit)
   i32 value;
   iptr option_index;
   char goods_amount;
-  Dialog caravan_dialog;
   iptr choice;
   iptr unit_type2;
 
-  caravan_dialog.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(caravan_dialog.Dialog::destruct());
+  Dialog caravan_dialog(0x4000);
   mapviews_ensure_visible((int)cities[city].x,(int)cities[city].y,
                      cities[city].owner);
   do {
@@ -2856,7 +2852,6 @@ static int city_process_production_unit(uptr city,uptr civ)
 static void city_process_production_almost_wonder(uptr city,uptr civ)
 {
   iptr str;
-  Dialog wonder_dialog;
   iptr improvement2;
   int cost2;
 
@@ -2876,8 +2871,7 @@ static void city_process_production_almost_wonder(uptr city,uptr civ)
       if ((autoplay.active == 0) && (2 < game.multiplayer)) {
         net_send_text_args(0x4a,0xff,3,0,improvement2,0);
       }
-      wonder_dialog.Dialog::construct(0x4000);
-      ON_SCOPE_EXIT(wonder_dialog.Dialog::destruct());
+      Dialog wonder_dialog(0x4000);
       wonder_dialog.load_game_text((const char *)&str_almostwonder);
       wonder_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
       wonder_dialog.set_image_zoom(8);

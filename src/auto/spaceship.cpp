@@ -1636,12 +1636,10 @@ void __cdecl spaceship_status_dialog(int civ,int allow_launch)
   short part_count;
   iptr str;
   int result;
-  Dialog dlg;
   int part;
   int over_limit;
   
-  dlg.Dialog::construct(0x2000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x2000);
   over_limit = 0;
   spaceship_calc_stats(civ,1);
   if (civs[civ].spaceship_parts[3] == 0) {
@@ -2025,10 +2023,8 @@ void __cdecl spaceship_select_view_dialog(int unused)
   int shown;
   i32 flags;
   int civ2;
-  Dialog dlg;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   dlg.load_game_section((const char *)&str_spaceships,1);
   any_ship = false;
   for (civ2 = 1; civ2 < 8; civ2++) {

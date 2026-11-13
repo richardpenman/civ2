@@ -696,12 +696,10 @@ i32 __cdecl trade_commodity_cities_dialog(int civ,int commodity)
   iptr city;
   int section_count;
   int total_count;
-  Dialog dialog2;
   int pass;
   iptr slot;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   text_set_label_arg(0,commodity_names[commodity]);
   dialog2.load_game_section((const char *)&str_supplyshow,0x40001);
   total_count = 0;
@@ -776,11 +774,9 @@ void __cdecl trade_supply_search_dialog(int civ)
   iptr label;
   i32 option_flags;
   iptr option_id;
-  Dialog dialog2;
   iptr commodity;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   choice = civ_has_advance(civ,ADV_TRADE);
   if (choice != 0) {
     do {

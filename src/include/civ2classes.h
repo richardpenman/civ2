@@ -469,9 +469,9 @@ typedef struct Dialog {
     void load_text_noflags(const char *filename,const char *section);    /* 0043ca10 */
     void reset_string_pool(uint size);    /* 0059d5b5 */
     void init_defaults();    /* 0059d5f5 */
-    Dialog *construct(i32 size);    /* 0059db08 */
+    explicit Dialog(i32 size);    /* 0059db08 */
     void close();    /* 0059db65 */
-    i32 destruct();    /* 0059df8a */
+    ~Dialog();    /* 0059df8a */
     void init(SurfaceWindow *surface_wnd,DibSurface *background,RECT *rect,u32 flags);    /* 0059dfb9 */
     i32 set_item_text(int line_id,const char *text);    /* 0059e0eb */
     DialogLine *add_line(const char *text,int x,int y,int max_len,int color);    /* 0059e18b */
@@ -561,8 +561,8 @@ typedef struct ScenarioEvents : Dialog {
     union { uptr field_30c; struct ScenarioEvent *event_list; };
     /* methods */
     void init_string_pool(uint pool_size);    /* 004fa47e */
-    ScenarioEvents *construct(i32 pool_size);    /* 004fa4be */
-    void destruct();    /* 004fa569 */
+    explicit ScenarioEvents(i32 pool_size);    /* 004fa4be */
+    ~ScenarioEvents();    /* 004fa569 */
     void reset(i32 pool_size);    /* 004fa5d9 */
     ScenarioEvent *alloc();    /* 004fa617 */
     i32 action_play_wave(ScenarioEvent *event);    /* 004fa707 */
@@ -3382,7 +3382,7 @@ typedef struct ThroneRoomWindow : ModalMenuWindow {
     union { u32 field_1924; u32 choosing_item; };
     union { u32 field_1928; u32 throne_complete; };
     union { u32 field_192c; u32 chosen_item; };
-    Dialog choice_dialog_2;         /* 0x1930 */
+    union { Dialog choice_dialog_2; };   /* 0x1930: built and destroyed by the constructor and destructor */
     u32 click_prompt_rect;          /* 0x1c24 RECT */
     u8 gap_1c28[12];
     GameFont click_prompt_font;     /* 0x1c34 */

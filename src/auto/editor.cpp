@@ -637,13 +637,11 @@ void __cdecl tribe_editor_rename_commodity(void)
   size_t len;
   iptr parent_wnd2;
   char input_buf[260];
-  Dialog dialog2;
   int choice;
   int input_result;
   i8 *eh_prev;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -681,13 +679,11 @@ void __cdecl tribe_editor_rename_govt(void)
   size_t len;
   iptr parent_wnd2;
   char input_buf[260];
-  Dialog dialog2;
   int choice;
   int input_result;
   i8 *eh_prev;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -731,13 +727,11 @@ void __cdecl tribe_editor_rename_title(void)
   iptr parent_wnd2;
   char input_buf[260];
   char option_text[64];
-  Dialog dialog2;
   uint choice;
   int input_result;
   i8 *eh_prev;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -1443,11 +1437,9 @@ i32 __cdecl editor_options_dialog(const char *file_name,const char *section,uint
   int rc;
   iptr parent_wnd2;
   i32 choice;
-  Dialog dlg;
   int i;
   
-  dlg.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dlg.Dialog::destruct());
+  Dialog dlg(0x4000);
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }

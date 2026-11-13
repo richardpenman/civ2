@@ -312,12 +312,10 @@ void __cdecl menu_find_city(void)
   byte civ_byte;
   iptr city;
   int count;
-  Dialog dialog2;
   int civ;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   civ2 = human_civ[0];
   count = 0;
   dialog2.load_game_section((const char *)&str_findcity,0x800001);
@@ -713,7 +711,7 @@ i32 __cdecl dlg_game_text_input(const char *section,i32 max_len,char *buf,const 
 Dialog *Dialog::scalar_destruct(uint flags)
 
 {
-  destruct();
+  this->~Dialog();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }
@@ -1891,12 +1889,10 @@ i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dl
 
 {
   i32 result;
-  Dialog dialog2;
   Sprite sprite;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
   sprite.create_solid((2 - (uint)(ui_metrics.large_screen == 0)) * 0x40,(2 - (uint)(ui_metrics.large_screen == 0)) * 0x30
@@ -1925,12 +1921,10 @@ i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dl
 
 {
   i32 result;
-  Dialog dialog2;
   Sprite sprite;
   i8 *seh_scope;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   sprite_init(&sprite);
   ON_SCOPE_EXIT(sprite_destroy(&sprite));
   sprite.create_solid((2 - (uint)(ui_metrics.large_screen == 0)) * 0x40,(2 - (uint)(ui_metrics.large_screen == 0)) * 0x30
@@ -2247,12 +2241,10 @@ popup_text_run(const char *file,const char *section,i32 result,i32 arg4,i32 arg5
 
 {
   int status;
-  Dialog dialog2;
   int i;
   i32 eh_prev;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   status = dialog2.load_text_section(file,section,result,0,(SurfaceWindow *)arg4,(DibSurface *)arg5,(RECT *)arg6,arg7);
   if (status == 0) {
     if (((byte)dialog2.style_flags & 4) != 0) {
@@ -2282,11 +2274,9 @@ popup_text_with_sprite(const char *file,const char *section,i32 flags,Sprite *sp
 
 {
   i32 result;
-  Dialog dialog2;
   i32 eh_prev;
   
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   dialog2.load_text(file,section,flags);
   dialog2.add_sprite(sprite,0,0);
   dialog2.set_image_zoom(zoom);
@@ -2302,13 +2292,11 @@ dlg_text_input(const char *file,const char *section,i32 max_len,const char *init
 {
   int status;
   i32 result;
-  Dialog dialog2;
   char *p;
   i32 eh_prev;
   
   result = 0;
-  dialog2.Dialog::construct(0x4000);
-  ON_SCOPE_EXIT(dialog2.Dialog::destruct());
+  Dialog dialog2(0x4000);
   str_clear(out_text);
   status = dialog2.load_text_section(file,section,max_len,initial_text,0,0,0,1);
   if (status == 0) {
