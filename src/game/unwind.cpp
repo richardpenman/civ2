@@ -44,16 +44,10 @@ void SurfaceWindow::destruct()
     surface_dtor((DibSurface *)this);
 }
 
-/* 0x004f3e70: destructor - destroys the member at this+0x4a4, then the base. */
+/* 0x004f3e70: destructor - nothing of its own: then its member dialog (this+0x4a4,
+   the unwind funclet 004f3ebb) and its PictureWindow base (funclet 004f3ee5). */
 CityPicturePopup::~CityPicturePopup()
 {
-    Dialog *member;
-
-    /* funclet 004f3ebb */
-    member = (this != NULL) ? &dialog : NULL;
-    member->~Dialog();
-    /* funclet 004f3ee5 */
-    PictureWindow::destruct();
 }
 
 /* 0x005efeb0: destructor - releases the handle at this+0xb0, runs the

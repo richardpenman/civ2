@@ -849,7 +849,7 @@ void PictureWindow::blit()
    
    Library: Visual Studio 1998 Debug */
 
-void PictureWindow::destruct()
+PictureWindow::~PictureWindow()
 
 {
   i8 *seh_scope;
@@ -874,7 +874,7 @@ void PictureWindow::destruct()
 }
 
 /* 0043c260 auto */
-PictureWindow *PictureWindow::construct()
+PictureWindow::PictureWindow()
 
 {
   i8 *seh_scope;
@@ -887,7 +887,6 @@ PictureWindow *PictureWindow::construct()
   button_ctor(&button_4);
   scrollbar.construct();
   vtable = (u32)((pointer *)(ptr_fun_rest + 4));
-  return this;
 }
 
 /* 0043c5c0 auto */

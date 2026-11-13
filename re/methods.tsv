@@ -146,8 +146,8 @@ addr	old	class	member	file	why
 0042abc1	picwnd_blit_at	PictureWindow	blit_at	src/auto/window.cpp	
 0042ac18	picwnd_blit	PictureWindow	blit	src/auto/window.cpp	
 0042acb0	advisor_add_close_button	PictureWindow	advisor_add_close_button	src/auto/reports.cpp	
-0043c110	picwnd_dtor	PictureWindow	destruct	src/auto/window.cpp	
-0043c260	picwnd_ctor	PictureWindow	construct	src/auto/window.cpp	
+0043c110	picwnd_dtor	PictureWindow	~PictureWindow	src/auto/window.cpp	
+0043c260	picwnd_ctor	PictureWindow	PictureWindow	src/auto/window.cpp	
 0043c3f0	resource_dll_load	DllHandle	resource_dll_load	src/auto/map.cpp	
 0043c430	dll_free	DllHandle	free	src/auto/text.cpp	
 0043c460	font_init	GameFont	init	src/auto/graphics.cpp	
@@ -419,8 +419,8 @@ addr	old	class	member	file	why
 004e7240	wnd_show_restored	WndBase	show_restored	src/auto/window.cpp	
 004f3d60	city_picture_popup_ctor	CityPicturePopup	CityPicturePopup	src/auto/city.cpp	
 004f3e20	city_picture_popup_scalar_dtor	CityPicturePopup	scalar_destruct	src/auto/city.cpp	
-004f3feb	pedia_window_ctor	PediaWindow	construct	src/auto/pedia.cpp	
-004f44a7	pedia_window_dtor	PediaWindow	destruct	src/auto/pedia.cpp	
+004f3feb	pedia_window_ctor	PediaWindow	PediaWindow	src/auto/pedia.cpp	
+004f44a7	pedia_window_dtor	PediaWindow	~PediaWindow	src/auto/pedia.cpp	
 004f4793	pedia_clear_links	PediaWindow	clear_links	src/auto/pedia.cpp	
 004f4809	pedia_free_lists	PediaWindow	free_lists	src/auto/pedia.cpp	
 004f4b9f	pedia_window_create	PediaWindow	create	src/auto/pedia.cpp	
@@ -467,8 +467,8 @@ addr	old	class	member	file	why
 005014bf	city_window_remove_citizen_hotspots	CityWindow	remove_citizen_hotspots	src/auto/city_window.cpp	
 005014e5	city_window_remove_panel_hotspots	CityWindow	remove_panel_hotspots	src/auto/city_window.cpp	
 0050152b	city_window_remove_hotspots	CityWindow	remove_hotspots	src/auto/city_window.cpp	
-00501551	city_window_ctor	CityWindow	construct	src/auto/city_window.cpp	
-0050160a	city_window_dtor	CityWindow	destruct	src/auto/city_window.cpp	
+00501551	city_window_ctor	CityWindow	CityWindow	src/auto/city_window.cpp	
+0050160a	city_window_dtor	CityWindow	~CityWindow	src/auto/city_window.cpp	
 005016b2	city_window_blit_bg_rect	CityWindow	blit_bg_rect	src/auto/city_window.cpp	
 00501733	city_window_begin_draw	CityWindow	begin_draw	src/auto/city_window.cpp	
 00501780	city_window_recalc_redraw	CityWindow	recalc_redraw	src/auto/city_window.cpp	
@@ -585,8 +585,8 @@ addr	old	class	member	file	why
 00553d30	wnd_set_drag_begin_callback	WndHandlers	set_drag_begin_callback	src/auto/window.cpp	
 00553d70	wnd_set_drag_end_callback	WndHandlers	set_drag_end_callback	src/auto/window.cpp	
 00559ded	setup_picwnd_reset_fields	SetupPicWindow	reset_fields	src/auto/game_setup.cpp	
-00559e3c	setup_picwnd_ctor	SetupPicWindow	construct	src/auto/game_setup.cpp	
-00559ed4	setup_picwnd_dtor	SetupPicWindow	destruct	src/auto/game_setup.cpp	
+00559e3c	setup_picwnd_ctor	SetupPicWindow	SetupPicWindow	src/auto/game_setup.cpp	
+00559ed4	setup_picwnd_dtor	SetupPicWindow	~SetupPicWindow	src/auto/game_setup.cpp	
 00559f60	setup_picwnd_blit_image_rect	SetupPicWindow	blit_image_rect	src/auto/game_setup.cpp	
 00559fcf	setup_picwnd_draw_image	SetupPicWindow	draw_image	src/auto/game_setup.cpp	
 0055a00b	setup_picwnd_client_rect	SetupPicWindow	setup_picwnd_client_rect	src/auto/game_setup.cpp	kept whole (client_rect clashes)
@@ -602,8 +602,8 @@ addr	old	class	member	file	why
 005674b9	pedia_draw_tree_connector	DibSurface	pedia_draw_tree_connector	src/auto/pedia.cpp	
 005675b7	pedia_draw_tree_stub	PediaWindow	draw_tree_stub	src/auto/pedia.cpp	
 0056e180	map_view_zoom_scale_round	MapView	zoom_scale_round	src/auto/map.cpp	
-0056e270	lobby_list_ctor	LobbyList	construct	src/auto/network_join.cpp	
-0056e2c9	lobby_list_dtor	LobbyList	destruct	src/auto/network_join.cpp	
+0056e270	lobby_list_ctor	LobbyList	LobbyList	src/auto/network_join.cpp	
+0056e2c9	lobby_list_dtor	LobbyList	~LobbyList	src/auto/network_join.cpp	
 0056e2e9	lobby_host_wait_players	LobbyList	host_wait_players	src/auto/network_join.cpp	
 0056edd3	lobby_entry_neighbor	LobbyList	entry_neighbor	src/auto/network_join.cpp	
 0056ee2c	lobby_clear_player_list	LobbyList	clear_player_list	src/auto/network_join.cpp	
@@ -615,8 +615,8 @@ addr	old	class	member	file	why
 0056f42b	lobby_slot_for_entry_id	LobbyList	slot_for_entry_id	src/auto/network_join.cpp	
 00574522	sprite_picker_draw	SpritePicker	draw	src/auto/graphics_sprite_editor.cpp	
 00575dec	sprite_picker_run	SpritePicker	run	src/auto/graphics_sprite_editor.cpp	
-00578390	sprite_picker_dtor	SpritePicker	destruct	src/auto/graphics_sprite_editor.cpp	
-005784a0	sprite_picker_ctor	SpritePicker	construct	src/auto/graphics_sprite_editor.cpp	
+00578390	sprite_picker_dtor	SpritePicker	~SpritePicker	src/auto/graphics_sprite_editor.cpp	
+005784a0	sprite_picker_ctor	SpritePicker	SpritePicker	src/auto/graphics_sprite_editor.cpp	
 005785d0	wnd_set_rbuttondown_handler	WndHandlers	set_rbuttondown_handler	src/auto/window.cpp	
 00578610	wnd_set_rbuttonup_any_handler	WndHandlers	set_rbuttonup_any_handler	src/auto/window.cpp	
 00578650	menu_storage_reinit	GameMenu	storage_reinit	src/auto/window.cpp	
@@ -912,8 +912,8 @@ addr	old	class	member	file	why
 005dafdf	err_set_code	ErrorContext	set_code	src/auto/support.cpp	
 005db035	err_ctx_set_field_708	ErrorContext	set_field_708	src/auto/support.cpp	
 005db059	err_ctx_clear_codes	ErrorContext	clear_codes	src/auto/support.cpp	
-005db089	err_ctx_ctor	ErrorContext	construct	src/auto/support.cpp	
-005db0b4	err_ctx_dtor	ErrorContext	destruct	src/auto/support.cpp	
+005db089	err_ctx_ctor	ErrorContext	ErrorContext	src/auto/support.cpp	
+005db0b4	err_ctx_dtor	ErrorContext	~ErrorContext	src/auto/support.cpp	
 005db0d0	scrollbar_set_page_size	Scrollbar	set_page_size	src/auto/controls.cpp	
 005db110	scrollbar_get_ctl_range	Scrollbar	get_ctl_range	src/auto/controls.cpp	
 005db610	wnd_record_init	WndBase	init	src/auto/window.cpp	

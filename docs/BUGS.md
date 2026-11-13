@@ -625,7 +625,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 
 ### B29. The High Council's first advisor button may not clear the speech area
 - **Where:** `src/auto/reports.cpp`, `CouncilWindow::draw_speech` (line 6853) reads
-  `speech_advisor_index`, which `CouncilWindow::construct` (line 6328) and `init` do not set,
+  `speech_advisor_index`, which the `CouncilWindow` constructor and `init` do not set,
   on the first button (`draw_speech(-1)`); the window is a local of `council_show`.
 - **What goes wrong:** the area is cleared and repainted only when the stale value is 0 to 2.
 - **Source:** found by Peter Johnson's reconstruction (BF-067).

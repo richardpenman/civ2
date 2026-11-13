@@ -4651,12 +4651,9 @@ uint __cdecl city_tile_status_flags(int city,int tile_idx)
 }
 
 /* 004f3d60 auto */
-CityPicturePopup::CityPicturePopup()
+CityPicturePopup::CityPicturePopup() : dialog(0x4000)
 
 {
-  
-  PictureWindow::construct();
-  new (&dialog, GameNewAt()) Dialog(0x4000);
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 3);
 }
 

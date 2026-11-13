@@ -914,7 +914,7 @@ void __cdecl err_report_ctx_global_init(void)
 void __cdecl err_report_ctx_static_init(void)
 
 {
-  ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->construct();
+  new (&err_report_ctx_block.err_report_ctx, GameNewAt()) ErrorContext;
   return;
 }
 
@@ -930,7 +930,7 @@ void __cdecl err_report_ctx_reg_atexit(void)
 void __cdecl err_report_ctx_atexit_dtor(void)
 
 {
-  ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->destruct();
+  ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->~ErrorContext();
   return;
 }
 
@@ -1011,12 +1011,11 @@ void ErrorContext::clear_codes()
 }
 
 /* 005db089 auto */
-ErrorContext *ErrorContext::construct()
+ErrorContext::ErrorContext()
 
 {
   set_field_708(0);
   clear_codes();
-  return this;
 }
 
 /* 005db0b4 auto */
@@ -1025,7 +1024,7 @@ ErrorContext *ErrorContext::construct()
    
    Library: Visual Studio 1998 Debug */
 
-void ErrorContext::destruct()
+ErrorContext::~ErrorContext()
 
 {
   return;

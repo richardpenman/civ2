@@ -107,7 +107,7 @@ void __cdecl city_window_global_init(void)
 void __cdecl city_window_static_init(void)
 
 {
-  ((CityWindow *)((i8 *)&city_wnd.window))->construct();
+  new (&city_wnd.window, GameNewAt()) CityWindow;
   return;
 }
 
@@ -123,7 +123,7 @@ void __cdecl city_window_reg_atexit(void)
 void __cdecl city_window_atexit_dtor(void)
 
 {
-  ((CityWindow *)((i8 *)&city_wnd.window))->destruct();
+  ((CityWindow *)((i8 *)&city_wnd.window))->~CityWindow();
   return;
 }
 
@@ -329,7 +329,7 @@ void CityWindow::remove_hotspots()
 }
 
 /* 00501551 auto */
-CityWindow *CityWindow::construct()
+CityWindow::CityWindow()
 
 {
   
@@ -338,11 +338,10 @@ CityWindow *CityWindow::construct()
   city_font.init_empty();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 5);
   reset_state();
-  return this;
 }
 
 /* 0050160a auto */
-void CityWindow::destruct()
+CityWindow::~CityWindow()
 
 {
   int seh_state;

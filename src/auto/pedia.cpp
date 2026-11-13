@@ -1341,7 +1341,7 @@ void __cdecl pedia_window_global_init(void)
 void __cdecl pedia_window_static_init(void)
 
 {
-  ((PediaWindow *)((i8 *)&pedia_wnd.window))->construct();
+  new (&pedia_wnd.window, GameNewAt()) PediaWindow;
   return;
 }
 
@@ -1357,12 +1357,12 @@ void __cdecl pedia_window_reg_atexit(void)
 void __cdecl pedia_window_static_dtor(void)
 
 {
-  ((PediaWindow *)((i8 *)&pedia_wnd.window))->destruct();
+  ((PediaWindow *)((i8 *)&pedia_wnd.window))->~PediaWindow();
   return;
 }
 
 /* 004f3feb auto */
-PediaWindow *PediaWindow::construct()
+PediaWindow::PediaWindow()
 
 {
   u8 *slot;
@@ -1453,11 +1453,10 @@ PediaWindow *PediaWindow::construct()
   pedia_concept_names = (PediaListNode *)0x0;
   list_hotspot = 0;
   client_y = 0;
-  return this;
 }
 
 /* 004f44a7 auto */
-void PediaWindow::destruct()
+PediaWindow::~PediaWindow()
 
 {
   i32 exc_link;

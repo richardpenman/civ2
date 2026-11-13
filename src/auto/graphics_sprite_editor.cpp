@@ -269,7 +269,7 @@ void __cdecl sprite_picker_window_global_init(void)
 void __cdecl sprite_picker_window_static_init(void)
 
 {
-  ((SpritePicker *)((i8 *)&sprite_editor.sprite_picker_window))->construct();
+  new (&sprite_editor.sprite_picker_window, GameNewAt()) SpritePicker;
   return;
 }
 
@@ -285,7 +285,7 @@ void __cdecl sprite_picker_window_reg_atexit(void)
 void __cdecl sprite_picker_window_static_dtor(void)
 
 {
-  ((SpritePicker *)((i8 *)&sprite_editor.sprite_picker_window))->destruct();
+  ((SpritePicker *)((i8 *)&sprite_editor.sprite_picker_window))->~SpritePicker();
   return;
 }
 
@@ -2809,7 +2809,7 @@ void __cdecl sprite_editor_import_sheet(void)
    
    Library: Visual Studio 1998 Debug */
 
-void SpritePicker::destruct()
+SpritePicker::~SpritePicker()
 
 {
   int seh_state;
@@ -2829,7 +2829,7 @@ void SpritePicker::destruct()
 }
 
 /* 005784a0 auto */
-SpritePicker *SpritePicker::construct()
+SpritePicker::SpritePicker()
 
 {
   
@@ -2839,5 +2839,4 @@ SpritePicker *SpritePicker::construct()
   button_ctor(&button_2);
   button_ctor(&button_3);
   vtable = (u32)&leader_anim_frame_starts_block.ptr_fun_4;
-  return this;
 }

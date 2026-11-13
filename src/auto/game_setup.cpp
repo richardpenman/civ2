@@ -874,12 +874,7 @@ static int setup_net_host(Dialog *dlg,char *ip_buf,int conn_type,i32 map_source,
     }
     this_00 = (LobbyList *)operator_new(0x70);
     (*((char *)eh_state + 0)) = 3;
-    if (this_00 == (LobbyList *)0x0) {
-      lobby_list = (LobbyList *)0x0;
-    }
-    else {
-      lobby_list = this_00->construct();
-    }
+    lobby_list = this_00 != (LobbyList *)0x0 ? new (this_00, GameNewAt()) LobbyList : (LobbyList *)0x0;
     *eh_state = (*eh_state & 0xffffff00 | (byte)(1));
     net.net_lobby_list = lobby_list;
     choice = lobby_list->host_wait_players(map_source,conn_type);
@@ -3338,7 +3333,7 @@ void __cdecl setup_picwnd_global_init(void)
 void __cdecl setup_picwnd_static_init(void)
 
 {
-  ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->construct();
+  new (&setup_picwnd_state.window, GameNewAt()) SetupPicWindow;
   return;
 }
 
@@ -3354,7 +3349,7 @@ void __cdecl setup_picwnd_reg_atexit(void)
 void __cdecl setup_picwnd_static_dtor(void)
 
 {
-  ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->destruct();
+  ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->~SetupPicWindow();
   return;
 }
 
@@ -3432,7 +3427,7 @@ void SetupPicWindow::reset_fields()
 }
 
 /* 00559e3c auto */
-SetupPicWindow *SetupPicWindow::construct()
+SetupPicWindow::SetupPicWindow()
 
 {
   i8 *seh_scope;
@@ -3441,7 +3436,6 @@ SetupPicWindow *SetupPicWindow::construct()
   dll.init();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 8);
   reset_fields();
-  return this;
 }
 
 /* 00559ed4 auto */
@@ -3450,7 +3444,7 @@ SetupPicWindow *SetupPicWindow::construct()
    
    Library: Visual Studio 1998 Debug */
 
-void SetupPicWindow::destruct()
+SetupPicWindow::~SetupPicWindow()
 
 {
   i8 *seh_scope;

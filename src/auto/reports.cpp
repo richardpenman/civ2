@@ -235,7 +235,7 @@ void __cdecl advisor_window_global_init(void)
 void __cdecl advisor_window_static_init(void)
 
 {
-  ((PictureWindow *)((i8 *)&advisor_state.window))->PictureWindow::construct();
+  new (&advisor_state.window, GameNewAt()) PictureWindow;
   return;
 }
 
@@ -251,7 +251,7 @@ void __cdecl advisor_window_reg_atexit(void)
 void __cdecl advisor_window_static_dtor(void)
 
 {
-  ((PictureWindow *)((i8 *)&advisor_state.window))->PictureWindow::destruct();
+  ((PictureWindow *)((i8 *)&advisor_state.window))->~PictureWindow();
   return;
 }
 
@@ -276,7 +276,7 @@ void __cdecl casualty_window_global_init(void)
 void __cdecl casualty_window_static_init(void)
 
 {
-  ((PictureWindow *)((i8 *)&casualty.window))->PictureWindow::construct();
+  new (&casualty.window, GameNewAt()) PictureWindow;
   return;
 }
 
@@ -292,7 +292,7 @@ void __cdecl casualty_window_reg_atexit(void)
 void __cdecl casualty_window_static_dtor(void)
 
 {
-  ((PictureWindow *)((i8 *)&casualty.window))->PictureWindow::destruct();
+  ((PictureWindow *)((i8 *)&casualty.window))->~PictureWindow();
   return;
 }
 

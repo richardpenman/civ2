@@ -1126,7 +1126,7 @@ typedef struct LobbyList {
     u32 drop_counts[7];             /* 0x54 connections lost, per player */
     /* methods */
     LobbyList *scalar_destruct(uint flags);    /* 004471c0 */
-    LobbyList *construct();    /* 0056e270 */
+    LobbyList();    /* 0056e270 */
     i32 host_wait_players(i32 map_arg,int launch_mode);    /* 0056e2e9 */
     DialogOption *entry_neighbor(DialogOption *entry);    /* 0056edd3 */
     void clear_player_list();    /* 0056ee2c */
@@ -1136,7 +1136,7 @@ typedef struct LobbyList {
     DialogOption *find_waiting_entry();    /* 0056f372 */
     DialogOption *find_entry_by_id(int entry_id);    /* 0056f3e0 */
     int slot_for_entry_id(int entry_id);    /* 0056f42b */
-    void destruct();    /* 0056e2c9 */
+    ~LobbyList();    /* 0056e2c9 */
 } LobbyList;
 static_assert(sizeof(LobbyList) == 0x70, "");
 
@@ -1638,8 +1638,8 @@ typedef struct ErrorContext {
     void set_code(u32 code);    /* 005dafdf */
     void set_field_708(i32 value);    /* 005db035 */
     void clear_codes();    /* 005db059 */
-    ErrorContext *construct();    /* 005db089 */
-    void destruct();    /* 005db0b4 */
+    ErrorContext();    /* 005db089 */
+    ~ErrorContext();    /* 005db0b4 */
 } ErrorContext;
 
 /* ErrorContext where the code reaches past its end: the object is larger */
@@ -2583,8 +2583,8 @@ typedef struct PediaWindow : SurfaceWindow {
     void draw_terrain_transform_column(GameFont *font2,int terrain2,int stats_top,int line_height,int right_col_x,int row_height);    /* part of draw_terrain_page */
     void show_terrain_modal(int terrain_id);    /* 00491c20 */
     void init_concept_list(RECT *unused_arg);    /* 004a69b0 */
-    PediaWindow *construct();    /* 004f3feb */
-    void destruct();    /* 004f44a7 */
+    PediaWindow();    /* 004f3feb */
+    ~PediaWindow();    /* 004f44a7 */
     void clear_links();    /* 004f4793 */
     void free_lists();    /* 004f4809 */
     void create();    /* 004f4b9f */
@@ -3012,8 +3012,8 @@ typedef struct CityWindow : FrameWindow {
     void remove_citizen_hotspots();    /* 005014bf */
     void remove_panel_hotspots();    /* 005014e5 */
     void remove_hotspots();    /* 0050152b */
-    CityWindow *construct();    /* 00501551 */
-    void destruct();    /* 0050160a */
+    CityWindow();    /* 00501551 */
+    ~CityWindow();    /* 0050160a */
     void blit_bg_rect(int *rect);    /* 005016b2 */
     void begin_draw(RECT *rect);    /* 00501733 */
     void recalc_redraw(i32 flag);    /* 00501780 */
@@ -3096,15 +3096,15 @@ typedef struct PictureWindow : FrameWindow {
     void blit_at(int x,int y,i32 width,i32 height);    /* 0042abc1 */
     void blit();    /* 0042ac18 */
     void advisor_add_close_button();    /* 0042acb0 */
-    PictureWindow *construct();    /* 0043c260 */
-    void destruct();    /* 0043c110 */
+    PictureWindow();    /* 0043c260 */
+    ~PictureWindow();    /* 0043c110 */
 } PictureWindow;
 static_assert(sizeof(PictureWindow) == 0x4a4, "");
 
 /* A city picture popup (city_picture_popup_ctor 004f3d60, 0x798 bytes): a picture
    window with a dialog. */
 typedef struct CityPicturePopup : PictureWindow {
-    union { Dialog dialog; u8 popup_dialog[32]; };
+    Dialog dialog;
     /* methods */
     CityPicturePopup();    /* 004f3d60 */
     void *scalar_destruct(uint flags);    /* 004f3e20 */
@@ -3124,8 +3124,8 @@ typedef struct SetupPicWindow : FrameWindow {
     union { DllHandle dll; u32 dll_head; };
     /* methods */
     void reset_fields();    /* 00559ded */
-    SetupPicWindow *construct();    /* 00559e3c */
-    void destruct();    /* 00559ed4 */
+    SetupPicWindow();    /* 00559e3c */
+    ~SetupPicWindow();    /* 00559ed4 */
     void blit_image_rect(int *rect);    /* 00559f60 */
     void draw_image(RECT *rect);    /* 00559fcf */
     void setup_picwnd_client_rect(RECT *rect,int x,int y,int width,int height);    /* 0055a00b */
@@ -3155,8 +3155,8 @@ typedef struct SpritePicker : FrameWindow {
     /* methods */
     void draw();    /* 00574522 */
     void run();    /* 00575dec */
-    SpritePicker *construct();    /* 005784a0 */
-    void destruct();    /* 00578390 */
+    SpritePicker();    /* 005784a0 */
+    ~SpritePicker();    /* 00578390 */
 } SpritePicker;
 static_assert(sizeof(SpritePicker) == 0x3ec, "");
 

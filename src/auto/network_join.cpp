@@ -1583,7 +1583,7 @@ void *NetGamelistView::view_scalar_destruct(uint flags)
 LobbyList *LobbyList::scalar_destruct(uint flags)
 
 {
-  destruct();
+  this->~LobbyList();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }
@@ -1591,7 +1591,7 @@ LobbyList *LobbyList::scalar_destruct(uint flags)
 }
 
 /* 0056e270 auto */
-LobbyList *LobbyList::construct()
+LobbyList::LobbyList()
 
 {
   u8 *slot_ptr;
@@ -1606,11 +1606,10 @@ LobbyList *LobbyList::construct()
     slot_ptr[2] = '\0';
     slot_ptr[3] = '\0';
   }
-  return this;
 }
 
 /* 0056e2c9 auto */
-void LobbyList::destruct()
+LobbyList::~LobbyList()
 
 {
   net.free_game_list();

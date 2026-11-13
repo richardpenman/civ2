@@ -4,7 +4,7 @@
 #ifndef CIV2_STATE_CITY_H
 #define CIV2_STATE_CITY_H
 
-extern pointer ptr_fun;  /* only TaxRateDialog::construct uses it */
+extern pointer ptr_fun;  /* only TaxRateDialog's constructor uses it */
 extern u8 ptr_fun_rest[16];
 #pragma pack(push, 1)
 struct cityview_improvement_art_x_block {
