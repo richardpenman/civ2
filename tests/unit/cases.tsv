@@ -26,12 +26,12 @@ ai_civ_turn_assess	auto/ai.cpp	16	0
 ai_continent_defense_quota	auto/ai.cpp	16	0
 ai_find_road_link_tile	auto/ai.cpp	16	0
 ai_orders_badly_damaged	auto/ai.cpp	1	0
-ai_orders_caravan	auto/ai.cpp	4	0
+ai_orders_caravan	auto/ai.cpp	6	0
 ai_orders_city_guard	auto/ai.cpp	16	0
 ai_orders_city_site	auto/ai.cpp	16	0
 ai_orders_damaged	auto/ai.cpp	16	0
 ai_orders_defender_fortify	auto/ai.cpp	16	0
-ai_orders_diplomat	auto/ai.cpp	2	0
+ai_orders_diplomat	auto/ai.cpp	6	0
 ai_orders_finish	auto/ai.cpp	16	0
 ai_orders_fortress_site	auto/ai.cpp	16	0
 ai_orders_keep_goto	auto/ai.cpp	16	0
@@ -798,6 +798,7 @@ WndBase::get_palette_obj	auto/window.cpp	16	0
 WndBase::get_window	auto/window.cpp	16	0
 WndBase::hide	auto/window.cpp	4	0
 WndBase::move_to_rect	auto/window.cpp	2	0
+WndBase::set_caption_height	auto/window.cpp	1	0
 WndBase::set_cursor	auto/window.cpp	4	0
 WndBase::set_palette	auto/window.cpp	16	0
 WndHandlers::call_char	auto/window.cpp	16	0

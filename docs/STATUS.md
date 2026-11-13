@@ -149,7 +149,20 @@ message by message and clock event by clock event.
   that differ only in casts, every retyped parameter scanned for pointer
   arithmetic (byte buffers became u8 *, other offsets go through
   (u8 *)p or a member), and the suite after each batch.  The classes'
-  member functions still take some `iptr`s (270 in civ2classes.h); the
+  member functions had 258 `iptr` parameters and 3 `iptr` return values
+  (civ2classes.h); none remain: 108 parameters and the 3 returns are int
+  (coordinates, civilization, city, unit and advance numbers, slots, ids),
+  the others RECT * (34), i32 * (21 out-parameters), GamePalette * (15),
+  DibSurface * (13), GameFont * (11), Wnd * / WndBase * (18: the controls'
+  and windows' parents), strings (17), SurfaceWindow *, Sprite *, Control *,
+  GameMenu *, PtrListNode *, u8 * row and colour buffers ...; Dialog::show_modal,
+  DibSurface::wnd_create, AviPlayer::create and ErrorContext::report have
+  their parameters named for what they carry (a timeout, a title, the
+  failed expression and the source file).  Checked the same way: 55
+  functions compile differently, in register choice, stack slots,
+  instruction order and null tests laid the other way; the unit
+  tests were recorded again (a member's mangled name changes with its
+  parameter types) and keep every function's cases.  The
   classes, typed callbacks and the rest of the modernization come next.  Types
   and fields are recovered per subsystem: raw offset accesses
   (`*(T *)(p + 0x34)`, `(T *)((int)this + 0x34)`) went from over 5,100 to
@@ -439,8 +452,8 @@ message by message and clock event by clock event.
   moviewnd_wndproc (2): two messages' handlers shared by other messages,
   whose MCI call passes a stale local by address (moving it into a helper
   would move that stack slot).
-* **Unit tests** (step 6, the last part).  `make test` runs 11,112 recorded
-  calls of 879 of the game's functions in 2.7 seconds, without the game's
+* **Unit tests** (step 6, the last part).  `make test` runs 11,119 recorded
+  calls of 880 of the game's functions in 2.7 seconds, without the game's
   files (docs/DEVELOPMENT.md "Unit tests"): each call recorded from the
   replays of 43 scenarios (all but `menu`, which runs none that qualify) by
   the recording build (tests/unit_record.c: -finstrument-functions, the
@@ -449,14 +462,14 @@ message by message and clock event by clock event.
   (tests/unit_run.c) and compared byte for byte, `rand()` calls included (the
   seed is game data).  Calls that reach the platform layer, the heap or
   state outside the game's data are not taken; the runner keeps the cases it
-  reproduces twice in each of three processes.  By file: window 118 functions,
+  reproduces twice in each of three processes.  By file: window 119 functions,
   city 108, unit 106, map 75, civ 70, ai 60 (of the 63 the replays run),
   graphics 56, text 54, diplomacy 43, game 32 ... (tests/unit/cases.tsv): combat
   (strengths, odds, the fight, veterans, city defences), movement and paths,
   city food, shields, trade, happiness, workers and production choice, the
   AI's assessments and unit orders, research cost and choice, diplomacy's
   evaluations and treaties, map generation steps; 216 cases call `rand()`.
-  Of the 2,270 game functions these replays run, 879 have cases: the rest
+  Of the 2,270 game functions these replays run, 880 have cases: the rest
   draw, wait for input or read files, or are called only with pointers into
   the heap.  Not covered: rules parsing and the save/load round trip (they
   read and write files; the replays check them), and the top-level turn
