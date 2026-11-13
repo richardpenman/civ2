@@ -392,7 +392,7 @@ XDaemon allocates its receive buffer with the size from
 
 ## 10. What the game sends through XDaemon
 
-### 10.1 When the game calls XD_* (src/auto/network.cpp)
+### 10.1 When the game calls XD_* (src/auto/network*.cpp)
 
 - **Startup** (`net_session_ctor`): Set{Broadcast,Secure}Receive,
   SetOnClientConnectionToServer, SetNewClientConnection,

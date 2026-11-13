@@ -8,15 +8,15 @@
 // SOURCE src/auto/reports.cpp hall_of_fame_load
 // SOURCE src/auto/support.cpp error_report
 // SOURCE src/auto/window.cpp dialog_prepend_title_label
-// SOURCE src/auto/game.cpp save_filter_append_label
-// SOURCE src/auto/game.cpp save_file_filter
-// SOURCE src/auto/game.cpp save_filter_add_entry
+// SOURCE src/auto/game_save.cpp save_filter_append_label
+// SOURCE src/auto/game_save.cpp save_file_filter
+// SOURCE src/auto/game_save.cpp save_filter_add_entry
 // SOURCE src/auto/map.cpp terrain_editor_on_edit_river
 // SOURCE src/auto/map.cpp terrain_editor_on_edit_coast
 // SOURCE src/auto/map.cpp terrain_editor_on_edit_misc
 // SOURCE src/auto/pedia.cpp PediaWindow::load_wonder_index
 // SOURCE src/auto/pedia.cpp PediaWindow::append_unit_fact
-// SOURCE src/auto/network.cpp parley_desc_append
+// SOURCE src/auto/network_parley.cpp parley_desc_append
 // Fixed buffers of the original overflowed only by modified game text (Peter
 // Johnson's ledger BF-029, 038, 053, 057, 061, 063, 072, 082, 096, 116, 118,
 // 198, 212): the actual bodies with small providers. The game's own text keeps

@@ -12,7 +12,7 @@ struct GamePalette;
 struct GameFont;
 struct GameMenu;
 struct Control;
-struct EventsParseState;    /* game.cpp: the parts of ScenarioEvents::parse_file */
+struct EventsParseState;    /* game_events.cpp: the parts of ScenarioEvents::parse_file */
 
 /* The window classes.  WndBase (wnd_record_init 005db610, 0x10 bytes) is
    the native window record; ModalMenuWindow (wnd_ctor 0044c730, 0xb8) adds

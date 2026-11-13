@@ -7,7 +7,7 @@ progress: [STATUS.md](STATUS.md).
 
 | Path | What |
 | --- | --- |
-| `src/auto/` | The game: decompiled once, now C++ edited directly, a file per subject (`city.cpp`, `unit.cpp`, `ai.cpp`, `diplomacy.cpp`, `map.cpp`, `window.cpp` …). |
+| `src/auto/` | The game: decompiled once, now C++ edited directly, a file per subject (`city.cpp`, `unit.cpp`, `ai.cpp`, `diplomacy.cpp`, `map.cpp`, `window.cpp` …), the largest in parts named after it: `game_setup.cpp`, `game_save.cpp`, `game_events.cpp` and `game_events_editor.cpp`, `game_diffeng.cpp`, `game_cheat.cpp`, `game_status.cpp`; `network_messages.cpp`, `network_join.cpp`, `network_parley.cpp` and `network_parley_panes.cpp`; `city_window.cpp`, `city_production.cpp`, `city_advisors.cpp`, `city_view.cpp`, `city_editors.cpp`; `unit_move.cpp`, `unit_combat.cpp`, `unit_spy.cpp`, `unit_editors.cpp`; `window_dialog.cpp`, `window_menu.cpp`; `graphics_surface.cpp`, `graphics_sprite_editor.cpp`. |
 | `src/game/` | Functions the decompiler could not translate, reconstructed by hand. |
 | `src/data/` | The game's static data, laid out exactly as in the original: defined in `gamedata.cpp` (address order), declared by subject in `state/` (`game.h`, `city.h`, `network.h` ..., the texts in `strings.h`); records listed in `re/state_records.txt`. |
 | `src/include/` | Types recovered from the binary: units, cities, civilizations, map, the game's classes. |

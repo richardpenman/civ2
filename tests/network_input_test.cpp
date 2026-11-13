@@ -1,16 +1,16 @@
-// SOURCE src/auto/game.cpp diffeng_rle_decoded_size
-// SOURCE src/auto/game.cpp diffeng_rle_decode
-// SOURCE src/auto/game.cpp diffeng_rle_encode
-// SOURCE src/auto/network.cpp net_state_diff_record_fits
-// SOURCE src/auto/network.cpp net_message_min_size
-// SOURCE src/auto/network.cpp net_parley_item_valid
-// SOURCE src/auto/network.cpp net_parley_offer_valid
-// SOURCE src/auto/network.cpp net_popup_args_valid
-// SOURCE src/auto/network.cpp net_rule_table_valid
-// SOURCE src/auto/network.cpp net_message_body_valid
-// SOURCE src/auto/network.cpp net_received_message_valid
-// SOURCE src/auto/network.cpp net_on_broadcast_receive
-// SOURCE src/auto/network.cpp net_on_secure_receive
+// SOURCE src/auto/game_diffeng.cpp diffeng_rle_decoded_size
+// SOURCE src/auto/game_diffeng.cpp diffeng_rle_decode
+// SOURCE src/auto/game_diffeng.cpp diffeng_rle_encode
+// SOURCE src/auto/network_messages.cpp net_state_diff_record_fits
+// SOURCE src/auto/network_messages.cpp net_message_min_size
+// SOURCE src/auto/network_messages.cpp net_parley_item_valid
+// SOURCE src/auto/network_messages.cpp net_parley_offer_valid
+// SOURCE src/auto/network_messages.cpp net_popup_args_valid
+// SOURCE src/auto/network_messages.cpp net_rule_table_valid
+// SOURCE src/auto/network_messages.cpp net_message_body_valid
+// SOURCE src/auto/network_messages.cpp net_received_message_valid
+// SOURCE src/auto/network_messages.cpp net_on_broadcast_receive
+// SOURCE src/auto/network_messages.cpp net_on_secure_receive
 #include <cassert>
 #include <cstdio>
 #include <cstring>

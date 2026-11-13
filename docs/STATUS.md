@@ -4,7 +4,7 @@
 
 | status      | functions | meaning |
 |-------------|-----------|---------|
-| auto        | 4040 | game functions, translated from Ghidra's output by `tools/gen_c.py`; since October 2026 the source, edited directly, in files by subject (src/auto/city.cpp, unit.cpp, map.cpp ...) |
+| auto        | 4040 | game functions, translated from Ghidra's output by `tools/gen_c.py`; since October 2026 the source, edited directly, in files by subject (src/auto/city.cpp, unit.cpp, map.cpp ...; the largest in parts: city_window.cpp, game_events.cpp, network_parley.cpp ...) |
 | game        |  114 | reconstructed by hand (src/game/*.cpp) |
 | ehfunclet   |  462 | C++ unwind funclets; inlined into their callers, never called on their own |
 | crt         |  295 | statically linked MSVC 4.2 debug C runtime: the native builds use their own C library (src/native/crt.cpp for what differs) |
@@ -274,9 +274,10 @@ message by message and clock event by clock event.
   long body are split into named parts, each beside the function it came
   from with a comment saying so: before, 69 functions were over 300 lines
   and 9 over 1,000 (the AI's unit orders 2,849, the parley window 2,282,
-  production choice 1,985); now 9 are over 300 (data tables and flat
-  switches of short cases: the spaceship's part rows, the network message
-  dispatch, the events editor's trigger lists) and none over 1,000.
+  production choice 1,985); then 9 were over 300 (data tables and flat
+  switches of short cases) and none over 1,000; now none is over 300 (the
+  longest: city_choose_production_improvement_score, 295 lines; see "Files
+  and functions by subject" below).
   Locals shared between parts are passed by reference or in a small state
   struct, so values that carry over (the original's stale reads included)
   flow as before; a part that called `_rand()` names the original function
@@ -441,17 +442,68 @@ message by message and clock event by clock event.
   with clear (a path gcc cannot rule out).  The call comparison caught a
   slip in a first try: in the parley's unit and city lists a row whose unit
   or city is gone leaves the drawing loop to rebuild the list and draw it
-  again, not to finish (now the flag `stale`).  Left, by kind:
-  ai_unit_choose_orders (36) and ai_barbarian_unit_move (8): the split
-  parts return codes that send the parent into shared tails (the order's
-  direction, its finish, the guard checks), several entered from many
-  points; unit_move_dir (15): the map lock released and the network told on
-  every path, after a tail (finish_move) that the attack and the
-  no-direction paths share; diplo_meet_ally_war_talk (8): a 25-line ending
-  of the meeting (attitudes, the request count) reached from eight points;
-  moviewnd_wndproc (2): two messages' handlers shared by other messages,
-  whose MCI call passes a stale local by address (moving it into a helper
-  would move that stack slot).
+  again, not to finish (now the flag `stale`).
+  69 -> 0: the shared tails became parts the paths return through.
+  ai_unit_choose_orders (36): its endings are parts, each ending in the
+  next (ai_orders_by_kind, the orders by kind of unit; ai_orders_guard;
+  ai_orders_transport_loop; ai_orders_plan_then_apply; ai_orders_apply_dir,
+  the direction become orders; ai_orders_finish), so a goto to a tail is
+  `return tail(&st);`; ai_barbarian_unit_move (8) the same
+  (ai_barb_finalize_dir, ai_barb_clear_goto_done).  unit_move_dir (15): the
+  checks in its loop say where the move goes on (`next`: UMD_CHECKS,
+  UMD_FINISH_MOVE, UMD_UNLOCK_MAP, UMD_SEND_UPDATE); the move itself and
+  its finish are parts (unit_move_dir_step, whose `_rand()` names
+  unit_move_dir; unit_move_dir_finish_move), after which the function
+  unlocks the map and tells the network as before.  diplo_ai_meet_player
+  (8; STATUS called it diplo_meet_ally_war_talk): the meeting is a part
+  (diplo_ai_meet_player_talk) it returns from to the ending.
+  moviewnd_wndproc (2): the size and palette handlers are parts (the MCI
+  call's parameter block, passed uninitialized as in the original, is not
+  read for that command).  Checked with every part forced inline in both
+  versions: the call automata the same for all six at -O0
+  (tools/calls_compare.py); at -O2 gcc specializes the copied tails on
+  paths no input reaches (the order known to be 4..9 when the orders are
+  finished at once, the direction known to be 8), which the shared tail
+  could not.  The replays and the unit tests as before.
+* **Files and functions by subject** (step 6).  No function is over 300
+  lines (10 were: the network message dispatch 711, the spaceship's part
+  rows 707, net_send_message 603, ai_unit_choose_orders 451, the events
+  editor's trigger edit 433 and lists 348, net_popup_show 432,
+  events_write_list 429, unit_move_dir 312, foreign_minister_show 301).
+  NetSession::dispatch_message calls a handler per kind of message
+  (session, the game's state, the host's calls for a client, turns, what
+  the players see, diplomacy), each a switch of its cases that returns 0
+  for the others; net_send_message sends the header-only messages through
+  one part and builds the others' packets in another (identical cases
+  merged); net_popup_show by kind of popup; foreign_minister_show's row,
+  attitude setting and network audience are parts; the events writer's and
+  editor's switches lose 236 empty case labels each (no default: the same
+  graph at -O2); the spaceship's 88 part rows are a const table, copied
+  field by field as the original wrote them (their padding keeps what the
+  stack held).  The six files over 10,000 lines are split by subject,
+  whole functions moved in their order, each with the comments and types
+  before it: game.cpp 19,728 -> 4,425 (game_setup 3,946, game_events
+  3,793, game_events_editor 2,129, game_save 1,477, game_cheat 1,423,
+  game_status 1,133, game_diffeng 712), network.cpp 18,244 -> 3,595
+  (network_parley_panes 4,947, network_parley 4,590, network_messages
+  2,968, network_join 2,091), city.cpp 18,164 -> 5,563 (city_window 5,554,
+  city_production 3,158, city_advisors 1,632, city_editors 1,174,
+  city_view 1,098), window.cpp 12,997 -> 7,012 (window_dialog 4,352,
+  window_menu 1,639), unit.cpp 10,942 -> 5,199 (unit_combat 1,618,
+  unit_move 1,560, unit_editors 1,452, unit_spy 1,230), graphics.cpp
+  10,411 -> 3,651 (graphics_surface 3,921, graphics_sprite_editor 2,845);
+  the largest file is now civ.cpp (8,049).  Static functions moved with
+  all their callers (none made extern); the game's data is untouched.
+  Checks: the machine code of every function against the previous commit's,
+  pooled over all objects: 4,097 the same, 51 differ, all where gcc no
+  longer sees a callee's body in the same file (-O1's pure/const
+  discovery): two getters (CityWindow::get_city, DibSurface::pixel_ptr)
+  called where gcc had dropped or merged the call, values reloaded after
+  calls it had known not to write them, and the register and block choices
+  that follow; their call automata are the same (tools/calls_compare.py,
+  the two getters aside).  The unit tests find all 880 functions (the
+  file column of tests/unit/cases.tsv and re/methods.tsv, and the source
+  probes' SOURCE lines, follow the functions).
 * **Unit tests** (step 6, the last part).  `make test` runs 11,119 recorded
   calls of 880 of the game's functions in 2.7 seconds, without the game's
   files (docs/DEVELOPMENT.md "Unit tests"): each call recorded from the
@@ -462,9 +514,9 @@ message by message and clock event by clock event.
   (tests/unit_run.c) and compared byte for byte, `rand()` calls included (the
   seed is game data).  Calls that reach the platform layer, the heap or
   state outside the game's data are not taken; the runner keeps the cases it
-  reproduces twice in each of three processes.  By file: window 119 functions,
-  city 108, unit 106, map 75, civ 70, ai 60 (of the 63 the replays run),
-  graphics 56, text 54, diplomacy 43, game 32 ... (tests/unit/cases.tsv): combat
+  reproduces twice in each of three processes.  By file: window 82 functions,
+  map 75, civ 70, unit 67, city 61, ai 60 (of the 63 the replays run), text 54,
+  diplomacy 43, window_dialog 35, controls 29 ... (tests/unit/cases.tsv): combat
   (strengths, odds, the fight, veterans, city defences), movement and paths,
   city food, shields, trade, happiness, workers and production choice, the
   AI's assessments and unit orders, research cost and choice, diplomacy's

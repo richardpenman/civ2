@@ -103,11 +103,11 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed** (`bugfix_state()`). The cheat menu's Set City Size still accepts any number.
 
 ### B25. A human unit under autoplay meets a lone diplomat and does what its stack says
-- **Where:** `src/auto/unit.cpp`, `unit_move_dir` (0059062c), its part `unit_move_dir_expel`
-  (line 7630): a human player's unit moving onto a lone diplomat of a civilization it has a
+- **Where:** `src/auto/unit_move.cpp`, `unit_move_dir` (0059062c), its part `unit_move_dir_expel`:
+  a human player's unit moving onto a lone diplomat of a civilization it has a
   cease-fire or peace with, near that civilization's city, asks "Expel?" (`answer`); under
   autoplay (`autoplay.active`, the debug cheat) the question is not asked and `answer`, a local
-  of `unit_move_dir` (line 7960) never set before, is read as it is: 2 stops the move, 0
+  of `unit_move_dir` never set before, is read as it is: 2 stops the move, 0
   expels, anything else attacks.
 - **What goes wrong:** under autoplay the unit stops, expels or attacks (breaking the treaty)
   by stale stack.
@@ -193,8 +193,8 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   machine code has it too (re/decomp.c: the loop's end jumps past the loop).
 
 ### B5. SAM Battery score tests a city flag nothing sets
-- **Where:** `src/auto/city.cpp`, `city_choose_production_sam_score` (part of
-  `city_choose_production`, 00498e8b), line 5593:
+- **Where:** `src/auto/city_production.cpp`, `city_choose_production_sam_score` (part of
+  `city_choose_production`, 00498e8b):
   ```cpp
   score = 0xc - threat_level;
   score = int_clamp(score,1,0xc);
@@ -260,8 +260,8 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x64a8c19c`.
 
 ### B21. A city's wonder score doubled by its other locals when it builds something else
-- **Where:** `src/auto/city.cpp`, `city_choose_production` (00498e8b), its part
-  `city_choose_production_try_wonder` (line 6399): the score of a wonder the city does not
+- **Where:** `src/auto/city_production.cpp`, `city_choose_production` (00498e8b), its part
+  `city_choose_production_try_wonder`: the score of a wonder the city does not
   build is doubled when the civilization (`civ5`) has its bit in `wonder_builders[-0x27 -
   building]`, the 28-byte mask of the civilizations building each wonder. For a city building
   a unit or an improvement (`building` > -0x27) that index is -100 to -1: below the array. The
@@ -296,12 +296,13 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 ### B6. A stale parley cancel ends the next granted audience at once
 - **Where:** `net.nm_parley_cancel_count` (`src/data/state/network.h`), a counter of received
   `NM_PARLEYREQUEST_CANCEL` messages, raised for every one received
-  (`src/auto/network.cpp` line 5178). The message's handler (`case NM_PARLEYREQUEST_CANCEL`,
-  line 4930) ignores a cancel that matches no pending request but leaves the count. The
+  (`NetSession::process_messages` counts each type, `src/auto/network_messages.cpp`). The
+  message's handler (`case NM_PARLEYREQUEST_CANCEL` in `NetSession::dispatch_diplomacy_message`)
+  ignores a cancel that matches no pending request but leaves the count. The
   requester's code then reads it: `diplo_civs_meet_parley` (`src/auto/diplomacy.cpp` line
   5739), the Foreign Minister's audience request (`src/auto/reports.cpp` line 1753),
-  `net_popup_parley_request` (`src/auto/network.cpp` line 10328), `mp_meeting_wait_idle`. Only
-  `net_heartbeat_send` (line 5548) and those paths clear it.
+  `net_popup_parley_request` (`src/auto/network.cpp`), `mp_meeting_wait_idle`. Only
+  `net_heartbeat_send` and those paths clear it.
 - **What goes wrong:** an audience granted too late (after the requester gave up) opens the
   other player's parley window alone; its End Negotiations sends a cancel the requester no
   longer expects. The count stays, and the requester's next granted audience ends at once with
@@ -323,7 +324,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   itself but has not been run yet.
 
 ### B7. "Opponent's Response" popups nest
-- **Where:** `src/auto/network.cpp`, `parley_poll_net_replies` (004b81dd), line 8153. Every popup
+- **Where:** `src/auto/network_parley.cpp`, `parley_poll_net_replies` (004b81dd). Every popup
   it opens (PARLEYCOUNTEROFFER, PARLEYNOTHANKS, PARLEYACCEPT, ...) gets
   `dlg_style.pending_idle_callback = parley_poll_net_replies`: while the popup waits, the same
   function processes network messages and can open the next reply's popup inside it. The
@@ -344,7 +345,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   change nothing for the other player. Left for a test that reproduces it.
 
 ### B18. Joining a network game sets "Open Game" from a stale value
-- **Where:** `src/auto/game.cpp`, the network setup (the function with `setup_net_host` and
+- **Where:** `src/auto/game_setup.cpp`, the network setup (the function with `setup_net_host` and
   `setup_net_join`): `saved_open_game` is saved before hosting (which sets `open_game = 1`)
   and restored after the loop, but Join skips the save.
 - **What goes wrong:** a joining player's `mp_options.open_game` gets the low 16 bits of a stale
@@ -375,7 +376,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 ## Scenario and events
 
 ### B8. Compacting the events frees the string pool the editor still points into
-- **Where:** `src/auto/game.cpp`, `events_compact` (004cef35), line 7459. It copies the events
+- **Where:** `src/auto/game_events.cpp`, `events_compact` (004cef35). It copies the events
   out, resets the events (freeing the string pool and allocating a new one) and copies them
   back, while its callers keep pointers into the old pool: `editor_text_dlg_on_ok`
   (`src/auto/editor.cpp` line 1575) writes the text lines through
@@ -388,7 +389,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 
 ### B23. A MOVEUNIT event for a named unit type moves nothing
-- **Where:** `src/auto/game.cpp`, `ScenarioEvents::action_move_unit` (004fb29f), line 8295:
+- **Where:** `src/auto/game_events.cpp`, `ScenarioEvents::action_move_unit` (004fb29f):
   the units to move are those with `event->move_unit_type != unit` false, where `unit` is the
   slot number in the unit list, not the unit's type (`units[unit].type`). `unit=ANYUNIT` (-2)
   works.
@@ -403,8 +404,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 
 ### B32. Renaming in a rules editor to a shorter name shifts every later name
 - **Where:** the rules editors' OK: `tech_editor_save_items` (00415307, `src/auto/civ.cpp`
-  line 74), the improvements' (`src/auto/city.cpp` line 7744), units' (`src/auto/unit.cpp`
-  line 8299), terrain's (`src/auto/map.cpp` line 4611) and the governments' and commodities'
+  line 74), the improvements' (`src/auto/city_editors.cpp`), units' (`src/auto/unit_editors.cpp`), terrain's (`src/auto/map.cpp` line 4611) and the governments' and commodities'
   (`src/auto/editor.cpp` lines 280 to 294) copy each name into its string pool entry at the
   editor's width (20, 25, 15, 15, 15 and 10), padding with NULs. A pool entry can be longer
   (a scenario's RULES.TXT).
@@ -419,7 +419,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   names is longer than its editor's width.
 
 ### B33. The events parser's debug output names a stale civilization
-- **Where:** `src/auto/game.cpp`, `ScenarioEvents::parse_trigger_received_tech` and
+- **Where:** `src/auto/game_events.cpp`, `ScenarioEvents::parse_trigger_received_tech` and
   `parse_trigger_city_taken` (lines 9153 and 9226): with `@DEBUG` in EVENTS.TXT the "king id"
   of a receiver or attacker is printed from `ps->parsed_civ`, which these triggers do not set:
   another line's civilization, or nothing set at all.
@@ -432,7 +432,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 ## User interface
 
 ### B9. The "long move" warning comes too early
-- **Where:** `src/auto/unit.cpp`, `unit_move_dir_long_move` (part of `unit_move_dir`, 0059062c),
+- **Where:** `src/auto/unit_move.cpp`, `unit_move_dir_long_move` (part of `unit_move_dir`, 0059062c),
   line 7475:
   ```cpp
   if ((units[unit3].orders == ORDER_GOTO) || ((units[unit3].flags & UNITF_AUTOMATED) != 0)) {
@@ -459,7 +459,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   (`city_window_supported_unit_menu`, which CIV2UIA does not patch).
 
 ### B20. Buttons wider than their dialog run past its left edge
-- **Where:** `src/auto/window.cpp`, `Dialog::layout_buttons` (part of `Dialog::compute_layout`,
+- **Where:** `src/auto/window_dialog.cpp`, `Dialog::layout_buttons` (part of `Dialog::compute_layout`,
   0059fd2a). Every button gets the width of the widest label (or an equal share of the window,
   if larger) and they are placed from the right edge leftward; the window does not grow when
   they do not fit.
@@ -473,8 +473,8 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed** (`bugfix_ui()`).
 
 ### B10. Clicking a citizen in the city window changes the one to its right
-- **Where:** `src/auto/city.cpp`, `CityWindow::draw_citizens` (line 12323), which adds one hotspot
-  per citizen (line 12374):
+- **Where:** `src/auto/city_window.cpp`, `CityWindow::draw_citizens`, which adds one hotspot
+  per citizen:
   ```cpp
   rect_set_xywh((iptr)hotspot_rect,x2,top + offset,pos,height);
   clickmap.hotspot_add_rect(i,2,(RECT *)hotspot_rect);
@@ -495,7 +495,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed** (`bugfix_ui()`).
 
 ### B11. Hot-seat: crash in the status panel between players
-- **Where:** `src/auto/game.cpp`, `status_draw_unit_panel` (00569801), its part for the tile
+- **Where:** `src/auto/game_status.cpp`, `status_draw_unit_panel` (00569801), its part for the tile
   under the unit: `if ((game.reveal_map == 0) && (human_civ != 0)) tile = known_at(x, y,
   human_civ)`. CIV2UIA patches that `jnz` to `jg` at 00569ec7. During an AI civilization's turn
   in a hot-seat game the turn loop sets human_civ's low byte to -1 (`game_play_loop`,
@@ -517,7 +517,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **What goes wrong:** opening a city from an advisor's list leaves the focus on the advisor:
   the city window's keys do nothing, and Escape closes the advisor instead.
 - **Source:** community, CIV2UIA ([README, item 21](https://github.com/FoxAhead/Civ2-UI-Additions)).
-- **Where:** `src/auto/city.cpp`, `CityWindow::open` (shows the window, `SurfaceWindow::show`:
+- **Where:** `src/auto/city_window.cpp`, `CityWindow::open` (shows the window, `SurfaceWindow::show`:
   ShowWindow and BringWindowToTop, no SetFocus) and `city_window_close` (gives the focus to the
   main window). The advisors open cities from their click handlers (e.g.
   `attitude_advisor_on_click`). Reproduced in the native build: a replay (F4, a click on Rome,
@@ -530,7 +530,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   a second Escape the advisor.
 
 ### B14. An enemy unit that fails to move pauses the game as if seen
-- **Where:** `src/auto/unit.cpp`, `unit_move_dir` (0059062c): `civ_sees[8]` (which players see
+- **Where:** `src/auto/unit_move.cpp`, `unit_move_dir` (0059062c): `civ_sees[8]` (which players see
   the move) is filled only when the unit moves; a move that stops early still reads
   `civ_sees[human_civ]` to pause (`ui_delay_ticks`) after an enemy's move. The original's stack
   held non-zero there for players 1 to 5 and zero for 6 and 7 (FRAME_PRESETS; probed in the
@@ -566,11 +566,12 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed** (`bugfix_ui()`).
 
 ### B22. Hot-seat: an AI unit's move is shown, paused for and announced by stale values
-- **Where:** `src/auto/unit.cpp`, `unit_move_dir` (0059062c) and `unit_paradrop` (004ca39e)
-  read `civ_sees[human_civ]` and `civ_animates[human_civ]` (whether this player sees the move
-  and sees it animated): in `unit_move_dir_landing_alert` (line 7145), the two ways of moving
-  the stack (lines 7186, 7225), the pause after an enemy's move (line 8203), and the
-  paradrop's announcement and animation (lines 3410, 3554). During an AI civilization's turn
+- **Where:** `unit_move_dir` (0059062c, `src/auto/unit_move.cpp`) and `unit_paradrop`
+  (004ca39e, `src/auto/unit.cpp`) read `civ_sees[human_civ]` and `civ_animates[human_civ]`
+  (whether this player sees the move and sees it animated): in `unit_move_dir_landing_alert`,
+  the two ways of moving the stack (`unit_move_dir_relocate`, `unit_move_dir_relocate_via_host`),
+  the pause after an enemy's move (`unit_move_dir_finish_move`), and the paradrop's
+  announcement and animation (`unit_paradrop_announce`, `unit_paradrop`). During an AI civilization's turn
   in a hot-seat game human_civ's low byte is -1 (B11): the original reads the local before
   each array, in `unit_move_dir` the hut flag (local_a4, 0 until the unit has moved) and
   `civ_sees[7]`. After Reveal Map's Barbarians (human_civ 0) it reads entry 0, which it never
@@ -612,7 +613,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed in every mode.**
 
 ### B28. A save whose end could not be written is reported saved
-- **Where:** `src/auto/game.cpp`, `save_write_game` (004741be), line 3130: the file is closed
+- **Where:** `src/auto/game_save.cpp`, `save_write_game` (004741be): the file is closed
   at the end (`ScopedFile`) and the result of the close, which writes what is still buffered,
   is not looked at.
 - **What goes wrong:** on a full disk the save is cut short and the game says it was saved.
@@ -646,8 +647,8 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed in every mode** (with the message name's array: a memory error in our build).
 
 ### B31. Shield waste drawn at a stale position on a full production bar
-- **Where:** `src/auto/city.cpp`, the city window's shield bar (`draw_resource_map`, 005025d5),
-  line 13043: `mid_x`, where the waste icons start, is set only when the waste's part of the
+- **Where:** `src/auto/city_window.cpp`, the city window's shield bar (`draw_resource_map`, 005025d5):
+  `mid_x`, where the waste icons start, is set only when the waste's part of the
   bar is not 0 wide after the support and surplus parts are measured.
 - **What goes wrong:** with very large production and some waste, the waste icons are drawn at
   a stale x.
@@ -659,7 +660,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 ### B35. The advisors call a democracy a republic
 - **Where:** the title line of the advisors (`attitude_advisor_draw`, `defense_minister_draw` and
   the casualty view in `src/auto/reports.cpp`, `trade_advisor_draw` and `city_status_draw` in
-  `src/auto/city.cpp`, `science_advisor_draw` in `src/auto/civ.cpp`): the label is
+  `src/auto/city_advisors.cpp`, `science_advisor_draw` in `src/auto/civ.cpp`): the label is
   `0x148 + int_clamp(government - 1, 0, 4)`, of Empire, Kingdom, People's Republic, Holy
   Empire, Republic and United States (0x148..0x14d).
 - **What goes wrong:** the clamp to 4 shows Democracy as "Republic of the ..."; the "United

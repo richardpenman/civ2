@@ -10,7 +10,7 @@
 // SOURCE src/auto/civ.cpp advance_has_prereq_seen
 // SOURCE src/auto/civ.cpp advance_has_prereq
 // SOURCE src/auto/city.cpp city_add_trade_route
-// SOURCE src/auto/game.cpp ScenarioEvents::parse_file
+// SOURCE src/auto/game_events.cpp ScenarioEvents::parse_file
 // Memory errors in the game's own code reached from its files (Peter Johnson's
 // ledger BF-058/296, BF-197, BF-121, BF-173, BF-026, BF-030): the actual
 // bodies with small providers; valid inputs keep the original's results.

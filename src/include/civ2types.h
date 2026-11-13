@@ -668,7 +668,7 @@ static_assert(sizeof(WaveSource) == 0xbc, "");
 static_assert(sizeof(BitmapInfoHeader) == 0x28, "");
 #endif
 
-/* Network (network.cpp). */
+/* Network (network*.cpp). */
 /* A game announced on the network (0x124 bytes): the payload of the server's
  * info message (net_fill_game_info), copied into a node of the found games
  * list (net.found_games, sorted by game name). */
@@ -751,7 +751,7 @@ static_assert(sizeof(NetStackedDraw) == 0x40, "");
 #endif
 
 
-/* Windows (window.cpp). */
+/* Windows (window*.cpp). */
 /* The native window record (0x4c bytes, a locked mem_handle block) that
  * wnd_obj_create makes for a window object: WndBase.native_wnd,
  * wnd_get_window(). */
@@ -782,7 +782,7 @@ static_assert(sizeof(NativeWindow) == 0x4c, "");
 #endif
 
 
-/* Dialogs (window.cpp): the lists a dialog builds, each node allocated from
+/* Dialogs (window_dialog.cpp): the lists a dialog builds, each node allocated from
  * the dialog's string pool (memblock_alloc). */
 /* A choice of a dialog's option list (0x18 bytes; Dialog.option_list,
  * dialog_add_option); a list sorted by text when style_flags & 0x800000. */
@@ -859,7 +859,7 @@ static_assert(sizeof(RleStream) == 0x14, "");
 #endif
 
 
-/* Scenario events (game.cpp). */
+/* Scenario events (game_events.cpp). */
 /* One @IF/@THEN event of EVENTS.TXT (0x1c4 bytes; ScenarioEvents.event_list,
  * events_alloc, events_parse_file).  The first 0x1bc bytes are saved with the
  * game; the strings live in the events' string pool. */
@@ -928,7 +928,7 @@ static_assert(sizeof(ScenarioEvent) == 0x1c4, "");
 #endif
 
 
-/* Graphics (graphics.cpp). */
+/* Graphics (graphics*.cpp). */
 /* A GDI DIB section and its memory DC (0x28 bytes, a locked mem_handle block;
  * dib_create*; DibSurface.dib). */
 typedef struct GdiDib {
