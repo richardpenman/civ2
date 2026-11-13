@@ -35,8 +35,8 @@ addr	old	class	member	file	why
 0040efa0	font_line_spacing	GameFont	line_spacing	src/auto/graphics.cpp	
 0040efd0	font_text_width	GameFont	text_width	src/auto/graphics.cpp	
 0040f010	surface_delete	DibSurface	surface_delete	src/auto/graphics.cpp	kept whole (delete clashes)
-0040f060	taxrate_dialog_ctor	TaxRateDialog	construct	src/auto/city_advisors.cpp	
-0040f1e0	taxrate_dialog_dtor	TaxRateDialog	destruct	src/auto/city_advisors.cpp	
+0040f060	taxrate_dialog_ctor	TaxRateDialog	TaxRateDialog	src/auto/city_advisors.cpp	
+0040f1e0	taxrate_dialog_dtor	TaxRateDialog	~TaxRateDialog	src/auto/city_advisors.cpp	
 0040f320	wnd_set_modal_idle_callback	ModalMenuWindow	set_modal_idle_callback	src/auto/window.cpp	
 0040f350	wnd_set_keyboard_nav	Wnd	set_keyboard_nav	src/auto/window.cpp	
 0040f380	ctrl_show_and_redraw	Control	show_and_redraw	src/auto/controls.cpp	
@@ -87,8 +87,8 @@ addr	old	class	member	file	why
 00416c9e	tech_editor_dialog_run	EditorWindow	tech_editor_dialog_run	src/auto/civ.cpp	
 00417ef0	font_set	GameFont	set	src/auto/graphics.cpp	
 00417f70	sprite_get_key_color	Sprite	get_key_color	src/auto/graphics.cpp	
-00417fa0	editor_wnd_ctor	EditorWindow	construct	src/auto/editor.cpp	
-004183d0	editor_wnd_dtor	EditorWindow	destruct	src/auto/editor.cpp	
+00417fa0	editor_wnd_ctor	EditorWindow	EditorWindow	src/auto/editor.cpp	
+004183d0	editor_wnd_dtor	EditorWindow	~EditorWindow	src/auto/editor.cpp	
 00418740	ctrl_get_id	Control	get_id	src/auto/controls.cpp	
 00418770	control_get_hwnd	Control	get_hwnd	src/auto/controls.cpp	
 004187a0	edit_ctor	EditControl		src/auto/controls.cpp	address taken (src/auto/editor.cpp, src/auto/window.cpp)
@@ -178,8 +178,8 @@ addr	old	class	member	file	why
 0044c8e0	wnd_clear_handlers	WndHandlers	clear_handlers	src/auto/window.cpp	
 0044ca40	wnd_handlers_dtor	WndHandlers	destruct	src/auto/window.cpp	
 0044cb20	surfwnd_wnd_dtor	Wnd	destruct	src/auto/window.cpp	
-0044ce16	throneroom_ctor	ThroneRoomWindow	construct	src/auto/reports.cpp	
-0044d027	throneroom_dtor	ThroneRoomWindow	destruct	src/auto/reports.cpp	
+0044ce16	throneroom_ctor	ThroneRoomWindow	ThroneRoomWindow	src/auto/reports.cpp	
+0044d027	throneroom_dtor	ThroneRoomWindow	~ThroneRoomWindow	src/auto/reports.cpp	
 0044d162	throneroom_create_windows	ThroneRoomWindow	create_windows	src/auto/reports.cpp	
 0044d296	throneroom_run_upgrade	ThroneRoomWindow	run_upgrade	src/auto/reports.cpp	
 0044d9c1	throneroom_run_view	ThroneRoomWindow	run_view	src/auto/reports.cpp	
@@ -219,8 +219,8 @@ addr	old	class	member	file	why
 00453cc0	hyperlink_ctor	Hyperlink	construct	src/auto/pedia.cpp	
 00453d40	hyperlink_set_click_callback	Hyperlink	set_click_callback	src/auto/pedia.cpp	
 00453d70	hyperlink_set_dblclick_callback	Hyperlink	set_dblclick_callback	src/auto/pedia.cpp	
-00454354	cityview_ctor	CityViewWindow	construct	src/auto/city_view.cpp	
-00454699	cityview_dtor	CityViewWindow	destruct	src/auto/city_view.cpp	
+00454354	cityview_ctor	CityViewWindow	CityViewWindow	src/auto/city_view.cpp	
+00454699	cityview_dtor	CityViewWindow	~CityViewWindow	src/auto/city_view.cpp	
 004548a9	cityview_load	CityViewWindow	load	src/auto/city_view.cpp	
 00454eb2	cityview_run_modal	CityViewWindow	run_modal	src/auto/city_view.cpp	
 00454f83	cityview_classify_site	CityViewWindow	classify_site	src/auto/city_view.cpp	
@@ -320,8 +320,8 @@ addr	old	class	member	file	why
 00492ab0	edit_get_sel_end	EditControl	get_sel_end	src/auto/controls.cpp	
 00492ae0	edit_replace_sel	EditControl	replace_sel	src/auto/controls.cpp	
 00492b20	edit_set_sel	EditControl	set_sel	src/auto/controls.cpp	
-004942a3	diplo_leader_wnd_ctor	DiploLeaderWindow	construct	src/auto/diplomacy.cpp	
-004943c9	diplo_leader_wnd_dtor	DiploLeaderWindow	destruct	src/auto/diplomacy.cpp	
+004942a3	diplo_leader_wnd_ctor	DiploLeaderWindow	DiploLeaderWindow	src/auto/diplomacy.cpp	
+004943c9	diplo_leader_wnd_dtor	DiploLeaderWindow	~DiploLeaderWindow	src/auto/diplomacy.cpp	
 004944bb	diplo_leader_wnd_init	DiploLeaderWindow	init	src/auto/diplomacy.cpp	
 00494704	diplo_leader_wnd_show	DiploLeaderWindow	show	src/auto/diplomacy.cpp	
 004947f0	diplo_leader_wnd_teardown	DiploLeaderWindow	teardown	src/auto/diplomacy.cpp	
@@ -332,8 +332,8 @@ addr	old	class	member	file	why
 00494e2a	diplo_leader_init_science	DiploLeaderWindow	init_science	src/auto/diplomacy.cpp	
 00495c35	diplo_leader_init_portrait	DiploLeaderWindow	init_portrait	src/auto/diplomacy.cpp	
 00495e0c	diplo_leader_init_video	DiploLeaderWindow	init_video	src/auto/diplomacy.cpp	
-0049621d	portrait_dlg_ctor	PortraitDialog	construct	src/auto/graphics.cpp	
-0049632a	portrait_dlg_dtor	PortraitDialog	destruct	src/auto/graphics.cpp	
+0049621d	portrait_dlg_ctor	PortraitDialog	PortraitDialog	src/auto/graphics.cpp	
+0049632a	portrait_dlg_dtor	PortraitDialog	~PortraitDialog	src/auto/graphics.cpp	
 00496402	portrait_dlg_create	PortraitDialog	create	src/auto/graphics.cpp	
 004964b3	portrait_dlg_create_buttons	PortraitDialog	create_buttons	src/auto/graphics.cpp	
 004965ff	portrait_dlg_run	PortraitDialog	run	src/auto/graphics.cpp	
@@ -382,16 +382,16 @@ addr	old	class	member	file	why
 004bb6d0	edit_set_caret	EditControl	set_caret	src/auto/controls.cpp	
 004bb710	edit_get_text_end	EditControl	get_text_end	src/auto/controls.cpp	
 004bb740	radiogrp_dtor	RadioGroup	destruct	src/auto/controls.cpp	
-004bb99f	wonder_movie_wnd_ctor	WonderMovieWindow	construct	src/auto/city_view.cpp	
-004bba79	wonder_movie_wnd_dtor	WonderMovieWindow	destruct	src/auto/city_view.cpp	
+004bb99f	wonder_movie_wnd_ctor	WonderMovieWindow	WonderMovieWindow	src/auto/city_view.cpp	
+004bba79	wonder_movie_wnd_dtor	WonderMovieWindow	~WonderMovieWindow	src/auto/city_view.cpp	
 004bbb3f	wonder_movie_wnd_create	WonderMovieWindow	create	src/auto/city_view.cpp	
 004bbdfb	wonder_movie_wnd_play	WonderMovieWindow	play	src/auto/city_view.cpp	
 004bc0d3	wonder_movie_wnd_draw_caption	WonderMovieWindow	draw_caption	src/auto/city_view.cpp	
 004bc10f	wonder_movie_wnd_resize	WonderMovieWindow	resize	src/auto/city_view.cpp	
 004cff70	wnd_set_resize_border	WndBase	set_resize_border	src/auto/window.cpp	
 004cffb0	edit_get_line	EditControl	get_line	src/auto/controls.cpp	
-004d0517	spaceship_wnd_ctor	SpaceshipWindow	construct	src/auto/spaceship.cpp	
-004d08b0	spaceship_wnd_dtor	SpaceshipWindow	destruct	src/auto/spaceship.cpp	
+004d0517	spaceship_wnd_ctor	SpaceshipWindow	SpaceshipWindow	src/auto/spaceship.cpp	
+004d08b0	spaceship_wnd_dtor	SpaceshipWindow	~SpaceshipWindow	src/auto/spaceship.cpp	
 004d0b58	spaceship_wnd_init	SpaceshipWindow	init	src/auto/spaceship.cpp	
 004d0d64	spaceship_wnd_create	SpaceshipWindow	create	src/auto/spaceship.cpp	
 004d0ea6	spaceship_wnd_run_modal	SpaceshipWindow	run_modal	src/auto/spaceship.cpp	
@@ -417,7 +417,7 @@ addr	old	class	member	file	why
 004dbee6	parley_build_description	ParleyWindow	build_description	src/auto/network_parley.cpp	
 004def54	parley_describe_treaty	ParleyWindow	describe_treaty	src/auto/network_parley.cpp	
 004e7240	wnd_show_restored	WndBase	show_restored	src/auto/window.cpp	
-004f3d60	city_picture_popup_ctor	CityPicturePopup	construct	src/auto/city.cpp	
+004f3d60	city_picture_popup_ctor	CityPicturePopup	CityPicturePopup	src/auto/city.cpp	
 004f3e20	city_picture_popup_scalar_dtor	CityPicturePopup	scalar_destruct	src/auto/city.cpp	
 004f3feb	pedia_window_ctor	PediaWindow	construct	src/auto/pedia.cpp	
 004f44a7	pedia_window_dtor	PediaWindow	destruct	src/auto/pedia.cpp	
@@ -523,8 +523,8 @@ addr	old	class	member	file	why
 00514272	net_msgq_reset	NetMsgQueue	reset	src/auto/network.cpp	
 0051438f	net_msgq_enqueue	NetMsgQueue	enqueue	src/auto/network.cpp	
 005149d6	net_msgq_dequeue	NetMsgQueue	dequeue	src/auto/network.cpp	
-00514f16	destroyed_civs_wnd_ctor	DestroyedCivsWindow	construct	src/auto/reports.cpp	
-005150b9	destroyed_civs_wnd_dtor	DestroyedCivsWindow	destruct	src/auto/reports.cpp	
+00514f16	destroyed_civs_wnd_ctor	DestroyedCivsWindow	DestroyedCivsWindow	src/auto/reports.cpp	
+005150b9	destroyed_civs_wnd_dtor	DestroyedCivsWindow	~DestroyedCivsWindow	src/auto/reports.cpp	
 005151f4	destroyed_civs_wnd_create	DestroyedCivsWindow	create	src/auto/reports.cpp	
 00515516	destroyed_civs_run	DestroyedCivsWindow	run	src/auto/reports.cpp	
 00515999	destroyed_civs_draw_entry	DestroyedCivsWindow	draw_entry	src/auto/reports.cpp	
@@ -532,8 +532,8 @@ addr	old	class	member	file	why
 00515dc8	destroyed_civs_slide_step	DestroyedCivsWindow	slide_step	src/auto/reports.cpp	
 00515f3c	destroyed_civs_slide_down	DestroyedCivsWindow	slide_down	src/auto/reports.cpp	
 00516005	destroyed_civs_slide_up	DestroyedCivsWindow	slide_up	src/auto/reports.cpp	
-0051661a	council_wnd_ctor	CouncilWindow	construct	src/auto/reports.cpp	
-005167d9	council_wnd_dtor	CouncilWindow	destruct	src/auto/reports.cpp	
+0051661a	council_wnd_ctor	CouncilWindow	CouncilWindow	src/auto/reports.cpp	
+005167d9	council_wnd_dtor	CouncilWindow	~CouncilWindow	src/auto/reports.cpp	
 00516947	council_wnd_init	CouncilWindow	init	src/auto/reports.cpp	
 00516fd4	council_wnd_run_modal	CouncilWindow	run_modal	src/auto/reports.cpp	
 00517158	council_draw_background	CouncilWindow	draw_background	src/auto/reports.cpp	
@@ -1028,6 +1028,6 @@ addr	old	class	member	file	why
 	pedia_load_description	PediaWindow	load_description	src/game/retvals.cpp	
 	wnd_dtor	ModalMenuWindow	destruct	src/game/unwind.cpp	
 	surfwnd_dtor	SurfaceWindow	destruct	src/game/unwind.cpp	
-	city_picture_popup_dtor	CityPicturePopup	destruct	src/game/unwind.cpp	
+	city_picture_popup_dtor	CityPicturePopup	~CityPicturePopup	src/game/unwind.cpp	
 	ddwin_dtor	DDWindow	destruct	src/game/unwind.cpp	
 	spaceship_wnd_make_button_sprites	SpaceshipWindow	make_button_sprites	src/game/unwind.cpp	

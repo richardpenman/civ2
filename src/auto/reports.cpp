@@ -3908,7 +3908,7 @@ void __cdecl casualty_timeline_on_dblclick(i32 click_x,int click_y)
 }
 
 /* 0044ce16 auto */
-ThroneRoomWindow *ThroneRoomWindow::construct(int civ)
+ThroneRoomWindow::ThroneRoomWindow(int civ)
 
 {
   iptr i;
@@ -3932,11 +3932,10 @@ ThroneRoomWindow *ThroneRoomWindow::construct(int civ)
   }
   SetRect((LPRECT)((u8 *)&click_prompt_rect),0,0x1c2,0x280,0x1e0);
   click_prompt_font.set_styled(0,0x12,3);
-  return this;
 }
 
 /* 0044d027 auto */
-void ThroneRoomWindow::destruct()
+ThroneRoomWindow::~ThroneRoomWindow()
 
 {
   int try_level;
@@ -5985,19 +5984,17 @@ void __cdecl destroyed_civs_show(int killer_civ)
 
 {
   int created;
-  i8 window[1808];
+  DestroyedCivsWindow window;
   
-  ((DestroyedCivsWindow *)window)->construct();
-  ON_SCOPE_EXIT(((DestroyedCivsWindow *)&window)->destruct());
-  created = ((DestroyedCivsWindow *)window)->create(killer_civ);
+  created = window.create(killer_civ);
   if (created != 0) {
-    ((DestroyedCivsWindow *)window)->run();
+    window.run();
   }
   return;
 }
 
 /* 00514f16 auto */
-DestroyedCivsWindow *DestroyedCivsWindow::construct()
+DestroyedCivsWindow::DestroyedCivsWindow()
 
 {
   
@@ -6014,11 +6011,10 @@ DestroyedCivsWindow *DestroyedCivsWindow::construct()
   slide_y = 0;
   SetRect((LPRECT)&panel_clip_rect,0xd0,0x39,0x1b1,0x14c);
   caption_font_2.set_styled(0,0x18,1);
-  return this;
 }
 
 /* 005150b9 auto */
-void DestroyedCivsWindow::destruct()
+DestroyedCivsWindow::~DestroyedCivsWindow()
 
 {
   int try_level;
@@ -6364,11 +6360,9 @@ void __cdecl council_show(int civ,i32 cheat_mode)
 {
   int ok;
   i32 ret_addr;
-  CouncilWindow council;
   
   council_state.active = 1;
-  council.construct();
-  ON_SCOPE_EXIT(council.destruct());
+  CouncilWindow council;
   snd_cd_stop();
   ret_addr = 0x5165c6;
   ok = council.init(civ,cheat_mode);
@@ -6381,7 +6375,7 @@ void __cdecl council_show(int civ,i32 cheat_mode)
 }
 
 /* 0051661a auto */
-CouncilWindow *CouncilWindow::construct()
+CouncilWindow::CouncilWindow()
 
 {
   
@@ -6403,11 +6397,10 @@ CouncilWindow *CouncilWindow::construct()
      docs/BUGS.md) */
   speech_advisor_index = 0;
   council_state.wnd = this;
-  return this;
 }
 
 /* 005167d9 auto */
-void CouncilWindow::destruct()
+CouncilWindow::~CouncilWindow()
 
 {
   int try_level;

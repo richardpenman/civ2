@@ -853,10 +853,8 @@ void EditorWindow::tech_editor_dialog_run()
 void __cdecl tech_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.tech_editor_dialog_run();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;
@@ -8016,10 +8014,8 @@ void EditorWindow::cosmic_editor_dialog()
 void __cdecl cosmic_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.cosmic_editor_dialog();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;

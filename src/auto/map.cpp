@@ -5812,10 +5812,8 @@ void EditorWindow::terrain_editor_run()
 void __cdecl terrain_editor_open(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.terrain_editor_run();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;

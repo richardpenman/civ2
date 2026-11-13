@@ -1441,11 +1441,9 @@ void EditorWindow::unit_editor_window_run()
 void __cdecl unit_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   i32 eh_next;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.unit_editor_window_run();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;

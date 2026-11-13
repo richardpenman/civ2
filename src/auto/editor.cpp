@@ -3,7 +3,7 @@
 #include "auto_common.h"
 
 /* 00417fa0 auto */
-EditorWindow *EditorWindow::construct()
+EditorWindow::EditorWindow()
 
 {
   i32 eh_frame;
@@ -33,11 +33,10 @@ EditorWindow *EditorWindow::construct()
   trigger_listbox.construct();
   action_listbox.construct();
   vtable = (u32)((pointer *)ptr_fun_rest);
-  return this;
 }
 
 /* 004183d0 auto */
-void EditorWindow::destruct()
+EditorWindow::~EditorWindow()
 
 {
   i8 *eh_prev;
@@ -1197,10 +1196,8 @@ void EditorWindow::tribe_editor_main()
 void __cdecl tribe_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.tribe_editor_main();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;

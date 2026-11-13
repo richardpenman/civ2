@@ -4373,7 +4373,6 @@ void __cdecl diplo_greeting_sound_done_cb(void)
 void __cdecl diplo_leader_wnd_launch(int civ2,int civ)
 
 {
-  DiploLeaderWindow *self;
   int ok;
   iptr parent_wnd2;
   iptr tribe_idx;
@@ -4399,13 +4398,7 @@ void __cdecl diplo_leader_wnd_launch(int civ2,int civ)
     }
     diplo_leader.window = 0;
   }
-  self = (DiploLeaderWindow *)(operator_new(0x108c));
-  if (self == (DiploLeaderWindow *)0x0) {
-    view = (DiploLeaderWindow *)0x0;
-  }
-  else {
-    view = self->construct();
-  }
+  view = game_new<DiploLeaderWindow>();
   diplo_leader.window = view;
   if (((view != (DiploLeaderWindow *)0x0) && (((*((char *)&game.game_options + 2)) & (OPT_DIPLOMACY_SCREEN >> 16)) != 0)) &&
      (ok = view->init(civ2,civ), ok != 0)) {
@@ -4461,7 +4454,7 @@ void __cdecl diplo_leader_play_reaction(int reaction)
 }
 
 /* 004942a3 auto */
-DiploLeaderWindow *DiploLeaderWindow::construct()
+DiploLeaderWindow::DiploLeaderWindow()
 
 {
   i32 eh_frame;
@@ -4475,11 +4468,10 @@ DiploLeaderWindow *DiploLeaderWindow::construct()
   leader_video_wnd.construct();
   gfx_get_screen_rect((RECT *)&control_list);
   pending_flag_1088 = '\0';
-  return this;
 }
 
 /* 004943c9 auto */
-void DiploLeaderWindow::destruct()
+DiploLeaderWindow::~DiploLeaderWindow()
 
 {
   i8 *eh_prev;
@@ -5159,7 +5151,7 @@ void __cdecl diplo_leader_video_end_cb(void)
 void *DiploLeaderWindow::scalar_destruct(uint flags)
 
 {
-  destruct();
+  this->~DiploLeaderWindow();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }

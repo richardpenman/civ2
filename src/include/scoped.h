@@ -13,11 +13,15 @@
  *
  * Everything here is forced inline: the native builds compile with
  * -fno-inline, and an inlined guard gives the same calls, per path, as the
- * release written out by hand on each of them.  The game's own objects
- * (windows, surfaces, dialogs) get no C++ constructors or destructors; a
- * local one is built with its explicit construct call and released with
- * ON_SCOPE_EXIT(obj.destruct()) right after it (what the original's MSVC
- * unwind funclets did).
+ * release written out by hand on each of them.  The game's classes whose
+ * objects live only on the stack and the heap have C++ constructors and
+ * destructors (the editors, the council, the throne room, the spaceship ...;
+ * game_new below for the heap).  The others, which have objects in the
+ * game's static data (built by its start-up initializers, destroyed by its
+ * atexit list), or are members or bases of such, keep explicit
+ * construct/destruct: a local one is built with its construct call and
+ * released with ON_SCOPE_EXIT(obj.destruct()) right after it (what the
+ * original's MSVC unwind funclets did).
  */
 #ifndef CIV2_SCOPED_H
 #define CIV2_SCOPED_H
@@ -59,5 +63,18 @@ public:
 private:
     FILE *f_;
 };
+
+/* new T(args) on the game's heap, as the original's `new`: operator_new
+   (the C runtime's malloc), the constructor run only if that succeeded;
+   NULL otherwise.  The object is freed by its scalar_destruct(1). */
+struct GameNewAt {};      /* placement in memory the caller has (inlined, unlike <new>'s) */
+inline __attribute__((always_inline)) void *operator new(size_t, void *mem, GameNewAt) { return mem; }
+
+template <class T, class... A>
+static SCOPED_INLINE T *game_new(A... args)
+{
+    void *mem = operator_new(sizeof(T));
+    return mem != (void *)0x0 ? new (mem, GameNewAt()) T(args...) : (T *)0x0;
+}
 
 #endif

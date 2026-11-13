@@ -2097,14 +2097,12 @@ void WndBase::show_restored()
 int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,int silent,int civ)
 
 {
-  CityPicturePopup *self;
   int result;
   i32 height;
   i32 width;
   iptr option_text;
   iptr option_id;
   uint picture_id;
-  CityPicturePopup *popup_new;
   Sprite sprite;
   CityPicturePopup *popup;
   GamePalette palette;
@@ -2124,14 +2122,7 @@ int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,in
       mapviews_ensure_visible((int)cities[city].x,(int)cities[city].y,civ);
       text_set_string_arg_b(0,(const char *)&cities[city].name);
     }
-    self = (CityPicturePopup *)operator_new(0x798);
-    if (self == (CityPicturePopup *)0x0) {
-      popup_new = (CityPicturePopup *)0x0;
-    }
-    else {
-      popup_new = self->construct();
-    }
-    popup = popup_new;
+    popup = game_new<CityPicturePopup>();
     result = civ_has_advance(civ,ADV_INDUSTRIALIZATION);
     if (result != 0) {
       picture++;

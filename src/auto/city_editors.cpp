@@ -406,10 +406,8 @@ void EditorWindow::city_editor_open_window()
 void __cdecl city_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.city_editor_open_window();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;
@@ -1164,10 +1162,8 @@ void EditorWindow::impr_editor_window_run()
 void __cdecl impr_editor_run(void)
 
 {
-  EditorWindow editor_wnd;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.impr_editor_window_run();
   ((SurfaceWindow *)((i8 *)&map_views_block.map_views))->repaint();
   return;

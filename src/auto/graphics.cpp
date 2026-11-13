@@ -2017,7 +2017,7 @@ void __cdecl rect_intersect_into(LPRECT dest,RECT *rect_a,RECT *rect_b)
 }
 
 /* 0049621d auto */
-PortraitDialog *PortraitDialog::construct()
+PortraitDialog::PortraitDialog()
 
 {
   
@@ -2029,7 +2029,6 @@ PortraitDialog *PortraitDialog::construct()
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3);
   civ = 0;
   field_1e0 = 0;
-  return this;
 }
 
 /* 0049632a auto */
@@ -2038,7 +2037,7 @@ PortraitDialog *PortraitDialog::construct()
    
    Library: Visual Studio 1998 Debug */
 
-void PortraitDialog::destruct()
+PortraitDialog::~PortraitDialog()
 
 {
   int eh_state;

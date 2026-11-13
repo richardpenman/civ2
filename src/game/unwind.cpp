@@ -45,7 +45,7 @@ void SurfaceWindow::destruct()
 }
 
 /* 0x004f3e70: destructor - destroys the member at this+0x4a4, then the base. */
-void CityPicturePopup::destruct()
+CityPicturePopup::~CityPicturePopup()
 {
     Dialog *member;
 
@@ -131,14 +131,12 @@ void __cdecl portrait_dlg_show(i32 civ)
     int created;
     PortraitDialog portrait_dlg;
 
-    portrait_dlg.construct();
     portrait_dlg.civ = civ;
     created = portrait_dlg.create();
     if (created != 0) {
         portrait_dlg.run();
     }
-    /* funclet 00493eeb: lea ecx,[ebp-0x1f4] */
-    portrait_dlg.destruct();
+    /* funclet 00493eeb: lea ecx,[ebp-0x1f4]: its destructor */
 }
 
 /* 0x005e0863: builds a window with "OK"/"Cancel" buttons on the stack and

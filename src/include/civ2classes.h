@@ -2314,8 +2314,8 @@ typedef struct PortraitDialog : SurfaceWindow {
     u32 field_1e0;
     u32 result;
     /* methods */
-    PortraitDialog *construct();    /* 0049621d */
-    void destruct();    /* 0049632a */
+    PortraitDialog();    /* 0049621d */
+    ~PortraitDialog();    /* 0049632a */
     i32 create();    /* 00496402 */
     void create_buttons();    /* 004964b3 */
     void run();    /* 004965ff */
@@ -2689,8 +2689,8 @@ typedef struct CouncilWindow : SurfaceWindow {
     Button council_close_button;    /* 0x12ec */
     u8 pad_1328[8];
     /* methods */
-    CouncilWindow *construct();    /* 0051661a */
-    void destruct();    /* 005167d9 */
+    CouncilWindow();    /* 0051661a */
+    ~CouncilWindow();    /* 005167d9 */
     i32 init(u32 civ,int cheat_mode);    /* 00516947 */
     void run_modal();    /* 00516fd4 */
     void draw_background();    /* 00517158 */
@@ -2759,8 +2759,8 @@ typedef struct TaxRateDialog : FrameWindow {
     void calc_totals();    /* 0040c480 */
     void paint();    /* 0040c7d0 */
     void run(uptr civ);    /* 0040cd64 */
-    TaxRateDialog *construct();    /* 0040f060 */
-    void destruct();    /* 0040f1e0 */
+    TaxRateDialog();    /* 0040f060 */
+    ~TaxRateDialog();    /* 0040f1e0 */
 } TaxRateDialog;
 static_assert(sizeof(TaxRateDialog) == 0x510, "");
 static_assert(__builtin_offsetof(TaxRateDialog, rate_locked) == 0x34c, "");
@@ -2883,7 +2883,7 @@ typedef struct EditorWindow : FrameWindow {
     void tech_editor_create_edit(int slot);    /* 00416734 */
     void tech_editor_paint();    /* 00416828 */
     void tech_editor_dialog_run();    /* 00416c9e */
-    EditorWindow *construct();    /* 00417fa0 */
+    EditorWindow();    /* 00417fa0 */
     void city_editor_create_combo(int combo_index);    /* 0042903e */
     void city_editor_draw();    /* 004293a8 */
     void city_editor_open_window();    /* 00429671 */
@@ -2907,7 +2907,7 @@ typedef struct EditorWindow : FrameWindow {
     void unit_editor_create_edit(int index);    /* 005b08e8 */
     void unit_editor_paint();    /* 005b09dc */
     void unit_editor_window_run();    /* 005b1037 */
-    void destruct();    /* 004183d0 */
+    ~EditorWindow();    /* 004183d0 */
 } EditorWindow;
 static_assert(sizeof(EditorWindow) == 0xb50, "");
 
@@ -2921,8 +2921,8 @@ typedef struct WonderMovieWindow : FrameWindow {
     union { GamePalette palette; u8 palette_bytes[64]; };
     u8 pad_1180[8];
     /* methods */
-    WonderMovieWindow *construct();    /* 004bb99f */
-    void destruct();    /* 004bba79 */
+    WonderMovieWindow();    /* 004bb99f */
+    ~WonderMovieWindow();    /* 004bba79 */
     void create(int wonder);    /* 004bbb3f */
     void play();    /* 004bbdfb */
     void draw_caption();    /* 004bc0d3 */
@@ -3106,9 +3106,9 @@ static_assert(sizeof(PictureWindow) == 0x4a4, "");
 typedef struct CityPicturePopup : PictureWindow {
     union { Dialog dialog; u8 popup_dialog[32]; };
     /* methods */
-    CityPicturePopup *construct();    /* 004f3d60 */
+    CityPicturePopup();    /* 004f3d60 */
     void *scalar_destruct(uint flags);    /* 004f3e20 */
-    void destruct();
+    ~CityPicturePopup();
 } CityPicturePopup;
 static_assert(sizeof(CityPicturePopup) == 0x798, "");
 
@@ -3187,8 +3187,8 @@ typedef struct DestroyedCivsWindow : ModalMenuWindow {
     GameFont caption_font_2;        /* 0x700 */
     u8 pad_708[8];
     /* methods */
-    DestroyedCivsWindow *construct();    /* 00514f16 */
-    void destruct();    /* 005150b9 */
+    DestroyedCivsWindow();    /* 00514f16 */
+    ~DestroyedCivsWindow();    /* 005150b9 */
     i32 create(uint killer);    /* 005151f4 */
     void run();    /* 00515516 */
     void draw_entry(int entry);    /* 00515999 */
@@ -3270,8 +3270,8 @@ typedef struct SpaceshipWindow : ModalMenuWindow {
     SpaceshipStar stars[80];        /* 0x1db8 */
     u8 pad_2178[8];
     /* methods */
-    SpaceshipWindow *construct(u32 civ);    /* 004d0517 */
-    i32 destruct();    /* 004d08b0 */
+    explicit SpaceshipWindow(u32 civ);    /* 004d0517 */
+    ~SpaceshipWindow();    /* 004d08b0 */
     i32 init();    /* 004d0b58 */
     uint create();    /* 004d0d64 */
     void run_modal();    /* 004d0ea6 */
@@ -3341,7 +3341,7 @@ typedef struct DiploLeaderWindow : ModalMenuWindow {
     union { u8 field_1088; u8 pending_flag_1088; };
     u8 pad_1089[3];
     /* methods */
-    DiploLeaderWindow *construct();    /* 004942a3 */
+    DiploLeaderWindow();    /* 004942a3 */
     i32 init(i32 viewer_civ,int leader_civ);    /* 004944bb */
     void show();    /* 00494704 */
     void teardown();    /* 004947f0 */
@@ -3355,7 +3355,7 @@ typedef struct DiploLeaderWindow : ModalMenuWindow {
     i32 init_portrait();    /* 00495c35 */
     i8 init_video();    /* 00495e0c */
     void wnd_set_bg_tile(DibSurface *tile);    /* 00497cc0 */
-    void destruct();    /* 004943c9 */
+    ~DiploLeaderWindow();    /* 004943c9 */
     void *scalar_destruct(uint flags);    /* 00497bf0 */
 } DiploLeaderWindow;
 static_assert(sizeof(DiploLeaderWindow) == 0x108c, "");
@@ -3388,8 +3388,8 @@ typedef struct ThroneRoomWindow : ModalMenuWindow {
     GameFont click_prompt_font;     /* 0x1c34 */
     u8 gap_1c3c[8];
     /* methods */
-    ThroneRoomWindow *construct(int civ);    /* 0044ce16 */
-    void destruct();    /* 0044d027 */
+    explicit ThroneRoomWindow(int civ);    /* 0044ce16 */
+    ~ThroneRoomWindow();    /* 0044d027 */
     uint create_windows();    /* 0044d162 */
     void run_upgrade();    /* 0044d296 */
     void run_view();    /* 0044d9c1 */
@@ -3441,7 +3441,7 @@ typedef struct CityViewWindow : ModalMenuWindow {
     GameFont title_font;            /* 0x1ca8 */
     u8 pad_1cb0[4];
     /* methods */
-    CityViewWindow *construct();    /* 00454354 */
+    CityViewWindow();    /* 00454354 */
     i32 load(uptr city);    /* 004548a9 */
     void run_modal();    /* 00454eb2 */
     void classify_site();    /* 00454f83 */
@@ -3461,7 +3461,7 @@ typedef struct CityViewWindow : ModalMenuWindow {
     void draw_title();    /* 004560f8 */
     void scroll_right();    /* 0045638b */
     void scroll_left();    /* 004564a8 */
-    void destruct();    /* 00454699 */
+    ~CityViewWindow();    /* 00454699 */
     void *scalar_destruct(uint flags);    /* 00456e90 */
 } CityViewWindow;
 static_assert(sizeof(CityViewWindow) == 0x1cb4, "");

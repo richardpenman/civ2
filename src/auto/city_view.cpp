@@ -6,17 +6,10 @@
 void __cdecl cityview_open(uptr city)
 
 {
-  CityViewWindow *self;
   int loaded;
   CityViewWindow *this2;
   
-  self = (CityViewWindow *)operator_new(0x1cb4);
-  if (self == (CityViewWindow *)0x0) {
-    this2 = (CityViewWindow *)0x0;
-  }
-  else {
-    this2 = self->construct();
-  }
+  this2 = game_new<CityViewWindow>();
   if (this2 != (CityViewWindow *)0x0) {
     loaded = this2->load(city);
     if (loaded != 0) {
@@ -30,7 +23,7 @@ void __cdecl cityview_open(uptr city)
 }
 
 /* 00454354 auto */
-CityViewWindow *CityViewWindow::construct()
+CityViewWindow::CityViewWindow()
 
 {
   u8 *slot;
@@ -68,11 +61,10 @@ CityViewWindow *CityViewWindow::construct()
   }
   title_font.set_styled(0,0x24,1);
   SetRect((LPRECT)(title_rect),0,0,tax_rate_icon_sprites_block.screen_rect_right,0x28);
-  return this;
 }
 
 /* 00454699 auto */
-void CityViewWindow::destruct()
+CityViewWindow::~CityViewWindow()
 
 {
   int seh_state;
@@ -844,7 +836,7 @@ void CityViewWindow::scroll_left()
 void *CityViewWindow::scalar_destruct(uint flags)
 
 {
-  destruct();
+  this->~CityViewWindow();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }
@@ -856,11 +848,9 @@ void __cdecl wonder_show_movie(int wonder)
 
 {
   i32 ret_addr;
-  WonderMovieWindow movie_wnd2;
   
   snd_wave_stop_all();
-  movie_wnd2.construct();
-  ON_SCOPE_EXIT(movie_wnd2.destruct());
+  WonderMovieWindow movie_wnd2;
   blink.unit_active = 0;
   snd_cd_stop();
   ret_addr = 0x4bb937;
@@ -876,7 +866,7 @@ void __cdecl wonder_show_movie(int wonder)
 }
 
 /* 004bb99f auto */
-WonderMovieWindow *WonderMovieWindow::construct()
+WonderMovieWindow::WonderMovieWindow()
 
 {
   
@@ -886,11 +876,10 @@ WonderMovieWindow *WonderMovieWindow::construct()
   palette.init();
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 2);
   font_size16_bold_block.wonder_movie_wnd = this;
-  return this;
 }
 
 /* 004bba79 auto */
-void WonderMovieWindow::destruct()
+WonderMovieWindow::~WonderMovieWindow()
 
 {
   int seh_state;

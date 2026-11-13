@@ -2119,11 +2119,9 @@ void EditorWindow::events_editor_run()
 void __cdecl events_editor_open(void)
 
 {
-  EditorWindow editor_wnd;
   i8 *seh_scope;
   
-  editor_wnd.construct();
-  ON_SCOPE_EXIT(editor_wnd.destruct());
+  EditorWindow editor_wnd;
   editor_wnd.events_editor_run();
   return;
 }

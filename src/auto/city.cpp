@@ -4657,21 +4657,20 @@ uint __cdecl city_tile_status_flags(int city,int tile_idx)
 }
 
 /* 004f3d60 auto */
-CityPicturePopup *CityPicturePopup::construct()
+CityPicturePopup::CityPicturePopup()
 
 {
   
   PictureWindow::construct();
   dialog.Dialog::construct(0x4000);
   vtable = (u32)((pointer *)&leader_anim_frame_starts_block.ptr_fun_3 + 3);
-  return this;
 }
 
 /* 004f3e20 auto */
 void *CityPicturePopup::scalar_destruct(uint flags)
 
 {
-  destruct();
+  this->~CityPicturePopup();
   if ((flags & 1) != 0) {
     operator_delete(this);
   }

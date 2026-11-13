@@ -39,7 +39,6 @@ i32 __cdecl spaceship_wnd_run(int civ_arg)
   int init_ok;
   i32 ret_addr;
   int civ;
-  SpaceshipWindow window[1];   /* 0x2180 bytes */
   i32 eh_next;
   
   if (spaceship_launch_sprite_xs_block.spaceship_wnd == 0) {
@@ -51,18 +50,17 @@ i32 __cdecl spaceship_wnd_run(int civ_arg)
         civ = civ_arg;
       }
       ret_addr = 0x4d0293;
-      window->construct(civ);
-      ON_SCOPE_EXIT(((SpaceshipWindow *)&window)->destruct());
-      init_ok = window->init();
+      SpaceshipWindow window(civ);
+      init_ok = window.init();
       if (init_ok == 0) {
         result = 0;
       }
       else {
         if (civ_arg < 0) {
-          window->launch_sequence();
+          window.launch_sequence();
         }
         else {
-          window->run_modal();
+          window.run_modal();
         }
         result = 1;
       }
@@ -84,21 +82,19 @@ i32 __cdecl spaceship_wnd_show_for_civ(int civ)
   i32 result;
   int init_ok;
   i32 ret_addr;
-  SpaceshipWindow window[1];   /* 0x2180 bytes */
   i32 eh_next;
   
   if (human_civ[0] == civ) {
     if (spaceship_launch_sprite_xs_block.spaceship_wnd == 0) {
       if (council_state.active == '\0') {
         ret_addr = 0x4d03b3;
-        window->construct(civ);
-        ON_SCOPE_EXIT(((SpaceshipWindow *)&window)->destruct());
-        init_ok = window->init();
+        SpaceshipWindow window(civ);
+        init_ok = window.init();
         if (init_ok == 0) {
           result = 0;
         }
         else {
-          window->present();
+          window.present();
           result = 1;
         }
       }
@@ -144,7 +140,7 @@ void __cdecl spaceship_wnd_draw_title(int civ)
 }
 
 /* 004d0517 auto */
-SpaceshipWindow *SpaceshipWindow::construct(u32 civ)
+SpaceshipWindow::SpaceshipWindow(u32 civ)
 
 {
   
@@ -185,14 +181,12 @@ SpaceshipWindow *SpaceshipWindow::construct(u32 civ)
   close_btn_pressed = 0;
   launch_btn_pressed = 0;
   typing_label_part = 0;
-  return this;
 }
 
 /* 004d08b0 auto */
-i32 SpaceshipWindow::destruct()
+SpaceshipWindow::~SpaceshipWindow()
 
 {
-  i32 ret_value;
   int eh_state;
   
   eh_state = 0xf;
@@ -242,7 +236,6 @@ i32 SpaceshipWindow::destruct()
   /* inlined unwind funclet 004d0b28 */ { surface_wnd.SurfaceWindow::destruct(); }
   eh_state = 0xffffffff;
   /* inlined unwind funclet 004d0b37 */ { ModalMenuWindow::destruct(); }
-  return ret_value;
 }
 
 /* 004d0b58 auto */

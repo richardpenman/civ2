@@ -608,8 +608,6 @@ void __cdecl taxrate_dialog_show(int civ)
 {
   TaxRateDialog dialog2;
   
-  dialog2.construct();
-  ON_SCOPE_EXIT(dialog2.destruct());
   if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
     if ((game.multiplayer < 3) || (human_civ[0] == civ)) {
       dialog2.run(civ);
@@ -651,7 +649,7 @@ void __cdecl taxrate_enforce_max_rate(int civ)
 }
 
 /* 0040f060 auto */
-TaxRateDialog *TaxRateDialog::construct()
+TaxRateDialog::TaxRateDialog()
 
 {
   
@@ -663,11 +661,10 @@ TaxRateDialog *TaxRateDialog::construct()
                checkbox_dtor);
   button_ctor(&ok_button);
   vtable = (u32)&ptr_fun;
-  return this;
 }
 
 /* 0040f1e0 auto */
-void TaxRateDialog::destruct()
+TaxRateDialog::~TaxRateDialog()
 
 {
   int eh_state;
