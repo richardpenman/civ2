@@ -674,7 +674,8 @@ static void fuzzy_boundaries(struct audio *a)
             free(buf);
             continue;
         }
-        if (b - 1 >= lo && sector_power(buf + (b - 1 - lo) * RAW) < FUZZY_SILENT) {
+        /* (b - 1 < hi: past it when the next track is empty, end == start) */
+        if (b - 1 >= lo && b - 1 < hi && sector_power(buf + (b - 1 - lo) * RAW) < FUZZY_SILENT) {
             fprintf(stderr, "setup: fix-cue-gaps: tracks %d/%d: boundary kept (silent already)\n",
                     a->t[i].number, a->t[i + 1].number);
             free(buf);
