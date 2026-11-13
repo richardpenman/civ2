@@ -185,9 +185,16 @@ message by message and clock event by clock event.
   one access (the MCI device a movie window keeps where a Wnd keeps its
   controls, at 0x8 and 0x10; the DirectDraw window's native record: 3).
   Strings read from their second character are `buf + 1`.  Offsets written
-  as indexes, which the count misses, remain in the dialog's button table
-  (labels, ids and x at 0x294..0x2f4), the parley offers' item ids and
-  panes, and a few byte buffers.  The 529 casts in
+  as indexes, which the count misses, are members too (223 sites): the
+  dialog's added labels and buttons (`extra_button_labels[6]`,
+  `DialogButton buttons[9]` at 0x294..0x2f4), the parley panes' items,
+  selections and rectangles (`list_items[pane][i]` for
+  `list_items[pane * 0x801 + i]`, `&window->list_selected[pane][row]` for
+  `pane * 0x2004 + 0x8400 + (iptr)window`), the Civilopedia's sort keys
+  (byte overlays at offsets from the wrong list).  Members of the state
+  records indexed past a scalar or by bytes (`((i8 *)&text_args.strings) +
+  i * 0x104`, the sprite blocks' `+ i * 0x3c`: about 970) are the records'
+  layout, left for their own pass.  The 529 casts in
   gamedata.cpp's initializers point into the original's string pool and data
   blocks: data addresses, not field accesses.  The decompiler's byte-joining
   macros (CONCAT11, CONCAT12, CONCAT22, CONCAT31, CONCAT44: 73 uses on 57
@@ -321,11 +328,25 @@ message by message and clock event by clock event.
   enumerator promotes and converts as the int literal did: the machine code
   of every function is the same as before (tools/cxx_compare.py, all
   files), and the suite passes.  Bit meanings come from the functions that
-  set and test them; two stay uncertain, marked "?" in the header (a city bit
-  nothing sets, CITYF_SAM_UNUSED, and RULE_BASE_1, always set, which only the
-  barbarians' unit choice tests).  Left
-  as numbers: sizes, coordinates and arithmetic; ranges (`orders < 4`,
-  `improvement < 0x27`); resources (terrain 11..32); masks of more than
+  set and test them.  Two bits are named by their only effect:
+  CITYF_SAM_WANTED (0x40000), which nothing sets, the original neither,
+  makes the AI's SAM Battery score 3 better (most likely meant as "attacked
+  from the air", as CITYF_COASTAL_FORT_USED records for ships; BUGS.md B5),
+  and RULE_BARBARIAN_FULL_ROSTER (0x1), always set, lets barbarian hordes
+  field Archers, Elephants, Crusaders, Dragoons, Artillery, Cavalry,
+  Fanatics and Partisans; why it is a rule bit is unknown.  Counts and
+  ranges are named too (about 260 numbers): IMP_FIRST_WONDER
+  (`improvement < IMP_FIRST_WONDER`, `improvement - IMP_FIRST_WONDER` the
+  wonder, `-IMP_FIRST_WONDER - building`), IMP_COUNT, WONDER_COUNT,
+  UNIT_TYPE_COUNT, ADV_COUNT, TERRAIN_COUNT and TERRAIN_RECORDS with the
+  resources' records TERRAIN_SPECIAL_1/2 (terrain + 11, + 22), the
+  terraforming orders' range (`ORDER_SLEEP < orders < ORDER_BUILD_AIRBASE`),
+  the barbarians' unit choices and the dialog's standard buttons
+  (DLG_BUTTON_OK/HELP/CANCEL); again with no difference in any function's
+  machine code.  Left as numbers: sizes, coordinates and arithmetic; ranges
+  without a name in the rules (`0x22 < improvement`: the spaceship parts and
+  Capitalization; `building < -0x26`); counts held by variables not named
+  for their kind (`i < 0x27`); masks of more than
   four bits or bits without a name; unsigned literals (`0x8000U`, an
   enumerator would be int); flag words reached through pointer arithmetic;
   dialog control ids and other UI message numbers.
