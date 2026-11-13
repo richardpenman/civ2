@@ -4568,8 +4568,8 @@ void DiploLeaderWindow::show()
 {
   handle_show_raise();
   wnd_flush_paint();
-  set_palette((iptr)&leader_palette);
-  main_frame_wnd_block.main_frame_wnd.set_palette((iptr)&leader_palette);
+  set_palette(&leader_palette);
+  main_frame_wnd_block.main_frame_wnd.set_palette(&leader_palette);
   if (diplo_leader.video_active != '\0') {
     leader_video_wnd.SurfaceWindow::show();
   }
@@ -4592,8 +4592,8 @@ void DiploLeaderWindow::teardown()
 {
   leader_surface.window.hide();
   wnd_flush_paint();
-  set_palette((iptr)&game_palette_block.game_palette);
-  main_frame_wnd_block.main_frame_wnd.set_palette((iptr)&game_palette_block.game_palette);
+  set_palette((GamePalette *)&game_palette_block.game_palette);
+  main_frame_wnd_block.main_frame_wnd.set_palette((GamePalette *)&game_palette_block.game_palette);
   hide();
   wnd_flush_paint();
   destroy_native();
@@ -4613,7 +4613,7 @@ uint DiploLeaderWindow::init_tile()
   int loaded;
   
   bg_tile_surface.DibSurface::create(0x40,0x40);
-  loaded = bg_tile_surface.load_gif_resource(299,10,0x20,(iptr)&game_palette_block.game_palette);
+  loaded = bg_tile_surface.load_gif_resource(299,10,0x20,(GamePalette *)&game_palette_block.game_palette);
   return (uint)(loaded != 0);
 }
 
@@ -4621,7 +4621,7 @@ uint DiploLeaderWindow::init_tile()
 i32 DiploLeaderWindow::init_background()
 
 {
-  create_with_handlers((const char *)&str_empty_102,0x800,0,0,screen_width_value,screen_height_value + 5,(iptr)&game_palette_block.game_palette,
+  create_with_handlers((const char *)&str_empty_102,0x800,0,0,screen_width_value,screen_height_value + 5,(GamePalette *)&game_palette_block.game_palette,
              (iptr)&main_frame_wnd_block.main_frame_wnd);
   wnd_set_bg_tile(&bg_tile_surface);
   return 1;
@@ -4650,9 +4650,9 @@ uint DiploLeaderWindow::init_main_art()
   wnd_x = (int)(screen_width_value - 0x280) / 3;
   wnd_y = (int)(screen_height_value - 0x1e0) / 3;
   leader_surface.wnd_create_with_surface((const char *)&str_empty_103,0x800,wnd_x,wnd_y,0x280,0x1e0,
-             (iptr)&leader_palette,(iptr)this);
+             &leader_palette,(iptr)this);
   loaded = leader_surface.load_gif_resource(civs[leader_civ].government + 200,10,0xec,
-                     (iptr)&palette);
+                     &palette);
   if (loaded != 0) {
     blue_ptr = &blue;
     green_ptr = &green;
@@ -4663,7 +4663,7 @@ uint DiploLeaderWindow::init_main_art()
     palette.get_rgb((iptr)rgb_buf,0x6a,0x28);
     leader_palette.set_rgb(0x6a,0x28,(iptr)rgb_buf)
     ;
-    leader_surface.set_palette((iptr)&leader_palette);
+    leader_surface.set_palette(&leader_palette);
   }
   return (uint)(loaded != 0);
 }
@@ -4697,7 +4697,7 @@ i32 DiploLeaderWindow::init_military()
     result = 1;
   }
   else {
-    loaded = surface.load_gif_resource(0xd7,10,0xec,(iptr)&palette);
+    loaded = surface.load_gif_resource(0xd7,10,0xec,&palette);
     if (loaded == 0) {
       fail_result = 0;
       result = fail_result;
@@ -4705,7 +4705,7 @@ i32 DiploLeaderWindow::init_military()
     else {
       draw_x = (uint)style_era * 0x6d + 1;
       draw_y = 0x9c;
-      sprite.grab_from_surface((iptr)&surface,9,draw_x,0x9c,0x6c,0x1e);
+      sprite.grab_from_surface(&surface,9,draw_x,0x9c,0x6c,0x1e);
       draw_x = 0x2d;
       draw_y = 0x82;
       step_y = 0x1f;
@@ -4835,11 +4835,11 @@ void DiploLeaderWindow::science_draw_tech(int advance,GameFont &font2,Sprite (&c
     CopyRect(&draw_rect,&text_rect);
     if (top_techs[0xc] != 0) {
       gfx_set_text_color_index(10);
-      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect(&font2,(aCStack_641 + 1),
                  &draw_rect,0);
       OffsetRect(&draw_rect,-1,-1);
       gfx_set_text_color_index(text_colors[style_era]);
-      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect(&font2,(aCStack_641 + 1),
                  &draw_rect,0);
     }
   }
@@ -4874,11 +4874,11 @@ void DiploLeaderWindow::science_draw_tech(int advance,GameFont &font2,Sprite (&c
       value = font2.font_cached_height();
       OffsetRect(&draw_rect,0,((rect_height2 >> 1) - value) + 1);
       gfx_set_text_color_index(10);
-      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect(&font2,(aCStack_641 + 1),
                  &draw_rect,1);
       OffsetRect(&draw_rect,-1,-1);
       gfx_set_text_color_index(text_colors[style_era]);
-      leader_surface.draw_text_in_rect((iptr)&font2,(aCStack_641 + 1),
+      leader_surface.draw_text_in_rect(&font2,(aCStack_641 + 1),
                  &draw_rect,1);
     }
     str_clear((char *)line2_buf);
@@ -4903,11 +4903,11 @@ void DiploLeaderWindow::science_draw_tech(int advance,GameFont &font2,Sprite (&c
       value = font2.font_cached_height();
       OffsetRect(&draw_rect,0,value - 3);
       gfx_set_text_color_index(10);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)line2_buf,
+      leader_surface.draw_text_in_rect(&font2,(const char *)line2_buf,
                  &draw_rect,1);
       OffsetRect(&draw_rect,-1,-1);
       gfx_set_text_color_index(text_colors[style_era]);
-      leader_surface.draw_text_in_rect((iptr)&font2,(const char *)line2_buf,
+      leader_surface.draw_text_in_rect(&font2,(const char *)line2_buf,
                  &draw_rect,1);
     }
   }
@@ -4985,24 +4985,24 @@ i32 DiploLeaderWindow::init_science()
     result = 1;
   }
   else {
-    value = surface.load_gif_resource(0xd7,10,0xec,(iptr)&palette);
+    value = surface.load_gif_resource(0xd7,10,0xec,&palette);
     if (value == 0) {
       fail_result = 0;
       result = fail_result;
     }
     else {
-      surface.set_palette((iptr)&leader_palette);
+      surface.set_palette(&leader_palette);
       draw_x = (uint)style_era * 0x6d + 1;
       draw_y = 1;
-      (category_sprites + 3)->grab_from_surface((iptr)&surface,9,draw_x,1,0x6c,0x1e);
+      (category_sprites + 3)->grab_from_surface(&surface,9,draw_x,1,0x6c,0x1e);
       draw_y += 0x1f;
-      category_sprites->grab_from_surface((iptr)&surface,9,draw_x,draw_y,0x6c,0x1e);
+      category_sprites->grab_from_surface(&surface,9,draw_x,draw_y,0x6c,0x1e);
       draw_y += 0x1f;
-      (category_sprites + 1)->grab_from_surface((iptr)&surface,9,draw_x,draw_y,0x6c,0x1e);
+      (category_sprites + 1)->grab_from_surface(&surface,9,draw_x,draw_y,0x6c,0x1e);
       draw_y += 0x1f;
-      (category_sprites + 2)->grab_from_surface((iptr)&surface,9,draw_x,draw_y,0x6c,0x1e);
+      (category_sprites + 2)->grab_from_surface(&surface,9,draw_x,draw_y,0x6c,0x1e);
       draw_y += 0x1f;
-      (category_sprites + 4)->grab_from_surface((iptr)&surface,9,draw_x,draw_y,0x6c,0x1e);
+      (category_sprites + 4)->grab_from_surface(&surface,9,draw_x,draw_y,0x6c,0x1e);
       step_y = 0x1f;
       draw_x = 0x1e5;
       draw_y = 0x82;
@@ -5044,7 +5044,7 @@ i32 DiploLeaderWindow::init_portrait()
   surface_ctor(&surface);
   ON_SCOPE_EXIT(surface_dtor(&surface));
   loaded = surface.load_gif_resource(civs[leader_civ].leader_portrait + 0xdc,10,0xec,
-                     (iptr)&palette);
+                     &palette);
   if (loaded == 0) {
     result = 0;
   }
@@ -5052,8 +5052,8 @@ i32 DiploLeaderWindow::init_portrait()
     palette.get_rgb((iptr)rgb_buf,0x2a,0x40);
     leader_palette.set_rgb(0x2a,0x40,(iptr)rgb_buf)
     ;
-    surface.set_palette((iptr)&leader_palette);
-    sprite.grab_from_surface((iptr)&surface,9,1,1,0xe1,0x113);
+    surface.set_palette(&leader_palette);
+    sprite.grab_from_surface(&surface,9,1,1,0xe1,0x113);
     sprite.draw((RECT *)draw_ctx,&leader_surface,0xd0,0x39);
     result = 1;
   }
@@ -5091,7 +5091,7 @@ i8 DiploLeaderWindow::init_video()
   else {
     leader_video_wnd.create_child((iptr)&str_empty_108,0x200,
                leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][0],
-               leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1],(iptr)&leader_surface);
+               leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1],&leader_surface);
     open_err = leader_video_wnd.open((const char *)video_path);
     if (open_err == 0) {
       leader_video_wnd.set_end_callback(diplo_leader_video_end_cb);
@@ -5099,8 +5099,8 @@ i8 DiploLeaderWindow::init_video()
       palette.load_ctab_res(leader_tribe + 1000);
       palette.get_rgb((iptr)rgb_buf,0x92,100);
       leader_palette.set_rgb(0x92,100,(iptr)rgb_buf);
-      leader_video_wnd.avi_player_set_palette((iptr)&leader_palette);
-      leader_video_wnd.window.set_palette((iptr)&leader_palette);
+      leader_video_wnd.avi_player_set_palette(&leader_palette);
+      leader_video_wnd.window.set_palette(&leader_palette);
       leader_video_wnd.show_frame(0);
       result = 1;
     }

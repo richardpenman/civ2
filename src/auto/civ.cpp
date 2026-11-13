@@ -531,7 +531,7 @@ void EditorWindow::tech_editor_create_combo(int slot)
   }
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_id,
              (RECT *)rect);
-  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_callback(tech_editor_on_combo);
   switch(slot) {
   case 0:
@@ -731,7 +731,7 @@ void EditorWindow::tech_editor_dialog_run()
   wnd_height_u = 0x17c;
   item_uptr = 0;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editorpt_gif,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editorpt_gif,10,0xc0,&palette);
   font_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = font_height;
   extra_arg3 = 0;
@@ -762,7 +762,7 @@ void EditorWindow::tech_editor_dialog_run()
     list_parent = (u8 *)&window;
   }
   list_box.create((iptr)list_parent,pos,(RECT *)rect);
-  list_box.set_font((iptr)&editor_font_block.editor_font);
+  list_box.set_font(&editor_font_block.editor_font);
   pos = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = pos + 8;
   pos = client_width - 10;
@@ -5312,7 +5312,7 @@ static void civ_advance_announce(uptr civ,iptr advance,iptr civ2,Dialog &dialog2
   dialog2.add_line((const char *)&textbuf.buf,0xffffffff,0xffffffff,0xffffffff,0);
   if (diplo_meeting.session_active == 0) {
     dialog2.add_sprite(
-               (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+               (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                      (char)advances[advance].epoch * 0x3c +
                      (char)advances[advance].category * 0xf0),0,0);
     dialog2.set_image_zoom(8);
@@ -5368,10 +5368,10 @@ static void civ_advance_sell_barracks(uptr civ,iptr advance,Dialog &dialog2)
       dialog2.load_game_text((const char *)&str_barracks);
       if (diplo_meeting.session_active == 0) {
         dialog2.add_sprite(
-                   (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                   (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                          (char)advances[advance].epoch * 0x3c +
                          (char)advances[advance].category * 0xf0),0,0);
-        dialog2.add_sprite((iptr)&caption_close_button_sprite_block.notify_sprites,0,0);
+        dialog2.add_sprite((Sprite *)&caption_close_button_sprite_block.notify_sprites,0,0);
         dialog2.set_image_zoom(8);
       }
       dialog2.show_modal(0);
@@ -5409,10 +5409,10 @@ static void civ_advance_first_discovery(uptr civ,iptr advance,iptr civ2,Dialog &
         dialog2.load_game_text((const char *)&str_endwonder_2);
         if (diplo_meeting.session_active == 0) {
           dialog2.add_sprite(
-                     (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                     (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                            (char)advances[advance].epoch * 0x3c +
                            (char)advances[advance].category * 0xf0),0,0);
-          dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c),0,0);
+          dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
           dialog2.set_image_zoom(8);
         }
         if (2 < game.multiplayer) {
@@ -6094,7 +6094,7 @@ int __cdecl civ_choose_research_dialog(int civ,int forced)
         text_append_int(hint_kind);
         info_dialog.load_text((const char *)&str_advice,(const char *)&textbuf.buf,8);
         info_dialog.add_sprite(
-                   (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                   (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                          (char)advances[advance2].epoch * 0x3c + (char)advances[advance2].category * 0xf0)
                    ,(ui_metrics.large_screen == 0) - 1 & 8,0);
         if (hint_kind != 0) {
@@ -6240,7 +6240,7 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
       text_set_string_arg_b(2,(const char *)&textbuf.buf);
       dialog2.load_game_text((const char *)&str_civadvance);
       dialog2.add_sprite(
-                 (iptr)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                 (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                        (char)advances[advance].category * 0xf0 +
                        (char)advances[advance].epoch * 0x3c),0,0);
       dialog2.set_image_zoom(8);
@@ -6266,8 +6266,8 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
       }
       if (improvements[IMP_SUPERMARKET].preq == advance) {
         dialog2.load_game_text((const char *)&str_newfarmland);
-        dialog2.add_sprite((iptr)&caption_close_button_sprite_block.research_dialog_sprite,0,0);
-        dialog2.add_sprite((iptr)&land_improvement_sprites_block.farmland_sprite,0,0);
+        dialog2.add_sprite((Sprite *)&caption_close_button_sprite_block.research_dialog_sprite,0,0);
+        dialog2.add_sprite(&land_improvement_sprites_block.farmland_sprite,0,0);
         dialog2.show_modal(0);
       }
       if (unit_types[UNIT_PARATROOPERS].prerequisite == advance) {
@@ -7941,7 +7941,7 @@ void EditorWindow::cosmic_editor_dialog()
     list_parent = (u8 *)&window;
   }
   list_box.create((iptr)list_parent,x_pos,(RECT *)rect);
-  list_box.set_font((iptr)&editor_font_block.editor_font);
+  list_box.set_font(&editor_font_block.editor_font);
   list_box.set_dblclick_callback((CtrlNotifyFn)cosmic_editor_edit_value);
   cosmic_editor_capture_defaults();
   cosmic_editor_fill_list();

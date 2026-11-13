@@ -2041,15 +2041,15 @@ int __cdecl text_draw_shadowed(DibSurface *surface,const char *text,int x,int y)
   
   if (-1 < text_style.shadow_color) {
     gfx_set_text_color_index(text_style.shadow_color);
-    (surface)->draw_text((iptr)text_style.font,text,
+    (surface)->draw_text(text_style.font,text,
                text_style.shadow_dx + text_style.fake_bold + x,text_style.shadow_dy + y,5);
   }
   if (-1 < text_style.fg_color) {
     gfx_set_text_color_index(text_style.fg_color);
     if (text_style.fake_bold != 0) {
-      (surface)->draw_text((iptr)text_style.font,text,x + 1,y,5);
+      (surface)->draw_text(text_style.font,text,x + 1,y,5);
     }
-    (surface)->draw_text((iptr)text_style.font,text,x,y,5);
+    (surface)->draw_text(text_style.font,text,x,y,5);
   }
   width = text_style.font->text_width(text);
   return x + width;

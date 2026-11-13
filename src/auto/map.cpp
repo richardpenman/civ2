@@ -5393,7 +5393,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
   }
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->create((iptr)parent2,left,
              (RECT *)rect);
-  ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_callback(terrain_editor_on_combo);
   switch(combo_idx) {
   case 0:
@@ -5664,7 +5664,7 @@ void EditorWindow::terrain_editor_run()
   wnd_height_u = 0x17c;
   item_uptr = 0;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editorpt_gif_3,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editorpt_gif_3,10,0xc0,&palette);
   line_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = line_height;
   create_arg9 = 0;

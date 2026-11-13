@@ -392,9 +392,9 @@ void extras_draw_work_counter(iptr surface, int unit, int px, int py, int zoom)
     y = py + gfx_zoom_scale(0x28, zoom);
     gfx_select_zoom_font(zoom);
     gfx_set_text_color_index(10);
-    ((DibSurface *)surface)->draw_text((iptr)&status_window_block.map_label_font, text, x + 1, y + 1, 0);
+    ((DibSurface *)surface)->draw_text((GameFont *)&status_window_block.map_label_font, text, x + 1, y + 1, 0);
     gfx_set_text_color_index(0x72);
-    ((DibSurface *)surface)->draw_text((iptr)&status_window_block.map_label_font, text, x, y, 0);
+    ((DibSurface *)surface)->draw_text((GameFont *)&status_window_block.map_label_font, text, x, y, 0);
 }
 
 /* ---- X41: sentries in grey halftones ---- */

@@ -876,7 +876,7 @@ void EditorWindow::tribe_editor_create_combo(int slot)
   }
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_x,
              (RECT *)rect);
-  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_callback(tribe_editor_on_combo);
   switch(slot) {
   case 0:
@@ -1077,7 +1077,7 @@ void EditorWindow::tribe_editor_main()
   wnd_height_u = 0x17c;
   item_uptr = 0;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsa_gif,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsa_gif,10,0xc0,&palette);
   font_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = font_height;
   arg9 = 0;
@@ -1559,7 +1559,7 @@ editor_text_dlg_create(const char *title,uint style,int x,int y,int width,int he
   else {
     parent_wnd2 = (iptr)&editor_active.wnd->window;
   }
-  ((DibSurface *)((i8 *)&editor_text_dlg.wnd))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(iptr)&game_palette_block.game_palette,
+  ((DibSurface *)((i8 *)&editor_text_dlg.wnd))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,
              parent_wnd2);
   if (editor_text_dlg.caption_height != 0) {
     ((WndBase *)((i8 *)&editor_text_dlg.inner))->set_caption_height(editor_text_dlg.caption_height);

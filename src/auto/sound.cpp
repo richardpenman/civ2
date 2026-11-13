@@ -1980,7 +1980,7 @@ i32 AviPlayer::destruct()
 void AviPlayer::create(iptr parent,i32 style,u32 x,u32 y)
 
 {
-  wnd_create(parent,style,x,y,0x140,0xf0,(iptr)&palette_u
+  wnd_create(parent,style,x,y,0x140,0xf0,&palette
             );
   fill(0);
   pos_x_u = x;
@@ -1989,7 +1989,7 @@ void AviPlayer::create(iptr parent,i32 style,u32 x,u32 y)
 }
 
 /* 005dd2e3 auto */
-void AviPlayer::create_child(iptr parent,i32 style,u32 x,u32 y,iptr target)
+void AviPlayer::create_child(iptr parent,i32 style,u32 x,u32 y,SurfaceWindow *target)
 
 {
   iptr target_dib;
@@ -1998,12 +1998,12 @@ void AviPlayer::create_child(iptr parent,i32 style,u32 x,u32 y,iptr target)
     target_dib = 0;
   }
   else {
-    target_dib = target + 0x48;
+    target_dib = (iptr)&target->window;
   }
-  wnd_create_with_surface((const char *)parent,style,x,y,0x140,0xf0,(iptr)&palette_u
+  wnd_create_with_surface((const char *)parent,style,x,y,0x140,0xf0,&palette
              ,target_dib);
   fill(0);
-  target_surface_uptr = target;
+  target_surface_uptr = (uptr)target;
   pos_x_u = x;
   pos_y_u = y;
   return;
@@ -2078,17 +2078,17 @@ void AviPlayer::pause()
 }
 
 /* 005dd561 auto */
-void DibSurface::avi_player_set_palette(iptr palette)
+void DibSurface::avi_player_set_palette(GamePalette *palette)
 
 {
-  avi_apply_palette((AviPlayer *)this,(GamePalette *)palette);
+  avi_apply_palette((AviPlayer *)this,palette);
   set_palette(palette);
   ((WndBase *)(this + 1))->set_palette(palette);
   return;
 }
 
 /* 005dd64c auto */
-void DibSurface::avi_player_draw_to(iptr dest,int x,int y)
+void DibSurface::avi_player_draw_to(DibSurface *dest,int x,int y)
 
 {
   int dest_size;
@@ -2097,10 +2097,10 @@ void DibSurface::avi_player_draw_to(iptr dest,int x,int y)
   tagRECT dst_rect;
   
   if ((-1 < x) && (-1 < y)) {
-    dest_size = ((DibSurface *)dest)->surface_width();
+    dest_size = (dest)->surface_width();
     src_size = get_width();
     if (src_size <= dest_size - x) {
-      dest_size = ((DibSurface *)dest)->surface_height();
+      dest_size = (dest)->surface_height();
       src_size = get_height();
       if (src_size <= dest_size - y) {
         avi_decode_frame((AviPlayer *)this,0);
@@ -2109,7 +2109,7 @@ void DibSurface::avi_player_draw_to(iptr dest,int x,int y)
         SetRect(&src_rect,0,0,src_size,dest_size);
         CopyRect(&dst_rect,&src_rect);
         OffsetRect(&dst_rect,x,y);
-        blit((DibSurface *)dest,&src_rect,&dst_rect);
+        blit(dest,&src_rect,&dst_rect);
       }
     }
   }

@@ -422,12 +422,12 @@ void ComboBox::create(iptr parent,i32 ctrl_id,RECT *rect)
 }
 
 /* 00418c70 auto */
-void ComboBox::set_font(iptr font)
+void ComboBox::set_font(GameFont *font)
 
 {
   i32 hfont;
   
-  hfont = ((GameFont *)font)->get_hfont();
+  hfont = (font)->get_hfont();
   combo_hwnd_set_font(hwnd,hfont);
   return;
 }
@@ -520,12 +520,12 @@ void ListBox::create(iptr parent,i32 ctrl_id,RECT *rect)
 }
 
 /* 00418fe0 auto */
-void ListBox::set_font(iptr font)
+void ListBox::set_font(GameFont *font)
 
 {
   i32 hfont;
   
-  hfont = ((GameFont *)font)->get_hfont();
+  hfont = (font)->get_hfont();
   listbox_hwnd_set_font(hwnd,hfont);
   return;
 }
@@ -911,7 +911,7 @@ spritebtn_create_icon_button(WndBase *parent,i32 ctrl_id,SpriteButton *button,Sp
   width2 = rect_width(rect);
   height2 = rect_height(rect);
   button->init_from_sprite(parent,ctrl_id,rect->left,rect->top,width2,
-             height2,(iptr)sprite,0x17);
+             height2,sprite,0x17);
   surf_rect = (int *)button->face_surface.get_rect();
   rect2.left = *surf_rect;
   rect2.top = surf_rect[1];
@@ -942,10 +942,10 @@ spritebtn_create_icon_button(WndBase *parent,i32 ctrl_id,SpriteButton *button,Sp
   gfx_draw_bevel_rect(&button->button_surface,&inner_rect,0xf,10);
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
-  button->button_surface.set_palette(palette);
+  button->button_surface.set_palette((GamePalette *)palette);
   parent_wnd = (WndBase *)button->get_parent();
   palette = parent_wnd->get_palette();
-  button->face_surface.set_palette(palette);
+  button->face_surface.set_palette((GamePalette *)palette);
   return;
 }
 
@@ -3678,7 +3678,7 @@ void __cdecl ctrl_set_pending_font(GameFont *font)
 }
 
 /* 005d7cb0 auto */
-void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int width,int height,iptr sprite,uint bg_color)
+void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int width,int height,Sprite *sprite,uint bg_color)
 
 {
   u32 value;
@@ -3715,15 +3715,15 @@ void SpriteButton::init_from_sprite(WndBase *parent,i32 ctrl_id,int x,int y, int
   face_surface.fill(bg_color & 0xff);
   center_x = width >> 1;
   center_y = height >> 1;
-  ((Sprite *)sprite)->get_origin(&origin_x2,&origin_y2);
-  half_w = ((Sprite *)sprite)->get_width();
+  (sprite)->get_origin(&origin_x2,&origin_y2);
+  half_w = (sprite)->get_width();
   half_w = half_w >> 1;
-  half_h = ((Sprite *)sprite)->get_height();
+  half_h = (sprite)->get_height();
   half_h = half_h >> 1;
-  ((Sprite *)sprite)->set_origin(-half_w,-half_h);
-  ((Sprite *)sprite)->draw((RECT *)draw_ctx_a,&button_surface,center_x,center_y);
-  ((Sprite *)sprite)->draw((RECT *)draw_ctx_b,&face_surface,center_x,center_y);
-  ((Sprite *)sprite)->set_origin(origin_x2,origin_y2);
+  (sprite)->set_origin(-half_w,-half_h);
+  (sprite)->draw((RECT *)draw_ctx_a,&button_surface,center_x,center_y);
+  (sprite)->draw((RECT *)draw_ctx_b,&face_surface,center_x,center_y);
+  (sprite)->set_origin(origin_x2,origin_y2);
   gfx_set_scale_ratio(scale_num2,scale_den2);
   size = button_surface.surface_height();
   yBottom = y + size - 1;

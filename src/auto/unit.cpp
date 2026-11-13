@@ -2237,7 +2237,7 @@ static int spy_city_mission_menu(Dialog &dlg,iptr unit,iptr city,uptr civ,uptr c
   text_set_label_arg(1,unit_types[units[unit].type].name);
   text_set_string_arg(2,(const char *)&cities[city].name);
   dlg.load_game_section((const char *)&str_spymenu,1);
-  dlg.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)
+  dlg.add_sprite((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)
              ,0,0);
   dlg.set_image_zoom(8);
   ret = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_spyoptions);
@@ -2594,7 +2594,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
     if (choice < 0) return;
     if (choice == 1) {
       dlg.load_game_section((const char *)&str_sabotage,1);
-      dlg.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c),0,0);
+      dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),0,0);
       dlg.set_image_zoom(8);
       for (improvement = 1; improvement < 0x27; improvement++) {
         if ((improvement != IMP_PALACE) && (ret = city_has_improvement(city,improvement), ret != 0)) {
@@ -5428,7 +5428,7 @@ unit_sound_editor_create_wnd(const char *title,uint style,int x,int y,int width,
   else {
     parent2 = (iptr)&editor_active.wnd->window;
   }
-  ((DibSurface *)((i8 *)&unit_sound_editor.window))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(iptr)&game_palette_block.game_palette,
+  ((DibSurface *)((i8 *)&unit_sound_editor.window))->wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,
              parent2);
   if (unit_sound_editor.caption_height != 0) {
     ((WndBase *)((i8 *)&unit_sound_editor.wnd))->set_caption_height(unit_sound_editor.caption_height);
@@ -6707,7 +6707,7 @@ i32 __cdecl unit_caravan_enter_city(int unit,uptr city)
       }
       dialog2.load_game_text((const char *)&str_caravanmenu);
       dialog2.add_sprite(
-                 (iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),0,0);
+                 ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0,0);
       if (-1 < (char)units[unit].counter) {
         text_clear();
         text_append((const char *)(city * 0x58 + (iptr)((u8 *)&cities + 32)));
@@ -8844,7 +8844,7 @@ void EditorWindow::unit_editor_create_combo(int index)
   }
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->create((iptr)parent2,x,
              (RECT *)rect);
-  ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_callback(unit_editor_on_combo);
   switch(index) {
   case 0:
@@ -9075,7 +9075,7 @@ void EditorWindow::unit_editor_window_run()
   wnd_height_u = 0x17c;
   item_uptr = 0;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsa_gif_2,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsa_gif_2,10,0xc0,&palette);
   font_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = font_height;
   wnd_arg9 = 0;
@@ -10837,7 +10837,7 @@ i32 __cdecl unit_stack_select_dialog(int unit,const char *title,int allow_cancel
     count++;
     if (count < 10) {
       unit_stack_select_text(unit);
-      dialog2.add_sprite((iptr)&sprite,unit,(const char *)&textbuf.buf);
+      dialog2.add_sprite(&sprite,unit,(const char *)&textbuf.buf);
     }
   }
   choice = dialog2.show_modal(0);

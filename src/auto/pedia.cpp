@@ -462,14 +462,14 @@ void PediaWindow::add_link(int item_id,int x,int y,i32 link_kind, i32 rect_left,
   max_width = ((GameFont *)((i8 *)&font_size21))->font_cached_height();
   draw_line(x,y + max_width - 2,text_width,underline_y);
   gfx_set_text_color_index(10);
-  draw_text((iptr)&font_size21,(const char *)&textbuf.buf,x + 1,y,5);
+  draw_text(&font_size21,(const char *)&textbuf.buf,x + 1,y,5);
   if ((category == 8) && (text_width = civ_has_advance(human_civ[0],item_id), text_width != 0)) {
     gfx_set_text_color_index(0x6a);
   }
   else {
     gfx_set_text_color_index(0x55);
   }
-  draw_text((iptr)&font_size21,(const char *)&textbuf.buf,x,y,5);
+  draw_text(&font_size21,(const char *)&textbuf.buf,x,y,5);
   gfx_set_text_color_index(10);
   new_link = (PediaLink *)operator_new(0x48);
   if (new_link == (PediaLink *)0x0) {
@@ -771,7 +771,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,int terrain2,int te
     label = label_string(label_table.string_ids[0x2c5]);
     str_copy_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
   }
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   y2 += line_height;
   text_clear();
   str_clear((char *)format_buf);
@@ -779,7 +779,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,int terrain2,int te
     label = label_string(label_table.string_ids[0x2c6]);
     str_copy_max(format_buf,label,sizeof format_buf);
     pedia_label_format(format_buf,"dd",base_shields,special_shields);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     y2 += line_height;
     text_clear();
     str_clear((char *)format_buf);
@@ -796,7 +796,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,int terrain2,int te
   else {
     label = label_string(label_table.string_ids[0x2c9]);
     str_copy_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     y2 += line_height;
     text_clear();
     str_clear((char *)format_buf);
@@ -810,7 +810,7 @@ void PediaWindow::draw_terrain_special_bonus(GameFont *font2,int terrain2,int te
       str_append_max(((i8 *)&textbuf.buf),label,TEXTBUF_SIZE);
     }
   }
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
 }
 
 /* Part of PediaWindow::draw_terrain_page (004906fd): a base terrain's
@@ -842,17 +842,17 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,int terrain2,int y2,
       text_append_label(0x299);
     }
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     text_clear();
     if (terrain_types[terrain2].improve_to[improve_kind] < '\0') {
       if ((char)terrain_types[terrain2].improve_bonus[improve_kind] < 1) {
         text_append_label(0x29b);
-        draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
       }
       else {
         _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_improve_bonus_fmt),(int)(char)terrain_types[terrain2].improve_bonus[improve_kind]
                 );
-        draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
         measured = font2->text_width((const char *)&textbuf.buf);
         x2 = value_x + measured + 3;
         if (improve_kind == 0) {
@@ -889,7 +889,7 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,int terrain2,int y2,
       text_append_label(0x29a);
     }
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     text_clear();
     if ((char)terrain_types[terrain2].improve_turns[improve_kind] < 1) {
       text_append_label(0x29b);
@@ -897,7 +897,7 @@ void PediaWindow::draw_terrain_improve_rows(GameFont *font2,int terrain2,int y2,
     else {
       _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_improve_turns_fmt),(int)(char)terrain_types[terrain2].improve_turns[improve_kind]);
     }
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
 }
 
@@ -923,13 +923,13 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int
   y2 = stats_top;
   text_append_label(0x29c);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   x2 += 0x14;
   y2 += line_height;
   text_clear();
   if (terrain_types[terrain2].transform_to < '\0') {
     text_append_label(0x29b);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
     terrain_index = pedia_find_terrain_index(terrain_types[terrain2].transform_to);
@@ -947,7 +947,7 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int
     text_clear();
     text_append_label(0x29d);
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     text_clear();
     x2 += 0x14;
     y2 += line_height;
@@ -956,14 +956,14 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int
     text_append_space();
     terrain_index = (iptr)label_string(label_table.string_ids[0x2c3]);
     text_append((const char *)terrain_index);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     if (((terrain2 == TERRAIN_DESERT) || (terrain2 == TERRAIN_GRASSLAND)) || (terrain2 == TERRAIN_PLAINS)) {
       y2 += line_height;
       text_clear();
       text_append_label(0x45);
       text_append_colon();
       text_append((const char *)&str_1_4);
-      draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+      draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
       measured = font2->text_width((const char *)&textbuf.buf);
       x2 = x2 + measured + 3;
       icon_center_y = y2 + row_height / 2;
@@ -977,7 +977,7 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int
   text_clear();
   text_append_label(0x29e);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   x2 += 0x14;
   y2 += line_height;
   text_clear();
@@ -1124,7 +1124,7 @@ void PediaWindow::draw_terrain_page()
     text_clear();
     text_append_label(0x295);
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     measured = font2->text_width((const char *)&textbuf.buf);
     x2 = x2 + measured + 10;
     text_clear();
@@ -1144,16 +1144,16 @@ void PediaWindow::draw_terrain_page()
     text_clear();
     text_append_label(0x293);
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     text_clear();
     _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_move_cost_fmt),(int)(char)terrain_types[terrain2].move_cost);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
     x2 = content_left + margin;
     y2 += line_height;
     text_clear();
     text_append_label(0x294);
     text_append_colon();
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
     text_clear();
     if (terrain_types[terrain2].defense == 6) {
       crt_strcpy(((i8 *)&textbuf.buf),str_200);
@@ -1171,17 +1171,17 @@ void PediaWindow::draw_terrain_page()
       terrain_index = (iptr)label_string(label_table.string_ids[0x2c2]);
       text_append((const char *)terrain_index);
     }
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
   x2 = content_left + margin;
   y2 += line_height;
   text_clear();
   text_append_label(0x40);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_food_fmt),(int)(char)terrain_types[terrain2].food);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measured = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
@@ -1193,7 +1193,7 @@ void PediaWindow::draw_terrain_page()
   text_clear();
   text_append_label(0x296);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   if (terrain2 == TERRAIN_GRASSLAND) {
     shields = '\0';
@@ -1202,7 +1202,7 @@ void PediaWindow::draw_terrain_page()
     shields = terrain_types[terrain2].shields;
   }
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_shields_fmt),(int)(char)shields);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measured = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
@@ -1214,10 +1214,10 @@ void PediaWindow::draw_terrain_page()
   text_clear();
   text_append_label(0x45);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_terrain_trade_fmt),(int)(char)terrain_types[terrain2].trade);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measured = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measured + 3;
   icon_center_y = y2 + row_height / 2;
@@ -1850,7 +1850,7 @@ void PediaWindow::create()
   col_width = main_frame_wnd_block.main_frame_wnd.client_height();
   crt_strcpy((char *)pedia_title_text_2_618,((i8 *)&pedia_window_empty_title_str));
   wnd_create_with_surface(0,0xe02,left_x / 2 - (int)panel_width / 2,
-             col_width / 2 - (int)panel_height / 2,panel_width,panel_height,(iptr)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd)
+             col_width / 2 - (int)panel_height / 2,panel_width,panel_height,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd)
   ;
   window.wnd_handlers.set_close_handler(pedia_close);
   set_redraw_callback(pedia_redraw_page);
@@ -2174,12 +2174,12 @@ void PediaWindow::draw_frame()
   x2 += (tmp_a / 2 - (tmp_b >> 1));
   y2 = panel_layout.bevel_width + panel_layout.margin_y;
   gfx_set_text_color_index(10);
-  draw_text((iptr)font2,(const char *)pedia_title_text_2,x2 + 2,
+  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2 + 2,
              y2 + 1,5);
   gfx_set_text_color_index(0x1a);
-  draw_text((iptr)font2,(const char *)pedia_title_text_2,x2 + 1,y2
+  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2 + 1,y2
              ,5);
-  draw_text((iptr)font2,(const char *)pedia_title_text_2,x2,y2,5);
+  draw_text((GameFont *)font2,(const char *)pedia_title_text_2,x2,y2,5);
   set_clip((RECT *)&content_left);
   return;
 }
@@ -2576,14 +2576,14 @@ void PediaWindow::draw_item_list()
         set_clip(&row_rect);
         if (shadow_color2 != text_color2) {
           gfx_set_text_color_index(shadow_color2);
-          draw_text((iptr)font2,(const char *)&textbuf.buf,text_x_off + col_x + 2,
+          draw_text(font2,(const char *)&textbuf.buf,text_x_off + col_x + 2,
                      text_y_off + row_y + 1,5);
           gfx_set_text_color_index(text_color2);
-          draw_text((iptr)font2,(const char *)&textbuf.buf,text_x_off + col_x + 1,
+          draw_text(font2,(const char *)&textbuf.buf,text_x_off + col_x + 1,
                      text_y_off + row_y,5);
         }
         gfx_set_text_color_index(text_color2);
-        draw_text((iptr)font2,(const char *)&textbuf.buf,text_x_off + col_x,
+        draw_text(font2,(const char *)&textbuf.buf,text_x_off + col_x,
                    text_y_off + row_y,5);
         set_clip((RECT *)(iptr)((u8 *)&list_rect));
       }
@@ -3671,13 +3671,13 @@ void PediaWindow::draw_improvement()
   text_clear();
   text_append_label(0x79);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = x2 + measure + 5;
   text_clear();
   if (improvements[improvement].preq < '\0') {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
     text_append_string_id(advances[improvements[improvement].preq].name);
@@ -3693,10 +3693,10 @@ void PediaWindow::draw_improvement()
   text_clear();
   text_append_label(0x84);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_improvement_cost_fmt),(uint)improvements[improvement].cost * 10);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
@@ -3707,15 +3707,15 @@ void PediaWindow::draw_improvement()
   text_clear();
   text_append_label(0x9f);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   if (improvement < 0x17) {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
   else if (wonder_expires[improvement - 0x27] < 1) {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
   else {
     label = (iptr)label_string(advances[wonder_expires[improvement - 0x27]].name);
@@ -3734,7 +3734,7 @@ void PediaWindow::draw_improvement()
     yBottom = content_bottom;
     measure = rect_width((RECT *)&content_left);
     SetRect(&text_rect,x2,y2,measure - 10 + x2,yBottom);
-    draw_text_rect((iptr)font2,(const char *)&textbuf.buf,&text_rect,5);
+    draw_text_rect(font2,(const char *)&textbuf.buf,&text_rect,5);
   }
   update_describe_button(resize_border);
   set_clip((RECT *)saved_clip);
@@ -3821,13 +3821,13 @@ void PediaWindow::draw_advance_requires(GameFont *font2,int advance,int y2)
   text_clear();
   text_append_label(0x79);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = x2 + measure + 5;
   text_clear();
   if ((advances[advance].preq[0] < '\0') && (advances[advance].preq[1] < '\0')) {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
     if (-1 < advances[advance].preq[0]) {
@@ -3843,7 +3843,7 @@ void PediaWindow::draw_advance_requires(GameFont *font2,int advance,int y2)
         x2 = x2 + text_width + 3;
         text_clear();
         text_append_comma();
-        draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
         text_width = font2->text_width((const char *)&textbuf.buf);
         text_width += 4;
         x2 += text_width;
@@ -3901,7 +3901,7 @@ void PediaWindow::draw_advance_children(GameFont *font2,int advance,int list_x2,
         text_append_lparen();
         text_append_label(0x7b);
         text_append_space();
-        draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
         measure = font2->text_width((const char *)&textbuf.buf);
         x2 = x2 + measure + 2;
         text_clear();
@@ -3915,7 +3915,7 @@ void PediaWindow::draw_advance_children(GameFont *font2,int advance,int list_x2,
         x2 = x2 + measure + 2;
         text_clear();
         text_append_rparen();
-        draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
       }
       y2 += row_height;
     }
@@ -4087,73 +4087,73 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,int advance,int has_ped
     if ((has_pedia == 0) &&
        ((((advance == ADV_MONARCHY || (advance == ADV_COMMUNISM)) || (advance == ADV_FUNDAMENTALISM)) ||
         ((advance == ADV_REPUBLIC || (advance == ADV_DEMOCRACY)))))) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_CONSTRUCTION)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_RADIO)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_RAILROAD)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_REFRIGERATION)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_MYSTICISM)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_ELECTRONICS)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_FUTURE_TECH)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_NUCLEAR_POWER)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_FUSION_POWER)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_PHILOSOPHY)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
     line = text_read_line_or_end(1);
     if ((has_pedia == 0) && (advance == ADV_COMMUNISM)) {
-      draw_text((iptr)font2,(const char *)(line + (*line == '^')),
+      draw_text(font2,(const char *)(line + (*line == '^')),
                  x2,y2,5);
       y2 += row_height;
     }
@@ -4166,7 +4166,7 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,int advance,int has_ped
     }
     for (wonder = 0; wonder < 0x1c; wonder++) {
       if (wonder_expires[wonder] == advance) {
-        draw_text((iptr)font2,(const char *)line_buf,x2,y2,5);
+        draw_text(font2,(const char *)line_buf,x2,y2,5);
         measure = font2->text_width((const char *)line_buf);
         x2 += measure;
         text_clear();
@@ -4180,7 +4180,7 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,int advance,int has_ped
         x2 = x2 + measure + 2;
         text_clear();
         text_append_period();
-        draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+        draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
         x2 = list_x2;
         y2 += row_height;
       }
@@ -4248,7 +4248,7 @@ void PediaWindow::draw_advance_page()
   measure = font2->text_width((const char *)&textbuf.buf);
   list_x2 = x2 + measure + 2;
   if (related_count != 0) {
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   text_clear();
   draw_advance_children(font2,advance,list_x2,row_height,y2);
@@ -4715,13 +4715,13 @@ void PediaWindow::draw_improvement_page()
   text_clear();
   text_append_label(0x79);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = x2 + measure + 5;
   text_clear();
   if (improvements[improvement].preq < '\0') {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
     text_append_string_id(advances[improvements[improvement].preq].name);
@@ -4737,10 +4737,10 @@ void PediaWindow::draw_improvement_page()
   text_clear();
   text_append_label(0x84);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_improve_cost_fmt),(uint)improvements[improvement].cost * 10);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
@@ -4751,10 +4751,10 @@ void PediaWindow::draw_improvement_page()
   text_clear();
   text_append_label(0x9e);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_improve_upkeep_fmt),(uint)improvements[improvement].upkeep);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = value_x + measure + 3;
   center_y = y2 + row_height / 2;
@@ -4768,7 +4768,7 @@ void PediaWindow::draw_improvement_page()
     yBottom = content_bottom;
     measure = rect_width((RECT *)&content_left);
     SetRect(&text_rect,x2,y2,measure - 10 + x2,yBottom);
-    draw_text_rect((iptr)font2,(const char *)&textbuf.buf,&text_rect,5);
+    draw_text_rect(font2,(const char *)&textbuf.buf,&text_rect,5);
   }
   update_describe_button(resize_border);
   set_clip((RECT *)saved_clip);
@@ -4988,13 +4988,13 @@ void PediaWindow::draw_unit_page()
   text_clear();
   text_append_label(0x79);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   measure = font2->text_width((const char *)&textbuf.buf);
   x2 = x2 + measure + 5;
   text_clear();
   if (unit_types[unit_type].prerequisite < '\0') {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   }
   else {
     text_append_string_id(advances[unit_types[unit_type].prerequisite].name);
@@ -5011,15 +5011,15 @@ void PediaWindow::draw_unit_page()
   text_clear();
   text_append_label(0x84);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   if ((char)unit_types[unit_type].cost < '\0') {
     text_append_label(0xe);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
   else {
     _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_cost_fmt),(char)unit_types[unit_type].cost * 10);
-    draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+    draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
     measure = font2->text_width((const char *)&textbuf.buf);
     x2 = value_x + measure + 5;
     center_y = y2 + slot_height / 2;
@@ -5032,42 +5032,42 @@ void PediaWindow::draw_unit_page()
   text_clear();
   text_append_label(0x7f);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_attack_fmt),(int)(char)unit_types[unit_type].attack);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   y2 += row_height;
   text_clear();
   text_append_label(0x80);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_defense_fmt),(int)(char)unit_types[unit_type].defense);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   y2 += row_height;
   text_clear();
   text_append_label(0x82);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_hp_fmt),(int)(char)unit_types[unit_type].hit_points / 10);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   y2 += row_height;
   text_clear();
   text_append_label(0x83);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_firepower_fmt),(int)(char)unit_types[unit_type].firepower);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   y2 += row_height;
   text_clear();
   text_append_label(0x81);
   text_append_colon();
-  draw_text((iptr)font2,(const char *)&textbuf.buf,x2,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,x2,y2,5);
   text_clear();
   _sprintf(((i8 *)&textbuf.buf),((i8 *)&pedia_unit_move_fmt),(int)(char)unit_types[unit_type].move / 3);
-  draw_text((iptr)font2,(const char *)&textbuf.buf,value_x,y2,5);
+  draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   pedia_file = str_pedia_6;
   text_clear();
   text_append_int(unit_type);
@@ -5103,7 +5103,7 @@ void PediaWindow::draw_unit_page()
       yBottom = content_bottom;
       measure = rect_width((RECT *)&content_left);
       SetRect(&desc_rect,x2,y2,x2 + measure / 2,yBottom);
-      draw_text_rect((iptr)font2,(const char *)desc_buf,&desc_rect,5);
+      draw_text_rect(font2,(const char *)desc_buf,&desc_rect,5);
     }
   }
   update_describe_button(resize_border);

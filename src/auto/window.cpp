@@ -788,11 +788,11 @@ void PictureWindow::open(uint resource_id,u32 report,u32 style,u32 img_width,u32
   image_height = img_height;
   win_flush_pending_msgs();
   if (resource_id == 10000) {
-    surface.load_gif_file((const char *)&str_scredits_gif,10,0xc0,(iptr)&palette)
+    surface.load_gif_file((const char *)&str_scredits_gif,10,0xc0,&palette)
     ;
   }
   else {
-    surface.load_gif_resource(resource_id,10,0xc0,(iptr)&palette);
+    surface.load_gif_resource(resource_id,10,0xc0,&palette);
   }
   win_flush_pending_msgs();
   if ((int)img_width < 1) {
@@ -1428,10 +1428,10 @@ i32 Wnd::destruct()
 /* 0044cd9b: written by hand in src/game/throneroom.cpp */
 
 /* 00450390 auto */
-void WndBase::set_palette(iptr palette)
+void WndBase::set_palette(GamePalette *palette)
 
 {
-  wnd_palette = palette;
+  wnd_palette = (u32)palette;
   apply_palette_handle(palette);
   return;
 }
@@ -1453,10 +1453,10 @@ void WndBase::center()
 }
 
 /* 00450440 auto */
-void WndBase::apply_palette_handle(iptr palette)
+void WndBase::apply_palette_handle(GamePalette *palette)
 
 {
-  wnd_obj_select_palette(native_wnd,(i32)((GamePalette *)palette)->hpalette);
+  wnd_obj_select_palette(native_wnd,(i32)(palette)->hpalette);
   return;
 }
 
@@ -1904,7 +1904,7 @@ i32 __cdecl popup_text_with_city(const char *filename,const char *section,i32 dl
   dialog2.load_text(filename,section,dlg_flags);
   dialog2.set_sprite_draw_fn((DialogSpriteDrawFn)popup_city_sprite_draw_cb);
   dialog2.set_image_zoom(0);
-  dialog2.add_sprite((iptr)&sprite,city,0);
+  dialog2.add_sprite(&sprite,city,0);
   result = dialog2.show_modal(0);
   (*(u32 *)&dlg_input.help_pressed) = dialog2.result_extra;
   return result;
@@ -1938,7 +1938,7 @@ i32 __cdecl popup_text_with_unit(const char *filename,const char *section,i32 dl
   dialog2.load_text(filename,section,dlg_flags);
   dialog2.set_sprite_draw_fn((DialogSpriteDrawFn)popup_unit_sprite_draw_cb);
   dialog2.set_image_zoom(0);
-  dialog2.add_sprite((iptr)&sprite,unit,0);
+  dialog2.add_sprite(&sprite,unit,0);
   result = dialog2.show_modal(0);
   (*(u32 *)&dlg_input.help_pressed) = dialog2.result_extra;
   return result;
@@ -3778,12 +3778,12 @@ int __cdecl popup_city_picture_zoom(const char *section,int city,uint picture,in
     else {
       picture_id = picture;
     }
-    popup->surface.load_gif_resource(picture_id,10,0xc0,(iptr)&palette);
+    popup->surface.load_gif_resource(picture_id,10,0xc0,&palette);
     height = popup->surface.surface_height();
     width = popup->surface.surface_width();
-    sprite.grab_from_surface((int)&popup->surface,7,0,0,width,height);
+    sprite.grab_from_surface(&popup->surface,7,0,0,width,height);
     popup->dialog.load_game_text(section);
-    popup->dialog.add_sprite((iptr)&sprite,0,0);
+    popup->dialog.add_sprite(&sprite,0,0);
     if ((silent == 0) && (city_calc.zoom_requested == 0)) {
       height = 0;
       option_id = 1;
@@ -3847,10 +3847,10 @@ i32 __cdecl popup_game_with_city_flags(const char *section,i32 city,i32 flags)
    
    Library: Visual Studio 1998 Debug */
 
-void FrameWindow::set_title_font(iptr font)
+void FrameWindow::set_title_font(GameFont *font)
 
 {
-  title_font = font;
+  title_font = (uptr)font;
   return;
 }
 
@@ -3860,10 +3860,10 @@ void FrameWindow::set_title_font(iptr font)
    
    Library: Visual Studio 1998 Debug */
 
-void FrameWindow::set_title_small_font(iptr font)
+void FrameWindow::set_title_small_font(GameFont *font)
 
 {
-  title_small_font = font;
+  title_small_font = (uptr)font;
   return;
 }
 
@@ -3898,7 +3898,7 @@ popup_text_run(const char *file,const char *section,i32 result,i32 arg4,i32 arg5
   
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
-  status = dialog2.load_text_section(file,section,result,0,arg4,arg5,(RECT *)arg6,arg7);
+  status = dialog2.load_text_section(file,section,result,0,(SurfaceWindow *)arg4,(DibSurface *)arg5,(RECT *)arg6,arg7);
   if (status == 0) {
     if (((byte)dialog2.style_flags & 4) != 0) {
       for (i = 0; i < (int)dialog2.option_count; i++) {
@@ -3933,7 +3933,7 @@ popup_text_with_sprite(const char *file,const char *section,i32 flags,Sprite *sp
   dialog2.Dialog::construct(0x4000);
   ON_SCOPE_EXIT(dialog2.Dialog::destruct());
   dialog2.load_text(file,section,flags);
-  dialog2.add_sprite((iptr)sprite,0,0);
+  dialog2.add_sprite(sprite,0,0);
   dialog2.set_image_zoom(zoom);
   result = dialog2.show_modal(0);
   (*(u32 *)&dlg_input.help_pressed) = dialog2.result_extra;
@@ -4506,10 +4506,10 @@ void FrameWindow::draw_caption()
     }
   }
   gfx_set_text_color_index(10);
-  draw_text((iptr)font2,(const char *)caption,text_x2 + 2,text_y2 + 1,5);
+  draw_text(font2,(const char *)caption,text_x2 + 2,text_y2 + 1,5);
   gfx_set_text_color_index(0x1a);
-  draw_text((iptr)font2,(const char *)caption,text_x2 + 1,text_y2,5);
-  draw_text((iptr)font2,(const char *)caption,text_x2,text_y2,5);
+  draw_text(font2,(const char *)caption,text_x2 + 1,text_y2,5);
+  draw_text(font2,(const char *)caption,text_x2,text_y2,5);
   set_clip((RECT *)&client_rect);
   return;
 }
@@ -4591,7 +4591,7 @@ void FrameWindow::layout()
 }
 
 /* 0055318c auto */
-void FrameWindow::add_caption_button(iptr sprite,i32 callback)
+void FrameWindow::add_caption_button(Sprite *sprite,i32 callback)
 
 {
   u32 index;
@@ -4600,11 +4600,11 @@ void FrameWindow::add_caption_button(iptr sprite,i32 callback)
   if ((int)caption_button_count < 6) {
     index = caption_button_count;
     caption_button_count++;
-    caption_buttons[index].sprite = (Sprite *)sprite;
+    caption_buttons[index].sprite = sprite;
     caption_buttons[index].id = callback;
-    dim = ((Sprite *)sprite)->width();
+    dim = (sprite)->width();
     caption_buttons[index].width = dim;
-    dim = ((Sprite *)sprite)->height();
+    dim = (sprite)->height();
     caption_buttons[index].height = dim;
     caption_buttons[index].hotspot = 0;
   }
@@ -4737,7 +4737,7 @@ void FrameWindow::create(const char *title,uint flags,int x,int y,int width, int
     x = (caption_font_block.screen_width >> 1) - (width >> 1);
     y = (caption_font_block.screen_height >> 1) - (height >> 1);
   }
-  wnd_create_with_surface(0,wnd_style,x,y,width,height,(iptr)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+  wnd_create_with_surface(0,wnd_style,x,y,width,height,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
   if (caption_height != 0) {
     ((WndBase *)&window)->set_caption_height(caption_height);
   }
@@ -4843,12 +4843,12 @@ void __cdecl frame_texture_load(void)
   else {
     dll.resource_dll_load((iptr)path);
     ON_SCOPE_EXIT(dll.free());
-    ok = surface.load_gif_resource(999,10,0xec,(iptr)&art_palette);
+    ok = surface.load_gif_resource(999,10,0xec,(GamePalette *)&art_palette);
     if (ok == 0) {
       MessageBoxA((HWND)0x0,str_failed_to_load_civ2art_gif_2,str_notice_15,0x40);
     }
     else {
-      sprite.grab_from_surface((iptr)&surface,2,1,1,0x40,0x20);
+      sprite.grab_from_surface(&surface,2,1,1,0x40,0x20);
       ((DibSurface *)((i8 *)&frame_texture_surface_block.frame_texture_surface))->DibSurface::create(0x40,0x20);
       sprite.draw((RECT *)sprite_rect,(DibSurface *)&frame_texture_surface_block.frame_texture_surface,0,0);
       sprite.free();
@@ -6193,7 +6193,7 @@ i32 Dialog::destruct()
 }
 
 /* 0059dfb9 auto */
-void Dialog::init(iptr surface_wnd,iptr background,RECT *rect,u32 flags)
+void Dialog::init(SurfaceWindow *surface_wnd,DibSurface *background,RECT *rect,u32 flags)
 
 {
   i32 size;
@@ -6206,11 +6206,11 @@ void Dialog::init(iptr surface_wnd,iptr background,RECT *rect,u32 flags)
     init_defaults();
     reset_string_pool((uint)pool_size);
   }
-  set_font((iptr)dlg_style.default_text_font);
-  set_title_font((iptr)(*(i8 * *)dlg_style.default_text_font_rest));
-  set_list_font((iptr)(*(i8 * *)(dlg_style.default_text_font_rest + 4)));
-  surf_wnd = (SurfaceWindow *)surface_wnd;
-  bg_surface = background;
+  set_font((GameFont *)dlg_style.default_text_font);
+  set_title_font(((GameFont *)(*(i8 * *)dlg_style.default_text_font_rest)));
+  set_list_font(((GameFont *)*(i8 * *)(dlg_style.default_text_font_rest + 4)));
+  surf_wnd = surface_wnd;
+  bg_surface = (u32)background;
   result_id = 0;
   style_flags = flags;
   if (rect == 0) {
@@ -6362,12 +6362,12 @@ int Dialog::edit_row_height()
 }
 
 /* 0059e472 auto */
-void Dialog::set_font(iptr font)
+void Dialog::set_font(GameFont *font)
 
 {
   u32 row_height;
   
-  body_font = font;
+  body_font = (uptr)font;
   row_height = dialog_option_row_height();
   option_row_height = row_height;
   return;
@@ -6379,18 +6379,18 @@ void Dialog::set_font(iptr font)
    
    Library: Visual Studio 1998 Debug */
 
-void Dialog::set_title_font(iptr font)
+void Dialog::set_title_font(GameFont *font)
 
 {
-  title_font = font;
+  title_font = (uptr)font;
   return;
 }
 
 /* 0059e4c5 auto */
-void Dialog::set_list_font(iptr font)
+void Dialog::set_list_font(GameFont *font)
 
 {
-  list_font = font;
+  list_font = (uptr)font;
   return;
 }
 
@@ -6708,7 +6708,7 @@ void Dialog::set_image_zoom(u32 zoom)
 }
 
 /* 0059ec88 auto */
-DialogSprite *Dialog::add_sprite(iptr sprite,int sprite_id,const char *label)
+DialogSprite *Dialog::add_sprite(Sprite *sprite,int sprite_id,const char *label)
 
 {
   DialogSprite *entry;
@@ -6736,8 +6736,8 @@ DialogSprite *Dialog::add_sprite(iptr sprite,int sprite_id,const char *label)
   }
   entry->next = 0;
   entry->field_04 = 0;
-  entry->sprite = (Sprite *)sprite;
-  entry_width = ((Sprite *)sprite)->width();
+  entry->sprite = sprite;
+  entry_width = (sprite)->width();
   if (label == 0) {
     entry->label = 0;
   }
@@ -6976,7 +6976,7 @@ void Dialog::set_text_color(int highlighted,int use_alt,int shadow)
 }
 
 /* 0059f3d7 auto */
-int Dialog::draw_text_shadowed(iptr font,char *text,int x,int y,uint flags)
+int Dialog::draw_text_shadowed(GameFont *font,char *text,int x,int y,uint flags)
 
 {
   char *underscore;
@@ -6997,7 +6997,7 @@ int Dialog::draw_text_shadowed(iptr font,char *text,int x,int y,uint flags)
   use_alt = uses_alt_text_color();
   set_text_color(flags & 1,use_alt,shadow);
   ((DibSurface *)surf_wnd)->draw_text(font,(const char *)text,x,y,5);
-  text_width = ((GameFont *)font)->text_width((const char *)text);
+  text_width = (font)->text_width((const char *)text);
   return x + text_width;
 }
 
@@ -7707,9 +7707,9 @@ void Dialog::draw_option_cell(const char *text,int x,int y,int selected,int disa
   }
   if (shadow_color2 != fg_color) {
     gfx_set_text_color_index(shadow_color2);
-    ((DibSurface *)surf_wnd)->draw_text(list_font,text,x + 2,y + 1,5);
+    ((DibSurface *)surf_wnd)->draw_text((GameFont *)list_font,text,x + 2,y + 1,5);
     gfx_set_text_color_index(fg_color);
-    ((DibSurface *)surf_wnd)->draw_text(list_font,text,x + 1,y,5);
+    ((DibSurface *)surf_wnd)->draw_text((GameFont *)list_font,text,x + 1,y,5);
   }
   if (disabled == 0) {
     gfx_set_text_color_index(fg_color);
@@ -7717,7 +7717,7 @@ void Dialog::draw_option_cell(const char *text,int x,int y,int selected,int disa
   else {
     gfx_set_text_color_index(highlight_color);
   }
-  ((DibSurface *)surf_wnd)->draw_text(list_font,text,x,y,5);
+  ((DibSurface *)surf_wnd)->draw_text((GameFont *)list_font,text,x,y,5);
   return;
 }
 
@@ -8132,11 +8132,11 @@ i32 Dialog::create_window()
     }
     if (parent2 == (i8 *)0x0) {
       ((DibSurface *)surf_wnd)->wnd_create((iptr)title,wnd_style,window_x,
-                 window_y,wnd_width,wnd_height,(iptr)&game_palette_block.game_palette);
+                 window_y,wnd_width,wnd_height,(GamePalette *)&game_palette_block.game_palette);
     }
     else {
       ((DibSurface *)surf_wnd)->wnd_create_with_surface((const char *)title,wnd_style,window_x,
-                 window_y,wnd_width,wnd_height,(iptr)palette,(iptr)parent2);
+                 window_y,wnd_width,wnd_height,(GamePalette *)palette,(iptr)parent2);
     }
     if ((style_flags & 0x10000) == 0) {
       surf_wnd->window.set_caption_height(title_height);
@@ -9469,12 +9469,12 @@ void Dialog::render()
     title_x = ((int)zoom >> 1) - (tmp + 4 >> 1);
     title_y = bevel_width + pad_y;
     gfx_set_text_color_index(title_shadow_color);
-    ((DibSurface *)surf_wnd)->draw_text(title_font,(const char *)title_text,title_x + 2,
+    ((DibSurface *)surf_wnd)->draw_text((GameFont *)title_font,(const char *)title_text,title_x + 2,
                title_y + 1,5);
     gfx_set_text_color_index(title_color);
-    ((DibSurface *)surf_wnd)->draw_text(title_font,(const char *)title_text,title_x + 1,title_y,5)
+    ((DibSurface *)surf_wnd)->draw_text((GameFont *)title_font,(const char *)title_text,title_x + 1,title_y,5)
     ;
-    ((DibSurface *)surf_wnd)->draw_text(title_font,(const char *)title_text,title_x,title_y,5);
+    ((DibSurface *)surf_wnd)->draw_text((GameFont *)title_font,(const char *)title_text,title_x,title_y,5);
   }
   draw_wrapped_text(1);
   if (sprite_count != 0) {
@@ -9895,7 +9895,7 @@ void Dialog::load_section_keyword(char *line,i8 *expanded,int &mode,int &default
 }
 
 /* 005a632a auto */
-i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,iptr init_arg1, iptr init_arg2,RECT *init_arg3,uint flags)
+i32 Dialog::load_text_section(const char *file_name,const char *section,int default_value,iptr edit_default,SurfaceWindow *init_arg1, DibSurface *init_arg2,RECT *init_arg3,uint flags)
 
 {
   int cmp;
@@ -10062,12 +10062,12 @@ uint Dialog::uses_alt_text_color()
 void Dialog::draw_text_default_font(const char *text,i32 x,i32 y, i32 flags)
 
 {
-  draw_text_shadowed(body_font,(char *)text,x,y,flags);
+  draw_text_shadowed((GameFont *)body_font,(char *)text,x,y,flags);
   return;
 }
 
 /* 005bb4ae auto */
-void DibSurface::wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette,iptr parent)
+void DibSurface::wnd_create_with_surface(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
 
 {
   NativeWindow *hwnd;
@@ -11008,7 +11008,7 @@ i16 WndBase::get_style_flags()
 }
 
 /* 005c5760 auto */
-void WndBase::create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette)
+void WndBase::create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette)
 
 {
   NativeWindow *hwnd;
@@ -11020,7 +11020,7 @@ void WndBase::create_framed(const char *title,i32 style,i32 x,i32 y ,i32 width,i
 }
 
 /* 005c57f9 auto */
-void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette,iptr parent)
+void WndBase::create_framed_child(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
 
 {
   NativeWindow *hwnd;
@@ -11194,7 +11194,7 @@ i32 Wnd::dispatch_hotkey_char(i32 ch)
 }
 
 /* 005c5f20 auto */
-void WndBase::create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette)
+void WndBase::create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette)
 
 {
   NativeWindow *hwnd;
@@ -11207,7 +11207,7 @@ void WndBase::create_with_cmd_proc(const char *title,i32 style,i32 x,i32 y ,i32 
 }
 
 /* 005c5fc4 auto */
-void WndBase::create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,iptr palette,iptr parent)
+void WndBase::create_with_handlers(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette,iptr parent)
 
 {
   NativeWindow *hwnd;
@@ -11614,7 +11614,7 @@ void WndBase::destroy()
 }
 
 /* 005db67b auto */
-void WndBase::create(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,iptr palette)
+void WndBase::create(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,GamePalette *palette)
 
 {
   NativeWindow *native;
@@ -11632,7 +11632,7 @@ void WndBase::create(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,ip
 }
 
 /* 005db893 auto */
-void WndBase::create_child(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,iptr palette,WndBase *parent)
+void WndBase::create_child(i32 wnd_kind,u32 style,i32 x,i32 y, i32 width,i32 height,GamePalette *palette,WndBase *parent)
 
 {
   NativeWindow *native;

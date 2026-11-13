@@ -43,7 +43,7 @@ i32 __cdecl setup_hotseat_game(void)
   civ_saved_cursor_x_block.mp_turn_time_limit_ms = 0;
   game.multiplayer = 1;
   for (;;) {
-    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
     main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
     main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
     wnd_flush_paint();
@@ -145,7 +145,7 @@ i32 __cdecl setup_hotseat_game(void)
             text_append_label(0x363);
             ((GameMenu *)((i8 *)&main_menu_block.main_menu))->add_item(1,0x1f2,(const char *)&textbuf.buf,0);
             prefs_save_civ2dat();
-            ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+            ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
             main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
             main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
             wnd_flush_paint();
@@ -174,7 +174,7 @@ i32 __cdecl setup_hotseat_game(void)
         text_append_label(0x363);
         ((GameMenu *)((i8 *)&main_menu_block.main_menu))->add_item(1,0x1f2,(const char *)&textbuf.buf,0);
         prefs_save_civ2dat();
-        ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+        ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
         main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
         main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
         wnd_flush_paint();
@@ -650,7 +650,7 @@ int __cdecl setup_start_scenario(void)
       snd_cd_stop();
       snd_play_effect(SND_MENULOOP,0,1,0);
     }
-    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
     main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
     main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
     result = game_load_dialog(1,0,1);
@@ -685,7 +685,7 @@ int __cdecl setup_start_scenario(void)
       unit = (iptr)game.active_unit;
       if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
          ((int)units[unit].owner == (int)scenario.objective_civ)) {
-        dlg.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),0
+        dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
                    ,0);
       }
       choice = dlg.show_modal(0);
@@ -778,7 +778,7 @@ int __cdecl setup_start_scenario(void)
   if (result != 0) {
     snd_play_effect(SND_MENUOK,0,0,0);
   }
-  ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+  ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
   main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
   main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
   choice = result;
@@ -887,7 +887,7 @@ i32 __cdecl load_game_pick_civ(int title_offset)
         arg5 = 0;
         arg4 = 0;
         name2 = civ_leader_name(game.player_civ);
-        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,(iptr)name2,arg4,arg5,(RECT *)arg6,arg7);
+        choice = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_3,0x17,(iptr)name2,(SurfaceWindow *)arg4,(DibSurface *)arg5,(RECT *)arg6,arg7);
         if (choice == 0) {
           dialog_prepend_title_label(&dlg,title_offset + 0x25e);
           choice = dlg.run_modal((iptr)name_buf,0);
@@ -1287,7 +1287,7 @@ void __cdecl game_main(void)
         parley_wnd_block.create(3);
       }
       ((PediaWindow *)((i8 *)&pedia_wnd.window))->create();
-      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
       main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
       main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
       if (game.multiplayer != '\0') {
@@ -1711,7 +1711,7 @@ static void setup_net_reset_game(int first_pass,GamePalette *palette)
 
   if (turn_resume_new_game == 1) {
     snd_play_effect(SND_MENUOK,0,0,0);
-    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)palette);
+    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,palette);
     main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
     main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
     wnd_flush_paint();
@@ -1981,13 +1981,13 @@ i32 __cdecl setup_mp_load_scenario(i32 mp_mode)
       snd_cd_stop();
       snd_play_effect(SND_MENULOOP,0,1,0);
     }
-    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+    ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
     main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
     main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
     rc = game_load_dialog(1,3,1);
     if (rc != 0) {
       snd_play_effect(SND_MENUOK,0,0,0);
-      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
       main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
       main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
       wnd_flush_paint();
@@ -2025,7 +2025,7 @@ i32 __cdecl setup_mp_load_scenario(i32 mp_mode)
       unit = (int)game.active_unit;
       if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
          ((int)units[unit].owner == (int)scenario.objective_civ)) {
-        dlg.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),0
+        dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
                    ,0);
       }
       unit = dlg.show_modal(0);
@@ -2361,7 +2361,7 @@ void __cdecl intro_play_opening_video(void)
     str_append((char *)path,(const char *)&str_civ2_video_opening_avi);
     found = file_resolve_path((const char *)path);
     if (found != 0) {
-      ((WndBase *)&host_wnd)->create_with_cmd_proc((const char *)&str_empty_82,0x800,0,0,screen_rect2.right,screen_rect2.bottom + 5,(iptr)&game_palette_block.game_palette);
+      ((WndBase *)&host_wnd)->create_with_cmd_proc((const char *)&str_empty_82,0x800,0,0,screen_rect2.right,screen_rect2.bottom + 5,(GamePalette *)&game_palette_block.game_palette);
       ((WndBase *)&host_wnd)->set_bg_color(0);
       intro.video_player = &player;
       player.create((iptr)&str_empty_83,0x800,0,0);
@@ -3613,7 +3613,7 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
         ui_flush_input();
         result = file_exists((const char *)&str_title_gif);
         if ((result != 0) &&
-           (result = ((DibSurface *)((i8 *)&scenario_title_surface_block.scenario_title_surface))->load_gif_file((const char *)&str_title_gif_2,10,0xc0,(iptr)&palette),
+           (result = ((DibSurface *)((i8 *)&scenario_title_surface_block.scenario_title_surface))->load_gif_file((const char *)&str_title_gif_2,10,0xc0,&palette),
            result != 0)) {
           main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&scenario_title_surface_block.scenario_title_surface);
           main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
@@ -5139,7 +5139,7 @@ static void play_loop_casualty_popup(Dialog *dialog2)
       else {
         dialog2->load_text_noflags((const char *)&str_game_7,(const char *)&str_casualties);
       }
-      dialog2->add_sprite((iptr)&popup_info_icon_sprite,0,0);
+      dialog2->add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
       dialog2->set_image_zoom(0);
       input_flush_events();
       snd_play_effect(SND_NEWONDER,0,0,0);
@@ -5556,7 +5556,7 @@ i32 __cdecl game_mp_client_turn_loop(void)
         text_set_string_arg(1,name_str);
         if (casualties < 1) {
           dialog2.load_text_noflags((const char *)&str_game_7,(const char *)&str_ourturntomove);
-          dialog2.add_sprite((iptr)&popup_info_icon_sprite,0,0);
+          dialog2.add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
           dialog2.set_image_zoom(0);
           input_flush_events();
           snd_play_effect(SND_NEWONDER,0,0,0);
@@ -5572,7 +5572,7 @@ i32 __cdecl game_mp_client_turn_loop(void)
           else {
             dialog2.load_text_noflags((const char *)&str_game_7,(const char *)&str_casualties_2);
           }
-          dialog2.add_sprite((iptr)&popup_info_icon_sprite,0,0);
+          dialog2.add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
           dialog2.set_image_zoom(0);
           input_flush_events();
           snd_play_effect(SND_NEWONDER,0,0,0);
@@ -5776,7 +5776,7 @@ static int mp_host_own_turn(uptr civ,Dialog *dialog2,i32 force_process)
       else {
         dialog2->load_text_noflags((const char *)&str_game_7,(const char *)&str_casualties_3);
       }
-      dialog2->add_sprite((iptr)&popup_info_icon_sprite,0,0);
+      dialog2->add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
       dialog2->set_image_zoom(0);
       input_flush_events();
       snd_play_effect(SND_NEWONDER,0,0,0);
@@ -5787,7 +5787,7 @@ static int mp_host_own_turn(uptr civ,Dialog *dialog2,i32 force_process)
     }
     else {
       dialog2->load_text_noflags((const char *)&str_game_7,(const char *)&str_ourturntomove_2);
-      dialog2->add_sprite((iptr)&popup_info_icon_sprite,0,0);
+      dialog2->add_sprite((Sprite *)&popup_info_icon_sprite,0,0);
       dialog2->set_image_zoom(0);
       input_flush_events();
       snd_play_effect(SND_NEWONDER,0,0,0);
@@ -11547,7 +11547,7 @@ static TribeStep setup_tribe_city_style(Dialog *dlg,char *input_text,int *choice
     dialog_prepend_title_label(dlg,player_slot + 0x25e);
     for (style2 = 0; style2 < 4; style2++) {
       label = (iptr)label_string(label_table.string_ids[0xf6 + style2]);
-      dlg->add_sprite(style2 * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360)),style2,(const char *)label);
+      dlg->add_sprite((Sprite *)(style2 * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360))),style2,(const char *)label);
     }
     dlg->set_default_choice((int)leaders[civs[game.player_civ].tribe].city_style);
     if (in_game == 0) {
@@ -11900,14 +11900,14 @@ i32 __cdecl scenario_start_dialog(int game_mode)
         snd_cd_stop();
         snd_play_effect(SND_MENULOOP,0,1,0);
       }
-      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+      ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
       main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
       main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
       wnd_flush_paint();
       load_result = game_load_dialog(1,game_mode,1);
       if (load_result != 0) {
         snd_play_effect(SND_MENUOK,0,0,0);
-        ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+        ((DibSurface *)((i8 *)&minimap_window_block.setup_backdrop_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
         main_frame_wnd_block.main_frame_wnd.set_bg_surface((DibSurface *)&minimap_window_block.setup_backdrop_surface);
         main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
         wnd_flush_paint();
@@ -11944,7 +11944,7 @@ i32 __cdecl scenario_start_dialog(int game_mode)
         unit = (int)game.active_unit;
         if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
            ((int)units[unit].owner == (int)scenario.objective_civ)) {
-          dlg.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c),0
+          dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
                      ,0);
         }
         unit = dlg.show_modal(0);
@@ -12568,7 +12568,7 @@ i32 __cdecl setup_join_pick_civ(int player_idx)
     ret = 0;
     human_civ[0] = civ;
     str = civ_leader_name(civ);
-    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,(iptr)str,ret,arg_b,(RECT *)arg_c,arg_d);
+    result = dlg.load_text_section((const char *)&str_game_7,(const char *)&str_name_7,0x17,(iptr)str,(SurfaceWindow *)ret,(DibSurface *)arg_b,(RECT *)arg_c,arg_d);
     if (result == 0) {
       dialog_prepend_title_label(&dlg,player_idx + 0x25f);
       result = dlg.run_modal((iptr)name_text,0);
@@ -15923,7 +15923,7 @@ void EditorWindow::events_editor_run()
     list_parent = (u8 *)&window;
   }
   trigger_listbox.create((iptr)list_parent,x,(RECT *)rect);
-  trigger_listbox.set_font((iptr)&editor_font_block.editor_font);
+  trigger_listbox.set_font(&editor_font_block.editor_font);
   trigger_listbox.set_select_callback(events_editor_fill_actions);
   trigger_listbox.set_dblclick_callback(events_editor_on_edit_trigger);
   events_editor_fill_triggers();
@@ -15938,7 +15938,7 @@ void EditorWindow::events_editor_run()
     list_parent2 = (u8 *)&window;
   }
   action_listbox.create((iptr)list_parent2,x,(RECT *)rect);
-  action_listbox.set_font((iptr)&editor_font_block.editor_font);
+  action_listbox.set_font(&editor_font_block.editor_font);
   action_listbox.set_select_callback(events_editor_update_buttons);
   action_listbox.set_dblclick_callback(events_editor_on_edit_action);
   events_editor_fill_actions(0);
@@ -17526,7 +17526,7 @@ void __cdecl setup_picwnd_load_image(i32 width,i32 height)
   palette.init();
   ON_SCOPE_EXIT(palette.destroy());
   win_flush_pending_msgs();
-  surface.load_gif_resource(setup_picwnd_state.image_id + 900,10,0xc0,(iptr)&palette);
+  surface.load_gif_resource(setup_picwnd_state.image_id + 900,10,0xc0,&palette);
   win_flush_pending_msgs();
   ((DibSurface *)((i8 *)&setup_picwnd_state.surface))->DibSurface::create(width,height);
   gfx_copy_rect_same_pos(&surface,(DibSurface *)&setup_picwnd_state.surface,0,0,width,height);
@@ -19038,7 +19038,7 @@ uint __cdecl main_frame_create(void)
   text_append_label(2);
   WritePrivateProfileStringA
             (str_civilization_gold_16,str_window_name,((i8 *)&textbuf.buf),str_civ_ini_16);
-  main_frame_wnd_block.main_frame_wnd.create_with_cmd_proc((const char *)&textbuf.buf,0x7c,0,0,600,400,(iptr)&game_palette_block.game_palette);
+  main_frame_wnd_block.main_frame_wnd.create_with_cmd_proc((const char *)&textbuf.buf,0x7c,0,0,600,400,(GamePalette *)&game_palette_block.game_palette);
   cd_ok = file_require_cdrom((const char *)&str_civ2_civ2_exe_2);
   if (cd_ok != 0) {
     wave_bits = 8;
@@ -19046,7 +19046,7 @@ uint __cdecl main_frame_create(void)
     wnd_info = main_frame_wnd_block.main_frame_wnd.get_window();
     snd_wave_open((i32)wnd_info->hwnd,wave_rate,wave_bits);
     menu_build_main();
-    ((DibSurface *)((i8 *)&main_frame_bg_surface_block.main_frame_bg_surface))->load_gif_resource(0x5a,10,0xc0,(iptr)&palette);
+    ((DibSurface *)((i8 *)&main_frame_bg_surface_block.main_frame_bg_surface))->load_gif_resource(0x5a,10,0xc0,&palette);
     main_frame_wnd_block.main_frame_wnd.set_bg_surface(&main_frame_bg_surface_block.main_frame_bg_surface);
     main_frame_wnd_block.main_frame_wnd.set_bg_color(0x9e);
     main_frame_wnd_block.main_frame_wnd.set_icon(1);

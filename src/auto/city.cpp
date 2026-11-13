@@ -445,7 +445,7 @@ void TaxRateDialog::run(uptr civ)
     bar_gap = (int)(bar_gap * 3) / 2;
     gif_resource_id = 0x42;
   }
-  (*(DibSurface * *)&taxrate_state.bg_surface)->load_gif_resource(gif_resource_id,10,0xc0,(iptr)&palette);
+  (*(DibSurface * *)&taxrate_state.bg_surface)->load_gif_resource(gif_resource_id,10,0xc0,&palette);
   value = ((GameFont *)((i8 *)&ui_text_font))->font_cached_height();
   row_spacing_value = value;
   label_text = (iptr)label_string(label_table.string_ids[0x102]);
@@ -911,7 +911,7 @@ void EditorWindow::city_editor_create_combo(int combo_index)
   }
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_id,
              (RECT *)rect);
-  ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_callback(city_editor_on_combo_change);
   if (combo_index == 0) {
     label = (iptr)label_string(label_table.string_ids[0x20d]);
@@ -1051,7 +1051,7 @@ void EditorWindow::city_editor_open_window()
   wnd_height_u = 0x17c;
   item_uptr = 0;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsq_gif,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editorsq_gif,10,0xc0,&palette);
   font_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = font_height;
   arg_9 = 0;
@@ -3594,7 +3594,7 @@ void __cdecl city_set_production(int city,int production)
             text_set_label_arg(2,improvements[improvement2].name);
             text_set_label_arg(3,improvements[improvement].name);
             dialog2.load_game_text((const char *)&str_switchwonder);
-            dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c),0,0);
+            dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
             dialog2.set_image_zoom(8);
             if (2 < game.multiplayer) {
               net_send_text_args(0x13,0xff,4,0,improvement,8);
@@ -3607,7 +3607,7 @@ void __cdecl city_set_production(int city,int production)
                       (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] | 1, autoplay.active == 0)) {
           text_set_label_arg(2,improvements[improvement].name);
           dialog2.load_game_text((const char *)&str_startwonder);
-          dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c),0,0);
+          dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
           dialog2.set_image_zoom(8);
           if (2 < game.multiplayer) {
             net_send_text_args(0x12,0xff,3,0,improvement,8);
@@ -3656,7 +3656,7 @@ void __cdecl city_set_production(int city,int production)
         text_set_string_arg(1,civ_name);
         text_set_label_arg(2,improvements[improvement].name);
         dialog2.load_game_text((const char *)&str_abandonwonder);
-        dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c),0,0);
+        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
         dialog2.set_image_zoom(8);
         if (2 < game.multiplayer) {
           net_send_text_args(0x14,0xff,3,0,improvement,8);
@@ -4264,18 +4264,18 @@ i32 CityViewWindow::load(uptr city)
       (&backbuffer)->DibSurface::create(0x500,0x1e0);
     }
     ok = improvement_art_surface.load_gif_resource(300,10,0xec,
-                       (iptr)&cityview_palette);
+                       &cityview_palette);
     if (ok == 0) {
       result = 0;
     }
     else {
       ok = wonder_art_surface.load_gif_resource(0x131,10,0xec,
-                         (iptr)&cityview_palette);
+                         &cityview_palette);
       if (ok == 0) {
         result = 0;
       }
       else {
-        ok = art_surface.load_gif_resource(0x136,10,0xec,(iptr)&cityview_palette);
+        ok = art_surface.load_gif_resource(0x136,10,0xec,&cityview_palette);
         if (ok == 0) {
           result = 0;
         }
@@ -4283,7 +4283,7 @@ i32 CityViewWindow::load(uptr city)
           src_x = 1;
           src_y = 1;
           for (i = 0; i < 4; i++) {
-            large_building_sprites_a[i].grab_from_surface((iptr)&art_surface,9
+            large_building_sprites_a[i].grab_from_surface(&art_surface,9
                        ,src_x,src_y,0x9e,0x72);
             large_building_sprites_a[i].replace_color(7,9);
             src_x += 0x9f;
@@ -4295,7 +4295,7 @@ i32 CityViewWindow::load(uptr city)
             src_y += 0x73;
           }
           for (i = 0; i < 4; i++) {
-            large_building_sprites_b[i].grab_from_surface((iptr)&art_surface,9
+            large_building_sprites_b[i].grab_from_surface(&art_surface,9
                        ,src_x,src_y,0x9e,0x72);
             large_building_sprites_b[i].replace_color(7,9);
             src_x += 0x9f;
@@ -4303,7 +4303,7 @@ i32 CityViewWindow::load(uptr city)
           src_x = 1;
           src_y = 0x15a;
           for (i = 0; i < 4; i++) {
-            small_building_sprites_a[i].grab_from_surface((iptr)&art_surface,9
+            small_building_sprites_a[i].grab_from_surface(&art_surface,9
                        ,src_x,src_y,0x7b,0x52);
             small_building_sprites_a[i].replace_color(7,9);
             src_x += 0x7c;
@@ -4315,7 +4315,7 @@ i32 CityViewWindow::load(uptr city)
             src_y += 0x53;
           }
           for (i = 0; i < 4; i++) {
-            small_building_sprites_b[i].grab_from_surface((iptr)&art_surface,9
+            small_building_sprites_b[i].grab_from_surface(&art_surface,9
                        ,src_x,src_y,0x7b,0x52);
             small_building_sprites_b[i].replace_color(7,9);
             src_x += 0x7c;
@@ -4353,7 +4353,7 @@ void CityViewWindow::run_modal()
 {
   handle_show_raise();
   wnd_flush_paint();
-  set_palette((iptr)&cityview_palette);
+  set_palette(&cityview_palette);
   surface_wnd.SurfaceWindow::show();
   wnd_flush_paint();
   surface_wnd.window.set_capture();
@@ -4365,7 +4365,7 @@ void CityViewWindow::run_modal()
   surface_wnd.window.release_capture();
   surface_wnd.window.hide();
   wnd_flush_paint();
-  set_palette((iptr)&game_palette_block.game_palette);
+  set_palette((GamePalette *)&game_palette_block.game_palette);
   hide();
   wnd_flush_paint();
   return;
@@ -4419,7 +4419,7 @@ uint CityViewWindow::load_icon_surface()
   int loaded;
   
   icon_surface.DibSurface::create(0x20,0x20);
-  loaded = icon_surface.load_gif_resource(399,10,0x20,(iptr)&game_palette_block.game_palette);
+  loaded = icon_surface.load_gif_resource(399,10,0x20,(GamePalette *)&game_palette_block.game_palette);
   return (uint)(loaded != 0);
 }
 
@@ -4431,10 +4431,10 @@ uint CityViewWindow::create_windows()
   int art_era2;
   
   create_with_handlers((const char *)&str_empty_74,0x800,tax_rate_icon_sprites_block.cityview_screen_rect,tax_rate_icon_sprites_block.cityview_screen_rect_top,
-             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,(tax_rate_icon_sprites_block.cityview_screen_rect_bottom - tax_rate_icon_sprites_block.cityview_screen_rect_top) + 5,(iptr)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
+             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,(tax_rate_icon_sprites_block.cityview_screen_rect_bottom - tax_rate_icon_sprites_block.cityview_screen_rect_top) + 5,(GamePalette *)&game_palette_block.game_palette,(iptr)&main_frame_wnd_block.main_frame_wnd);
   set_bg_color(0);
   surface_wnd.wnd_create_with_surface((const char *)&str_empty_75,0x800,0,tax_rate_icon_sprites_block.cityview_screen_rect_bottom - 0x1e0 >> 1,
-             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,0x1e0,(iptr)&cityview_palette,(iptr)this);
+             tax_rate_icon_sprites_block.screen_rect_right - tax_rate_icon_sprites_block.cityview_screen_rect,0x1e0,&cityview_palette,(iptr)this);
   ok = city_has_improvement(city_id,IMP_SUPERHIGHWAYS);
   if (ok == 0) {
     art_era2 = civ_city_art_era(cities[city_id].owner);
@@ -4443,7 +4443,7 @@ uint CityViewWindow::create_windows()
     art_era2 = 3;
   }
   ok = (&backbuffer)->load_gif_resource(terrain_kind * 5 + art_era2 + 0x154,10,
-                     0xec,(iptr)&cityview_palette);
+                     0xec,&cityview_palette);
   if (ok != 0) {
     surface_wnd.window.wnd_handlers.set_keydown_handler(cityview_on_key);
     surface_wnd.window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)cityview_on_lbuttonup);
@@ -4716,7 +4716,7 @@ void CityViewWindow::place_improvement(int slot,int improvement)
 
 {
   if (-1 < slot) {
-    slot_sprites[slot].grab_from_surface((iptr)&improvement_art_surface,9,
+    slot_sprites[slot].grab_from_surface(&improvement_art_surface,9,
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_x) + (improvement - 1) * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_y) + (improvement - 1) * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_w) + (improvement - 1) * 0x10),
@@ -4732,7 +4732,7 @@ void CityViewWindow::place_wonder(int slot,int wonder)
 
 {
   if (-1 < slot) {
-    slot_sprites[slot].grab_from_surface((iptr)&wonder_art_surface,9,
+    slot_sprites[slot].grab_from_surface(&wonder_art_surface,9,
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_x) + wonder * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_y) + wonder * 0x10),
                *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_w) + wonder * 0x10),
@@ -4823,11 +4823,11 @@ void CityViewWindow::draw_title()
   text_append_year((int)game.year);
   gfx_set_text_color_index(10);
   OffsetRect((LPRECT)title_rect,1,1);
-  surface_wnd.draw_text_in_rect((iptr)&title_font,(const char *)&textbuf.buf,
+  surface_wnd.draw_text_in_rect(&title_font,(const char *)&textbuf.buf,
              (RECT *)title_rect,0);
   gfx_set_text_color_index(0x1a);
   OffsetRect((LPRECT)title_rect,-1,-1);
-  surface_wnd.draw_text_in_rect((iptr)&title_font,(const char *)&textbuf.buf,
+  surface_wnd.draw_text_in_rect(&title_font,(const char *)&textbuf.buf,
              (RECT *)title_rect,0);
   return;
 }
@@ -7411,12 +7411,12 @@ void WonderMovieWindow::create(int wonder)
   else {
     art_dll.resource_dll_load((iptr)path);
     ON_SCOPE_EXIT(art_dll.free());
-    ok = art_surface.load_gif_resource(wonder + 20000,10,0xec,(iptr)palette_bytes);
+    ok = art_surface.load_gif_resource(wonder + 20000,10,0xec,(GamePalette *)palette_bytes);
     if (ok == 0) {
       MessageBoxA((HWND)0x0,str_failed_to_load_civ2art_gif,str_notice_9,0x40);
     }
     else {
-      sprite.grab_from_surface((iptr)&art_surface,2,1,1,0x40,0x20);
+      sprite.grab_from_surface(&art_surface,2,1,1,0x40,0x20);
       frame_surface.DibSurface::create(0x40,0x20);
       sprite.draw((RECT *)draw_rect,((DibSurface *)frame_surface_bytes),0,0);
       sprite.free();
@@ -7435,7 +7435,7 @@ void WonderMovieWindow::create(int wonder)
   wnd_height = height2;
   title = (iptr)label_string(improvements[wonder_index + 0x27].name);
   this->FrameWindow::create((const char *)title,style,pos_x,pos_y,wnd_width,wnd_height,arg7,arg8,arg9);
-  ((WndBase *)&window)->set_palette((iptr)palette_bytes);
+  ((WndBase *)&window)->set_palette((GamePalette *)palette_bytes);
   wnd_width = 0;
   rect = (iptr)get_rect();
   fill_rect((RECT *)rect,wnd_width);
@@ -7468,16 +7468,16 @@ void WonderMovieWindow::play()
       window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)wonder_movie_on_lbuttonup);
       window.wnd_handlers.set_keydown_handler(wonder_movie_on_key);
       player.create_child((iptr)&str_empty_116,0x200,border_width,caption_height,
-                 (iptr)this);
+                 this);
       open_result = ((AviPlayer *)&player_head)->open((const char *)path);
       if (open_result == 0) {
         ((AviPlayer *)&player_head)->set_end_callback(wonder_movie_on_video_end);
         ((WndHandlers *)&player_field_58)->set_lbuttonup_handler((WndMouseFn)wonder_movie_on_lbuttonup);
-        ((DibSurface *)&player_head)->avi_player_set_palette((iptr)(palette_bytes))
+        ((DibSurface *)&player_head)->avi_player_set_palette(((GamePalette *)palette_bytes))
         ;
-        ((WndBase *)&player_field_48)->set_palette((iptr)(palette_bytes));
+        ((WndBase *)&player_field_48)->set_palette(((GamePalette *)palette_bytes));
         screen_fade_out();
-        main_frame_wnd_block.main_frame_wnd.set_palette((iptr)(palette_bytes));
+        main_frame_wnd_block.main_frame_wnd.set_palette(((GamePalette *)palette_bytes));
         this->SurfaceWindow::show();
         ((SurfaceWindow *)&player_head)->SurfaceWindow::show();
         wnd_flush_paint();
@@ -7490,7 +7490,7 @@ void WonderMovieWindow::play()
         snd_wave_stop_all();
         ((WndBase *)&player_field_48)->hide();
         wnd_flush_paint();
-        main_frame_wnd_block.main_frame_wnd.set_palette((iptr)&game_palette_block.game_palette);
+        main_frame_wnd_block.main_frame_wnd.set_palette((GamePalette *)&game_palette_block.game_palette);
         ((WndBase *)&window)->hide();
         wnd_flush_paint();
         screen_fade_in();
@@ -8136,7 +8136,7 @@ void EditorWindow::impr_editor_create_combo(int combo_index)
   }
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->create((iptr)parent_wnd2,ctrl_id,
              (RECT *)rect);
-  ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_font((iptr)&editor_font_block.editor_font);
+  ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_callback(impr_editor_on_select);
   if (combo_index == 0) {
     for (improvement = 0; improvement < 0x43; improvement++) {
@@ -8338,7 +8338,7 @@ void EditorWindow::impr_editor_window_run()
   wnd_height_u = 0x17c;
   item_uptr = 1;
   editor_lists.next_ctrl_id = 0xc9;
-  editor_ui.bg_surface->load_gif_file((const char *)&str_editoras_gif,10,0xc0,(iptr)&palette);
+  editor_ui.bg_surface->load_gif_file((const char *)&str_editoras_gif,10,0xc0,&palette);
   line_height = ((GameFont *)((i8 *)&editor_font_block.editor_font))->font_cached_height();
   font_height_uptr = line_height;
   arg9 = 0;
@@ -10119,7 +10119,7 @@ int __cdecl city_notify_dialog_ex(const char *msg_key,int city,int force,Sprite 
         }
       }
       if (sprite != 0) {
-        dialog2.add_sprite((iptr)sprite,0,0);
+        dialog2.add_sprite(sprite,0,0);
         dialog2.set_image_zoom(8);
       }
       result = dialog2.show_modal(0);
@@ -10378,7 +10378,7 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
     else {
       built_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
     }
-    built_dialog.add_sprite((iptr)built_sprite,0,0)
+    built_dialog.add_sprite((Sprite *)built_sprite,0,0)
     ;
     built_dialog.set_image_zoom(8);
     built_dialog.show_modal(0);
@@ -10861,7 +10861,7 @@ static void city_process_production_almost_wonder(uptr city,uptr civ)
       wonder_dialog.Dialog::construct(0x4000);
       ON_SCOPE_EXIT(wonder_dialog.Dialog::destruct());
       wonder_dialog.load_game_text((const char *)&str_almostwonder);
-      wonder_dialog.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c),0,0);
+      wonder_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
       wonder_dialog.set_image_zoom(8);
       wonder_dialog.show_modal(0);
     }
@@ -11965,8 +11965,8 @@ void __cdecl city_window_load_background(void)
   if (city_wnd.size_level != city_wnd_state.bg_size_level) {
     city_wnd_state.bg_size_level = city_wnd.size_level;
     ((DibSurface *)((i8 *)&city_window_bg_surface))->release();
-    surface.load_gif_file((const char *)&str_city_gif,10,0xc0,(iptr)&palette);
-    sprite.grab_from_surface((iptr)&surface,7,0,0,0x27c,0x1a5);
+    surface.load_gif_file((const char *)&str_city_gif,10,0xc0,&palette);
+    sprite.grab_from_surface(&surface,7,0,0,0x27c,0x1a5);
     surface.release();
     height = ((CityWindow *)((i8 *)&city_wnd.window))->scale(0x1a5);
     width = ((CityWindow *)((i8 *)&city_wnd.window))->scale(0x27c);
@@ -12581,7 +12581,7 @@ void CityWindow::draw_resource_tiles(int half_tile_w,int half_tile_h,int origin_
         break;
       }
     }
-    ((MapView *)((i8 *)&map_views_block.map_views))->draw_tile_terrain((iptr)this,tile_x,tile_y,x2,y2,
+    ((MapView *)((i8 *)&map_views_block.map_views))->draw_tile_terrain(this,tile_x,tile_y,x2,y2,
                (int)cities[city_index].owner,
                map_zoom_level,tile_idx);
     if (i < 0x15) {
@@ -14261,7 +14261,7 @@ void __cdecl city_window_supported_unit_menu(int unit)
       dialog2.load_game_section((const char *)&str_childclick,1);
       dialog2.set_sprite_draw_fn((DialogSpriteDrawFn)unit_dlg_draw_sprite_cb);
       dialog2.set_image_zoom(8);
-      dialog2.add_sprite((iptr)&sprite,unit,0);
+      dialog2.add_sprite(&sprite,unit,0);
       arg = 0;
       option_id = 4;
       city2 = (iptr)label_string(label_table.string_ids[0x132]);
@@ -14367,7 +14367,7 @@ void __cdecl city_window_present_unit_menu(int stack_idx)
   dlg_unit_sprite_zoom = 8;
   dialog2.set_sprite_draw_fn((DialogSpriteDrawFn)unit_dlg_draw_sprite_cb);
   dialog2.set_image_zoom(8);
-  dialog2.add_sprite((iptr)&sprite,unit,0);
+  dialog2.add_sprite(&sprite,unit,0);
   unit2 = 0;
   option_id = 0;
   city = (iptr)label_string(label_table.string_ids[0x51]);
@@ -15664,10 +15664,10 @@ void __cdecl city_button_buy(i32 control_id)
           dialog2.load_game_text((const char *)text_key);
           city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
           if (cities[city].building < '\0') {
-            dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + building * -0x3c),0,0);
+            dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + building * -0x3c)),0,0);
           }
           else {
-            dialog2.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),0,0);
+            dialog2.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0);
           }
           dialog2.set_image_zoom(8);
           if (can_afford) {
@@ -15777,7 +15777,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       str_clear((char *)caption);
       str_append((char *)caption,(const char *)&str_empty_145);
       str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
-      unit_dialog.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),0,0);
+      unit_dialog.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0);
       city = unit_dialog.load_text((const char *)&str_advice_3,(const char *)caption,0x8000)
       ;
       if (city != 0) {
@@ -15795,13 +15795,13 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         text_set_label_arg(0,improvements[city].name);
         if (improvement < 0x27) {
           str_append_max((char *)caption,label_string(improvements[improvement].name),sizeof caption);
-          improvement_dialog.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c),
+          improvement_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
         else {
           str_append((char *)caption,(const char *)&str_wonder);
           improvement_dialog.add_sprite(
-                     (iptr)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf),
+                     ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf)),
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
       }
@@ -15809,7 +15809,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         unit_type = improvement;
         text_set_label_arg(0,unit_types[improvement].name);
         str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
-        improvement_dialog.add_sprite((iptr)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c),0,0
+        improvement_dialog.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0
                   );
       }
       city = improvement_dialog.load_text((const char *)&str_advice_6,(const char *)caption,0x8000)
@@ -17222,11 +17222,11 @@ void CityWindow::create()
   top = minimap_wnd_rect_block.city_wnd_rect_top;
   title = (iptr)label_string(label_table.string_ids[0x7]);
   this->FrameWindow::create((const char *)title,style,left,top,width,height,extra_arg1,extra_arg2,extra_arg3);
-  set_title_font((iptr)&city_window_font);
-  set_title_small_font((iptr)&city_window_small_font);
-  add_caption_button((iptr)&caption_close_button_sprite_block.caption_close_button_sprite,1);
-  add_caption_button((iptr)&caption_zoom_out_sprite,2);
-  add_caption_button((iptr)&caption_zoom_out_button_sprite_block.caption_zoom_out_button_sprite,3);
+  set_title_font((GameFont *)&city_window_font);
+  set_title_small_font(&city_window_small_font);
+  add_caption_button((Sprite *)&caption_close_button_sprite_block.caption_close_button_sprite,1);
+  add_caption_button((Sprite *)&caption_zoom_out_sprite,2);
+  add_caption_button((Sprite *)&caption_zoom_out_button_sprite_block.caption_zoom_out_button_sprite,3);
   set_caption_button_handler(city_window_on_caption_button);
   clear_controls();
   window.wnd_handlers.set_close_handler(city_window_close);
@@ -17486,7 +17486,7 @@ static void city_capture_aftermath_abandon_wonder(uptr city,Dialog &dialog2,iptr
       }
     }
   }
-  dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement3 * 0x3c),0,0);
+  dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement3 * 0x3c)),0,0);
   dialog2.set_image_zoom(8);
   dialog2.show_modal(0);
 }
@@ -17517,13 +17517,13 @@ static void city_capture_aftermath_wonder_notices(uptr city,iptr civ,Dialog &dia
       }
       if ((human_civ[0] == civ) && (autoplay.active == 0)) {
         dialog2.load_game_text((const char *)&str_capturewonder_2);
-        dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c),0,0);
+        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
         dialog2.set_image_zoom(8);
         dialog2.show_modal(0);
       }
       else if ((human_civ[0] == civ2) && (autoplay.active == 0)) {
         dialog2.load_game_text((const char *)&str_lostwonder_2);
-        dialog2.add_sprite((iptr)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c),0,0);
+        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
         dialog2.set_image_zoom(8);
         dialog2.show_modal(0);
       }
