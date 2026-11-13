@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenCiv2</title>
+<style>
+  :root { color-scheme: dark; --bg: #101010; --fg: #e8e2d0; --dim: #a39d8c; --accent: #c9a24a; --panel: #1c1a16; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
+               font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #setup { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: normal; color: var(--accent); margin: 0 0 1rem; }
+  p { margin: 0 0 1rem; }
+  .dim { color: var(--dim); font-size: 0.9rem; }
+  #drop { border: 2px dashed #4a4538; border-radius: 8px; padding: 1.5rem 1rem; text-align: center; margin: 1rem 0; }
+  #drop.over { border-color: var(--accent); background: var(--panel); }
+  label.button, button { display: inline-block; font: inherit; color: var(--bg); background: var(--accent);
+                         border: 0; border-radius: 4px; padding: 0.45rem 1rem; margin: 0.25rem; cursor: pointer; }
+  button.plain { background: none; color: var(--dim); text-decoration: underline; padding: 0; }
+  input[type=file] { display: none; }
+  #status { min-height: 1.5rem; color: var(--dim); }
+  #have { background: var(--panel); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
+  #game[hidden], #setup[hidden], #have[hidden] { display: none; }
+  #screen { image-rendering: pixelated; image-rendering: crisp-edges; outline: none; touch-action: none; }
+  dialog { background: #c0c0c0; color: #000; border: 2px outset #fff; padding: 0; min-width: 18rem; max-width: 34rem;
+           font: 14px/1.4 "Segoe UI", Arial, sans-serif; }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
+  #dialog-title { background: #000080; color: #fff; padding: 0.2rem 0.5rem; font-weight: bold; }
+  #dialog-text { padding: 1rem; white-space: pre-wrap; }
+  #dialog-buttons { padding: 0 1rem 1rem; text-align: center; }
+  #dialog-buttons button { background: #c0c0c0; color: #000; border: 2px outset #fff; border-radius: 0; min-width: 5rem; }
+</style>
+</head>
+<body>
+<div id="setup" hidden>
+  <h1>OpenCiv2</h1>
+  <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
+     <em>your own</em> copy of the game: choose the folder Civilization II is installed in (the one with
+     <code>Civ2Art.dll</code> and <code>RULES.TXT</code>). The files are copied into this browser's storage, and
+     never leave your computer; your saved games are kept there too.</p>
+  <div id="drop">
+    <label class="button" for="folder">Choose the game's folder</label>
+    <label class="button" for="zip">or a .zip of it</label>
+    <p class="dim">or drop the folder (or the .zip) here</p>
+    <input id="folder" type="file" webkitdirectory multiple>
+    <input id="zip" type="file" accept=".zip,application/zip">
+  </div>
+  <p class="dim">The game needs to be installed: its CD or a disc image of it is not enough here (the desktop version of
+     OpenCiv2 can set the game up from those, and its game folder can then be chosen). Music plays if the folder
+     has it (<code>Music/Track02.ogg</code> ..., as the desktop version's set-up makes from the CD).
+     Single player only: network games are not available in the browser.</p>
+  <div id="have" hidden>
+    <p>The game files are in this browser.</p>
+    <button id="play">Play</button>
+    <button id="forget" class="plain">Remove them</button>
+  </div>
+  <p id="status"></p>
+</div>
+<div id="game" hidden><canvas id="screen" tabindex="0"></canvas></div>
+<dialog id="dialog"><div id="dialog-title"></div><div id="dialog-text"></div><div id="dialog-buttons"></div></dialog>
+<script type="module" src="main.js"></script>
+</body>
+</html>
