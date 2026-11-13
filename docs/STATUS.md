@@ -232,10 +232,9 @@ message by message and clock event by clock event.
   (`city_window_draw_citizens` -> `CityWindow::draw_citizens`;
   `*_ctor`/`*_dtor` -> `construct`/`destruct`), the whole old name kept
   where the short one would clash with a member, a keyword or a macro (13,
-  e.g. `DibSurface::surface_width`, its field being `width`).  No C++
-  constructors, destructors or virtual functions: objects live in the
-  original's static data and are built explicitly, and the original's
-  vtables are data the game reads.  The same name in a base and a derived
+  e.g. `DibSurface::surface_width`, its field being `width`).  No virtual
+  functions: the original's vtables are data the game reads.  Constructors
+  and destructors: see "Constructors and destructors" below.  The same name in a base and a derived
   class (`construct`, `create`) is allowed; a call that could reach the
   other one is qualified (`obj->Control::construct()`), and a global a
   member would now hide inside a member function is written `::name`.  What
@@ -392,12 +391,11 @@ message by message and clock event by clock event.
   events_write_file (two files and the directory), the password dialog
   (the turn timer), net_session_init, the unit menu's busy flag, the
   sprite sheet import, the explosion animation (zoom scale, redraw flag),
-  file_read_nth_line; gotos 180 -> 112.  The game's objects keep their
-  explicit construct/destruct (no C++ constructors or destructors).  Left
+  file_read_nth_line; gotos 180 -> 112.  (The local windows and dialogs
+  have since become objects with C++ constructors and destructors: 110
+  guards are left; "Constructors and destructors" below.)  Left
   as written: the funclets inside class destructors (members of objects
-  in static data, 201), two functions whose dialog a split-off part
-  destroys on some paths (net_client_turn_loop, net_popup_queue_show_next);
-  releases followed by more work on a single path (GetDC/ReleaseDC,
+  in static data); releases followed by more work on a single path (GetDC/ReleaseDC,
   SelectObject restores, GlobalLock/Unlock, the wait cursor, the modal
   loop's owner disable/enable: no function releases them on several
   paths), releases in a different order on different paths or before a
@@ -426,6 +424,63 @@ message by message and clock event by clock event.
   the pool is the original's own bug (its callers keep event pointers
   across events_compact, valid under Wine only because the new pool is
   the block just freed), so events_compact keeps the pool's block.
+* **Constructors and destructors** (step 6).  20 of the game's classes
+  have C++ constructors and destructors: their `construct()` is the
+  constructor and `destruct()` the destructor, the bodies as the original
+  wrote them.  Windows that live only on the stack or the heap: the
+  scenario editors' EditorWindow, the council, tax rates, portrait, wonder
+  movie, throne room, spaceship, destroyed civilizations, city view,
+  foreign leader and city picture windows; Dialog (108 locals) and
+  ScenarioEvents on it; the windows and objects the original builds in its
+  static data, through casts of their storage (CityWindow, PediaWindow,
+  PictureWindow, SetupPicWindow, SpritePicker, ErrorContext); LobbyList.
+  A local is declared where it was constructed (its ON_SCOPE_EXIT guard
+  gone: 228 -> 110); a heap object is `game_new<T>(args)` (scoped.h: the
+  game's operator_new, the constructor only if it succeeded, as MSVC's
+  `new`), freed by its scalar_destruct, which runs the destructor; an object
+  in static data is still built by the original's start-up initializer and
+  destroyed by its atexit function, now by placement new and an explicit
+  `~T()` call, so nothing runs at another time (no object file has a C++
+  dynamic initializer or `__cxa_atexit` registration but lang.cpp's, as
+  before); a member that a constructor builds between other calls stays a
+  variant member built the same way.  Where a destructor's members and
+  base now have destructors of their own, the funclets are gone into C++'s
+  member and base destruction, in the same order: ScenarioEvents (its
+  Dialog base), CityPicturePopup (its dialog, then its PictureWindow base);
+  3 of the 185 funclet calls in destructors, 182 left, 134 of them in the
+  new destructors.  Where split-off parts destroyed their caller's dialog
+  just before the caller returned (the network popups, the client's turn
+  loop) the caller's destructor does it; the scenario intro's cancellation
+  (net_join_cancel_scenario) runs in the part, so its dialog is its own.
+  Left with explicit construct/destruct, and why: the classes that are the
+  declared type of static data (gamedata.cpp, state/*.h), or a base or a
+  member of one (23: DibSurface, SurfaceWindow, FrameWindow, WndBase,
+  ModalMenuWindow, Wnd, WndHandlers, Control, Button, Scrollbar, GameFont,
+  Sprite, DllHandle, ClickMap, MapView, ParleyWindow, the network message
+  queue and records ...: found by giving every class a destructor and
+  seeing which static definitions need one), since a C++ constructor or
+  destructor there would run at program start or be registered at exit
+  (g++ has no `no_destroy`), and their bases' and members' destruction
+  stays explicit inside the new destructors, hence their funclets;
+  GamePalette, AviPlayer and TimerManager, members that destructors destroy
+  between other calls (an automatic member destructor would run after the
+  body, too late); EndgameMovieWindow and GameMenu, each with two
+  construct/destruct pairs (the defeat and arrival movies; the menu and its
+  handle); the controls the windows hold as members and build through the
+  MSVC vector iterators with their ctor/dtor functions' addresses
+  (Checkbox, ComboBox, EditControl ...).  Checks: the machine code of every
+  function against the previous commit's (tools/cxx_compare.py): the same
+  but for the constructors' dropped `return this`, the destructors' dropped
+  return values (Dialog's memblock_free result, the spaceship's
+  uninitialized one, both unused), the heap sites testing the allocation
+  rather than the constructor's result, a funclet's `this != NULL` test,
+  register and stack slot choices in about 20 functions, and the network
+  functions above (the same calls in the same order once the parts are
+  put back); the suites (44 and 44), the additions' tests (28), the unit
+  tests (11,119 cases, no function renamed among them), the 44 replays
+  under AddressSanitizer (no report; leaks not checked, as a replay ends
+  without the atexit list), and the network tests (ours-orig and orig-ours with
+  diplomacy, a third player with kick and lobby).
 * **The last gotos** (step 6).  112 -> 69: the rest became loops with a
   flag (`while (chosen == 0)`, `stop = 1; break;`), restarts as loops
   (the player count asked again when the first player backs out, the city
