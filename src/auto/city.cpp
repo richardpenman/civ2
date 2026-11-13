@@ -104,7 +104,7 @@ uint __cdecl city_objective_value(int city)
   
   value = (uint)((cities[city].flags & CITYF_OBJECTIVE) != 0);
   if ((scenario.flags[0] & 4) != 0) {
-    for (wonder = 0; wonder < 0x1c; wonder++) {
+    for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
       if (game.wonder_city[wonder] == city) {
         value++;
       }
@@ -1081,7 +1081,7 @@ uptr __cdecl city_create(int x,int y,int civ)
     cities[city].specialists = 0;
     cities[city].building = UNIT_SETTLERS;
     best_score = 0;
-    for (unit_type = 2; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 2; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if ((unit_types[unit_type].role == ROLE_DEFEND) &&
          (can_build = civ_can_build_unit(civ,city,unit_type), can_build != 0)) {
         score = ((int)(char)unit_types[unit_type].defense << 3) /
@@ -1510,7 +1510,7 @@ void __cdecl city_set_production(int city,int production)
       }
     }
     if (cities[city].building < -0x26) {
-      if (-0x27 < old_building) {
+      if (-IMP_FIRST_WONDER < old_building) {
         cities[city].shield_box = cities[city].shield_box / 2;
       }
       if (cities[city].building < 1) {
@@ -1519,9 +1519,9 @@ void __cdecl city_set_production(int city,int production)
       else {
         improvement = (iptr)cities[city].building;
       }
-      wonder = improvement - 0x27;
+      wonder = improvement - IMP_FIRST_WONDER;
       if (old_building < -0x26) {
-        old_wonder = -0x27 - old_building;
+        old_wonder = -IMP_FIRST_WONDER - old_building;
       }
       else {
         old_wonder = 0;
@@ -1570,7 +1570,7 @@ void __cdecl city_set_production(int city,int production)
         }
       }
       if ((cities[city].shield_box == 0) &&
-         (wonder_group = (improvement - 0x27) / 7, *(char *)&civs[civ].wonders_by_group[wonder_group] == '\0'
+         (wonder_group = (improvement - IMP_FIRST_WONDER) / 7, *(char *)&civs[civ].wonders_by_group[wonder_group] == '\0'
          )) {
         all_humans_have = 1;
         for (civ3 = 1; civ3 < 8; civ3++) {
@@ -1600,9 +1600,9 @@ void __cdecl city_set_production(int city,int production)
       else {
         improvement = (iptr)old_building;
       }
-      wonder = improvement - 0x27;
-      if (((game.wonder_city[improvement - 0x27] != city) &&
-          (bonus_mult = civ_has_wonder(civ,improvement - 0x27), bonus_mult == 0)) &&
+      wonder = improvement - IMP_FIRST_WONDER;
+      if (((game.wonder_city[improvement - IMP_FIRST_WONDER] != city) &&
+          (bonus_mult = civ_has_wonder(civ,improvement - IMP_FIRST_WONDER), bonus_mult == 0)) &&
          ((((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] & 2) == 0 &&
           ((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] = (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] | 2,
           autoplay.active == 0)))) {
@@ -2110,7 +2110,7 @@ void __cdecl city_load_citypref(void)
       if (line == 0) break;
       text_next_token();
       found = -1;
-      for (improvement = 1; improvement < 0x27; improvement++) {
+      for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
         _Str2 = ((i8 *)&text_parse.token_buf);
         _Str1 = label_string(improvements[improvement].name);
         result = __strcmpi(_Str1,_Str2);
@@ -2137,7 +2137,7 @@ i32 __cdecl city_can_build_improvement(int civ,int city,int improvement)
   i32 result;
   
   result = 0;
-  if (improvement < 0x27) {
+  if (improvement < IMP_FIRST_WONDER) {
     ok = civ_has_advance(civ,improvements[improvement].preq);
     if (ok != 0) {
       if (city < 0) {
@@ -2191,7 +2191,7 @@ i32 __cdecl city_can_build_improvement(int civ,int city,int improvement)
     }
   }
   else {
-    result = civ_can_build_wonder(civ,improvement - 0x27);
+    result = civ_can_build_wonder(civ,improvement - IMP_FIRST_WONDER);
   }
   return result;
 }
@@ -4341,7 +4341,7 @@ void __cdecl city_pay_improvement_upkeep(int city)
   
   civ = (iptr)cities[city].owner;
   if (civs[civ].government != GOV_ANARCHY) {
-    for (improvement = 1; improvement < 0x27; improvement++) {
+    for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
       upkeep = city_has_improvement(city,improvement);
       if (upkeep != 0) {
         upkeep = civ_improvement_upkeep(civ,improvement);
@@ -4888,10 +4888,10 @@ static void city_capture_aftermath_wonder_notices(uptr city,iptr civ,Dialog &dia
   uptr wonder_city;
   iptr wonder;
 
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     wonder_city = wonder_get_city(wonder);
     if (wonder_city == city) {
-      improvement2 = wonder + 0x27;
+      improvement2 = wonder + IMP_FIRST_WONDER;
       text_set_label_arg(1,improvements[improvement2].name);
       text_clear();
       if (((wonder < 7) || (wonder == WONDER_STATUE_OF_LIBERTY)) || ((wonder == WONDER_EIFFEL_TOWER || (0x16 < wonder)))) {

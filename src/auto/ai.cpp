@@ -271,7 +271,7 @@ static void ai_advance_ai_bonus(iptr advance, iptr civ, int &check,
       city2 = value + 5;
     }
     value = city2;
-    for (wonder = 0; wonder < 0x1c; wonder++) {
+    for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
       if (wonder_expires[wonder] == advance) {
         city2 = civ_has_wonder(civ,wonder);
         if ((city2 != 0) && (advance != ADV_INDUSTRIALIZATION)) {
@@ -444,7 +444,7 @@ int __cdecl ai_advance_value(int civ,int advance)
   if (game.advance_known_by[advance] == '\0') {
     value++;
   }
-  for (advance2 = 0; advance2 < 100; advance2++) {
+  for (advance2 = 0; advance2 < ADV_COUNT; advance2++) {
     if (((advances[advance2].preq[0] == advance) || (advances[advance2].preq[1] == advance)) &&
        (city2 = civ_has_advance(civ,advance2), city2 != 0)) {
       value--;
@@ -932,7 +932,7 @@ static int ai_assess_unit_upgrade(AiCivAssess *o)
       unit_destroy_redraw(unit,1);
       return AI_ASSESS_CONTINUE;
     }
-    for (unit_type = 0; (int)unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; (int)unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if ((unit_types[units[unit].type].obsolete_by ==
            unit_types[unit_type].prerequisite) &&
          (unit_types[units[unit].type].role == unit_types[unit_type].role)) {
@@ -1435,7 +1435,7 @@ static void ai_assess_reset_counts(AiCivAssess *o)
   for (group = 0; group < 4; group++) {
     *(i8 *)&civs[civ].wonders_by_group[group] = 0;
   }
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     city6 = civ_has_wonder(civ,wonder);
     if (city6 != 0) {
       group = wonder / 7;
@@ -1459,7 +1459,7 @@ static void ai_assess_reset_counts(AiCivAssess *o)
   civs[civ].total_city_size = 0;
   civs[civ].military_strength = 0;
   civs[civ].total_attack = 0;
-  for (unit_type = 0; (int)unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; (int)unit_type < UNIT_TYPE_COUNT; unit_type++) {
     *(i8 *)&civs[civ].units_active[unit_type] = 0;
     *(i8 *)&civs[civ].units_in_production[unit_type] = 0;
   }
@@ -1581,7 +1581,7 @@ void __cdecl ai_civ_turn_assess(uptr civ)
         if ((char)unit_types[units[unit].type].attack < 'c') {
           if ((units[unit].orders != ORDER_AI_IDLE) &&
              ((((15 < units[unit].orders || (units[unit].orders == ORDER_GOTO)) ||
-               (units[unit].ai_task = '?', units[unit].orders < 4)) &&
+               (units[unit].ai_task = '?', units[unit].orders < ORDER_BUILD_FORTRESS)) &&
               (units[unit].orders != ORDER_SLEEP)))) {
             x2 = (int)units[unit].x;
             y2 = (int)units[unit].y;
@@ -6448,7 +6448,7 @@ i32 __cdecl ai_unit_choose_orders(void)
     result = ai_barbarian_unit_move();
     return result;
   }
-  if ((3 < units[unit].orders) && (units[unit].orders < '\n')) return ai_orders_finish(&st);
+  if ((ORDER_SLEEP < units[unit].orders) && (units[unit].orders < ORDER_BUILD_AIRBASE)) return ai_orders_finish(&st);
   x2 = (int)units[unit].x;
   y3 = (int)units[unit].y;
   unit_type = (uptr)units[unit].type;

@@ -3005,7 +3005,7 @@ void __cdecl parley_describe_units(ParleyOfferItem *items)
   int unit_count;
   char count_text[16];
   
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     type_counts[unit_type] = 0;
   }
   unit_count = items->value;
@@ -3021,7 +3021,7 @@ void __cdecl parley_describe_units(ParleyOfferItem *items)
     }
   }
   listed = 0;
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if (type_counts[unit_type] != 0) {
       parley_desc_append(label_string(unit_types[unit_type].name));
       parley_desc_append((const char *)((i8 *)&parley_units_open_paren_str));

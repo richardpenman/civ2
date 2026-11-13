@@ -38,7 +38,7 @@ void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
   if ((their_side != 0) && (can_see_other != 0)) {
     civ = (int)parley_wnd_block.other_civ;
   }
-  for (advance = 0; (int)advance < 100; advance++) {
+  for (advance = 0; (int)advance < ADV_COUNT; advance++) {
     if (their_side == 0) {
       result = civ_has_advance(human_civ[0],advance);
       if ((result != 0) &&

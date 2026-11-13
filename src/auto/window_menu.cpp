@@ -20,10 +20,10 @@ void __cdecl menu_wonder_movies(void)
     dialog2.Dialog::reset(0x1001);
     dialog2.set_width(0x1b8);
     dialog2.set_listbox(0x10,0x1b8,0);
-    for (wonder = 0; wonder < 0x1c; wonder++) {
+    for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
       flags = 0;
       wonder_id = wonder;
-      wonder_name = (iptr)label_string(improvements[wonder + 0x27].name);
+      wonder_name = (iptr)label_string(improvements[wonder + IMP_FIRST_WONDER].name);
       dialog2.add_option((const char *)wonder_name,wonder_id,flags);
     }
     dialog2.set_default_choice(last_choice);

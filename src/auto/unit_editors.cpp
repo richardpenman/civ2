@@ -491,7 +491,7 @@ void __cdecl unit_editor_load_rules(void)
   size_t _Count;
   iptr unit_type;
   
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     _Count = 0x28;
     _Source = label_string(unit_types[unit_type].name);
     _strncpy(editor_text_dlg_wnd_block.editor_item_name_recs[unit_type],_Source,_Count);
@@ -523,7 +523,7 @@ void __cdecl unit_editor_store_rules(void)
   size_t _Count;
   iptr unit_type;
   
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     _Count = 0xf;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[unit_type];
     _Dest = label_string(unit_types[unit_type].name);
@@ -637,7 +637,7 @@ i32 __cdecl unit_editor_write_units(FILE *file)
   iptr unit_type;
   int bit;
   
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     text_clear();
     text_append_string_id(unit_types[unit_type].name);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_name_sep));
@@ -710,7 +710,7 @@ void __cdecl unit_editor_on_ok(void)
   invalid_count = unit_editor_store_controls();
   if (invalid_count == 0) {
     renamed_count = 0;
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       new_name = editor_text_dlg_wnd_block.editor_item_name_recs[unit_type];
       str = label_string(unit_types[unit_type].name);
       cmp = _strcmp(str,new_name);
@@ -1074,7 +1074,7 @@ void EditorWindow::unit_editor_create_combo(int index)
   ((ComboBox *)(text_font + index * 0x38 + 0x28))->set_callback(unit_editor_on_combo);
   switch(index) {
   case 0:
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       label = (iptr)label_string(unit_types[unit_type].name);
       ((ComboBox *)(text_font + index * 0x38 + 0x28))->add_string((const char *)label);
     }
@@ -1085,7 +1085,7 @@ void EditorWindow::unit_editor_create_combo(int index)
     ((ComboBox *)(text_font + index * 0x38 + 0x28))->add_string((const char *)label);
     label = (iptr)label_string(label_table.string_ids[0x1f1]);
     ((ComboBox *)(text_font + index * 0x38 + 0x28))->add_string((const char *)label);
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       label = (iptr)label_string(advances[advance].name);
       ((ComboBox *)(text_font + index * 0x38 + 0x28))->add_string((const char *)label);
     }

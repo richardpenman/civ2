@@ -501,11 +501,11 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
   }
   improvement2 = 0;
   rand_start = crt_rand_at("spy_city_mission");
-  rand_start = rand_start % 0x27;
-  for (improvement = 0; improvement < 0x27; improvement++) {
-    candidate = (improvement + rand_start) % 0x27;
-    if (((candidate != 0) && (candidate != 1)) &&
-       ((candidate != 0x11 && (ret = city_has_improvement(city,candidate), ret != 0)))) {
+  rand_start = rand_start % IMP_FIRST_WONDER;
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
+    candidate = (improvement + rand_start) % IMP_FIRST_WONDER;
+    if (((candidate != IMP_NOTHING) && (candidate != IMP_PALACE)) &&
+       ((candidate != IMP_SDI_DEFENSE && (ret = city_has_improvement(city,candidate), ret != 0)))) {
       improvement2 = candidate;
       break;
     }
@@ -518,7 +518,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       dlg.load_game_section((const char *)&str_sabotage,1);
       dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),0,0);
       dlg.set_image_zoom(8);
-      for (improvement = 1; improvement < 0x27; improvement++) {
+      for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
         if ((improvement != IMP_PALACE) && (ret = city_has_improvement(city,improvement), ret != 0)) {
           option_flags = 0;
           impr_option = improvement;

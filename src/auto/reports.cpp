@@ -861,7 +861,7 @@ void __cdecl defense_minister_draw(void)
       row_index = 0;
       advisor_state.first_row = y;
       row_y = list_top;
-      for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+      for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
         next_row = row_index;
         if (((type_listed[unit_type] != '\0') && (next_row = row_index + 1, y <= (int)row_index)) &&
            ((int)row_index < y + rows_per_page)) {
@@ -1288,7 +1288,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
   advisor_state.items_per_page = advisor_state.rows_per_page * 3;
   advance_count = 0;
   left_x = advisor_state.list_left;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     value = civ_has_advance(civ,advance);
     if (value != 0) {
       advance_count++;
@@ -1303,7 +1303,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
   item_y = y2;
   first_item = advisor_state.first_row;
   text_set_font(&advisor_bold_font);
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     has_adv = civ_has_advance(civ,advance);
     value = item_index;
     if (((has_adv != 0) && (value = item_index + 1, first_item <= item_index)) &&
@@ -1436,7 +1436,7 @@ void __cdecl intel_report_on_click(int click_x,int click_y)
       (-1 < click_x - 2)) && (column = (click_x - 2) / advisor_state.column_width, column < 3)) {
     column = advisor_state.rows_per_page * column + advisor_state.first_row;
     item_index = 0;
-    for (advance_id = 0; advance_id < 100; advance_id++) {
+    for (advance_id = 0; advance_id < ADV_COUNT; advance_id++) {
       has_adv = civ_has_advance(civ,advance_id);
       if ((has_adv != 0) && (is_match = item_index == column + row, item_index = item_index + 1, is_match)) {
         ((PediaWindow *)((i8 *)&pedia_wnd.window))->show_topic_modal(advance_id);
@@ -2148,7 +2148,7 @@ void __cdecl historian_report_show(void)
           scores[civ] += (uint)civs[civ].military_strength;
         }
         else if (category == 2) {
-          for (advance = 0; advance < 100; advance++) {
+          for (advance = 0; advance < ADV_COUNT; advance++) {
             has_adv = civ_has_advance(civ,advance);
             if (has_adv != 0) {
               scores[civ]++;
@@ -2244,7 +2244,7 @@ void __cdecl top_cities_draw(void)
     if (cities[city].id != 0) {
       score = ((int)cities[city].size + (int)(char)cities[city].happy) -
                  (int)(char)cities[city].unhappy;
-      for (wonder = 0; wonder < 0x1c; wonder++) {
+      for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
         if (game.wonder_city[wonder] == city) {
           score += 10;
         }
@@ -2312,7 +2312,7 @@ void __cdecl top_cities_draw(void)
                          (int)(char)cities[city].happy,(int)(char)cities[city].unhappy,0
                         );
       wonder_x = mid_x;
-      for (wonder = 0; wonder < 0x1c; wonder++) {
+      for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
         if ((game.wonder_city[wonder] == city) && (0x23 < right_x - wonder_x)) {
           ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c))->draw((RECT *)icon_rect,&advisor_state.window,
                      wonder_x,y2 + 6);
@@ -4915,7 +4915,7 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
   media_wnd.window.set_capture();
   gfx_set_text_color_index(0xff);
   advance = 0;
-  while ((advance < 100 && (status = civ_has_advance(advance_civ,advance), status == 0))) {
+  while ((advance < ADV_COUNT && (status = civ_has_advance(advance_civ,advance), status == 0))) {
     advance++;
   }
   str = (iptr)label_string(advances[advance].name);
@@ -5500,7 +5500,7 @@ i32 __cdecl council_military_advice(int civ,i32 era)
       if (has != 0) {
         air_strength[civ2]++;
       }
-      for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+      for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
         has = civ_has_advance(civ2,unit_types[unit_type].prerequisite);
         if (has != 0) {
           if (unit_types[unit_type].domain == DOMAIN_SEA) {
@@ -5676,7 +5676,7 @@ i32 __cdecl council_trade_advice(int civ,int era)
     target_improvement = 0x16;
     ratio_divisor = 4;
   }
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     improvement_counts[improvement] = 0;
   }
   for (city = 0; city < game.num_cities; city++) {
@@ -5684,7 +5684,7 @@ i32 __cdecl council_trade_advice(int civ,int era)
       city_count++;
       route_total += (char)cities[city].trade_routes;
       city_split_trade(city,(int)cities[city].trade,1,0);
-      for (improvement = 0; improvement < 0x27; improvement++) {
+      for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
         value = city_has_improvement(city,improvement);
         if (value != 0) {
           improvement_counts[improvement]++;
@@ -5699,7 +5699,7 @@ i32 __cdecl council_trade_advice(int civ,int era)
       }
     }
   }
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     if ((improvement_counts[improvement] != 0) && (value = civ_improvement_upkeep(civ,improvement), value != 0)) {
       upkeep_total += improvement_counts[improvement] * value;
     }

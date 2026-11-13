@@ -743,7 +743,7 @@ static void diplo_exchange_survey(iptr civ2,iptr civ,int &offer2_value,int &offe
   diplo_eval.offer_tech_2nd = -1;
   diplo_eval.offer_tech_best = -1;
   diplo_eval.wanted_tech = -1;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     if ((advances[advance].preq[0] != -2) || (advances[advance].preq[1] != -2)) {
       ret = civ_has_advance(civ2,advance);
       civ_has = civ_has_advance(civ,advance);
@@ -751,15 +751,15 @@ static void diplo_exchange_survey(iptr civ2,iptr civ,int &offer2_value,int &offe
         advance2 = advance;
       }
       if ((civ_has != 0) && (civ_tech_count = civ_tech_count + 1, ret == 0)) {
-        for (wonder = 0; wonder < 0x1c; wonder++) {
-          if (((improvements[wonder + 0x27].preq == advance) &&
+        for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
+          if (((improvements[wonder + IMP_FIRST_WONDER].preq == advance) &&
               (game.wonder_city[wonder] == -1)) &&
              (wonder_group = wonder / 7,
              civs[civ].wonders_by_group[wonder_group] <
              civs[civ2].wonders_by_group[wonder_group])) {
             for (city = 0; city < game.num_cities; city++) {
               if (((cities[city].id != 0) && (cities[city].owner == civ)) &&
-                 ((int)cities[city].building == -(wonder + 0x27))) {
+                 ((int)cities[city].building == -(wonder + IMP_FIRST_WONDER))) {
                 blocking_wonder = wonder;
                 break;
               }
@@ -908,7 +908,7 @@ diplo_tech_exchange(int civ2,int civ,i32 x,i32 y,int mode,int eval_only
     }
     if ((-1 < blocking_wonder) && (DIFF_KING < game.difficulty)) {
       if (mode == 0) {
-        text_set_label_arg(1,improvements[blocking_wonder + 0x27].name);
+        text_set_label_arg(1,improvements[blocking_wonder + IMP_FIRST_WONDER].name);
         popup_game((const char *)&str_noexchangewonder);
         mode = 0;
       }
@@ -2682,7 +2682,7 @@ void __cdecl diplo_gift_menu(int civ2,int civ)
       if (city == 0) {
         advance = unit_types[units[unit].type].prerequisite;
         advance2 = -1;
-        for (advance_idx = 0; advance_idx < 100; advance_idx++) {
+        for (advance_idx = 0; advance_idx < ADV_COUNT; advance_idx++) {
           city = civ_has_advance(civ,advance_idx);
           if ((city == 0) && (city = advance_has_prereq(advance,advance_idx), city != 0)) {
             advance2 = advance_idx;
@@ -3426,7 +3426,7 @@ static bool diplo_meet_offer_ceasefire(iptr civ2,iptr civ,i32 x,i32 y,bool paid,
             civs[civ].gold = 0;
             status_redraw(1);
             conceded = true;
-            for (advance = 0; advance < 100; advance++) {
+            for (advance = 0; advance < ADV_COUNT; advance++) {
               advance2 = civ_has_advance(civ,advance);
               if (((advance2 != ADV_ADVANCED_FLIGHT) && (advance2 = civ_has_advance(civ2,advance), advance2 == ADV_ADVANCED_FLIGHT)) &&
                  ((advances[advance].preq[0] != -2 || (advances[advance].preq[1] != -2)))) {
@@ -4725,7 +4725,7 @@ void DiploLeaderWindow::science_rank_top_techs(int (&top_techs)[13],int &tech_co
   int j;
   int depth;
   
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     value = civ_has_advance(leader_civ,advance);
     if (value != 0) {
       tech_count++;
@@ -5585,7 +5585,7 @@ i32 __cdecl diplo_ai_swap_advances(uptr civ,uptr civ2)
     else {
       leader_far_ahead = true;
     }
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       if ((advances[advance].preq[0] != -2) || (advances[advance].preq[1] != -2)) {
         check = civ_has_advance(civ,advance);
         if ((check == 0) && (check = civ_has_advance(civ2,advance), check != 0)) {
@@ -6750,7 +6750,7 @@ void __cdecl diplo_ai_seek_war_ally(uptr civ2,uptr civ)
               value = int_clamp(civs[civ2].gold / 100,1,10);
               advance = -1;
               best_value = -99;
-              for (advance2 = 0; advance2 < 100; advance2++) {
+              for (advance2 = 0; advance2 < ADV_COUNT; advance2++) {
                 if (((((advances[advance2].preq[0] != -2) || (advances[advance2].preq[1] != -2)) &&
                      (check = civ_has_advance(civ,advance2), check == 0)) &&
                     ((check = civ_has_advance(civ2,advance2), check != 0 ||

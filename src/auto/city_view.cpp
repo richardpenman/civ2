@@ -860,7 +860,7 @@ void __cdecl wonder_show_movie(int wonder)
   snd_sync_music_option();
   if (game_language != 0) {
     ret_addr = 0x4bb96a;
-    ((PediaWindow *)((i8 *)&pedia_wnd.window))->show_improvement_modal(wonder + 0x27);
+    ((PediaWindow *)((i8 *)&pedia_wnd.window))->show_improvement_modal(wonder + IMP_FIRST_WONDER);
   }
   return;
 }
@@ -961,7 +961,7 @@ void WonderMovieWindow::create(int wonder)
   style = 0xc;
   wnd_width = width2;
   wnd_height = height2;
-  title = (iptr)label_string(improvements[wonder_index + 0x27].name);
+  title = (iptr)label_string(improvements[wonder_index + IMP_FIRST_WONDER].name);
   this->FrameWindow::create((const char *)title,style,pos_x,pos_y,wnd_width,wnd_height,arg7,arg8,arg9);
   ((WndBase *)&window)->set_palette((GamePalette *)palette_bytes);
   wnd_width = 0;

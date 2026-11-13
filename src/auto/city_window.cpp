@@ -2326,7 +2326,7 @@ void __cdecl city_window_sell_improvement(i32 list_row)
       city2 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
       city_recalc(city2,on);
       list_top = (short)city_wnd.improvement_list_top;
-      for (imp_idx = 1; imp_idx < 0x27; imp_idx++) {
+      for (imp_idx = 1; imp_idx < IMP_FIRST_WONDER; imp_idx++) {
         imp_arg = imp_idx;
         city2 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
         city = city_has_improvement(city2,imp_arg);
@@ -2435,14 +2435,14 @@ void CityWindow::draw_improvements(int blit)
     }
     row_y = list_top + 1;
     shown_count = 0;
-    for (improvement = 0; improvement < 0x43; improvement++) {
-      if (improvement < 0x27) {
+    for (improvement = 0; improvement < IMP_COUNT; improvement++) {
+      if (improvement < IMP_FIRST_WONDER) {
         has_it = city_has_improvement(city_index,improvement);
         wonder_idx = -1;
       }
       else {
-        wonder_idx = improvement - 0x27;
-        if ((int)game.wonder_city[improvement - 0x27] == city_index) {
+        wonder_idx = improvement - IMP_FIRST_WONDER;
+        if ((int)game.wonder_city[improvement - IMP_FIRST_WONDER] == city_index) {
           has_it = 1;
         }
         else {
@@ -4050,7 +4050,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         city = -improvement;
         improvement = -improvement;
         text_set_label_arg(0,improvements[city].name);
-        if (improvement < 0x27) {
+        if (improvement < IMP_FIRST_WONDER) {
           str_append_max((char *)caption,label_string(improvements[improvement].name),sizeof caption);
           improvement_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
@@ -4092,7 +4092,7 @@ static void city_button_change_add_options(int city2,int &option_count2,iptr cur
   int wonder;
 
   option_count2 = 0;
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     city3 = unit_type;
     city4 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
     city = civ_can_build_unit(city2,city4,city3);
@@ -4135,7 +4135,7 @@ static void city_button_change_add_options(int city2,int &option_count2,iptr cur
       option_count2++;
     }
   }
-  for (improvement = 1; improvement < 0x27; improvement++) {
+  for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
     city3 = improvement;
     city4 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
     city = city_can_build_improvement(city2,city4,city3);
@@ -4166,10 +4166,10 @@ static void city_button_change_add_options(int city2,int &option_count2,iptr cur
       option_count2++;
     }
   }
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     city = civ_can_build_wonder(city2,wonder);
     if (city != 0) {
-      improvement = wonder + 0x27;
+      improvement = wonder + IMP_FIRST_WONDER;
       text_clear();
       city = wonder_is_expired(wonder);
       if (city != 0) {
@@ -4293,7 +4293,7 @@ void __cdecl city_button_change(i32 control_id)
           city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
           cities[city].flags = cities[city].flags & ~(CITYF_AUTOBUILD | CITYF_AUTO_UNITS_ONLY | CITYF_AUTO_IMPROVEMENTS_ONLY);
           if (change_dialog.result_extra == 0) {
-            if (unit_type3 < 0x3e) {
+            if (unit_type3 < UNIT_TYPE_COUNT) {
               unit_type2 = unit_type3;
             }
             else {
@@ -4376,7 +4376,7 @@ void __cdecl city_button_change(i32 control_id)
           }
           else if (change_dialog.result_extra != 2) {
             if (change_dialog.result_extra == 3) {
-              if (unit_type3 < 0x3e) {
+              if (unit_type3 < UNIT_TYPE_COUNT) {
                 city2 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
                 city2 = (int)cities[city2].y;
                 city7 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
@@ -4416,7 +4416,7 @@ void __cdecl city_button_change(i32 control_id)
             }
           }
           else {
-            if (unit_type3 < 0x3e) {
+            if (unit_type3 < UNIT_TYPE_COUNT) {
               ((PediaWindow *)((i8 *)&pedia_wnd.window))->show_unit_modal(unit_type3);
               current_build = unit_type3;
             }

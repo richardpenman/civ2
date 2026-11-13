@@ -1447,7 +1447,7 @@ void __cdecl text_append_advance_abbrev(int advance,int with_comma)
   else if (advance == -1) {
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_nil_strs) + ((with_comma != 0) - 1 & 8));
   }
-  else if (advance < 100) {
+  else if (advance < ADV_COUNT) {
     crt_strcat(((i8 *)&textbuf.buf),(const char *)(advances + advance));
     if (with_comma != 0) {
       crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_comma_str));

@@ -86,7 +86,7 @@ void __cdecl cheat_toggle_all_advances(uptr civ)
   iptr advance;
   
   if (civs[civ].future_techs == '\0') {
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       civ_give_advance(civ,advance,0,0,0);
     }
     civs[civ].future_techs = 1;
@@ -96,7 +96,7 @@ void __cdecl cheat_toggle_all_advances(uptr civ)
     for (advance = 0; advance < 0xd; advance++) {
       *(i8 *)&civs[civ].advances[advance] = 0;
     }
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       game.advance_known_by[advance] =
            game.advance_known_by[advance] & ~(byte)(1 << ((byte)civ & 0x1f));
     }
@@ -131,7 +131,7 @@ void __cdecl cheat_edit_technologies(void)
   if ((int)civ >= 0) {
     while( true ) {
       dialog2.load_game_section((const char *)&str_edittech,1);
-      for (advance = 0; advance < 100; advance++) {
+      for (advance = 0; advance < ADV_COUNT; advance++) {
         if (advances[advance].enabled != '\0') {
           text_clear();
           text_append_string_id(advances[advance].name);
@@ -170,7 +170,7 @@ void __cdecl cheat_edit_technologies(void)
         }
         civs[civ].num_advances = '\0';
         last_choice = advance3;
-        for (advance = 0; advance < 100; advance++) {
+        for (advance = 0; advance < ADV_COUNT; advance++) {
           advance3 = civ_has_advance(civ,advance);
           if (advance3 != ADV_ADVANCED_FLIGHT) {
             civs[civ].num_advances++;
@@ -319,7 +319,7 @@ void __cdecl cheat_change_terrain(void)
       dialog2.close();
       dialog2.init_defaults();
       dialog2.load_text((const char *)&str_debug_5,(const char *)&str_terrain1_2,1);
-      for (terrain2 = 0; (int)terrain2 < 0xb; terrain2++) {
+      for (terrain2 = 0; (int)terrain2 < TERRAIN_COUNT; terrain2++) {
         option_flags = 0;
         option_terrain = terrain2;
         x = (iptr)label_string(terrain_types[terrain2].name);
@@ -394,7 +394,7 @@ void __cdecl cheat_create_unit(void)
   }
   while( true ) {
     dialog2.load_text((const char *)&str_debug_6,(const char *)&str_createunit_4,1);
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if ((((unit_types[unit_type].obsolete_by < '\0') ||
            (obsolete_known = civ_has_advance(cheat_unit.owner_civ,unit_types[unit_type].obsolete_by),
            obsolete_known == 0)) || (cheat_unit.show_obsolete != '\0')) &&
@@ -863,7 +863,7 @@ void __cdecl cheat_edit_city(void)
           status_redraw(1);
         }
         else if (choice == 2) {
-          for (wonder = 0; wonder < 0x1c; wonder++) {
+          for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
             if (game.wonder_city[wonder] == city) {
               game.wonder_city[wonder] = -1;
             }
@@ -1101,7 +1101,7 @@ void __cdecl cheat_edit_king(void)
                  *(i8 *)&civs[civ2].advances[advance];
           }
           civs[civ].num_advances = '\0';
-          for (advance = 0; advance < 100; advance++) {
+          for (advance = 0; advance < ADV_COUNT; advance++) {
             choice = civ_has_advance(civ,advance);
             if (choice != 0) {
               civs[civ].num_advances++;

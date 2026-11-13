@@ -43,7 +43,7 @@ void __cdecl tech_editor_load_items(void)
   size_t _Count;
   iptr advance;
   
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     _Count = 0x28;
     _Source = label_string(advances[advance].name);
     _strncpy(editor_text_dlg_wnd_block.editor_item_name_recs[advance],_Source,_Count);
@@ -67,7 +67,7 @@ void __cdecl tech_editor_save_items(void)
   size_t _Count;
   iptr advance;
   
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     _Count = 0x14;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[advance];
     _Dest = label_string(advances[advance].name);
@@ -174,7 +174,7 @@ i32 __cdecl tech_editor_write_civilize(FILE *file)
   size_t name_len;
   iptr advance;
   
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     text_clear();
     text_append_string_id(advances[advance].name);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tech_editor_ctrl_kinds_block.civilize_rules_name_sep_str));
@@ -217,7 +217,7 @@ void __cdecl tech_editor_relink_prereqs(void)
   iptr preq_idx;
   
   game.num_advances = 0;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     if (advances[advance].enabled != '\0') {
       game.num_advances++;
       for (preq_idx = 0; preq_idx < 2; preq_idx++) {
@@ -305,7 +305,7 @@ void __cdecl tech_editor_fill_usage_list(void)
   advances_header = false;
   units_header = false;
   editor_active.wnd->list_box.clear();
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if ((int)unit_types[unit_type].prerequisite == editor_active.wnd->item) {
       if (!units_header) {
         label = (iptr)label_string(label_table.string_ids[0x202]);
@@ -316,7 +316,7 @@ void __cdecl tech_editor_fill_usage_list(void)
       editor_active.wnd->list_box.add_string((const char *)label);
     }
   }
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     if ((int)advances[advance].preq[0] == editor_active.wnd->item) {
       if (!advances_header) {
         label = (iptr)label_string(label_table.string_ids[0x203]);
@@ -535,7 +535,7 @@ void EditorWindow::tech_editor_create_combo(int slot)
   ((ComboBox *)(text_font + slot * 0x38 + 0x28))->set_callback(tech_editor_on_combo);
   switch(slot) {
   case 0:
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       label = (iptr)label_string(advances[advance].name);
       ((ComboBox *)(text_font + slot * 0x38 + 0x28))->add_string((const char *)label);
     }
@@ -546,7 +546,7 @@ void EditorWindow::tech_editor_create_combo(int slot)
     ((ComboBox *)(text_font + slot * 0x38 + 0x28))->add_string((const char *)label);
     label = (iptr)label_string(label_table.string_ids[0x1f1]);
     ((ComboBox *)(text_font + slot * 0x38 + 0x28))->add_string((const char *)label);
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       label = (iptr)label_string(advances[advance].name);
       ((ComboBox *)(text_font + slot * 0x38 + 0x28))->add_string((const char *)label);
     }
@@ -949,7 +949,7 @@ void __cdecl rules_load_advances(int keep_names)
     text_close_file();
   }
   game.num_advances = 0;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     advances[advance].preq[1] = -2;
     advances[advance].preq[0] = advances[advance].preq[1];
     if (advances[advance].preq[0] == -2) {
@@ -959,7 +959,7 @@ void __cdecl rules_load_advances(int keep_names)
       advances[advance].enabled = 1;
     }
   }
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     if (from_file == 0) {
       if (rules_advance_count <= advance) break;
       if (keep_names == 0) {
@@ -1014,7 +1014,7 @@ void __cdecl rules_load_advances(int keep_names)
       advances[advance].enabled = 1;
     }
   }
-  for (; advance < 100; advance++) {
+  for (; advance < ADV_COUNT; advance++) {
     if (keep_names == 0) {
       _sprintf(((i8 *)&text_parse.token_buf),str_advance_d,advance + 1);
       name_id = strpool_add_padded((const char *)&text_parse.token_buf,0x14);
@@ -1034,7 +1034,7 @@ void __cdecl rules_load_advances(int keep_names)
       advances[advance].enabled = 1;
     }
   }
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     if (advances[advance].enabled != '\0') {
       game.num_advances++;
       for (preq_index = 0; preq_index < 2; preq_index++) {
@@ -1071,7 +1071,7 @@ void __cdecl rules_load_improvements(int keep_names)
   from_file = rules_from_scenario();
   if (from_file == 0) {
     text_close_file();
-    for (improvement = 0; improvement < 0x43; improvement++) {
+    for (improvement = 0; improvement < IMP_COUNT; improvement++) {
       if (keep_names == 0) {
         snprintf(key,sizeof key,"rules.improvement.%d",improvement);
         improvements[improvement].name = rules_name(key,0x19);
@@ -1090,7 +1090,7 @@ void __cdecl rules_load_improvements(int keep_names)
     return;
   }
   text_open_section((const char *)&main_frame_wnd_block.rules_txt_path,(const char *)&str_improve);
-  for (improvement = 0; improvement < 0x43; improvement++) {
+  for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     text_read_line(1);
     if (keep_names == 0) {
       name_id = text_next_token_str_id(0x19);
@@ -1144,7 +1144,7 @@ void __cdecl rules_load_units(int keep_names)
   const RulesUnit *row;
   
   double_moves_applied = 0;
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     unit_types[unit_type].prerequisite = -2;
   }
   /* (port) the game's rules (rules.h), or the scenario's RULES.TXT */
@@ -1152,7 +1152,7 @@ void __cdecl rules_load_units(int keep_names)
   if (from_file != 0) {
     text_open_section(0,(const char *)&str_units);
   }
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if (from_file == 0) {
       if (rules_unit_count <= unit_type) break;
       row = &rules_units[unit_type];
@@ -1219,7 +1219,7 @@ void __cdecl rules_load_units(int keep_names)
       error_report(0xfffffffa,3,textbuf.buf,unit_type,0);
     }
   }
-  for (; unit_type < 0x3e; unit_type++) {
+  for (; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if (keep_names == 0) {
       _sprintf(((i8 *)&text_parse.token_buf),str_unit_d,unit_type + 1);
       name_id = strpool_add_padded((const char *)&text_parse.token_buf,0xf);
@@ -1260,7 +1260,7 @@ void __cdecl rules_load_terrain(void)
   
   if (rules_from_scenario() == 0) {
     /* (port) the game's rules (rules.h) */
-    for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
       snprintf(key,sizeof key,"rules.terrain.%d",terrain2);
       terrain_types[terrain2].name = rules_name(key,0xf);
       terrain_types[terrain2].move_cost = rules_terrain[terrain2].move_cost;
@@ -1268,7 +1268,7 @@ void __cdecl rules_load_terrain(void)
       for (slot = 0; slot < 3; slot++) {
         terrain_types[terrain2].yields[slot] = rules_terrain[terrain2].yields[slot];
       }
-      if (terrain2 < 0xb) {
+      if (terrain2 < TERRAIN_COUNT) {
         for (slot = 0; slot < 2; slot++) {
           terrain_types[terrain2].improve_to[slot] = rules_terrain[terrain2].improve_to[slot];
           terrain_types[terrain2].improve_bonus[slot] = rules_terrain[terrain2].improve_bonus[slot];
@@ -1281,7 +1281,7 @@ void __cdecl rules_load_terrain(void)
     return;
   }
   text_open_section(0,(const char *)&str_terrain);
-  for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     text_read_line(1);
     name_id = text_next_token_str_id(0xf);
     terrain_types[terrain2].name = name_id;
@@ -1293,7 +1293,7 @@ void __cdecl rules_load_terrain(void)
       value = text_next_int();
       terrain_types[terrain2].yields[slot] = (char)value;
     }
-    if (terrain2 < 0xb) {
+    if (terrain2 < TERRAIN_COUNT) {
       for (slot = 0; slot < 2; slot++) {
         token = text_next_token();
         result_terrain = rules_parse_terrain_abbrev(token);
@@ -1648,7 +1648,7 @@ void __cdecl civ_intro_popup(int civ)
   while ((0 < advance && (known_count < 0xc))) {
     /* advances[100] is one past the table: the original read the terrain
        table that follows it there (irrigate_to, mine_to of the first terrain) */
-    if (((advance == 100) ? ((terrain_types[0].irrigate_to != -2) || (terrain_types[0].mine_to != -2))
+    if (((advance == ADV_COUNT) ? ((terrain_types[0].irrigate_to != -2) || (terrain_types[0].mine_to != -2))
                           : ((advances[advance].preq[0] != -2) || (advances[advance].preq[1] != -2))) &&
        (has_advance = civ_has_advance(civ,advance), has_advance != 0)) {
       known_advances[known_count] = advance;
@@ -1879,7 +1879,7 @@ void __cdecl science_advisor_draw(void)
   known_count = 0;
   list_left = advisor_state.list_left;
   rows_per_page = advisor_state.rows_per_page;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     value = civ_has_advance(civ,advance);
     if (value != 0) {
       known_count++;
@@ -1894,7 +1894,7 @@ void __cdecl science_advisor_draw(void)
   draw_y = cur_y;
   first_item = advisor_state.first_row;
   text_set_font(&advisor_bold_font);
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     has_advance = civ_has_advance(civ,advance);
     value = item_index;
     if (((has_advance != 0) && (value = item_index + 1, first_item <= item_index)) &&
@@ -1966,7 +1966,7 @@ void __cdecl science_advisor_on_click(int click_x,int click_y)
       (-1 < click_x - 2)) && (column = (click_x - 2) / advisor_state.column_width, column < 3)) {
     column = advisor_state.rows_per_page * column + advisor_state.first_row;
     known_index = 0;
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       has_advance = civ_has_advance(advisor_state.report_civ,advance);
       if ((has_advance != 0) && (is_match = known_index == column + row, known_index = known_index + 1, is_match)) {
         ((PediaWindow *)((i8 *)&pedia_wnd.window))->show_topic_modal(advance);
@@ -2126,7 +2126,7 @@ static int civ_score_draw_wonders(iptr civ,int left_x,int text_y3)
   column = 0;
   row_wrapped = 0;
   draw_y = text_y3;
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     if ((((-1 < game.wonder_city[wonder]) && (game.wonder_city[wonder] < game.num_cities))
         && (cities[game.wonder_city[wonder]].id != 0)) &&
        (city = (iptr)game.wonder_city[wonder], cities[city].owner == civ)) {
@@ -2136,7 +2136,7 @@ static int civ_score_draw_wonders(iptr civ,int left_x,int text_y3)
       text_set_colors(0x5e,0x12,0xffffffff,0xffffffff);
       text_y2 = draw_y + 3;
       value = text_x2;
-      text = (iptr)label_string(improvements[wonder + 0x27].name);
+      text = (iptr)label_string(improvements[wonder + IMP_FIRST_WONDER].name);
       gfx_draw_text((const char *)text,value,text_y2);
       row_wrapped = 0;
       column++;
@@ -3027,7 +3027,7 @@ void __cdecl civ_update_power_ranks(void)
            (uint)civs[civ].num_advances * 3 + civs[civ].total_city_size * 8 +
            (civs[civ].gold >> 5);
       military_power = 0;
-      for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+      for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
         if ((char)unit_types[unit_type].role < 5) {
           if (unit_types[unit_type].domain == DOMAIN_LAND) {
             hp_factor = ((char)unit_types[unit_type].hit_points + 1 +
@@ -3239,7 +3239,7 @@ void __cdecl civ_process_cities_turn(uptr civ)
   for (govt = 0; govt < 7; govt++) {
     civs[civ].government_score[govt] = 0;
   }
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] = 0;
   }
   game.transient_flags = game.transient_flags & ~TRANSIENT_ATTITUDE_DIRTY;
@@ -3400,7 +3400,7 @@ void __cdecl civ_process_cities_turn(uptr civ)
      (civs[civ].government_score[GOV_DEMOCRACY] = 0, -1 < leaders[civs[civ].tribe].attack)) {
     civs[civ].government_score[GOV_REPUBLIC] = 0;
   }
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] = 0;
   }
   return;
@@ -4114,7 +4114,7 @@ int __cdecl civ_calc_score(int civ)
     }
   }
   civ_score.wonders = 0;
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     if ((-1 < game.wonder_city[wonder]) && (cities[game.wonder_city[wonder]].owner == civ)) {
       civ_score.wonders += 0x14;
     }
@@ -4955,7 +4955,7 @@ i8 __cdecl rules_parse_advance_abbrev(char *abbrev)
     }
     else {
       found = -3;
-      for (advance = 0; (found < 0 && (advance < 100)); advance++) {
+      for (advance = 0; (found < 0 && (advance < ADV_COUNT)); advance++) {
         cmp = _strcmp(abbrev,advances[advance].abbrev);
         if (cmp == 0) {
           found = advance;
@@ -4987,7 +4987,7 @@ i8 __cdecl rules_parse_terrain_abbrev(char *abbrev)
     }
     else {
       found = -3;
-      for (terrain2 = 0; (found < 0 && (terrain2 < 0xb)); terrain2++) {
+      for (terrain2 = 0; (found < 0 && (terrain2 < TERRAIN_COUNT)); terrain2++) {
         cmp = _strcmp(abbrev,terrain_types[terrain2].abbrev);
         if (cmp == 0) {
           found = terrain2;
@@ -5016,7 +5016,7 @@ i32 __cdecl civ_has_advance(int civ,int advance_id)
   else if (advance_id == ADV_FUTURE_TECH) {
     result = 0;
   }
-  else if (advance_id < 100) {
+  else if (advance_id < ADV_COUNT) {
     if (civ < 1) {
       result = 0;
     }
@@ -5082,7 +5082,7 @@ void __cdecl civ_leonardo_upgrade(int civ)
   
   result = civ_has_wonder(civ,WONDER_LEONARDO);
   if (result != 0) {
-    for (unit_type2 = 0; unit_type2 < 0x3e; unit_type2++) {
+    for (unit_type2 = 0; unit_type2 < UNIT_TYPE_COUNT; unit_type2++) {
       notified[unit_type2] = '\0';
     }
     for (unit = 0; unit < game.num_units; unit++) {
@@ -5096,7 +5096,7 @@ void __cdecl civ_leonardo_upgrade(int civ)
         }
         if ((-1 < upgrade_advance) && (result = civ_has_advance(civ,upgrade_advance), result != 0)) {
           unit_type3 = -1;
-          for (unit_type2 = 0; unit_type2 < 0x3e; unit_type2++) {
+          for (unit_type2 = 0; unit_type2 < UNIT_TYPE_COUNT; unit_type2++) {
             if (((unit_types[unit_type2].prerequisite == upgrade_advance) &&
                 (unit_types[units[unit].type].role == unit_types[unit_type2].role)) &&
                ((char)unit_types[units[unit].type].hold <= (char)unit_types[unit_type2].hold)) {
@@ -5316,13 +5316,13 @@ static void civ_advance_announce(uptr civ,iptr advance,iptr civ2,Dialog &dialog2
   text_clear();
   if (((*(i8 *)&human_civ) != civ) ||
      ((1 << ((byte)(*(i8 *)&human_civ) & 0x1f) & (uint)game.human_players) == 0)) {
-    for (improvement = 0; improvement < 0x43; improvement++) {
+    for (improvement = 0; improvement < IMP_COUNT; improvement++) {
       if (improvements[improvement].preq == advance) {
         text_list_append_wrapped(&dialog2,improvements[improvement].name,&list_count,
                            &line_width);
       }
     }
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if (unit_types[unit_type].prerequisite == advance) {
         text_list_append_wrapped(&dialog2,unit_types[unit_type].name,&list_count,
                            &line_width);
@@ -5393,11 +5393,11 @@ static void civ_advance_first_discovery(uptr civ,iptr advance,iptr civ2,Dialog &
   }
   game.first_discoverer[advance] = game.first_discoverer[advance] | (byte)civ;
   if (autoplay.active == 0) {
-    for (wonder = 0; wonder < 0x1c; wonder++) {
+    for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
       if (((wonder_expires[wonder] == advance) &&
           (city = (iptr)game.wonder_city[wonder], -1 < city)) &&
          (((uint)game.human_players & 1 << (cities[city].owner & 0x1fU)) != 0)) {
-        improvement2 = wonder + 0x27;
+        improvement2 = wonder + IMP_FIRST_WONDER;
         text_set_label_arg(0,advances[advance].name);
         text_set_label_arg(1,improvements[improvement2].name);
         dialog2.load_game_text((const char *)&str_endwonder_2);
@@ -5584,7 +5584,7 @@ i32 __cdecl civ_can_build_unit(int civ,int city,int unit_type)
     if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) &&
        (((int)(uint)cosmic.road_move_mult < (int)(char)unit_types[unit_type].move &&
         (unit_types[unit_type].domain == DOMAIN_LAND)))) {
-      for (unit_type2 = 0; unit_type2 < 0x3e; unit_type2++) {
+      for (unit_type2 = 0; unit_type2 < UNIT_TYPE_COUNT; unit_type2++) {
         if (((((unit_type2 != unit_type) && (unit_types[unit_type2].role == unit_types[unit_type].role)) &&
              (unit_types[unit_type2].domain == unit_types[unit_type].domain)) &&
             (((int)(uint)cosmic.road_move_mult < (int)(char)unit_types[unit_type2].move &&
@@ -5618,7 +5618,7 @@ i32 __cdecl civ_can_build_wonder(int civ,int wonder)
   if ((((((game.game_flags & GAME_SCENARIO) == 0) || ((scenario.flags[0] & 4) == 0)) || (game.reveal_map != '\0'))
       || ((((int)(short)scenario.flags[0] & 0x8000U) != 0 && (wonder == WONDER_MANHATTAN)))) &&
      ((game.wonder_city[wonder] == -1 &&
-      (known = civ_has_advance(civ,improvements[wonder + 0x27].preq), known != 0)))) {
+      (known = civ_has_advance(civ,improvements[wonder + IMP_FIRST_WONDER].preq), known != 0)))) {
     result = 1;
   }
   return result;
@@ -5639,7 +5639,7 @@ int __cdecl civ_pick_research_advance(int civ)
   best_score = -1;
   best_advance = -1;
   candidates = 0;
-  for (advance = 0; advance < 100; advance++) {
+  for (advance = 0; advance < ADV_COUNT; advance++) {
     value = civ_can_research_advance(civ,advance);
     if (((value != 0) && ((advances[advance].preq[0] != -2 || (advances[advance].preq[1] != -2))))
        && (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0 ||
@@ -5763,7 +5763,7 @@ static void research_goal_add_options(iptr civ,int exclude_current,int mode,Dial
       dialog2.set_list_indent(0x4b,0);
       dialog2.set_option_draw_fn((DialogOptionDrawFn)research_option_draw_advance);
     }
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       if (((advances[advance].enabled != '\0') &&
           (known = civ_has_advance(civ,advance), known == 0)) &&
          ((exclude_current == 0 ||
@@ -5785,7 +5785,7 @@ static void research_goal_add_options(iptr civ,int exclude_current,int mode,Dial
       dialog2.set_list_indent(0x4b,0);
       dialog2.set_option_draw_fn((DialogOptionDrawFn)research_option_draw_unit);
     }
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       advance = (iptr)unit_types[unit_type].prerequisite;
       if (((-1 < advance) && (known = civ_has_advance(civ,advance), known == 0)) &&
          ((exclude_current == 0 || (civs[civ].researching != advance)))) {
@@ -5806,7 +5806,7 @@ static void research_goal_add_options(iptr civ,int exclude_current,int mode,Dial
       dialog2.set_list_indent(0x4b,0);
       dialog2.set_option_draw_fn((DialogOptionDrawFn)research_option_draw_improvement);
     }
-    for (improvement = 0; improvement < 0x43; improvement++) {
+    for (improvement = 0; improvement < IMP_COUNT; improvement++) {
       advance = (iptr)improvements[improvement].preq;
       if (((-1 < advance) && (known = civ_has_advance(civ,advance), known == 0)) &&
          ((exclude_current == 0 || (civs[civ].researching != advance)))) {
@@ -6047,20 +6047,20 @@ int __cdecl civ_choose_research_dialog(int civ,int forced)
         text_set_string_arg(0,(const char *)&textbuf.buf);
         hint_kind = 0;
         count = 0;
-        for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+        for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
           if ((unit_types[unit_type].prerequisite == advance2) && (count < 5)) {
             hint_items[count] = unit_type;
             count++;
           }
         }
-        for (improvement = 1; improvement < 0x43; improvement++) {
+        for (improvement = 1; improvement < IMP_COUNT; improvement++) {
           if ((improvements[improvement].preq == advance2) && (count < 5)) {
             hint_items[count] = -improvement;
             count++;
           }
         }
         if (count == 0) {
-          for (advance3 = 0; advance3 < 100; advance3++) {
+          for (advance3 = 0; advance3 < ADV_COUNT; advance3++) {
             if ((advances[advance3].enabled != '\0') &&
                (((advances[advance3].preq[0] == advance2 || (advances[advance3].preq[1] == advance2)) &&
                 (count < 5)))) {
@@ -6128,7 +6128,7 @@ int __cdecl civ_choose_research_dialog(int civ,int forced)
       choice_dialog.set_option_draw_fn((DialogOptionDrawFn)research_option_draw_advance);
       choice_dialog.set_list_indent(0x4b,0);
       count = 0;
-      for (advance = 0; advance < 100; advance++) {
+      for (advance = 0; advance < ADV_COUNT; advance++) {
         if (((((advances[advance].enabled != '\0') &&
               (known = civ_has_advance(civ,advance), known == 0)) &&
              ((known = civ_has_advance(civ,advances[advance].preq[0]), known != 0 &&
@@ -6538,7 +6538,7 @@ void __cdecl rules_apply_double_moves(void)
   if (((game.multiplayer == '\0') || (mp_doubles.moves == 0)) || (double_moves_applied != 0)) {
     if (((game.multiplayer != '\0') && (mp_doubles.moves == 0)) && (double_moves_applied == 1)) {
       double_moves_applied = 0;
-      for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+      for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
         if (unit_types[unit_type].domain == DOMAIN_LAND) {
           unit_types[unit_type].move = (char)unit_types[unit_type].move / 2;
         }
@@ -6548,7 +6548,7 @@ void __cdecl rules_apply_double_moves(void)
   }
   else {
     double_moves_applied = 1;
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if (unit_types[unit_type].domain == DOMAIN_LAND) {
         unit_types[unit_type].move = unit_types[unit_type].move * 2;
       }
@@ -7277,7 +7277,7 @@ void __cdecl civ_steal_advance(int civ,int civ2)
       if (interactive) {
         dialog2.load_game_text((const char *)&str_takeciv_2);
       }
-      for (advance = 0; advance < 100; advance++) {
+      for (advance = 0; advance < ADV_COUNT; advance++) {
         known = civ_has_advance(civ,advance);
         if ((((known == 0) && (known = civ_has_advance(civ2,advance), known != 0)) &&
             ((((game.game_flags & GAME_SCENARIO) == 0 || ((scenario.flags[0] & 0x10) == 0)) ||

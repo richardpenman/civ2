@@ -588,7 +588,7 @@ i32 __cdecl save_write_game(const char *file_name,int is_scenario)
       }
       else {
         game.game_flags = game.game_flags | GAME_SAVED_AS_SCENARIO;
-        for (advance = 0; advance < 100; advance++) {
+        for (advance = 0; advance < ADV_COUNT; advance++) {
           game.advance_known_by[advance] = '\0';
           for (civ = 1; civ < 8; civ++) {
             rc = civ_has_advance(civ,advance);

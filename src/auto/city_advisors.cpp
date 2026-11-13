@@ -211,7 +211,7 @@ void TaxRateDialog::calc_totals()
   total_upkeep_value = 0;
   total_science = 0;
   civ = this->civ;
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     improvement_counts[improvement] = 0;
   }
   saved_science_rate = civs[civ].science_rate;
@@ -221,7 +221,7 @@ void TaxRateDialog::calc_totals()
   for (city = 0; city < game.num_cities; city++) {
     if ((cities[city].id != 0) && ((int)cities[city].owner == civ)) {
       city_split_trade(city,(int)cities[city].trade,1,0);
-      for (improvement = 0; improvement < 0x27; improvement++) {
+      for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
         upkeep = city_has_improvement(city,improvement);
         if (upkeep != 0) {
           improvement_counts[improvement]++;
@@ -233,7 +233,7 @@ void TaxRateDialog::calc_totals()
       }
     }
   }
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     if ((improvement_counts[improvement] != 0) && (upkeep = civ_improvement_upkeep(civ,improvement), upkeep != 0)) {
       total_upkeep_value += improvement_counts[improvement] * upkeep;
     }
@@ -923,7 +923,7 @@ static void trade_advisor_draw_right_cell(iptr civ,int text_y2,int improvement_k
   if (item < improvement_kinds) {
     city2 = -1;
     n = 0;
-    for (improvement = 0; improvement < 0x27; improvement++) {
+    for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
       if (improvement_counts[improvement] != 0) {
         if (item == n) {
           city2 = improvement;
@@ -1046,7 +1046,7 @@ void __cdecl trade_advisor_draw(void)
   advisor_state.list_height = list_bottom - top_y;
   advisor_state.rows_per_page = int_clamp((list_bottom - top_y) / 0x18,1,99);
   rows_per_page = advisor_state.rows_per_page;
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     improvement_counts[improvement] = 0;
   }
   improvement_kinds = 0;
@@ -1057,7 +1057,7 @@ void __cdecl trade_advisor_draw(void)
   for (city = 0; city < game.num_cities; city++) {
     if ((cities[city].id != 0) && (cities[city].owner == civ)) {
       city_count++;
-      for (improvement = 0; improvement < 0x27; improvement++) {
+      for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
         upkeep2 = civ_improvement_upkeep(civ,improvement);
         /* X10: the buildings with no upkeep listed too */
         if ((upkeep2 != 0 || (extra_ui(X_ZERO_UPKEEP) && improvement != 0)) &&
@@ -1071,7 +1071,7 @@ void __cdecl trade_advisor_draw(void)
       }
     }
   }
-  for (improvement = 0; improvement < 0x27; improvement++) {
+  for (improvement = 0; improvement < IMP_FIRST_WONDER; improvement++) {
     if (improvement_counts[improvement] != 0) {
       value = civ_improvement_upkeep(civ,improvement);
       total_upkeep += value * improvement_counts[improvement];
@@ -1462,7 +1462,7 @@ void __cdecl wonders_report_draw(void)
     era_counts[era] = 0;
   }
   total_rows = 0;
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     if (game.wonder_city[wonder] != -1) {
       era = wonder / 7;
       result = total_rows + 1;
@@ -1501,9 +1501,9 @@ void __cdecl wonders_report_draw(void)
     era_counts[era] = 0;
   }
   first_row2 = advisor_state.first_row;
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     if (game.wonder_city[wonder] != -1) {
-      improvement = wonder + 0x27;
+      improvement = wonder + IMP_FIRST_WONDER;
       era = wonder / 7;
       if (era_counts[era] == 0) {
         era_counts[era]++;

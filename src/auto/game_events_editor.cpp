@@ -53,7 +53,7 @@ i32 __cdecl events_editor_pick_item(int default_choice,const char *title,i32 kin
     }
     break;
   case 2:
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       result = 0;
       item = advance;
       name_str = (iptr)label_string(advances[advance].name);
@@ -107,7 +107,7 @@ i32 __cdecl events_editor_pick_item(int default_choice,const char *title,i32 kin
     }
     break;
   case 7:
-    for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
       result = 0;
       terrain_item = terrain2;
       item = (iptr)label_string(terrain_types[terrain2].name);

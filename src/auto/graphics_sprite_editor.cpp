@@ -581,7 +581,7 @@ void __cdecl sprite_sheet_save_terrain1(void)
   res_x = 0x83;
   res2_x = 0xc4;
   y2 = 1;
-  for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
     key_color = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->get_key_color();
     fill_color = (uint)key_color;
     height = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->height();

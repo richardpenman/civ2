@@ -590,7 +590,7 @@ i32 __cdecl events_parse_unit_type(const char *name2)
     result = 0xfffffffe;
   }
   else {
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       _Str2 = label_string(unit_types[unit_type].name);
       cmp = __strcmpi((char *)name2,_Str2);
       if (cmp == 0) {
@@ -1079,7 +1079,7 @@ int ScenarioEvents::action_move_unit(ScenarioEvent *event)
                      (event->move_unit_type != -2)) ||
                     (units[unit].owner != civ)) ||
                    (('b' < (char)unit_types[units[unit].type].attack ||
-                    (units[unit].orders == ORDER_AI_IDLE)))))) || (3 < units[unit].orders)) ||
+                    (units[unit].orders == ORDER_AI_IDLE)))))) || (ORDER_SLEEP < units[unit].orders)) ||
                 (units[unit].orders == ORDER_SLEEP));
         x = (int)units[unit].x;
         y = (int)units[unit].y;

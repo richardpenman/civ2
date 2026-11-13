@@ -69,8 +69,8 @@ void __cdecl mapgen_calc_fertility(void)
   for (landmass2 = 0; landmass2 < 0x40; landmass2++) {
     landmass_table_block.landmass_recs[landmass2].fertile_tiles = 0;
   }
-  for (terrain2 = 0; (int)terrain2 < 0x16; terrain2++) {
-    terrain = (int)terrain2 % 0xb;
+  for (terrain2 = 0; (int)terrain2 < TERRAIN_SPECIAL_2; terrain2++) {
+    terrain = (int)terrain2 % TERRAIN_COUNT;
     terrain_score[terrain2] =
          (char)terrain_types[terrain2].food * 3 + (int)(char)terrain_types[terrain2].trade;
     if (terrain != TERRAIN_GRASSLAND) {
@@ -4564,7 +4564,7 @@ void __cdecl terrain_editor_load_rules(void)
   iptr i;
   iptr terrain2;
   
-  for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     _Count = 0x28;
     _Source = label_string(terrain_types[terrain2].name);
     _strncpy(editor_text_dlg_wnd_block.editor_item_name_recs[terrain2],_Source,_Count);
@@ -4575,7 +4575,7 @@ void __cdecl terrain_editor_load_rules(void)
       editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[2 + i] =
            (int)(char)terrain_types[terrain2].yields[i];
     }
-    if (terrain2 < 0xb) {
+    if (terrain2 < TERRAIN_COUNT) {
       for (i = 0; i < 2; i++) {
         editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[5 + i * 4] =
              (int)terrain_types[terrain2].improve_to[i];
@@ -4602,7 +4602,7 @@ void __cdecl terrain_editor_store_rules(void)
   iptr i;
   iptr terrain2;
   
-  for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     _Count = 0xf;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[terrain2];
     _Dest = label_string(terrain_types[terrain2].name);
@@ -4613,7 +4613,7 @@ void __cdecl terrain_editor_store_rules(void)
       terrain_types[terrain2].yields[i] =
            (i8)editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[2 + i];
     }
-    if (terrain2 < 0xb) {
+    if (terrain2 < TERRAIN_COUNT) {
       for (i = 0; i < 2; i++) {
         terrain_types[terrain2].improve_to[i] =
              (i8)editor_text_dlg_wnd_block.editor_item_recs[terrain2].values[5 + i * 4];
@@ -4759,7 +4759,7 @@ void __cdecl terrain_editor_append_rule_ref(int terrain,int with_comma)
   else if (terrain == -2) {
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_yes_strs) + ((with_comma != 0) - 1 & 8));
   }
-  else if (terrain < 0xb) {
+  else if (terrain < TERRAIN_COUNT) {
     crt_strcat(((i8 *)&textbuf.buf),(const char *)(terrain_types + terrain));
     if (with_comma != 0) {
       crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_comma_str));
@@ -4781,7 +4781,7 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
   iptr terrain2;
   iptr i;
   
-  for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     text_clear();
     text_append_string_id(terrain_types[terrain2].name);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_name_sep));
@@ -4804,7 +4804,7 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
       text_append_int((int)(char)terrain_types[terrain2].yields[i]);
       crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_yield_sep));
     }
-    if (terrain2 < 0xb) {
+    if (terrain2 < TERRAIN_COUNT) {
       for (i = 0; i < 2; i++) {
         text_append_spaces(3);
         terrain_editor_append_rule_ref(terrain_types[terrain2].improve_to[i],1);
@@ -4930,12 +4930,12 @@ void __cdecl terrain_editor_on_rename(void)
     editor_active.wnd->combos[3].add_string((const char *)label);
     label = (iptr)label_string(label_table.string_ids[0x1f0]);
     editor_active.wnd->combos[5].add_string((const char *)label);
-    for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
       if ((terrain2 != 0xd) && (terrain2 != 0x18)) {
         editor_active.wnd->combos[0].add_string((const char *)editor_text_dlg_wnd_block.editor_item_name_recs[terrain2]);
       }
     }
-    for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
       editor_active.wnd->combos[1].add_string((const char *)editor_text_dlg_wnd_block.editor_item_name_recs[terrain2]);
       editor_active.wnd->combos[3].add_string((const char *)editor_text_dlg_wnd_block.editor_item_name_recs[terrain2]);
       editor_active.wnd->combos[5].add_string((const char *)editor_text_dlg_wnd_block.editor_item_name_recs[terrain2]);
@@ -5395,7 +5395,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
   ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->set_callback(terrain_editor_on_combo);
   switch(combo_idx) {
   case 0:
-    for (terrain2 = 0; terrain2 < 0x21; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
       if ((terrain2 != 0xd) && (terrain2 != 0x18)) {
         label = (iptr)label_string(terrain_types[terrain2].name);
         ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
@@ -5408,7 +5408,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
     ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
     label = (iptr)label_string(label_table.string_ids[0x1f0]);
     ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
-    for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
       label = (iptr)label_string(terrain_types[terrain2].name);
       ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
     }
@@ -5425,7 +5425,7 @@ void EditorWindow::terrain_editor_create_combo(int combo_idx)
   case 5:
     label = (iptr)label_string(label_table.string_ids[0x1f0]);
     ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
-    for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+    for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
       label = (iptr)label_string(terrain_types[terrain2].name);
       ((ComboBox *)(text_font + combo_idx * 0x38 + 0x28))->add_string((const char *)label);
     }

@@ -981,24 +981,24 @@ void PediaWindow::draw_terrain_transform_column(GameFont *font2,int terrain2,int
   x2 += 0x14;
   y2 += line_height;
   text_clear();
-  terrain_index = pedia_find_terrain_index(terrain2 + 0xb);
+  terrain_index = pedia_find_terrain_index(terrain2 + TERRAIN_SPECIAL_1);
   label = pedia_lookup_text(pedia_wnd.terrain_names,terrain_index);
   crt_strcpy(((i8 *)&textbuf.buf),label);
   link_width = font2->text_width((const char *)&textbuf.buf);
   link_height = font2->line_spacing();
   SetRect(&link_rect,x2,y2,x2 + link_width + 5,y2 + link_height);
-  add_link(terrain2 + 0xb,x2,y2,4,link_rect.left,link_rect.top,
+  add_link(terrain2 + TERRAIN_SPECIAL_1,x2,y2,4,link_rect.left,link_rect.top,
                      link_rect.right,link_rect.bottom);
   if (terrain2 != TERRAIN_GRASSLAND) {
     text_clear();
     y2 += line_height;
-    terrain_index = pedia_find_terrain_index(terrain2 + 0x16);
+    terrain_index = pedia_find_terrain_index(terrain2 + TERRAIN_SPECIAL_2);
     label = pedia_lookup_text(pedia_wnd.terrain_names,terrain_index);
     crt_strcpy(((i8 *)&textbuf.buf),label);
     link_width = font2->text_width((const char *)&textbuf.buf);
     link_height = font2->line_spacing();
     SetRect(&link_rect,x2,y2,x2 + link_width + 5,y2 + link_height);
-    add_link(terrain2 + 0x16,x2,y2,4,link_rect.left,link_rect.top,
+    add_link(terrain2 + TERRAIN_SPECIAL_2,x2,y2,4,link_rect.left,link_rect.top,
                        link_rect.right,link_rect.bottom);
   }
 }
@@ -1068,11 +1068,11 @@ void PediaWindow::draw_terrain_page()
   sprite_width2 = ((Sprite *)((i8 *)&terrain_base_sprites_block.terrain_base_sprites))->get_width();
   x2 += margin;
   y2 += (row_height / 2 - sprite_height2 / 2);
-  terrain3 = terrain2 % 0xb;
+  terrain3 = terrain2 % TERRAIN_COUNT;
   sprite_area_width = sprite_width2 * 2 + panel_layout.margin_x * 2;
   ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain3 * 0x3c))->draw((RECT *)base_sprite_ctx,&pedia_wnd.window,x2,
              y2);
-  if (terrain2 < 0xb) {
+  if (terrain2 < TERRAIN_COUNT) {
     if (terrain2 == TERRAIN_FOREST) {
       ((Sprite *)((i8 *)&forest_sprites))->draw((RECT *)forest_sprite_ctx,&pedia_wnd.window,x2,y2);
     }
@@ -3032,7 +3032,7 @@ void PediaWindow::load_improvement_index(PediaListNode *&prev_node2)
     improvement = 1;
     /* BF-140, BF-214 (Peter Johnson's ledger): at most the game's improvements (1..38) (a longer
        DESCRIBE.TXT index filled the lists past their ends) */
-    while ((sort_key != -2) && (improvement < 0x27)) {
+    while ((sort_key != -2) && (improvement < IMP_FIRST_WONDER)) {
       if (-2 < improvements[improvement].preq) {
         pedia_improve_keys[pedia_improve_count] = sort_key;
         pedia_improve_ids[pedia_improve_count] = improvement;
@@ -3085,10 +3085,10 @@ void PediaWindow::load_wonder_index(PediaListNode *&prev_node2)
     text_read_line(1);
     sort_key = text_next_int();
     pedia_wonder_count = 0;
-    improvement = 0x27;
+    improvement = IMP_FIRST_WONDER;
     /* BF-212 (Peter Johnson's ledger): at most the game's wonders (39..66) (a longer
        DESCRIBE.TXT index filled the lists past their ends) */
-    while ((sort_key != -2) && (improvement < 0x43)) {
+    while ((sort_key != -2) && (improvement < IMP_COUNT)) {
       if (-2 < improvements[improvement].preq) {
         pedia_wonder_keys[pedia_wonder_count] = sort_key;
         pedia_wonder_ids[pedia_wonder_count] = improvement;
@@ -3712,17 +3712,17 @@ void PediaWindow::draw_improvement()
     text_append_label(0xe);
     draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
-  else if (wonder_expires[improvement - 0x27] < 1) {
+  else if (wonder_expires[improvement - IMP_FIRST_WONDER] < 1) {
     text_append_label(0xe);
     draw_text(font2,(const char *)&textbuf.buf,value_x,y2,5);
   }
   else {
-    label = (iptr)label_string(advances[wonder_expires[improvement - 0x27]].name);
+    label = (iptr)label_string(advances[wonder_expires[improvement - IMP_FIRST_WONDER]].name);
     text_append((const char *)label);
     text_width = font2->text_width((const char *)&textbuf.buf);
     line_height = font2->line_spacing();
     SetRect(&link_rect,value_x,y2,value_x + text_width + 5,y2 + line_height);
-    add_link((int)wonder_expires[improvement - 0x27],value_x,y2,0,link_rect.left,
+    add_link((int)wonder_expires[improvement - IMP_FIRST_WONDER],value_x,y2,0,link_rect.left,
                        link_rect.top,link_rect.right,link_rect.bottom);
   }
   x2 = content_left + 10;
@@ -3872,7 +3872,7 @@ void PediaWindow::draw_advance_children(GameFont *font2,int advance,int list_x2,
   tagRECT link_rect;
   int text_width;
 
-  for (advance2 = 0; advance2 < 100; advance2++) {
+  for (advance2 = 0; advance2 < ADV_COUNT; advance2++) {
     is_child = 0;
     advance3 = -1;
     if (advances[advance2].preq[0] == advance) {
@@ -3937,7 +3937,7 @@ void PediaWindow::draw_advance_improvements(GameFont *font2,int advance,int list
 
   in_right_col = 0;
   x2 = list_x2;
-  for (improvement = 1; improvement < 0x43; improvement++) {
+  for (improvement = 1; improvement < IMP_COUNT; improvement++) {
     if (improvements[improvement].preq == advance) {
       ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)impr_ctx,&pedia_wnd.window,
                  x2,y2);
@@ -3955,7 +3955,7 @@ void PediaWindow::draw_advance_improvements(GameFont *font2,int advance,int list
         text_width = (measure / 2 - 5) - x2;
       }
       SetRect(&link_rect,x2,y2,text_width + x2 + 5,line_height + y2);
-      if (improvement < 0x27) {
+      if (improvement < IMP_FIRST_WONDER) {
         add_link(improvement,x2,y2,1,link_rect.left,link_rect.top,
                            link_rect.right,link_rect.bottom);
       }
@@ -4000,7 +4000,7 @@ void PediaWindow::draw_advance_units(GameFont *font2,int advance,int related_cou
   uint in_right_col;
 
   in_right_col = 0;
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if (unit_types[unit_type].prerequisite == advance) {
       if (related_count < 0xb) {
         measure = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->height();
@@ -4163,17 +4163,17 @@ void PediaWindow::draw_advance_civ_facts(GameFont *font2,int advance,int has_ped
       rest_len = _strlen((line_buf + 1));
       crt_memmove(line_buf,(line_buf + 1),rest_len);
     }
-    for (wonder = 0; wonder < 0x1c; wonder++) {
+    for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
       if (wonder_expires[wonder] == advance) {
         draw_text(font2,(const char *)line_buf,x2,y2,5);
         measure = font2->text_width((const char *)line_buf);
         x2 += measure;
         text_clear();
-        text_append_string_id(improvements[wonder + 0x27].name);
+        text_append_string_id(improvements[wonder + IMP_FIRST_WONDER].name);
         text_width = font2->text_width((const char *)&textbuf.buf);
         line_height = font2->line_spacing();
         SetRect(&link_rect,x2,y2,text_width + x2,line_height + y2);
-        add_link(wonder + 0x27,x2,y2,2,link_rect.left,link_rect.top,
+        add_link(wonder + IMP_FIRST_WONDER,x2,y2,2,link_rect.left,link_rect.top,
                            link_rect.right,link_rect.bottom);
         measure = font2->text_width((const char *)&textbuf.buf);
         x2 = x2 + measure + 2;
@@ -4223,17 +4223,17 @@ void PediaWindow::draw_advance_page()
              (RECT *)icon_ctx,&pedia_wnd.window,panel_layout.margin_x + x2,y2);
   gfx_set_text_color_index(dlg_style.list_text);
   related_count = 0;
-  for (advance2 = 0; advance2 < 100; advance2++) {
+  for (advance2 = 0; advance2 < ADV_COUNT; advance2++) {
     if ((advances[advance2].preq[0] == advance) || (advances[advance2].preq[1] == advance)) {
       related_count++;
     }
   }
-  for (improvement = 1; improvement < 0x43; improvement++) {
+  for (improvement = 1; improvement < IMP_COUNT; improvement++) {
     if (improvements[improvement].preq == advance) {
       related_count++;
     }
   }
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     if (unit_types[unit_type].prerequisite == advance) {
       related_count++;
     }
@@ -4830,7 +4830,7 @@ void PediaWindow::show_improvement_modal(int improvement_id)
   u32 improve_idx;
   
   if ((pedia_wnd.closed != 0) && (net.map_redraw_busy == 0)) {
-    if (improvement_id < 0x27) {
+    if (improvement_id < IMP_FIRST_WONDER) {
       improve_idx = 0;
       while (((int)improve_idx < (int)pedia_improve_count &&
              (pedia_improve_ids[improve_idx] != improvement_id))) {

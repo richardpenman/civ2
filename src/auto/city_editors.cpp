@@ -421,7 +421,7 @@ void __cdecl impr_editor_load_rules(void)
   size_t _Count;
   iptr improvement;
   
-  for (improvement = 0; improvement < 0x43; improvement++) {
+  for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     _Count = 0x28;
     _Source = label_string(improvements[improvement].name);
     _strncpy(editor_text_dlg_wnd_block.editor_item_name_recs[improvement],_Source,_Count);
@@ -429,8 +429,8 @@ void __cdecl impr_editor_load_rules(void)
     editor_text_dlg_wnd_block.editor_item_recs[improvement].values[0] = (uint)improvements[improvement].cost;
     editor_text_dlg_wnd_block.editor_item_recs[improvement].values[1] = (uint)improvements[improvement].upkeep;
     editor_text_dlg_wnd_block.editor_item_recs[improvement].values[2] = (int)improvements[improvement].preq;
-    if (0x27 < improvement) {
-      editor_text_dlg_wnd_block.editor_item_recs[improvement].values[3] = (int)wonder_expires[improvement - 0x27];
+    if (IMP_FIRST_WONDER < improvement) {
+      editor_text_dlg_wnd_block.editor_item_recs[improvement].values[3] = (int)wonder_expires[improvement - IMP_FIRST_WONDER];
     }
   }
   return;
@@ -445,7 +445,7 @@ void __cdecl impr_editor_store_rules(void)
   size_t _Count;
   iptr improvement;
   
-  for (improvement = 0; improvement < 0x43; improvement++) {
+  for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     _Count = 0x19;
     _Source = editor_text_dlg_wnd_block.editor_item_name_recs[improvement];
     _Dest = label_string(improvements[improvement].name);
@@ -453,8 +453,8 @@ void __cdecl impr_editor_store_rules(void)
     improvements[improvement].cost = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[0];
     improvements[improvement].upkeep = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[1];
     improvements[improvement].preq = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[2];
-    if (0x27 < improvement) {
-      wonder_expires[improvement - 0x27] = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[3];
+    if (IMP_FIRST_WONDER < improvement) {
+      wonder_expires[improvement - IMP_FIRST_WONDER] = (i8)editor_text_dlg_wnd_block.editor_item_recs[improvement].values[3];
     }
   }
   return;
@@ -545,7 +545,7 @@ i32 __cdecl impr_editor_write_section(FILE *file)
   size_t name_len;
   iptr improvement;
   
-  for (improvement = 0; improvement < 0x43; improvement++) {
+  for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     text_clear();
     text_append_string_id(improvements[improvement].name);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&impr_editor_ctrl_kinds_block.rules_improve_name_sep_str));
@@ -576,9 +576,9 @@ i32 __cdecl impr_editor_write_endwonder(FILE *file)
 {
   iptr improvement;
   
-  for (improvement = 0x27; improvement < 0x43; improvement++) {
+  for (improvement = IMP_FIRST_WONDER; improvement < IMP_COUNT; improvement++) {
     text_clear();
-    text_append_advance_abbrev(wonder_expires[improvement - 0x27],1);
+    text_append_advance_abbrev(wonder_expires[improvement - IMP_FIRST_WONDER],1);
     text_append_spaces(8);
     crt_strcat(((i8 *)&textbuf.buf),((i8 *)&rules_endwonder_comment_sep_str));
     text_append_string_id(improvements[improvement].name);
@@ -784,7 +784,7 @@ void __cdecl impr_editor_on_select(int ctrl_id)
       else {
         editor_active.wnd->icon_button.enable();
       }
-      if (editor_active.wnd->item < 0x27) {
+      if (editor_active.wnd->item < IMP_FIRST_WONDER) {
         ((Control *)&editor_active.wnd->combos[2])->hide();
       }
       else {
@@ -840,7 +840,7 @@ void EditorWindow::impr_editor_create_combo(int combo_index)
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_font(&editor_font_block.editor_font);
   ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->set_callback(impr_editor_on_select);
   if (combo_index == 0) {
-    for (improvement = 0; improvement < 0x43; improvement++) {
+    for (improvement = 0; improvement < IMP_COUNT; improvement++) {
       label = (iptr)label_string(improvements[improvement].name);
       ((ComboBox *)&combos_u)->add_string((const char *)label);
     }
@@ -850,7 +850,7 @@ void EditorWindow::impr_editor_create_combo(int combo_index)
     ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->add_string((const char *)label);
     label = (iptr)label_string(label_table.string_ids[0x1f1]);
     ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->add_string((const char *)label);
-    for (advance = 0; advance < 100; advance++) {
+    for (advance = 0; advance < ADV_COUNT; advance++) {
       label = (iptr)label_string(advances[advance].name);
       ((ComboBox *)(text_font + combo_index * 0x38 + 0x28))->add_string((const char *)label);
     }
@@ -909,7 +909,7 @@ void EditorWindow::impr_editor_paint()
   }
   icon_x = client_x + 0x20;
   icon_y = client_y + 0x20;
-  if ((int)item_uptr < 0x27) {
+  if ((int)item_uptr < IMP_FIRST_WONDER) {
     icon_sprite = (Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + item_uptr * 0x3c);
   }
   else {

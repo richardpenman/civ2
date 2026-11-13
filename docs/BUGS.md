@@ -198,19 +198,25 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   ```cpp
   score = 0xc - threat_level;
   score = int_clamp(score,1,0xc);
-  if ((cities[city].flags & CITYF_SAM_UNUSED) != 0) {
+  if ((cities[city].flags & CITYF_SAM_WANTED) != 0) {
     score -= 3;
   }
   ```
-  City flag 0x40000 (`CITYF_SAM_UNUSED` in `src/include/enums.h`) is tested here and set nowhere
-  in the game.
-- **What goes wrong:** the branch never runs; whatever lowered a city's interest in a SAM
-  Battery (most likely "already has one" or "was attacked from the air") never happens. Had it
-  run, `score` is unsigned and `1 - 3` would wrap to a huge score.
+  City flag 0x40000 (`CITYF_SAM_WANTED` in `src/include/enums.h`) is tested here and set nowhere
+  in the game, nor in the original (re/decomp.c: its only use of the bit on a city is this
+  test).
+- **What goes wrong:** the branch never runs.  A lower score is a better choice
+  (`city_choose_production_try_improvement` keeps the lowest), so the flag would make a SAM
+  Battery more urgent: by analogy with `CITYF_COASTAL_FORT_USED`, which `unit_resolve_attack`
+  sets when a Coastal Fortress doubles a defence and the AI's ship routing tests, it most
+  likely meant "attacked from the air"; the SAM branch of `unit_resolve_attack` doubles the
+  defence and records nothing.  Had it run, `score` is unsigned and `1 - 3` wraps to
+  0xfffffffe, which the caller reads as `(int)` -2: a negative score that beats every other
+  improvement and unit.
 - **Source:** our code.
 - **Fix:** needs a decision. Without knowing what the flag was meant to record, the safe fix is
-  none: leave it dead (the bug has no visible effect). If we give it a meaning, clamp the score
-  at 1 after the subtraction. **State** either way.
+  none: leave it dead (the bug has no visible effect). If we give it that meaning (set it where
+  a SAM Battery doubles a defence), clamp the score at 1 after the subtraction. **State** either way.
 - **Saves:** a fix that sets the flag writes a bit the original never writes in the city flags.
   The original ignores it everywhere but here, so its saves load either way.
 - **Status: not fixed** (dead code: no visible effect).

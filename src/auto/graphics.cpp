@@ -642,7 +642,7 @@ void __cdecl gfx_load_terrain_sprites(void)
   res_x = 0x83;
   res2_x = 0xc4;
   y2 = 1;
-  for (terrain2 = 0; terrain2 < 0xb; terrain2++) {
+  for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
     ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->free();
     ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78))->free();
     ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + terrain2 * 0x78))->free();
@@ -687,7 +687,7 @@ void __cdecl gfx_load_terrain_sprites(void)
   sprite_grab_tile_cell(&blank_sprite,0xc4,0x1bf);
   for (terrain2 = 0; terrain2 < 0xd; terrain2++) {
     gfx_fill_rect_xywh(&gfx_sheet_surface_block.gfx_sheet_surface,0,0,0x40,0x20,7);
-    if (terrain2 < 0xb) {
+    if (terrain2 < TERRAIN_COUNT) {
       ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->draw((RECT *)grab_rect_a,&gfx_sheet_surface_block.gfx_sheet_surface,0,0);
     }
     else if (terrain2 == 0xb) {

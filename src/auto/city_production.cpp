@@ -202,15 +202,15 @@ static void city_choose_production_survey_cities(ChooseProdState *s,iptr city)
             if (cities[s->city2].building < -0x26) {
               s->wonders_building++;
               if (cities[city].total_shields < cities[s->city2].total_shields) {
-                *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] =
-                     *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] |
+                *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] =
+                     *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] |
                      (byte)(1 << (s->civ5 & 0x1f));
               }
               ret = (uint)improvements[-(int)cities[s->city2].building].cost * city_calc.shield_rows;
               if (ret - cities[s->city2].shield_box == 0 || ret < cities[s->city2].shield_box)
               {
-                *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] =
-                     *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] | 1;
+                *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] =
+                     *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] | 1;
               }
             }
             if (-1 < cities[s->city2].building) {
@@ -224,8 +224,8 @@ static void city_choose_production_survey_cities(ChooseProdState *s,iptr city)
           s->foreign_same_build++;
         }
         if (cities[s->city2].building < -0x26) {
-          *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] =
-               *(byte *)&s->wonder_builders[-0x27 - cities[s->city2].building] |
+          *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] =
+               *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[s->city2].building] |
                (byte)(1 << (cities[s->city2].owner & 0x1fU));
         }
         if (((((uint)game.human_players & 1 << (cities[s->city2].owner & 0x1fU)) != 0) &&
@@ -589,7 +589,7 @@ static uint city_choose_production_sam_score(ChooseProdState *s,iptr city,uint s
   }
   score = 0xc - threat_level;
   score = int_clamp(score,1,0xc);
-  if ((cities[city].flags & CITYF_SAM_UNUSED) != 0) {
+  if ((cities[city].flags & CITYF_SAM_WANTED) != 0) {
     score -= 3;
   }
   *defensive = 1;
@@ -1154,7 +1154,7 @@ static int city_choose_production_wonder_bias(ChooseProdState *s,iptr city,iptr 
     break;
   case WONDER_MAGELLAN:
     ship_count = 0;
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       if (unit_types[unit_type].domain == DOMAIN_SEA) {
         ship_count += (uint)civs[s->civ].units_active[unit_type];
       }
@@ -1294,10 +1294,10 @@ static int city_choose_production_wonder_bias(ChooseProdState *s,iptr city,iptr 
    ours would read past the array; docs/BUGS.md). */
 static uint city_choose_production_rivals(ChooseProdState *s,iptr city)
 {
-  if (cities[city].building > -0x27) {
+  if (cities[city].building > -IMP_FIRST_WONDER) {
     return 0;
   }
-  return (uint)*(byte *)&s->wonder_builders[-0x27 - cities[city].building];
+  return (uint)*(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[city].building];
 }
 
 /* Part of city_choose_production (00498e8b): a wonder: its score and whether
@@ -1315,7 +1315,7 @@ static void city_choose_production_try_wonder(ChooseProdState *s,iptr city,iptr 
   uint score;
   int raw_score;
 
-  improvement = wonder + 0x27;
+  improvement = wonder + IMP_FIRST_WONDER;
   ret = city_can_build_improvement(s->civ,city,improvement);
   if (ret != 0) {
     defensive = 0;
@@ -1336,12 +1336,12 @@ static void city_choose_production_try_wonder(ChooseProdState *s,iptr city,iptr 
       score--;
     }
     if ((((s->wonder_in_progress == 0) || ((int)cities[city].building == -improvement)) ||
-        ((((game.human_players & *(byte *)&s->wonder_builders[-0x27 - cities[city].building]) ==
+        ((((game.human_players & *(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[city].building]) ==
            0 || ((*(short *)((int)&game + cities[city].building * -2 + 0xb0) != -1 ||
                  ((int)cities[city].shield_box <
                   (int)((uint)improvements[-(int)cities[city].building].cost * city_calc.shield_rows)
                   / 2)))) &&
-         ((*(byte *)&s->wonder_builders[-0x27 - cities[city].building] & 1) == 0)))) &&
+         ((*(byte *)&s->wonder_builders[-IMP_FIRST_WONDER - cities[city].building] & 1) == 0)))) &&
        (((DIFF_WARLORD < game.difficulty || (preq2 = (iptr)improvements[improvement].preq, preq2 < 0))
         || ((game.human_players & game.advance_known_by[preq2]) != 0)))) {
       if (wonder != WONDER_MANHATTAN) {
@@ -2053,14 +2053,14 @@ static iptr city_choose_production_final_choice(ChooseProdState *s,iptr city)
       s->choice = -4;
     }
     else if ((cities[city].building < -0x26) &&
-            (((s->same_build_count == 0 && (-0x27 < s->choice)) && ((cities[city].flags & CITYF_DISORDER_2ND_TURN) == 0)))) {
+            (((s->same_build_count == 0 && (-IMP_FIRST_WONDER < s->choice)) && ((cities[city].flags & CITYF_DISORDER_2ND_TURN) == 0)))) {
       if (cities[city].building < 1) {
         cur_improvement = ~(int)cities[city].building + 1;
       }
       else {
         cur_improvement = (iptr)cities[city].building;
       }
-      wonder = cur_improvement - 0x27;
+      wonder = cur_improvement - IMP_FIRST_WONDER;
       if (((s->defense_need < 2) && (ret = wonder_is_expired(wonder), ret == 0)) &&
          ((game.wonder_city[wonder] == -1 &&
           ((s->defense_urgent == 0 || ((cities[city].flags & CITYF_DEFENDER_LOST) == 0)))))) {
@@ -2162,7 +2162,7 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
   }
   st.wonders_here = 0;
   st.wonders_owned = 0;
-  for (wonder = 0; wonder < 0x1c; wonder++) {
+  for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
     st.wonder_builders[wonder] = 0;
     ret = wonder_get_city(wonder);
     if (ret == city) {
@@ -2187,7 +2187,7 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
   city_find_nearest(cities[city].x,cities[city].y,st.civ,0xfffffffe,-1);
   st.nearest_dist = advisor_window_block.nearest_city_dist;
   city_choose_production_scan_tiles(&st,city);
-  for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+  for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     st.units_in_build[unit_type] = 0;
     st.unit_counts[unit_type] = 0;
   }
@@ -2238,7 +2238,7 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
   st.best_build = 999;
   st.best_unit = 999;
   st.choice = 999;
-  for (improvement = 1; improvement < 0x27; improvement++) {
+  for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
     city_choose_production_try_improvement(&st,city,improvement);
   }
   pref_chosen = 0;
@@ -2263,18 +2263,18 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
              (int)(uint)civs[st.civ].continent_cities[st.landmass2] ||
             ((*(char *)&civs[st.civ].continent_flags[st.landmass2] == '\0' &&
              (4 - leaders[civs[st.civ].tribe].civilize <= (int)civs[st.civ].num_cities)))))))) {
-      for (wonder = 0; wonder < 0x1c; wonder++) {
+      for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
         city_choose_production_try_wonder(&st,city,wonder);
       }
     }
     if (civs[st.civ].num_military_units < 0x200) {
-      for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+      for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
         city_choose_production_try_special_unit(&st,city,unit_type);
       }
     }
   }
   if (civs[st.civ].num_military_units < 0x200) {
-    for (unit_type = 0; unit_type < 0x3e; unit_type++) {
+    for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
       city_choose_production_try_military_unit(&st,city,unit_type);
     }
   }
@@ -2702,7 +2702,7 @@ static int city_process_production_unit(uptr city,uptr civ)
   unit_type = (iptr)cities[city].building;
   if ((-1 < unit_types[unit_type].obsolete_by) &&
      (result = civ_has_advance(civ,unit_types[unit_type].obsolete_by), result != 0)) {
-    for (unit_type2 = 0; unit_type2 < 0x3e; unit_type2++) {
+    for (unit_type2 = 0; unit_type2 < UNIT_TYPE_COUNT; unit_type2++) {
       if ((unit_types[unit_type2].prerequisite == unit_types[unit_type].obsolete_by) &&
          (unit_types[unit_type2].role == unit_types[unit_type].role)) {
         if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
@@ -2864,7 +2864,7 @@ static void city_process_production_almost_wonder(uptr city,uptr civ)
     }
     cost2 = (uint)improvements[improvement2].cost * city_calc.shield_rows;
     if (((cost2 <= (cities[city].shield_box + city_calc.total_shields) - city_calc.shield_support) &&
-        (game.wonder_city[improvement2 - 0x27] == -1)) && (autoplay.active == 0)) {
+        (game.wonder_city[improvement2 - IMP_FIRST_WONDER] == -1)) && (autoplay.active == 0)) {
       str = (iptr)(civ_name_plural(civ));
       text_set_string_arg(1,(const char *)str);
       text_set_label_arg(2,improvements[improvement2].name);
@@ -2933,7 +2933,7 @@ static void city_process_production_ai_buy(uptr city,uptr civ,int net_shields)
     gold_spent = civs[civ].gold >> 6;
   }
   if (0x26 < improvement) {
-    group = (improvement - 0x27) / 7;
+    group = (improvement - IMP_FIRST_WONDER) / 7;
     if ((*(char *)&civs[civ].wonders_by_group[group] == '\0') ||
        (civs[civ].wonders_by_group[group] < (byte)(((i8 *)&map_views_block.human_wonders_by_group_min))[group])) {
       gold_spent = civs[civ].gold >> 6;
@@ -2949,7 +2949,7 @@ static void city_process_production_ai_buy(uptr city,uptr civ,int net_shields)
       gold_spent = gold_spent << 1;
     }
   }
-  if ((0x22 < improvement) && (improvement < 0x27)) {
+  if ((0x22 < improvement) && (improvement < IMP_FIRST_WONDER)) {
     for (civ3 = 1; civ3 < 8; civ3++) {
       if (((1 << ((byte)civ3 & 0x1f) & (uint)game.human_players) != 0) &&
          (result = civ_spaceship_exists(civ3), result != 0)) {
@@ -3047,7 +3047,7 @@ void __cdecl city_process_production(uptr city)
     wonder = -1;
     cost2 = (uint)improvements[improvement].cost * city_calc.shield_rows;
     if (0x26 < improvement) {
-      wonder = improvement - 0x27;
+      wonder = improvement - IMP_FIRST_WONDER;
     }
     if ((autoplay.active == 0) &&
        ((((-1 < wonder && (game.wonder_city[wonder] != -1)) ||

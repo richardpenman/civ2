@@ -1346,8 +1346,8 @@ static void barbarians_city_uprising(iptr city,uint freq_mask)
         }
       }
       horde_size = int_clamp(horde_count,2,99);
-      main_type = 0x10;
-      alt_type = 0xf;
+      main_type = UNIT_CHARIOT;
+      alt_type = UNIT_HORSEMEN;
       unit = crt_rand_at("game_spawn_barbarians");
       if (unit % 3 == 0) {
         int_swap(&main_type,&alt_type);
@@ -1361,29 +1361,29 @@ static void barbarians_city_uprising(iptr city,uint freq_mask)
       if (game.advance_known_by[ADV_GUNPOWDER] != '\0') {
         label = label_string(label_table.string_ids[100]);
         text_set_string_arg(0,label);
-        if ((game.rules & RULE_BASE_1) != 0) {
-          main_type = 4;
-          alt_type = 0x11;
+        if ((game.rules & RULE_BARBARIAN_FULL_ROSTER) != 0) {
+          main_type = UNIT_ARCHERS;
+          alt_type = UNIT_ELEPHANT;
         }
       }
       if (game.advance_known_by[ADV_INDUSTRIALIZATION] != '\0') {
         label = label_string(label_table.string_ids[0x65]);
         text_set_string_arg(0,label);
-        main_type = 0x18;
-        alt_type = 7;
+        main_type = UNIT_CANNON;
+        alt_type = UNIT_MUSKETEERS;
         if (game.advance_known_by[unit_types[UNIT_ARMOR].prerequisite] != '\0') {
           label = label_string(label_table.string_ids[0x66]);
           text_set_string_arg(0,label);
-          alt_type = 0xb;
-          if (((game.rules & RULE_BASE_1) != 0) && (main_type = 0x19, game.advance_known_by[ADV_GUERRILLA_WARFARE] != '\0'))
+          alt_type = UNIT_RIFLEMEN;
+          if (((game.rules & RULE_BARBARIAN_FULL_ROSTER) != 0) && (main_type = UNIT_ARTILLERY, game.advance_known_by[ADV_GUERRILLA_WARFARE] != '\0'))
           {
             if ((civs[game.best_human_rank].government < GOV_REPUBLIC) ||
                (cities[city].owner != cities[city].founder)) {
-              main_type = 0x15;
-              alt_type = 9;
+              main_type = UNIT_CAVALRY;
+              alt_type = UNIT_PARTISANS;
             }
             else {
-              alt_type = 8;
+              alt_type = UNIT_FANATICS;
               label = label_string(label_table.string_ids[0x67]);
               text_set_string_arg(0,label);
             }
@@ -1399,7 +1399,7 @@ static void barbarians_city_uprising(iptr city,uint freq_mask)
           unit_type = main_type;
         }
         if (remaining == horde_size) {
-          unit_type = 0x2e;
+          unit_type = UNIT_DIPLOMAT;
         }
         unit2 = unit_create(unit_type,0,x2,y2);
         if (-1 < unit2) {
@@ -1494,39 +1494,39 @@ static bool barbarians_sea_raid(void)
   if (game.barbarian_activity == 3) {
     horde_count = unit + 2;
   }
-  unit_type2 = 0x20;
+  unit_type2 = UNIT_TRIREME;
   if (game.advance_known_by[ADV_NAVIGATION] != '\0') {
-    unit_type2 = 0x21;
+    unit_type2 = UNIT_CARAVEL;
   }
   if (game.advance_known_by[ADV_MAGNETISM] != '\0') {
-    unit_type2 = 0x23;
+    unit_type2 = UNIT_FRIGATE;
   }
-  escort_type = 2;
-  if ((game.rules & RULE_BASE_1) != 0) {
-    escort_type = 4;
+  escort_type = UNIT_WARRIORS;
+  if ((game.rules & RULE_BARBARIAN_FULL_ROSTER) != 0) {
+    escort_type = UNIT_ARCHERS;
   }
   if ((game.human_players & game.advance_known_by[ADV_IRON_WORKING]) != 0) {
-    escort_type = 5;
+    escort_type = UNIT_LEGION;
   }
   if ((game.advance_known_by[ADV_METALLURGY] != '\0') ||
      ((game.barbarian_activity == 3 && (game.advance_known_by[ADV_CHIVALRY] != '\0')))) {
-    if (((x2 & 1) == 0) || ((game.rules & RULE_BASE_1) == 0)) {
-      escort_type = 0x13;
+    if (((x2 & 1) == 0) || ((game.rules & RULE_BARBARIAN_FULL_ROSTER) == 0)) {
+      escort_type = UNIT_KNIGHTS;
     }
     else {
-      escort_type = 0x12;
+      escort_type = UNIT_CRUSADERS;
     }
   }
   remaining = horde_count;
-  if (((game.human_players & game.advance_known_by[ADV_TACTICS]) != 0) && ((game.rules & RULE_BASE_1) != 0)) {
-    escort_type = 0x14;
+  if (((game.human_players & game.advance_known_by[ADV_TACTICS]) != 0) && ((game.rules & RULE_BARBARIAN_FULL_ROSTER) != 0)) {
+    escort_type = UNIT_DRAGOONS;
   }
   while( true ) {
     remaining--;
     if ((int)remaining < 0) break;
     unit_type = escort_type;
     if ((remaining != 0) && (horde_count - 1 == remaining)) {
-      unit_type = 0x2e;
+      unit_type = UNIT_DIPLOMAT;
     }
     unit = unit_create(unit_type,0,x2,y2);
     if (-1 < unit) {

@@ -45,6 +45,7 @@ enum UnitTypeId : u8 {
     UNIT_TEST_1 = 54,          UNIT_TEST_2 = 55,          UNIT_TEST_3 = 56,
     UNIT_TEST_4 = 57,          UNIT_TEST_5 = 58,          UNIT_TEST_6 = 59,
     UNIT_TEST_7 = 60,          UNIT_TEST_8 = 61,
+    UNIT_TYPE_COUNT = 62,           /* the slots (unit_types[]) */
 };
 
 /* City improvements (@IMPROVE; city_has_improvement, improvements[],
@@ -74,6 +75,8 @@ enum ImprovementId : u8 {
     IMP_WOMENS_SUFFRAGE = 60,   IMP_HOOVER_DAM = 61,        IMP_MANHATTAN = 62,
     IMP_UNITED_NATIONS = 63,    IMP_APOLLO = 64,            IMP_SETI = 65,
     IMP_CURE_FOR_CANCER = 66,
+    IMP_FIRST_WONDER = 39,          /* improvement - IMP_FIRST_WONDER: the WonderId; -building <= it: a wonder */
+    IMP_COUNT = 67,                 /* improvements and wonders (improvements[]) */
 };
 
 /* Wonders (0..27: improvement 39 + n; game.wonder_city[], civ_has_wonder). */
@@ -88,6 +91,7 @@ enum WonderId : u8 {
     WONDER_WOMENS_SUFFRAGE = 21,   WONDER_HOOVER_DAM = 22,        WONDER_MANHATTAN = 23,
     WONDER_UNITED_NATIONS = 24,    WONDER_APOLLO = 25,            WONDER_SETI = 26,
     WONDER_CURE_FOR_CANCER = 27,
+    WONDER_COUNT = 28,
 };
 
 /* Advances (@CIVILIZE; civ_has_advance, game.advance_known_by[]). */
@@ -126,6 +130,7 @@ enum AdvanceId : u8 {
     ADV_EXTRA_1 = 93,             ADV_EXTRA_2 = 94,             ADV_EXTRA_3 = 95,
     ADV_EXTRA_4 = 96,             ADV_EXTRA_5 = 97,             ADV_EXTRA_6 = 98,
     ADV_EXTRA_7 = 99,
+    ADV_COUNT = 100,                /* the slots (advances[], game.advance_known_by[]) */
 };
 
 /* Governments (@GOVERNMENTS; Civ.government): ordered, the code compares
@@ -142,6 +147,10 @@ enum TerrainId : u8 {
     TERRAIN_FOREST = 3, TERRAIN_HILLS = 4, TERRAIN_MOUNTAINS = 5,
     TERRAIN_TUNDRA = 6, TERRAIN_GLACIER = 7, TERRAIN_SWAMP = 8,
     TERRAIN_JUNGLE = 9, TERRAIN_OCEAN = 10,
+    TERRAIN_COUNT = 11,             /* the base types */
+    TERRAIN_SPECIAL_1 = 11,         /* + a base type: its first special resource's record (terrain_types[]) */
+    TERRAIN_SPECIAL_2 = 22,         /* + a base type: its second */
+    TERRAIN_RECORDS = 33,           /* the base types and both specials of each */
 };
 
 /* Tile.terrain: the type in the low nibble and two bits. */
@@ -245,7 +254,10 @@ enum CityFlag : i32 {
     CITYF_AI_SPECIALIST_HELD = 0x8000,  /* AI kept or added an entertainer against disorder */
     CITYF_AIRLIFTED = 0x10000,          /* airlift used this turn */
     CITYF_TRADE_DIRTY = 0x20000,        /* commodity demand to recompute */
-    CITYF_SAM_UNUSED = 0x40000,         /* ? never set; the AI scores a SAM battery 3 lower */
+    CITYF_SAM_WANTED = 0x40000,         /* nothing sets it, nor in the original: with it the AI's SAM Battery
+                                           score is 3 better (city_choose_production); likely meant, like
+                                           CITYF_COASTAL_FORT_USED, to mark a city attacked from the air,
+                                           which unit_resolve_attack never records (docs/BUGS.md B5) */
     CITYF_AI_TERRAFORM_GOAL = 0x80000,  /* pollution to clean (city_add_terraform_goals) */
     CITYF_DISORDER_LONG = 0x100000,     /* three turns or more */
     CITYF_OCEAN_ACCESS = 0x200000,      /* water next to it is not a lake */
@@ -325,9 +337,13 @@ enum SpaceshipFlag : u8 {
 };
 
 /* Custom rules (game.rules; the @ADVANCED dialog).  0x2f is the base
- * value: bits 0x1..0x8 and 0x20 are always set. */
+ * value: bits 0x1..0x8 and 0x20 are always set; only 0x1 is tested. */
 enum GameRuleFlag : u16 {
-    RULE_BASE_1 = 0x1,                  /* ? always set; gives barbarians more unit types */
+    RULE_BARBARIAN_FULL_ROSTER = 0x1,   /* always set (no dialog item clears it): barbarians also field
+                                           Archers, Elephants, Crusaders, Dragoons, Artillery, Cavalry,
+                                           Fanatics and Partisans (game_spawn_barbarians); clear, only
+                                           Warriors, Legion, Horsemen, Chariots, Knights, Musketeers,
+                                           Cannons and Riflemen.  Why a rule bit: unknown (no other use) */
     RULE_NORMAL_COMBAT = 0x10,          /* clear: Simplified Combat */
     RULE_BLOODLUST = 0x80,
     RULE_NO_RESTART_ELIMINATED = 0x100,

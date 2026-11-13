@@ -1851,7 +1851,7 @@ popup_text_with_improvement(const char *filename,const char *section,i32 dlg_fla
   i32 result;
   i8 *sprite;
   
-  if (improvement < 0x27) {
+  if (improvement < IMP_FIRST_WONDER) {
     sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
   }
   else {
