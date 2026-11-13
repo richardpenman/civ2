@@ -439,28 +439,28 @@ message by message and clock event by clock event.
   moviewnd_wndproc (2): two messages' handlers shared by other messages,
   whose MCI call passes a stale local by address (moving it into a helper
   would move that stack slot).
-* **Unit tests** (step 6, the last part).  `make test` runs 10,634 recorded
-  calls of 845 of the game's functions in 2.5 seconds, without the game's
+* **Unit tests** (step 6, the last part).  `make test` runs 11,112 recorded
+  calls of 879 of the game's functions in 2.7 seconds, without the game's
   files (docs/DEVELOPMENT.md "Unit tests"): each call recorded from the
-  replays of 35 scenarios (all but `menu`, which runs none that qualify) by
+  replays of 43 scenarios (all but `menu`, which runs none that qualify) by
   the recording build (tests/unit_record.c: -finstrument-functions, the
   arguments, the game's data and the map at entry, the return value through a
   return-address trampoline, the state at exit), set up again by the runner
   (tests/unit_run.c) and compared byte for byte, `rand()` calls included (the
   seed is game data).  Calls that reach the platform layer, the heap or
   state outside the game's data are not taken; the runner keeps the cases it
-  reproduces twice in each of three processes.  By file: window 112 functions,
-  city 104, unit 99, map 71, civ 68, graphics 55, ai 55 (of the 57 the replays
-  run), text 53, diplomacy 35, game 29 ... (tests/unit/cases.tsv): combat
+  reproduces twice in each of three processes.  By file: window 118 functions,
+  city 108, unit 106, map 75, civ 70, ai 60 (of the 63 the replays run),
+  graphics 56, text 54, diplomacy 43, game 32 ... (tests/unit/cases.tsv): combat
   (strengths, odds, the fight, veterans, city defences), movement and paths,
   city food, shields, trade, happiness, workers and production choice, the
   AI's assessments and unit orders, research cost and choice, diplomacy's
-  evaluations and treaties, map generation steps; 207 cases call `rand()`.
-  Of the 2,239 game functions these replays run, 845 have cases: the rest
+  evaluations and treaties, map generation steps; 216 cases call `rand()`.
+  Of the 2,270 game functions these replays run, 879 have cases: the rest
   draw, wait for input or read files, or are called only with pointers into
   the heap.  Not covered: rules parsing and the save/load round trip (they
   read and write files; the replays check them), and the top-level turn
-  functions that redraw (their parts are covered).  2.6 MB of data (gzip;
+  functions that redraw (their parts are covered).  3.1 MB of data (gzip;
   state as deltas from case to case; no text from the game's files: where the
   data holds text, tests/unit/textmask.tsv from tools/unit_textmask.py, the
   cases have what the initializers leave).  Deliberate one-line mutations,

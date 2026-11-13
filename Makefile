@@ -54,7 +54,8 @@ native-suite:                 ## run every scenario on a native build (EXE=OpenC
 UNIT_SCRIPTS ?= long50 turns newgame conquest civilwar spies units talks citywork hotseat accelerated \
                 napoleon ww1 actions actions2 events scenario saveload endgame advisors citywindow conquest-spy \
                 editors editors2 hotseat-scenario mapview menucheat menuitems menuorders menuview \
-                menuview-arrange reports screens setup spriteedit
+                menuview-arrange reports screens setup spriteedit cityunits editrename pediascroll premade \
+                rarecalls rome spritepick uimisc
 
 test:                         ## the unit tests: the recorded cases in tests/unit (build/civ2-unittest), then the source probes (tests/*_test.cpp)
 	$(DK) sh -c "python3 tools/build_native.py --target linux32test >/dev/null && cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz"

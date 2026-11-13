@@ -124,7 +124,7 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
 ## Unit tests
 
 `make test` checks the game's logic in seconds (2.5 s for the cases, a few more to build):
-10,634 calls of 845 of the game's functions (combat odds and strengths, movement and paths,
+11,112 calls of 879 of the game's functions (combat odds and strengths, movement and paths,
 city food, shields, trade, happiness and
 production choice, the AI's assessments and unit orders, research, diplomacy, map generation steps
 ...), each recorded from a replay of the reference scenarios, called again with the same arguments
@@ -135,7 +135,7 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
 * **Recording** (`tests/unit_record.c`, `make unit-record`).  The recording build
   (`build_native.py --target linux32rec`) compiles the game and the platform layer with
   `-finstrument-functions`: every function calls the recorder on entry and exit.  While a replay runs
-  (`tools/unit_record.sh`: the scenarios in `UNIT_SCRIPTS`, 35 of the 44, each run checked against
+  (`tools/unit_record.sh`: the scenarios in `UNIT_SCRIPTS`, 43 of the 44, each run checked against
   the original's recording as by the suite), the recorder takes some calls of each game function (the 1st, 2nd, 3rd, 4th, 6th,
   9th ...; at most 6 per scenario and 16 in all): the argument words (by the signatures
   `tools/unit_sigs.py` gets from the debugging information), the state at entry (the game's data,
@@ -155,7 +155,7 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
   the runner keeps only the cases it reproduces, twice in each of three processes
   (`civ2-unittest --bless`): calls that read memory outside what is recorded (the heap: the recorder
   moves its heap away so that such pointers point to nothing) drop out there.
-* **Data** (`tests/unit/*.gz`, 2.6 MB).  A case's state is a delta from the previous case's,
+* **Data** (`tests/unit/*.gz`, 3.1 MB).  A case's state is a delta from the previous case's,
   compressed.  No text from the game's files is recorded: where the game's data holds text (every
   `char` array and text buffer, `tools/unit_textmask.py` -> `tests/unit/textmask.tsv`) the cases have
   what the game's initializers leave there, and on the stack what looks like text is zeroed; the
