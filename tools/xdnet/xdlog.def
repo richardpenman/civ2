@@ -15,7 +15,7 @@ EXPORTS
   ?XD_GetNumEnumeratedAdapters@@YAHH@Z = xd_stub_12
   ?XD_GetNumModems@@YAHXZ = xd_stub_13
   ?XD_GetXDaemonVersion@@YAHPAH00@Z = w_XD_GetXDaemonVersion
-  ?XD_InFlushSendBuffer@@YAHXZ = xd_stub_15
+  ?XD_InFlushSendBuffer@@YAHXZ = w_XD_InFlushSendBuffer
   ?XD_InitializeModem@@YAHH@Z = xd_stub_16
   ?XD_InitializeSerial@@YAHH@Z = xd_stub_17
   ?XD_InitializeSocketsIPXSPX@@YAHHHHHIP6AXPAXGJ@Z@Z = xd_stub_18

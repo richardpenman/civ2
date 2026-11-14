@@ -785,8 +785,28 @@ message by message and clock event by clock event.
   `--lobby`: the original, its join cancelled in the host's lobby, lists
   no games when it tries again (its game list never broadcasts
   NM_GET_SERVERS: no XD_SendBroadcastData at all); ours lists them and
-  joins.  Not traced; timerdll's one-notification-per-timer flag left set
-  by a lost message would do it, which depends on timing.  The parley's unit, city
+  joins.  Traced (`XDTIMERS=1`: the originals' log proxy logs the game's
+  timers, tools/xdnet/xdlog.c): a race in timerdll.dll, not a lost
+  message.  Its TimerCallBack, on the multimedia timer's thread, posts
+  0x52c to the game's timer window and only then sets the slot's
+  "notified" flag (disassembled: 100010f1); the window's handler fires the
+  slot and clears the flag (`timer_wnd_proc`, ResetTimerNotified).  Under
+  Wine the game's thread often handles the message before the poster has
+  set the flag (6 of the 19 ticks of one game list in a run); when the flag
+  is set after the handler has cleared it, it stays set with no message
+  coming, and that slot never fires again in this process.  The game
+  list's timer (`net_gamelist_poll_tick`, re-created every 250 ms) takes
+  the lowest free slot, 1: in the run, slot 1 died during the first game
+  list (the game already listed, the join went on), and the game list
+  shown after the cancelled join got slot 1 again, flag set: no tick, no
+  NM_GET_SERVERS, no games.  In the next run the flag came late six times
+  too, always before the handler had cleared it, and the original joined
+  again from the network menu: it depends on timing.  The original's own
+  (a fresh start lists the games again); nothing the host sends is
+  involved, and `--lobby` now has the original try again first and notes
+  what it did (result.txt).  Ours runs its timers'
+  callbacks on the game's thread (src/platform/message.c), so the flag is
+  always set before the message is handled.  The parley's unit, city
   and advance lists ran in the 50-turn game against the original, outside
   the coverage build.  Never run: the modem, serial, IPX and DirectPlay-lobby
   paths (XD_InitializeModem/Serial/SocketsIPXSPX, XD_ShutdownModem/TEN,

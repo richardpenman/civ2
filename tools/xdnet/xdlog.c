@@ -10,12 +10,14 @@ void *xd_real[64];
 #include "stubs.h"
 
 static HANDLE logf_h = INVALID_HANDLE_VALUE;
+static void timers(void);
 static CRITICAL_SECTION lk;
 static DWORD t0;
 
 static void lg(const char *fmt, ...)
 {
     char buf[8192]; int n; DWORD w; va_list ap;
+    timers();
     n = snprintf(buf, 64, "%7lu t%04lx ", GetTickCount() - t0, GetCurrentThreadId() & 0xffff);
     va_start(ap, fmt); n += vsnprintf(buf + n, sizeof buf - n - 2, fmt, ap); va_end(ap);
     if (n > (int)sizeof buf - 2) n = sizeof buf - 2;
@@ -39,6 +41,91 @@ static void hex(const char *tag, const void *p, unsigned long len)
 }
 
 #define REAL(name) ((void *)xd_real[IDX_##name])
+
+/* XDTIMERS=1: the game's timers (timerdll.dll, src/platform/resources.c has
+   the same five functions).  timerdll's TimerCallBack, on the multimedia
+   timer's thread, posts 0x52c (wparam: the game's timer slot) to the timer
+   window, then sets the slot's "notified" flag; the window's 0x52c handler
+   fires the slot and clears the flag (ResetTimerNotified); while the flag
+   is set the slot posts nothing.  Logged: each 0x52c the timer window gets
+   (the timer window subclassed: the flag when the handler starts, 0 when
+   it runs before TimerCallBack has set it: TimerCallBack then sets it,
+   and if that comes after the handler has cleared it the flag stays set
+   with no message coming, and the slot never posts again), and the slots'
+   timer ids and flags each time they change (looked at on every XD call,
+   the game's message polls included: XD_InFlushSendBuffer). */
+static int timers_on = -1, in_timers;
+static volatile DWORD *td_ids, *td_flags;
+static HWND td_hwnd;
+static HMODULE td_module;
+static WNDPROC td_proc;
+static DWORD td_last_ids[17], td_last_flags[17];
+static LRESULT CALLBACK td_wndproc(HWND h, UINT m, WPARAM w, LPARAM l)
+{
+    DWORD before, after, t;
+    LRESULT r;
+    if (m != 0x52c || w >= 16 || !td_flags)
+        return CallWindowProcA(td_proc, h, m, w, l);
+    before = td_flags[w];
+    t = GetTickCount();
+    lg("timer 0x52c slot %u (id %lu), flag %lu%s", (unsigned)w, td_ids[w], before,
+       before ? "" : "   (not set yet: if TimerCallBack sets it after this handler has cleared it, the slot never posts again)");
+    r = CallWindowProcA(td_proc, h, m, w, l);
+    after = td_flags[w];
+    t = GetTickCount() - t;
+    if (t > 100 || after)
+        lg("timer 0x52c slot %u handled in %lu ms, flag now %lu (id %lu)", (unsigned)w, t, after, td_ids[w]);
+    return r;
+}
+static void timers(void)
+{
+    HMODULE m;
+    char buf[600];
+    int i, n = 0, changed = 0;
+    if (timers_on < 0) {
+        char v[8];
+        timers_on = GetEnvironmentVariableA("XDTIMERS", v, sizeof v) && v[0] == '1';
+    }
+    if (!timers_on || in_timers)
+        return;
+    in_timers = 1;
+    m = GetModuleHandleA("timerdll.dll");
+    if (m != td_module) {       /* (loaded with the game's timer window, freed with it) */
+        td_module = m;
+        td_ids = td_flags = NULL;
+        td_hwnd = NULL;
+    }
+    if (td_hwnd && !IsWindow(td_hwnd))
+        td_hwnd = NULL;
+    if (!td_ids && m != NULL) {
+        BYTE *a = (BYTE *)m + 0x105c, *b = (BYTE *)m + 0x10df;   /* SetTimerID's and ResetTimerNotified's stores */
+        if (a[0] == 0x89 && a[1] == 0x04 && a[2] == 0x8d && b[0] == 0xc7 && b[1] == 0x04 && b[2] == 0x85) {
+            td_ids = *(DWORD **)(a + 3);
+            td_flags = *(DWORD **)(b + 3);
+        }
+        lg("timerdll.dll at %p: timer ids %p, flags %p", m, td_ids, td_flags);
+    }
+    if (td_ids && !td_hwnd && (td_hwnd = FindWindowA("MSMrTimerClass", "MrTimer")) != NULL) {
+        td_proc = (WNDPROC)SetWindowLongA(td_hwnd, GWL_WNDPROC, (LONG)td_wndproc);
+        lg("timer window %p subclassed (its procedure %p)", td_hwnd, td_proc);
+    }
+    if (td_ids) {
+        for (i = 1; i < 17; i++)
+            if (td_ids[i] != td_last_ids[i] || td_flags[i] != td_last_flags[i])
+                changed = 1;
+        if (changed) {
+            for (i = 1; i < 17; i++) {
+                td_last_ids[i] = td_ids[i];
+                td_last_flags[i] = td_flags[i];
+                if (td_ids[i] || td_flags[i])
+                    n += snprintf(buf + n, sizeof buf - n, " %d:%lu%s", i, td_ids[i], td_flags[i] ? "*" : "");
+            }
+            buf[n] = 0;
+            lg("timers (slot:id, * flag set):%s", n ? buf : " none");
+        }
+    }
+    in_timers = 0;
+}
 
 /* Wine/Linux report SO_RCVBUF as 128K+; XDaemon stores the buffer size in a
    16-bit field, so it would recv() with length 0 forever.  Report Windows 9x's
@@ -126,6 +213,8 @@ int w_XD_ActivateServer(void)
 { int r = ((int (*)(void))REAL(XD_ActivateServer))(); lg("XD_ActivateServer() = %d", r); return r; }
 int w_XD_CloseConnection(void)
 { int r = ((int (*)(void))REAL(XD_CloseConnection))(); lg("XD_CloseConnection() = %d", r); return r; }
+int w_XD_InFlushSendBuffer(void)
+{ timers(); return ((int (*)(void))REAL(XD_InFlushSendBuffer))(); }
 int w_XD_FlushSendBuffer(unsigned long t)
 { int r; lg("XD_FlushSendBuffer(%lu) ...", t); r = ((int (*)(unsigned long))REAL(XD_FlushSendBuffer))(t); lg("XD_FlushSendBuffer = %d", r); return r; }
 char *w_XD_GetCurrentProtoAddr(unsigned a, int p)

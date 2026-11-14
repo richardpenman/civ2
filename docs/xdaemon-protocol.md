@@ -664,9 +664,9 @@ tools/xdnet/nettest.py ours-ours --exe civ2-linux32cov --migrate   # coverage (n
   `--third --kick`) the lobby as players come and go first: Reject Player
   with no one listed (nothing happens), the third player (Carol) cancels
   its wait (NM_CLIENT_CANCELED_START: the host takes it off the list) and
-  joins again (ours from the network menu; the original starts again: its
-  game list, after a join it cancelled, never asks for games, no
-  XD_SendBroadcastData, so it lists none), then it is rejected; `--save-end`
+  joins again (from the network menu; the original, whose game list may
+  then list none, its timer's slot dead (docs/STATUS.md, timerdll's
+  race), starts again if so), then it is rejected; `--save-end`
   both players save where the game stands and `tools/xdnet/savecmp.py`
   compares the two saves section by section (game, civs, map, units,
   cities; what each civ has seen and the saving player's own header
@@ -678,7 +678,9 @@ tools/xdnet/nettest.py ours-ours --exe civ2-linux32cov --migrate   # coverage (n
   side offers the other 10 gold, which accepts and at once ends the
   negotiations: the "Opponent's Response" popups are counted (the
   original: two at once; ours: one after the other, Enter closing each);
-  `--classic` runs ours with CIV2_CLASSIC=1.
+  `--classic` runs ours with CIV2_CLASSIC=1; `XDTIMERS=1` in the
+  environment has the originals' log proxy log their timers (timerdll's
+  slots and the 0x52c messages, tools/xdnet/xdlog.c).
 - `--diplo`: Chat with Kings both ways (with the chat macros Ctrl+F1..F3,
   Clear, the Mute and Anonymous boxes); an audience left unanswered (the
   requester gives up after 15 s, the request closes itself after 20 s and

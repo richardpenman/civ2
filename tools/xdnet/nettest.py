@@ -258,6 +258,8 @@ def start(g, inet, save=None):
         env += ' SIMUL=1'
     if CLASSIC and g.kind == 'ours':
         env += ' CIV2_CLASSIC=1'
+    if g.kind == 'orig' and os.environ.get('XDTIMERS'):
+        env += ' XDTIMERS=1'        # (the log proxy logs the game's timers: tools/xdnet/xdlog.c)
     if save:
         env += ' SAVE=%s' % save.replace(ROOT, '/work')
     if g.kind == 'orig':
@@ -310,6 +312,7 @@ FEATURES = {'open': 508, 'kill': 540, 'positions': 572, 'chat': 604, 'production
 SIMULTANEOUS = []
 AFTER_LATE = None                   # --after-late
 CLASSIC = []                        # --classic: our games with CIV2_CLASSIC=1
+LOBBY_NOTES = []                    # --lobby: what the original did when it tried again
 
 
 def host_setup(g, inet, name='Alice', game='TestGame', chat=False, rejoin=False, features=(), timer=0):
@@ -1204,9 +1207,21 @@ def lobby_leave(host, g, inet):
     host.shot('lobby-left')
     log(g.role, 'left the lobby')
     if g.kind == 'orig':
-        # (the original, its join cancelled, lists no games when it tries
-        # again: its game list never asks for them, no XD_SendBroadcastData;
-        # so it leaves and starts again)
+        # (the original, its join cancelled, tries again from the network
+        # menu as ours does; its game list may list nothing: the timer that
+        # asks for games never fires when timerdll's race has left its slot
+        # dead (docs/STATUS.md); then it leaves and starts again)
+        try:
+            client_join(g, host, inet, name='Carol', n=2, again=True)
+            LOBBY_NOTES.append('NOTE %s (the original): joined again from the network menu' % g.role)
+            host.wait_msg('rx', nm('NM_PLAYER_LIST_NODE'), 3, timeout=60, what='PLAYER_LIST_NODE')
+            host.wait_stable()
+            log(g.role, 'joined again')
+            return
+        except Fail as e:
+            g.shot('no-games')
+            LOBBY_NOTES.append('NOTE %s (the original): trying again from the network menu: %s; started again' % (g.role, e))
+            log(g.role, 'trying again:', e)
         end = time.time() + 90
         while time.time() < end and g.alive():
             g.keys('Escape')
@@ -1594,6 +1609,7 @@ def main():
             if os.path.exists(pc):
                 with open(os.path.join(out, 'records.txt'), 'w') as f:
                     subprocess.run([sys.executable, '-I', os.path.join(ROOT, 'tools/xdnet/xdparse.py'), pc], stdout=f)
+        result += LOBBY_NOTES
         ok = check(host, client, opts.turns, result, opts) and not any(r.startswith('FAIL') for r in result)
         if not opts.keep:
             sh('docker', 'rm', '-f', 'xdc2', check=False)
