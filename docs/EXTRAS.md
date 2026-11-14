@@ -112,7 +112,7 @@ replaces that dialog.
 
 `Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in the opening window; or `--hd` on
 the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures appear) with
-Peter Johnson's replacement art, once installed (by the opening window, or `make hd`), at the screen's
+The replacement art (openciv2-assets), once installed (by the opening window, or `make hd`), at the screen's
 full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
 unit tests; it changes only what is shown.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
 

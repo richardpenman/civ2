@@ -584,7 +584,7 @@ static void build(void)
     y += 112;
     add(T_HEAD, PAGE_GAME, x, y, 300, 22, "Graphics");
     add_check(PAGE_GAME, x, y + 26, 520, "HD graphics",
-              "Peter Johnson's new art for the map, at the screen's full resolution.", &now.hd);
+              "New art for the map, at the screen's full resolution.", &now.hd);
     add(T_TEXT, PAGE_GAME, x + 22, y + 68, 70, 20, "Density:")->small = 1;
     for (i = 0; i <= 4; i++) {
         static const char *const names[5] = {"Auto", "1", "2", "3", "4"};
