@@ -260,11 +260,12 @@ builds do not use it.
   opens a dialog that keeps the keys from the game.
 * **By hand**: sound and music (the headless browser has no audio device), the cursors, resizing the
   window and other browsers than Chrome are checked by playing (music, the videos and loading saved
-  games: played and fine, 2026-11-14): `make web`, `python3 -m http.server
+  games: played and fine, 2026-11-14; exporting saves and the set-up from the real CD: fine,
+  2026-11-14): `make web`, `python3 -m http.server
   -d build/web`, open `http://localhost:8000/?setup`.
 * **Limits**: network games only through the relay, Internet games only.  Videos play as natively (the Indeo decoder is part of the
-  module).  The set-up has been tried only on a made-up CD (below): there is no real CD or image
-  here; the cabinet code is libunshield's, as natively, and the made-up cabinet is also read by
+  module).  The set-up is tested automatically on a made-up CD (below) and was tried by hand on
+  the real CD (2026-11-14); the cabinet code is libunshield's, as natively, and the made-up cabinet is also read by
   unshield's own command-line tool.
 * **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
   wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading and writing, which of
