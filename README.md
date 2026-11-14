@@ -32,8 +32,8 @@ The game opens in a window filling the screen. To play full screen, see [EXTRAS.
 
 Optionally, the map can be drawn with Peter Johnson's new high-resolution art
 ([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): `make hd` downloads it,
-then set `Graphics=HD` under `[OpenCiv2]` in `CIV.INI` ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md);
-a prototype, built from source only for now).
+then start the game with `--hd` (or `CIV2_HD=1`, or `Graphics=HD` under `[OpenCiv2]` in
+`CIV.INI`; [HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype, built from source only for now).
 
 On Linux, the window uses the system's title bar with the game's menu bar inside it.
 `CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.

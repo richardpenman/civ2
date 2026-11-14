@@ -81,7 +81,7 @@ Windows.
 
 ## HD graphics
 
-`Graphics=HD` in the same `[OpenCiv2]` section draws the map (and wherever the same pictures
+`Graphics=HD` in the same `[OpenCiv2]` section (or `--hd` on the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures
 appear) with Peter Johnson's replacement art, once installed with `make hd`, at the screen's
 full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
 unit tests; it changes only what is shown.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).

@@ -1,0 +1,23 @@
+# HD graphics (docs/HD-GRAPHICS.md): Rome's city window, whole on a 640x480
+# desktop (on the replays' reference desktop the game's window is smaller
+# than the city window, which shows cut off, as the original's does).
+# run: CIV2_TEST_HD=3 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call menu_command 4e2803 0 528
+wait 3000
+key Return
+wait 12000
+click 228 298
+wait 3000
+click 230 242
+wait 4000
+shot hd-city
+key Escape
+wait 2000

@@ -842,10 +842,20 @@ void hd_init(int classic, int unit_test, int scale)
             return;
         want = atoi(test);
     } else {
-        plat_profile_string("CIV.INI", "OpenCiv2", "Graphics", value, sizeof value);
-        if (strcasecmp(value, "HD"))
+        /* the command line's --hd[=N] (CIV2_HD_ARG), else CIV2_HD=N, else
+           CIV.INI's Graphics=HD: 0 off, 1 on, 2 to 4 on at that density */
+        const char *arg = getenv("CIV2_HD_ARG"), *env = getenv("CIV2_HD");
+        const char *on = arg && *arg ? arg : env && *env ? env : NULL;
+        if (on)
+            want = atoi(on) > 1 ? atoi(on) : atoi(on) == 1 || !strcasecmp(on, "on") ? 0 : -1;
+        else {
+            plat_profile_string("CIV.INI", "OpenCiv2", "Graphics", value, sizeof value);
+            want = strcasecmp(value, "HD") ? -1 : 0;
+        }
+        if (want < 0)
             return;
-        want = (int)GetPrivateProfileIntA("OpenCiv2", "GraphicsDensity", 0, "CIV.INI");
+        if (!want)
+            want = (int)GetPrivateProfileIntA("OpenCiv2", "GraphicsDensity", 0, "CIV.INI");
         if (want < 1)
             want = scale;           /* a plane pixel per pixel of the display */
     }

@@ -13,17 +13,27 @@ a prototype: the map is done, much of the rest follows from it (below).
    release pinned in `data/hd-pack.json` (234 MB, once, into `~/.cache/openciv2`), checks its
    SHA-256 and each file's, and installs `atlas-hd.pack` with its licence and provenance in
    `data/native/hd` (not part of the repository: `.gitignore`).
-2. In `CIV.INI` (the game's settings, in its Windows directory):
+2. Switch it on, any of these ways (the first that says anything wins):
 
-   ```ini
-   [OpenCiv2]
-   Graphics=HD
-   ```
+   * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
+     `build/OpenCiv2 ~/Civ2 --hd`;
+   * in the environment: `CIV2_HD=1` (or `=N`);
+   * in `CIV.INI` (the game's settings, in its Windows directory):
 
-   `GraphicsDensity=N` (1 to 4) sets how many screen pixels each of the game's pixels gets
-   each way; by default the game's own scale (docs/EXTRAS.md, Screen scale), so on a 4K
-   screen 3, on a 1920x1080 one 1 (the new art at the original's size).  It takes effect the
-   next time the game starts.
+     ```ini
+     [OpenCiv2]
+     Graphics=HD
+     ```
+
+   `1` (and the bare `--hd`, and `Graphics=HD`) is on at the screen's own density; `N` from 2 to
+   4 is on at that density; `0` is off (`--hd=0` turns it off whatever the environment or
+   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density is how many screen pixels
+   each of the game's pixels gets each way: by default the game's own scale (docs/EXTRAS.md,
+   Screen scale), so on a 4K screen 3, on a 1920x1080 one 1 (the new art at the original's
+   size); `GraphicsDensity=N` (1 to 4) in `CIV.INI` sets it for the bare `--hd`, `CIV2_HD=1`
+   and `Graphics=HD`.  It takes effect the next time the game starts.  The portable build's
+   set-up takes `--hd` out of its arguments (as `--fix-cue-gaps`) and passes it to the game
+   as `CIV2_HD_ARG`.
 
 Without the art the game says so in its log and plays with the original graphics.  HD graphics
 are never on with `CIV2_CLASSIC=1`, in replays (but with `CIV2_TEST_HD=N`, density N) or in
@@ -123,7 +133,10 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed) and any replay script with
   `CIV2_TEST_HD=2`: for `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
-  original's recording; the `-hd` screenshots are looked at by eye.  The native and portable
+  original's recording; the `-hd` screenshots are looked at by eye.  On the replays'
+  reference desktop the game's window is 600x438 at its top left and the city window larger,
+  so `citywindow.txt` shows it cut off, as the original's recording does (the HD frame is that
+  area times the density); `harness/hd/hd-city.txt` shows it whole on a 640x480 desktop.  The native and portable
   builds draw identical HD frames.  Without the pack the game logs it and plays as ever.
 
 ## Not yet done
@@ -139,4 +152,5 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are enlarged pixels (their text is sharp).
-* A setting in Game > OpenCiv2 Options; the browser version.
+* A setting in Game > OpenCiv2 Options (or the planned launcher, writing `Graphics=HD`); the
+  browser version.

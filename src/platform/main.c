@@ -271,6 +271,17 @@ int main(int argc, char **argv)
     plat_normal_desktop = !plat_replay || (getenv("CIV2_NORMAL_DESKTOP") && *getenv("CIV2_NORMAL_DESKTOP"));
     if (!host_init(unit_test || (plat_replay && !getenv("CIV2_SHOW"))))
         return 1;
+    /* --hd, --hd=N (HD graphics; the portable build's set-up passes them
+       as CIV2_HD_ARG): left out of the arguments */
+    {
+        int k, n = argc > 0;
+        for (k = n; k < argc; k++)
+            if (!strcasecmp(argv[k], "--hd") || !strncasecmp(argv[k], "--hd=", 5))
+                setenv("CIV2_HD_ARG", argv[k][4] == '=' ? argv[k] + 5 : "1", 1);
+            else
+                argv[n++] = argv[k];
+        argc = n;
+    }
     set_dirs(argv[0], argc > 1 && !unit_test ? argv[1] : NULL);
     clock_init();
     if (!plat_replay && !unit_test) {

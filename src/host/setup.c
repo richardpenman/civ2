@@ -282,14 +282,24 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
     int again, ok, cancelled, music_only, cd_music = 0;
     int i, n;
 
-    /* (--fix-cue-gaps, --no-fix-cue-gaps, any case: noted and left out of
-       the arguments read here) */
+    /* (--fix-cue-gaps, --no-fix-cue-gaps, --hd, --hd=N, any case: noted and
+       left out of the arguments read here) */
     for (i = n = argc > 0; i < argc; i++)
         if (same_flag(argv[i], "--no-fix-cue-gaps"))
             setup_fix_cue_gaps = 0;
         else if (same_flag(argv[i], "--fix-cue-gaps"))
             setup_fix_cue_gaps = 1;
-        else
+        else if (same_flag(argv[i], "--hd") || !strncmp(argv[i], "--hd=", 5) || !strncmp(argv[i], "--HD=", 5)) {
+            /* HD graphics (docs/HD-GRAPHICS.md), for the game: --hd on,
+               --hd=N density N (2 to 4; 1 on, 0 off), as CIV2_HD_ARG */
+            char kv[64];
+            snprintf(kv, sizeof kv, "CIV2_HD_ARG=%s", argv[i][4] == '=' ? argv[i] + 5 : "1");
+#ifdef _WIN32
+            _putenv(kv);
+#else
+            putenv(strdup(kv));
+#endif
+        } else
             argv[n++] = argv[i];
     argc = n;
 
