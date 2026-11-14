@@ -713,6 +713,10 @@ message by message and clock event by clock event.
     the reveal buttons, Check Intelligence, the small layout; ours vs the
     original both ways (ASan), and ours vs ours.  The original and ours put
     the same offers on the wire and answer the timeouts alike.
+  - replies coming while an "Opponent's Response" popup is open (`--nest`,
+    bug B7 in docs/BUGS.md): the offer accepted, then the negotiations
+    ended at once; the original opens the second popup inside the first,
+    every time, ours (B7 fixed) after it.
   - 50 turns, ours (ASan) hosting the original and ours vs ours (ASan):
     no crash, every message received in order and byte for byte, and at
     the end both players' saves hold the same game

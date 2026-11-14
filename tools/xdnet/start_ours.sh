@@ -8,6 +8,7 @@ pkill -f "Xvfb :$D" 2>/dev/null; sleep 1
 rm -rf $G; cp -r /civ2 $G; chmod -R u+w $G
 cp /work/harness/CIV2.DAT /work/harness/CIV.INI $G/
 [ -n "$SIMUL" ] && printf 'Simultaneous=1\r\n' >> $G/CIV.INI   # SIMUL=1: simultaneous moves offered
+printf '[OpenCiv2]\r\nLauncher=0\r\n' >> $G/CIV.INI    # (no opening window: the keys go to the game)
 [ -n "$SAVE" ] && cp "$SAVE" $G/     # SAVE=FILE: a saved game to load
 rm -f /tmp/.X$D-lock /tmp/.X11-unix/X$D
 Xvfb :$D -screen 0 1024x768x24 -nolisten tcp >/dev/null 2>&1 &

@@ -28,13 +28,12 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 36 bugs. Fixed by the flag: B2, B3, B4, B6, B9 to B20, B22 (in part),
+Status of the list: 36 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
 B23 to B25, B28 and B32 to B36. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
-anyway. Not fixed: B5
-(dead code, no effect) and B7 (network popups; see there). Memory errors already fixed in
-every mode, and stale reads of locals that are not bugs, are listed separately. Reports traced
+anyway. Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
+stale reads of locals that are not bugs, are listed separately. Reports traced
 to code that has no bug are under "Checked, not bugs in MGE". Hot-seat games are not network
 games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 
@@ -331,24 +330,31 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 
 ### B7. "Opponent's Response" popups nest
 - **Where:** `src/auto/network_parley.cpp`, `parley_poll_net_replies` (004b81dd). Every popup
-  it opens (PARLEYCOUNTEROFFER, PARLEYNOTHANKS, PARLEYACCEPT, ...) gets
+  it opens (PARLEYCOUNTEROFFER, PARLEYNOTHANKS, PARLEYACCEPT) gets
   `dlg_style.pending_idle_callback = parley_poll_net_replies`: while the popup waits, the same
   function processes network messages and can open the next reply's popup inside it. The
-  other side ending the negotiations (`diplo_wnd_close_active`, `src/auto/diplomacy.cpp` line
-  5159, its PARLEYCANCEL popup with `turn_popup_timeout_idle`, which also processes messages)
-  adds another.
-- **What goes wrong:** two or more "Opponent's Response" boxes stack up, each needing OK,
-  sometimes after the parley window is gone. Seen in the network tests, in ours and the
-  original.
-- **Source:** our code (network tests).
-- **Fix:** don't open a reply popup from the idle callback while one is already open: the
-  callback only collects replies, and the popup's caller shows the next one when it returns.
-  **UI only**, but it runs in network code; test against the original before enabling it there.
+  other side ending the negotiations (`diplo_wnd_close_active`, `src/auto/diplomacy.cpp`, its
+  PARLEYCANCEL popup with `turn_popup_timeout_idle`, which also processes messages) adds another.
+- **What goes wrong:** two or more "Opponent's Response" boxes stack up, the last on top, each
+  needing OK, the ones underneath after the parley window is gone. Those no longer have the
+  keyboard (the window's closing gave it to the main window): Enter there goes to the map
+  (End of Turn), only a click closes them.
+- **Source:** our code (network tests). Reproduced by `tools/xdnet/nettest.py --nest`, both
+  ways: A offers B 10 gold, B accepts, and while A's "The offer has been accepted!" is showing,
+  B ends the negotiations; A's popup takes the cancel and "...have broken off negotiations!"
+  opens inside it. Every time, in the original (ours-orig: the original as the client; orig-ours:
+  as the host) and in ours before the fix.
+- **Fix:** `parley_response_popup`: a response popup (those four) that comes while one is
+  showing waits, and is shown when that one closes, in the order they came. What the game does
+  on the message (the parley's mode, `NM_PARLEY_EXECUTE` sent or the transaction executed, the
+  window closed) is done at once as before, so the other player sees the same and nothing on
+  the network changes. The window closing meanwhile leaves the keyboard with the popup and
+  gives it to the main window when the last one has closed. **UI only** (`bugfix_ui()`:
+  classic mode and replays keep the original's nesting).
 - **Saves:** none.
-- **Status: not fixed.** The fix restructures how parley replies are taken from network
-  messages (when the parley's mode changes, how two replies of a kind are counted), and the
-  network tests do not make the popups nest reliably, so it could not be shown to work or to
-  change nothing for the other player. Left for a test that reproduces it.
+- **Status: fixed by the flag.** `nettest.py ours-orig --nest` and `orig-ours --nest`: the
+  original's side shows the two popups at once, ours one after the other, Enter closing each;
+  both runs pass otherwise as before (every message received in order and byte for byte).
 
 ### B18. Joining a network game sets "Open Game" from a stale value
 - **Where:** `src/auto/game_setup.cpp`, the network setup (the function with `setup_net_host` and

@@ -5167,7 +5167,6 @@ i32 __cdecl diplo_wnd_close_active(void)
 
 {
   int child;
-  iptr civ_name;
   ParleyWindow *wnd2;
   
   child = wnd_get_active_child();
@@ -5185,10 +5184,7 @@ i32 __cdecl diplo_wnd_close_active(void)
     if ((((int)parley_wnd_block.other_civ == -1) || (net.nm_parley_cancel_count != 0)) || (net.nm_parley_accept_offer_count != 0)) {
       if ((((int)parley_wnd_block.other_civ != -1) && (net.nm_parley_cancel_count != 0)) && (net.nm_parley_accept_offer_count == 0)) {
         net.nm_parley_cancel_count = 0;
-        civ_name = (iptr)(civ_name_plural(parley_wnd_block.other_civ));
-        text_set_string_arg(0,(const char *)civ_name);
-        dlg_style.pending_idle_callback = turn_popup_timeout_idle;
-        popup_game_with_sprite(str_parleycancel_3,(Sprite *)&popup_info_icon_sprite,0);
+        parley_response_popup(str_parleycancel_3,parley_wnd_block.other_civ,turn_popup_timeout_idle);
       }
     }
     else {
@@ -5200,8 +5196,10 @@ i32 __cdecl diplo_wnd_close_active(void)
   wnd2->closed = 1;
   wnd2->other_civ = 0xffffffff;
   wnd2->window.hide();
-  main_frame_wnd_block.main_frame_wnd.focus_and_raise();
-  ui_flush_input();
+  if (!parley_response_popup_keeps_focus()) {  /* B7: not while a response popup is showing */
+    main_frame_wnd_block.main_frame_wnd.focus_and_raise();
+    ui_flush_input();
+  }
   return 1;
 }
 

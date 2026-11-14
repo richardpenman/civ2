@@ -665,7 +665,11 @@ tools/xdnet/nettest.py ours-ours --exe civ2-linux32cov --migrate   # coverage (n
   gcov data in run/xd/cov/RUN-ROLE (`tools/xdnet/netcov.py` merges them
   and lists the network functions never run; `--classes`: with the
   network classes' members, LobbyList:: ...); `--exe OpenCiv2.exe` runs
-  the Windows build under Wine (its Winsock code).
+  the Windows build under Wine (its Winsock code); `--nest` (bug B7) each
+  side offers the other 10 gold, which accepts and at once ends the
+  negotiations: the "Opponent's Response" popups are counted (the
+  original: two at once; ours: one after the other, Enter closing each);
+  `--classic` runs ours with CIV2_CLASSIC=1.
 - `--diplo`: Chat with Kings both ways (with the chat macros Ctrl+F1..F3,
   Clear, the Mute and Anonymous boxes); an audience left unanswered (the
   requester gives up after 15 s, the request closes itself after 20 s and

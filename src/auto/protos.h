@@ -1068,6 +1068,8 @@ void __cdecl chat_wnd_close(void); /* 004b768d */
 i32 __cdecl diplo_wnd_close_active(void); /* 004b76d5 */
 void __cdecl parley_wnd_redraw(void); /* 004b7885 */
 void __cdecl parley_poll_net_replies(void); /* 004b81dd */
+void __cdecl parley_response_popup(const char *section,int civ,WndNotifyFn idle); /* (B7: the parley's response popups) */
+int __cdecl parley_response_popup_keeps_focus(void); /* (B7) */
 void __cdecl parley_gold_edit_on_change(int control_id); /* 004b8e5c */
 void __cdecl chat_log_append(const char *line); /* 004b93a2 */
 void __cdecl chat_append_sender_name(int civ); /* 004b9504 */

@@ -1800,10 +1800,7 @@ void __cdecl parley_poll_net_replies(void)
           parley_wnd_block.shown_right_kind = (i32)parley_wnd_block.right_kind;
           parley_wnd_block.add_side_dialog(parley_panes.mode2_left_kind,0);
           parley_wnd_block.add_side_dialog((i32)parley_wnd_block.right_kind,1);
-          civ_name = (civ_name_plural(parley_wnd_block.other_civ));
-          text_set_string_arg(0,civ_name);
-          dlg_style.pending_idle_callback = parley_poll_net_replies;
-          popup_game_with_sprite(str_parleycounteroffer,(Sprite *)&popup_info_icon_sprite,0);
+          parley_response_popup(str_parleycounteroffer,parley_wnd_block.other_civ,parley_poll_net_replies);
         }
       }
       else {
@@ -1811,10 +1808,7 @@ void __cdecl parley_poll_net_replies(void)
         parley_wnd_block.mode = 3;
         parley_wnd_block.selected_action = 0xffffffff;
         parley_wnd_block.set_mode_sides(1);
-        civ_name = (civ_name_plural(parley_wnd_block.other_civ));
-        text_set_string_arg(0,civ_name);
-        dlg_style.pending_idle_callback = parley_poll_net_replies;
-        popup_game_with_sprite(str_parleynothanks,(Sprite *)&popup_info_icon_sprite,0);
+        parley_response_popup(str_parleynothanks,parley_wnd_block.other_civ,parley_poll_net_replies);
       }
     }
     else {
@@ -1837,8 +1831,7 @@ void __cdecl parley_poll_net_replies(void)
       parley_wnd_block.shown_right_kind = (i32)parley_wnd_block.right_kind;
       parley_wnd_block.add_side_dialog(parley_panes.mode2_left_kind,0);
       parley_wnd_block.add_side_dialog((i32)parley_wnd_block.right_kind,1);
-      dlg_style.pending_idle_callback = parley_poll_net_replies;
-      popup_game_with_sprite(str_parleyaccept,(Sprite *)&popup_info_icon_sprite,0);
+      parley_response_popup(str_parleyaccept,-1,parley_poll_net_replies);
     }
   }
   else {
@@ -1876,6 +1869,78 @@ void __cdecl parley_poll_net_replies(void)
     }
   }
   return;
+}
+
+/* An "Opponent's Response..." popup (SECTION of GAME.TXT; %string0 the
+   plural name of CIV, none if CIV < 0), IDLE its modal idle callback: the
+   original's code where the parley shows a response.  Each IDLE processes
+   network messages, so the next response (or the other side ending the
+   negotiations) came up inside the one showing.  B7 (docs/BUGS.md): one
+   that comes while another is showing waits, and is shown when that one
+   closes; what the game does on the message is done at once as before, and
+   nothing it sends changes. */
+#define PARLEY_POPUPS_WAITING 8
+static struct { const char *section; int civ; WndNotifyFn idle; } parley_popups_waiting[PARLEY_POPUPS_WAITING];
+static int parley_popups_waiting_count;
+static int parley_popup_showing;
+static int parley_popup_refocus;
+
+static void parley_response_popup_show(const char *section,int civ,WndNotifyFn idle)
+{
+  if (civ >= 0) {
+    text_set_string_arg(0,civ_name_plural(civ));
+  }
+  dlg_style.pending_idle_callback = idle;
+  popup_game_with_sprite(section,(Sprite *)&popup_info_icon_sprite,0);
+}
+
+void __cdecl parley_response_popup(const char *section,int civ,WndNotifyFn idle)
+{
+  int i;
+
+  if (!bugfix_ui()) {
+    parley_response_popup_show(section,civ,idle);
+    return;
+  }
+  if (parley_popup_showing) {   /* B7: after the one showing */
+    if (parley_popups_waiting_count < PARLEY_POPUPS_WAITING) {
+      i = parley_popups_waiting_count++;
+      parley_popups_waiting[i].section = section;
+      parley_popups_waiting[i].civ = civ;
+      parley_popups_waiting[i].idle = idle;
+    }
+    return;
+  }
+  parley_popup_showing = 1;
+  parley_response_popup_show(section,civ,idle);
+  while (parley_popups_waiting_count > 0) {
+    section = parley_popups_waiting[0].section;
+    civ = parley_popups_waiting[0].civ;
+    idle = parley_popups_waiting[0].idle;
+    parley_popups_waiting_count--;
+    for (i = 0; i < parley_popups_waiting_count; i++) {
+      parley_popups_waiting[i] = parley_popups_waiting[i + 1];
+    }
+    parley_response_popup_show(section,civ,idle);
+  }
+  parley_popup_showing = 0;
+  if (parley_popup_refocus) {   /* (the window closed meanwhile: as diplo_wnd_close_active does) */
+    parley_popup_refocus = 0;
+    main_frame_wnd_block.main_frame_wnd.focus_and_raise();
+    ui_flush_input();
+  }
+}
+
+/* B7: the parley window closing (diplo_wnd_close_active) while a response
+   popup shows leaves the keyboard with the popup, and gives it to the main
+   window when the last popup has closed: 1 then. */
+int __cdecl parley_response_popup_keeps_focus(void)
+{
+  if (!bugfix_ui() || !parley_popup_showing) {
+    return 0;
+  }
+  parley_popup_refocus = 1;
+  return 1;
 }
 
 /* 004b8676 auto */

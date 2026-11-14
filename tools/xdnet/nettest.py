@@ -20,6 +20,8 @@ usage (from the project root, on the docker host):
            --third ours|orig        a third player: the host relays
            --keep                   leave the containers running (drive them by hand)
            --extras --migrate --kick --lobby --simultaneous --timer N --features LIST --save-end
+           --nest                   replies while an "Opponent's Response" is open (bug B7)
+           --classic                our games with CIV2_CLASSIC=1
            --exe civ2-linux32cov (gcov data: tools/xdnet/netcov.py)  --exe OpenCiv2.exe (Windows build, Wine)
   (docs/xdaemon-protocol.md section 11.1)
 
@@ -254,6 +256,8 @@ def start(g, inet, save=None):
     env = 'DISP=%d' % g.disp
     if SIMULTANEOUS:
         env += ' SIMUL=1'
+    if CLASSIC and g.kind == 'ours':
+        env += ' CIV2_CLASSIC=1'
     if save:
         env += ' SAVE=%s' % save.replace(ROOT, '/work')
     if g.kind == 'orig':
@@ -305,6 +309,7 @@ FEATURES = {'open': 508, 'kill': 540, 'positions': 572, 'chat': 604, 'production
             'simultaneous': 700}   # x 79 (simultaneous: when CIV.INI allows it, --simultaneous)
 SIMULTANEOUS = []
 AFTER_LATE = None                   # --after-late
+CLASSIC = []                        # --classic: our games with CIV2_CLASSIC=1
 
 
 def host_setup(g, inet, name='Alice', game='TestGame', chat=False, rejoin=False, features=(), timer=0):
@@ -657,7 +662,8 @@ def offer(g, other, action, *picks, reply='accept', amount=None, dblclick=False)
     """G (in the parley, picking an action) makes an offer: ACTION, then
     PICKS (radio buttons: treaty / gift / proposal kind; barter: what we
     offer, what we want), AMOUNT typed in a gold box, Transmit; OTHER gives
-    REPLY.  Checked on the wire: the offer and the reply both ways."""
+    REPLY (None: none yet).  Checked on the wire: the offer and the reply
+    both ways."""
     sent = g.count('tx', nm('NM_PARLEY_TRANSACTION'))
     got = other.count('rx', nm('NM_PARLEY_TRANSACTION'))
     log(g.role, 'offers', action, ' '.join(picks), amount or '', '->', reply)
@@ -697,6 +703,8 @@ def offer(g, other, action, *picks, reply='accept', amount=None, dblclick=False)
     answer_dialogs(other, 4)
     time.sleep(2)
     other.shot('offered-' + action)
+    if reply is None:
+        return
     if action == 'treaty' and picks[0] == 'cancel':         # (no reply: in force at once)
         answer_dialogs(other)
         answer_dialogs(g, 3)
@@ -868,6 +876,77 @@ def run_offers(h, c, skip=0):
              lambda: window_moves(h, c)]
     for step in steps[skip:]:
         step()
+
+
+RESPONSE = "Opponent's Response..."
+RESPONSE_OK = (512, 438)            # its OK button
+
+
+def nested_responses(a, b):
+    """Bug B7 (docs/BUGS.md): A asks B for an audience, offers 10 gold; B
+    accepts, and while A's 'Opponent's Response...' (the offer accepted) is
+    still open, B ends the negotiations: A's idle callback takes the cancel
+    and its 'have broken off negotiations' comes too.  The original opens it
+    inside the first (two at once); ours, B7 fixed, after it (one at a
+    time).  Returns (the most showing at once, how many A saw in all)."""
+    reply = request_audience(a, b)
+    if reply != 1:
+        raise Fail('%s: audience for B7: reply %d (want 1)' % (b.role, reply))
+    wait_popup(a, lambda t: t.startswith('Opponent'))
+    a.keys('Return')
+    time.sleep(3)
+    offer(a, b, 'gift', 'money', amount=10, reply=None)
+    n = b.count('tx', nm('NM_PARLEY_ACCEPT_OFFER'))
+    parley_click(b, PARLEY_BUTTON['left'], 400)                 # Accept Offer
+    b.wait_msg('tx', nm('NM_PARLEY_ACCEPT_OFFER'), n + 1, timeout=30, what='PARLEY_ACCEPT_OFFER')
+    a.wait_msg('rx', nm('NM_PARLEY_ACCEPT_OFFER'), timeout=30, what='PARLEY_ACCEPT_OFFER')
+    answer_dialogs(b, 4)
+    wait_popup(a, lambda t: t == RESPONSE)
+    a.shot('b7-accepted')
+    n = b.count('tx', nm('NM_PARLEYREQUEST_CANCEL'))
+    r = a.count('rx', nm('NM_PARLEYREQUEST_CANCEL'))
+    parley_click(b, *PARLEY_END)                                # End Negotiations
+    b.wait_msg('tx', nm('NM_PARLEYREQUEST_CANCEL'), n + 1, timeout=30, what='PARLEYREQUEST_CANCEL')
+    a.wait_msg('rx', nm('NM_PARLEYREQUEST_CANCEL'), r + 1, timeout=30, what='PARLEYREQUEST_CANCEL')
+    time.sleep(5)
+    most, seen, quiet = 0, 0, time.time()
+    end = time.time() + 60
+    while time.time() < end:
+        pops = popups(a)
+        k = sum(1 for t in pops if t == RESPONSE)
+        if not pops:
+            if seen and time.time() > quiet + 6:
+                break
+            time.sleep(1)
+            continue
+        most = max(most, k)
+        seen += 1 if k else 0               # (OK closes the top one)
+        a.shot('b7-response%d' % k)
+        log(a.role, 'B7: %d "%s" showing (%s)' % (k, RESPONSE, ', '.join(pops)))
+        if k and (a.kind == 'orig' or CLASSIC):
+            a.wclick(*RESPONSE_OK)          # (its OK: the keyboard has gone to the main window)
+        else:
+            a.keys('Return')                # (B7 fixed: the keyboard stays with the popup)
+        quiet = time.time()
+        time.sleep(2.5)
+    answer_dialogs(b, 3)
+    for g in (a, b):
+        settle(g, 20)
+    log('B7: %s: at most %d at once, %d in all' % (a.role, most, seen))
+    return most, seen
+
+
+def nest_test(host, client, result):
+    """Bug B7 both ways: the host's responses, then the client's."""
+    for g in (host, client):
+        settle(g, 40)
+    for a, b in ((host, client), (client, host)):
+        most, seen = nested_responses(a, b)
+        want = 2 if a.kind == 'orig' or CLASSIC else 1
+        good = most == want and seen == 2
+        result.append('%s %s: "%s" popups: %d at once (want %d: %s), %d in all (want 2)' % (
+            'PASS' if good else 'FAIL', a.role, RESPONSE, most, want,
+            'nested, the original' if want == 2 else 'one after the other, B7 fixed', seen))
 
 
 CHAT_WINDOW = (99, 123)             # the original's Chat with Kings: its frame's top-left corner
@@ -1354,9 +1433,14 @@ def main():
     ap.add_argument('--diplo', action='store_true', help='after the turns: emissary, audience, peace treaty (implies --chat: contact)')
     ap.add_argument('--after-late', choices=['fixed', 'classic'], help='with --diplo: one more audience after the late grant; '
                     'fixed: the requester\'s parley window must open (bug B6 fixed), classic: must not (the original\'s bug)')
+    ap.add_argument('--nest', action='store_true', help='after the turns: replies arriving while an "Opponent\'s Response" '
+                    'popup is open, both ways (bug B7; implies --chat: contact)')
+    ap.add_argument('--classic', action='store_true', help='our games with CIV2_CLASSIC=1 (the original\'s bugs)')
     ap.add_argument('--stop-after', choices=['lobby', 'join', 'civ', 'turns', 'rejoin'], help='stop there (with --keep: drive by hand)')
     opts = ap.parse_args()
-    opts.chat = opts.chat or opts.diplo
+    opts.chat = opts.chat or opts.diplo or opts.nest
+    if opts.classic:
+        CLASSIC.append(1)
     AFTER_LATE = opts.after_late
     if opts.simultaneous:
         SIMULTANEOUS.append(1)
@@ -1449,6 +1533,8 @@ def main():
             chat(host, client)
         if opts.diplo:
             diplomacy(host, client)
+        if opts.nest:
+            nest_test(host, client, result)
         if opts.extras:
             extras(host, client)
         if opts.save_end:
