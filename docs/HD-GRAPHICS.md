@@ -121,9 +121,10 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (28 PASS).
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed) and any replay script with
-  `CIV2_TEST_HD=2` (for instance `harness/scripts/citywindow.txt`): every logical screenshot,
-  the `rand()` trace and the sounds are identical to the original's recording; the `-hd`
-  screenshots are looked at by eye.
+  `CIV2_TEST_HD=2`: for `harness/scripts/citywindow.txt` and `newgame.txt` every logical
+  screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
+  original's recording; the `-hd` screenshots are looked at by eye.  The native and portable
+  builds draw identical HD frames.  Without the pack the game logs it and plays as ever.
 
 ## Not yet done
 
