@@ -82,8 +82,7 @@ make web                                   # first time: downloads Binaryen into
 python3 -m http.server -d build/web 8000   # then open http://localhost:8000
 ```
 
-Your copy of the game, saved games, network games through a relay, and limits:
-[BROWSER.md](docs/BROWSER.md).
+More details in [BROWSER.md](docs/BROWSER.md).
 
 ## Status
 
@@ -117,6 +116,8 @@ Details: [STATUS.md](docs/STATUS.md) (progress and verification) and
 | ![Main menu](docs/screenshots/menu.png) | ![A city](docs/screenshots/city.png) |
 | ![The World War II scenario](docs/screenshots/europe-1940.png) | ![The Top Five Cities](docs/screenshots/top5.png) |
 | ![A foreign leader receiving an envoy](docs/screenshots/diplomacy.png) | ![London's city view](docs/screenshots/city-view.png) |
+| ![The map with the HD graphics](docs/screenshots/hd-map.png) | ![A city with the HD graphics](docs/screenshots/hd-city.png) |
 
 *The native build: the main menu, a city, the World War II scenario, the Top Five Cities, a foreign
-leader receiving an envoy and London's city view with its wonders.*
+leader receiving an envoy and London's city view with its wonders; last, the map and a city with
+the optional HD graphics.*
