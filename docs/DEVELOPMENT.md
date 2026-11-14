@@ -234,6 +234,23 @@ builds do not use it.
   `DecompressionStream`), written back as soon as the game closes, renames or removes a file (saved games,
   `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
   be persistent (`navigator.storage.persist`).
+* **HD graphics** (src/web/hdpack.js, host.js's `host_present_hd`): the pack is checked
+  (`crypto.subtle` SHA-256 of the release's `.zip` against data/hd-pack.json, copied to the site,
+  then of `data/atlas-hd.pack`, inflated by `DecompressionStream` from the `.zip` read in parts,
+  against its `package.json`; the pack alone against the pin's `pack_sha256`) and kept in
+  IndexedDB's `hd` store in 4 MB chunks, `info` written last.  At start, where HD graphics are
+  wanted (`?hd=N`, passed as `--hd=N`, else `CIV.INI`), the page builds from the chunks a pack
+  of the pictures hd.c draws (`KEEP`: 65 MB, 17 of the 60 chunks read) at `/data/hd/atlas-hd.pack`,
+  where hd.c finds it as the program's data; hd.c reads it on demand with `fseek`/`fread` as
+  natively, its decoded pictures within its 160 MB budget in the module's memory (no maximum set
+  at link time: wasm32's 4 GB).  The frame goes on the canvas at density times the desktop's size
+  by `putImageData` (about 10 ms for 2560x1600, so not WebGL), not smoothed where the canvas is
+  shown at whole device pixels.  No import was added to asyncify's.  GitHub's release downloads
+  have no CORS headers, so the page cannot fetch them: the player chooses the downloaded `.zip`,
+  or the site has the art (`make web HD=1`: `build/web/hd`).  The opening window's choices on the
+  `?setup` page: src/web/options.js (launcher.c's `read_choices`/`write_choices` in JavaScript,
+  over `CIV.INI`'s text), its lists and texts taken from launcher.c by tools/build_web.py into
+  `choices.json`.
 * **Set-up from the CD or a disc image** (src/web/setup_run.js, setup_worker.js,
   setup/setup_web.c): the native set-up's own code, src/host/setup.c and setup_disc.c with
   unshield, zlib, libogg and libvorbis (their sources from tools/fetch-toolchain.sh, as the native
@@ -271,8 +288,8 @@ builds do not use it.
   unshield's own command-line tool.
 * **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
   wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading and writing, which of
-  the files are the player's and where imported ones go; no browser, no game
-  files), `src/web/test/setup.mjs` (`setup.wasm` under node on a made-up CD,
+  the files are the player's and where imported ones go, the HD art's checks, store and
+  pruning, the opening window's choices in `CIV.INI`; no browser, no game files), `src/web/test/setup.mjs` (`setup.wasm` under node on a made-up CD,
   `src/web/test/disc.mjs`: an InstallShield 5 cabinet with stored and zlib-compressed files in two
   file groups, one of them "Sound Files", an ISO 9660 file system with it and `CIV2/KINGS`,
   `CIV2/VIDEO`, and a disc image of that, `.bin` and `.cue`, the data track followed by two audio
@@ -290,7 +307,12 @@ builds do not use it.
   (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
   only the player's files), the saved game removed and imported from that `.zip` (on the set-up
   page, then again while the game runs), and loaded again from the menu;
-  screenshots in `run/web-smoke`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
+  screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: the art chosen on the set-up page
+  (the release's `.zip` from `tools/fetch_hd_pack.py`'s cache, else `data/native/hd/atlas-hd.pack`;
+  skipped without either), checked and kept, HD graphics and a rule written to `CIV.INI`, the game
+  at a device pixel ratio of 2: the canvas twice the desktop, a saved game's map in HD (41% of its
+  2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
+  graphics; screenshots in `run/web-hd`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
 * **Network games, browser and native** (`tools/xdnet/webnet.py native-web|web-native [--turns N]

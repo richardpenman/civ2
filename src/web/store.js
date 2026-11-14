@@ -7,7 +7,11 @@
 // {names, at}: its paths, when it was made), so that the player's own files
 // can be told from the game's (saves.js).
 
-const DB = 'OpenCiv2', FILES = 'files', META = 'meta';
+// A third, hd, keeps the HD graphics' art (hdpack.js): the pack in chunks
+// (keys 0, 1 ...) and 'info', its description; not the game's, so not
+// cleared with it.
+
+const DB = 'OpenCiv2', FILES = 'files', META = 'meta', HD = 'hd';
 
 function req(r) {
     return new Promise((resolve, reject) => {
@@ -17,12 +21,14 @@ function req(r) {
 }
 
 export async function openStore() {
-    const open = indexedDB.open(DB, 2);
+    const open = indexedDB.open(DB, 3);
     open.onupgradeneeded = (e) => {
         if (e.oldVersion < 1)
             open.result.createObjectStore(FILES);
         if (e.oldVersion < 2)
             open.result.createObjectStore(META);
+        if (e.oldVersion < 3)
+            open.result.createObjectStore(HD);
     };
     const db = await req(open);
     const tx = (mode) => db.transaction(FILES, mode).objectStore(FILES);
@@ -67,6 +73,24 @@ export async function openStore() {
         async setMeta(k, v) {
             const t = db.transaction(META, 'readwrite');
             t.objectStore(META).put(v, k);
+            return done(t);
+        },
+        async get(k) {
+            return req(tx('readonly').get(k));
+        },
+        async hdGet(k) {
+            return req(db.transaction(HD, 'readonly').objectStore(HD).get(k));
+        },
+        async hdPutMany(entries) {
+            const t = db.transaction(HD, 'readwrite');
+            const s = t.objectStore(HD);
+            for (const [k, v] of entries)
+                s.put(v, k);
+            return done(t);
+        },
+        async hdClear() {
+            const t = db.transaction(HD, 'readwrite');
+            t.objectStore(HD).clear();
             return done(t);
         },
     };

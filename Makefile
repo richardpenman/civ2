@@ -37,15 +37,16 @@ windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
 # The browser version (README "Browser version", docs/DEVELOPMENT.md): a
 # static site in build/web; its tests in Chrome's headless shell (Linux
 # x86-64; they need the game files, $$CIV2_GAME or ~/Civ2).
-web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain)
-	python3 tools/build_web.py
+web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; HD=1: with the HD graphics' art on the site)
+	HD=$(HD) python3 tools/build_web.py
 
-web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke)
+web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke), then HD graphics (run/web-hd)
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/unit.mjs
 	tools/toolchain/node/bin/node src/web/test/setup.mjs
 	tools/toolchain/node/bin/node src/web/test/net.mjs
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs
+	tools/toolchain/node/bin/node src/web/test/hd.mjs
 
 web-replay: web               ## SCRIPT replayed in the browser version, compared with the original's recording
 	sh tools/fetch-toolchain.sh browser

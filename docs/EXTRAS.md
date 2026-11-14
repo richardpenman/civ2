@@ -102,8 +102,8 @@ again* (`Launcher=0`) starts the game at once from then on; the window comes bac
 run they are set in (the window says so).  The window is drawn by the platform layer itself
 (`src/platform/launcher.c`), in the colours and fonts of the game's dialogs, the same on every
 system.  It is not shown in replays and unit tests (`CIV2_TEST_LAUNCHER=1` shows it in a replay:
-`harness/extras/x-launcher.txt`), nor in the browser version, whose set-up page is its own
-([BROWSER.md](BROWSER.md)).  Its texts are English only.
+`harness/extras/x-launcher.txt`), nor in the browser version, whose set-up page has the same
+choices (but full screen), with the same texts ([BROWSER.md](BROWSER.md)).  Its texts are English only.
 
 These choices were made before in the game, in Game > OpenCiv2 Options; the opening window
 replaces that dialog.

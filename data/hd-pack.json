@@ -1,7 +1,9 @@
 {
-  "comment": "HD graphics (docs/HD-GRAPHICS.md): the openciv2-assets runtime art pack, pinned. Upgrading = changing tag, url, sha256 and size here. tools/fetch_hd_pack.py downloads it, checks this checksum and installs it in data/native/hd (not in the repository); the game's opening window downloads it the same way (src/host/host_launcher.c, built with these values) into the user's own folder.",
+  "comment": "HD graphics (docs/HD-GRAPHICS.md): the openciv2-assets runtime art pack, pinned. Upgrading = changing tag, url, sha256 and size here. tools/fetch_hd_pack.py downloads it, checks this checksum and installs it in data/native/hd (not in the repository); the game's opening window downloads it the same way (src/host/host_launcher.c, built with these values) into the user's own folder. pack_sha256 and pack_size: data/atlas-hd.pack inside it (as its package.json lists), for the browser version, which also takes the pack alone (src/web/hdpack.js).",
   "tag": "v2026.11.08.1",
   "url": "https://github.com/PeterJohnson/openciv2-assets/releases/download/v2026.11.08.1/openciv2-assets-2026.11.08.1.zip",
   "sha256": "093e791370a3a3724e0acc5b2c08dfbeff22e7efb9b5e9ac77b0f1da839539d4",
-  "size": 234081955
+  "size": 234081955,
+  "pack_sha256": "9e1ec3b46b32f9926cac43e314ca0cd6a0115195bf474e8986a402323c42d007",
+  "pack_size": 249808905
 }

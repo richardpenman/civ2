@@ -56,7 +56,10 @@ window"), which downloads and installs the art the first time (below), then Play
 
 Without the art the game says so in its log and plays with the original graphics.  HD graphics
 are never on with `CIV2_CLASSIC=1`, in replays (but with `CIV2_TEST_HD=N`, density N) or in
-the unit tests, and not in the browser version.  `CIV2_HD_PACK=FILE` names another pack.
+the unit tests.  `CIV2_HD_PACK=FILE` names another pack.
+
+In the browser version: *HD graphics* on its `?setup` page, the art downloaded or chosen there and
+kept in the browser, or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
 ## What the art is
 
@@ -147,6 +150,10 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## Tests
 
+* The browser version: `make web-test` (`src/web/test/unit.mjs`: the art's checks, its chunks in
+  the store, the pack pruned; `src/web/test/hd.mjs`: the art chosen on the set-up page from the
+  cached release `.zip`, then a saved game's map at a device pixel ratio of 2, checked to be drawn
+  in HD; screenshots in `run/web-hd`).
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (28 PASS: the opening window's script, x-launcher, replaced the options
   dialog's).
@@ -172,4 +179,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are enlarged pixels (their text is sharp).
-* The browser version (its set-up page has no HD choice).
+* The browser version gives the game only the pictures hd.c draws (`src/web/hdpack.js`: `KEEP`,
+  the keys' first parts); a picture of another kind drawn here must be added there.  The page
+  cannot download the art from GitHub itself (no CORS on release downloads): the player chooses
+  the downloaded `.zip`, or the site serves it (`make web HD=1`).

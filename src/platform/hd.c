@@ -8,7 +8,9 @@
  * here), the keys in ascending order.  A sprite the game takes from one of
  * its sheets at x,y,w,h has the picture "crop/file/SHEET/x,y,w,h" where the
  * pack has one (4 to 8 times as large); terrain blends are bound by role
- * ("dither/T/Q", "fog/Q").
+ * ("dither/T/Q", "fog/Q").  (The browser version gives the game only the
+ * pictures keyed crop/, tint/, dither/, fog/ and file/: src/web/hdpack.js,
+ * KEEP; a picture of another kind drawn here is to be added there.)
  *
  * The planes: a surface (Bitmap) gets one when an HD sprite is drawn on it
  * or a surface with one is copied to it: hd, w*d x h*d pixels 0xffRRGGBB,

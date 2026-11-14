@@ -17,12 +17,21 @@ a disc image (src/web/setup/setup_web.c with src/host/setup.c,
 setup_disc.c, unshield, zlib, libogg and libvorbis, as the native build has
 them: wasi-sdk's clang; the page runs it in a Web Worker).
 
+The set-up page's choices are the opening window's (src/platform/launcher.c):
+its lists and texts taken from there into choices.json.  The HD graphics'
+pin (data/hd-pack.json) is copied as hd-pack.json; with HD=1 in the
+environment (make web HD=1) the installed art (data/native/hd/atlas-hd.pack,
+make hd) is copied to hd/atlas-hd.pack too, so that the page gets it from the
+site itself (otherwise build/web/hd is removed).
+
 Usage: build_web.py [--no-module]   (--no-module: build/wasm/civ2.wasm as it is)
 Binaryen comes from tools/fetch-toolchain.sh web (or $BINARYEN: its folder).
 """
 import glob
 import gzip
+import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -37,7 +46,7 @@ BINARYEN = os.environ.get('BINARYEN') or os.path.join(ROOT, 'tools', 'toolchain'
 # The imports that may wait (src/web/host.js: blocking)
 ASYNC_IMPORTS = ['host.host_wait_event', 'host.host_poll_event', 'host.host_delay_ms', 'host.host_message_box']
 PAGE = ['index.html', 'main.js', 'host.js', 'wasi.js', 'store.js', 'zip.js', 'saves.js', 'setup_run.js',
-        'setup_worker.js', 'net.js']
+        'setup_worker.js', 'net.js', 'hdpack.js', 'options.js']
 FONTS = ['fonts_win.bin', 'fonts_win_aa.bin']
 
 
@@ -80,6 +89,50 @@ def build_setup():
          '-I' + os.path.join(paths.VORBIS, 'lib'), '-o', out] + sources)
 
 
+def c_strings(text):
+    """The C literals of an initializer's part: strings (adjacent ones joined) and integers."""
+    out = []
+    for m in re.finditer(r'((?:"(?:[^"\\]|\\.)*"\s*)+)|(-?\d+)', text):
+        if m.group(1):
+            out.append(''.join(json.loads(x) for x in re.findall(r'"(?:[^"\\]|\\.)*"', m.group(1))))
+        else:
+            out.append(int(m.group(2)))
+    return out
+
+
+def choices():
+    """The opening window's lists and texts (src/platform/launcher.c), for the set-up page (src/web/options.js)."""
+    src = open(os.path.join(ROOT, 'src', 'platform', 'launcher.c')).read()
+
+    def table(name, fields):
+        m = re.search(r'\b' + name + r'\[[A-Z]*\] = \{(.*?)\n\};', src, re.S)
+        if not m:
+            sys.exit('build_web: launcher.c has no table %s' % name)
+        rows = [c_strings(g) for g in re.findall(r'\{([^{}]*)\}', m.group(1))]
+        if not rows or any(len(r) != len(fields) for r in rows):
+            sys.exit('build_web: launcher.c\'s table %s is not as expected' % name)
+        return [dict(zip(fields, r)) for r in rows]
+
+    def text(pattern):
+        m = re.search(pattern, src, re.S)
+        if not m:
+            sys.exit('build_web: launcher.c has no text for %s' % pattern)
+        return c_strings(m.group(1))[0]
+    return {
+        'standard': text(r'"Standard",\s*("(?:[^"\\]|\\.)*")'),
+        'classic': text(r'"Classic",\s*("(?:[^"\\]|\\.)*")'),
+        'hd': text(r'"HD graphics",\s*("(?:[^"\\]|\\.)*")'),
+        'rulesIntro': text(r'add\(T_TEXT, PAGE_RULES,[^"]*("(?:[^"\\]|\\.)*"(?:\s*"(?:[^"\\]|\\.)*")*)'),
+        'limitsNote': text(r'"Limits"\);\s*add\(T_TEXT, PAGE_RULES,[^"]*("(?:[^"\\]|\\.)*")'),
+        'uiIntro': text(r'add\(T_TEXT, PAGE_UI,[^"]*("(?:[^"\\]|\\.)*"(?:\s*"(?:[^"\\]|\\.)*")*)'),
+        'suppressNote': text(r'add\(T_TEXT, PAGE_UI, x \+ 180,[^"]*("(?:[^"\\]|\\.)*")'),
+        'rules': table('rules', ['key', 'label', 'note']),
+        'limits': table('limits', ['key', 'label', 'original', 'lo', 'hi']),
+        'extras': table('extras', ['key', 'label']),
+        'colours': table('colours', ['key', 'label', 'def']),
+    }
+
+
 def main():
     if '--no-module' not in sys.argv:
         run([sys.executable, os.path.join(ROOT, 'tools', 'build_port.py'), 'module'])
@@ -95,6 +148,22 @@ def main():
     build_setup()
     for f in PAGE:
         shutil.copy(os.path.join(SRC, f), os.path.join(OUT, f))
+    with open(os.path.join(OUT, 'choices.json'), 'w') as f:
+        json.dump(choices(), f, indent=1)
+    shutil.copy(os.path.join(ROOT, 'data', 'hd-pack.json'), os.path.join(OUT, 'hd-pack.json'))
+    hd = os.path.join(OUT, 'hd')
+    if os.environ.get('HD', '') not in ('', '0'):
+        pack = os.path.join(ROOT, 'data', 'native', 'hd', 'atlas-hd.pack')
+        if not os.path.exists(pack):
+            run([sys.executable, os.path.join(ROOT, 'tools', 'fetch_hd_pack.py')])
+        os.makedirs(hd, exist_ok=True)
+        if newer(pack, os.path.join(hd, 'atlas-hd.pack')):
+            shutil.copy(pack, os.path.join(hd, 'atlas-hd.pack'))
+        for f in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
+            if os.path.exists(os.path.join(ROOT, 'data', 'native', 'hd', f)):
+                shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
+    elif os.path.isdir(hd):
+        shutil.rmtree(hd)
     for f in FONTS:
         s, d = os.path.join(ROOT, 'data', 'native', f), os.path.join(OUT, 'data', f + '.gz')
         if newer(s, d):

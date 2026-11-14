@@ -21,8 +21,25 @@
   #relay { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid #4a4538; padding: 0 0.3rem; }
   #status { min-height: 1.5rem; color: var(--dim); }
   #have { background: var(--panel); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  #options h2 { font: inherit; font-weight: bold; margin: 1.5rem 0 0.25rem; }
+  #options h3 { font: inherit; font-weight: bold; margin: 0.5rem 0 0.25rem; }
+  fieldset { border: 1px solid #4a4538; border-radius: 8px; margin: 0.75rem 0; padding: 0.5rem 1rem 0.75rem; }
+  fieldset:disabled { opacity: 0.5; }
+  legend { color: var(--accent); padding: 0 0.3rem; }
+  label.choice { display: block; margin: 0.2rem 0; }
+  .note { display: block; color: var(--dim); font-size: 0.85rem; margin: 0 0 0 1.6rem; }
+  p.note { margin: 0.2rem 0; }
+  h3 .note { font-weight: normal; }
+  .indent { margin: 0.25rem 0 0.25rem 1.6rem; }
+  .columns { columns: 2 14rem; font-size: 0.95rem; }
+  .columns label { display: block; break-inside: avoid; }
+  .fields label { display: inline-block; margin: 0.2rem 1rem 0.2rem 0; }
+  .fields input, #opt-ui input[type=text] { font: inherit; width: 6rem; background: var(--panel); color: var(--fg);
+                                            border: 1px solid #4a4538; padding: 0 0.3rem; }
+  #art-bar { height: 0.6rem; width: 20rem; max-width: 100%; background: #333; border-radius: 3px; margin: 0.3rem 0; }
+  #art-bar div { height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
-  #game[hidden], #setup[hidden], #have[hidden] { display: none; }
+  [hidden] { display: none !important; }
   #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; font-size: 12px;
                 line-height: 18px; background: #333; color: #ccc; opacity: 0.25; }
   #saves-open:hover, #saves-open:focus { opacity: 1; }
@@ -72,6 +89,47 @@
        <code>HALLFAME.DAT</code>), to keep elsewhere or take to another browser or computer:</p>
     <button class="export-saves">Export saves</button>
     <label class="button" for="import-saves">Import saves</label>
+  </div>
+  <div id="options" hidden>
+    <h2>How to play</h2>
+    <p class="dim">As the desktop version's opening window: kept in the game's <code>CIV.INI</code>, under
+       <code>[OpenCiv2]</code>, from the next start of the game.</p>
+    <fieldset id="opt-game"><legend>Game</legend>
+      <h3>Mode</h3>
+      <label class="choice"><input type="radio" name="mode" value="0"> Standard<span class="note" id="note-standard"></span></label>
+      <label class="choice"><input type="radio" name="mode" value="1"> Classic<span class="note" id="note-classic"></span></label>
+      <h3>Graphics</h3>
+      <label class="choice"><input type="checkbox" id="opt-hd"> HD graphics<span class="note" id="note-hd"></span></label>
+      <div class="indent" id="densities">Density:
+        <label><input type="radio" name="density" value="0"> Auto</label>
+        <label><input type="radio" name="density" value="1"> 1</label>
+        <label><input type="radio" name="density" value="2"> 2</label>
+        <label><input type="radio" name="density" value="3"> 3</label>
+        <label><input type="radio" name="density" value="4"> 4</label>
+      </div>
+      <div class="indent" id="art">
+        <p id="art-status" class="note"></p>
+        <div id="art-bar" hidden><div></div></div>
+        <button id="art-download">Download</button>
+        <label class="button" for="art-file">Choose the .zip or atlas-hd.pack</label>
+        <label class="button" for="art-folder">a folder with it</label>
+        <button id="art-stop" hidden>Stop</button>
+        <button id="art-remove" class="plain" hidden>Remove the art</button>
+        <input id="art-file" type="file" accept=".zip,.pack,application/zip">
+        <input id="art-folder" type="file" webkitdirectory multiple>
+      </div>
+    </fieldset>
+    <fieldset id="opt-rules"><legend>Rules</legend>
+      <p class="note" id="note-rules"></p>
+      <div id="rules"></div>
+      <h3>Limits <span class="note" id="note-limits"></span></h3>
+      <div id="limits" class="fields"></div>
+    </fieldset>
+    <fieldset id="opt-ui"><legend>Interface</legend>
+      <p class="note" id="note-ui"></p>
+      <div id="extras" class="columns"></div>
+      <div id="colours" class="fields"></div>
+    </fieldset>
   </div>
   <p id="status"></p>
 </div>

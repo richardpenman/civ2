@@ -2,11 +2,15 @@
 // desktop's scale, pixels, the WASI file system, .zip reading and writing, the player's saves.
 //   tools/toolchain/node/bin/node src/web/test/unit.mjs
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {vkOf, Wheel, desktopScale, argbToRgba} from '../host.js';
 import {MemFS, makeWasi, normalize} from '../wasi.js';
 import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+import {sha256, zipDir, zipMember, packFrom, keepPack, loadPack, packIndex, prunePack, KEEP} from '../hdpack.js';
+import {iniGet, iniSet, readChoices, changedChoices, writeChoices, hdWanted} from '../options.js';
 
 // keys
 assert.equal(vkOf({code: 'KeyA', key: 'a'}), 0x41);
@@ -177,4 +181,124 @@ const savesZip = await makeZip([{name: 'Civ2/ONE.SAV', data: Buffer.from('1')}, 
 const toPut = await savesToImport([{name: 'saves.zip', data: savesZip}, {name: 'TWO.SAV', data: Buffer.from('2')},
                                    {name: 'notes.txt', data: Buffer.from('no')}], have);
 assert.deepEqual(toPut.map(([k, d]) => k + '=' + Buffer.from(d)), ['ONE.SAV=1', 'civ.ini=i', 'TWO.SAV=2']);
+// ---- HD graphics' art (hdpack.js) ----
+
+// a pack as the release's: C2ATLAS1, a count, a palette, entries in key order, the PNGs
+function makePack(pics) {
+    const keys = Object.keys(pics).sort(), head = 12 + 768 + 180 * keys.length;
+    const out = new Uint8Array(head + keys.reduce((n, k) => n + pics[k].length, 0)), v = new DataView(out.buffer);
+    out.set(Buffer.from('C2ATLAS1'));
+    v.setUint32(8, keys.length, true);
+    for (let i = 0; i < 768; i++)
+        out[12 + i] = i & 255;
+    // (the PNGs in reverse order: the stored pack's offsets need not follow its keys)
+    let at = out.length;
+    keys.forEach((k, i) => {
+        const p = 12 + 768 + 180 * i;
+        out.set(Buffer.from(k), p);
+        v.setUint32(p + 160, 8, true);
+        v.setUint32(p + 164, 4, true);
+        at -= pics[k].length;
+        v.setUint32(p + 168, at, true);
+        v.setUint32(p + 172, pics[k].length, true);
+        v.setUint32(p + 176, 12345, true);
+        out.set(pics[k], at);
+    });
+    return out;
+}
+const pics = {'advance/0': Buffer.alloc(300, 1), 'crop/file/units/1,1,64,48': Buffer.alloc(200, 2),
+              'dither/1/0': Buffer.from('dither'), 'file/units': Buffer.alloc(150, 4), 'fog/2': Buffer.from('f'),
+              'resource/x/gifs/1': Buffer.alloc(500, 5), 'tint/crop/file/units/1,1,64,48/3': Buffer.alloc(90, 6)};
+const pack = makePack(pics);
+const hex = (b) => createHash('sha256').update(b).digest('hex');
+assert.equal(await sha256(pack), hex(pack));
+assert.deepEqual(packIndex(pack).map((e) => e.key), Object.keys(pics).sort());
+// the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
+for (const chunk of [64, 100, 1 << 20]) {
+    const reads = [];
+    const pruned = await prunePack(async (k) => {
+        reads.push(k);
+        return pack.subarray(k * chunk, (k + 1) * chunk);
+    }, chunk);
+    const idx = packIndex(pruned);
+    assert.deepEqual(idx.map((e) => e.key), Object.keys(pics).sort().filter((k) => KEEP.some((p) => k.startsWith(p))));
+    for (const e of idx)
+        assert.deepEqual(Buffer.from(pruned.subarray(e.off, e.off + e.len)), pics[e.key]);
+    assert.deepEqual(pruned.subarray(12, 12 + 768), pack.subarray(12, 12 + 768));
+    assert.equal(new DataView(pruned.buffer).getUint32(12 + 768 + 176, true), 0);
+    assert.equal(pruned.length, 12 + 768 + 180 * idx.length + idx.reduce((n, e) => n + e.len, 0));
+    assert.equal(new Set(reads).size, reads.length);       // each chunk read once
+}
+// the release's .zip: checked against the pin, then the pack against package.json
+const manifest = (p) => Buffer.from(JSON.stringify({kind: 'openciv2-assets', schema: 1, version: 't',
+                                                    files: {'data/atlas-hd.pack': {sha256: hex(p), size: p.length}}}));
+const release = await makeZip([{name: 'package.json', data: manifest(pack)}, {name: 'LICENSE', data: Buffer.from('MIT')},
+                               {name: 'data/atlas-hd.pack', data: pack}]);
+const pinned = {tag: 'vT', sha256: hex(release), size: release.length, pack_sha256: hex(pack), pack_size: pack.length};
+const dir = await zipDir(new Blob([release]));
+assert.deepEqual([...dir.keys()], ['package.json', 'LICENSE', 'data/atlas-hd.pack']);
+assert.equal(Buffer.from(await zipMember(new Blob([release]), dir.get('LICENSE'))).toString(), 'MIT');
+const phases = new Set();
+assert.deepEqual(await packFrom(new Blob([release]), pinned, {progress: (ph) => phases.add(ph)}), pack);
+assert.deepEqual([...phases].sort(), ['check', 'unpack']);
+assert.deepEqual(await packFrom(new Blob([pack]), pinned), pack);                    // the pack alone
+await assert.rejects(packFrom(new Blob([release]), {...pinned, sha256: '0'.repeat(64)}), /not the art's release vT/);
+const other = makePack({...pics, 'fog/2': Buffer.from('g')});
+await assert.rejects(packFrom(new Blob([other]), pinned), /not the one of the art's release/);
+const lying = await makeZip([{name: 'package.json', data: manifest(pack)}, {name: 'data/atlas-hd.pack', data: other}]);
+await assert.rejects(packFrom(new Blob([lying]), {...pinned, sha256: hex(lying), size: lying.length}),
+                     /does not match its package.json/);
+await assert.rejects(packFrom(new Blob([Buffer.from('hello world')]), pinned), /neither/);
+const stop = new AbortController();
+stop.abort();
+await assert.rejects(packFrom(new Blob([release]), pinned, {signal: stop.signal}), {name: 'AbortError'});
+// kept in the store in chunks, its description last; loaded for the game pruned
+const hdStore = new Map();
+const fake = {hdClear: async () => hdStore.clear(), hdPutMany: async (es) => es.forEach(([k, v]) => hdStore.set(k, v)),
+              hdGet: async (k) => hdStore.get(k)};
+const info = await keepPack(fake, pack, pinned);
+assert.equal(info.size, pack.length);
+assert.equal(info.chunks, 1);
+assert.deepEqual(await loadPack(fake, pinned), await prunePack(async () => pack));
+assert.equal(await loadPack(fake, {...pinned, pack_sha256: 'other'}), null);         // another release's
+await fake.hdClear();
+assert.equal(await loadPack(fake, pinned), null);
+
+// ---- the opening window's choices in CIV.INI (options.js) ----
+
+const ini0 = '[Civ2]\r\nFoo=1\r\n\r\n[OpenCiv2]\r\nMode=Standard\r\n\r\n[Other]\r\nx=y\r\n';
+assert.equal(iniGet(ini0, 'openciv2', 'MODE'), 'Standard');
+assert.equal(iniGet(ini0, 'OpenCiv2', 'Foo'), null);
+assert.equal(iniSet(ini0, 'OpenCiv2', 'Mode', 'Classic'), ini0.replace('Mode=Standard', 'Mode=Classic'));
+assert.equal(iniSet(ini0, 'OpenCiv2', 'Graphics', 'HD'), ini0.replace('Mode=Standard\r\n', 'Mode=Standard\r\nGraphics=HD\r\n'));
+assert.equal(iniSet('', 'OpenCiv2', 'Graphics', 'HD'), '[OpenCiv2]\r\nGraphics=HD\r\n');
+assert.equal(iniSet('[A]\nb=1\n', 'OpenCiv2', 'k', 'v'), '[A]\nb=1\n\n[OpenCiv2]\nk=v\n');
+const spec = JSON.parse(readFileSync(new URL('../../../build/web/choices.json', import.meta.url)));
+assert.ok(spec.rules.length >= 5 && spec.extras.length >= 20 && spec.limits.length === 5 && spec.colours.length === 4);
+const c0 = readChoices(spec, '');
+assert.equal(c0.classic, false);
+assert.equal(c0.hd, false);
+assert.ok(c0.extra.every((x) => x) && c0.rule.every((x) => !x));
+assert.deepEqual(c0.limit, ['2020', '2000', '32000', '30000', '10000']);
+assert.deepEqual(c0.colour, ['100', '0', '0', '']);
+assert.deepEqual(changedChoices(spec, c0, c0), []);
+const c1 = structuredClone(c0);
+c1.hd = true;
+c1.density = 2;
+c1.rule[0] = true;
+c1.extra[1] = false;
+c1.limit[0] = '2100';           // the warning moves with the year
+c1.limit[3] = '50000';
+assert.deepEqual(changedChoices(spec, c1, c0), [['Graphics', 'HD'], ['GraphicsDensity', '2'], [spec.rules[0].key, '1'],
+    [spec.extras[1].key, '0'], ['RetirementYear', '2100'], ['RetirementWarningYear', '2080'], ['GoldLimit', '50000']]);
+const ini1 = writeChoices(spec, ini0, c1, c0);
+assert.deepEqual(readChoices(spec, ini1), {...c1, limit: ['2100', '2080', '32000', '50000', '10000']});
+assert.equal(hdWanted(ini1, null), 2);
+assert.equal(hdWanted(ini0, null), -1);
+assert.equal(hdWanted(ini0, '1'), 0);
+assert.equal(hdWanted(ini0, ''), 0);
+assert.equal(hdWanted(ini0, '3'), 3);
+assert.equal(hdWanted(ini1, '0'), -1);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
+
 console.log('src/web unit tests passed');

@@ -128,25 +128,37 @@ export async function runGame(opts) {
 
     // -- the desktop on the canvas: w x h desktop pixels, shown at a whole
     //    number of device pixels each where it fits, else shrunk
-    let screenW = 640, screenH = 480, follows = false, image = null;
+    //    HD graphics: the canvas density times larger (host_present_hd)
+    let screenW = 640, screenH = 480, follows = false, image = null, density = 1, shown = 1;
     const dpr = () => window.devicePixelRatio || 1;
     const viewport = () => [Math.floor(window.innerWidth * dpr()), Math.floor(window.innerHeight * dpr())];
+    // (whole device pixels for each of the canvas's: crisp; else smoothed)
+    const rendering = () => {
+        canvas.style.imageRendering = shown >= density && shown % density === 0 ? '' : 'auto';
+    };
     const fit = () => {
         const [vw, vh] = viewport();
         let s = Math.min(vw / screenW, vh / screenH);
         if (s >= 1)
             s = Math.floor(s);
+        shown = s;
         canvas.style.width = (screenW * s / dpr()) + 'px';
         canvas.style.height = (screenH * s / dpr()) + 'px';
+        rendering();
         cursorCache.clear();
         applyCursor();
+    };
+    const setDensity = (d) => {
+        density = d;
+        canvas.width = screenW * d;
+        canvas.height = screenH * d;
+        image = ctx.createImageData(canvas.width, canvas.height);
+        rendering();
     };
     const setDesktop = (w, h) => {
         screenW = w;
         screenH = h;
-        canvas.width = w;
-        canvas.height = h;
-        image = ctx.createImageData(w, h);
+        setDensity(1);
         fit();
     };
     window.addEventListener('resize', () => {
@@ -215,6 +227,21 @@ export async function runGame(opts) {
             push(EV.KEYUP, vk);
         held.clear();
     });
+
+    // ARGB rows (the game's) onto the canvas, w x h
+    function present(pixels, stride, w, h) {
+        if (!image)
+            return;
+        const dst = new Uint32Array(image.data.buffer);
+        if (stride === w * 4)
+            argbToRgba(new Uint32Array(memory.buffer, pixels, w * h), dst, w * h);
+        else
+            for (let y = 0; y < h; y++)
+                argbToRgba(new Uint32Array(memory.buffer, pixels + y * stride, w), dst.subarray(y * w), w);
+        ctx.putImageData(image, 0, 0);
+        if (opts.stats)
+            opts.stats.memoryBytes = memory.buffer.byteLength;
+    }
 
     // -- cursors: CSS cursors, the game's images scaled as the desktop is
     const SYSTEM_CURSORS = ['default', 'text', 'wait', 'crosshair', 'nwse-resize', 'nesw-resize', 'ew-resize',
@@ -311,20 +338,24 @@ export async function runGame(opts) {
         host_menu_begin: () => {},
         host_menu_add: () => {},
         host_menu_end: () => {},
-        // HD graphics (docs/HD-GRAPHICS.md) are not in the browser version:
-        // the game never calls this here (no pack); the module imports it.
-        host_present_hd: () => {},
+        // HD graphics (docs/HD-GRAPHICS.md): the frame density times the
+        // desktop's size each way, on a canvas of that size shown where the
+        // desktop is (at the device's pixels where the density is the
+        // desktop's scale: Auto)
+        host_present_hd: (pixels, stride, d) => {
+            const t = performance.now();
+            if (d !== density || canvas.width !== screenW * d || canvas.height !== screenH * d)
+                setDensity(d);
+            present(pixels, stride, canvas.width, canvas.height);
+            if (opts.stats) {
+                opts.stats.hdFrames = (opts.stats.hdFrames || 0) + 1;
+                opts.stats.hdMs = (opts.stats.hdMs || 0) + performance.now() - t;
+            }
+        },
         host_present: (pixels, stride) => {
-            if (!image)
-                return;
-            const dst = new Uint32Array(image.data.buffer);
-            if (stride === screenW * 4)
-                argbToRgba(new Uint32Array(memory.buffer, pixels, screenW * screenH), dst, screenW * screenH);
-            else
-                for (let y = 0; y < screenH; y++)
-                    argbToRgba(new Uint32Array(memory.buffer, pixels + y * stride, screenW),
-                               dst.subarray(y * screenW), screenW);
-            ctx.putImageData(image, 0, 0);
+            if (density !== 1)
+                setDensity(1);
+            present(pixels, stride, screenW, screenH);
         },
         host_resize_desktop: (w, h) => {
             if (w !== screenW || h !== screenH)
@@ -332,7 +363,8 @@ export async function runGame(opts) {
         },
         host_minimize: () => {},
         // The opening window (src/platform/launcher.c) is not in the browser
-        // version, which has its own set-up page (-1); nor HD graphics.
+        // version, which has its own set-up page (-1) and gets the HD
+        // graphics' art itself (hdpack.js).
         host_close_window: () => {},
         host_launcher: () => -1,
         host_user_dir: () => 0,
