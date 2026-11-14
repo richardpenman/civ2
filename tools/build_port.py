@@ -239,7 +239,9 @@ def pack():
                     'tools/paths.py', 'tools/run-civ2.sh', 'tools/toolchain/unshield', 'tools/toolchain/zlib',
                     'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native', 'harness/CIV2.DAT',
                     'README.md', 'THIRD-PARTY.txt'):
-            t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel))
+            # not the HD graphics' art (data/native/hd, tools/fetch_hd_pack.py): fetched by each player
+            t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel),
+                  filter=lambda ti: None if ti.name.startswith('OpenCiv2/data/native/hd') else ti)
     print('wrote %s (%d MB)' % (os.path.relpath(out, ROOT), os.path.getsize(out) >> 20))
 
 
