@@ -1,11 +1,12 @@
 // The browser host's logic under node (no browser): keys, the wheel, the
-// desktop's scale, pixels, the WASI file system, .zip reading.
+// desktop's scale, pixels, the WASI file system, .zip reading and writing, the player's saves.
 //   tools/toolchain/node/bin/node src/web/test/unit.mjs
 import assert from 'node:assert/strict';
 import {vkOf, Wheel, desktopScale, argbToRgba} from '../host.js';
 import {MemFS, makeWasi, normalize} from '../wasi.js';
-import {unzip} from '../zip.js';
-import {deflateRawSync} from 'node:zlib';
+import {unzip, zip as makeZip, crc32} from '../zip.js';
+import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
+import {deflateRawSync, inflateRawSync} from 'node:zlib';
 
 // keys
 assert.equal(vkOf({code: 'KeyA', key: 'a'}), 0x41);
@@ -123,4 +124,57 @@ const text = Buffer.from('RULES '.repeat(100));
 const files = await unzip(zip([['Civ2/RULES.TXT', text, true], ['Civ2/Sound\\A.WAV', Buffer.from('wav'), false]]));
 assert.deepEqual(files.map((f) => f.name), ['Civ2/RULES.TXT', 'Civ2/Sound/A.WAV']);
 assert.equal(Buffer.from(files[0].data).toString(), text.toString());
+
+// .zip written (saves.js's export) and read back: deflated where smaller,
+// stored otherwise, an empty file, a name not in ASCII
+assert.equal(crc32(Buffer.from('123456789')), 0xcbf43926);
+const big = new Uint8Array(100000).map((_, i) => (i * 7) & 0x3f), noise = new Uint8Array(300).map(() => Math.random() * 256);
+const written = await makeZip([{name: 'A.SAV', data: big, mtime: Date.UTC(2026, 10, 14, 12)},
+                               {name: 'Scenario/MINE.SCN', data: noise}, {name: 'EMPTY.SAV', data: new Uint8Array(0)},
+                               {name: 'Été.SAV', data: Buffer.from('é')}]);
+assert.ok(written.length < 20000);          // (the big one deflated)
+const back = await unzip(written.buffer);
+assert.deepEqual(back.map((f) => f.name), ['A.SAV', 'Scenario/MINE.SCN', 'EMPTY.SAV', 'Été.SAV']);
+assert.deepEqual(back[0].data, big);
+assert.deepEqual(back[1].data, noise);
+assert.equal(back[2].data.length, 0);
+assert.equal(Buffer.from(back[3].data).toString(), 'é');
+const stored = await makeZip([{name: 'A.SAV', data: big}], {deflate: false});
+assert.equal(stored.length, 30 + 5 + big.length + 46 + 5 + 22);
+assert.deepEqual((await unzip(stored.buffer))[0].data, big);
+// (the same as an independent reader, node's zlib, reads it: the deflated member raw)
+const lh = new DataView(written.buffer);
+assert.equal(lh.getUint16(8, true), 8);
+assert.deepEqual(new Uint8Array(inflateRawSync(written.subarray(30 + 5, 30 + 5 + lh.getUint32(18, true)))), big);
+
+// the player's files: saved games, settings in the game's folder, the scenarios they made
+assert.equal(savesKind('GAME.SAV'), 'sav');
+assert.equal(savesKind('Scenario/x.mp'), 'scn');
+assert.equal(savesKind('civ.ini'), 'settings');
+assert.equal(savesKind('Sub/CIV.INI'), null);
+assert.equal(savesKind('RULES.TXT'), null);
+const T = 1700000000000;
+const stored2 = [['Civ2Art.dll', {mtime: T}], ['RULES.TXT', {mtime: T}], ['CIV.INI', {mtime: T + 5}],
+                 ['ROME.SCN', {mtime: T}], ['EUROPE.MP', {mtime: T + 3600e3}], ['MINE.SCN', {mtime: T + 3600e3}],
+                 ['Scenario/OLD.SCN', {mtime: T}], ['Ca_Auto.SAV', {mtime: T}], ['HALLFAME.DAT', {mtime: T + 9}]];
+assert.deepEqual(playerFiles(stored2, {names: ['Civ2Art.dll', 'RULES.TXT', 'ROME.SCN', 'EUROPE.MP', 'Scenario/OLD.SCN',
+                                               'CIV.INI'], at: T + 60e3}),
+                 ['CIV.INI', 'EUROPE.MP', 'MINE.SCN', 'Ca_Auto.SAV', 'HALLFAME.DAT']);
+// (no note of the game's copy: scenarios written well after Civ2Art.dll was copied)
+assert.deepEqual(playerFiles(stored2, undefined), ['CIV.INI', 'EUROPE.MP', 'MINE.SCN', 'Ca_Auto.SAV', 'HALLFAME.DAT']);
+// where imported files go: folders the game has kept, others left out, the case of what is there
+const have = ['RULES.TXT', 'Scenario/OLD.SCN', 'Sound/A.WAV', 'civ.ini', 'GAME.SAV'];
+assert.equal(importPath('NEW.SAV', have), 'NEW.SAV');
+assert.equal(importPath('Civ2/NEW.SAV', have), 'NEW.SAV');
+assert.equal(importPath('my saves/x/NEW.SAV', have), 'NEW.SAV');
+assert.equal(importPath('scenario/MINE.SCN', have), 'Scenario/MINE.SCN');
+assert.equal(importPath('Civ2/Scenario/MINE.SCN', have), 'Scenario/MINE.SCN');
+assert.equal(importPath('CIV.INI', have), 'civ.ini');
+assert.equal(importPath('game.sav', have), 'GAME.SAV');
+assert.equal(importPath('../../etc/x.SAV', have), 'x.SAV');
+const savesZip = await makeZip([{name: 'Civ2/ONE.SAV', data: Buffer.from('1')}, {name: 'Civ2/CIV.INI', data: Buffer.from('i')},
+                                {name: 'Civ2/RULES.TXT', data: Buffer.from('no')}]);
+const toPut = await savesToImport([{name: 'saves.zip', data: savesZip}, {name: 'TWO.SAV', data: Buffer.from('2')},
+                                   {name: 'notes.txt', data: Buffer.from('no')}], have);
+assert.deepEqual(toPut.map(([k, d]) => k + '=' + Buffer.from(d)), ['ONE.SAV=1', 'civ.ini=i', 'TWO.SAV=2']);
 console.log('src/web unit tests passed');

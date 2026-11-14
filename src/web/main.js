@@ -5,6 +5,7 @@ import {MemFS} from './wasi.js';
 import {runGame} from './host.js';
 import {openStore} from './store.js';
 import {unzip} from './zip.js';
+import {exportSaves, importSaves} from './saves.js';
 
 const GAME = '/civ2', DATA = '/data';
 const $ = (id) => document.getElementById(id);
@@ -64,6 +65,7 @@ async function importFiles(store, files) {
         }
     }
     await store.putMany(batch);
+    await store.setMeta('game', {names: found.files.map((f) => f.name), at: Date.now()});
     status(`The game's ${n} files are kept in this browser.`);
     return true;
 }
@@ -126,6 +128,75 @@ function messageBox(icon, title, text, labels, ids, enter, escape) {
     });
 }
 
+// ---- the player's saved games: exported, imported (saves.js) ----
+
+let running = null;         // the game's files while it runs (MemFS)
+
+function savesStatus(s) {
+    $('saves-status').textContent = s;
+    status(s);
+}
+
+async function exportClicked(store) {
+    try {
+        if (running)
+            await window.civ2Flush();
+        const {data, names} = await exportSaves(store);
+        if (!names.length) {
+            savesStatus('There are no saved games to export yet.');
+            return;
+        }
+        const a = document.createElement('a');
+        const d = new Date(), pad = (n) => String(n).padStart(2, '0');
+        a.download = `OpenCiv2-saves-${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}.zip`;
+        a.href = URL.createObjectURL(new Blob([data], {type: 'application/zip'}));
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+        savesStatus(`Exported ${names.length} file${names.length > 1 ? 's' : ''}: ${names.join(', ')}.`);
+    } catch (e) {
+        console.error(e);
+        savesStatus('Could not export the saved games: ' + e.message);
+    }
+}
+
+async function importChosen(store, list) {
+    try {
+        const files = [];
+        for (const f of list)
+            files.push({name: f.name, data: new Uint8Array(await f.arrayBuffer())});
+        const names = await importSaves(store, files, running, GAME);
+        savesStatus(names.length ? `Imported ${names.length} file${names.length > 1 ? 's' : ''}: ${names.join(', ')}.`
+                                 : 'Nothing to import there: saved games are .SAV files (or a .zip of them).');
+    } catch (e) {
+        console.error(e);
+        savesStatus('Could not import: ' + e.message);
+    }
+}
+
+function savesControls(store) {
+    for (const b of document.querySelectorAll('.export-saves'))
+        b.onclick = () => exportClicked(store);
+    $('import-saves').onchange = async (e) => {
+        const list = [...e.target.files];
+        e.target.value = '';
+        if (list.length)
+            await importChosen(store, list);
+    };
+    // while playing: a small button over the screen's corner, its dialog
+    // keeping the keys from the game
+    const d = $('saves-dialog');
+    $('saves-open').onclick = () => {
+        $('saves-status').textContent = '';
+        d.showModal();
+    };
+    $('saves-close').onclick = () => d.close();
+    d.addEventListener('keydown', (e) => e.stopPropagation());
+    d.addEventListener('keyup', (e) => e.stopPropagation());
+    d.addEventListener('close', () => $('screen').focus());
+}
+
 async function play(store) {
     // (the game files and saved games kept for good: without this the browser
     // may clear them when disk space runs low, Safari after a week unused)
@@ -176,6 +247,7 @@ async function play(store) {
         }
     };
     window.civ2Fs = fs;
+    running = fs;
     window.civ2Flush = () => (timer ? (clearTimeout(timer), flush()) : Promise.resolve());
     window.addEventListener('pagehide', () => window.civ2Flush());
     status(`Starting (files loaded in ${Math.round(performance.now() - t0)} ms) ...`);
@@ -199,6 +271,7 @@ async function play(store) {
         status('The game stopped: ' + e.message);
     }
     await window.civ2Flush();
+    running = null;
     $('game').hidden = true;
     showSetup(store, true);
 }
@@ -224,6 +297,7 @@ async function main() {
         return;
     }
     const store = await openStore();
+    savesControls(store);
     const chosen = async (files) => {
         try {
             if (await importFiles(store, files))

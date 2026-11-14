@@ -216,6 +216,16 @@ builds do not use it.
   `DecompressionStream`), written back as soon as the game closes, renames or removes a file (saved games,
   `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
   be persistent (`navigator.storage.persist`).
+* **Saves exported and imported** (src/web/saves.js): the player's files are the `.SAV` files,
+  `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT` in the game's folder, and the `.SCN` and `.MP` files
+  the copy of the game did not have or that changed since (the store's `meta` notes the copy's
+  paths and time; a copy made before that was noted: written ten minutes or more after
+  `Civ2Art.dll` was copied).  Exported as a `.zip` (src/web/zip.js writes it: each file deflated
+  with `CompressionStream` where that makes it smaller), imported from `.SAV` files or `.zip`
+  archives (only those kinds of files; folders in front of a path that the game's folder does not
+  have dropped, the case of a file already there kept) into IndexedDB and, while the game runs,
+  into its files in memory.  While playing, the *Saves* button over the screen's top right corner
+  opens a dialog that keeps the keys from the game.
 * **By hand**: sound and music (the headless browser has no audio device), the cursors, resizing the
   window and other browsers than Chrome are checked by playing (music, the videos and loading saved
   games: played and fine, 2026-11-14): `make web`, `python3 -m http.server
@@ -224,11 +234,14 @@ builds do not use it.
   reader would have to be compiled to wasm as well): an installed folder is needed.  Videos play
   as natively (the Indeo decoder is part of the module).
 * **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
-  wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading; no browser, no game
+  wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading and writing, which of
+  the files are the player's and where imported ones go; no browser, no game
   files), then `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
   from `tools/fetch-toolchain.sh browser`; Linux x86-64) zips the game folder, gives it to the page
   through its file input, then plays: the menu, a new game with the default choices, a save
-  (Ctrl+S) kept in IndexedDB, and the saved game loaded again after reloading the page;
+  (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
+  only the player's files), the saved game removed and imported from that `.zip` (on the set-up
+  page, then again while the game runs), and loaded again from the menu;
   screenshots in `run/web-smoke`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).

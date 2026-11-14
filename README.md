@@ -84,7 +84,12 @@ It plays single-player games with the original graphics and your own copy of the
 time, the page asks for the folder Civilization II is installed in (or a `.zip` of it; both can be
 dropped on the page) and copies it into the browser's storage (IndexedDB); later visits start the
 game at once (`?setup` shows the page again, to replace or remove the files). Saved games,
-`CIV.INI` and the Hall of Fame are kept there too. The game must be installed: the browser
+`CIV.INI` and the Hall of Fame are kept there too: **Export saves** (on the `?setup` page, or
+under the small *Saves* button at the top right while playing) downloads them as a `.zip` (saved
+games, the scenarios and maps you made, `CIV.INI`, `CIV2.DAT`, `HALLFAME.DAT`; not the game's own
+files), and **Import saves** puts `.SAV` files, or such a `.zip`, back (into the running game too,
+so that *Load a Game* finds them at once): to keep them safe, or move them to another browser or
+computer. The game must be installed: the browser
 version cannot set it up from the CD or a disc image (the desktop version can, and its game
 folder, `GameData`, can then be chosen). Music plays where the folder has it (`Music/TrackNN.ogg`,
 as the desktop version's set-up makes from the CD). Network games are not available in the browser.

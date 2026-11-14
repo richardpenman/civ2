@@ -22,6 +22,12 @@
   #have { background: var(--panel); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
   #game[hidden], #setup[hidden], #have[hidden] { display: none; }
+  #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; font-size: 12px;
+                line-height: 18px; background: #333; color: #ccc; opacity: 0.25; }
+  #saves-open:hover, #saves-open:focus { opacity: 1; }
+  #saves-dialog { background: var(--panel); color: var(--fg); border: 1px solid #4a4538; border-radius: 8px;
+                  padding: 1rem; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #saves-dialog h2 { font: inherit; font-weight: bold; margin: 0 0 0.5rem; }
   #screen { image-rendering: pixelated; image-rendering: crisp-edges; outline: none; touch-action: none; }
   dialog { background: #c0c0c0; color: #000; border: 2px outset #fff; padding: 0; min-width: 18rem; max-width: 34rem;
            font: 14px/1.4 "Segoe UI", Arial, sans-serif; }
@@ -54,10 +60,25 @@
     <p>The game files are in this browser.</p>
     <button id="play">Play</button>
     <button id="forget" class="plain">Remove them</button>
+    <p class="dim">Your saved games (and the scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code>,
+       <code>HALLFAME.DAT</code>), to keep elsewhere or take to another browser or computer:</p>
+    <button class="export-saves">Export saves</button>
+    <label class="button" for="import-saves">Import saves</label>
   </div>
   <p id="status"></p>
 </div>
-<div id="game" hidden><canvas id="screen" tabindex="0"></canvas></div>
+<div id="game" hidden><canvas id="screen" tabindex="0"></canvas>
+  <button id="saves-open" title="Export or import saved games">Saves</button></div>
+<input id="import-saves" type="file" multiple accept=".sav,.zip,.scn,.mp,.ini,.dat">
+<dialog id="saves-dialog">
+  <h2>Saved games</h2>
+  <p class="dim">Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and
+     <code>HALLFAME.DAT</code> as a .zip; or saved games (.SAV, or such a .zip) put into the game.</p>
+  <button class="export-saves">Export saves</button>
+  <label class="button" for="import-saves">Import saves</label>
+  <button id="saves-close" class="plain">Close</button>
+  <p id="saves-status" class="dim"></p>
+</dialog>
 <dialog id="dialog"><div id="dialog-title"></div><div id="dialog-text"></div><div id="dialog-buttons"></div></dialog>
 <script type="module" src="main.js"></script>
 </body>

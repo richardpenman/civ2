@@ -32,7 +32,7 @@ SRC = os.path.join(ROOT, 'src', 'web')
 BINARYEN = os.environ.get('BINARYEN') or os.path.join(ROOT, 'tools', 'toolchain', 'binaryen')
 # The imports that may wait (src/web/host.js: blocking)
 ASYNC_IMPORTS = ['host.host_wait_event', 'host.host_poll_event', 'host.host_delay_ms', 'host.host_message_box']
-PAGE = ['index.html', 'main.js', 'host.js', 'wasi.js', 'store.js', 'zip.js']
+PAGE = ['index.html', 'main.js', 'host.js', 'wasi.js', 'store.js', 'zip.js', 'saves.js']
 FONTS = ['fonts_win.bin', 'fonts_win_aa.bin']
 
 

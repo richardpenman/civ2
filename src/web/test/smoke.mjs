@@ -2,7 +2,8 @@
 // in Chrome's headless shell (driven over the DevTools protocol, no other
 // dependency), given the player's game files as a .zip through the page's
 // own file input, then the game: the main menu, a new game with the default
-// choices, its first turn.  Screenshots in run/web-smoke (the game's
+// choices, its first turn, a save; the saves exported and imported again
+// (from the set-up page, and while playing), the saved game loaded.  Screenshots in run/web-smoke (the game's
 // images: never committed).
 //
 //   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME] [GAME_DIR]
@@ -23,6 +24,7 @@ import {readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, mkdtempSy
 import {join, relative, extname, dirname} from 'node:path';
 import {homedir} from 'node:os';
 import {fileURLToPath} from 'node:url';
+import {unzip} from '../zip.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const WEB = join(ROOT, 'build', 'web');
@@ -336,11 +338,59 @@ async function main() {
         log('saved games in IndexedDB: ' + after.join(' ') + (added.length ? ' (new: ' + added.join(' ') + ')' : ''));
         if (!added.length)
             throw new Error('the saved game is not in IndexedDB');
-        // a later visit again: the saved game loaded from the menu
+        // the saves exported from the set-up page (a download: the player's
+        // files only), the saved game removed, imported again from the .zip
+        const downloads = join(tmp, 'downloads');
+        mkdirSync(downloads, {recursive: true});
+        await send('Browser.setDownloadBehavior', {behavior: 'allow', downloadPath: downloads}).catch(
+            () => send('Page.setDownloadBehavior', {behavior: 'allow', downloadPath: downloads}));
+        await send('Page.navigate', {url: url + '?setup'});
+        await waitFor('/Ready/.test(window.civ2Status || "")', 30000, 'the set-up page');
+        await evaluate('document.querySelector("#have .export-saves").click()');
+        const t3 = performance.now();
+        let exported = null;
+        while (!exported && performance.now() - t3 < 30000) {
+            await sleep(250);
+            exported = readdirSync(downloads).find((f) => /^OpenCiv2-saves-.*\.zip$/.test(f));
+        }
+        if (!exported)
+            throw new Error('no saves exported: ' + await evaluate('window.civ2Status'));
+        const zipped = join(downloads, exported);
+        const inZip = (await unzip(readFileSync(zipped).buffer.slice(0))).map((f) => f.name);
+        log(`exported ${exported}: ${inZip.join(' ')}`);
+        if (!inZip.includes(added[0]) || inZip.some((n) => !/\.(sav|scn|mp)$|^(civ\.ini|civ2\.dat|hallfame\.dat)$/i.test(n)))
+            throw new Error('the export is not the player\'s files');
+        const removeSave = (k) => evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
+            const t = r.result.transaction("files", "readwrite"); t.objectStore("files").delete(${JSON.stringify(k)});
+            t.oncomplete = () => { r.result.close(); resolve(true); }; }; })`);
+        const importFile = async (path) => {
+            const {result: input} = await send('Runtime.evaluate', {expression: 'document.getElementById("import-saves")'});
+            await send('DOM.setFileInputFiles', {objectId: input.objectId, files: [path]});
+        };
+        await removeSave(added[0]);
+        if ((await savedGames()).includes(added[0]))
+            throw new Error('the saved game was not removed');
+        await importFile(zipped);
+        await waitFor('/Imported|Could not|Nothing/.test(window.civ2Status) && window.civ2Status', 30000, 'the import');
+        log('set-up page: ' + await evaluate('window.civ2Status'));
+        if (!(await savedGames()).includes(added[0]))
+            throw new Error('the saved game was not imported');
+        // a later visit again (the saved game removed once more): imported
+        // while the game runs (into its files too), then loaded from the menu
+        await removeSave(added[0]);
         await send('Page.navigate', {url});
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the second start');
         await settle(3000, 60000);
         await shot('17-again');
+        if (await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`))
+            throw new Error('the saved game is still there');
+        await importFile(zipped);
+        await waitFor('/Imported|Could not|Nothing/.test(document.getElementById("saves-status").textContent)', 30000,
+                      'the import while playing');
+        if (!await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`) || !(await savedGames()).includes(added[0]))
+            throw new Error('the saved game imported while playing is not in the game\'s files');
+        log('while playing: ' + await evaluate('document.getElementById("saves-status").textContent'));
+        await evaluate('document.getElementById("screen").focus()');
         await key('KeyL', 76, 'l');     // Load a Game
         await key('Enter', 13);
         await settle(2000, 15000);
