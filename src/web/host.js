@@ -95,7 +95,8 @@ export function argbToRgba(src, dst, n) {
 
 // opts: {wasm: ArrayBuffer|Response|WebAssembly.Module (or a promise of one), onFrame: called at the first frame, fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
 // enter, escape) -> Promise<id>, stats: {} (filled in as it runs: busyMs, resumes),
-// relay: the network relay's address (net.js; none: no network play)}
+// relay: the network relay's address, or a function giving it (net.js; none: no network play),
+// onRelayUnreachable(relay): a network game's connection could not reach it}
 // -> the game's exit code
 export async function runGame(opts) {
     const {canvas, fs} = opts;
@@ -300,7 +301,7 @@ export async function runGame(opts) {
     const music = {source: null, playing: false, token: 0};
 
     // -- network play: through the relay (opts.relay: 'ws://host:port')
-    const net = makeNet(opts.relay);
+    const net = makeNet(opts.relay, globalThis.WebSocket, opts.onRelayUnreachable);
 
     // -- the module's imports
     const host = {

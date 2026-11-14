@@ -18,7 +18,6 @@
                          border: 0; border-radius: 4px; padding: 0.45rem 1rem; margin: 0.25rem; cursor: pointer; }
   button.plain { background: none; color: var(--dim); text-decoration: underline; padding: 0; }
   input[type=file] { display: none; }
-  #relay { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid #4a4538; padding: 0 0.3rem; }
   #status { color: var(--dim); }
   #status:empty { display: none; }
   #chosen { margin: 0.5rem 0 0; }
@@ -61,10 +60,11 @@
   dialog { background: #c0c0c0; color: #000; border: 2px outset #fff; padding: 0; min-width: 18rem; max-width: 34rem;
            font: 14px/1.4 "Segoe UI", Arial, sans-serif; }
   dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
-  #dialog-title { background: #000080; color: #fff; padding: 0.2rem 0.5rem; font-weight: bold; }
-  #dialog-text { padding: 1rem; white-space: pre-wrap; }
-  #dialog-buttons { padding: 0 1rem 1rem; text-align: center; }
-  #dialog-buttons button { background: #c0c0c0; color: #000; border: 2px outset #fff; border-radius: 0; min-width: 5rem; }
+  #dialog-title, .dialog-title { background: #000080; color: #fff; padding: 0.2rem 0.5rem; font-weight: bold; }
+  #dialog-text, .dialog-text { padding: 1rem; white-space: pre-wrap; }
+  .dialog-text input { font: inherit; background: #fff; color: #000; border: 2px inset #fff; padding: 0 0.2rem; }
+  #dialog-buttons, .dialog-buttons { padding: 0 1rem 1rem; text-align: center; }
+  #dialog-buttons button, .dialog-buttons button { background: #c0c0c0; color: #000; border: 2px outset #fff; border-radius: 0; min-width: 5rem; }
 </style>
 </head>
 <body>
@@ -89,8 +89,6 @@
   </div>
   <p id="status"></p>
   <button id="stop" hidden>Stop</button>
-  <p class="dim"><label>Network games' relay: <input id="relay" type="text" size="26" placeholder="ws://127.0.0.1:8765"
-     spellcheck="false"></label></p>
   <div id="have" hidden>
     <p>The game files are in this browser. <button id="forget" class="plain">Remove them</button></p>
     <button id="play">Play</button>
@@ -140,6 +138,10 @@
   <button id="saves-close" class="plain">Close</button>
   <p id="saves-status" class="dim"></p>
 </dialog>
+<dialog id="relay-dialog"><div class="dialog-title">Network games</div>
+  <div class="dialog-text" id="relay-text"></div>
+  <div class="dialog-text"><label>The relay: <input id="relay-address" type="text" size="30" spellcheck="false"></label></div>
+  <div class="dialog-buttons"><button id="relay-use">Use it</button><button id="relay-close">Close</button></div></dialog>
 <dialog id="dialog"><div id="dialog-title"></div><div id="dialog-text"></div><div id="dialog-buttons"></div></dialog>
 <script type="module" src="main.js"></script>
 </body>

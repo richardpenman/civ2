@@ -109,8 +109,10 @@ the desktop version.
 
 A web page cannot open the game's TCP connections itself, so network games go through a small
 relay: `tools/webrelay.py` (Python 3, nothing else to install) bridges the page's WebSockets to
-TCP. Run it on the machine of the player who hosts, or on any machine the browsers can reach, and
-give the page its address on the `?setup` page (*Network games' relay*; empty: none), or in the address as `?relay=ws://HOST:8765`:
+TCP. Run it on the machine that serves the site: the page uses port 8765 of the site's own host
+(`ws://HOST:8765`, `wss://` on an `https://` page). A relay elsewhere: `?relay=ws://HOST:PORT` in the
+address. When a network game cannot reach the relay, the page says so (run `tools/webrelay.py`
+there) and asks for its address, kept in this browser for the next connection:
 
 ```sh
 tools/webrelay.py                                        # browsers on this machine; join any game on the LAN

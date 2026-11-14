@@ -348,6 +348,24 @@ async function main() {
         log('desktop after resizing: ' + size.join('x'));
         if (size[0] !== 1024 || size[1] !== 720)
             throw new Error('the desktop did not follow the window');
+        // the network games' relay: by default the site's host's port 8765;
+        // one not there: the player told how to run it, its address asked
+        // for and kept (as a network game's connection that cannot reach it does)
+        const relay0 = await evaluate('window.civ2Relay.address()');
+        if (relay0 !== 'ws://127.0.0.1:8765')
+            throw new Error('the relay is not the site\'s host by default: ' + relay0);
+        await evaluate('window.civ2Relay.unreachable("ws://127.0.0.1:8765")');
+        await sleep(300);
+        const told = await evaluate('document.getElementById("relay-dialog").open && document.getElementById("relay-text").textContent');
+        log('no relay: ' + told);
+        if (!/tools\/webrelay.py on 127.0.0.1/.test(told || ''))
+            throw new Error('no word of the relay not answering');
+        await shot('23-no-relay');
+        await evaluate('document.getElementById("relay-address").value = "ws://10.0.0.2:9000"; document.getElementById("relay-use").click()');
+        const relay1 = await evaluate('[window.civ2Relay.address(), document.getElementById("relay-dialog").open]');
+        if (relay1[0] !== 'ws://10.0.0.2:9000' || relay1[1])
+            throw new Error('the relay\'s address not kept: ' + relay1);
+        await evaluate('localStorage.removeItem("civ2.relay")');
         const st = await evaluate('window.civ2Status');
         if (errors.length || /stopped/.test(st))
             throw new Error('the game stopped: ' + st);

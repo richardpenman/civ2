@@ -19,10 +19,13 @@ export const ipNumber = (s) => {
     return m ? ((+m[1] << 24) | (+m[2] << 16) | (+m[3] << 8) | +m[4]) >>> 0 : 0;
 };
 
-// relay: 'ws://host:port' (or '' / null: no network play); WS: the
-// WebSocket class (the tests give node's) -> the calls, on plain values
-export function makeNet(relay, WS = globalThis.WebSocket) {
-    relay = (relay || '').replace(/\/+$/, '');
+// relay: 'ws://host:port' (or '' / null: no network play; or a function
+// giving it, asked at each connection); WS: the WebSocket class (the tests
+// give node's); unreachable(relay): called when a game's connection or
+// listener could not reach the relay -> the calls, on plain values
+export function makeNet(relayGiven, WS = globalThis.WebSocket, unreachable = () => {}) {
+    const relayNow = () => ((typeof relayGiven === 'function' ? relayGiven() : relayGiven) || '').replace(/\/+$/, '');
+    let relay = relayNow();
     const socks = [];
     let localAddr = '127.0.0.1';
     const add = (s) => {
@@ -37,6 +40,15 @@ export function makeNet(relay, WS = globalThis.WebSocket) {
         const ws = new WS(relay + path);
         ws.binaryType = 'arraybuffer';
         return ws;
+    };
+    // (a game's WebSocket that never opened: the relay is not there)
+    const watch = (ws) => {
+        let opened = false;
+        ws.addEventListener('open', () => { opened = true; });
+        ws.addEventListener('close', () => {
+            if (!opened)
+                unreachable(relay);
+        });
     };
     // (the address the others reach this machine's games at: the relay's)
     if (relay && WS) {
@@ -98,12 +110,21 @@ export function makeNet(relay, WS = globalThis.WebSocket) {
         // that could not just never accepts)
         tcpListen: (h) => {
             const s = get(h);
+            relay = relayNow();
             if (!s || s.kind !== 'tcp' || !relay || !s.port)
                 return -1;
+            let ws;
+            try {
+                ws = open('/listen?port=' + s.port);
+            } catch (e) {
+                unreachable(relay);
+                return -1;
+            }
             s.kind = 'listener';
             s.pending = [];
             s.children = new Map();
-            const ws = s.ws = open('/listen?port=' + s.port);
+            s.ws = ws;
+            watch(ws);
             ws.onmessage = (e) => {
                 if (typeof e.data !== 'string') {
                     const d = new Uint8Array(e.data);
@@ -152,6 +173,7 @@ export function makeNet(relay, WS = globalThis.WebSocket) {
         },
         tcpConnect: (h, ip, port) => {
             const s = get(h);
+            relay = relayNow();
             if (!s || s.kind !== 'tcp' || s.ws || !relay)
                 return -1;
             s.state = 'connecting';
@@ -160,8 +182,10 @@ export function makeNet(relay, WS = globalThis.WebSocket) {
                 ws = s.ws = open(`/connect?host=${ipText(ip)}&port=${port}`);
             } catch (e) {
                 s.state = 'error';
+                unreachable(relay);
                 return 0;
             }
+            watch(ws);
             ws.onmessage = (e) => {
                 if (typeof e.data === 'string') {
                     if (JSON.parse(e.data).connected)

@@ -39,6 +39,25 @@ const none = makeNet('');
 assert.equal(none.tcpConnect(none.tcpOpen(0), 0x7f000001, 4993), -1);
 assert.equal(none.tcpListen(none.tcpOpen(4993)), -1);
 
+// a relay that is not there: the game's connection and listener say so
+// (the page tells the player); the relay asked for at each (a function)
+{
+    const nobody = await freePort(), said = [];
+    let addr = `ws://127.0.0.1:${nobody}`;
+    const gone = makeNet(() => addr, globalThis.WebSocket, (r) => said.push(r));
+    const c = gone.tcpOpen(0);
+    assert.equal(gone.tcpConnect(c, 0x7f000001, 4993), 0);
+    await until(() => gone.tcpState(c) === -1 || null, 5000, 'no relay: the connection failed');
+    await until(() => said.length === 1 || null, 5000, 'no relay: said');
+    assert.equal(said[0], `ws://127.0.0.1:${nobody}`);
+    addr = `ws://127.0.0.1:${nobody}/`;
+    assert.equal(gone.tcpListen(gone.tcpOpen(4993)), 0);
+    await until(() => said.length === 2 || null, 5000, 'no relay: the listener said');
+    addr = 'not an address';
+    assert.equal(gone.tcpListen(gone.tcpOpen(4993)), -1);
+    assert.equal(said.length, 3);
+}
+
 const wsPort = await freePort(), gamePort = await freePort(), hostPort = await freePort();
 const relay = spawn('python3', [join(ROOT, 'tools', 'webrelay.py'), '--port', String(wsPort),
                                 '--ports', `${gamePort},${hostPort}`, '-v'], {stdio: ['ignore', 'pipe', 'inherit']});
@@ -47,7 +66,8 @@ await new Promise((resolve, reject) => {
     relay.on('exit', (c) => reject(new Error('the relay stopped: ' + c)));
 });
 try {
-    const net = makeNet(`ws://127.0.0.1:${wsPort}`);
+    const unreached = [];
+    const net = makeNet(`ws://127.0.0.1:${wsPort}`, globalThis.WebSocket, (r) => unreached.push(r));
     await until(() => net.localAddr() === '127.0.0.1' || null, 3000, 'the relay\'s address');
 
     // joining: a host on gamePort that echoes, upper-cased, and closes on "bye"
@@ -127,6 +147,7 @@ try {
     net.close(a);
     await aClosed;
     players.forEach((p) => p.destroy());
+    assert.deepEqual(unreached, []);                         // (refusals are the relay's: it was there)
     console.log('src/web network tests passed');
 } finally {
     relay.kill();

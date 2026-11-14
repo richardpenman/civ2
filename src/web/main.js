@@ -223,16 +223,51 @@ function messageBox(icon, title, text, labels, ids, enter, escape) {
 }
 
 // The network games' relay (tools/webrelay.py): ?relay=ws://HOST:PORT, else
-// the set-up page's field (kept in this browser)
+// the address the player gave (kept in this browser), else port 8765 of
+// the site's own host
+const relayDefault = () => `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.hostname || '127.0.0.1'}:8765`;
 function relayAddress() {
     const q = new URLSearchParams(location.search).get('relay');
     if (q !== null)
         return q;
     try {
-        return localStorage.getItem('civ2.relay') || '';
+        return localStorage.getItem('civ2.relay') || relayDefault();
     } catch (e) {
-        return '';
+        return relayDefault();
     }
+}
+
+// A network game's connection could not reach the relay: the player told
+// how to run it, and asked for its address (kept; the next connection uses it)
+function relayUnreachable(relay) {
+    const d = $('relay-dialog');
+    if (d.open)
+        return;
+    let host = relay;
+    try {
+        host = new URL(relay).hostname || relay;
+    } catch (e) { /* not an address */ }
+    $('relay-text').textContent = `Network games go through a relay, and none answered at ${relay}: run ` +
+        `tools/webrelay.py on ${host}, or give its address here (or open the page with ?relay=ws://HOST:PORT).`;
+    const input = $('relay-address');
+    input.value = relay;
+    $('relay-use').onclick = () => {
+        const v = input.value.trim();
+        if (v && !/^wss?:\/\/./.test(v)) {
+            $('relay-text').textContent = 'The relay\'s address starts with ws:// (or wss://).';
+            return;
+        }
+        try {
+            if (!v || v === relayDefault())
+                localStorage.removeItem('civ2.relay');
+            else
+                localStorage.setItem('civ2.relay', v);
+        } catch (e) { /* not kept */ }
+        d.close();
+    };
+    $('relay-close').onclick = () => d.close();
+    d.showModal();
+    input.focus();
 }
 
 // ---- the player's saved games: exported, imported (saves.js) ----
@@ -641,7 +676,8 @@ async function play(store) {
                                   timing.frame = Math.round(performance.now());
                                   $('loading').hidden = true;
                               }, canvas, args, env, messageBox,
-                              stats: window.civ2Stats, relay: relayAddress()});
+                              stats: window.civ2Stats, relay: relayAddress,
+                              onRelayUnreachable: relayUnreachable});
         status('The game has ended' + (code ? ' (' + code + ')' : '') + '.');
     } catch (e) {
         console.error(e);
@@ -685,14 +721,12 @@ async function main() {
     const store = await mark('store', openStore(() =>
         status('Waiting for another OpenCiv2 tab (from before an update) to close: close it, or reload it.')));
     savesControls(store);
-    $('relay').value = relayAddress();
-    $('relay').onchange = () => {
-        const v = $('relay').value.trim();
-        try {
-            localStorage.setItem('civ2.relay', v);
-        } catch (e) { /* not kept */ }
-        status(v && !/^wss?:\/\//.test(v) ? 'The relay\'s address starts with ws:// (or wss://).' : '');
-    };
+    // (the relay's dialog keeps the keys from the game)
+    const rd = $('relay-dialog');
+    rd.addEventListener('keydown', (e) => e.stopPropagation());
+    rd.addEventListener('keyup', (e) => e.stopPropagation());
+    rd.addEventListener('close', () => $('screen').focus());
+    window.civ2Relay = {address: relayAddress, unreachable: relayUnreachable};     // (the tests)
     const chosen = async (files) => {
         try {
             if (await importFiles(store, files))
