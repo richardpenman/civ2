@@ -10,10 +10,16 @@
 
 export const CHUNK = 4 << 20;
 // The pictures src/platform/hd.c draws, by their keys' first part
-// ("crop/file/SHEET/x,y,w,h", "tint/crop/...", "dither/T/Q", "fog/Q",
-// "file/SHEET"): the rest of the pack (the other windows' pictures, which it
-// does not draw yet) is left out of the game's memory.
-export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/'];
+// ("crop/file/SHEET/x,y,w,h", "crop/resource/MODULE/gifs/ID/x,y,w,h",
+// "tint/crop/...", "dither/T/Q", "fog/Q", "file/SHEET"; the resource
+// pictures it paints whole, hd.c's WHOLE, and the throne room's pieces,
+// "palace-resource/ID"): the rest of the pack (the pictures made for other
+// renderers) is left out of the game's memory.
+export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace-resource/',
+    'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/5', 'resource/tiles.dll/gifs/65',
+    'resource/tiles.dll/gifs/66', 'resource/tiles.dll/gifs/90',
+    'resource/intro.dll/', 'resource/cv.dll/gifs/34', 'resource/cv.dll/gifs/35',
+    'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
 const HEAD = 12 + 768, ENTRY = 180;
 
 export async function sha256(bytes) {
@@ -104,21 +110,39 @@ export async function prunePack(read, chunk = CHUNK, keep = KEEP) {
     const head = await bytes(0, HEAD + count * ENTRY);
     const kept = packIndex(head).filter((e) => keep.some((p) => e.key.startsWith(p)));
     const index = HEAD + kept.length * ENTRY;
-    const out = new Uint8Array(index + kept.reduce((n, e) => n + e.len, 0)), v = new DataView(out.buffer);
-    out.set(head.subarray(0, HEAD));
-    v.setUint32(8, kept.length, true);
-    let at = index;
-    // (the PNGs read in the stored pack's order: each chunk once)
+    // (the PNGs read in the stored pack's order: each chunk once; a PNG the
+    // same as one already kept, as the city view's landscapes of one terrain,
+    // kept once, its entries pointing at the same bytes)
     const order = kept.map((e, i) => [e, i]).sort((a, b) => a[0].off - b[0].off);
-    const where = new Array(kept.length);
+    const where = new Array(kept.length), pngs = [], seen = new Map();
+    let at = index;
     for (const [e, i] of order) {
-        out.set(await bytes(e.off, e.len), at);
-        where[i] = at;
-        at += e.len;
+        const png = await bytes(e.off, e.len);
+        let h = 2166136261;
+        for (let k = 0; k < png.length; k += 61)
+            h = Math.imul(h ^ png[k], 16777619);
+        const id = png.length + ':' + (h >>> 0), same = (seen.get(id) || []).find(([p]) =>
+            p.every((b, k) => b === png[k]));
+        if (same)
+            where[i] = same[1];
+        else {
+            seen.set(id, [...(seen.get(id) || []), [png, at]]);
+            pngs.push(png);
+            where[i] = at;
+            at += e.len;
+        }
         if (cache.size > 2)
             for (const k of [...cache.keys()])
                 if (k < Math.floor(e.off / chunk))
                     cache.delete(k);
+    }
+    const out = new Uint8Array(at), v = new DataView(out.buffer);
+    out.set(head.subarray(0, HEAD));
+    v.setUint32(8, kept.length, true);
+    at = index;
+    for (const png of pngs) {
+        out.set(png, at);
+        at += png.length;
     }
     kept.forEach((e, i) => {
         const p = HEAD + i * ENTRY;
@@ -132,7 +156,7 @@ export async function prunePack(read, chunk = CHUNK, keep = KEEP) {
 // The stored art for the game, or null (none, or not the pinned release's).
 // The pruned pack is kept too (keys 'p0', 'p1' ... and 'pruned', its
 // description, written last), the first start after the art is kept making
-// it: later starts read it alone (64 MB rather than the 250 MB pack), its
+// it: later starts read it alone (some 110 MB rather than the 250 MB pack), its
 // chunks at once.  Each step's time in timing (ms) when given.
 export async function loadPack(store, pin, timing = {}) {
     const t0 = performance.now();

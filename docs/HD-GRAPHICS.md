@@ -5,7 +5,7 @@ OpenCiv2 can draw the game with the replacement art of
 licence): painted terrain, units, cities and resources at 4 to 8 times the original's
 resolution, shown at the screen's full resolution, with text drawn sharp at that resolution
 too.  It is optional and off by default: the original graphics stay the game's look.  This is
-a prototype: the map is done, much of the rest follows from it (below).
+a prototype: the map is done, and many of the other windows' pictures (below).
 
 ## Playing with it
 
@@ -85,7 +85,10 @@ here:
 | `tint/crop/.../COLOUR` | 456 of those in each civilization's colour (flags, shields) |
 | `dither/T/Q`, `fog/Q` | the blends of each terrain into its neighbours, by quarter of a tile (the game makes these itself from a mask) |
 | `file/SHEET` | the whole sheets at the original's size |
-| `resource/MODULE/gifs/ID`, `city/...`, `palace/...`, `advance/...` ... | pictures for the other windows (city view, throne room, advisors, Civilopedia ...) that PR #11 draws with renderers of its own |
+| `resource/MODULE/gifs/ID` | the pictures of the game's libraries (`mk.dll`, `pv.dll`, `cv.dll`, `tiles.dll` ...) by resource id, at the original's size (below) |
+| `crop/resource/MODULE/gifs/ID/x,y,w,h` | the sprites the game takes from those pictures (the city view's improvements and houses, the leaders' portraits, the diplomacy screen's icons, the spaceship's buttons) |
+| `palace-resource/ID` | the throne room's pieces (`pv.dll`), each at its piece's size |
+| `city/...`, `palace/...`, `building/...`, `house/...`, `lot/...`, `advance/...`, `wonder/...` ... | pictures that PR #11's renderers of their own place themselves (not used here) |
 
 ## How it is drawn
 
@@ -130,6 +133,23 @@ The rest is in the platform layer (`src/platform/hd.c`):
   frame (`host_present_hd`) in the same place, at its density.  A replay's `shot NAME` also
   saves `NAME-hd.bmp` (the frame).
 
+* **The other windows' pictures**: when the game loads a picture from one of its libraries'
+  GIF resources (`DibSurface::load_gif_resource`), the surface remembers it as
+  `resource/MODULE/gifs/ID` (the module the platform's `FindResourceA` found it in,
+  `plat_res_module`), and the sprites the game takes from it get the pack's
+  `crop/resource/MODULE/gifs/ID/x,y,w,h` as sprites from sheets do (the throne room's pieces
+  `palace-resource/ID`, where the size is the piece's).  The pack's whole pictures were made
+  for PR #11's renderers: many are laid out otherwise than the original's (the throne room's
+  pieces, the spaceship's parts, the announcements' pictures are vignettes, the advisors'
+  photographs a framed parchment), so only those that work as the same picture are painted
+  on the surface's plane when it is loaded (`WHOLE` in hd.c, each looked at in its window):
+  the diplomacy rooms, the advisors' backgrounds (the parchment without its frame, which the
+  game's smaller windows would cut off), the new game's backdrop and pictures, the city
+  view's landscapes, the spaceship's window.  A picture with transparent parts (the new
+  game's pictures) is drawn, where the game copies it, over what the destination's plane
+  showed; a sprite taken from such a picture keeps its transparency.  A surface's plane is
+  drawn anew from its pixels whenever another picture is loaded into it.
+
 So nothing the game computes changes, nor any `rand()` call: the game's own pixels, which its
 code reads back (map picking masks, editors), are the original's.  PR #11 learned the hard way
 that the game's palettes take a version number from the game's random generator
@@ -160,7 +180,7 @@ without the planes; it was 9 to 15 ms before the background was taken only where
 it); a replay of loading a game, its advisor, city window and menus takes some 20% (density 2)
 to 40% (density 3) more time than without (including the container's start).  In the browser, at a device pixel ratio
 of 2 (a 2560x1600 frame), showing a frame takes some 11 ms either way; the module's memory on the
-map is 179 MB with sharp text (87 MB without, 202 MB with HD graphics).  The frame is composed
+map is 179 MB with sharp text (87 MB without, 218 MB with HD graphics, its pictures of the other windows included).  The frame is composed
 only when the screen changed (`plat_present`'s signature), as before.
 
 ## The choice (November 2026)
@@ -197,8 +217,12 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `rand()` traces are those of the same runs without it, their `-hd` frames looked at by eye and
   blessed.  `src/web/test/hd.mjs` checks that the first screen's text is sharp, with HD graphics
   and with sharp text alone (`?hd=0`), and `?hd=0&sharp=0` the original's.
-* HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed) and any replay script with
-  `CIV2_TEST_HD=2`: for `harness/scripts/citywindow.txt` and `newgame.txt` every logical
+* HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed), `harness/hd/hd-cityview.txt`
+  (the city view), and any replay script with `CIV2_TEST_HD=2`, looking at its `-hd` shots:
+  `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
+  leader's portrait, the icons), `advisors.txt` (the advisors' parchment), `reports.txt` (the
+  throne room), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
+  `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
   original's recording; the `-hd` screenshots are looked at by eye.  On the replays'
   reference desktop the game's window is 600x438 at its top left and the city window larger,
@@ -206,12 +230,34 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   area times the density); `harness/hd/hd-city.txt` shows it whole on a 640x480 desktop.  The native and portable
   builds draw identical HD frames.  Without the pack the game logs it and plays as ever.
 
+## The pictures drawn
+
+For a stripped pack, the keys hd.c draws (1,363 pictures, 157 MB of PNGs, 109 MB with each
+repeated PNG once; the whole pack holds 2,105, 250 MB):
+
+* `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
+* `crop/resource/...` (230): the sprites taken from the libraries' pictures;
+* `palace-resource/ID` (28): the throne room's pieces;
+* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
+  `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340` to `353`,
+  `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
+
 ## Not yet done
 
-* The other windows' own pictures (city view, throne room, advisors' backgrounds, Civilopedia
-  and advance pictures, diplomacy portraits, spaceship): the pack has them, keyed by resource
-  (`resource/MODULE/gifs/ID`); a loaded GIF resource with a whole-picture entry could get a
-  plane drawn from it, as sheets do.
+* The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
+  throne room's background (`pv.dll` 100, the hall the game colours to choose a section) and
+  `pv.dll` 170 to 184, the `palace/` set; the announcements' pictures (`tiles.dll` 70 to 77,
+  vignettes) and the wonders' (`wonder.dll`), whose windows the replays do not reach and
+  which were not looked at; the advisors' framed parchments of `mk.dll` 10000 to 10002 and
+  `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
+  (`ss.dll` 400 to 491, one placeholder); the advance pictures (`advance/`), the city view's
+  larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
+  their crops); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
+  editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).
+* The new game's pictures are vignettes over black (the frame the game draws around them
+  holds nothing else); the city view's landscape is the pack's, whose coast need not be where
+  the game puts its harbour; the advisors' text, coloured for the original's grey
+  photographs, is pale on the parchment.
 * Unit shields and the city size box are the original's, enlarged (the pack's `shield` is an
   alpha mask to be tinted); in places the larger unit art covers the shield.
 * Palette changes of an 8-bit surface (a flash, a fade) do not reach pixels already in a
@@ -222,6 +268,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   as crisp as a Windows desktop at that scale draws them; their text is sharp); its radio
   buttons and check boxes are its own pictures, enlarged.
 * The browser version gives the game only the pictures hd.c draws (`src/web/hdpack.js`: `KEEP`,
-  the keys' first parts); a picture of another kind drawn here must be added there.  The page
+  the keys' first parts, and the same PNG once where the pack repeats it); a picture of another
+  kind drawn here must be added there.  The page
   cannot download the art from GitHub itself (no CORS on release downloads): the player chooses
   the downloaded `.zip`, or the site serves it (`make web HD=1`).

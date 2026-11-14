@@ -295,13 +295,14 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
 i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,GamePalette *palette)
 
 {
-  /* (port) HD graphics (src/platform/hd.h): not one of the game's sheets */
+  /* (port) HD graphics (src/platform/hd.h): the pack's picture of the resource */
   static int hd_nested;
   if (hd_on && !hd_nested) {
     hd_nested = 1;
     i32 loaded = load_gif_resource(res_id,first_color,color_count,palette);
     hd_nested = 0;
-    hd_sheet_clear((void *)bits);
+    if (loaded != 0) hd_resource_loaded((void *)bits,res_id);
+    else hd_sheet_clear((void *)bits);
     return loaded;
   }
   i32 ret;

@@ -95,7 +95,9 @@ typedef struct Bitmap {
     unsigned char *hd_prev;
     int hd_w, hd_h, hd_d;       /* (as the surface was then, at density hd_d) */
     const void *hd_bits;
-    char hd_sheet[16];          /* the game's sheet loaded here (terrain1 ...) */
+    char hd_sheet[48];          /* the picture loaded here: the pack's key (file/terrain1,
+                                   resource/mk.dll/gifs/200 ...) */
+    int hd_alpha;               /* the plane has transparent pixels (a picture's) */
 } Bitmap;
 
 unsigned char *bmp_row(const Bitmap *b, int y);     /* row y, top = 0 */

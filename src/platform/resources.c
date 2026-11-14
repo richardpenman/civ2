@@ -222,13 +222,26 @@ FARPROC WINAPI GetProcAddress(HMODULE h, LPCSTR name)
 
 typedef struct { const unsigned char *p; unsigned size; } Res;
 
+char plat_res_module[32];       /* the module the last resource found is in */
+
 HRSRC WINAPI FindResourceA(HMODULE h, LPCSTR name, LPCSTR type)
 { API_TRACE();
     Res *r;
     unsigned size;
-    const unsigned char *p = find_res(module_of(h), name, type, &size);
+    Module *m = module_of(h);
+    const unsigned char *p = find_res(m, name, type, &size);
     if (!p)
         return 0;
+    {   /* the module's file name, lower case (HD graphics: the pack's resource/MODULE/...) */
+        const char *base = m->name, *c;
+        size_t i;
+        for (c = m->name; *c; c++)
+            if (*c == '/' || *c == '\\' || *c == ':')
+                base = c + 1;
+        for (i = 0; base[i] && i < sizeof plat_res_module - 1; i++)
+            plat_res_module[i] = (char)tolower((unsigned char)base[i]);
+        plat_res_module[i] = 0;
+    }
     r = malloc(sizeof *r);
     r->p = p;
     r->size = size;

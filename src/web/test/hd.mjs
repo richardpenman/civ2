@@ -270,7 +270,8 @@ async function main() {
         log(`a later start: "${said0}" ${Math.round(performance.now() - opened)} ms; ${JSON.stringify(timing)}`);
         if (!(await evaluate('window.civ2Hd') || {}).packBytes)
             throw new Error('the art kept not used where the site has none');
-        if (!(timing.packChunks <= 20))
+        // (the pruned copy some 104 MB, 25 chunks; the whole pack 60)
+        if (!(timing.packChunks <= 30))
             throw new Error('the whole pack read at a start, not its pruned copy');
         await settle(2000, 30000);
         // ?hd=0: the original graphics, as natively --hd=0, with sharp

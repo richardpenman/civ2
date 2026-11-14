@@ -28,6 +28,10 @@ extern int hd_density;      /* plane pixels per surface pixel, each way (1..4) *
 /* A 640x480 sheet (TERRAIN1, UNITS ...) was loaded into this surface from
    the file name (the game's own folder only: a scenario's art is its own). */
 void hd_sheet_loaded(void *bits, const char *filename);
+/* A picture was loaded into this surface from resource GIFS id of a
+   library (the module FindResource last found it in): the pack's picture
+   resource/MODULE/gifs/ID, and its crops for the sprites taken from it. */
+void hd_resource_loaded(void *bits, int id);
 /* The surface's pixels were replaced otherwise (another picture loaded). */
 void hd_sheet_clear(void *bits);
 /* Sprite::encode_from_surface took sprite (its data handle) from the

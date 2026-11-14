@@ -10,9 +10,11 @@
  * here), the keys in ascending order.  A sprite the game takes from one of
  * its sheets at x,y,w,h has the picture "crop/file/SHEET/x,y,w,h" where the
  * pack has one (4 to 8 times as large); terrain blends are bound by role
- * ("dither/T/Q", "fog/Q").  (The browser version gives the game only the
- * pictures keyed crop/, tint/, dither/, fog/ and file/: src/web/hdpack.js,
- * KEEP; a picture of another kind drawn here is to be added there.)
+ * ("dither/T/Q", "fog/Q").  The pictures of the game's libraries are
+ * "resource/MODULE/gifs/ID" and their sprites "crop/resource/..." (below).
+ * (The browser version gives the game only the pictures drawn here:
+ * src/web/hdpack.js, KEEP; a picture of another kind drawn here is to be
+ * added there.)
  *
  * The planes: a surface (Bitmap) gets one when an HD sprite is drawn on it
  * or a surface with one is copied to it: hd, w*d x h*d pixels 0xffRRGGBB,
@@ -457,7 +459,26 @@ static void transfer(Bitmap *dst, Bitmap *src, int x, int y, int w, int h, int s
     }
     if (!clip_rect(dst, &l, &t, &r, &b))
         return;
-    if (w == sw && h == sh) {
+    if (src->hd_alpha && src != dst) {
+        /* a picture with transparent pixels: over what dst's plane shows
+           there (its pixels are the copy's already) */
+        for (j = t * d; j < b * d; j++)
+            for (i = l * d; i < r * d; i++) {
+                int ax = sx * d + (int)((int64_t)(i - x * d) * sw / w), ay = sy * d + (int)((int64_t)(j - y * d) * sh / h);
+                uint32_t c, *o, a, ia;
+                if (ax < 0 || ay < 0 || ax >= src->w * d || ay >= src->h * d)
+                    continue;
+                c = src->hd[(size_t)ay * src->w * d + ax];
+                o = dst->hd + (size_t)j * dst->w * d + i;
+                a = c >> 24;
+                ia = 255 - a;
+                if (a == 255)
+                    *o = c;
+                else if (a)
+                    *o = 0xff000000u | (((c >> 16) & 255) + ((*o >> 16) & 255) * ia / 255) << 16 |
+                         (((c >> 8) & 255) + ((*o >> 8) & 255) * ia / 255) << 8 | ((c & 255) + (*o & 255) * ia / 255);
+            }
+    } else if (w == sw && h == sh) {
         int first = t * d, end = b * d, step = 1;
         if (src == dst && y > sy) { first = b * d - 1; end = t * d - 1; step = -1; }
         for (j = first; j != end; j += step)
@@ -705,34 +726,117 @@ void hd_dc_chevron(DC *dc, double cx, double cy, int dir, unsigned int c, unsign
 
 /* ---- sheets and sprites ---- */
 
+/* The surface's pixels were replaced: its plane shows them anew (a picture
+   painted there before is gone). */
+static void reloaded(Bitmap *b)
+{
+    b->hd_sheet[0] = 0;
+    if (valid(b))
+        redraw_rect(b, 0, 0, b->w, b->h);
+    b->hd_alpha = 0;
+}
+
 void hd_sheet_clear(void *bits)
 {
     Bitmap *b;
     if (hd_on && (b = bmp_of_bits(bits)))
-        b->hd_sheet[0] = 0;
+        reloaded(b);
 }
 
 void hd_sheet_loaded(void *bits, const char *filename)
 {
     Bitmap *b;
-    char cwd[1024], key[200];
+    char cwd[1024];
     const char *base = filename, *s;
     size_t i;
     if (!hd_on || !(b = bmp_of_bits(bits)))
         return;
-    b->hd_sheet[0] = 0;
+    reloaded(b);
     /* a scenario's own art is kept: only the game's folder's sheets */
     if (!getcwd(cwd, sizeof cwd) || strcmp(cwd, plat_game_dir))
         return;
     for (s = filename; *s; s++)
         if (*s == '/' || *s == '\\' || *s == ':')
             base = s + 1;
-    for (i = 0; base[i] && base[i] != '.' && i < sizeof b->hd_sheet - 1; i++)
-        b->hd_sheet[i] = (char)tolower((unsigned char)base[i]);
-    b->hd_sheet[i] = 0;
-    snprintf(key, sizeof key, "file/%s", b->hd_sheet);
-    if (!find(key))
+    memcpy(b->hd_sheet, "file/", 5);
+    for (i = 0; base[i] && base[i] != '.' && i < sizeof b->hd_sheet - 6; i++)
+        b->hd_sheet[5 + i] = (char)tolower((unsigned char)base[i]);
+    b->hd_sheet[5 + i] = 0;
+    if (!find(b->hd_sheet))
         b->hd_sheet[0] = 0;
+}
+
+/* ---- the pictures of the game's resource libraries ----
+
+   A picture the game loads from a library's GIF resource (mk.dll's 200 ...)
+   is the pack's "resource/MODULE/gifs/ID", at the original's size; the
+   sprites the game takes from it are "crop/resource/MODULE/gifs/ID/x,y,w,h".
+   The pack's pictures were made for PR #11's own renderers: many are laid
+   out otherwise than the original's (the throne room's pieces, the
+   spaceship's parts, the advisors' rooms), so only those that are the same
+   picture, whole, are painted on the surface's plane (WHOLE, each looked
+   at in its window); the others give only their crops. */
+static const struct {
+    const char *module;
+    int lo, hi;
+    int inset;                  /* the picture's border left out, in 1/1000ths */
+} WHOLE[] = {
+    {"mk.dll", 200, 206, 0},    /* diplomacy: the rooms, by government */
+    {"tiles.dll", 50, 59, 45},  /* the advisors' backgrounds: the pack's parchment */
+    {"tiles.dll", 65, 66, 45},  /* (without its frame: the game's windows are smaller) */
+    {"tiles.dll", 90, 90, 0},   /* the new game's backdrop */
+    {"intro.dll", 901, 913, 0}, /* the new game's pictures */
+    {"cv.dll", 340, 353, 0},    /* the city view's landscapes */
+    {"ss.dll", 498, 499, 0},    /* the spaceship's window */
+};
+
+extern char plat_res_module[];
+
+/* The picture without a border of inset/1000 of its size, scaled to w x h. */
+static uint32_t *scaled_inside(Entry *a, int inset, int w, int h)
+{
+    Entry in = *a;
+    int l = a->pw * inset / 1000, t = a->ph * inset / 1000, y;
+    uint32_t *px;
+    in.pw = a->pw - 2 * l;
+    in.ph = a->ph - 2 * t;
+    if (in.pw <= 0 || in.ph <= 0 || !(in.rgba = malloc((size_t)in.pw * in.ph * 4)))
+        return NULL;
+    for (y = 0; y < in.ph; y++)
+        memcpy(in.rgba + (size_t)y * in.pw * 4, a->rgba + ((size_t)(y + t) * a->pw + l) * 4, (size_t)in.pw * 4);
+    px = make_scaled(&in, w, h, 0);
+    free(in.rgba);
+    return px;
+}
+
+void hd_resource_loaded(void *bits, int id)
+{
+    Bitmap *b;
+    Entry *a;
+    uint32_t *px;
+    int pid, d = hd_density, y, whole = -1;
+    size_t i, n;
+    if (!hd_on || !(b = bmp_of_bits(bits)))
+        return;
+    reloaded(b);
+    if (!hd_art)
+        return;
+    snprintf(b->hd_sheet, sizeof b->hd_sheet, "resource/%s/gifs/%d", plat_res_module, id);
+    for (i = 0; i < sizeof WHOLE / sizeof *WHOLE; i++)
+        if (!strcmp(WHOLE[i].module, plat_res_module) && id >= WHOLE[i].lo && id <= WHOLE[i].hi)
+            whole = WHOLE[i].inset;
+    /* (the surface's rows are whole dwords: up to 3 pixels wider) */
+    if (whole < 0 || !(pid = find(b->hd_sheet)) || (int)entries[pid - 1].h != b->h || (int)entries[pid - 1].w > b->w ||
+        b->w - (int)entries[pid - 1].w > 3 || b->bpp != 8 || !(a = decode(pid)) || !plane(b) ||
+        !(px = whole ? scaled_inside(a, whole, (int)a->w * d, b->h * d) : make_scaled(a, (int)a->w * d, b->h * d, 0)))
+        return;
+    n = (size_t)a->w * d;
+    for (y = 0; y < b->h * d; y++)
+        memcpy(b->hd + (size_t)y * b->w * d, px + y * n, n * 4);
+    for (i = 0; i < n * b->h * d && !b->hd_alpha; i++)
+        b->hd_alpha = px[i] >> 24 != 255;
+    free(px);
+    commit_rect(b, 0, 0, b->w, b->h);
 }
 
 typedef struct Spr {
@@ -835,10 +939,25 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
     if (!(b = bmp_of_bits(bits)) || w <= 0 || h <= 0 || x < 0 || y < 0 || x + w > b->w || y + h > b->h)
         return;
     if (b->hd_sheet[0]) {
-        snprintf(name, sizeof name, "crop/file/%s/%d,%d,%d,%d", b->hd_sheet, x, y, w, h);
-        if ((id = find(name)) && (p = add(s, handle)))
+        snprintf(name, sizeof name, "crop/%s/%d,%d,%d,%d", b->hd_sheet, x, y, w, h);
+        if ((id = find(name)) && (p = add(s, handle))) {
             p->id = id;
-        return;
+            return;
+        }
+        /* the throne room's pieces (pv.dll), each the whole of its own
+           picture in the pack, at the piece's size */
+        if (!strncmp(b->hd_sheet, "resource/pv.dll/gifs/", 21)) {
+            snprintf(name, sizeof name, "palace-resource/%s", b->hd_sheet + 21);
+            if ((id = find(name)) && (int)entries[id - 1].w == w && (int)entries[id - 1].h == h &&
+                (p = add(s, handle))) {
+                p->id = id;
+                return;
+            }
+        }
+        /* a sheet's sprite without a picture keeps its pixels; a resource
+           picture's is taken from its plane (below) */
+        if (!strncmp(b->hd_sheet, "file/", 5))
+            return;
     }
     /* taken from what is drawn (a unit's background, kept to restore it):
        the plane's pixels, where the game's are not the transparent colour */
@@ -854,8 +973,9 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
     for (j = 0; j < h * d; j++) {
         const unsigned char *row = bmp_row(b, y + j / d);
         for (i = 0; i < w * d; i++)
-            p->snap[(size_t)j * w * d + i] = key >= 0 && row[x + i / d] == key ? 0 :
-                b->hd[(size_t)(y * d + j) * b->w * d + x * d + i] | 0xff000000u;
+            /* (a picture with its own transparency: that, not the key's) */
+            p->snap[(size_t)j * w * d + i] = key >= 0 && !b->hd_alpha && row[x + i / d] == key ? 0 :
+                b->hd[(size_t)(y * d + j) * b->w * d + x * d + i] | (b->hd_alpha ? 0 : 0xff000000u);
     }
 }
 
@@ -928,9 +1048,13 @@ void hd_compose_piece(Bitmap *s, int dx, int dy, int l, int t, int r, int b)
        there sharp */
     if (plane(s)) {
         sync_rect(s, l - dx, t - dy, r - dx, b - dy);
-        for (y = t * d; y < b * d; y++)
-            memcpy(screen->hd + (size_t)y * screen->w * d + l * d,
-                   s->hd + (size_t)(y - dy * d) * s->w * d + (l - dx) * d, (size_t)(r - l) * d * 4);
+        for (y = t * d; y < b * d; y++) {
+            uint32_t *o = screen->hd + (size_t)y * screen->w * d + l * d;
+            memcpy(o, s->hd + (size_t)(y - dy * d) * s->w * d + (l - dx) * d, (size_t)(r - l) * d * 4);
+            if (s->hd_alpha)
+                for (x = 0; x < (r - l) * d; x++)
+                    o[x] |= 0xff000000u;
+        }
         return;
     }
     if (!pixel_bytes(s))
