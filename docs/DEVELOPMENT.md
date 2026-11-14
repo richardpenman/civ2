@@ -213,10 +213,12 @@ builds do not use it.
   inflated by the page), the platform's log to `/dev/null` (`?log`: to the console).
   src/web/store.js keeps the game's folder in IndexedDB: copied in once from the folder or `.zip`
   the player chooses (src/web/main.js; src/web/zip.js reads the archive with the browser's
-  `DecompressionStream`), written back a second after the game writes a file (saved games,
-  `CIV.INI`, `CIV2.DAT`).
+  `DecompressionStream`), written back as soon as the game closes, renames or removes a file (saved games,
+  `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
+  be persistent (`navigator.storage.persist`).
 * **By hand**: sound and music (the headless browser has no audio device), the cursors, resizing the
-  window and other browsers than Chrome are checked by playing: `make web`, `python3 -m http.server
+  window and other browsers than Chrome are checked by playing (music, the videos and loading saved
+  games: played and fine, 2026-11-14): `make web`, `python3 -m http.server
   -d build/web`, open `http://localhost:8000/?setup`.
 * **Limits**: no network games; no set-up from the CD or a disc image (unshield and the disc
   reader would have to be compiled to wasm as well): an installed folder is needed.  Videos play
