@@ -259,7 +259,18 @@ const fake = {hdClear: async () => hdStore.clear(), hdPutMany: async (es) => es.
 const info = await keepPack(fake, pack, pinned);
 assert.equal(info.size, pack.length);
 assert.equal(info.chunks, 1);
-assert.deepEqual(await loadPack(fake, pinned), await prunePack(async () => pack));
+assert.ok(hdStore.has('pruned') && hdStore.has('p0'));   // the pruned pack kept with it, read alone at a start
+const again = {};
+assert.deepEqual(await loadPack(fake, pinned, again), await prunePack(async () => pack));
+assert.equal(again.packChunks, hdStore.get('pruned').chunks);
+assert.equal(again.kept, undefined);
+for (const k of [...hdStore.keys()])                    // (art kept before the pruned copy was: made at a start)
+    if (/^p|pruned/.test(k))
+        hdStore.delete(k);
+const first = {};
+assert.deepEqual(await loadPack(fake, pinned, first), await prunePack(async () => pack));
+await first.kept;
+assert.ok(hdStore.has('pruned') && hdStore.has('p0'));
 assert.equal(await loadPack(fake, {...pinned, pack_sha256: 'other'}), null);         // another release's
 await fake.hdClear();
 assert.equal(await loadPack(fake, pinned), null);

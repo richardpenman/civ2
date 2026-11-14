@@ -12,10 +12,18 @@ import {readChoices, writeChoices, hdWanted} from './options.js';
 
 const GAME = '/civ2', DATA = '/data';
 const $ = (id) => document.getElementById(id);
+// (on the set-up page, and over the screen until the game's first frame)
 const status = (s) => {
     $('status').textContent = s;
+    $('loading').textContent = s;
     window.civ2Status = s;
 };
+// a start's steps, in ms since the page was opened (the tests read it)
+const timing = window.civ2Timing = {};
+const mark = (name, p) => p.then((v) => {
+    timing[name] = Math.round(performance.now());
+    return v;
+});
 
 // The installed game among the files chosen: the folder with Civ2Art.dll and
 // RULES.TXT (any case), as the native set-up checks (src/host/setup.c).
@@ -517,6 +525,32 @@ async function showOptions(store) {
     optionsRender();
 }
 
+// What a start needs from the site, fetched at once, alongside the stored
+// files: the module (compiled as it downloads), the fonts, the art's pin
+let siteP = null;
+function fromSite() {
+    if (!siteP) {
+        const compile = async () => {
+            try {
+                return await WebAssembly.compileStreaming(fetch('civ2.wasm'));
+            } catch (e) {
+                // (a server that does not say application/wasm)
+                const r = await fetch('civ2.wasm');
+                if (!r.ok)
+                    throw new Error('civ2.wasm: ' + r.status);
+                return WebAssembly.compile(await r.arrayBuffer());
+            }
+        };
+        siteP = {wasm: mark('wasm', compile()),
+                 fonts: mark('fonts', Promise.all([fetchGz('data/fonts_win.bin.gz'), fetchGz('data/fonts_win_aa.bin.gz')])),
+                 pin: pin()};
+        // (a failure is met where it is awaited)
+        for (const p of Object.values(siteP))
+            p.catch(() => {});
+    }
+    return siteP;
+}
+
 async function play(store) {
     // (the game files and saved games kept for good: without this the browser
     // may clear them when disk space runs low, Safari after a week unused)
@@ -524,11 +558,22 @@ async function play(store) {
         navigator.storage.persist().catch(() => {});
     $('setup').hidden = true;
     $('game').hidden = false;
-    status('Loading ...');
+    $('loading').hidden = false;
+    status('Loading the game files ...');
     const t0 = performance.now();
+    const site = fromSite();
     const fs = new MemFS();
-    const [entries, fonts, fontsAa] = await Promise.all([store.all(), fetchGz('data/fonts_win.bin.gz'),
-                                                         fetchGz('data/fonts_win_aa.bin.gz')]);
+    // CIV.INI first (a moment): the HD graphics' art, when wanted, read
+    // alongside the other files
+    const query = new URLSearchParams(location.search), args = ['civ2', GAME];
+    const iniName = (await store.keys()).find((k) => /^civ\.ini$/i.test(k));
+    const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
+    const hd = hdWanted(ini, query.get('hd')) >= 0;
+    const packP = hd ? mark('hd', site.pin.then((p) => loadPack(store, p, timing))).catch((e) => {
+        console.error(e);
+        return null;
+    }) : null;
+    const [entries, [fonts, fontsAa]] = await Promise.all([mark('files', store.all()), site.fonts]);
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
@@ -536,20 +581,16 @@ async function play(store) {
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
     // HD graphics (?hd=N as --hd=N, else CIV.INI's choice): the art the
     // game draws, where hd.c looks for it (CIV2_DATA/hd)
-    const query = new URLSearchParams(location.search), args = ['civ2', GAME];
     if (query.has('hd'))
         args.push('--hd=' + (query.get('hd') || '1'));
     // (sharp text and interface: ?sharp=0 off, as --sharp=0; else CIV.INI's)
     if (query.has('sharp'))
         args.push('--sharp=' + (query.get('sharp') || '1'));
     window.civ2Hd = null;
-    if (hdWanted(iniOf(entries).text, query.get('hd')) >= 0) {
+    if (hd) {
         const t = performance.now();
         status('Loading the HD graphics\' art ...');
-        const pack = await loadPack(store, await pin()).catch((e) => {
-            console.error(e);
-            return null;
-        });
+        const pack = await packP;
         if (pack)
             fs.put(DATA + '/hd/atlas-hd.pack', pack);
         window.civ2Hd = {packBytes: pack ? pack.length : 0, loadMs: Math.round(performance.now() - t)};
@@ -605,7 +646,11 @@ async function play(store) {
     let code;
     try {
         window.civ2Stats = {};
-        code = await runGame({wasm: fetch('civ2.wasm'), fs, canvas, args, env, messageBox,
+        code = await runGame({wasm: site.wasm, fs,
+                              onFrame: () => {
+                                  timing.frame = Math.round(performance.now());
+                                  $('loading').hidden = true;
+                              }, canvas, args, env, messageBox,
                               stats: window.civ2Stats, relay: relayAddress()});
         status('The game has ended' + (code ? ' (' + code + ')' : '') + '.');
     } catch (e) {
@@ -619,6 +664,7 @@ async function play(store) {
 }
 
 async function showSetup(store, ended = false) {
+    $('loading').hidden = true;
     $('setup').hidden = false;
     const have = await store.count() > 0;
     $('have').hidden = !have;
@@ -642,8 +688,12 @@ async function main() {
         status('This browser lacks what the game needs (WebAssembly, IndexedDB, DecompressionStream).');
         return;
     }
-    const store = await openStore(() =>
-        status('Waiting for another OpenCiv2 tab (from before an update) to close: close it, or reload it.'));
+    // (a later visit: what the game needs from the site, at once)
+    const setup = new URLSearchParams(location.search).has('setup');
+    if (!setup)
+        fromSite();
+    const store = await mark('store', openStore(() =>
+        status('Waiting for another OpenCiv2 tab (from before an update) to close: close it, or reload it.')));
     savesControls(store);
     $('relay').value = relayAddress();
     $('relay').onchange = () => {
@@ -727,7 +777,7 @@ async function main() {
         chosen(files);
     };
     // later visits: straight into the game (?setup: this page first)
-    if (await store.count() > 0 && !new URLSearchParams(location.search).has('setup'))
+    if (!setup && await store.count() > 0)
         return play(store);
     showSetup(store);
 }

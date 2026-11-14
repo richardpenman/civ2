@@ -93,7 +93,7 @@ export function argbToRgba(src, dst, n) {
 
 // ---- the run ----
 
-// opts: {wasm: ArrayBuffer|Response (or a promise of one), fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
+// opts: {wasm: ArrayBuffer|Response|WebAssembly.Module (or a promise of one), onFrame: called at the first frame, fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
 // enter, escape) -> Promise<id>, stats: {} (filled in as it runs: busyMs, resumes),
 // relay: the network relay's address (net.js; none: no network play)}
 // -> the game's exit code
@@ -241,6 +241,11 @@ export async function runGame(opts) {
         ctx.putImageData(image, 0, 0);
         if (opts.stats)
             opts.stats.memoryBytes = memory.buffer.byteLength;
+        if (opts.onFrame) {
+            const f = opts.onFrame;
+            opts.onFrame = null;
+            f();
+        }
     }
 
     // -- cursors: CSS cursors, the game's images scaled as the desktop is
@@ -604,7 +609,8 @@ export async function runGame(opts) {
     const wasi = makeWasi(fs, opts.args, opts.env, () => memory);
     const imports = {host, wasi_snapshot_preview1: wasi};
     const wasm = await opts.wasm;
-    const {instance} = wasm instanceof Response
+    const {instance} = wasm instanceof WebAssembly.Module ? {instance: await WebAssembly.instantiate(wasm, imports)}
+        : wasm instanceof Response
         ? await WebAssembly.instantiateStreaming(wasm.clone(), imports).catch(
             async () => WebAssembly.instantiate(await wasm.arrayBuffer(), imports))
         : await WebAssembly.instantiate(wasm, imports);

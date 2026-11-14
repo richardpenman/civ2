@@ -136,6 +136,8 @@ export async function keepPack(store, pack, pin, {progress = () => {}, signal} =
     }
     const info = {tag: pin.tag, size: pack.length, chunk: CHUNK, chunks: n, sha256: pin.pack_sha256, at: Date.now()};
     await store.hdPutMany([['info', info]]);
+    // (and the pictures the game draws, as a start reads them: loadPack)
+    await keepPruned(store, info, await prunePack(async () => pack, pack.length));
     return info;
 }
 
@@ -209,12 +211,51 @@ export async function prunePack(read, chunk = CHUNK, keep = KEEP) {
     return out;
 }
 
-// The stored art for the game, or null (none, or not the pinned release's)
-export async function loadPack(store, pin) {
-    const info = await store.hdGet('info');
+// The stored art for the game, or null (none, or not the pinned release's).
+// The pruned pack is kept too (keys 'p0', 'p1' ... and 'pruned', its
+// description, written last), the first start after the art is kept making
+// it: later starts read it alone (64 MB rather than the 250 MB pack), its
+// chunks at once.  Each step's time in timing (ms) when given.
+export async function loadPack(store, pin, timing = {}) {
+    const t0 = performance.now();
+    const [info, pruned] = await Promise.all([store.hdGet('info'), store.hdGet('pruned')]);
     if (!info || (pin && info.sha256 !== pin.pack_sha256))
         return null;
-    return prunePack((k) => store.hdGet(k), info.chunk);
+    const want = prunedOf(info);
+    if (pruned && pruned.sha256 === want.sha256 && pruned.at === want.at && pruned.keep === want.keep) {
+        const parts = await Promise.all(Array.from({length: pruned.chunks}, (_, k) => store.hdGet('p' + k)));
+        if (parts.every((c) => c)) {
+            const out = new Uint8Array(pruned.size);
+            let at = 0;
+            for (const c of parts) {
+                out.set(c.subarray(0, Math.min(c.length, out.length - at)), at);
+                at += c.length;
+            }
+            if (at === pruned.size) {
+                timing.packMs = Math.round(performance.now() - t0);
+                timing.packChunks = parts.length;
+                return out;
+            }
+        }
+    }
+    let read = 0;
+    const pack = await prunePack((k) => (read++, store.hdGet(k)), info.chunk);
+    timing.packMs = Math.round(performance.now() - t0);
+    timing.packChunks = read;
+    // (kept for the next start, while this one goes on)
+    timing.kept = keepPruned(store, info, pack).catch((e) => console.warn('HD graphics: the pruned art not kept:', e));
+    return pack;
+}
+
+const prunedOf = (info) => ({sha256: info.sha256, at: info.at, keep: KEEP.join(' ')});
+
+// The pruned pack kept (keepPack's info, the pruned pack's bytes)
+export async function keepPruned(store, info, pruned) {
+    const n = Math.ceil(pruned.length / CHUNK), puts = [];
+    for (let k = 0; k < n; k++)
+        puts.push(['p' + k, pruned.slice(k * CHUNK, Math.min(pruned.length, (k + 1) * CHUNK))]);
+    await store.hdPutMany(puts);
+    await store.hdPutMany([['pruned', {...prunedOf(info), size: pruned.length, chunks: n}]]);
 }
 
 // The art downloaded: from the site itself where it has it (make web HD=1:

@@ -23,6 +23,8 @@ import {ROOT, WEB, zipFolder, serve, browser} from './cdp.mjs';
 const OUT = join(ROOT, 'run', 'web-hd');
 const GAME = process.argv[2] || process.env.CIV2_GAME || join(homedir(), 'Civ2');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// (a later visit's start, to the game's first frame: some 3 s here)
+const START_MS = 15000;
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
 function artFile() {
@@ -242,6 +244,20 @@ async function main() {
         await shot('02-map');
         if (st.mixed < 0.05)
             throw new Error('the map is not drawn in HD (the desktop\'s pixels enlarged)');
+        // a later visit (the page opened again, the art kept, its pruned
+        // copy made by the start above): what it does said at once, the
+        // pruned art read alone, the game's first frame within START_MS
+        await send('Page.navigate', {url});
+        const opened = performance.now();
+        const said0 = await waitFor('(() => { const l = document.getElementById("loading");' +
+                                    ' return l && !l.hidden && l.textContent || window.civ2Timing && window.civ2Timing.frame; })()',
+                                    1000, 'a word from the page at once');
+        await waitFor('window.civ2Timing && window.civ2Timing.frame', START_MS, `the first frame within ${START_MS} ms`);
+        const timing = await evaluate('window.civ2Timing');
+        log(`a later start: "${said0}" ${Math.round(performance.now() - opened)} ms; ${JSON.stringify(timing)}`);
+        if (!(timing.packChunks <= 20))
+            throw new Error('the whole pack read at a start, not its pruned copy');
+        await settle(2000, 30000);
         // ?hd=0: the original graphics, as natively --hd=0, with sharp
         // text and interface (on by default): the planes without the art
         await send('Page.navigate', {url: url + '?hd=0'});

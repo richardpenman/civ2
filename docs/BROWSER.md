@@ -40,7 +40,10 @@ tracks, but a disc image has them.
 
 The game is copied into the browser's storage (IndexedDB), and never leaves your computer; your
 saved games are kept there too. Later visits start the game at
-once. The page asks the browser to keep that storage for good, so that it is not cleared when
+once: the stored files, the fonts and the game's module (compiled as it downloads) are read side by
+side, with a line over the screen saying what it is doing until the game's first frame (about 2.5 s
+here with the HD art, 2 s without; `src/web/test/hd.mjs` fails a later visit's start over 15 s, and
+the page's `window.civ2Timing` has each step's time). The page asks the browser to keep that storage for good, so that it is not cleared when
 disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up page again: to
 replace the game files or remove them.
 
@@ -87,8 +90,9 @@ device pixel ratio of 2 or more the canvas is the device's pixels, its text, men
 drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in the address
 switches it for that visit, as `--sharp=0` natively.
 
-What it takes: the game gets only the pictures it draws (65 MB of the pack's 250 MB, loaded from
-the storage in about 0.3 s); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
+What it takes: the game gets only the pictures it draws (65 MB of the pack's 250 MB), kept beside
+the pack as their own copy when the art is kept, so that a start reads that copy alone (its 16 chunks
+at once, under a second) and never the whole pack; the module's memory was 175 MB on a saved game's map at density 2 (87 MB
 without, 179 MB with sharp text alone); showing a 2560x1600 frame takes about 10 ms (Chrome, this
 machine).
 

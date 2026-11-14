@@ -47,6 +47,8 @@
                                             border: 1px solid #4a4538; padding: 0 0.3rem; }
   #art-bar { height: 0.6rem; width: 20rem; max-width: 100%; background: #333; border-radius: 3px; margin: 0.3rem 0; }
   #art-bar div { height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
+  #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
+             color: var(--dim); pointer-events: none; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
   [hidden] { display: none !important; }
   #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; font-size: 12px;
@@ -66,6 +68,7 @@
 </style>
 </head>
 <body>
+<p id="loading" role="status">Loading ...</p>
 <div id="setup" hidden>
   <h1>OpenCiv2</h1>
   <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
