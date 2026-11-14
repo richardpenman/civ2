@@ -52,6 +52,12 @@ the repository at `/work` and the game at `/civ2`.
 | wasi-sdk + wabt (`tools/fetch-toolchain.sh`) | The portable build: the game compiles to a wasm32 module (keeping the original's 32-bit data model), which wasm2c turns into C for any machine. |
 | `hook/` (`make hook`) | The proxy DLL that makes the original replayable. |
 
+Windows builds: the release (`make windows`, cross-compiled on Linux with MinGW) uses the older
+C runtime (`msvcrt.dll`), with SDL2 built in; a build in an MSYS2 UCRT64 shell (README) uses the
+Universal C Runtime, with `SDL2.dll` beside it. Both run on Windows 10 and later. MSYS2's
+MINGW64 environment (the `mingw-w64-x86_64-` packages) still builds the game, but MSYS2 has
+deprecated it.
+
 ```sh
 make native          # build/civ2-linux32: gcc -m32, the same code, easier to debug
 make port            # build/OpenCiv2 in the container
