@@ -555,7 +555,8 @@ void hd_sheet_loaded(void *bits, const char *filename)
 typedef struct Spr {
     const void *sprite;
     unsigned handle;
-    int id, opaque;             /* the pack's picture, or */
+    int id, opaque;             /* the pack's picture (variant: in a civilization's colour), or */
+    int variant;
     uint32_t *snap;             /* the plane's pixels it was taken from, */
     int sw, sh;                 /* sw x sh */
     struct Spr *next;
@@ -627,6 +628,18 @@ void hd_sprite_opaque(const void *s, unsigned handle)
         p->opaque = 1;
 }
 
+/* Sprite::replace_color: colour 8 (a flag's cloth) in a civilization's
+   colour is a picture of its own in the pack ("tint/KEY/COLOUR"). */
+void hd_sprite_recolor(const void *s, unsigned handle, int old_color, int new_color)
+{
+    Spr *p;
+    char key[220];
+    if (!hd_on || !(p = lookup(s, handle)) || !p->id || old_color != 8)
+        return;
+    snprintf(key, sizeof key, "tint/%s/%d", entries[p->id - 1].key, new_color & 255);
+    p->variant = find(key);
+}
+
 void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y, int w, int h, int key)
 {
     Bitmap *b;
@@ -689,7 +702,7 @@ void hd_sprite_end(const void *s, unsigned handle, void *bits, int x, int y, int
         paint(b, p->snap, p->sw, p->sh, x * d, y * d, w * d, h * d, clip[0] * d, clip[1] * d, clip[2] * d,
               clip[3] * d, tint);
     else {
-        const uint32_t *px = picture(p->id, w * d, h * d, p->opaque);
+        const uint32_t *px = picture(p->variant ? p->variant : p->id, w * d, h * d, p->opaque);
         if (px)
             paint(b, px, w * d, h * d, x * d, y * d, w * d, h * d, clip[0] * d, clip[1] * d, clip[2] * d,
                   clip[3] * d, tint);

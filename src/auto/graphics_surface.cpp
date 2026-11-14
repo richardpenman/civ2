@@ -2030,6 +2030,7 @@ void Sprite::get_origin(i32 *out_x,i32 *out_y)
 void Sprite::replace_color(i32 old_color,i32 new_color)
 
 {
+  if (hd_on) hd_sprite_recolor(this,data_handle,old_color,new_color);     /* (port) HD graphics */
   int rows_left;
   int *len_ptr;
   char had_data;

@@ -31,6 +31,8 @@ void hd_sprite_captured(const void *sprite, unsigned handle, void *bits, int x, 
 /* The sprite (its data handle) is drawn with this picture of the pack. */
 void hd_sprite_bind(const void *sprite, unsigned handle, const char *key, int opaque_tile);
 void hd_sprite_forget(const void *sprite);
+/* Sprite::replace_color: a flag in a civilization's colour. */
+void hd_sprite_recolor(const void *sprite, unsigned handle, int old_color, int new_color);
 /* The sprite (a terrain diamond) covers its diamond exactly: no seams. */
 void hd_sprite_opaque(const void *sprite, unsigned handle);
 /* Before the game draws the sprite at (x, y), w x h (its frame, scaled),

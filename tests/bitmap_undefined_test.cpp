@@ -49,6 +49,7 @@ static int MessageBoxA(HWND, const char *text, LPCSTR, UINT) {
     return 0;
 }
 struct DibSurface {
+    iptr bits;                  // HD graphics' hook (off here)
     unsigned char pixels[480][640];
     void create(int w, int h) {
         assert(w == 640 && h == 480);
@@ -69,6 +70,8 @@ static void palette_get_entry_rgb(GameLogPalette *, int color, i8 *r, i8 *g, i8 
     *(char *)g = (char)(color + 1);
     *(char *)b = (char)(color + 2);
 }
+static const int hd_on = 0;     // HD graphics (src/platform/hd.h): off, as in the unit tests
+static void hd_sheet_loaded(void *, const char *) {}
 #include "production.inc"
 static void put32(std::vector<unsigned char> &v, size_t off, int value) {
     memcpy(v.data() + off, &value, 4);
