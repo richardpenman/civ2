@@ -30,13 +30,10 @@ the original's.
 
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
-Optionally, the map can be drawn with Peter Johnson's new high-resolution art
+Optionally, the map can be drawn with new high-resolution art
 ([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): `make hd` downloads it,
 then start the game with `--hd` (or `CIV2_HD=1`, or `Graphics=HD` under `[OpenCiv2]` in
 `CIV.INI`; [HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype, built from source only for now).
-
-On Linux, the window uses the system's title bar with the game's menu bar inside it.
-`CIV2_CLASSIC=1` also draws the original title bar and frame inside that window.
 
 ### Multiplayer
 
@@ -85,47 +82,8 @@ make web                                   # first time: downloads Binaryen into
 python3 -m http.server -d build/web 8000   # then open http://localhost:8000
 ```
 
-It plays single-player games with the original graphics and your own copy of the game: the first
-time, the page asks for the folder Civilization II is installed in (or a `.zip` of it; both can be
-dropped on the page), or the game's CD (the folder it is mounted at, with `DATA1.CAB` and `CIV2`),
-or a disc image of the CD (its `.cue` and `.bin`, chosen or dropped together), and copies the game
-into the browser's storage (IndexedDB): from the CD or a disc image it is set up as the desktop
-version's set-up does, unpacked from the installer's cabinet with its videos, and from a disc image
-its music encoded as Ogg Vorbis (`Music/TrackNN.ogg`; a few minutes; the browser cannot read a
-CD's music tracks, a disc image has them); later visits start the
-game at once (`?setup` shows the page again, to replace or remove the files). Saved games,
-`CIV.INI` and the Hall of Fame are kept there too: **Export saves** (on the `?setup` page, or
-under the small *Saves* button at the top right while playing) downloads them as a `.zip` (saved
-games, the scenarios and maps you made, `CIV.INI`, `CIV2.DAT`, `HALLFAME.DAT`; not the game's own
-files), and **Import saves** puts `.SAV` files, or such a `.zip`, back (into the running game too,
-so that *Load a Game* finds them at once): to keep them safe, or move them to another browser or
-computer. Music plays where the game's folder has it (`Music/TrackNN.ogg`, as
-the set-up makes from a disc image; a folder the desktop version set up, `GameData`, has it too).
-
-Network games work in the browser through a small relay, since a web page cannot open the
-game's TCP connections itself: `tools/webrelay.py` (Python 3, nothing else to install) bridges
-the page's WebSockets to TCP. Run it on the machine of the player who hosts (or any machine the
-browsers reach), and give the page its address on the `?setup` page or as `?relay=ws://HOST:8765`:
-
-```sh
-tools/webrelay.py                                   # browsers on this machine; join any game on the LAN
-tools/webrelay.py --host 0.0.0.0 --listen-host 0.0.0.0   # LAN party: other machines' browsers use it, and
-                                                    # other machines join a game a browser hosts
-```
-
-A browser joins a game hosted by the desktop OpenCiv2, the original game or another browser
-(Multiplayer Game > Internet Game > Join, the host's address); a game hosted in a browser is
-joined at the relay's address (the game shows it), port 4993. Only Internet games, by address:
-the local network's game lists (UDP broadcasts) do not reach a browser. By default the relay is
-not an open proxy: it listens on 127.0.0.1, connects only to port 4993 and only to this machine
-and private network addresses (`--allow CIDR`, or `--allow any`, for games elsewhere on the
-Internet), hosts games for browsers on 127.0.0.1 unless `--listen-host` says otherwise, and can
-be limited to the pages of one site (`--origin http://...`); `tools/webrelay.py --help`.
-It speaks `ws://`: a page served over `https://` needs it behind a TLS proxy (`wss://`).
-
-Tested in Chrome; it should run in any browser from 2023 on (Edge 103, Firefox 113,
-Safari 16.4). The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T, Ctrl+N close or
-open tabs and windows): use the game's menus for those commands.
+Your copy of the game, saved games, network games through a relay, and limits:
+[BROWSER.md](docs/BROWSER.md).
 
 ## Status
 
