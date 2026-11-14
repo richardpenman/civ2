@@ -5,72 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OpenCiv2</title>
 <style>
-  :root { color-scheme: dark; --bg: #101010; --fg: #e8e2d0; --dim: #a39d8c; --accent: #c9a24a; --panel: #1c1a16; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg);
-               font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  #setup { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; }
-  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: normal; color: var(--accent); margin: 0 0 1rem; }
-  p { margin: 0 0 1rem; }
-  .dim { color: var(--dim); font-size: 0.9rem; }
-  #drop { border: 2px dashed #4a4538; border-radius: 8px; padding: 1.5rem 1rem; text-align: center; margin: 1rem 0; }
-  #drop.over { border-color: var(--accent); background: var(--panel); }
-  label.button, button { display: inline-block; font: inherit; color: var(--bg); background: var(--accent);
-                         border: 0; border-radius: 4px; padding: 0.45rem 1rem; margin: 0.25rem; cursor: pointer; }
-  button.plain { background: none; color: var(--dim); text-decoration: underline; padding: 0; }
+  /* the game's look, drawn here (none of the game's own files: the page comes before them):
+     the main menu's brown desktop, its dialogs' grey marble in a bevelled frame, Times */
+  :root { color-scheme: light; --desk: #8c7b62; --ink: #1a1a1a; --dim: #3a3a3a; --hi: #ffffff; --lo: #6b6b6b;
+          --dark: #2a2a2a; --face: #b9b9b9; --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", serif;
+          /* marble: fine grain and soft veins (generated noise), over a light grey */
+          --marble: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='v' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0117 0.0469' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.25'/%3E%3C/filter%3E%3Cfilter id='g' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -1.4 0.9'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23v)' opacity='0.11'/%3E%3Crect width='256' height='256' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E"); }
+  html, body { margin: 0; min-height: 100%; background: var(--desk); color: var(--ink);
+               font: 18px/1.45 var(--serif); }
+  #setup { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  /* a dialog: marble in a raised frame, its title on it embossed, its contents in a sunken panel */
+  .panel { background: var(--face) var(--marble); border: 3px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+           box-shadow: 1px 1px 0 var(--dark), 0 0 0 1px #4a4030; padding: 0.35rem; margin: 0 0 1.5rem; }
+  .title { font: bold 1.6rem/1.2 var(--serif); text-align: center; margin: 0.15rem 0 0.4rem; color: #f4f4f4;
+           text-shadow: 1px 1px 0 #000, 2px 2px 1px #555; letter-spacing: 0.02em; }
+  .body { background: rgba(255, 255, 255, 0.12); border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+          padding: 0.9rem 1rem; }
+  p { margin: 0 0 0.8rem; }
+  code { font: 0.85em/1 "Courier New", monospace; }
+  a { color: #00007a; }
+  .dim { color: var(--dim); font-size: 0.92rem; }
+  #drop { border: 2px dashed #5a5a5a; padding: 1rem; text-align: center; margin: 1rem 0; }
+  #drop.over { border-color: #00007a; background: rgba(255, 255, 255, 0.35); }
+  #drop p { margin: 0.3rem 0 0; }
+  /* the game's buttons: grey, raised, pressed when clicked */
+  label.button, button { display: inline-block; font: 1rem/1.3 var(--serif); color: #000; background: var(--face);
+                         border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
+                         box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+                         border-radius: 0; padding: 0.3rem 1.1rem; margin: 0.25rem; min-width: 6rem; cursor: pointer; }
+  label.button:active, button:active { border-color: var(--dark) var(--hi) var(--hi) var(--dark);
+                                       box-shadow: inset 1px 1px 0 #808080; padding: 0.35rem 1.05rem 0.25rem 1.15rem; }
+  button:focus-visible, label.button:focus-visible, input:focus-visible { outline: 2px dotted #000; outline-offset: -6px; }
+  input:focus-visible { outline-offset: 2px; }
+  button:disabled { color: #808080; text-shadow: 1px 1px 0 #fff; cursor: default; }
+  button.plain { background: none; border: 0; box-shadow: none; color: #00007a; text-decoration: underline;
+                 padding: 0; margin: 0 0.25rem; min-width: 0; }
+  button.plain:active { padding: 0; }
+  button.plain:focus-visible { outline-offset: 2px; }
   input[type=file] { display: none; }
   #status { color: var(--dim); }
   #status:empty { display: none; }
   #chosen { margin: 0.5rem 0 0; }
   #choose-wrap { position: relative; display: inline-block; }
+  #choose { font-size: 1.15rem; padding: 0.4rem 1.4rem; }
   #choose-menu { position: absolute; z-index: 2; left: 50%; transform: translateX(-50%); top: 100%; min-width: 19rem;
-                 background: var(--panel); border: 1px solid #4a4538; border-radius: 6px; padding: 0.25rem; text-align: left; }
-  #choose-menu button { display: block; width: 100%; margin: 0; background: none; color: var(--fg); text-align: left;
-                        border-radius: 4px; padding: 0.4rem 0.75rem; }
-  #choose-menu button:hover, #choose-menu button:focus { background: #2e2a22; outline: none; }
+                 max-width: calc(100vw - 2rem); background: var(--face) var(--marble); border: 2px solid;
+                 border-color: var(--hi) var(--dark) var(--dark) var(--hi); padding: 0.2rem; text-align: left; }
+  #choose-menu button { display: block; width: 100%; margin: 0; background: none; border: 1px solid transparent;
+                        box-shadow: none; text-align: left; padding: 0.35rem 0.7rem; }
+  #choose-menu button:hover, #choose-menu button:focus { background: #00007a; color: #fff; outline: none; }
+  #choose-menu button:hover span, #choose-menu button:focus span { color: #ddd; }
   #choose-menu span { display: block; color: var(--dim); font-size: 0.85rem; }
-  #have { background: var(--panel); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
-  #options h2 { font: inherit; font-weight: bold; margin: 1.5rem 0 0.25rem; }
-  #options h3 { font: inherit; font-weight: bold; margin: 0.5rem 0 0.25rem; }
-  fieldset { border: 1px solid #4a4538; border-radius: 8px; margin: 0.75rem 0; padding: 0.5rem 1rem 0.75rem; }
-  fieldset:disabled { opacity: 0.5; }
-  legend { color: var(--accent); padding: 0 0.3rem; }
-  label.choice { display: block; margin: 0.2rem 0; }
-  .note { display: block; color: var(--dim); font-size: 0.85rem; margin: 0 0 0 1.6rem; }
+  #have { margin: 1rem 0 0; padding-top: 0.8rem; border-top: 2px groove #eee; }
+  #have p { margin: 0 0 0.4rem; }
+  #options h3 { font: bold 1rem var(--serif); margin: 0.6rem 0 0.2rem; }
+  fieldset { border: 2px groove #eee; margin: 0.9rem 0; padding: 0.4rem 0.9rem 0.7rem; min-width: 0; }
+  fieldset:disabled { opacity: 0.55; }
+  legend { font: bold 1.1rem var(--serif); padding: 0 0.3rem; }
+  label.choice { display: block; margin: 0.25rem 0; }
+  .note { display: block; color: var(--dim); font-size: 0.88rem; margin: 0 0 0 1.75rem; }
   p.note { margin: 0.2rem 0; }
-  h3 .note { font-weight: normal; }
-  .indent { margin: 0.25rem 0 0.25rem 1.6rem; }
+  h3 .note { font-weight: normal; display: inline; margin: 0; }
+  .indent { margin: 0.25rem 0 0.25rem 1.75rem; }
+  .indent .note { margin: 0; }
   .columns { columns: 2 14rem; font-size: 0.95rem; }
-  .columns label { display: block; break-inside: avoid; }
+  .columns label { display: block; break-inside: avoid; margin: 0.15rem 0; }
   .fields label { display: inline-block; margin: 0.2rem 1rem 0.2rem 0; }
-  .fields input, #opt-ui input[type=text] { font: inherit; width: 6rem; background: var(--panel); color: var(--fg);
-                                            border: 1px solid #4a4538; padding: 0 0.3rem; }
-  #art-bar { height: 0.6rem; width: 20rem; max-width: 100%; background: #333; border-radius: 3px; margin: 0.3rem 0; }
-  #art-bar div { height: 100%; width: 0; background: var(--accent); border-radius: 3px; }
+  .fields input, .dialog-text input { font: inherit; width: 6rem; background: #fff; color: #000; border: 2px solid;
+                                      border-color: var(--lo) var(--hi) var(--hi) var(--lo); padding: 0 0.3rem; }
+  /* the game's round radio buttons and square boxes */
+  input[type=radio], input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 1.05rem; height: 1.05rem;
+      margin: 0 0.45rem 0 0; vertical-align: -0.15rem; background: radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a);
+      border: 1px solid #333; box-shadow: inset -1px -1px 0 #777, 1px 1px 0 #fff; cursor: pointer; }
+  input[type=radio] { border-radius: 50%; }
+  input[type=radio]:checked { background: radial-gradient(circle, #000 0 28%, transparent 33%),
+                              radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a); }
+  input[type=checkbox]:checked { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='%23000' stroke-width='2.4'/%3E%3C/svg%3E") center/85% no-repeat,
+                                 radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a); }
+  input:disabled { cursor: default; opacity: 0.6; }
+  #art-bar { height: 0.8rem; width: 20rem; max-width: 100%; background: #fff; margin: 0.3rem 0; border: 2px solid;
+             border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+  #art-bar div { height: 100%; width: 0; background: #00007a; }
+  #art-status[style*="color"] { font-weight: bold; }
   #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
-             color: var(--dim); pointer-events: none; }
+             font: 1.2rem var(--serif); color: #f4f0e6; text-shadow: 1px 1px 0 #000; pointer-events: none; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
   [hidden] { display: none !important; }
-  #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; font-size: 12px;
-                line-height: 18px; background: #333; color: #ccc; opacity: 0.25; }
+  #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; min-width: 0; font: 12px/16px var(--serif);
+                opacity: 0.35; }
   #saves-open:hover, #saves-open:focus { opacity: 1; }
-  #saves-dialog { background: var(--panel); color: var(--fg); border: 1px solid #4a4538; border-radius: 8px;
-                  padding: 1rem; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  #saves-dialog h2 { font: inherit; font-weight: bold; margin: 0 0 0.5rem; }
   #screen { image-rendering: pixelated; image-rendering: crisp-edges; outline: none; touch-action: none; }
-  dialog { background: #c0c0c0; color: #000; border: 2px outset #fff; padding: 0; min-width: 18rem; max-width: 34rem;
-           font: 14px/1.4 "Segoe UI", Arial, sans-serif; }
+  /* the in-game dialogs: as the game's own message boxes */
+  dialog { background: var(--face) var(--marble); color: #000; border: 3px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
+           box-shadow: 1px 1px 0 var(--dark); padding: 0; min-width: 18rem; max-width: min(34rem, calc(100vw - 2rem));
+           font: 16px/1.4 var(--serif); }
   dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
-  #dialog-title, .dialog-title { background: #000080; color: #fff; padding: 0.2rem 0.5rem; font-weight: bold; }
-  #dialog-text, .dialog-text { padding: 1rem; white-space: pre-wrap; }
-  .dialog-text input { font: inherit; background: #fff; color: #000; border: 2px inset #fff; padding: 0 0.2rem; }
-  #dialog-buttons, .dialog-buttons { padding: 0 1rem 1rem; text-align: center; }
-  #dialog-buttons button, .dialog-buttons button { background: #c0c0c0; color: #000; border: 2px outset #fff; border-radius: 0; min-width: 5rem; }
+  #dialog-title, .dialog-title, #saves-dialog h2 { font: bold 1.25rem/1.2 var(--serif); text-align: center; color: #f4f4f4;
+      text-shadow: 1px 1px 0 #000, 2px 2px 1px #555; padding: 0.35rem 0.5rem 0.2rem; margin: 0; }
+  #dialog-text, .dialog-text { padding: 0.6rem 1rem; white-space: pre-wrap; }
+  .dialog-text input { width: auto; }
+  #dialog-buttons, .dialog-buttons { padding: 0.2rem 1rem 0.8rem; text-align: center; }
+  #saves-dialog p, #saves-dialog > button, #saves-dialog > label { margin-left: 1rem; }
+  #saves-dialog { padding-bottom: 0.5rem; }
+  @media (max-width: 480px) {
+    html, body { font-size: 16px; }
+    #setup { padding: 0.75rem 0.5rem 2rem; }
+    .body { padding: 0.7rem 0.6rem; }
+    .title { font-size: 1.35rem; }
+  }
 </style>
 </head>
 <body>
 <p id="loading" role="status">Loading ...</p>
 <div id="setup" hidden>
-  <h1>OpenCiv2</h1>
+ <section class="panel" aria-labelledby="title-main">
+  <h1 class="title" id="title-main">OpenCiv2</h1>
+  <div class="body">
   <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
      <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with
      <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD.</p>
@@ -95,8 +145,11 @@
     <button class="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip">Export saves</button>
     <label class="button" for="import-saves">Import saves</label>
   </div>
-  <div id="options" hidden>
-    <h2>How to play</h2>
+  </div>
+ </section>
+  <section id="options" class="panel" aria-labelledby="title-options" hidden>
+    <h2 class="title" id="title-options">How to play</h2>
+    <div class="body">
     <p class="dim">As the desktop version's opening window: kept in the game's <code>CIV.INI</code>, under
        <code>[OpenCiv2]</code>, from the next start of the game.</p>
     <fieldset id="opt-game"><legend>Game</legend>
@@ -124,7 +177,8 @@
       <div id="extras" class="columns"></div>
       <div id="colours" class="fields"></div>
     </fieldset>
-  </div>
+    </div>
+  </section>
 </div>
 <div id="game" hidden><canvas id="screen" tabindex="0"></canvas>
   <button id="saves-open" title="Export or import saved games">Saves</button></div>
