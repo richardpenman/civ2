@@ -354,7 +354,9 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 - **Status: fixed by the flag.** `nettest.py ours-orig --nest` and `orig-ours --nest`: the
   original's side shows the two popups at once, ours one after the other, Enter closing each;
-  both runs pass otherwise as before (every message received in order and byte for byte).
+  both runs pass otherwise as before (every message received in order and byte for byte), and
+  so do `--diplo` both ways. `ours-ours --nest --classic`: ours in classic mode nests them as
+  the original does.
 
 ### B18. Joining a network game sets "Open Game" from a stale value
 - **Where:** `src/auto/game_setup.cpp`, the network setup (the function with `setup_net_host` and
