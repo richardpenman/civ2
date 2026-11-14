@@ -67,9 +67,11 @@ export class MemFS {
                 out.push([f.slice(pre.length), false]);
         return out;
     }
-    changed(path, removed = false) {
+    // partial: written to while still open (more may follow); otherwise
+    // the change is complete (closed, renamed, removed)
+    changed(path, removed = false, partial = false) {
         if (this.onchange)
-            this.onchange(path, removed);
+            this.onchange(path, removed, partial);
     }
 }
 
@@ -324,7 +326,7 @@ export function makeWasi(fs, args, env, memory, log = (fd, s) => (fd === 2 ? con
                         file.size = f.pos;
                     file.mtime = Date.now();
                     f.dirty = true;
-                    fs.changed(f.path);
+                    fs.changed(f.path, false, true);
                 }
                 total += l;
             }

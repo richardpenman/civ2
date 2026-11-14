@@ -127,6 +127,10 @@ function messageBox(icon, title, text, labels, ids, enter, escape) {
 }
 
 async function play(store) {
+    // (the game files and saved games kept for good: without this the browser
+    // may clear them when disk space runs low, Safari after a week unused)
+    if (navigator.storage && navigator.storage.persist)
+        navigator.storage.persist().catch(() => {});
     $('setup').hidden = true;
     $('game').hidden = false;
     status('Loading ...');
@@ -139,7 +143,9 @@ async function play(store) {
     fs.mkdirs(GAME);
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
-    // what the game writes, kept (a second after its last change)
+    // what the game writes, kept: at once when a file is closed, renamed or
+    // removed (a saved game is safe as soon as the game has written it),
+    // else a second after the last write to a file still open
     const dirty = new Map();
     let timer = 0;
     const flush = async () => {
@@ -158,12 +164,16 @@ async function play(store) {
         if (put.length)
             await store.putMany(put);
     };
-    fs.onchange = (path, removed) => {
+    fs.onchange = (path, removed, partial) => {
         if (!path.startsWith(GAME + '/') || /\.log$/i.test(path))
             return;
         dirty.set(path, removed);
-        if (!timer)
+        if (!partial) {
+            clearTimeout(timer);
+            flush();
+        } else if (!timer) {
             timer = setTimeout(flush, 1000);
+        }
     };
     window.civ2Fs = fs;
     window.civ2Flush = () => (timer ? (clearTimeout(timer), flush()) : Promise.resolve());
