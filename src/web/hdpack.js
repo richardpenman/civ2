@@ -1,13 +1,12 @@
 // HD graphics in the browser (docs/HD-GRAPHICS.md, docs/BROWSER.md): the
-// openciv2-assets art pack, as the desktop version's opening window gets it.
-// The release pinned in data/hd-pack.json (copied to the site as
-// hd-pack.json) is checked as tools/fetch_hd_pack.py checks it: the archive's
-// SHA-256, then data/atlas-hd.pack's against the archive's package.json (or,
-// given alone, against the pin's pack_sha256).  The pack is kept in
-// IndexedDB (store.js: the 'hd' store) in chunks of CHUNK bytes, its
-// description under 'info' written last; the game gets, at start, a pack of
-// the pictures it draws (prunePack), in its files in memory where hd.c looks
-// for it (/data/hd/atlas-hd.pack).
+// openciv2-assets art pack, from the site itself, where it was built with it
+// (make web HD=1: hd/atlas-hd.pack, hd/pack.json saying so), checked against
+// the release pinned in data/hd-pack.json (copied to the site as
+// hd-pack.json: its pack_sha256).  The pack is kept in IndexedDB (store.js:
+// the 'hd' store) in chunks of CHUNK bytes, its description under 'info'
+// written last; the game gets, at start, a pack of the pictures it draws
+// (prunePack), kept with it, in its files in memory where hd.c looks for it
+// (/data/hd/atlas-hd.pack).
 
 export const CHUNK = 4 << 20;
 // The pictures src/platform/hd.c draws, by their keys' first part
@@ -27,98 +26,17 @@ const stopped = (signal) => {
         throw new DOMException('stopped', 'AbortError');
 };
 
-async function bytesOf(blob, from, to) {
-    return new Uint8Array(await blob.slice(from, to).arrayBuffer());
-}
-
-// A .zip's members (a Blob, read in parts: the archive is never in memory
-// for this): name -> {method, csize, size, local}
-export async function zipDir(blob) {
-    const tailFrom = Math.max(0, blob.size - 22 - 65535);
-    const tail = await bytesOf(blob, tailFrom, blob.size), v = new DataView(tail.buffer);
-    let end = -1;
-    for (let i = tail.length - 22; i >= 0; i--)
-        if (v.getUint32(i, true) === 0x06054b50) {
-            end = i;
-            break;
-        }
-    if (end < 0)
-        throw new Error('not a zip archive');
-    const count = v.getUint16(end + 10, true), cdSize = v.getUint32(end + 12, true), cdAt = v.getUint32(end + 16, true);
-    const cd = await bytesOf(blob, cdAt, cdAt + cdSize), c = new DataView(cd.buffer), dec = new TextDecoder();
-    const out = new Map();
-    for (let k = 0, p = 0; k < count; k++) {
-        if (c.getUint32(p, true) !== 0x02014b50)
-            throw new Error('damaged zip archive');
-        const nlen = c.getUint16(p + 28, true);
-        out.set(dec.decode(cd.subarray(p + 46, p + 46 + nlen)), {
-            method: c.getUint16(p + 10, true), csize: c.getUint32(p + 20, true), size: c.getUint32(p + 24, true),
-            local: c.getUint32(p + 42, true)});
-        p += 46 + nlen + c.getUint16(p + 30, true) + c.getUint16(p + 32, true);
-    }
-    return out;
-}
-
-// A member's bytes, inflated as they come into one array of its size;
-// progress(done, total)
-export async function zipMember(blob, m, {progress = () => {}, signal} = {}) {
-    const h = await bytesOf(blob, m.local, m.local + 30), v = new DataView(h.buffer);
-    if (v.getUint32(0, true) !== 0x04034b50)
-        throw new Error('damaged zip archive');
-    const start = m.local + 30 + v.getUint16(26, true) + v.getUint16(28, true);
-    const raw = blob.slice(start, start + m.csize);
-    if (m.method === 0)
-        return new Uint8Array(await raw.arrayBuffer());
-    if (m.method !== 8)
-        throw new Error('compressed in a way this page cannot read (method ' + m.method + ')');
-    const out = new Uint8Array(m.size), reader = raw.stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
-    let at = 0;
-    for (;;) {
-        stopped(signal);
-        const {done, value} = await reader.read();
-        if (done)
-            break;
-        if (at + value.length > out.length)
-            throw new Error('damaged zip archive');
-        out.set(value, at);
-        at += value.length;
-        progress(at, out.length);
-    }
-    if (at !== out.length)
-        throw new Error('damaged zip archive');
-    return out;
-}
-
-// The pinned art from what the player chose or the page downloaded (a Blob:
-// the release's .zip, or atlas-hd.pack alone), checked -> the pack's bytes.
-// progress(phase, done, total): phase 'check' or 'unpack'.
+// The pinned art downloaded from the site (a Blob: atlas-hd.pack), checked
+// -> the pack's bytes.  progress(phase, done, total): phase 'check'.
 export async function packFrom(blob, pin, {progress = () => {}, signal} = {}) {
-    const magic = new TextDecoder().decode(await bytesOf(blob, 0, 8));
-    if (magic.startsWith('PK\x03\x04')) {
-        progress('check', 0, blob.size);
-        if (blob.size !== pin.size || await sha256(await blob.arrayBuffer()) !== pin.sha256)
-            throw new Error(`this archive is not the art's release ${pin.tag} (its SHA-256 differs)`);
-        stopped(signal);
-        const dir = await zipDir(blob), want = dir.get('package.json'), member = dir.get('data/atlas-hd.pack');
-        const manifest = want && JSON.parse(new TextDecoder().decode(await zipMember(blob, want)));
-        if (!manifest || manifest.kind !== 'openciv2-assets' || manifest.schema !== 1 || !member ||
-            !manifest.files || !manifest.files['data/atlas-hd.pack'])
-            throw new Error('not an openciv2-assets runtime pack (schema 1)');
-        const listed = manifest.files['data/atlas-hd.pack'];
-        const pack = await zipMember(blob, member, {progress: (d, t) => progress('unpack', d, t), signal});
-        progress('check', pack.length, pack.length);
-        if (pack.length !== listed.size || await sha256(pack) !== listed.sha256)
-            throw new Error('data/atlas-hd.pack does not match its package.json');
-        return pack;
-    }
-    if (magic === 'C2ATLAS1') {
-        progress('check', 0, blob.size);
-        const pack = new Uint8Array(await blob.arrayBuffer());
-        if (pack.length !== pin.pack_size || await sha256(pack) !== pin.pack_sha256)
-            throw new Error(`this atlas-hd.pack is not the one of the art's release ${pin.tag}`);
-        return pack;
-    }
-    throw new Error('neither the art\'s .zip nor atlas-hd.pack');
+    const pack = new Uint8Array(await blob.arrayBuffer());
+    stopped(signal);
+    if (new TextDecoder().decode(pack.subarray(0, 8)) !== 'C2ATLAS1')
+        throw new Error('the site\'s hd/atlas-hd.pack is not an HD art pack');
+    progress('check', 0, pack.length);
+    if (pack.length !== pin.pack_size || await sha256(pack) !== pin.pack_sha256)
+        throw new Error(`the site's hd/atlas-hd.pack is not the one of the art's release ${pin.tag}`);
+    return pack;
 }
 
 // The pack kept in the store (store.hdClear, hdPutMany([[key, value]])):
@@ -258,34 +176,23 @@ export async function keepPruned(store, info, pruned) {
     await store.hdPutMany([['pruned', {...prunedOf(info), size: pruned.length, chunks: n}]]);
 }
 
-// The art downloaded: from the site itself where it has it (make web HD=1:
-// hd/atlas-hd.pack), else the release on GitHub (which browsers may refuse
-// to a page of another site: then the player downloads it and chooses it).
-// -> a Blob; progress(done, total)
-export async function download(pin, {progress = () => {}, signal} = {}) {
-    let r = null;
+// Whether the site has the art (make web HD=1): {size} or null
+export async function siteArt() {
     try {
-        r = await fetch('hd/atlas-hd.pack', {signal});
-        if (!r.ok)
-            r = null;
+        const r = await fetch('hd/pack.json', {cache: 'no-cache'});
+        return r.ok ? await r.json() : null;
     } catch (e) {
-        if (e.name === 'AbortError')
-            throw e;
+        return null;
     }
-    if (!r) {
-        try {
-            r = await fetch(pin.url, {signal});
-        } catch (e) {
-            if (e.name === 'AbortError')
-                throw e;
-            const err = new Error('the browser does not let this page download the art from GitHub');
-            err.cors = true;
-            throw err;
-        }
-        if (!r.ok)
-            throw new Error('the download failed (' + r.status + ')');
-    }
-    const total = +r.headers.get('Content-Length') || pin.size, parts = [], reader = r.body.getReader();
+}
+
+// The art downloaded from the site (hd/atlas-hd.pack) -> a Blob;
+// progress(done, total)
+export async function download(size, {progress = () => {}, signal} = {}) {
+    const r = await fetch('hd/atlas-hd.pack', {signal});
+    if (!r.ok)
+        throw new Error('the download failed (' + r.status + ')');
+    const total = +r.headers.get('Content-Length') || size, parts = [], reader = r.body.getReader();
     let done = 0;
     for (;;) {
         const {done: end, value} = await reader.read();

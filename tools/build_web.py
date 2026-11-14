@@ -21,8 +21,9 @@ The set-up page's choices are the opening window's (src/platform/launcher.c):
 its lists and texts taken from there into choices.json.  The HD graphics'
 pin (data/hd-pack.json) is copied as hd-pack.json; with HD=1 in the
 environment (make web HD=1) the installed art (data/native/hd/atlas-hd.pack,
-make hd) is copied to hd/atlas-hd.pack too, so that the page gets it from the
-site itself (otherwise build/web/hd is removed).
+make hd) is copied to hd/atlas-hd.pack too, with hd/pack.json saying so: the
+page offers HD graphics only where the site has the art (otherwise
+build/web/hd is removed).
 
 Usage: build_web.py [--no-module]   (--no-module: build/wasm/civ2.wasm as it is)
 Binaryen comes from tools/fetch-toolchain.sh web (or $BINARYEN: its folder).
@@ -160,6 +161,9 @@ def main():
         os.makedirs(hd, exist_ok=True)
         if newer(pack, os.path.join(hd, 'atlas-hd.pack')):
             shutil.copy(pack, os.path.join(hd, 'atlas-hd.pack'))
+        # (what tells the page the site has the art: without it, no HD graphics there)
+        with open(os.path.join(hd, 'pack.json'), 'w') as f:
+            json.dump({'size': os.path.getsize(pack)}, f)
         for f in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
             if os.path.exists(os.path.join(ROOT, 'data', 'native', 'hd', f)):
                 shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))

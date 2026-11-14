@@ -1,13 +1,13 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
 // headless shell (as smoke.mjs), the game's files given as a .zip, then on
-// the set-up page HD graphics ticked: the download fails (the site has no
-// art, GitHub's release no CORS), then the art chosen as the page then
-// offers (the release's .zip from the cache of tools/fetch_hd_pack.py, else
-// data/native/hd/atlas-hd.pack: make hd; nothing downloaded here): checked,
+// the set-up page HD graphics not offered while the site has no art; then
+// the site with the art (as make web HD=1: data/native/hd/atlas-hd.pack,
+// make hd, served at hd/), HD graphics ticked: downloaded from it, checked,
 // kept in IndexedDB, HD graphics switched on in CIV.INI; then the game at a
 // device pixel ratio of 2 (density Auto: 2), the menu and a saved game's map
 // drawn in HD (the canvas twice the desktop's size, and not the desktop's
-// pixels enlarged), the first screen's text sharp; then
+// pixels enlarged), the first screen's text sharp; then a later visit's
+// start (said at once, its first frame within START_MS); then
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics.  Screenshots in
 // run/web-hd (look at them).  Without the art (or the game) it says so and
@@ -15,7 +15,7 @@
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
 
-import {writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync, readFileSync} from 'node:fs';
+import {writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
 import {ROOT, WEB, zipFolder, serve, browser} from './cdp.mjs';
@@ -27,13 +27,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const START_MS = 15000;
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
-function artFile() {
-    const pin = JSON.parse(readFileSync(join(ROOT, 'data', 'hd-pack.json')));
-    const cache = process.env.CIV2_DEPENDENCY_CACHE ||
-        join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'openciv2');
-    const candidates = [join(cache, pin.sha256 + '.zip'), join(ROOT, 'data', 'native', 'hd', 'atlas-hd.pack')];
-    return candidates.find((f) => existsSync(f));
-}
+const artFile = () => [join(ROOT, 'data', 'native', 'hd', 'atlas-hd.pack')].find((f) => existsSync(f));
 
 async function main() {
     if (!existsSync(join(WEB, 'civ2.wasm')))
@@ -48,7 +42,8 @@ async function main() {
     const tmp = mkdtempSync(join(ROOT, 'run', 'web-tmp-'));
     const zip = join(tmp, 'Civ2.zip');
     log(`zipping ${GAME}: ${zipFolder(GAME, zip)} files`);
-    const server = await serve();
+    let siteArt = null;
+    const server = await serve({hd: () => siteArt});
     const url = `http://127.0.0.1:${server.address().port}/`;
     const b = await browser(join(tmp, 'profile'));
     const errors = [];
@@ -174,23 +169,20 @@ async function main() {
         await waitFor('!document.getElementById("options").hidden', 10000, 'the choices');
         if (await evaluate('document.getElementById("opt-hd").checked'))
             throw new Error('HD graphics on before the art');
-        log('art: ' + await evaluate('document.getElementById("art-status").textContent'));
-        // HD graphics ticked: the download starts at once; the site has no
-        // art of its own (make web without HD=1) and GitHub's release lets
-        // no page fetch it, so it fails, and only then the page offers the
-        // release's .zip, chosen here (or the pack alone): checked, kept
-        if (!await evaluate('document.getElementById("art-fallback").hidden'))
-            throw new Error('the .zip offered before a download failed');
-        await evaluate('document.getElementById("opt-hd").click()');
-        await waitFor('!document.getElementById("art-fallback").hidden || ' +
-                      '/kept in this browser/.test(document.getElementById("art-status").textContent)', 600000,
-                      'the download');
-        log('download: ' + await evaluate('document.getElementById("art-status").textContent'));
+        // the site without the art: HD graphics not offered, and why
+        const none = await evaluate('document.getElementById("art-status").textContent');
+        log('art: ' + none);
+        if (!await evaluate('document.getElementById("opt-hd").disabled') || !/without the HD art/.test(none))
+            throw new Error('HD graphics offered where the site has no art');
         await evaluate('document.getElementById("opt-hd").scrollIntoView()');
-        await shot('00-setup-fallback');
+        await shot('00-setup-no-art');
+        // the site with it: ticked, the download starts at once, checked, kept
+        siteArt = art;
+        await send('Page.navigate', {url: url + '?setup'});
+        await waitFor('window.civ2Setup && !document.getElementById("options").hidden', 10000, 'the choices again');
+        log('art: ' + await evaluate('document.getElementById("art-status").textContent'));
         const t0 = performance.now();
-        if (!await evaluate('document.getElementById("art-fallback").hidden'))
-            await input('art-file', [art]);
+        await evaluate('document.getElementById("opt-hd").click()');
         await waitFor('/kept in this browser|stay off/.test(document.getElementById("art-status").textContent) && ' +
                       'document.getElementById("art-bar").hidden', 600000, 'the art');
         const said = await evaluate('document.getElementById("art-status").textContent');
@@ -245,8 +237,10 @@ async function main() {
         if (st.mixed < 0.05)
             throw new Error('the map is not drawn in HD (the desktop\'s pixels enlarged)');
         // a later visit (the page opened again, the art kept, its pruned
-        // copy made by the start above): what it does said at once, the
-        // pruned art read alone, the game's first frame within START_MS
+        // copy made by the start above; the site without it now: the art
+        // kept still used): what it does said at once, the pruned art read
+        // alone, the game's first frame within START_MS
+        siteArt = null;
         await send('Page.navigate', {url});
         const opened = performance.now();
         const said0 = await waitFor('(() => { const l = document.getElementById("loading");' +
@@ -255,6 +249,8 @@ async function main() {
         await waitFor('window.civ2Timing && window.civ2Timing.frame', START_MS, `the first frame within ${START_MS} ms`);
         const timing = await evaluate('window.civ2Timing');
         log(`a later start: "${said0}" ${Math.round(performance.now() - opened)} ms; ${JSON.stringify(timing)}`);
+        if (!(await evaluate('window.civ2Hd') || {}).packBytes)
+            throw new Error('the art kept not used where the site has none');
         if (!(timing.packChunks <= 20))
             throw new Error('the whole pack read at a start, not its pruned copy');
         await settle(2000, 30000);

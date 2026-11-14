@@ -63,21 +63,15 @@ Full screen and *Don't show this window again* are not there: the browser has it
 ## HD graphics
 
 The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.md)) as the desktop
-version does: tick *HD graphics* on the `?setup` page. The art (openciv2-assets, 234 MB, the release
-pinned in `data/hd-pack.json`) is needed once: ticking *HD graphics* starts its download at once,
-with its progress and a Stop button, from the site itself where it has it (below), else from
-GitHub. GitHub's release downloads do not allow a page of another site to fetch them (no
-`Access-Control-Allow-Origin` on the release's redirect, nor on the file it leads to), so only when
-the download fails the page offers a link to the release's `.zip` and one *Choose the downloaded
-.zip…* button (which takes `atlas-hd.pack` alone too, e.g. from `data/native/hd` after `make hd`).
-
-Either way the page checks it as `tools/fetch_hd_pack.py` does: the archive's SHA-256, then
-`data/atlas-hd.pack`'s against the archive's `package.json` (the pack alone: against the pin's
-`pack_sha256`), with its progress and a Stop button, and keeps the pack in the browser's storage
-(IndexedDB, 250 MB; unticking *HD graphics* keeps it, *Remove the art* takes it out), so that it works offline from then on. A site
-that should offer the art itself: `make web HD=1` copies the installed art (`make hd`) to
-`build/web/hd/atlas-hd.pack`, which the page downloads instead (250 MB more to serve; the art's
-licence beside it).
+version does, where the site has the art: `make web HD=1` copies the installed art (`make hd`,
+openciv2-assets, the release pinned in `data/hd-pack.json`) to `build/web/hd/atlas-hd.pack` (250 MB
+more to serve; the art's licence beside it), with `hd/pack.json` saying so. On such a site, tick
+*HD graphics* on the `?setup` page: the art is downloaded from the site at once, with its progress
+and a Stop button, checked against the pin's `pack_sha256`, and kept in the browser's storage
+(IndexedDB, 250 MB; unticking *HD graphics* keeps it, *Remove the art* takes it out), so that it
+works offline from then on. A site built without it (`make web`) does not offer HD graphics: the
+tick is greyed, with *This site was built without the HD art (make web HD=1)*; art already kept in
+the browser still works there.
 
 `?hd=1` (or `?hd=N`, N the density 2 to 4) in the address turns them on for that visit, `?hd=0` off,
 as `--hd` does natively. The page has no density choice: it is *Auto* (unless `CIV.INI` has
@@ -150,7 +144,7 @@ options: `tools/webrelay.py --help`.
 - The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T and Ctrl+N close or open tabs and
   windows): use the game's menus for those commands.
 - No LAN game lists (see above).
-- The HD graphics' art cannot be downloaded from GitHub by the page itself (above): unless the site
-  serves the art (`make web HD=1`), the player downloads the `.zip` and chooses it.
+- HD graphics only where the site has the art (`make web HD=1`): GitHub's release downloads do not
+  allow a page of another site to fetch them.
 - HD graphics need memory: about 300 MB of the browser's storage with the game, and some 175 MB for
   the game's module on the map at density 2 (more at 3 or 4).

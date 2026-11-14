@@ -7,7 +7,7 @@ import {openStore} from './store.js';
 import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
 import {findDisc} from './setup_run.js';
-import {packFrom, keepPack, loadPack, download} from './hdpack.js';
+import {packFrom, keepPack, loadPack, download, siteArt} from './hdpack.js';
 import {readChoices, writeChoices, hdWanted} from './options.js';
 
 const GAME = '/civ2', DATA = '/data';
@@ -334,7 +334,8 @@ function optionsRender() {
         r.checked = +r.value === (now.classic ? 1 : 0);
     $('opt-sharp').checked = now.sharp;
     $('opt-hd').checked = now.hd;
-    $('opt-hd').disabled = now.classic || !!opt.fetching;
+    // (the art from this site only, where it has it: make web HD=1; kept, it stays usable)
+    $('opt-hd').disabled = now.classic || !!opt.fetching || (!opt.site && !opt.art);
     $('opt-rules').disabled = $('opt-ui').disabled = now.classic;
     spec.rules.forEach((x, i) => { $('rule-' + i).checked = now.rule[i]; });
     spec.extras.forEach((x, i) => { $('extra-' + i).checked = now.extra[i]; });
@@ -344,16 +345,10 @@ function optionsRender() {
     const f = opt.fetching, status = $('art-status');
     $('art-stop').hidden = !f;
     $('art-bar').hidden = !f;
-    // (only once the download failed: the release's .zip, chosen here)
-    $('art-fallback').hidden = !!f || !!opt.art || !opt.message || now.classic;
-    if (opt.pinned) {
-        $('art-link').href = opt.pinned.url;
-        $('art-link').textContent = `the release's .zip (${MB(opt.pinned.size)} MB)`;
-    }
     $('art-remove').hidden = !!f || !opt.art;
     status.style.color = '';
     if (f) {
-        const doing = {download: 'Downloading the art', check: 'Checking it', unpack: 'Unpacking it',
+        const doing = {download: 'Downloading the art', check: 'Checking it',
                        keep: 'Keeping it in this browser'}[f.phase] || 'Getting the art';
         status.textContent = f.total ? `${doing}: ${MB(f.done)} of ${MB(f.total)} MB` : doing + ' ...';
         $('art-bar').firstElementChild.style.width = (f.total ? 100 * Math.min(1, f.done / f.total) : 0) + '%';
@@ -362,9 +357,10 @@ function optionsRender() {
     } else if (opt.message) {
         status.style.color = '#e07a6a';
         status.textContent = opt.message + ' HD graphics stay off.';
+    } else if (opt.site) {
+        status.textContent = `HD graphics need the art: ${MB(opt.site.size)} MB, downloaded once from this site when ticked.`;
     } else {
-        status.textContent = `HD graphics need the art: ${MB(opt.pinned ? opt.pinned.size : 234081955)} MB, ` +
-            'downloaded once when ticked.';
+        status.textContent = 'This site was built without the HD art (make web HD=1).';
     }
 }
 
@@ -380,9 +376,9 @@ function optionsChanged() {
     optionsSave().catch((e) => status('Could not keep the choices: ' + e.message));
 }
 
-// The art got (blob: () => Promise<Blob>, given the signal and progress),
-// checked and kept; HD graphics on once it is, off if it failed
-async function getArt(blob) {
+// The art downloaded from the site, checked and kept; HD graphics on once
+// it is, off if it failed
+async function getArt() {
     const ac = new AbortController(), signal = ac.signal;
     const progress = (phase) => (done, total) => {
         opt.fetching = {phase, done, total};
@@ -394,7 +390,7 @@ async function getArt(blob) {
     optionsRender();
     try {
         const p = await pin();
-        const b = await blob(signal, progress('download'));
+        const b = await download(opt.site.size, {signal, progress: progress('download')});
         const pack = await packFrom(b, p, {signal, progress: (phase, d, t) => progress(phase)(d, t)});
         if (navigator.storage && navigator.storage.estimate) {
             const {usage, quota} = await navigator.storage.estimate();
@@ -425,7 +421,7 @@ async function showOptions(store) {
     const name = (await store.keys()).find((k) => /^civ\.ini$/i.test(k));
     opt.store = store;
     opt.spec = await choicesSpec();
-    opt.pinned = await pin();
+    opt.site = await siteArt();
     opt.ini = iniOf(name ? [[name, await store.get(name)]] : []);
     opt.was = readChoices(opt.spec, opt.ini.text);
     opt.now = structuredClone(opt.was);
@@ -505,14 +501,8 @@ async function showOptions(store) {
             opt.now.hd = $('opt-hd').checked;
             optionsChanged();
             // (the art, where it is not here: downloaded, as the opening window does)
-            if (opt.now.hd && !opt.art && !opt.fetching)
-                getArt((signal, progress) => download(opt.pinned, {signal, progress}));
-        };
-        $('art-file').onchange = (e) => {
-            const f = e.target.files[0];
-            e.target.value = '';
-            if (f)
-                getArt(async () => f);
+            if (opt.now.hd && !opt.art && !opt.fetching && opt.site)
+                getArt();
         };
         $('art-remove').onclick = async () => {
             await store.hdClear();

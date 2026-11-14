@@ -9,7 +9,7 @@ import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
-import {sha256, zipDir, zipMember, packFrom, keepPack, loadPack, packIndex, prunePack, KEEP} from '../hdpack.js';
+import {sha256, packFrom, keepPack, loadPack, packIndex, prunePack, KEEP} from '../hdpack.js';
 import {iniGet, iniSet, readChoices, changedChoices, writeChoices, hdWanted} from '../options.js';
 
 // keys
@@ -229,29 +229,17 @@ for (const chunk of [64, 100, 1 << 20]) {
     assert.equal(pruned.length, 12 + 768 + 180 * idx.length + idx.reduce((n, e) => n + e.len, 0));
     assert.equal(new Set(reads).size, reads.length);       // each chunk read once
 }
-// the release's .zip: checked against the pin, then the pack against package.json
-const manifest = (p) => Buffer.from(JSON.stringify({kind: 'openciv2-assets', schema: 1, version: 't',
-                                                    files: {'data/atlas-hd.pack': {sha256: hex(p), size: p.length}}}));
-const release = await makeZip([{name: 'package.json', data: manifest(pack)}, {name: 'LICENSE', data: Buffer.from('MIT')},
-                               {name: 'data/atlas-hd.pack', data: pack}]);
-const pinned = {tag: 'vT', sha256: hex(release), size: release.length, pack_sha256: hex(pack), pack_size: pack.length};
-const dir = await zipDir(new Blob([release]));
-assert.deepEqual([...dir.keys()], ['package.json', 'LICENSE', 'data/atlas-hd.pack']);
-assert.equal(Buffer.from(await zipMember(new Blob([release]), dir.get('LICENSE'))).toString(), 'MIT');
+// the site's pack: checked against the pin
+const pinned = {tag: 'vT', pack_sha256: hex(pack), pack_size: pack.length};
 const phases = new Set();
-assert.deepEqual(await packFrom(new Blob([release]), pinned, {progress: (ph) => phases.add(ph)}), pack);
-assert.deepEqual([...phases].sort(), ['check', 'unpack']);
-assert.deepEqual(await packFrom(new Blob([pack]), pinned), pack);                    // the pack alone
-await assert.rejects(packFrom(new Blob([release]), {...pinned, sha256: '0'.repeat(64)}), /not the art's release vT/);
+assert.deepEqual(await packFrom(new Blob([pack]), pinned, {progress: (ph) => phases.add(ph)}), pack);
+assert.deepEqual([...phases], ['check']);
 const other = makePack({...pics, 'fog/2': Buffer.from('g')});
-await assert.rejects(packFrom(new Blob([other]), pinned), /not the one of the art's release/);
-const lying = await makeZip([{name: 'package.json', data: manifest(pack)}, {name: 'data/atlas-hd.pack', data: other}]);
-await assert.rejects(packFrom(new Blob([lying]), {...pinned, sha256: hex(lying), size: lying.length}),
-                     /does not match its package.json/);
-await assert.rejects(packFrom(new Blob([Buffer.from('hello world')]), pinned), /neither/);
+await assert.rejects(packFrom(new Blob([other]), pinned), /not the one of the art's release vT/);
+await assert.rejects(packFrom(new Blob([Buffer.from('hello world')]), pinned), /not an HD art pack/);
 const stop = new AbortController();
 stop.abort();
-await assert.rejects(packFrom(new Blob([release]), pinned, {signal: stop.signal}), {name: 'AbortError'});
+await assert.rejects(packFrom(new Blob([pack]), pinned, {signal: stop.signal}), {name: 'AbortError'});
 // kept in the store in chunks, its description last; loaded for the game pruned
 const hdStore = new Map();
 const fake = {hdClear: async () => hdStore.clear(), hdPutMany: async (es) => es.forEach(([k, v]) => hdStore.set(k, v)),
