@@ -15,6 +15,7 @@
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
+static int texture_density = 1;    /* HD graphics: texture pixels per desktop pixel */
 static int screen_w, screen_h;
 static int follows_window;      /* the desktop follows the window's size (HOST_EV_RESIZE) */
 static Uint64 perf_start;
@@ -78,7 +79,8 @@ static int make_texture(int w, int h)
 {
     SDL_RenderSetLogicalSize(renderer, w, h);
     fit_desktop();
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w * texture_density,
+                                h * texture_density);
     return texture != NULL;
 }
 
@@ -307,8 +309,32 @@ int host_usable_size(int32_t *w, int32_t *h)
     return 1;
 }
 
+/* The texture density pixels per desktop pixel each way; it fills the same
+   part of the window (SDL_RenderSetLogicalSize keeps the desktop's size). */
+static void texture_at(int density)
+{
+    if (texture && density != texture_density) {
+        SDL_DestroyTexture(texture);
+        texture = NULL;
+        texture_density = density;
+        make_texture(screen_w, screen_h);
+    }
+}
+
+void host_present_hd(const void *pixels, int stride, int density)
+{
+    texture_at(density < 1 ? 1 : density);
+    if (!texture)
+        return;
+    SDL_UpdateTexture(texture, NULL, pixels, stride);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+}
+
 void host_present(const void *pixels, int stride)
 {
+    texture_at(1);
     if (!texture)
         return;
     SDL_UpdateTexture(texture, NULL, pixels, stride);

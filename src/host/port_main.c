@@ -104,6 +104,8 @@ void HOST(menu_add)(Host *h, u32 level, u32 flags, u32 id, u32 text)
 }
 void HOST(menu_end)(Host *h) { (void)h; host_menu_end(); }
 void HOST(present)(Host *h, u32 pixels, u32 stride) { (void)h; host_present(MEM(pixels), (int)stride); }
+void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density)
+{ (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
 void HOST(resize_desktop)(Host *h, u32 w, u32 hh) { (void)h; host_resize_desktop((int)w, (int)hh); }
 

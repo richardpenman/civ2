@@ -17,6 +17,7 @@
 #include <execinfo.h>
 #endif
 #include "plat.h"
+#include "hd.h"
 
 static char **script;
 static int script_len, script_pos;
@@ -380,6 +381,10 @@ void replay_run_script(void)
             char path[1300];
             snprintf(path, sizeof path, "%s/%s.bmp", shot_dir, arg);
             plat_screenshot(path);
+            if (hd_on) {        /* HD graphics (CIV2_TEST_HD): the frame too */
+                snprintf(path, sizeof path, "%s/%s-hd.bmp", shot_dir, arg);
+                hd_screenshot(path);
+            }
             plat_log("shot %s at t=%lu ms\n", arg, (unsigned long)(vclock_us / 1000));
         } else if (!strcmp(cmd, "file")) {
             plat_getcwd(next_file, sizeof next_file);

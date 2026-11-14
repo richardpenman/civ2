@@ -90,6 +90,12 @@ typedef struct Bitmap {
     int ncolors;
     int is_dib;
     int selected;               /* selected into a DC */
+    /* HD graphics (hd.c): the plane, w*d x h*d, and the pixels it took */
+    uint32_t *hd;
+    unsigned char *hd_prev;
+    int hd_w, hd_h;
+    const void *hd_bits;
+    char hd_sheet[16];          /* the game's sheet loaded here (terrain1 ...) */
 } Bitmap;
 
 unsigned char *bmp_row(const Bitmap *b, int y);     /* row y, top = 0 */
