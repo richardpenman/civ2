@@ -172,7 +172,7 @@ def exe(cross_windows=False):
     # disc image's music: their sources, from tools/fetch-toolchain.sh;
     # stb_vorbis to play the music)
     host = [os.path.join(ROOT, 'src', 'host', f) for f in
-            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'host_launcher.c', 'setup.c', 'setup_disc.c') +
+            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'host_options.c', 'setup.c', 'setup_disc.c') +
             (('host_menu_win.c', 'setup_win.c') if windows else ('setup_unix.c',)) +
             (('host_menu_mac.m', 'setup_mac.m') if mac else ())]
     third = [os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c')] + \
@@ -220,8 +220,6 @@ def exe(cross_windows=False):
     out = os.path.join(ROOT, 'build', 'OpenCiv2' + ('.exe' if windows else ''))
     # (Windows: the C runtime's threads library linked in, so only SDL2.dll is needed beside the program)
     libs = ['-lm', '-static-libgcc', '-Wl,-Bstatic', '-lpthread', '-Wl,-Bdynamic'] if windows else ['-lm', '-lpthread']
-    if not windows and not mac:
-        libs.append('-ldl')         # (host_launcher.c: libX11, where there is one, for Shift at start)
     if windows:
         objs.append(windows_resources(cc, obj))
         libs = ['-lole32', '-lshell32', '-luuid', '-lws2_32'] + libs

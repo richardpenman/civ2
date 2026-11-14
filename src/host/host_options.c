@@ -1,8 +1,9 @@
 /*
- * The host's part of the opening window (src/platform/launcher.c, host.h):
- * whether Shift is held down at start, the user's own OpenCiv2 folder, and
- * the HD graphics' art (docs/HD-GRAPHICS.md) downloaded, checked and
- * installed there, in the background, as tools/fetch_hd_pack.py does it.
+ * The host's part of the OpenCiv2 Options dialog (src/game/options.cpp,
+ * host.h): the program started again (its choices that need a restart), the
+ * user's own OpenCiv2 folder, and the HD graphics' art (docs/HD-GRAPHICS.md)
+ * downloaded, checked and installed there, in the background, as
+ * tools/fetch_hd_pack.py does it.
  *
  * The pack is the release pinned in data/hd-pack.json (the build passes its
  * url, sha256 and size: HD_PACK_URL, HD_PACK_SHA256, HD_PACK_SIZE).  The
@@ -35,10 +36,7 @@
 extern char **environ;
 #endif
 #ifdef __APPLE__
-#include "host_menu.h"
-#endif
-#if defined(__linux__)
-#include <dlfcn.h>
+#include <mach-o/dyld.h>
 #endif
 
 #ifndef HD_PACK_URL         /* (tools/build_port.py and build_native.py pass data/hd-pack.json's) */
@@ -48,55 +46,165 @@ extern char **environ;
 #define HD_PACK_SIZE 0
 #endif
 
-/* ---- Shift at start ---- */
+/* ---- the restart ---- */
 
-#if defined(__linux__)
-/* X11 (also XWayland): the keyboard's state, whatever window has the
-   focus (SDL knows it only for its own windows). */
-static int x11_shift_held(void)
+/* The program's arguments as it was started (port_main.c: before the
+   set-up takes its own out); without them (the native test build) Linux's
+   /proc/self/cmdline. */
+static char **saved_argv;
+static int saved_argc;
+
+void host_save_args(int argc, char **argv)
 {
-    typedef void *(*OpenDisplay)(const char *);
-    typedef int (*CloseDisplay)(void *);
-    typedef int (*QueryKeymap)(void *, char *);
-    typedef unsigned char (*KeysymToKeycode)(void *, unsigned long);
-    void *lib = dlopen("libX11.so.6", RTLD_LAZY | RTLD_LOCAL), *d;
-    OpenDisplay open_display;
-    CloseDisplay close_display;
-    QueryKeymap query_keymap;
-    KeysymToKeycode to_keycode;
-    char keys[32];
-    int held = 0, i;
-    if (!lib)
-        return 0;
-    open_display = (OpenDisplay)dlsym(lib, "XOpenDisplay");
-    close_display = (CloseDisplay)dlsym(lib, "XCloseDisplay");
-    query_keymap = (QueryKeymap)dlsym(lib, "XQueryKeymap");
-    to_keycode = (KeysymToKeycode)dlsym(lib, "XKeysymToKeycode");
-    if (open_display && close_display && query_keymap && to_keycode && (d = open_display(NULL))) {
-        if (query_keymap(d, keys))
-            for (i = 0; i < 2; i++) {
-                unsigned code = to_keycode(d, i ? 0xffe2 : 0xffe1);     /* XK_Shift_R, XK_Shift_L */
-                if (code && (keys[code >> 3] >> (code & 7)) & 1)
-                    held = 1;
-            }
-        close_display(d);
+    int i;
+    saved_argv = (char **)calloc((size_t)argc + 1, sizeof *saved_argv);
+    if (!saved_argv)
+        return;
+    for (i = 0; i < argc; i++)
+        saved_argv[i] = strdup(argv[i]);
+    saved_argc = argc;
+}
+
+/* The arguments that choose what the options dialog chooses (--hd,
+   --sharp: they would win over it again) or the set-up (--setup): left
+   out of the restart's. */
+static int restart_drops(const char *a)
+{
+    static const char *const flags[] = {"--hd", "--sharp", "--setup"};
+    unsigned i;
+    for (i = 0; i < sizeof flags / sizeof flags[0]; i++) {
+        size_t n = strlen(flags[i]);
+        if (!SDL_strncasecmp(a, flags[i], n) && (!a[n] || (a[n] == '=' && i < 2)))
+            return 1;
     }
-    dlclose(lib);
-    return held;
+    return 0;
+}
+
+/* args: the arguments to start again with (argv[0] first), NULL-terminated,
+   in a block of size bytes; their count. */
+static int restart_args(char **args, int max, char *block, size_t size)
+{
+    int n = 0, i;
+    if (saved_argv) {
+        for (i = 0; i < saved_argc && n < max - 1; i++)
+            if (!i || !restart_drops(saved_argv[i]))
+                args[n++] = saved_argv[i];
+    } else {
+#if defined(__linux__)
+        FILE *f = fopen("/proc/self/cmdline", "rb");
+        size_t got = 0, k = 0;
+        if (f) {
+            got = fread(block, 1, size - 1, f);
+            fclose(f);
+        }
+        block[got] = 0;
+        while (k < got && n < max - 1) {
+            char *a = block + k;
+            if (!n || !restart_drops(a))
+                args[n++] = a;
+            k += strlen(a) + 1;
+        }
+#else
+        (void)block;
+        (void)size;
+#endif
+    }
+    args[n] = NULL;
+    return n;
+}
+
+#ifdef _WIN32
+/* An argument as Windows' C runtime parses it back */
+static void quote_arg(char *out, size_t size, const char *a)
+{
+    size_t k = 0;
+    int slashes = 0;
+    if (*a && !strpbrk(a, " \t\"")) {
+        snprintf(out, size, "%s", a);
+        return;
+    }
+    if (k + 1 < size)
+        out[k++] = '"';
+    for (; *a && k + 4 < size; a++) {
+        if (*a == '\\') {
+            slashes++;
+        } else {
+            if (*a == '"')
+                while (slashes-- >= 0 && k + 4 < size)
+                    out[k++] = '\\';
+            slashes = 0;
+        }
+        out[k++] = *a;
+    }
+    while (slashes-- > 0 && k + 3 < size)
+        out[k++] = '\\';
+    out[k++] = '"';
+    out[k] = 0;
 }
 #endif
 
-int host_launcher(void)
+int host_restart(int now)
 {
-#if defined(_WIN32)
-    return GetAsyncKeyState(VK_SHIFT) < 0;
-#elif defined(__APPLE__)
-    return host_mac_shift_held();
-#elif defined(__linux__)
-    return x11_shift_held();
+    char *args[64], block[8192];
+    int n;
+    if (!now)
+        return 1;
+    n = restart_args(args, 64, block, sizeof block);
+    if (!n)
+        return 0;
+    /* what the set-up took from the command line (--hd, --sharp) */
+#ifdef _WIN32
+    _putenv("CIV2_HD_ARG=");
+    _putenv("CIV2_SHARP_ARG=");
+    {
+        char exe[MAX_PATH], line[8192], q[1100];
+        STARTUPINFOA si;
+        PROCESS_INFORMATION pi;
+        int i;
+        if (!GetModuleFileNameA(NULL, exe, sizeof exe))
+            return 0;
+        quote_arg(line, sizeof line, exe);
+        for (i = 1; i < n; i++) {
+            quote_arg(q, sizeof q, args[i]);
+            if (strlen(line) + strlen(q) + 2 < sizeof line) {
+                strcat(line, " ");
+                strcat(line, q);
+            }
+        }
+        memset(&si, 0, sizeof si);
+        si.cb = sizeof si;
+        host_hd_fetch(HOST_HD_CANCEL, NULL, NULL, 0);
+        if (!CreateProcessA(exe, line, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+            return 0;
+        CloseHandle(pi.hThread);
+        CloseHandle(pi.hProcess);
+        host_quit();
+        ExitProcess(0);
+    }
 #else
-    return 0;
+    unsetenv("CIV2_HD_ARG");
+    unsetenv("CIV2_SHARP_ARG");
+    {
+        char exe[4096];
+#if defined(__APPLE__)
+        uint32_t len = sizeof exe;
+        if (_NSGetExecutablePath(exe, &len))
+            return 0;
+#elif defined(__linux__)
+        snprintf(exe, sizeof exe, "/proc/self/exe");
+#else
+        snprintf(exe, sizeof exe, "%s", args[0]);
 #endif
+        if (access(exe, X_OK))
+            return 0;
+        host_hd_fetch(HOST_HD_CANCEL, NULL, NULL, 0);
+        host_quit();
+        execv(exe, args);
+        fprintf(stderr, "OpenCiv2: could not start again (%s)\n", strerror(errno));
+        exit(1);
+    }
+#endif
+    return 0;
 }
 
 /* ---- folders ---- */

@@ -324,7 +324,7 @@ def main():
         sources += [os.path.join(ROOT, 'src', 'third_party', 'indeo4', f + '.c')
                     for f in ('iv41', 'ivi', 'ivi_dsp', 'vlc', 'reverse', 'zigzag')]
     if args.target.startswith('linux'):
-        sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c', 'host_launcher.c')]
+        sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c', 'host_options.c')]
         # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.
         sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     sources += [os.path.join(ROOT, f) for f in t.get('extra', [])]

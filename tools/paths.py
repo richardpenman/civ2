@@ -44,7 +44,7 @@ VORBIS = os.environ.get('VORBIS_SRC') or os.path.join(ROOT, 'tools', 'toolchain'
 
 def hd_pack_defines():
     """The HD graphics' pinned pack (data/hd-pack.json) for the host's download
-    of it (src/host/host_launcher.c): -D flags for the C compiler."""
+    of it (src/host/host_options.c): -D flags for the C compiler."""
     import json
     pin = json.load(open(os.path.join(ROOT, 'data', 'hd-pack.json')))
     return ['-DHD_PACK_TAG="%s"' % pin['tag'], '-DHD_PACK_URL="%s"' % pin['url'],

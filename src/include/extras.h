@@ -70,6 +70,7 @@ enum {
 };
 
 EXTRAS_C int plat_extras;                       /* src/platform/main.c */
+EXTRAS_C int plat_unit_test;                    /* src/platform/main.c: the unit tests' runner */
 EXTRAS_C int plat_scale;                        /* src/platform/main.c: pixels per desktop pixel */
 EXTRAS_C int plat_fullscreen;                   /* src/platform/main.c: full screen, not a window */
 EXTRAS_C uint64_t extras_enabled;     /* src/game/extras.cpp: bit per item */
@@ -83,13 +84,29 @@ EXTRAS_C HWND plat_window_at_cursor(POINT *pt);  /* src/platform/message.c */
 EXTRAS_C int plat_profile_string(const char *file, const char *section, const char *key, char *out, int n);
 
 /* src/game/extras.cpp */
-EXTRAS_C void extras_load(void);                /* the settings, once at start */
+EXTRAS_C void extras_load(void);                /* the settings: at start, and as the OpenCiv2 Options change them */
 EXTRAS_C int extras_input(void *msg);           /* a mouse message (MSG *) before dispatch: 1 if used */
 EXTRAS_C int extras_setting(const char *key, int def);   /* [OpenCiv2] key=number */
 EXTRAS_C const char *extras_text(const char *key);   /* an addition's text (translatable) */
 EXTRAS_C int extras_text_translated(const char *key);  /* whether a translation gives it */
 /* each of the additions' texts: add("openciv2.<key>", English) (lang.cpp's export) */
 EXTRAS_C void extras_texts_each(void (*add)(const char *key, const char *english));
+
+/* src/game/options.cpp: the OpenCiv2 Options dialog (docs/EXTRAS.md), from
+   the main menu */
+EXTRAS_C int options_in_main_menu(void);        /* whether the main menu has it */
+enum { MAIN_MENU_OPTIONS = 8 };                 /* its choice there, after View Credits (7) */
+EXTRAS_C void options_dialog(void);
+/* a setting chosen there in a test run (1, its text in out), which the
+   game reads instead of CIV.INI's */
+EXTRAS_C int options_test_setting(const char *key, char *out, int n);
+/* src/platform/options.c: the HD graphics' art (op, info, msg and the
+   states as host_hd_fetch's, src/host/host.h; _DONE: there), the restart
+   (now 0: how it can be, 1 restarted; host_restart's) */
+enum { PLAT_HD_START, PLAT_HD_POLL, PLAT_HD_CANCEL };
+enum { PLAT_HD_IDLE = -2, PLAT_HD_FAILED = -1, PLAT_HD_DONE = 0, PLAT_HD_RUNNING = 1, PLAT_HD_LATER = 2 };
+EXTRAS_C int plat_hd_art(int op, int *info, char *msg, int n);
+EXTRAS_C int plat_restart(int now);
 
 /* In a dialog list row's text (X30, X37): EXTRAS_ICON then 'g' (a gold coin),
    's' (a shield) or 'f' (food): that icon. */

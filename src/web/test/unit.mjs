@@ -2,7 +2,6 @@
 // desktop's scale, pixels, the WASI file system, .zip reading and writing, the player's saves.
 //   tools/toolchain/node/bin/node src/web/test/unit.mjs
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
 import {vkOf, Wheel, desktopScale, argbToRgba} from '../host.js';
 import {MemFS, makeWasi, normalize} from '../wasi.js';
 import {unzip, zip as makeZip, crc32} from '../zip.js';
@@ -10,7 +9,7 @@ import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {sha256, packFrom, keepPack, loadPack, packIndex, prunePack, KEEP} from '../hdpack.js';
-import {iniGet, iniSet, readChoices, changedChoices, writeChoices, hdWanted} from '../options.js';
+import {iniGet, iniSet, hdWanted} from '../options.js';
 
 // keys
 assert.equal(vkOf({code: 'KeyA', key: 'a'}), 0x41);
@@ -263,7 +262,7 @@ assert.equal(await loadPack(fake, {...pinned, pack_sha256: 'other'}), null);    
 await fake.hdClear();
 assert.equal(await loadPack(fake, pinned), null);
 
-// ---- the opening window's choices in CIV.INI (options.js) ----
+// ---- the game's OpenCiv2 Options in CIV.INI, as the page reads them (options.js) ----
 
 const ini0 = '[Civ2]\r\nFoo=1\r\n\r\n[OpenCiv2]\r\nMode=Standard\r\n\r\n[Other]\r\nx=y\r\n';
 assert.equal(iniGet(ini0, 'openciv2', 'MODE'), 'Standard');
@@ -272,25 +271,7 @@ assert.equal(iniSet(ini0, 'OpenCiv2', 'Mode', 'Classic'), ini0.replace('Mode=Sta
 assert.equal(iniSet(ini0, 'OpenCiv2', 'Graphics', 'HD'), ini0.replace('Mode=Standard\r\n', 'Mode=Standard\r\nGraphics=HD\r\n'));
 assert.equal(iniSet('', 'OpenCiv2', 'Graphics', 'HD'), '[OpenCiv2]\r\nGraphics=HD\r\n');
 assert.equal(iniSet('[A]\nb=1\n', 'OpenCiv2', 'k', 'v'), '[A]\nb=1\n\n[OpenCiv2]\nk=v\n');
-const spec = JSON.parse(readFileSync(new URL('../../../build/web/choices.json', import.meta.url)));
-assert.ok(spec.rules.length >= 5 && spec.extras.length >= 20 && spec.limits.length === 5 && spec.colours.length === 4);
-const c0 = readChoices(spec, '');
-assert.equal(c0.classic, false);
-assert.equal(c0.hd, false);
-assert.ok(c0.extra.every((x, i) => x === (spec.extras[i].key !== 'HotkeyUnderlines')) && c0.rule.every((x) => !x));   // (HotkeyUnderlines: off by default)
-assert.deepEqual(c0.limit, ['2020', '2000', '32000', '30000', '10000']);
-assert.deepEqual(c0.colour, ['100', '0', '0', '']);
-assert.deepEqual(changedChoices(spec, c0, c0), []);
-const c1 = structuredClone(c0);
-c1.hd = true;
-c1.rule[0] = true;
-c1.extra[1] = false;
-c1.limit[0] = '2100';           // the warning moves with the year
-c1.limit[3] = '50000';
-assert.deepEqual(changedChoices(spec, c1, c0), [['Graphics', 'HD'], [spec.rules[0].key, '1'],
-    [spec.extras[1].key, '0'], ['RetirementYear', '2100'], ['RetirementWarningYear', '2080'], ['GoldLimit', '50000']]);
-const ini1 = writeChoices(spec, ini0, c1, c0);
-assert.deepEqual(readChoices(spec, ini1), {...c1, limit: ['2100', '2080', '32000', '50000', '10000']});
+const ini1 = iniSet(ini0, 'OpenCiv2', 'Graphics', 'HD');
 assert.equal(hdWanted(ini1, null), 0);         // (the density: Auto, unless CIV.INI has GraphicsDensity=)
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'GraphicsDensity', '2'), null), 2);
 assert.equal(hdWanted(ini0, null), -1);
@@ -299,14 +280,6 @@ assert.equal(hdWanted(ini0, ''), 0);
 assert.equal(hdWanted(ini0, '3'), 3);
 assert.equal(hdWanted(ini1, '0'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
-// sharp text and interface: on by default, but in Classic; written once chosen
-assert.equal(c0.sharp, true);
-assert.equal(c0.sharpSet, false);
-assert.equal(readChoices(spec, iniSet('', 'OpenCiv2', 'Mode', 'Classic')).sharp, false);
-assert.equal(readChoices(spec, iniSet(iniSet('', 'OpenCiv2', 'Mode', 'Classic'), 'OpenCiv2', 'SharpText', '1')).sharp, true);
-const c2 = {...structuredClone(c0), sharp: false, sharpSet: true};
-assert.deepEqual(changedChoices(spec, c2, c0), [['SharpText', '0']]);
-assert.deepEqual(readChoices(spec, writeChoices(spec, '', c2, c0)), c2);
-assert.deepEqual(changedChoices(spec, {...structuredClone(c0), classic: true, sharp: false}, c0), [['Mode', 'Classic']]);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);
 
 console.log('src/web unit tests passed');

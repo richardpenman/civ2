@@ -1,9 +1,8 @@
-// The opening window's choices (src/platform/launcher.c; docs/EXTRAS.md "The
-// opening window") on the set-up page: read from and written to CIV.INI's
-// [OpenCiv2] section, which the browser keeps with the game's files, as the
-// opening window reads and writes them, so that the game reads them as
-// natively.  The lists and their texts are the opening window's own
-// (tools/build_web.py takes them from launcher.c into choices.json).
+// The game's OpenCiv2 Options (src/game/options.cpp; docs/EXTRAS.md
+// "OpenCiv2 Options") as the page reads them: CIV.INI's [OpenCiv2] section,
+// which the game writes and the browser keeps with the game's files.  What
+// the page needs to know before the game starts: whether it wants HD
+// graphics (their art, which the page gets: main.js).
 
 const SECTION = 'OpenCiv2';
 
@@ -62,85 +61,6 @@ export function iniSet(text, section, key, value) {
             lines.splice(last + 1, 0, entry);
     }
     return lines.join(nl) + nl;
-}
-
-// ---- the choices (launcher.c: Choices, read_choices, write_choices) ----
-
-export function readChoices(spec, ini) {
-    const get = (k) => {
-        const v = iniGet(ini, SECTION, k);
-        return v === null ? '' : v;
-    };
-    const getInt = (k, def) => {
-        const v = get(k);
-        return v ? parseInt(v, 10) || 0 : def;
-    };
-    const c = {};
-    c.classic = get('Mode').toLowerCase() === 'classic';
-    c.hd = get('Graphics').toLowerCase() === 'hd';
-    // sharp text and interface: SharpText=, else on but in Classic
-    c.sharpSet = get('SharpText') !== '';
-    c.sharp = c.sharpSet ? getInt('SharpText', 0) !== 0 : !c.classic;
-    c.rule = spec.rules.map((r) => getInt(r.key, 0) !== 0);
-    c.extra = spec.extras.map((x) => getInt(x.key, x.key === 'HotkeyUnderlines' ? 0 : 1) !== 0);
-    let year = getInt('RetirementYear', 0);
-    if (year <= 0)
-        year = spec.limits[0].original;
-    c.limit = spec.limits.map((l, i) => {
-        if (i === 0)
-            return String(year);
-        if (i === 1)
-            return String(getInt('RetirementYear', 0) > 0 ? getInt('RetirementWarningYear', year - 20) : l.original);
-        const n = getInt(l.key, 0);
-        return String(n > 0 ? n : l.original);
-    });
-    c.colour = spec.colours.map((x, i) => (i < spec.colours.length - 1 ? String(getInt(x.key, x.def)) : get(x.key)));
-    return c;
-}
-
-// What changed, as [key, value] to write
-export function changedChoices(spec, c, old) {
-    const out = [];
-    const put = (k, v) => out.push([k, String(v)]);
-    const atoi = (s) => parseInt(s, 10) || 0;
-    if (c.classic !== old.classic)
-        put('Mode', c.classic ? 'Classic' : 'Standard');
-    if (c.hd !== old.hd)
-        put('Graphics', c.hd ? 'HD' : 'Standard');
-    if (c.sharpSet && (c.sharp !== old.sharp || !old.sharpSet))
-        put('SharpText', c.sharp ? 1 : 0);
-    spec.rules.forEach((r, i) => c.rule[i] !== old.rule[i] && put(r.key, c.rule[i] ? 1 : 0));
-    spec.extras.forEach((x, i) => c.extra[i] !== old.extra[i] && put(x.key, c.extra[i] ? 1 : 0));
-    const [retire, warnL] = spec.limits;
-    if (c.limit[0] !== old.limit[0] || c.limit[1] !== old.limit[1]) {
-        const year = atoi(c.limit[0]);
-        let warn = atoi(c.limit[1]);
-        if (c.limit[1] === old.limit[1] && atoi(old.limit[1]) === atoi(old.limit[0]) - 20)
-            warn = year - 20;       // a warning 20 years before moves with the year
-        if (year === retire.original && warn === warnL.original)
-            put('RetirementYear', 0);
-        else {
-            put('RetirementYear', year < 1 ? 1 : year > 9999 ? 9999 : year);
-            put('RetirementWarningYear', warn < 0 ? 0 : warn);
-        }
-    }
-    spec.limits.forEach((l, i) => {
-        if (i >= 2 && c.limit[i] !== old.limit[i]) {
-            const v = atoi(c.limit[i]);
-            put(l.key, v <= l.original ? 0 : v > l.hi ? l.hi : v);
-        }
-    });
-    spec.colours.forEach((x, i) => {
-        if (c.colour[i] !== old.colour[i])
-            put(x.key, i === spec.colours.length - 1 ? c.colour[i] : atoi(c.colour[i]));
-    });
-    return out;
-}
-
-export function writeChoices(spec, ini, c, old) {
-    for (const [k, v] of changedChoices(spec, c, old))
-        ini = iniSet(ini, SECTION, k, v);
-    return ini;
 }
 
 // Whether the game will want HD graphics: ?hd=N (as --hd=N) wins, else

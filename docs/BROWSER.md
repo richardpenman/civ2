@@ -49,16 +49,17 @@ replace the game files or remove them.
 
 Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 
-## How to play: the opening window's choices
+## How to play: OpenCiv2 Options
 
-The desktop version asks how to play in its opening window ([EXTRAS.md](EXTRAS.md#the-opening-window));
-the browser version asks on its `?setup` page, under *How to play*, once the game files are there:
-the mode (Standard or Classic), sharp text and interface, HD graphics, the rule changes and limits, and the
-interface additions with the colour correction and the messages shown on the map, with the opening
-window's own texts. They are kept as soon as they are changed, in the game's `CIV.INI` (`[OpenCiv2]`,
-the same keys as natively) in the browser's storage, and take effect the next time the game starts.
-Full screen and *Don't show this window again* are not there: the browser has its own full screen
-(F11), and the game starts at once on later visits anyway.
+How to play is chosen in the game, as natively: *OpenCiv2 Options*, the main menu's last choice
+([EXTRAS.md](EXTRAS.md#openciv2-options)): the mode (Standard or Classic), sharp text and
+interface, HD graphics, the rule changes and limits, and the interface additions with the colour
+correction and the messages shown on the map.  They are kept in the game's `CIV.INI`
+(`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take effect when
+the game starts again (the mode, the graphics) offer *Restart now*: the page is loaded again,
+into the game (without `?setup`, `?hd` or `?sharp`, which would win over them).  Full screen is
+not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
+them, *Remove them* (with the HD art), *Play*, and the saved games' *Export* and *Import*.
 
 ## HD graphics
 
@@ -66,12 +67,13 @@ The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.
 version does, where the site has the art: `make web HD=1` copies the installed art (`make hd`,
 openciv2-assets, the release pinned in `data/hd-pack.json`) to `build/web/hd/atlas-hd.pack` (250 MB
 more to serve; the art's licence beside it), with `hd/pack.json` saying so. On such a site, tick
-*HD graphics* on the `?setup` page: the art is downloaded from the site at once, with its progress
-and a Stop button, checked against the pin's `pack_sha256`, and kept in the browser's storage
-(IndexedDB, 250 MB; unticking *HD graphics* keeps it, *Remove the art* takes it out), so that it
-works offline from then on. A site built without it (`make web`) does not offer HD graphics: the
-tick is greyed, with *This site was built without the HD art (make web HD=1)*; art already kept in
-the browser still works there.
+*HD graphics* in OpenCiv2 Options (Graphics and screen) and restart: as the page is loaded again
+it downloads the art from the site, with its progress on the screen, checks it against the pin's
+`pack_sha256` and keeps it in the browser's storage (IndexedDB, 250 MB; unticking *HD graphics*
+keeps it, *Remove them* on the `?setup` page takes it out with the game files), so that it works
+offline from then on. A site built without it (`make web`) does not offer HD graphics: the tick is
+greyed, with *This site was built without the art*; art already kept in the browser still works
+there (the page tells the game which: kept, on the site, or neither).
 
 `?hd=1` (or `?hd=N`, N the density 2 to 4) in the address turns them on for that visit, `?hd=0` off,
 as `--hd` does natively. The page has no density choice: it is *Auto* (unless `CIV.INI` has

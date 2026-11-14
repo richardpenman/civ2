@@ -1,7 +1,7 @@
 // The browser version's smoke test: build/web served on a local port, opened
 // in Chrome's headless shell (driven over the DevTools protocol, no other
 // dependency), given the player's game files as a .zip through the page's
-// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu, a new game with the default
+// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its OpenCiv2 Options), a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
 // (from the set-up page, and while playing), the saved game loaded.  Screenshots in run/web-smoke (the game's
 // images: never committed).
@@ -228,6 +228,15 @@ async function main() {
             await settle(3000, 30000);
         }
         await shot('01-menu');
+        // its last choice, OpenCiv2 Options (its hotkey): the game's dialog, closed again
+        await key('KeyO', 79, 'o');
+        await key('Enter', 13);
+        await settle(1500, 20000);
+        await shot('01-options');
+        await key('Escape', 27);
+        await settle(1500, 20000);
+        for (let i = 0; i < 8; i++)
+            await key('ArrowUp', 38);       // (back to Start a New Game)
         // a new game, the default choices (as harness/scripts/newgame.txt)
         for (let i = 2; i <= 10; i++) {
             await key('Enter', 13);

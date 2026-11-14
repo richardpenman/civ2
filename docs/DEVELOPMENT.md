@@ -100,8 +100,8 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
   it, named `NAME-LABEL`.  `CIV2_TEST_EXTRAS` turns additions on by number (`1`: all the interface
   additions; `17,42`: those rule changes), `CIV2_TEST_SETTINGS` sets `CIV.INI` values
   (`RetirementYear=1902,Gamma=150`), `CIV2_TEST_SUPPRESS` the popups shown on the map,
-  `CIV2_TEST_LAUNCHER=1` shows the opening window first (on a desktop of its size; its choices
-  hold for the run, nothing is written to `CIV.INI` or downloaded: `x-launcher.txt`), and
+  `CIV2_TEST_OPTIONS=1` puts OpenCiv2 Options in the main menu (its choices hold for the run,
+  nothing is written to `CIV.INI`, downloaded or restarted: `x-options.txt`), and
   `CIV2_TEST_FULL=WxH` shows the whole game window on a WxH desktop (the interface scripts: 640x480)
   instead of the reference desktop of the replays (the rule changes' scripts).
 * Each run's screenshots (PNG) and logs are in `run/extras-NAME`.  On a failure the suite names
@@ -245,12 +245,13 @@ builds do not use it.
   natively, its decoded pictures within its 160 MB budget in the module's memory (no maximum set
   at link time: wasm32's 4 GB).  The frame goes on the canvas at density times the desktop's size
   by `putImageData` (about 10 ms for 2560x1600, so not WebGL), not smoothed where the canvas is
-  shown at whole device pixels.  No import was added to asyncify's.  GitHub's release downloads
+  shown at whole device pixels.  GitHub's release downloads
   have no CORS headers, so the page cannot fetch them: the player chooses the downloaded `.zip`,
-  or the site has the art (`make web HD=1`: `build/web/hd`).  The opening window's choices on the
-  `?setup` page: src/web/options.js (launcher.c's `read_choices`/`write_choices` in JavaScript,
-  over `CIV.INI`'s text), its lists and texts taken from launcher.c by tools/build_web.py into
-  `choices.json`.
+  or the site has the art (`make web HD=1`: `build/web/hd`).  The game's OpenCiv2 Options
+  (src/game/options.cpp) are the same in the browser: its host tells it where the art is
+  (`host_hd_fetch`: kept, on the site, or neither) and its restart loads the page again
+  (`host_restart`, an import asyncify waits on, as the message box), the page then getting the art
+  from the site where `CIV.INI` asks for HD graphics (src/web/main.js, options.js: `hdWanted`).
 * **Set-up from the CD or a disc image** (src/web/setup_run.js, setup_worker.js,
   setup/setup_web.c): the native set-up's own code, src/host/setup.c and setup_disc.c with
   unshield, zlib, libogg and libvorbis (their sources from tools/fetch-toolchain.sh, as the native
@@ -289,7 +290,7 @@ builds do not use it.
 * **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
   wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading and writing, which of
   the files are the player's and where imported ones go, the HD art's checks, store and
-  pruning, the opening window's choices in `CIV.INI`; no browser, no game files), `src/web/test/setup.mjs` (`setup.wasm` under node on a made-up CD,
+  pruning, whether `CIV.INI` asks for HD graphics; no browser, no game files), `src/web/test/setup.mjs` (`setup.wasm` under node on a made-up CD,
   `src/web/test/disc.mjs`: an InstallShield 5 cabinet with stored and zlib-compressed files in two
   file groups, one of them "Sound Files", an ISO 9660 file system with it and `CIV2/KINGS`,
   `CIV2/VIDEO`, and a disc image of that, `.bin` and `.cue`, the data track followed by two audio

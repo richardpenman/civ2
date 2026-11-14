@@ -58,35 +58,6 @@
   #choose-menu span { display: block; color: var(--dim); font-size: 0.85rem; }
   #have { margin: 1rem 0 0; padding-top: 0.8rem; border-top: 2px groove #eee; }
   #have p { margin: 0 0 0.4rem; }
-  #options h3 { font: bold 1rem var(--serif); margin: 0.6rem 0 0.2rem; }
-  fieldset { border: 2px groove #eee; margin: 0.9rem 0; padding: 0.4rem 0.9rem 0.7rem; min-width: 0; }
-  fieldset:disabled { opacity: 0.55; }
-  legend { font: bold 1.1rem var(--serif); padding: 0 0.3rem; }
-  label.choice { display: block; margin: 0.25rem 0; }
-  .note { display: block; color: var(--dim); font-size: 0.88rem; margin: 0 0 0 1.75rem; }
-  p.note { margin: 0.2rem 0; }
-  h3 .note { font-weight: normal; display: inline; margin: 0; }
-  .indent { margin: 0.25rem 0 0.25rem 1.75rem; }
-  .indent .note { margin: 0; }
-  .columns { columns: 2 14rem; font-size: 0.95rem; }
-  .columns label { display: block; break-inside: avoid; margin: 0.15rem 0; }
-  .fields label { display: inline-block; margin: 0.2rem 1rem 0.2rem 0; }
-  .fields input, .dialog-text input { font: inherit; width: 6rem; background: #fff; color: #000; border: 2px solid;
-                                      border-color: var(--lo) var(--hi) var(--hi) var(--lo); padding: 0 0.3rem; }
-  /* the game's round radio buttons and square boxes */
-  input[type=radio], input[type=checkbox] { appearance: none; -webkit-appearance: none; width: 1.05rem; height: 1.05rem;
-      margin: 0 0.45rem 0 0; vertical-align: -0.15rem; background: radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a);
-      border: 1px solid #333; box-shadow: inset -1px -1px 0 #777, 1px 1px 0 #fff; cursor: pointer; }
-  input[type=radio] { border-radius: 50%; }
-  input[type=radio]:checked { background: radial-gradient(circle, #000 0 28%, transparent 33%),
-                              radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a); }
-  input[type=checkbox]:checked { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='%23000' stroke-width='2.4'/%3E%3C/svg%3E") center/85% no-repeat,
-                                 radial-gradient(circle at 35% 35%, #fff, #c8c8c8 60%, #8a8a8a); }
-  input:disabled { cursor: default; opacity: 0.6; }
-  #art-bar { height: 0.8rem; width: 20rem; max-width: 100%; background: #fff; margin: 0.3rem 0; border: 2px solid;
-             border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
-  #art-bar div { height: 100%; width: 0; background: #00007a; }
-  #art-status[style*="color"] { font-weight: bold; }
   #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
              font: 1.2rem var(--serif); color: #f4f0e6; text-shadow: 1px 1px 0 #000; pointer-events: none; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
@@ -103,7 +74,8 @@
   #dialog-title, .dialog-title, #saves-dialog h2 { font: bold 1.25rem/1.2 var(--serif); text-align: center; color: #f4f4f4;
       text-shadow: 1px 1px 0 #000, 2px 2px 1px #555; padding: 0.35rem 0.5rem 0.2rem; margin: 0; }
   #dialog-text, .dialog-text { padding: 0.6rem 1rem; white-space: pre-wrap; }
-  .dialog-text input { width: auto; }
+  .dialog-text input { font: inherit; width: auto; background: #fff; color: #000; border: 2px solid;
+                       border-color: var(--lo) var(--hi) var(--hi) var(--lo); padding: 0 0.3rem; }
   #dialog-buttons, .dialog-buttons { padding: 0.2rem 1rem 0.8rem; text-align: center; }
   #saves-dialog p, #saves-dialog > button, #saves-dialog > label { margin-left: 1rem; }
   #saves-dialog { padding-bottom: 0.5rem; }
@@ -123,7 +95,9 @@
   <div class="body">
   <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
      <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with
-     <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD.</p>
+     <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD.
+     How to play (Standard or Classic, HD graphics, the rule changes and the interface additions)
+     is chosen in the game: OpenCiv2 Options, in its main menu.</p>
   <div id="drop">
     <div id="choose-wrap">
       <button id="choose" aria-haspopup="menu" aria-expanded="false">Choose your game&hellip;</button>
@@ -147,38 +121,6 @@
   </div>
   </div>
  </section>
-  <section id="options" class="panel" aria-labelledby="title-options" hidden>
-    <h2 class="title" id="title-options">How to play</h2>
-    <div class="body">
-    <p class="dim">As the desktop version's opening window: kept in the game's <code>CIV.INI</code>, under
-       <code>[OpenCiv2]</code>, from the next start of the game.</p>
-    <fieldset id="opt-game"><legend>Game</legend>
-      <h3>Mode</h3>
-      <label class="choice"><input type="radio" name="mode" value="0"> Standard<span class="note" id="note-standard"></span></label>
-      <label class="choice"><input type="radio" name="mode" value="1"> Classic<span class="note" id="note-classic"></span></label>
-      <h3>Graphics</h3>
-      <label class="choice"><input type="checkbox" id="opt-sharp"> Sharp text and interface<span class="note" id="note-sharp"></span></label>
-      <label class="choice"><input type="checkbox" id="opt-hd"> HD graphics<span class="note" id="note-hd"></span></label>
-      <div class="indent" id="art">
-        <p id="art-status" class="note"></p>
-        <div id="art-bar" hidden><div></div></div>
-        <button id="art-stop" hidden>Stop</button>
-        <button id="art-remove" class="plain" hidden>Remove the art</button>
-      </div>
-    </fieldset>
-    <fieldset id="opt-rules"><legend>Rules</legend>
-      <p class="note" id="note-rules"></p>
-      <div id="rules"></div>
-      <h3>Limits <span class="note" id="note-limits"></span></h3>
-      <div id="limits" class="fields"></div>
-    </fieldset>
-    <fieldset id="opt-ui"><legend>Interface</legend>
-      <p class="note" id="note-ui"></p>
-      <div id="extras" class="columns"></div>
-      <div id="colours" class="fields"></div>
-    </fieldset>
-    </div>
-  </section>
 </div>
 <div id="game" hidden><canvas id="screen" tabindex="0"></canvas>
   <button id="saves-open" title="Export or import saved games">Saves</button></div>

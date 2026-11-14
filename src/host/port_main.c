@@ -107,8 +107,7 @@ void HOST(present)(Host *h, u32 pixels, u32 stride) { (void)h; host_present(MEM(
 void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density)
 { (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
-void HOST(close_window)(Host *h) { (void)h; host_close_window(); }
-u32 HOST(launcher)(Host *h) { (void)h; return (u32)host_launcher(); }
+u32 HOST(restart)(Host *h, u32 now) { (void)h; return (u32)host_restart((int)now); }
 u32 HOST(user_dir)(Host *h, u32 buf, u32 size)
 {
     char p[4096];
@@ -237,6 +236,7 @@ int main(int argc, char **argv)
     static struct w2c_wasi__snapshot__preview1 wasi = {&module};
     wasm_rt_trap_t trap;
     char cwd[4096], game[4096], *args[2];
+    host_save_args(argc, argv);     /* (for host_restart) */
     /* The game: GameData, set up from the user's copy first if need be,
        or the folder named (setup.h); the module's working directory
        starts at "/", so it is named (main.c's argument). */

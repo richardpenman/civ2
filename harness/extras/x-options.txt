@@ -1,0 +1,100 @@
+# The OpenCiv2 Options dialog (src/game/options.cpp), the main menu's last
+# choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI, downloaded or
+# restarted; the choices hold for the run): its pages; Classic chosen (the
+# restart offered, the other pages not in it) and Standard again; HD
+# graphics ticked (their art: nothing downloaded in a test run) and sharp
+# text off (the restart offered); Go To past foreign units, the retirement
+# year, the turn in the status panel off and gamma 150 chosen, which hold
+# at once: a saved game loaded without the turn after the year, brighter.
+# test: CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
+# (sharp: the same with sharp text and interface at density 2: the dialogs'
+# text and controls drawn sharp, the -hd shots)
+# test sharp: CIV2_TEST_SHARP=2 CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
+wait 8000
+shot xo-a-mainmenu
+key Down Down Down Down Down Down Down Down
+key Return
+wait 2000
+shot xo-b-options
+key Return                  # Mode
+wait 1000
+shot xo-c-mode
+key Down                    # Classic
+key Return
+wait 1000
+shot xo-d-restart
+key Down                    # Later
+key Return
+wait 1000
+shot xo-e-options-classic
+key Return                  # Mode
+wait 1000
+key Up                      # Standard
+key Return
+wait 1000
+key Down                    # Graphics and screen
+key Return
+wait 1000
+shot xo-f-graphics
+click 100 330               # HD graphics
+click 100 308               # Sharp text and interface: off
+wait 500
+shot xo-g-graphics-chosen
+key Return
+wait 1000
+shot xo-h-no-art
+key Return
+wait 1000
+shot xo-i-restart
+key Down                    # Later
+key Return
+wait 1000
+key Down                    # Rule changes
+key Return
+wait 1000
+shot xo-j-rules
+click 100 214               # Go To past foreign units
+wait 500
+shot xo-k-rules-chosen
+key Return
+wait 1000
+key Down                    # Limits
+key Return
+wait 1000
+shot xo-l-limits
+type 2050                   # the retirement year: its warning moves to 2030
+key Return
+wait 1000
+key Return                  # Limits again
+wait 1000
+shot xo-m-limits-2050
+key Escape
+wait 1000
+key Down                    # Interface additions
+key Return
+wait 1000
+shot xo-n-interface
+click 40 214                # Turn in the status panel
+wait 500
+shot xo-o-interface-chosen
+key Return
+wait 1000
+key Down                    # Colours and messages
+key Return
+wait 1000
+shot xo-p-colours
+type 150                    # gamma
+key Return
+wait 1000
+key Escape
+wait 2000
+shot xo-q-mainmenu
+key Up Up Up Up             # "Load a Game"
+key Return
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+shot xo-r-game

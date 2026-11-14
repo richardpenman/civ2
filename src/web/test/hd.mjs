@@ -1,9 +1,10 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
-// headless shell (as smoke.mjs), the game's files given as a .zip, then on
-// the set-up page HD graphics not offered while the site has no art; then
-// the site with the art (as make web HD=1: data/native/hd/atlas-hd.pack,
-// make hd, served at hd/), HD graphics ticked: downloaded from it, checked,
-// kept in IndexedDB, HD graphics switched on in CIV.INI; then the game at a
+// headless shell (as smoke.mjs), the game's files given as a .zip, then in
+// the game's OpenCiv2 Options HD graphics not offered while the site has no
+// art; then the site with the art (as make web HD=1: data/native/hd/
+// atlas-hd.pack, make hd, served at hd/), HD graphics ticked there and the
+// game restarted: the page loaded again, the art downloaded from the site,
+// checked, kept in IndexedDB, HD graphics on in CIV.INI; then the game at a
 // device pixel ratio of 2 (density Auto: 2), the menu and a saved game's map
 // drawn in HD (the canvas twice the desktop's size, and not the desktop's
 // pixels enlarged), the first screen's text sharp; then a later visit's
@@ -165,35 +166,60 @@ async function main() {
         await waitFor('/kept in this browser/.test(window.civ2Status) || /not|Could/.test(window.civ2Status) && window.civ2Status',
                       300000, 'the copy');
         log('game: ' + await evaluate('window.civ2Status'));
-        // the set-up page: the opening window's choices, HD graphics off
-        await waitFor('!document.getElementById("options").hidden', 10000, 'the choices');
-        if (await evaluate('document.getElementById("opt-hd").checked'))
-            throw new Error('HD graphics on before the art');
-        // the site without the art: HD graphics not offered, and why
-        const none = await evaluate('document.getElementById("art-status").textContent');
-        log('art: ' + none);
-        if (!await evaluate('document.getElementById("opt-hd").disabled') || !/without the HD art/.test(none))
-            throw new Error('HD graphics offered where the site has no art');
-        await evaluate('document.getElementById("opt-hd").scrollIntoView()');
-        await shot('00-setup-no-art');
-        // the site with it: ticked, the download starts at once, checked, kept
+        // the game's OpenCiv2 Options (the main menu's last choice) where
+        // the site has no art: HD graphics not offered there (look at the shot)
+        const toMenu = async () => {
+            await settle(3000, 60000);
+            if (!await evaluate('(() => { const c = document.getElementById("screen");' +
+                                ' const d = c.getContext("2d").getImageData(c.width - 8, c.height >> 1, 1, 1).data; return d[0] + d[1] + d[2] > 0; })()')) {
+                await key('Enter', 13);     // (the heralds' question, the first time)
+                await settle(3000, 30000);
+            }
+            await evaluate('document.getElementById("screen").focus()');
+        };
+        const toGraphics = async () => {
+            await key('KeyO', 79, 'o');     // OpenCiv2 Options (its hotkey)
+            await key('Enter', 13);
+            await settle(1000, 10000);
+            await key('ArrowDown', 40);     // Graphics and screen
+            await key('Enter', 13);
+            await settle(1000, 10000);
+        };
+        await evaluate('document.getElementById("play").click()');
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
+        await toMenu();
+        await toGraphics();
+        await shot('00-graphics-no-art');
+        await key('Escape', 27);
+        await settle(1000, 10000);
+        await key('Escape', 27);
+        await settle(1000, 10000);
+        // the site with the art: HD graphics ticked there (Tab, Space), OK,
+        // Restart now: the page loaded again, the art downloaded from the
+        // site, checked, kept in this browser, the game in HD
         siteArt = art;
         await send('Page.navigate', {url: url + '?setup'});
-        await waitFor('window.civ2Setup && !document.getElementById("options").hidden', 10000, 'the choices again');
-        log('art: ' + await evaluate('document.getElementById("art-status").textContent'));
+        await waitFor('window.civ2Setup', 10000, 'the page again');
+        await evaluate('document.getElementById("play").click()');
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start again');
+        await toMenu();
+        await toGraphics();
+        await key('Tab', 9);
+        await key('Space', 32, ' ');
+        await settle(500, 5000);
+        await shot('00-graphics');
+        await key('Enter', 13);
+        await settle(1000, 10000);
+        await shot('00-restart');
+        await evaluate('window.civ2Before = 1');
         const t0 = performance.now();
-        await evaluate('document.getElementById("opt-hd").click()');
-        await waitFor('/kept in this browser|stay off/.test(document.getElementById("art-status").textContent) && ' +
-                      'document.getElementById("art-bar").hidden', 600000, 'the art');
-        const said = await evaluate('document.getElementById("art-status").textContent');
-        log(`art from ${art}: ${said} (${Math.round(performance.now() - t0)} ms)`);
-        if (!/kept in this browser/.test(said))
-            throw new Error(said);
-        if (!await evaluate('document.getElementById("opt-hd").checked'))
-            throw new Error('HD graphics not on once the art is here');
-        // the rules page's choice too, kept in CIV.INI as the opening window writes them
-        await evaluate('document.getElementById("rule-0").click()');
-        await sleep(500);
+        await key('Enter', 13);             // Restart now
+        await waitFor('!window.civ2Before && window.civ2Status', 60000, 'the page loaded again');
+        log('restarted: ' + await evaluate('window.civ2Status'));
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 600000, 'the art');
+        log(`art from ${art} (${Math.round(performance.now() - t0)} ms): ${JSON.stringify(await evaluate('window.civ2Hd'))}`);
+        if (!(await evaluate('window.civ2Hd') || {}).packBytes)
+            throw new Error('the art not downloaded and kept at the restart');
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -201,18 +227,11 @@ async function main() {
                     resolve(new TextDecoder("latin1").decode(q.result.data)); }; }; }; })`);
         const section = ini.slice(ini.indexOf('[OpenCiv2]')).split(/\r?\n\r?\n/)[0];
         log('CIV.INI: ' + section.replace(/\r?\n/g, ' '));
-        if (!/^Graphics=HD$/m.test(section) || !/^GotoNoZocStop=1$/m.test(section))
-            throw new Error('CIV.INI does not have the choices');
-        await evaluate('document.getElementById("options").scrollIntoView()');
-        await shot('00-setup');
-        await evaluate('document.getElementById("opt-rules").scrollIntoView()');
-        await shot('00-setup-rules');
+        if (!/^Graphics=HD$/m.test(section))
+            throw new Error('CIV.INI does not have the choice');
         const usage = await evaluate('navigator.storage.estimate()');
         log(`browser storage used: ${Math.round(usage.usage / 1e6)} MB of ${Math.round(usage.quota / 1e6)} MB`);
         // played: HD graphics at the density Auto (the device's pixels: 2)
-        await evaluate('document.getElementById("play").click()');
-        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
-        log('started: ' + await evaluate('window.civ2Status') + ' ' + JSON.stringify(await evaluate('window.civ2Hd')));
         await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'an HD frame');
         await settle(3000, 60000);
         let st = await canvasState();

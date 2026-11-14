@@ -58,9 +58,6 @@ void hd_bits_redrawn(void *bits, int x, int y, int w, int h);
 /* The platform's side (src/platform). */
 struct Bitmap;
 void hd_init(int classic, int unit_test, int scale);
-/* For the opening window, before hd_init: sharp text and interface as
-   chosen so far (CIV2_TEST_SHARP in a replay), at the window's scale. */
-void hd_launcher_init(int scale);
 /* The art's file (CIV2_HD_PACK, the program's data/hd, the user's folder's
    hd): 1 if it is there. */
 int hd_pack_path(char *path, int size);

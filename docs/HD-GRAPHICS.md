@@ -9,12 +9,14 @@ a prototype: the map is done, much of the rest follows from it (below).
 
 ## Playing with it
 
-The simplest way: tick *HD graphics* in the game's opening window (docs/EXTRAS.md, "The opening
-window"), which downloads and installs the art the first time (below), then Play.  Otherwise:
+The simplest way: in the game's main menu choose *OpenCiv2 Options*, then *Graphics and screen*,
+tick *HD graphics* and OK (docs/EXTRAS.md, "OpenCiv2 Options"): the art is downloaded and
+installed the first time (below), and the game offers to restart, which turns them on.
+Otherwise:
 
 1. Install the art, any of these ways:
 
-   * in the opening window: ticking *HD graphics* (or *Download*) downloads the release pinned
+   * in OpenCiv2 Options: ticking *HD graphics* (and OK) downloads the release pinned
      in `data/hd-pack.json` (234 MB, once) with the system's `curl` (on Windows 10 and later
      `curl.exe`; on Linux `wget` where there is no curl), showing its progress, with a Stop
      button; checks its SHA-256 and each file's (as below), and installs the files in the
@@ -22,7 +24,8 @@ window"), which downloads and installs the art the first time (below), then Play
      `GameData`), `~/Library/Application Support/OpenCiv2/hd` on macOS,
      `%LOCALAPPDATA%\OpenCiv2\hd` on Windows.  The archive is kept in the same cache as
      `tools/fetch_hd_pack.py`'s (it can be deleted once installed).  If the download or a check
-     fails, the window says why and HD graphics stay off (src/host/host_launcher.c);
+     fails, the dialog says why and HD graphics stay off (src/game/options.cpp,
+     src/host/host_options.c);
    * `make hd` (or `python3 tools/fetch_hd_pack.py`) in a source checkout: it downloads the
      release pinned in `data/hd-pack.json` (234 MB, once, into `~/.cache/openciv2`), checks its
      SHA-256 and each file's, and installs `atlas-hd.pack` with its licence and provenance in
@@ -35,7 +38,7 @@ window"), which downloads and installs the art the first time (below), then Play
    * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
      `build/OpenCiv2 ~/Civ2 --hd`;
    * in the environment: `CIV2_HD=1` (or `=N`);
-   * in `CIV.INI` (the game's settings, in its Windows directory; the opening window writes
+   * in `CIV.INI` (the game's settings, in its Windows directory; OpenCiv2 Options writes
      them):
 
      ```ini
@@ -45,8 +48,8 @@ window"), which downloads and installs the art the first time (below), then Play
 
    `1` (and the bare `--hd`, and `Graphics=HD`) is on at the screen's own density; `N` from 2 to
    4 is on at that density; `0` is off (`--hd=0` turns it off whatever the environment or
-   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density (not a choice in the opening
-   window or the browser's set-up page: always the screen's) is how many screen pixels
+   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density (not a choice in OpenCiv2
+   Options: always the screen's) is how many screen pixels
    each of the game's pixels gets each way: by default the game's own scale (docs/EXTRAS.md,
    Screen scale), so on a 4K screen 3, on a 1920x1080 one 1 (the new art at the original's
    size); `GraphicsDensity=N` (1 to 4) in `CIV.INI`, for tests, sets it for the bare `--hd`, `CIV2_HD=1`
@@ -115,8 +118,8 @@ The rest is in the platform layer (`src/platform/hd.c`):
 * **Copies** between surfaces (`BitBlt`, `gfx_copy_pixels`) copy the planes too.
 * **Text** on a surface with a plane is drawn again there from the glyphs of the same font
   density times as tall (OpenCiv2's own fonts, to 48 pixels), each glyph where the game's is.
-* **The platform's shapes** that are not straight lines (the opening window's radio buttons and
-  check marks, the scroll bars' arrows, the combo box's arrow, the caption's close box) are drawn
+* **The platform's shapes** that are not straight lines (the check boxes' marks and the
+  radio buttons, the scroll bars' arrows, the combo box's arrow, the caption's close box) are drawn
   again on the plane, antialiased, after the same in the surface's pixels (`hd_dc_disc`,
   `hd_dc_line`, `hd_dc_polygon`, `hd_dc_chevron`); straight edges and lines are the surface's
   pixels enlarged, as many screen pixels wide as a game pixel, as a Windows desktop at that scale
@@ -148,8 +151,7 @@ density (as HD graphics' *Auto*), so that text and the platform's controls are d
 screen's resolution while every sprite keeps its original pixels, enlarged (the sprites' calls
 find no picture in an empty pack).  With HD graphics on, both: the art's density, the art, and
 the sharp text and controls.  Where the screen's scale is 1 and HD graphics are off, there are no
-planes.  The opening window (before the game's settings are read) is drawn sharp as
-`SharpText=` was last chosen.  In replays only `CIV2_TEST_SHARP=N` (density N) or
+planes.  In replays only `CIV2_TEST_SHARP=N` (density N) or
 `CIV2_TEST_HD=N` turn the planes on, never in the unit tests.
 
 Its cost, measured on this machine (one slow core) on a 1280x720 desktop (a 4K screen at
@@ -183,15 +185,15 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 ## Tests
 
 * The browser version: `make web-test` (`src/web/test/unit.mjs`: the art's checks, its chunks in
-  the store, the pack pruned; `src/web/test/hd.mjs`: the art chosen on the set-up page from the
-  cached release `.zip`, then a saved game's map at a device pixel ratio of 2, checked to be drawn
+  the store, the pack pruned; `src/web/test/hd.mjs`: HD graphics not offered in the game's
+  OpenCiv2 Options where the site has no art, then ticked there where it has and the game
+  restarted, the art downloaded from the site, checked and kept as the page is loaded again, then a saved game's map at a device pixel ratio of 2, checked to be drawn
   in HD; screenshots in `run/web-hd`).
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
-  `make test-extras` (28 PASS: the opening window's script, x-launcher, replaced the options
-  dialog's).
+  `make test-extras` (OpenCiv2 Options in the main menu: `x-options`).
 * Sharp text and interface: `make test-extras` runs `harness/extras/x-sharp.txt` (the main menu,
   the real file dialog, the map, the Trade Advisor's scroll bar, the city window, the Game menu)
-  and the opening window's `x-launcher-sharp` with `CIV2_TEST_SHARP=2`: their game pixels and
+  and OpenCiv2 Options' `x-options-sharp` with `CIV2_TEST_SHARP=2`: their game pixels and
   `rand()` traces are those of the same runs without it, their `-hd` frames looked at by eye and
   blessed.  `src/web/test/hd.mjs` checks that the first screen's text is sharp, with HD graphics
   and with sharp text alone (`?hd=0`), and `?hd=0&sharp=0` the original's.

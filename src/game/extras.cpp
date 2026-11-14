@@ -8,7 +8,6 @@
 #include <math.h>
 #include "game.h"
 #include "lang.h"
-#include "../platform/launcher.h"
 
 EXTERN_C int plat_replay;
 
@@ -23,8 +22,8 @@ struct KeyItem {
 };
 
 /* The items and their keys in CIV.INI's [OpenCiv2] section (the order of
-   the opening window's Interface page, src/platform/launcher.c, which lists
-   them again with their labels). */
+   the OpenCiv2 Options dialog's Interface additions, src/game/options.cpp,
+   which lists them again with their labels). */
 static const KeyItem extra_keys[] = {
     {X_WHEEL, "MouseWheel"}, {X_UNIT_LIST, "UnitListScroll"}, {X_UNIT_LIST_KEYS, "UnitListKeys"},
     {X_WORK_COUNTER, "WorkCounter"}, {X_GAME_TURN, "GameTurn"}, {X_RESEARCH, "ResearchNumbers"},
@@ -40,8 +39,9 @@ static const KeyItem extra_keys[] = {
 };
 
 /* The rule changes (extra_rule): off unless their key is set (=1; the
-   limits: their value, 0 the original's; the opening window, src/platform/
-   launcher.c, lists them again and shows the original's values while off). */
+   limits: their value, 0 the original's; the OpenCiv2 Options dialog,
+   src/game/options.cpp, lists them again and shows the original's values
+   while off). */
 static const KeyItem rule_keys[] = {
     {X_WORKER_HANDOVER, "WorkerHandover"}, {X_GOTO_ZOC, "GotoNoZocStop"},
     {X_ROTATION, "UnitRotation"}, {X_MASS_MOVE, "MassMove"}, {X_STACK_SENTRY, "StackSentry"},
@@ -62,8 +62,8 @@ static int clamp_setting(int v, int lo, int hi)
 int extras_setting(const char *key, int def)
 {
     char chosen[64];
-    /* chosen in the opening window in a test run (CIV2_TEST_LAUNCHER) */
-    if (launcher_setting(key, chosen, sizeof chosen))
+    /* chosen in the OpenCiv2 Options dialog in a test run (options.cpp) */
+    if (options_test_setting(key, chosen, sizeof chosen))
         return atoi(chosen);
     if (plat_replay) {
         /* replays: the defaults, whatever CIV.INI says, but those of
@@ -161,9 +161,9 @@ void extras_load(void)
     if (plat_replay) {  /* "1": the additions; "all": and the rule changes */
         char chosen[16];
         extras_rules = test && !strcmp(test, "all") ? rule_bits : 0;
-        /* (and those chosen in the opening window in a test run) */
+        /* (and those chosen in the OpenCiv2 Options dialog in a test run) */
         for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)
-            if (launcher_setting(rule_keys[i].key, chosen, sizeof chosen)) {
+            if (options_test_setting(rule_keys[i].key, chosen, sizeof chosen)) {
                 if (atoi(chosen))
                     extras_rules |= (uint64_t)1 << rule_keys[i].item;
                 else
@@ -197,6 +197,7 @@ static const struct { const char *key, *english; } texts[] = {
     {"size", "Size"}, {"name", "Name"}, {"production", "Production"},
     {"menu.arrange_s", "Arrange Windows S"},        /* X38 (default: the game's Arrange Windows, S) */
     {"menu.arrange_l", "Arrange Windows L"},
+    {"mainmenu.options", "OpenCiv2 Options"},       /* the main menu's last choice (options.cpp) */
 };
 
 static int text_entry(const char *key)
@@ -1381,8 +1382,8 @@ void extras_note_dialog(Dialog *d, const char *file, const char *section)
 static void suppress_list_get(char *list, int n)
 {
     const char *t = getenv("CIV2_TEST_SUPPRESS");
-    if (launcher_setting("SuppressList", list, n))
-        ;                       /* (chosen in the opening window in a test run) */
+    if (options_test_setting("SuppressList", list, n))
+        ;                       /* (chosen in the OpenCiv2 Options dialog in a test run) */
     else if (plat_replay)
         snprintf(list, n, "%s", t ? t : "");
     else

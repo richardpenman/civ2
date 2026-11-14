@@ -27,7 +27,6 @@
  */
 #include "plat.h"
 #include "hd.h"
-#include "launcher.h"
 #include "../host/host.h"
 #define STBI_ONLY_PNG
 #define STBI_NO_STDIO
@@ -1032,7 +1031,7 @@ void hd_screenshot(const char *path)
 
 /* Where the art is: CIV2_HD_PACK, else the program's data (a source
    checkout: data/native/hd, make hd), else the user's own folder (where the
-   opening window installs it, src/host/host_launcher.c).  1 if found. */
+   OpenCiv2 Options dialog installs it, src/host/host_options.c).  1 if found. */
 int hd_pack_path(char *path, int size)
 {
     const char *p = getenv("CIV2_HD_PACK");
@@ -1080,8 +1079,7 @@ static int sharp_wanted(int classic)
         return wanted(arg);
     if (env && *env)
         return wanted(env);
-    if (!launcher_setting("SharpText", value, sizeof value))
-        plat_profile_string("CIV.INI", "OpenCiv2", "SharpText", value, sizeof value);
+    plat_profile_string("CIV.INI", "OpenCiv2", "SharpText", value, sizeof value);
     return value[0] ? wanted(value) : classic ? -1 : 0;
 }
 
@@ -1099,26 +1097,6 @@ static void close_pack(void)
     nentries = 0;
     decoded_bytes = 0;
     hd_art = 0;
-}
-
-void hd_launcher_init(int scale)
-{
-    char mode[32] = "";
-    int want;
-    const char *test = getenv("CIV2_TEST_SHARP");
-    if (plat_replay)
-        want = test && atoi(test) > 1 ? atoi(test) : -1;
-    else {
-        const char *c = getenv("CIV2_CLASSIC");
-        plat_profile_string("CIV.INI", "OpenCiv2", "Mode", mode, sizeof mode);
-        want = sharp_wanted((c && *c) || !strcasecmp(mode, "Classic"));
-        if (!want)
-            want = scale;
-    }
-    hd_density = want > 4 ? 4 : want;
-    hd_on = hd_density > 1;
-    if (!hd_on)
-        hd_density = 1;
 }
 
 void hd_init(int classic, int unit_test, int scale)

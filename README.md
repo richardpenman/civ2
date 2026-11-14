@@ -24,18 +24,18 @@ improvements of FoxAhead's [CIV2UIA](https://github.com/FoxAhead/Civ2-UI-Additio
 wheel, scrolling lists, more figures in the advisors, quick information with Ctrl ...:
 [EXTRAS.md](docs/EXTRAS.md)), and, off unless switched on, its rule changes (Go To past enemy
 units, moving a stack's units of a type together, higher limits for gold, population and the
-map ...). Before the game starts, an opening window lets you choose: Standard, or Classic (the
-original game: its bugs, its interface, and its menu bar and window caption drawn as the
-original's), sharp text and interface on high-resolution screens (on by default), HD graphics,
-the rule changes and the interface additions, kept for next time
-(`CIV.INI`). "Don't show this window again" skips it; `--launcher`, or Shift held down at
-start, brings it back ([EXTRAS.md](docs/EXTRAS.md#the-opening-window)).
+map ...). OpenCiv2 Options, the last choice of the game's main menu, lets you choose: Standard,
+or Classic (the original game: its bugs, its interface, and its menu bar and window caption
+drawn as the original's), sharp text and interface on high-resolution screens (on by default),
+HD graphics, full screen, the rule changes and the interface additions, kept in `CIV.INI`
+([EXTRAS.md](docs/EXTRAS.md#openciv2-options)).
 
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 Optionally, the map can be drawn with new high-resolution art
-([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): tick HD graphics in the
-opening window, which downloads it the first time (234 MB); or `make hd`, then `--hd`
+([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): tick HD graphics in
+OpenCiv2 Options (Graphics and screen), which downloads it the first time (234 MB); or `make hd`,
+then `--hd`
 ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
 ### Multiplayer

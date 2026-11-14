@@ -200,12 +200,21 @@ int __cdecl game_main_menu_loop(void)
     game_over_reason = 0;
     if (net.lobby_launch_mode == -1) {
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->show(1,6,1);
-      dlg.load_game_section((const char *)&str_mainmenu,1);
-      dlg.set_default_choice((int)menu_prefs.main_menu_choice[0]);
-      dlg.set_position(
-                 -(((int)(caption_font_block.screen_width - 0x280 + (caption_font_block.screen_width - 0x280 >> 0x1f & 7U)) >> 3) + 1),
-                 -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
-      choice = dlg.show_modal(0);
+      choice = (int)menu_prefs.main_menu_choice[0];
+      for (;;) {
+        dlg.load_game_section((const char *)&str_mainmenu,1);
+        if (options_in_main_menu()) {
+          /* (OpenCiv2) its options, after View Credits (options.cpp) */
+          dlg.add_option(extras_text("mainmenu.options"),MAIN_MENU_OPTIONS,0);
+        }
+        dlg.set_default_choice(choice);
+        dlg.set_position(
+                   -(((int)(caption_font_block.screen_width - 0x280 + (caption_font_block.screen_width - 0x280 >> 0x1f & 7U)) >> 3) + 1),
+                   -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1));
+        choice = dlg.show_modal(0);
+        if (choice != MAIN_MENU_OPTIONS) break;
+        options_dialog();  /* (and the menu again, not remembered as the choice) */
+      }
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
       if (choice < 0) break;
       menu_prefs.main_menu_choice[0] = (short)choice;

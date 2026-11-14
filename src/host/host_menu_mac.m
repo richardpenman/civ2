@@ -242,8 +242,3 @@ int host_menu_syswm_command(const void *msg)
     (void)msg;
     return 0;
 }
-
-int host_mac_shift_held(void)
-{
-    return ([NSEvent modifierFlags] & NSEventModifierFlagShift) != 0;
-}
