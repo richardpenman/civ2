@@ -723,6 +723,37 @@ message by message and clock event by clock event.
     (`tools/xdnet/savecmp.py`; what each game keeps of its own: the saving
     player's header fields, the treaty-turn counters set by the game shown
     an audience request, who stands on tiles no human has seen).
+  - 20 turns, ours hosting the original (`--turns 20 --save-end`): in most
+    runs the original client's save keeps the barbarians' (civ 0's) starting
+    values, science and tax 4 and 4 and every continent policy 5, where the
+    host has 6, 2 and 0 (in one run also two bytes of unit 8's orders); the
+    original hosting ours agrees.  The original's own doing: its message
+    queue (`NetMsgQueue::enqueue`, `net_msg_is_priority`) keeps types
+    0x2a..0x66 apart and `NetSession::process_messages` takes them first;
+    `NM_ALPHA_DIFFERENCE_ENGINE` (0x5c) is one of them, `NM_DIFFERENCE_ENGINE`
+    (0x15) is not.  A diff and a later alpha diff waiting in the queue
+    together are applied the other way round, and the earlier diff writes
+    back the older values.  At the start the host sends the state (diffs:
+    civ 0 at 4/4, policies 5), the rules, `NM_READY_TO_START`, then the
+    first turn's alpha diff (civ 0 at 6/2, policies 0); these values do not
+    change again, so nothing corrects them (nothing re-initialises civ 0 on
+    the client; the `NM_SET_CIV` before `NM_MAP_STRUCT`, the client's civ
+    given a starting advance, comes from the original host too).  Our host sends the same
+    messages in the same order as the original host, 0.2 s from
+    `NM_START_CIVILIZATION` to that alpha diff where the original host under
+    Wine takes 0.4 s; the original client, still taking in the state, had
+    them all waiting at once with ours (its receive callbacks within 9 ms),
+    and the state before the alpha diff arrived with the original host (2 s
+    apart).  `tools/xdnet/diffreplay.py RUN` replays the host's diffs as the
+    client received them, in arrival order and in the queue's order: the
+    queue's order gives the client's save, byte for byte, in all three
+    failing runs (unit 8: a diff and an alpha diff 1 ms apart in the
+    middle of the game, the same race).  Not changed: a client that took
+    them in arrival order would compute another game than an original
+    client, and the host cannot know when a client has taken in what it
+    sent.  The original hosting the original differed too, but there the
+    two saves were made at different points of the client's turn (it built
+    a unit after the host had saved), not this.
   - the Windows build (OpenCiv2.exe, Winsock) under Wine against ours and
     against the original.
   The game's network code needed: net_session_init (the join dialog)

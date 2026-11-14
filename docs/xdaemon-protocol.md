@@ -522,6 +522,15 @@ S>C is host to client, C>S client to host, C>all a client's dst 0xFF send.
 6. The client sends NM_HEART_BEAT every 60 s; the host acks it. The host
    also pings the player whose turn starts.
 
+The game queues what arrives (its receive callbacks) and takes it in
+`NetSession::process_messages`, but types 0x2a..0x66 go to a second queue
+taken first (`NetMsgQueue::enqueue`, `net_msg_is_priority`), among them
+ALPHA_DIFFERENCE_ENGINE (0x5c) and not DIFFERENCE_ENGINE (0x15). A diff and
+a later alpha diff that wait together are applied the other way round, the
+older values last: a client that gets the start of the game all at once
+keeps civ 0's starting rates and policies (docs/STATUS.md, the 20-turn
+games; `tools/xdnet/diffreplay.py`).
+
 In Internet mode the client first sends NM_SERVER_QUERY and the host
 answers NM_SERVER_ANSWER [observed inet1].
 
