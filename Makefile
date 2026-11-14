@@ -40,9 +40,10 @@ windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
 web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain)
 	python3 tools/build_web.py
 
-web-test: web                 ## the browser version's tests: its host's logic, then the smoke test (menu, new game, save, load; run/web-smoke)
+web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke)
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/unit.mjs
+	tools/toolchain/node/bin/node src/web/test/setup.mjs
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs
 
 web-replay: web               ## SCRIPT replayed in the browser version, compared with the original's recording

@@ -6,6 +6,7 @@ import {runGame} from './host.js';
 import {openStore} from './store.js';
 import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
+import {findDisc} from './setup_run.js';
 
 const GAME = '/civ2', DATA = '/data';
 const $ = (id) => document.getElementById(id);
@@ -31,13 +32,9 @@ function findGame(files) {
         if (names.has('civ2art.dll') && names.has('rules.txt') && (root === null || dir.length < root.length))
             root = dir;
     if (root === null) {
-        for (const names of dirs.values())
-            if (names.has('data1.cab'))
-                return 'This is the game\'s CD. The browser version needs the game installed: install it ' +
-                       'from the CD (or set it up with the desktop version of OpenCiv2) and choose the folder ' +
-                       'it is installed in.';
-        return 'These files are not an installed Civilization II Multiplayer Gold Edition: its folder has ' +
-               'Civ2Art.dll and RULES.TXT in it.';
+        return 'These files are neither an installed Civilization II Multiplayer Gold Edition (its folder has ' +
+               'Civ2Art.dll and RULES.TXT in it), nor its CD (DATA1.CAB and CIV2), nor a disc image of the CD ' +
+               '(a .cue with its .bin).';
     }
     const pre = root ? root + '/' : '';
     return {files: files.filter((f) => f.name.startsWith(pre) && !/\.log$/i.test(f.name))
@@ -47,6 +44,9 @@ function findGame(files) {
 async function importFiles(store, files) {
     const found = findGame(files);
     if (typeof found === 'string') {
+        const disc = findDisc(files);
+        if (disc)
+            return setupFromDisc(store, files, disc);
         status(found);
         return false;
     }
@@ -68,6 +68,74 @@ async function importFiles(store, files) {
     await store.setMeta('game', {names: found.files.map((f) => f.name), at: Date.now()});
     status(`The game's ${n} files are kept in this browser.`);
     return true;
+}
+
+// The game set up from its CD or a disc image (disc: findDisc's), as the
+// desktop version's set-up does (setup_worker.js runs it): into the store
+// as its files come.
+function setupFromDisc(store, files, disc) {
+    return new Promise((resolve) => {
+        const worker = new Worker('setup_worker.js', {type: 'module'});
+        const stop = $('stop'), names = new Set(), messages = [];
+        let queue = store.clear(), batch = [], size = 0, ended = false;
+        const flush = () => {
+            const b = batch;
+            batch = [];
+            size = 0;
+            if (b.length)
+                queue = queue.then(() => store.putMany(b));
+        };
+        const end = (ok, text) => {
+            if (ended)
+                return;
+            ended = true;
+            worker.terminate();
+            stop.hidden = true;
+            flush();
+            queue.then(async () => {
+                if (ok && typeof findGame([...names].map((name) => ({name}))) !== 'string') {
+                    await store.setMeta('game', {names: [...names], at: Date.now()});
+                    status(text);
+                    resolve(true);
+                } else {
+                    await store.clear();
+                    status(ok ? 'The set-up did not make the game (no Civ2Art.dll, RULES.TXT).' : text);
+                    resolve(false);
+                }
+            }, (e) => {
+                status('Could not keep the files: ' + e.message);
+                resolve(false);
+            });
+        };
+        worker.onmessage = (e) => {
+            const m = e.data;
+            if (m.file !== undefined) {
+                names.add(m.file);
+                batch.push([m.file, m.data, Date.now()]);
+                size += m.data.length;
+                if (size > 16 << 20)
+                    flush();
+            } else if (m.progress) {
+                status(`${m.progress[0]}: ${m.progress[1].replace(/^\/(game|src)\//, '')}`);
+            } else if (m.message) {
+                messages.push(m.message[0]);
+                console.warn('set-up:', m.message[0]);
+            } else if (m.done !== undefined) {
+                end(m.done === 0, m.done === 0 ? `The game is set up from the ${disc.kind === 'cd' ? 'CD' : 'disc image'}: ` +
+                    `${names.size} files kept in this browser` + (disc.kind === 'cd' ? ' (without the music: the ' +
+                    'browser cannot read the CD\'s music tracks; a disc image of the CD has them).' : '.')
+                    : 'The set-up failed: ' + (messages.join(' ') || 'code ' + m.done));
+            } else if (m.error) {
+                end(false, 'The set-up failed: ' + m.error);
+            }
+        };
+        worker.onerror = (e) => end(false, 'The set-up failed: ' + (e.message || 'its worker stopped'));
+        stop.hidden = false;
+        stop.onclick = () => end(false, 'The set-up was stopped; choose the files again to start it again.');
+        status(`Setting the game up from its ${disc.kind === 'cd' ? 'CD' : 'disc image'} ...`);
+        worker.postMessage({files: files.map((f) => ({name: f.name, file: f.file || new Blob([f.data])})),
+                            source: disc.source});
+    });
 }
 
 // a dropped folder's files, through its entries
@@ -309,6 +377,7 @@ async function main() {
     };
     $('folder').onchange = (e) => chosen([...e.target.files].map((f) => ({name: f.webkitRelativePath || f.name, file: f})));
     $('zip').onchange = async (e) => e.target.files[0] && chosen(await zipFiles(e.target.files[0]));
+    $('image').onchange = (e) => chosen([...e.target.files].map((f) => ({name: f.name, file: f})));
     const drop = $('drop');
     drop.ondragover = (e) => {
         e.preventDefault();

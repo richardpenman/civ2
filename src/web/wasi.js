@@ -52,9 +52,16 @@ export class MemFS {
         this.mkdirs(parent(path));
         this.files.set(path, {data: bytes, size: bytes.length, mtime});
     }
+    // A file read where it is (read-only): read(pos, n) -> Uint8Array of
+    // its n bytes from pos (a disc image the player chose, read as needed).
+    putSource(path, size, read, mtime = Date.now()) {
+        path = normalize(path);
+        this.mkdirs(parent(path));
+        this.files.set(path, {data: null, size, mtime, read});
+    }
     get(path) {
         const f = this.files.get(normalize(path));
-        return f ? f.data.subarray(0, f.size) : null;
+        return f && !f.read ? f.data.subarray(0, f.size) : null;
     }
     // Entries of a directory: [name, isDir].
     list(dir) {
@@ -253,6 +260,8 @@ export function makeWasi(fs, args, env, memory, log = (fd, s) => (fd === 2 ? con
                 fs.files.set(p, file);
                 fs.changed(p);
             }
+            if (file.read && trunc)
+                return W.BADF;              // (read-only)
             const writing = (rights & (1n << 6n)) !== 0n;
             if (trunc && file.size) {
                 file.size = 0;
@@ -285,7 +294,17 @@ export function makeWasi(fs, args, env, memory, log = (fd, s) => (fd === 2 ? con
                 const mem = u8();
                 for (const [p, l] of iovs(iov, n)) {
                     const k = Math.max(0, Math.min(l, f.file.size - f.pos));
-                    mem.set(f.file.data.subarray(f.pos, f.pos + k), p);
+                    if (f.file.read) {
+                        try {
+                            if (k)
+                                u8().set(f.file.read(f.pos, k), p);
+                        } catch (e) {
+                            log(2, f.path + ': ' + e.message);
+                            return W.IO;
+                        }
+                    } else {
+                        mem.set(f.file.data.subarray(f.pos, f.pos + k), p);
+                    }
                     f.pos += k;
                     total += k;
                     if (k < l)
@@ -313,6 +332,8 @@ export function makeWasi(fs, args, env, memory, log = (fd, s) => (fd === 2 ? con
                         log(f.con, lines[f.con].slice(0, i));
                         lines[f.con] = lines[f.con].slice(i + 1);
                     }
+                } else if (f.file.read) {
+                    return W.BADF;          // (read-only)
                 } else {
                     const file = f.file;
                     if (f.append)

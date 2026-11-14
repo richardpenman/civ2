@@ -43,19 +43,23 @@
   <h1>OpenCiv2</h1>
   <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
      <em>your own</em> copy of the game: choose the folder Civilization II is installed in (the one with
-     <code>Civ2Art.dll</code> and <code>RULES.TXT</code>). The files are copied into this browser's storage, and
-     never leave your computer; your saved games are kept there too.</p>
+     <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. The files
+     are copied into this browser's storage, and never leave your computer; your saved games are kept there too.</p>
   <div id="drop">
-    <label class="button" for="folder">Choose the game's folder</label>
-    <label class="button" for="zip">or a .zip of it</label>
-    <p class="dim">or drop the folder (or the .zip) here</p>
+    <label class="button" for="folder">Choose the game's folder (or the CD's)</label>
+    <label class="button" for="zip">a .zip of it</label>
+    <label class="button" for="image">a disc image (.cue and .bin)</label>
+    <p class="dim">or drop the folder, the .zip, or the .cue with its .bin here</p>
     <input id="folder" type="file" webkitdirectory multiple>
     <input id="zip" type="file" accept=".zip,application/zip">
+    <input id="image" type="file" multiple accept=".cue,.bin">
   </div>
-  <p class="dim">The game needs to be installed: its CD or a disc image of it is not enough here (the desktop version of
-     OpenCiv2 can set the game up from those, and its game folder can then be chosen). Music plays if the folder
-     has it (<code>Music/Track02.ogg</code> ..., as the desktop version's set-up makes from the CD).
+  <p class="dim">From the CD (the folder it is in, with <code>DATA1.CAB</code> and <code>CIV2</code>) or a disc
+     image of it, the game is unpacked as its installer would, with its videos; from a disc image its music too,
+     encoded as Ogg Vorbis (a few minutes; the browser cannot read a CD's music tracks, a disc image has them).
+     Music plays if the game's folder has it (<code>Music/Track02.ogg</code> ..., as the set-up makes it).
      Single player only: network games are not available in the browser.</p>
+  <p><button id="stop" hidden>Stop</button></p>
   <div id="have" hidden>
     <p>The game files are in this browser.</p>
     <button id="play">Play</button>

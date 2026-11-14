@@ -82,17 +82,20 @@ python3 -m http.server -d build/web 8000   # then open http://localhost:8000
 
 It plays single-player games with the original graphics and your own copy of the game: the first
 time, the page asks for the folder Civilization II is installed in (or a `.zip` of it; both can be
-dropped on the page) and copies it into the browser's storage (IndexedDB); later visits start the
+dropped on the page), or the game's CD (the folder it is mounted at, with `DATA1.CAB` and `CIV2`),
+or a disc image of the CD (its `.cue` and `.bin`, chosen or dropped together), and copies the game
+into the browser's storage (IndexedDB): from the CD or a disc image it is set up as the desktop
+version's set-up does, unpacked from the installer's cabinet with its videos, and from a disc image
+its music encoded as Ogg Vorbis (`Music/TrackNN.ogg`; a few minutes; the browser cannot read a
+CD's music tracks, a disc image has them); later visits start the
 game at once (`?setup` shows the page again, to replace or remove the files). Saved games,
 `CIV.INI` and the Hall of Fame are kept there too: **Export saves** (on the `?setup` page, or
 under the small *Saves* button at the top right while playing) downloads them as a `.zip` (saved
 games, the scenarios and maps you made, `CIV.INI`, `CIV2.DAT`, `HALLFAME.DAT`; not the game's own
 files), and **Import saves** puts `.SAV` files, or such a `.zip`, back (into the running game too,
 so that *Load a Game* finds them at once): to keep them safe, or move them to another browser or
-computer. The game must be installed: the browser
-version cannot set it up from the CD or a disc image (the desktop version can, and its game
-folder, `GameData`, can then be chosen). Music plays where the folder has it (`Music/TrackNN.ogg`,
-as the desktop version's set-up makes from the CD). Network games are not available in the browser.
+computer. Music plays where the game's folder has it (`Music/TrackNN.ogg`, as
+the set-up makes from a disc image; a folder the desktop version set up, `GameData`, has it too). Network games are not available in the browser.
 Tested in Chrome; it should run in any browser from 2023 on (Edge 103, Firefox 113,
 Safari 16.4). The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T, Ctrl+N close or
 open tabs and windows): use the game's menus for those commands.

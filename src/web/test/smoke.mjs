@@ -1,7 +1,7 @@
 // The browser version's smoke test: build/web served on a local port, opened
 // in Chrome's headless shell (driven over the DevTools protocol, no other
 // dependency), given the player's game files as a .zip through the page's
-// own file input, then the game: the main menu, a new game with the default
+// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu, a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
 // (from the set-up page, and while playing), the saved game loaded.  Screenshots in run/web-smoke (the game's
 // images: never committed).
@@ -25,6 +25,7 @@ import {join, relative, extname, dirname} from 'node:path';
 import {homedir} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {unzip} from '../zip.js';
+import {sampleDisc, makeImage, tone} from './disc.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const WEB = join(ROOT, 'build', 'web');
@@ -270,6 +271,44 @@ async function main() {
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Status', 10000, 'the page');
+        if (!REPLAY) {
+            // the set-up from a disc image, a made-up one (disc.mjs: the
+            // cabinet, the videos, two audio tracks), chosen as the player
+            // chooses one (.cue and .bin): its files in IndexedDB, its music
+            // as the browser decodes it
+            const disc = sampleDisc(), image = makeImage(disc.iso, [tone(3, 440), tone(2, 660)], 'Civ2.bin');
+            writeFileSync(join(tmp, 'Civ2.cue'), image.cue);
+            writeFileSync(join(tmp, 'Civ2.bin'), image.bin);
+            const {result: input} = await send('Runtime.evaluate', {expression: 'document.getElementById("image")'});
+            await send('DOM.setFileInputFiles', {objectId: input.objectId, files: [join(tmp, 'Civ2.cue'), join(tmp, 'Civ2.bin')]});
+            await waitFor('/set up from|failed|stopped|neither/.test(window.civ2Status) && window.civ2Status', 120000, 'the set-up');
+            const said = await evaluate('window.civ2Status');
+            log('disc image: ' + said);
+            if (!/set up from/.test(said))
+                throw new Error(said);
+            const kept = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
+                const s = r.result.transaction("files").objectStore("files");
+                const got = (q) => new Promise((ok) => { q.onsuccess = () => ok(q.result); });
+                Promise.all([got(s.getAllKeys()), got(s.getAll())]).then(async ([keys, values]) => {
+                    const k = {result: keys}, q = {result: values}, out = {};
+                    for (let i = 0; i < k.result.length; i++) {
+                        const d = q.result[i].data;
+                        out[k.result[i]] = /\.ogg$/.test(k.result[i])
+                            ? (await new OfflineAudioContext(2, 44100, 44100).decodeAudioData(d.slice().buffer)).duration
+                            : Array.from(d.subarray(0, 4096)).reduce((h, b) => (h * 31 + b) | 0, d.length);
+                    }
+                    r.result.close();
+                    resolve(out);
+                }); }; })`);
+            const hash = (d) => Array.from(d.subarray(0, 4096)).reduce((h, b) => (h * 31 + b) | 0, d.length);
+            for (const [k, v] of Object.entries(disc.expect))
+                if (kept[k] !== hash(v))
+                    throw new Error('set up from the disc image, wrong: ' + k);
+            log('  music decoded: ' + ['Music/Track02.ogg', 'Music/Track03.ogg'].map((k) => k + ' ' + kept[k] + ' s').join(', '));
+            if (Math.abs(kept['Music/Track02.ogg'] - 3) > 0.05 || Math.abs(kept['Music/Track03.ogg'] - 2) > 0.05)
+                throw new Error('the music is not as the disc image has it');
+            rmSync(join(tmp, 'Civ2.bin'));
+        }
         const {result} = await send('Runtime.evaluate', {expression: 'document.getElementById("zip")'});
         await send('DOM.setFileInputFiles', {objectId: result.objectId, files: [zip]});
         const t0 = performance.now();
@@ -356,7 +395,8 @@ async function main() {
         if (!exported)
             throw new Error('no saves exported: ' + await evaluate('window.civ2Status'));
         const zipped = join(downloads, exported);
-        const inZip = (await unzip(readFileSync(zipped).buffer.slice(0))).map((f) => f.name);
+        const zb = readFileSync(zipped);
+        const inZip = (await unzip(zb.buffer.slice(zb.byteOffset, zb.byteOffset + zb.length))).map((f) => f.name);
         log(`exported ${exported}: ${inZip.join(' ')}`);
         if (!inZip.includes(added[0]) || inZip.some((n) => !/\.(sav|scn|mp)$|^(civ\.ini|civ2\.dat|hallfame\.dat)$/i.test(n)))
             throw new Error('the export is not the player\'s files');

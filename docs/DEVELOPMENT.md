@@ -216,7 +216,23 @@ builds do not use it.
   `DecompressionStream`), written back as soon as the game closes, renames or removes a file (saved games,
   `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
   be persistent (`navigator.storage.persist`).
-* **Saves exported and imported** (src/web/saves.js): the player's files are the `.SAV` files,
+* **Set-up from the CD or a disc image** (src/web/setup_run.js, setup_worker.js,
+  setup/setup_web.c): the native set-up's own code, src/host/setup.c and setup_disc.c with
+  unshield, zlib, libogg and libvorbis (their sources from tools/fetch-toolchain.sh, as the native
+  build has them), compiled by wasi-sdk's clang into a second module, `setup.wasm` (0.8 MB;
+  `tools/build_web.py`; an 8 MB stack, placed first so that running out of it traps).
+  setup_web.c is the system's part (setup_os.h) for it: plain files, no CD drive, no dialogs;
+  `main` runs `setup_choose_game` with `--setup SOURCE`, GameData being `/game`.  It runs in a Web
+  Worker over the WASI of src/web/wasi.js, the player's files under `/src` read where they are
+  (`MemFS.putSource`: `FileReaderSync` on the `File`, through a 1 MB cache), so that a 700 MB
+  disc image is never in memory whole; each file it writes into `/game` is handed to the page as
+  soon as it is closed or renamed (the `.part` files and the cabinet's temporary copy are not) and
+  dropped from the worker's memory, and the page keeps it in IndexedDB.  The page finds the CD (a
+  folder with `DATA1.CAB` and `CIV2`) or the image (a `.cue`) among the files chosen
+  (`findDisc`), where they are not an installed game; it shows the set-up's progress, has a Stop
+  button (the worker is ended, the store emptied), and checks that the result is a game
+  (`Civ2Art.dll`, `RULES.TXT`).  A CD's music tracks cannot be read by a browser: from a mounted
+  CD the game comes without music. (src/web/saves.js): the player's files are the `.SAV` files,
   `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT` in the game's folder, and the `.SCN` and `.MP` files
   the copy of the game did not have or that changed since (the store's `meta` notes the copy's
   paths and time; a copy made before that was noted: written ten minutes or more after
@@ -230,14 +246,24 @@ builds do not use it.
   window and other browsers than Chrome are checked by playing (music, the videos and loading saved
   games: played and fine, 2026-11-14): `make web`, `python3 -m http.server
   -d build/web`, open `http://localhost:8000/?setup`.
-* **Limits**: no network games; no set-up from the CD or a disc image (unshield and the disc
-  reader would have to be compiled to wasm as well): an installed folder is needed.  Videos play
-  as natively (the Indeo decoder is part of the module).
+* **Limits**: no network games.  Videos play as natively (the Indeo decoder is part of the
+  module).  The set-up has been tried only on a made-up CD (below): there is no real CD or image
+  here; the cabinet code is libunshield's, as natively, and the made-up cabinet is also read by
+  unshield's own command-line tool.
 * **Tests**: `make web-test` runs `src/web/test/unit.mjs` (the host's logic under node: keys, the
   wheel, the desktop's scale, pixels, the WASI file system, `.zip` reading and writing, which of
   the files are the player's and where imported ones go; no browser, no game
-  files), then `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
-  from `tools/fetch-toolchain.sh browser`; Linux x86-64) zips the game folder, gives it to the page
+  files), `src/web/test/setup.mjs` (`setup.wasm` under node on a made-up CD,
+  `src/web/test/disc.mjs`: an InstallShield 5 cabinet with stored and zlib-compressed files in two
+  file groups, one of them "Sound Files", an ISO 9660 file system with it and `CIV2/KINGS`,
+  `CIV2/VIDEO`, and a disc image of that, `.bin` and `.cue`, the data track followed by two audio
+  tracks with their pregaps: the game unpacked byte for byte, the videos copied, the music encoded
+  as Ogg Vorbis of the tracks' lengths, the temporary files gone; the same CD as a folder, its
+  names in another case: no music; and files that are neither), then
+  `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
+  from `tools/fetch-toolchain.sh browser`; Linux x86-64) first sets the game up from the made-up
+  disc image through the page (its file input, the worker, IndexedDB; the music decoded by the
+  browser: 3 s and 2 s), then zips the game folder, gives it to the page
   through its file input, then plays: the menu, a new game with the default choices, a save
   (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
   only the player's files), the saved game removed and imported from that `.zip` (on the set-up
