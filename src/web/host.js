@@ -311,6 +311,9 @@ export async function runGame(opts) {
         host_menu_begin: () => {},
         host_menu_add: () => {},
         host_menu_end: () => {},
+        // HD graphics (docs/HD-GRAPHICS.md) are not in the browser version:
+        // the game never calls this here (no pack); the module imports it.
+        host_present_hd: () => {},
         host_present: (pixels, stride) => {
             if (!image)
                 return;

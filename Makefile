@@ -9,7 +9,7 @@ SEED   ?= 7
 SCRIPT ?= harness/scripts/newgame.txt
 NAME   := $(basename $(notdir $(SCRIPT)))
 
-.PHONY: all build run windows web web-test web-replay images hook ref native port native-suite test test-extras extras-bless unit-record clean
+.PHONY: all build run windows web web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 MINGW64 shell.
@@ -51,6 +51,11 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs --replay $(NAME)
 	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; [Image.open(f).save(f[:-4] + '.png') for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
+
+# HD graphics (docs/HD-GRAPHICS.md): Peter Johnson's art, at the release
+# pinned in data/hd-pack.json, checked and installed in data/native/hd.
+hd:                           ## download and install the HD graphics' art (234 MB; then CIV.INI [OpenCiv2] Graphics=HD)
+	python3 tools/fetch_hd_pack.py
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)
 	docker build -t civ2-dev-base tools/docker

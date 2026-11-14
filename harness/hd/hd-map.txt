@@ -1,0 +1,20 @@
+# HD graphics (docs/HD-GRAPHICS.md): a saved game's map, zoomed out and in.
+# Not compared with a recording: look at the NAME-hd screenshots.
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 12000
+shot hd-01-map
+key z                       # zoom out
+wait 12000
+shot hd-02-zoomout
+key x
+wait 12000
+key x                       # zoom in
+wait 12000
+shot hd-03-zoomin

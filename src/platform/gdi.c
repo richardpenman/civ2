@@ -8,6 +8,7 @@
  * as Wine's DIB engine does.
  */
 #include "plat.h"
+#include "hd.h"
 
 Bitmap *screen;                 /* the composed desktop: what is shown */
 Bitmap *root;                   /* the desktop background */
@@ -45,6 +46,7 @@ void bmp_destroy(Bitmap *b)
 {
     if (!b)
         return;
+    hd_bitmap_free(b);
     if (b->owns_bits)
         free(b->bits);
     free(b);
@@ -292,6 +294,8 @@ void plat_compose(void)
     Window *order[512], *w;
     int n = 0, i, y;
     memcpy(screen->bits, root->bits, (size_t)screen->stride * (size_t)screen->h);
+    if (hd_on)
+        hd_compose_begin();
     for (w = desktop->children; w && n < 512; w = w->next)
         order[n++] = w;
     for (i = n - 1; i >= 0; i--) {
@@ -308,6 +312,8 @@ void plat_compose(void)
         /* Surface pixel (x, y) shows at screen (rect.left + x + host_dx, ...). */
         dx = w->rect.left + (w->host_clipped ? w->host_dx : 0);
         dy = w->rect.top + (w->host_clipped ? w->host_dy : 0);
+        if (hd_on)
+            hd_compose_piece(s, dx, dy, r.left, r.top, r.right, r.bottom);
         for (y = r.top; y < r.bottom; y++) {
             int sy = y - dy, x0 = r.left, x1 = r.right;
             if (sy < 0 || sy >= s->h)
@@ -330,6 +336,8 @@ void plat_compose(void)
             }
         }
     }
+    if (hd_on)
+        hd_compose_end(plat_color_lut_on ? plat_color_lut : NULL);
 }
 
 /* A DC on the composed screen itself (interactive popup menus). */
@@ -917,6 +925,8 @@ static void fill_device(Bitmap *b, const Region *clip, const RECT *r, COLORREF r
                 for (x = a.left; x < a.right; x++)
                     surf_put(b, x, y, rop2_xor ? surf_get(b, x, y) ^ 0xffffff : rgb);
         }
+        if (hd_on)          /* HD graphics: the fill shows, changed or not */
+            hd_redrawn(b, a.left, a.top, a.right - a.left, a.bottom - a.top);
     }
 }
 
@@ -1227,6 +1237,8 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
             plat_log("trace: blit to %d,%d %dx%d from %s %d,%d rop %06x\n", (int)sr.left, (int)sr.top, w, h,
                      sd->is_memory ? "memory" : "window", sx, sy, (unsigned)rop);
     }
+    if (hd_on && rop == SRCCOPY && !flipx && !flipy)
+        hd_blit_begin(src, sx, sy, sw, sh);
     sxs = malloc(sizeof(int) * (size_t)w);
     for (i = 0; i < clip.n; i++) {
         RECT a, want;
@@ -1257,6 +1269,9 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
             }
             xfer_row(&xf, srow, row, a.left, n, sxs, rop);
         }
+        /* HD graphics: the copy's plane too */
+        if (hd_on && rop == SRCCOPY && !flipx && !flipy)
+            hd_blit_end(dst, src, x, y, w, h, sx, sy, sw, sh, a.left, a.top, a.right, a.bottom);
     }
     free(sxs);
     rgn_free(&clip);

@@ -16,6 +16,12 @@ is not included: it is set up from the player's own copy.
   8. wasm2c runtime (wabt)    Apache License 2.0
   9. wasi-libc (wasi-sdk)     MIT licence (and others, see below)
  10. Liberation fonts 2.1.5   SIL Open Font License 1.1
+ 11. stb_image 2.30           MIT licence (or public domain)
+
+and, not in the programs but used by them when the player installs it
+(make hd, tools/fetch_hd_pack.py; docs/HD-GRAPHICS.md):
+
+ 12. openciv2-assets          MIT licence: the HD graphics' art
 
 unshield, zlib (the set-up's reader of the CD's InstallShield cabinet),
 libogg and libvorbis (its Ogg Vorbis encoder of the CD's music) are in the
@@ -384,3 +390,44 @@ Reserved Font Names.
   DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
   FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER
   DEALINGS IN THE FONT SOFTWARE.
+
+
+11. stb_image  https://github.com/nothings/stb  (src/third_party/stb_image)
+----------------------------------------------------------------------------
+
+The PNG decoder of the HD graphics (src/platform/hd.c).  Like stb_vorbis
+(5.), by Sean Barrett, available under 2 licences, whichever is preferred:
+the MIT licence, Copyright (c) 2017 Sean Barrett, as in 5., or public
+domain (www.unlicense.org); the full text is at the end of the file.
+
+
+12. openciv2-assets  https://github.com/PeterJohnson/openciv2-assets
+---------------------------------------------------------------------
+
+The replacement art of the optional HD graphics, by Peter Johnson: the
+release pinned in data/hd-pack.json, downloaded and installed by the player
+(data/native/hd), with its LICENSE, THIRD-PARTY.txt (the notices of what
+its art was made with) and ATLAS-PROVENANCE.md (how it was made).  Not part
+of this repository nor of OpenCiv2's releases.
+
+MIT License
+
+Copyright (c) 2026 Peter Johnson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

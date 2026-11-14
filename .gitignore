@@ -2,6 +2,9 @@
 # (or set CIV2_GAME).
 /orig/
 /*.zip
+# The HD graphics' art (tools/fetch_hd_pack.py, docs/HD-GRAPHICS.md)
+/data/native/hd/
+
 # Build outputs, runs, packages
 /build/
 /run/
@@ -17,5 +20,5 @@ __pycache__/
 /re/*.log
 
 # Downloaded toolchain (tools/fetch-toolchain.sh)
-/tools/toolchain/
+/tools/toolchain
 /tools/docker-ext/*.tar.gz

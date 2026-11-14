@@ -79,6 +79,13 @@ Text is drawn with fonts that have the widths of Windows' Times New Roman, Arial
 New (the Liberation fonts, `data/fonts_win.bin`), so it is laid out as the original's on
 Windows.
 
+## HD graphics
+
+`Graphics=HD` in the same `[OpenCiv2]` section (or `--hd` on the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures
+appear) with Peter Johnson's replacement art, once installed with `make hd`, at the screen's
+full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
+unit tests; it changes only what is shown.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
+
 ## Rule changes
 
 CIV2UIA's items that change the game's rules, and the limits it took from civ2patch, are off

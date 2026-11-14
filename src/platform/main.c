@@ -8,6 +8,7 @@
  * executable), CIV2_SCALE (window scale), CIV2_SCRIPT etc. (replay.c).
  */
 #include "plat.h"
+#include "hd.h"
 #include "../host/host.h"
 #include <unistd.h>
 
@@ -74,7 +75,14 @@ void plat_present(void)
         plat_compose();
     if (!plat_replay && !plat_overlay)
         shown_sig = frame_sig();
-    host_present(screen->bits, screen->stride);
+    {
+        /* HD graphics (hd.c): its frame, density times larger */
+        const unsigned int *frame = hd_on ? hd_frame() : NULL;
+        if (frame)
+            host_present_hd(frame, screen_w * hd_density * 4, hd_density);
+        else
+            host_present(screen->bits, screen->stride);
+    }
     present_cost = host_time_us() - now;
 }
 
@@ -263,6 +271,17 @@ int main(int argc, char **argv)
     plat_normal_desktop = !plat_replay || (getenv("CIV2_NORMAL_DESKTOP") && *getenv("CIV2_NORMAL_DESKTOP"));
     if (!host_init(unit_test || (plat_replay && !getenv("CIV2_SHOW"))))
         return 1;
+    /* --hd, --hd=N (HD graphics; the portable build's set-up passes them
+       as CIV2_HD_ARG): left out of the arguments */
+    {
+        int k, n = argc > 0;
+        for (k = n; k < argc; k++)
+            if (!strcasecmp(argv[k], "--hd") || !strncasecmp(argv[k], "--hd=", 5))
+                setenv("CIV2_HD_ARG", argv[k][4] == '=' ? argv[k] + 5 : "1", 1);
+            else
+                argv[n++] = argv[k];
+        argc = n;
+    }
     set_dirs(argv[0], argc > 1 && !unit_test ? argv[1] : NULL);
     clock_init();
     if (!plat_replay && !unit_test) {
@@ -322,6 +341,8 @@ int main(int argc, char **argv)
     gdi_init();
     wnd_init();
     resources_init();
+    /* HD graphics (docs/HD-GRAPHICS.md): [OpenCiv2] Graphics=HD and the art */
+    hd_init(classic, unit_test, plat_scale > 0 ? plat_scale : 1);
     sound_init();
     if (!window_open && !unit_test && (!plat_replay || getenv("CIV2_SHOW"))) {
         window_open = host_open_window(screen_w, screen_h, full ? -full : scale ? atoi(scale) : 1);

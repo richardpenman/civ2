@@ -1,0 +1,6 @@
+{
+  "comment": "HD graphics (docs/HD-GRAPHICS.md): Peter Johnson's runtime art pack, pinned. Upgrading = changing tag, url and sha256 here. tools/fetch_hd_pack.py downloads it, checks this checksum and installs it in data/native/hd (not in the repository).",
+  "tag": "v2026.11.08.1",
+  "url": "https://github.com/PeterJohnson/openciv2-assets/releases/download/v2026.11.08.1/openciv2-assets-2026.11.08.1.zip",
+  "sha256": "093e791370a3a3724e0acc5b2c08dfbeff22e7efb9b5e9ac77b0f1da839539d4"
+}

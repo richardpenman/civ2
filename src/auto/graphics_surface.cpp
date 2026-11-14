@@ -1,6 +1,7 @@
 /* The game, graphics: drawing surfaces, DIBs, sprites, palettes and fonts: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 005bb3f0 auto */
 void DibSurface::wnd_create(const char *title,i32 style,i32 x,i32 y ,i32 width,i32 height,GamePalette *palette)
@@ -156,6 +157,16 @@ DibSurface * __thiscall surface_dtor(DibSurface *self)
 i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_count,GamePalette *palette)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the art for the game's sheets */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    hd_nested = 1;
+    i32 loaded = load_gif_file(filename,first_color,color_count,palette);
+    hd_nested = 0;
+    if (loaded != 0) hd_sheet_loaded((void *)bits,filename);
+    else hd_sheet_clear((void *)bits);
+    return loaded;
+  }
   int result;
   i32 ret;
   uint table_size;
@@ -284,6 +295,15 @@ i32 DibSurface::load_gif_file(const char *filename,uint first_color,uint color_c
 i32 DibSurface::load_gif_resource(int res_id,uint first_color,uint color_count,GamePalette *palette)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): not one of the game's sheets */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    hd_nested = 1;
+    i32 loaded = load_gif_resource(res_id,first_color,color_count,palette);
+    hd_nested = 0;
+    hd_sheet_clear((void *)bits);
+    return loaded;
+  }
   i32 ret;
   int result;
   uint table_size;
@@ -493,6 +513,17 @@ void DibSurface::unlock()
 void DibSurface::fill_rect(RECT *rect,i32 color)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the fill shows, changed or not */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    tagRECT filled;
+    hd_nested = 1;
+    fill_rect(rect,color);
+    hd_nested = 0;
+    if (IntersectRect(&filled,rect,(RECT *)&clip_left))
+      hd_bits_redrawn((void *)bits,filled.left,filled.top,filled.right - filled.left,filled.bottom - filled.top);
+    return;
+  }
   char locked;
   i32 surf_height;
   GdiDib *dib;
@@ -1844,6 +1875,7 @@ i32 Sprite::create_solid(i32 width,i32 height,uint color)
 void Sprite::free()
 
 {
+  if (hd_on) hd_sprite_forget(this);     /* (port) HD graphics */
   uptr ptr;
   u32 handle;
   
@@ -1998,6 +2030,7 @@ void Sprite::get_origin(i32 *out_x,i32 *out_y)
 void Sprite::replace_color(i32 old_color,i32 new_color)
 
 {
+  if (hd_on) hd_sprite_recolor(this,data_handle,old_color,new_color);     /* (port) HD graphics */
   int rows_left;
   int *len_ptr;
   char had_data;
@@ -2034,6 +2067,19 @@ void Sprite::replace_color(i32 old_color,i32 new_color)
 int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): where the sprite was taken from */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    tagRECT taken;
+    hd_nested = 1;
+    int taken_handle = encode_from_surface(surface,key_mode,src_rect);
+    hd_nested = 0;
+    SetRect(&taken,src_rect->left,src_rect->top,src_rect->right,src_rect->bottom);
+    IntersectRect(&taken,&taken,(RECT *)&surface->clip_left);
+    hd_sprite_captured(this,taken_handle,(void *)surface->bits,taken.left,taken.top,taken.right - taken.left,
+                       taken.bottom - taken.top,key_mode == -2 ? -1 : (int)key_color);
+    return taken_handle;
+  }
   char locked;
   int rect_h;
   int rect_w;
@@ -2248,6 +2294,20 @@ int Sprite::encode_from_surface(DibSurface *surface,int key_mode,RECT *src_rect)
 int *Sprite::blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the sprite's picture too */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    int fx = x + gfx_scale_length(offset_x,0,0), fy = y + gfx_scale_length(offset_y,0,0);
+    int fw = gfx_scale_length(width(),0,0), fh = gfx_scale_length(height(),0,0);
+    int pictured = hd_sprite_begin(this,data_handle,(void *)surface->bits,fx,fy,fw,fh);
+    hd_nested = 1;
+    blit_to_surface(out_rect,surface,key_arg,x,y);
+    hd_nested = 0;
+    if (pictured)
+      hd_sprite_end(this,data_handle,(void *)surface->bits,fx,fy,fw,fh,(const int *)&surface->clip_left,-1,
+                    out_rect);
+    return out_rect;
+  }
   int trim_y;
   int tmp;
   int scaled_trim_x;
@@ -2340,6 +2400,20 @@ int *Sprite::blit_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x
 int *Sprite::blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int key_arg,int x, int y,i32 color)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the sprite's picture too */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    int fx = x + gfx_scale_length(offset_x,0,0), fy = y + gfx_scale_length(offset_y,0,0);
+    int fw = gfx_scale_length(width(),0,0), fh = gfx_scale_length(height(),0,0);
+    int pictured = hd_sprite_begin(this,data_handle,(void *)surface->bits,fx,fy,fw,fh);
+    hd_nested = 1;
+    blit_silhouette_to_surface(out_rect,surface,key_arg,x,y,color);
+    hd_nested = 0;
+    if (pictured)
+      hd_sprite_end(this,data_handle,(void *)surface->bits,fx,fy,fw,fh,(const int *)&surface->clip_left,color,
+                    out_rect);
+    return out_rect;
+  }
   int trim_y;
   int tmp;
   int scaled_trim_x;
@@ -2432,6 +2506,10 @@ int *Sprite::blit_silhouette_to_surface(int *out_rect,DibSurface *surface,int ke
 void Sprite::merge_at(Sprite *src,Sprite *dst,i32 unused,int dx, int dy)
 
 {
+  if (hd_on) {     /* (port) HD graphics: a sprite made of others is the game's own */
+    hd_sprite_forget(this);
+    hd_sprite_forget(dst);
+  }
   byte row_mask;
   LONG width;
   LONG height;
@@ -3482,6 +3560,16 @@ gfx_copy_pixels(int src_bits,int dst_bits,int src_x,int src_y,int dst_x,int dst_
             int height,int src_height,int dst_height,int src_pitch,int dst_pitch)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the copy's picture too */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    hd_copy_begin((void *)(uptr)src_bits,src_x,src_y,(int)width,height);
+    hd_nested = 1;
+    gfx_copy_pixels(src_bits,dst_bits,src_x,src_y,dst_x,dst_y,width,height,src_height,dst_height,src_pitch,dst_pitch);
+    hd_nested = 0;
+    hd_copy_end((void *)(uptr)dst_bits,(void *)(uptr)src_bits,dst_x,dst_y,src_x,src_y,(int)width,height);
+    return;
+  }
   i8 pixel;
   uint count;
   int abs_pitch;

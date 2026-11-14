@@ -1,6 +1,8 @@
 /* The game, graphics: sprites, surfaces, palettes, fonts: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
+void hd_bind_terrain(void);
 
 /* 00407f90 auto */
 int __cdecl rect_width(RECT *rect)
@@ -769,6 +771,7 @@ void __cdecl gfx_load_terrain_sprites(void)
     base_x += 0x41;
   }
   ((DibSurface *)((i8 *)&gfx_sheet_surface_block.gfx_sheet_surface))->release();
+  if (hd_on) hd_bind_terrain();     /* (port) HD graphics: the blends' pictures */
   return;
 }
 
@@ -1591,6 +1594,15 @@ GamePalette *GamePalette::get_logpalette()
 int __cdecl gfx_load_bmp_640x480(DibSurface *surface,const char *filename,int first_color,int num_colors,GamePalette *palette)
 
 {
+  /* (port) HD graphics (src/platform/hd.h): the art for the game's sheets */
+  static int hd_nested;
+  if (hd_on && !hd_nested) {
+    hd_nested = 1;
+    int loaded = gfx_load_bmp_640x480(surface,filename,first_color,num_colors,palette);
+    hd_nested = 0;
+    if (loaded != 0) hd_sheet_loaded((void *)surface->bits,filename);
+    return loaded;
+  }
   char color_base;
   size_t nread;
   GamePalette *logpal;

@@ -7,6 +7,7 @@
  * blended as its DIB engine does (tools/probe/aaprobe.c checks the model).
  */
 #include "plat.h"
+#include "hd.h"
 
 DC *dc_get(HDC h);
 
@@ -300,9 +301,121 @@ void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *
     measured_advances = 0;
 }
 
+static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const RECT *clip);
+
+/* The advance of a glyph as text_draw_game places it on b. */
+static int drawn_advance(const FontFace *f, const Bitmap *b, unsigned char ch)
+{
+    if (b->bpp > 8) {
+        if (!wine_text())
+            return f->g[ch].dadv;
+        return f->aa_mono && !measured_advances && f->aa ? f->aa[ch].adv : f->g[ch].adv;
+    }
+    return measured_advances ? f->g[ch].adv : f->g[ch].dadv;
+}
+
+/* HD graphics (hd.c): the text again on the surface's plane, from the
+   glyphs of the same font density times as tall (to 48 pixels), each where
+   the game's own glyph is, so that the text keeps its layout. */
+static void hd_text(DC *dc, Bitmap *b, const Region *rg, FontFace *f, int x, int y, const char *s, int n, COLORREF c)
+{
+    unsigned int *plane = hd_bitmap_plane(b);
+    int d = hd_density, fh = f->height * d, i, k;
+    FontFace *fine;
+    double scale;
+    if (fh > MAXH)
+        fh = MAXH;
+    fine = faces[f->face][fh][f->bold][f->italic];
+    if (!aa_data)
+        load_aa();
+    if (!fine || !fine->aa)
+        return;
+    scale = (double)f->height * d / fine->height;
+    if (dc->bk_mode == OPAQUE) {
+        COLORREF bk = dc_resolve_color(dc, dc->bk_color);
+        unsigned v = 0xff000000u | GetRValue(bk) << 16 | GetGValue(bk) << 8 | GetBValue(bk);
+        RECT bg, a;
+        bg.left = x; bg.top = y; bg.right = x + text_width(f, s, n); bg.bottom = y + f->tm[0];
+        for (k = 0; k < rg->n; k++)
+            if (rect_intersect(&a, &rg->r[k], &bg)) {
+                int px, py;
+                if (a.left < 0) a.left = 0;
+                if (a.top < 0) a.top = 0;
+                if (a.right > b->w) a.right = b->w;
+                if (a.bottom > b->h) a.bottom = b->h;
+                for (py = a.top * d; py < a.bottom * d; py++)
+                    for (px = a.left * d; px < a.right * d; px++)
+                        plane[(size_t)py * b->w * d + px] = v;
+            }
+    }
+    for (i = 0; i < n; i++) {
+        unsigned char ch = (unsigned char)s[i];
+        AaGlyph *g = &fine->aa[ch];
+        const unsigned char *cov = aa_coverage(g);
+        /* not wider than the game's glyph: its advance, density times */
+        double xs = fine->g[ch].adv ? (double)f->g[ch].dadv * d / fine->g[ch].adv : scale;
+        int gx = x * d + (int)(g->x * xs), gy = y * d + (int)(g->y * scale);
+        int gw = (int)(g->w * xs + .5), gh = (int)(g->h * scale + .5);
+        for (k = 0; cov && gw > 0 && gh > 0 && k < rg->n; k++) {
+            int l = rg->r[k].left * d, t = rg->r[k].top * d, r = rg->r[k].right * d, bot = rg->r[k].bottom * d, px, py;
+            if (l < gx) l = gx;
+            if (t < gy) t = gy;
+            if (r > gx + gw) r = gx + gw;
+            if (bot > gy + gh) bot = gy + gh;
+            if (l < 0) l = 0;
+            if (t < 0) t = 0;
+            if (r > b->w * d) r = b->w * d;
+            if (bot > b->h * d) bot = b->h * d;
+            for (py = t; py < bot; py++)
+                for (px = l; px < r; px++) {
+                    int v = cov[((py - gy) * g->h / gh) * g->w + (px - gx) * g->w / gw];
+                    unsigned *p = plane + (size_t)py * b->w * d + px, z = *p;
+                    if (v > 1)
+                        *p = 0xff000000u | aa_blend((z >> 16) & 255, GetRValue(c), v) << 16 |
+                             aa_blend((z >> 8) & 255, GetGValue(c), v) << 8 | aa_blend(z & 255, GetBValue(c), v);
+                }
+        }
+        x += drawn_advance(f, b, ch);
+    }
+}
+
 /* Glyphs at logical (x, y) = top left of the text cell, clipped to `clip`
- * (logical) and the DC's clip region. */
+ * (logical) and the DC's clip region; with HD graphics on a surface with a
+ * plane, there too (hd_text). */
 void text_draw(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
+{
+    FontFace *f = dc_face(dc);
+    Bitmap *b;
+    Region rg = {0, 0, NULL};
+    int m, w;
+    if (!hd_on || !f || n <= 0 || !(b = dc_target(dc)) || !hd_bitmap_plane(b)) {
+        text_draw_game(dc, x, y, s, n, clip);
+        return;
+    }
+    if (dc->is_memory) {
+        RECT all = {0, 0, 0, 0};
+        all.right = b->w;
+        all.bottom = b->h;
+        rgn_set(&rg, &all);
+    } else
+        rgn_copy(&rg, &dc->clip);
+    if (clip) {
+        RECT dclip = *clip;
+        dclip.left += dc->origin.x; dclip.right += dc->origin.x;
+        dclip.top += dc->origin.y; dclip.bottom += dc->origin.y;
+        rgn_intersect_rect(&rg, &dclip);
+    }
+    /* the cell, with room for glyphs that reach out of it */
+    m = f->height / 2 + 2;
+    w = text_width(f, s, n);
+    hd_bitmap_sync(b, x + dc->origin.x - m, y + dc->origin.y - m, w + 2 * m, f->tm[0] + 2 * m);
+    text_draw_game(dc, x, y, s, n, clip);
+    hd_text(dc, b, &rg, f, x + dc->origin.x, y + dc->origin.y, s, n, dc_resolve_color(dc, dc->text_color));
+    hd_bitmap_commit(b, x + dc->origin.x - m, y + dc->origin.y - m, w + 2 * m, f->tm[0] + 2 * m);
+    rgn_free(&rg);
+}
+
+static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const RECT *clip)
 {
     FontFace *f = dc_face(dc);
     Bitmap *b;
