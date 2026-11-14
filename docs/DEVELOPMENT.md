@@ -207,7 +207,23 @@ builds do not use it.
   Lock as SDL does), the wheel's fractions added up as host_sdl.c does, cursors as CSS cursors
   (the game's images scaled to the desktop), sound effects as WebAudio buffers queued one after
   another, music decoded by the browser (`decodeAudioData`: Ogg Vorbis or WAV), message boxes as
-  an in-page `<dialog>`.  The `host_net_*` imports fail: no network games.
+  an in-page `<dialog>`.  The `host_net_*` imports: network play through a relay (below).
+* **Network play** (src/web/net.js, tools/webrelay.py): the relay bridges WebSockets to TCP, one
+  WebSocket per connection made (`/connect?host=&port=`: then the connection's bytes as binary
+  messages, `{"connected": true}` once it is open, the WebSocket closed with 1000 when the peer
+  closed, 4000-4999 when it failed or was refused) and one per listening port
+  (`/listen?port=`: `{"listening"}`, `{"accept": ID, "ip"}` per connection, its bytes as
+  `[ID u32][bytes]` both ways, `{"closed": ID}`; from the page `{"close": ID}`,
+  `{"unlisten": true}`, so that the players stay when the game closes its listening socket);
+  `/info` gives the address the others reach it at (the game's `host_net_local_addr`).  net.js
+  gives the game host_net.c's non-blocking semantics: `connect` returns at once and
+  `tcp_state` is 0 until the relay says connected (-1 if refused), `recv` -1 while nothing has
+  come, 0 once the peer has closed (after what it sent), -2 when lost; `send` -1 while
+  connecting.  The WebSockets' events arrive while the game gives the page its turns (its loop
+  polls the sockets from `PeekMessage`, which yields every 25 ms).  UDP sockets open but carry
+  nothing (no LAN game lists; Internet games by address).  Python 3 standard library only
+  (asyncio; RFC 6455 framing written out); its defaults keep it from being an open proxy
+  (README).
 * **Files** (src/web/wasi.js): WASI preview 1 over a file system in memory: the player's files at
   `/civ2` (the game's folder, `argv[1]`), the fonts at `/data` (`CIV2_DATA`, fetched gzipped and
   inflated by the page), the platform's log to `/dev/null` (`?log`: to the console).
@@ -246,7 +262,7 @@ builds do not use it.
   window and other browsers than Chrome are checked by playing (music, the videos and loading saved
   games: played and fine, 2026-11-14): `make web`, `python3 -m http.server
   -d build/web`, open `http://localhost:8000/?setup`.
-* **Limits**: no network games.  Videos play as natively (the Indeo decoder is part of the
+* **Limits**: network games only through the relay, Internet games only.  Videos play as natively (the Indeo decoder is part of the
   module).  The set-up has been tried only on a made-up CD (below): there is no real CD or image
   here; the cabinet code is libunshield's, as natively, and the made-up cabinet is also read by
   unshield's own command-line tool.
@@ -260,6 +276,9 @@ builds do not use it.
   tracks with their pregaps: the game unpacked byte for byte, the videos copied, the music encoded
   as Ogg Vorbis of the tracks' lengths, the temporary files gone; the same CD as a folder, its
   names in another case: no music; and files that are neither), then
+  `src/web/test/net.mjs` (net.js under node with the relay: joining a TCP server, partial
+  reads, the peer closing, refused ports, addresses and connections; hosting with two TCP
+  clients, the listener closed while they stay), then
   `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
   from `tools/fetch-toolchain.sh browser`; Linux x86-64) first sets the game up from the made-up
   disc image through the page (its file input, the worker, IndexedDB; the music decoded by the
@@ -271,3 +290,15 @@ builds do not use it.
   screenshots in `run/web-smoke`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
+* **Network games, browser and native** (`tools/xdnet/webnet.py native-web|web-native [--turns N]
+  [--exe OpenCiv2]`; on the docker host, after `make web` and `make port`): tools/xdnet/nettest.py's
+  steps and checks, one player being the browser version (src/web/test/player.mjs: Chrome's
+  headless shell driven by xdotool's key names over stdin, its XDaemon and platform logs copied
+  out as they grow; src/web/test/cdp.mjs is shared with the smoke test), the other our native
+  build in a civ2-dev container, the relay on the docker host (its WebSocket side on 127.0.0.1,
+  games hosted by the browser listened for on the bridge's gateway).  An Internet game: the host
+  sets up a new game, the other joins by address, civilizations chosen, the world built, two
+  turns each (a settler moved, a city founded), both quit; checked as nettest.py checks: the
+  records well formed, what each sent the other received byte for byte, both reached the turns,
+  the expected messages in order, no crash (run/xd/cap/web-PAIRING/result.txt).  Not in
+  `make web-test` (it needs docker and a few minutes).

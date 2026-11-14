@@ -95,7 +95,29 @@ games, the scenarios and maps you made, `CIV.INI`, `CIV2.DAT`, `HALLFAME.DAT`; n
 files), and **Import saves** puts `.SAV` files, or such a `.zip`, back (into the running game too,
 so that *Load a Game* finds them at once): to keep them safe, or move them to another browser or
 computer. Music plays where the game's folder has it (`Music/TrackNN.ogg`, as
-the set-up makes from a disc image; a folder the desktop version set up, `GameData`, has it too). Network games are not available in the browser.
+the set-up makes from a disc image; a folder the desktop version set up, `GameData`, has it too).
+
+Network games work in the browser through a small relay, since a web page cannot open the
+game's TCP connections itself: `tools/webrelay.py` (Python 3, nothing else to install) bridges
+the page's WebSockets to TCP. Run it on the machine of the player who hosts (or any machine the
+browsers reach), and give the page its address on the `?setup` page or as `?relay=ws://HOST:8765`:
+
+```sh
+tools/webrelay.py                                   # browsers on this machine; join any game on the LAN
+tools/webrelay.py --host 0.0.0.0 --listen-host 0.0.0.0   # LAN party: other machines' browsers use it, and
+                                                    # other machines join a game a browser hosts
+```
+
+A browser joins a game hosted by the desktop OpenCiv2, the original game or another browser
+(Multiplayer Game > Internet Game > Join, the host's address); a game hosted in a browser is
+joined at the relay's address (the game shows it), port 4993. Only Internet games, by address:
+the local network's game lists (UDP broadcasts) do not reach a browser. By default the relay is
+not an open proxy: it listens on 127.0.0.1, connects only to port 4993 and only to this machine
+and private network addresses (`--allow CIDR`, or `--allow any`, for games elsewhere on the
+Internet), hosts games for browsers on 127.0.0.1 unless `--listen-host` says otherwise, and can
+be limited to the pages of one site (`--origin http://...`); `tools/webrelay.py --help`.
+It speaks `ws://`: a page served over `https://` needs it behind a TLS proxy (`wss://`).
+
 Tested in Chrome; it should run in any browser from 2023 on (Edge 103, Firefox 113,
 Safari 16.4). The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T, Ctrl+N close or
 open tabs and windows): use the game's menus for those commands.

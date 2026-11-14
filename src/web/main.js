@@ -196,6 +196,19 @@ function messageBox(icon, title, text, labels, ids, enter, escape) {
     });
 }
 
+// The network games' relay (tools/webrelay.py): ?relay=ws://HOST:PORT, else
+// the set-up page's field (kept in this browser)
+function relayAddress() {
+    const q = new URLSearchParams(location.search).get('relay');
+    if (q !== null)
+        return q;
+    try {
+        return localStorage.getItem('civ2.relay') || '';
+    } catch (e) {
+        return '';
+    }
+}
+
 // ---- the player's saved games: exported, imported (saves.js) ----
 
 let running = null;         // the game's files while it runs (MemFS)
@@ -332,7 +345,7 @@ async function play(store) {
     try {
         window.civ2Stats = {};
         code = await runGame({wasm: fetch('civ2.wasm'), fs, canvas, args: ['civ2', GAME], env, messageBox,
-                              stats: window.civ2Stats});
+                              stats: window.civ2Stats, relay: relayAddress()});
         status('The game has ended' + (code ? ' (' + code + ')' : '') + '.');
     } catch (e) {
         console.error(e);
@@ -366,6 +379,14 @@ async function main() {
     }
     const store = await openStore();
     savesControls(store);
+    $('relay').value = relayAddress();
+    $('relay').onchange = () => {
+        const v = $('relay').value.trim();
+        try {
+            localStorage.setItem('civ2.relay', v);
+        } catch (e) { /* not kept */ }
+        status(v && !/^wss?:\/\//.test(v) ? 'The relay\'s address starts with ws:// (or wss://).' : 'Ready.');
+    };
     const chosen = async (files) => {
         try {
             if (await importFiles(store, files))

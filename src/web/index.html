@@ -18,6 +18,7 @@
                          border: 0; border-radius: 4px; padding: 0.45rem 1rem; margin: 0.25rem; cursor: pointer; }
   button.plain { background: none; color: var(--dim); text-decoration: underline; padding: 0; }
   input[type=file] { display: none; }
+  #relay { font: inherit; background: var(--panel); color: var(--fg); border: 1px solid #4a4538; padding: 0 0.3rem; }
   #status { min-height: 1.5rem; color: var(--dim); }
   #have { background: var(--panel); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
@@ -58,7 +59,10 @@
      image of it, the game is unpacked as its installer would, with its videos; from a disc image its music too,
      encoded as Ogg Vorbis (a few minutes; the browser cannot read a CD's music tracks, a disc image has them).
      Music plays if the game's folder has it (<code>Music/Track02.ogg</code> ..., as the set-up makes it).
-     Single player only: network games are not available in the browser.</p>
+     Network games go through a relay, <code>tools/webrelay.py</code> (see the README).</p>
+  <p class="dim"><label>Network games' relay: <input id="relay" type="text" size="26" placeholder="ws://127.0.0.1:8765"
+     spellcheck="false"></label> (empty: none; also <code>?relay=ws://HOST:PORT</code>). Join a game by its host's
+     address (Multiplayer, Internet Game); a game hosted here is joined at the relay's address.</p>
   <p><button id="stop" hidden>Stop</button></p>
   <div id="have" hidden>
     <p>The game files are in this browser.</p>

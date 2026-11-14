@@ -8,6 +8,7 @@
 // (drawing, input, sound), and the stack is wound back to go on.
 
 import {makeWasi, ExitStatus} from './wasi.js';
+import {makeNet} from './net.js';
 
 const EV = {NONE: 0, QUIT: 1, KEYDOWN: 2, KEYUP: 3, MOTION: 4, BUTTONDOWN: 5, BUTTONUP: 6, EXPOSED: 7, COMMAND: 8,
             WHEEL: 9, RESIZE: 10};
@@ -93,7 +94,8 @@ export function argbToRgba(src, dst, n) {
 // ---- the run ----
 
 // opts: {wasm: ArrayBuffer|Response (or a promise of one), fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
-// enter, escape) -> Promise<id>, stats: {} (filled in as it runs: busyMs, resumes)}
+// enter, escape) -> Promise<id>, stats: {} (filled in as it runs: busyMs, resumes),
+// relay: the network relay's address (net.js; none: no network play)}
 // -> the game's exit code
 export async function runGame(opts) {
     const {canvas, fs} = opts;
@@ -264,6 +266,9 @@ export async function runGame(opts) {
     }
     const audioOk = () => audio && audio.state === 'running';
     const music = {source: null, playing: false, token: 0};
+
+    // -- network play: through the relay (opts.relay: 'ws://host:port')
+    const net = makeNet(opts.relay);
 
     // -- the module's imports
     const host = {
@@ -442,19 +447,40 @@ export async function runGame(opts) {
             music.source = null;
         },
         host_music_playing: () => (music.playing ? 1 : 0),
-        // network play: not in the browser
-        host_net_local_addr: () => -1,
-        host_net_udp_open: () => -1,
-        host_net_udp_send: () => -1,
+        // network play: through a relay (net.js); without one, none
+        host_net_local_addr: (buf, size) => {
+            if (size <= 0)
+                return 0;
+            const b = new TextEncoder().encode(net.localAddr()).subarray(0, size - 1);
+            const m = new Uint8Array(memory.buffer);
+            m.set(b, buf);
+            m[buf + b.length] = 0;
+            return b.length;
+        },
+        host_net_udp_open: (port) => net.udpOpen(port),
+        host_net_udp_send: (h, ip, port, p, n) => net.udpSend(h, n),
         host_net_udp_recv: () => -1,
-        host_net_tcp_open: () => -1,
-        host_net_tcp_listen: () => -1,
-        host_net_tcp_accept: () => -1,
-        host_net_tcp_connect: () => -1,
-        host_net_tcp_state: () => -1,
-        host_net_tcp_send: () => -2,
-        host_net_tcp_recv: () => -2,
-        host_net_close: () => {},
+        host_net_tcp_open: (port) => net.tcpOpen(port),
+        host_net_tcp_listen: (h) => net.tcpListen(h),
+        host_net_tcp_accept: (h, ipOut) => {
+            const r = net.tcpAccept(h);
+            if (r === -1)
+                return -1;
+            if (ipOut)
+                dv().setUint32(ipOut, r[1], true);
+            return r[0];
+        },
+        host_net_tcp_connect: (h, ip, port) => net.tcpConnect(h, ip >>> 0, port),
+        host_net_tcp_state: (h) => net.tcpState(h),
+        host_net_tcp_send: (h, p, n) => net.tcpSend(h, new Uint8Array(memory.buffer, p, n)),
+        host_net_tcp_recv: (h, p, n) => {
+            const r = net.tcpRecv(h, n);
+            if (typeof r === 'number')
+                return r;
+            new Uint8Array(memory.buffer).set(r, p);
+            return r.length;
+        },
+        host_net_close: (h) => net.close(h),
     };
 
     // -- the imports that may block: a promise unwinds the module's stack,

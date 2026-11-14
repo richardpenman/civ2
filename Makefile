@@ -44,6 +44,7 @@ web-test: web                 ## the browser version's tests: its host's logic, 
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/unit.mjs
 	tools/toolchain/node/bin/node src/web/test/setup.mjs
+	tools/toolchain/node/bin/node src/web/test/net.mjs
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs
 
 web-replay: web               ## SCRIPT replayed in the browser version, compared with the original's recording
