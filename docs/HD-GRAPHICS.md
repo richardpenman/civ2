@@ -149,6 +149,11 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game's pictures) is drawn, where the game copies it, over what the destination's plane
   showed; a sprite taken from such a picture keeps its transparency.  A surface's plane is
   drawn anew from its pixels whenever another picture is loaded into it.
+* **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: the throne room's
+  fade in, a palette loaded for another picture), the plane's pixels that are the surface's
+  pixels enlarged in the old colour take the new one.  The art (sprites, pictures) and sharp
+  text keep their colours: they do not fade with the palette (the throne room's pieces appear
+  at once rather than fading in).
 
 So nothing the game computes changes, nor any `rand()` call: the game's own pixels, which its
 code reads back (map picking masks, editors), are the original's.  PR #11 learned the hard way
@@ -260,8 +265,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   photographs, is pale on the parchment.
 * Unit shields and the city size box are the original's, enlarged (the pack's `shield` is an
   alpha mask to be tinted); in places the larger unit art covers the shield.
-* Palette changes of an 8-bit surface (a flash, a fade) do not reach pixels already in a
-  plane; the screen's grey fade does not grey the frame.
+* Palette changes of an 8-bit surface (a fade) reach only the pixels shown enlarged, not the
+  art nor sharp text; the screen's grey fade does not grey the frame.
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are its own pixels enlarged (straight lines, so

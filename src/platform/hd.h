@@ -67,6 +67,9 @@ void hd_init(int classic, int unit_test, int scale);
 int hd_pack_path(char *path, int size);
 void hd_bitmap_free(struct Bitmap *b);
 void hd_redrawn(struct Bitmap *b, int x, int y, int w, int h);     /* fills */
+/* b's colour table changed (it was old): its pixels enlarged in the plane
+   take their new colours (a palette's fade). */
+void hd_colors_changed(struct Bitmap *b, const void *old);
 /* Text (text.c): b's plane (NULL: none); before drawing, the rectangle's
    pixels into it (sync); after, the game's pixels there as shown (commit). */
 unsigned int *hd_bitmap_plane(struct Bitmap *b);

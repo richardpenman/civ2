@@ -723,12 +723,16 @@ UINT WINAPI SetDIBColorTable(HDC h, UINT start, UINT n, const RGBQUAD *in)
     API_TRACE();
     DC *dc = get_dc(h);
     UINT i;
+    RGBQUAD old[256];
     if (!dc || !dc->is_memory || !dc->bitmap || dc->bitmap->bpp > 8)
         return 0;
+    memcpy(old, dc->bitmap->colors, sizeof old);
     for (i = 0; i < n && start + i < 256; i++) {
         dc->bitmap->colors[start + i] = in[i];
         dc->bitmap->colors[start + i].rgbReserved = 0;
     }
+    if (hd_on)
+        hd_colors_changed(dc->bitmap, old);
     return i;
 }
 

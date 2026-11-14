@@ -378,6 +378,46 @@ static void redraw_rect(Bitmap *b, int l, int t, int r, int bot)
     }
 }
 
+/* The colour table changed (a fade, a palette loaded): where the plane
+   shows a pixel enlarged in its old colour (not a picture, nor sharp text),
+   the new colour.  The pictures keep theirs (docs/HD-GRAPHICS.md). */
+void hd_colors_changed(Bitmap *b, const void *old_table)
+{
+    const RGBQUAD *old = old_table;
+    uint32_t was[256], now[256];
+    unsigned char changed[256];
+    int d = hd_density, pitch, x, y, i, j, any = 0;
+    if (!hd_on || !valid(b) || b->bpp != 8)
+        return;
+    for (i = 0; i < 256; i++) {
+        was[i] = 0xff000000u | (uint32_t)old[i].rgbRed << 16 | (uint32_t)old[i].rgbGreen << 8 | old[i].rgbBlue;
+        now[i] = 0xff000000u | (uint32_t)b->colors[i].rgbRed << 16 | (uint32_t)b->colors[i].rgbGreen << 8 |
+                 b->colors[i].rgbBlue;
+        any |= changed[i] = was[i] != now[i];
+    }
+    if (!any)
+        return;
+    sync_rect(b, 0, 0, b->w, b->h);
+    pitch = b->w * d;
+    for (y = 0; y < b->h; y++) {
+        const unsigned char *row = b->hd_prev + (size_t)y * b->w;
+        for (x = 0; x < b->w; x++) {
+            uint32_t *p = b->hd + (size_t)y * d * pitch + (size_t)x * d;
+            int same = 1;
+            if (!changed[row[x]])
+                continue;
+            for (j = 0; j < d && same; j++)
+                for (i = 0; i < d; i++)
+                    if (p[j * pitch + i] != was[row[x]]) {
+                        same = 0;
+                        break;
+                    }
+            if (same)
+                block(b, x, y, now[row[x]]);
+        }
+    }
+}
+
 void hd_redrawn(Bitmap *b, int x, int y, int w, int h)
 {
     if (hd_on)
