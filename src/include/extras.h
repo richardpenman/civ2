@@ -89,7 +89,6 @@ EXTRAS_C const char *extras_text(const char *key);   /* an addition's text (tran
 EXTRAS_C int extras_text_translated(const char *key);  /* whether a translation gives it */
 /* each of the additions' texts: add("openciv2.<key>", English) (lang.cpp's export) */
 EXTRAS_C void extras_texts_each(void (*add)(const char *key, const char *english));
-EXTRAS_C void extras_options_dialog(void);      /* Game > OpenCiv2 Options */
 
 /* In a dialog list row's text (X30, X37): EXTRAS_ICON then 'g' (a gold coin),
    's' (a shield) or 'f' (food): that icon. */

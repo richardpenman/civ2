@@ -1,0 +1,44 @@
+# The opening window (src/platform/launcher.c; CIV2_TEST_LAUNCHER: on a
+# desktop of its size, nothing written or downloaded): its pages, choices
+# made on them (Go To past foreign units, the retirement year, the turn in
+# the status panel off, gamma 150), Classic chosen and back; then Play: the
+# game, its menu and a saved game, with the choices made (no turn after the
+# year, the colours brighter).
+# test: CIV2_TEST_LAUNCHER=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
+wait 1000
+shot xl-a-game
+click 196 66                # Rules
+wait 500
+shot xl-b-rules
+click 40 132                # Go To past foreign units
+click 240 350               # the retirement year
+key End BackSpace BackSpace BackSpace BackSpace
+type 2050
+wait 500
+shot xl-c-rules-chosen
+click 318 66                # Interface
+wait 500
+shot xl-d-interface
+click 40 192                # Turn in the status panel
+click 130 346               # Gamma
+key End BackSpace BackSpace BackSpace
+type 150
+wait 500
+shot xl-e-interface-chosen
+click 74 66                 # Game
+click 40 172                # Classic: the other pages not in it
+wait 500
+shot xl-f-classic
+click 40 132                # Standard again
+wait 500
+click 534 448               # Play
+wait 8000
+shot xl-g-menu
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+shot xl-h-game

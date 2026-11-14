@@ -9,6 +9,7 @@
  */
 #include "plat.h"
 #include "hd.h"
+#include "launcher.h"
 #include "../host/host.h"
 #include <unistd.h>
 
@@ -255,8 +256,71 @@ int main(int argc, char **argv)
 #else
     const int unit_test = 0;
 #endif
-    int classic = getenv("CIV2_CLASSIC") && *getenv("CIV2_CLASSIC");
+    int classic = getenv("CIV2_CLASSIC") && *getenv("CIV2_CLASSIC"), launched = 0;
     plat_replay = !unit_test && getenv("CIV2_SCRIPT") && *getenv("CIV2_SCRIPT");
+    /* Replays reproduce the reference desktop (Wine without a window
+       manager) unless CIV2_NORMAL_DESKTOP is set. */
+    plat_normal_desktop = !plat_replay || (getenv("CIV2_NORMAL_DESKTOP") && *getenv("CIV2_NORMAL_DESKTOP"));
+    if (!host_init(unit_test || (plat_replay && !getenv("CIV2_SHOW"))))
+        return 1;
+    /* --hd, --hd=N (HD graphics), --launcher (the opening window): left
+       out of the arguments (the portable build's set-up passes them as
+       CIV2_HD_ARG and CIV2_LAUNCHER_ARG) */
+    {
+        int k, n = argc > 0;
+        for (k = n; k < argc; k++)
+            if (!strcasecmp(argv[k], "--hd") || !strncasecmp(argv[k], "--hd=", 5))
+                setenv("CIV2_HD_ARG", argv[k][4] == '=' ? argv[k] + 5 : "1", 1);
+            else if (!strcasecmp(argv[k], "--launcher"))
+                setenv("CIV2_LAUNCHER_ARG", "1", 1);
+            else
+                argv[n++] = argv[k];
+        argc = n;
+    }
+    set_dirs(argv[0], argc > 1 && !unit_test ? argv[1] : NULL);
+    clock_init();
+    /* The opening window (launcher.c), before the game's: in a window of its
+       own, centred, at the scale the game will have (in a test run,
+       CIV2_TEST_LAUNCHER, on a desktop of its size); Quit ends here. */
+    if (!unit_test && launcher_wanted()) {
+        int sw = screen_w, sh = screen_h, k = 1, play, was_scale = plat_scale;
+        int32_t dw = 0, dh = 0;
+        launcher_size(&screen_w, &screen_h);
+        if (plat_replay)
+            replay_init();
+        else {
+            if (host_display_size(&dw, &dh))
+                k = host_desktop_scale(dw, dh, (int)GetPrivateProfileIntA("OpenCiv2", "Scale", 0, "CIV.INI"));
+            while (k > 1 && dw && (screen_w * k > dw * 9 / 10 || screen_h * k > dh * 9 / 10))
+                k--;
+            window_open = host_open_window(screen_w, screen_h, k);
+            plat_scale = k;
+        }
+        gdi_init();
+        wnd_init();
+        resources_init();
+        launched = 1;
+        play = launcher_run();
+        if (!plat_replay) {
+            host_close_window();
+            window_open = 0;
+            plat_scale = was_scale;
+        }
+        screen_w = sw;
+        screen_h = sh;
+        if (!play) {
+            host_quit();
+            return 0;
+        }
+    }
+    /* Classic: CIV2_CLASSIC=1, or chosen in the opening window (CIV.INI's
+       [OpenCiv2] Mode=Classic; not in replays and the unit tests). */
+    if (!classic && !unit_test) {
+        char mode[32] = "";
+        if (!launcher_setting("Mode", mode, sizeof mode) && !plat_replay)
+            plat_profile_string("CIV.INI", "OpenCiv2", "Mode", mode, sizeof mode);
+        classic = !strcasecmp(mode, "Classic");
+    }
     /* The original's bugs are fixed (docs/BUGS.md) except with CIV2_CLASSIC=1
        (the original game) and in replays and unit tests, which are compared
        with the original; CIV2_TEST_FIXES=1 fixes them in a replay (tests). */
@@ -266,24 +330,6 @@ int main(int argc, char **argv)
        turns them on in a replay (tests). */
     plat_extras = !classic && !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_EXTRAS") && *getenv("CIV2_TEST_EXTRAS")));
-    /* Replays reproduce the reference desktop (Wine without a window
-       manager) unless CIV2_NORMAL_DESKTOP is set. */
-    plat_normal_desktop = !plat_replay || (getenv("CIV2_NORMAL_DESKTOP") && *getenv("CIV2_NORMAL_DESKTOP"));
-    if (!host_init(unit_test || (plat_replay && !getenv("CIV2_SHOW"))))
-        return 1;
-    /* --hd, --hd=N (HD graphics; the portable build's set-up passes them
-       as CIV2_HD_ARG): left out of the arguments */
-    {
-        int k, n = argc > 0;
-        for (k = n; k < argc; k++)
-            if (!strcasecmp(argv[k], "--hd") || !strncasecmp(argv[k], "--hd=", 5))
-                setenv("CIV2_HD_ARG", argv[k][4] == '=' ? argv[k] + 5 : "1", 1);
-            else
-                argv[n++] = argv[k];
-        argc = n;
-    }
-    set_dirs(argv[0], argc > 1 && !unit_test ? argv[1] : NULL);
-    clock_init();
     if (!plat_replay && !unit_test) {
         /* A window with its frame, maximized; CIV2_FULLSCREEN=1 or CIV.INI's
          * [OpenCiv2] FullScreen=1: full screen, as the original on Windows.
@@ -338,9 +384,13 @@ int main(int argc, char **argv)
         /* Tests: the game as on Windows and macOS (the host's menu bar, no
            caption of its own, panels locked), the host's part left out. */
         plat_host_frame = plat_native_menu = plat_lock_panels = 1;
-    gdi_init();
-    wnd_init();
-    resources_init();
+    if (launched)
+        wnd_resize_desktop(screen_w, screen_h);     /* (the opening window's desktop) */
+    else {
+        gdi_init();
+        wnd_init();
+        resources_init();
+    }
     /* HD graphics (docs/HD-GRAPHICS.md): [OpenCiv2] Graphics=HD and the art */
     hd_init(classic, unit_test, plat_scale > 0 ? plat_scale : 1);
     sound_init();
@@ -349,7 +399,8 @@ int main(int argc, char **argv)
         if (scale && atoi(scale) > 1)
             plat_scale = atoi(scale);
     }
-    replay_init();
+    if (!launched || !plat_replay)
+        replay_init();
     extras_load();
     pointer_init(screen_w / 2, screen_h / 2);      /* where the X server puts it */
     /* The game's static data, then the C and C++ initializers the MSVC

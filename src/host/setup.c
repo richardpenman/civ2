@@ -282,8 +282,8 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
     int again, ok, cancelled, music_only, cd_music = 0;
     int i, n;
 
-    /* (--fix-cue-gaps, --no-fix-cue-gaps, --hd, --hd=N, any case: noted and
-       left out of the arguments read here) */
+    /* (--fix-cue-gaps, --no-fix-cue-gaps, --hd, --hd=N, --launcher, any
+       case: noted and left out of the arguments read here) */
     for (i = n = argc > 0; i < argc; i++)
         if (same_flag(argv[i], "--no-fix-cue-gaps"))
             setup_fix_cue_gaps = 0;
@@ -298,6 +298,14 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
             _putenv(kv);
 #else
             putenv(strdup(kv));
+#endif
+        } else if (same_flag(argv[i], "--launcher")) {
+            /* the opening window (src/platform/launcher.c), for the game:
+               as CIV2_LAUNCHER_ARG */
+#ifdef _WIN32
+            _putenv("CIV2_LAUNCHER_ARG=1");
+#else
+            putenv("CIV2_LAUNCHER_ARG=1");
 #endif
         } else
             argv[n++] = argv[i];

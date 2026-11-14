@@ -829,10 +829,39 @@ void hd_screenshot(const char *path)
 
 /* ---- start ---- */
 
+/* Where the art is: CIV2_HD_PACK, else the program's data (a source
+   checkout: data/native/hd, make hd), else the user's own folder (where the
+   opening window installs it, src/host/host_launcher.c).  1 if found. */
+int hd_pack_path(char *path, int size)
+{
+    const char *p = getenv("CIV2_HD_PACK");
+    char user[1024];
+    FILE *f;
+    if (p && *p) {
+        snprintf(path, (size_t)size, "%s", p);
+        return 1;
+    }
+    snprintf(path, (size_t)size, "%s/hd/atlas-hd.pack", plat_data_dir);
+    if ((f = fopen(path, "rb"))) {
+        fclose(f);
+        return 1;
+    }
+    if (host_user_dir(user, sizeof user) > 0) {
+        char other[1100];
+        snprintf(other, sizeof other, "%s/hd/atlas-hd.pack", user);
+        if ((f = fopen(other, "rb"))) {
+            fclose(f);
+            snprintf(path, (size_t)size, "%s", other);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 void hd_init(int classic, int unit_test, int scale)
 {
     char path[1100], value[16];
-    const char *test = getenv("CIV2_TEST_HD"), *p = getenv("CIV2_HD_PACK");
+    const char *test = getenv("CIV2_TEST_HD");
     int want;
     if (classic || unit_test)
         return;
@@ -860,10 +889,8 @@ void hd_init(int classic, int unit_test, int scale)
             want = scale;           /* a plane pixel per pixel of the display */
     }
     hd_density = want < 1 ? 1 : want > 4 ? 4 : want;
-    if (p && *p)
-        snprintf(path, sizeof path, "%s", p);
-    else
-        snprintf(path, sizeof path, "%s/hd/atlas-hd.pack", plat_data_dir);
+    if (!hd_pack_path(path, sizeof path))
+        plat_log("hd: no art (%s/hd/atlas-hd.pack, nor in the user's folder)\n", plat_data_dir);
     hd_on = open_pack(path);
     if (!hd_on)
         hd_density = 1;

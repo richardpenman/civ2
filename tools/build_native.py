@@ -35,28 +35,28 @@ TARGETS = {
         'exe': 'civ2-linux32',
         'cflags': ['-m32'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie'],
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32cov': {         # coverage of the test runs: gcov data in build/native/linux32cov
         'cc': 'gcc',
         'exe': 'civ2-linux32cov',
         'cflags': ['-m32', '--coverage'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie', '--coverage'],
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32gc': {          # which functions nothing refers to: build/native/linux32gc/unreferenced.txt
         'cc': 'gcc',
         'exe': 'civ2-linux32gc',
         'cflags': ['-m32', '-ffunction-sections'],
         'ldflags': ['-m32', '-no-pie', '-Wl,--gc-sections', '-Wl,--print-gc-sections'],
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32asan': {        # AddressSanitizer: code that relies on locals or globals being adjacent
         'cc': 'gcc',
         'exe': 'civ2-linux32asan',
         'cflags': ['-m32', '-fsanitize=address', '-fsanitize-recover=address', '-fno-omit-frame-pointer'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie', '-fsanitize=address'],
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     # The unit tests (tests/unit_record.c, tests/unit_run.c; docs/DEVELOPMENT.md):
     # the game's data at a fixed address in both.
@@ -89,13 +89,13 @@ TARGETS = {
                    '-Wno-error=implicit-function-declaration', '-Wno-error=implicit-int', '-Wno-error=return-type',
                    '-Wno-error=incompatible-function-pointer-types'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie'],
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux': {
         'cc': 'gcc',
         'exe': 'civ2',
         'ldflags': ['-rdynamic', '-no-pie'],   # game symbols name the callers in rand traces
-        'libs': ['-lSDL2', '-lm', '-ldl'],
+        'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'wasm': {
         # The portable build: the game and the platform layer as a wasm32
@@ -293,7 +293,7 @@ def compile_one(job):
             # The host interface over SDL2: plain C, none of the game's headers.
             flags = []
             extra = subprocess.run(['sdl2-config', '--cflags'], capture_output=True, text=True).stdout.split()
-            extra += ['-O1', '-g', '-Wall', '-std=gnu99', '-fno-pie']
+            extra += ['-O1', '-g', '-Wall', '-std=gnu99', '-fno-pie'] + paths.hd_pack_defines()
         r = subprocess.run([cc, '-c', '-o', o] + lang + [src] + tflags + flags + extra, capture_output=True, text=True)
         if r.returncode:
             return o, r.stderr
@@ -324,7 +324,7 @@ def main():
         sources += [os.path.join(ROOT, 'src', 'third_party', 'indeo4', f + '.c')
                     for f in ('iv41', 'ivi', 'ivi_dsp', 'vlc', 'reverse', 'zigzag')]
     if args.target.startswith('linux'):
-        sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c')]
+        sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c', 'host_launcher.c')]
         # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.
         sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     sources += [os.path.join(ROOT, f) for f in t.get('extra', [])]

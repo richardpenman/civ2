@@ -172,7 +172,7 @@ def exe(cross_windows=False):
     # disc image's music: their sources, from tools/fetch-toolchain.sh;
     # stb_vorbis to play the music)
     host = [os.path.join(ROOT, 'src', 'host', f) for f in
-            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'setup.c', 'setup_disc.c') +
+            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'host_launcher.c', 'setup.c', 'setup_disc.c') +
             (('host_menu_win.c', 'setup_win.c') if windows else ('setup_unix.c',)) +
             (('host_menu_mac.m', 'setup_mac.m') if mac else ())]
     third = [os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c')] + \
@@ -196,7 +196,7 @@ def exe(cross_windows=False):
     jobs = [(s, ['-O2', '-fno-strict-aliasing', '-w'] + cflags) for s in gen + rt] + \
            [(s, ['-std=gnu17', '-O2', '-w'] + cflags + third_inc) for s in third] + \
            [(s, ['-O2', '-Wall', '-Wno-format-truncation', '-Werror=implicit-function-declaration'] + cflags +
-             sdl_cflags + third_inc +
+             sdl_cflags + third_inc + paths.hd_pack_defines() +
              (['-fobjc-arc'] if s.endswith('.m') else [])) for s in host]
 
     # Every file depends on the generated header too (the host's files
@@ -208,7 +208,8 @@ def exe(cross_windows=False):
         src, flags = job
         o = os.path.join(obj, os.path.basename(src) + '.o')
         deps = [src] + ([header] if os.path.exists(header) else []) + \
-            (glob.glob(os.path.join(ROOT, 'src', 'host', '*.h')) if src in host else [])
+            (glob.glob(os.path.join(ROOT, 'src', 'host', '*.h')) + [os.path.join(ROOT, 'data', 'hd-pack.json')]
+             if src in host else [])
         if not os.path.exists(o) or os.path.getmtime(o) < max(os.path.getmtime(d) for d in deps):
             subprocess.run([cc, '-c', '-o', o, src, '-I', CDIR, '-I', os.path.join(ROOT, 'src', 'host')] + flags,
                            check=True)
@@ -219,6 +220,8 @@ def exe(cross_windows=False):
     out = os.path.join(ROOT, 'build', 'OpenCiv2' + ('.exe' if windows else ''))
     # (Windows: the C runtime's threads library linked in, so only SDL2.dll is needed beside the program)
     libs = ['-lm', '-static-libgcc', '-Wl,-Bstatic', '-lpthread', '-Wl,-Bdynamic'] if windows else ['-lm', '-lpthread']
+    if not windows and not mac:
+        libs.append('-ldl')         # (host_launcher.c: libX11, where there is one, for Shift at start)
     if windows:
         objs.append(windows_resources(cc, obj))
         libs = ['-lole32', '-lshell32', '-luuid', '-lws2_32'] + libs
@@ -237,7 +240,8 @@ def pack():
     with tarfile.open(out, 'w:gz') as t:
         for rel in ('build/wasm/c', 'src/host', 'src/platform/win32_vk.h', 'tools/build_port.py',
                     'tools/paths.py', 'tools/run-civ2.sh', 'tools/toolchain/unshield', 'tools/toolchain/zlib',
-                    'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native', 'harness/CIV2.DAT',
+                    'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native', 'data/hd-pack.json',
+                    'harness/CIV2.DAT',
                     'README.md', 'THIRD-PARTY.txt'):
             # not the HD graphics' art (data/native/hd, tools/fetch_hd_pack.py): fetched by each player
             t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel),

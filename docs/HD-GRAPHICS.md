@@ -9,16 +9,34 @@ a prototype: the map is done, much of the rest follows from it (below).
 
 ## Playing with it
 
-1. Install the art: `make hd` (or `python3 tools/fetch_hd_pack.py`).  It downloads the
-   release pinned in `data/hd-pack.json` (234 MB, once, into `~/.cache/openciv2`), checks its
-   SHA-256 and each file's, and installs `atlas-hd.pack` with its licence and provenance in
-   `data/native/hd` (not part of the repository: `.gitignore`).
+The simplest way: tick *HD graphics* in the game's opening window (docs/EXTRAS.md, "The opening
+window"), which downloads and installs the art the first time (below), then Play.  Otherwise:
+
+1. Install the art, any of these ways:
+
+   * in the opening window: ticking *HD graphics* (or *Download*) downloads the release pinned
+     in `data/hd-pack.json` (234 MB, once) with the system's `curl` (on Windows 10 and later
+     `curl.exe`; on Linux `wget` where there is no curl), showing its progress, with a Stop
+     button; checks its SHA-256 and each file's (as below), and installs the files in the
+     user's own OpenCiv2 folder: `${XDG_DATA_HOME:-~/.local/share}/OpenCiv2/hd` on Linux (beside
+     `GameData`), `~/Library/Application Support/OpenCiv2/hd` on macOS,
+     `%LOCALAPPDATA%\OpenCiv2\hd` on Windows.  The archive is kept in the same cache as
+     `tools/fetch_hd_pack.py`'s (it can be deleted once installed).  If the download or a check
+     fails, the window says why and HD graphics stay off (src/host/host_launcher.c);
+   * `make hd` (or `python3 tools/fetch_hd_pack.py`) in a source checkout: it downloads the
+     release pinned in `data/hd-pack.json` (234 MB, once, into `~/.cache/openciv2`), checks its
+     SHA-256 and each file's, and installs `atlas-hd.pack` with its licence and provenance in
+     `data/native/hd` (not part of the repository: `.gitignore`).
+
+   The game looks for `atlas-hd.pack` in `CIV2_HD_PACK`, then its data folder's `hd`
+   (`data/native/hd`), then the user's folder's `hd`.
 2. Switch it on, any of these ways (the first that says anything wins):
 
    * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
      `build/OpenCiv2 ~/Civ2 --hd`;
    * in the environment: `CIV2_HD=1` (or `=N`);
-   * in `CIV.INI` (the game's settings, in its Windows directory):
+   * in `CIV.INI` (the game's settings, in its Windows directory; the opening window writes
+     them):
 
      ```ini
      [OpenCiv2]
@@ -27,7 +45,8 @@ a prototype: the map is done, much of the rest follows from it (below).
 
    `1` (and the bare `--hd`, and `Graphics=HD`) is on at the screen's own density; `N` from 2 to
    4 is on at that density; `0` is off (`--hd=0` turns it off whatever the environment or
-   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density is how many screen pixels
+   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density (Auto, 1 to 4 in the
+   opening window) is how many screen pixels
    each of the game's pixels gets each way: by default the game's own scale (docs/EXTRAS.md,
    Screen scale), so on a 4K screen 3, on a 1920x1080 one 1 (the new art at the original's
    size); `GraphicsDensity=N` (1 to 4) in `CIV.INI` sets it for the bare `--hd`, `CIV2_HD=1`
@@ -129,7 +148,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 ## Tests
 
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
-  `make test-extras` (28 PASS).
+  `make test-extras` (28 PASS: the opening window's script, x-launcher, replaced the options
+  dialog's).
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed) and any replay script with
   `CIV2_TEST_HD=2`: for `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
@@ -152,5 +172,4 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are enlarged pixels (their text is sharp).
-* A setting in Game > OpenCiv2 Options (or the planned launcher, writing `Graphics=HD`); the
-  browser version.
+* The browser version (its set-up page has no HD choice).

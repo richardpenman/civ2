@@ -2600,8 +2600,8 @@ void Dialog::create_checkboxes()
   for (option = option_list; option != (DialogOption *)0x0;
       option = option->next) {
     if ((1 < (int)columns) && (i != 0) && (i % (int)((columns - 1 + option_count) / columns) == 0)) {
-      /* (OpenCiv2) in columns, as compute_layout made room for them (the
-         options dialog; the game's checkboxes are in one column) */
+      /* (OpenCiv2) in columns, as compute_layout made room for them
+         (Dialog::set_columns; the game's checkboxes are in one column) */
       x += option_width / columns;
       y2 = list_y;
     }

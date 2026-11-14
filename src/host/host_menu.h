@@ -28,5 +28,7 @@ void host_mac_activate(void);
 void host_mac_full_screen(SDL_Window *window);
 /* macOS: the window over the screen but the menu bar and the Dock (maximized). */
 void host_mac_fill_screen(SDL_Window *window);
+/* macOS: Shift held down now (host_launcher.c). */
+int host_mac_shift_held(void);
 
 #endif

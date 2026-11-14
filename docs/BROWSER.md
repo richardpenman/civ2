@@ -96,3 +96,7 @@ options: `tools/webrelay.py --help`.
   windows): use the game's menus for those commands.
 - No LAN game lists (see above).
 - The HD graphics ([HD-GRAPHICS.md](HD-GRAPHICS.md)) are not available in the browser yet.
+- No opening window: the desktop version's choices of mode (Standard or Classic), rule changes and
+  interface additions ([EXTRAS.md](EXTRAS.md#the-opening-window)) are not on the `?setup` page
+  yet. The browser version plays by those in its `CIV.INI`'s `[OpenCiv2]` section (as the desktop
+  version's, e.g. `Mode=Classic`), the defaults where it has none.

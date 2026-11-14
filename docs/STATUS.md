@@ -640,15 +640,14 @@ message by message and clock event by clock event.
   correction, coins in the Foreign Minister, Arrange Windows S/L, path lines with
   Shift, sentries in halftones, new games at zoom 1:1.  Off with `CIV2_CLASSIC=1`
   and in replays and unit tests (`CIV2_TEST_EXTRAS` turns them on in a replay).
-  Game > OpenCiv2 Options (CMD_OPENCIV2_OPTIONS 0x107, extras_options_dialog)
-  switches them, the rule changes and the limits in the game: the game's own
-  dialogs built in code (checkboxes as a GAME.TXT @checkbox section, text fields
-  as @CUSTOMSIZE's; the game's checkboxes are in one column, so
-  Dialog::create_checkboxes places them in columns when a dialog asks for more:
-  only ours does), our texts; it writes CIV.INI and keeps the changes for the
-  run (in replays too), redraws what they change and hides or shows Arrange
-  Windows S/L (now always in the menu, hidden while X38 is off); the rule pages
-  are disabled in network games.  The trade-road path line (X39's second half)
+  The opening window (src/platform/launcher.c, shown before the game starts; it
+  replaced the Game > OpenCiv2 Options dialog, November 2026) switches them, the
+  rule changes and the limits, the mode (Standard or Classic: `Mode=Classic`)
+  and HD graphics (downloading the art, src/host/host_launcher.c): drawn by the
+  platform layer with its own windows, it writes CIV.INI before the game reads
+  it; in a test run (CIV2_TEST_LAUNCHER) its choices hold for the run instead
+  (launcher_setting).  Arrange Windows S/L are always in the menu, hidden while
+  X38 is off.  The trade-road path line (X39's second half)
   walks the path finder as map_road_connection does (road planning: every land
   step costs 1, ties to the square nearer the goal), its state saved and put
   back, so the game's next search is unchanged; it uses the real map, so on

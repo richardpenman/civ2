@@ -349,6 +349,23 @@ void host_minimize(void)
         SDL_MinimizeWindow(window);
 }
 
+void host_close_window(void)
+{
+    if (texture)
+        SDL_DestroyTexture(texture);
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+    if (window)
+        SDL_DestroyWindow(window);
+    texture = NULL;
+    renderer = NULL;
+    window = NULL;
+    texture_density = 1;
+    follows_window = 0;
+    SDL_PumpEvents();
+    SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);     /* (the closed window's) */
+}
+
 /* ---- input ---- */
 
 static int vk_of_key(const SDL_Keysym *k)

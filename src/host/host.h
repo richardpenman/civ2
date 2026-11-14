@@ -105,6 +105,31 @@ void HOST_API(host_present_hd)(const void *pixels, int stride, int density);
 void HOST_API(host_resize_desktop)(int w, int h);
 /* Minimize the window (the desktop's main window was minimized). */
 void HOST_API(host_minimize)(void);
+/* The window closed (the opening window, src/platform/launcher.c, before
+ * the game's own is opened). */
+void HOST_API(host_close_window)(void);
+
+/* The opening window (src/platform/launcher.c): -1 this host has none (the
+ * browser: its own set-up page), else 1 if Shift is held down now (before
+ * any window is open), 0 if not. */
+int HOST_API(host_launcher)(void);
+/* The user's own OpenCiv2 folder (no trailing separator; made where
+ * missing): Linux ${XDG_DATA_HOME:-~/.local/share}/OpenCiv2, macOS
+ * ~/Library/Application Support/OpenCiv2, Windows %LOCALAPPDATA%\OpenCiv2.
+ * Its length, 0: none. */
+int HOST_API(host_user_dir)(char *buf, int size);
+/* HD graphics' art (docs/HD-GRAPHICS.md, src/host/host_fetch.c): the pack
+ * pinned in data/hd-pack.json downloaded in the background into the cache
+ * (as tools/fetch_hd_pack.py), checked (SHA-256: the archive's, then each
+ * file's) and installed in host_user_dir/hd.  op: HOST_HD_START, _POLL,
+ * _CANCEL.  info[0] what is being done (HOST_HD_DOWNLOADING ...),
+ * info[1] how much of it is done and info[2] of how much (KB); msg: why it
+ * failed.  Returns HOST_HD_RUNNING, _DONE (installed), _FAILED, _IDLE
+ * (nothing started, or stopped by _CANCEL). */
+enum { HOST_HD_START, HOST_HD_POLL, HOST_HD_CANCEL };
+enum { HOST_HD_DOWNLOADING, HOST_HD_CHECKING, HOST_HD_INSTALLING };
+enum { HOST_HD_IDLE = -2, HOST_HD_FAILED = -1, HOST_HD_DONE = 0, HOST_HD_RUNNING = 1 };
+int HOST_API(host_hd_fetch)(int op, int32_t *info, char *msg, int size);
 
 /* 1 if an event was returned; wait: up to timeout_ms (-1: forever). */
 int HOST_API(host_poll_event)(HostEvent *e);

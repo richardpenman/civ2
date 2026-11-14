@@ -99,7 +99,9 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
   CIV2_TEST_FULL=640x480` (the variables of the run), and `# test LABEL: ...` for a further run of
   it, named `NAME-LABEL`.  `CIV2_TEST_EXTRAS` turns additions on by number (`1`: all the interface
   additions; `17,42`: those rule changes), `CIV2_TEST_SETTINGS` sets `CIV.INI` values
-  (`RetirementYear=1902,Gamma=150`), `CIV2_TEST_SUPPRESS` the popups shown on the map, and
+  (`RetirementYear=1902,Gamma=150`), `CIV2_TEST_SUPPRESS` the popups shown on the map,
+  `CIV2_TEST_LAUNCHER=1` shows the opening window first (on a desktop of its size; its choices
+  hold for the run, nothing is written to `CIV.INI` or downloaded: `x-launcher.txt`), and
   `CIV2_TEST_FULL=WxH` shows the whole game window on a WxH desktop (the interface scripts: 640x480)
   instead of the reference desktop of the replays (the rule changes' scripts).
 * Each run's screenshots (PNG) and logs are in `run/extras-NAME`.  On a failure the suite names

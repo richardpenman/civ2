@@ -40,3 +40,12 @@ ZLIB = os.environ.get('ZLIB_SRC') or os.path.join(ROOT, 'tools', 'toolchain', 'z
 # (src/host/setup_disc.c; tools/fetch-toolchain.sh).
 OGG = os.environ.get('OGG_SRC') or os.path.join(ROOT, 'tools', 'toolchain', 'libogg')
 VORBIS = os.environ.get('VORBIS_SRC') or os.path.join(ROOT, 'tools', 'toolchain', 'libvorbis')
+
+
+def hd_pack_defines():
+    """The HD graphics' pinned pack (data/hd-pack.json) for the host's download
+    of it (src/host/host_launcher.c): -D flags for the C compiler."""
+    import json
+    pin = json.load(open(os.path.join(ROOT, 'data', 'hd-pack.json')))
+    return ['-DHD_PACK_TAG="%s"' % pin['tag'], '-DHD_PACK_URL="%s"' % pin['url'],
+            '-DHD_PACK_SHA256="%s"' % pin['sha256'], '-DHD_PACK_SIZE=%dL' % pin['size']]

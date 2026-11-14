@@ -22,18 +22,20 @@ them exactly where the cue sheet says).
 OpenCiv2 fixes the original game's bugs ([BUGS.md](docs/BUGS.md)) and adds the interface
 improvements of FoxAhead's [CIV2UIA](https://github.com/FoxAhead/Civ2-UI-Additions) (mouse
 wheel, scrolling lists, more figures in the advisors, quick information with Ctrl ...:
-[EXTRAS.md](docs/EXTRAS.md); each can be switched off in `CIV.INI`), and, off unless switched
-on in `CIV.INI`, its rule changes (Go To past enemy units, moving a stack's units of a type
-together, higher limits for gold, population and the map ...). Set `CIV2_CLASSIC=1` to play
-the original game instead: its bugs, its interface, and its menu bar and window caption drawn as
-the original's.
+[EXTRAS.md](docs/EXTRAS.md)), and, off unless switched on, its rule changes (Go To past enemy
+units, moving a stack's units of a type together, higher limits for gold, population and the
+map ...). Before the game starts, an opening window lets you choose: Standard, or Classic (the
+original game: its bugs, its interface, and its menu bar and window caption drawn as the
+original's), HD graphics, the rule changes and the interface additions, kept for next time
+(`CIV.INI`). "Don't show this window again" skips it; `--launcher`, or Shift held down at
+start, brings it back ([EXTRAS.md](docs/EXTRAS.md#the-opening-window)).
 
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 Optionally, the map can be drawn with new high-resolution art
-([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): `make hd` downloads it,
-then start the game with `--hd` (or `CIV2_HD=1`, or `Graphics=HD` under `[OpenCiv2]` in
-`CIV.INI`; [HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype, built from source only for now).
+([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): tick HD graphics in the
+opening window, which downloads it the first time (234 MB); or `make hd`, then `--hd`
+([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
 ### Multiplayer
 

@@ -594,8 +594,6 @@ static void menu_cmd_game_options(int cmd)
   case CMD_PICK_MUSIC:
     menu_select_music();
     break;
-  case CMD_OPENCIV2_OPTIONS:
-    extras_options_dialog();
   }
 }
 
@@ -1169,7 +1167,6 @@ void __cdecl menu_build_main(void)
   i32 cheat_checked;
   i32 cheat_disabled;
   int row;
-  int options_added = 0;
   
   ((GameMenu *)((i8 *)&main_menu_block.main_menu))->reset(0x1bbc);
   /* (port) The menus' structure is menu_rows; their texts are looked up by
@@ -1202,13 +1199,6 @@ void __cdecl menu_build_main(void)
         ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_hidden(CMD_ARRANGE_WINDOWS_S,!extra_ui(X_ARRANGE));
         ((GameMenu *)((i8 *)&main_menu_block.main_menu))->set_item_hidden(CMD_ARRANGE_WINDOWS_L,!extra_ui(X_ARRANGE));
       }
-    }
-    if (plat_extras && menu_rows[row].menu == 1 && menu_rows[row + 1].menu == 1 &&
-        menu_rows[row + 1].cmd == 0 && !options_added) {
-      /* OpenCiv2's options, after the Game menu's options dialogs */
-      ((GameMenu *)((i8 *)&main_menu_block.main_menu))->add_item(1,CMD_OPENCIV2_OPTIONS,
-                    extras_text("menu.options"),0);
-      options_added = 1;
     }
   }
   if (((game.game_options & OPT_CHEAT_MODE) == 0) || (game.multiplayer != '\0')) {

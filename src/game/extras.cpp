@@ -8,6 +8,7 @@
 #include <math.h>
 #include "game.h"
 #include "lang.h"
+#include "../platform/launcher.h"
 
 EXTERN_C int plat_replay;
 
@@ -22,7 +23,8 @@ struct KeyItem {
 };
 
 /* The items and their keys in CIV.INI's [OpenCiv2] section (the order of
-   the options dialog). */
+   the opening window's Interface page, src/platform/launcher.c, which lists
+   them again with their labels). */
 static const KeyItem extra_keys[] = {
     {X_WHEEL, "MouseWheel"}, {X_UNIT_LIST, "UnitListScroll"}, {X_UNIT_LIST_KEYS, "UnitListKeys"},
     {X_WORK_COUNTER, "WorkCounter"}, {X_GAME_TURN, "GameTurn"}, {X_RESEARCH, "ResearchNumbers"},
@@ -37,8 +39,8 @@ static const KeyItem extra_keys[] = {
 };
 
 /* The rule changes (extra_rule): off unless their key is set (=1; the
-   limits: their value, 0 the original's; the options dialog shows the
-   original's values while off). */
+   limits: their value, 0 the original's; the opening window, src/platform/
+   launcher.c, lists them again and shows the original's values while off). */
 static const KeyItem rule_keys[] = {
     {X_WORKER_HANDOVER, "WorkerHandover"}, {X_GOTO_ZOC, "GotoNoZocStop"},
     {X_ROTATION, "UnitRotation"}, {X_MASS_MOVE, "MassMove"}, {X_STACK_SENTRY, "StackSentry"},
@@ -56,33 +58,12 @@ static int clamp_setting(int v, int lo, int hi)
     return v < lo ? lo : v > hi ? hi : v;
 }
 
-/* Settings the options dialog changed in this run (they are also written
-   to CIV.INI): they come first, in replays too. */
-static struct {
-    const char *key;
-    int value;
-} changed[16];
-static int changed_count;
-
-static void setting_changed(const char *key, int value)
-{
-    int i;
-    for (i = 0; i < changed_count && strcmp(changed[i].key, key); i++)
-        ;
-    if (i == changed_count) {
-        if (changed_count == (int)(sizeof changed / sizeof changed[0]))
-            return;
-        changed[changed_count++].key = key;
-    }
-    changed[i].value = value;
-}
-
 int extras_setting(const char *key, int def)
 {
-    int i;
-    for (i = 0; i < changed_count; i++)
-        if (!strcmp(changed[i].key, key))
-            return changed[i].value;
+    char chosen[64];
+    /* chosen in the opening window in a test run (CIV2_TEST_LAUNCHER) */
+    if (launcher_setting(key, chosen, sizeof chosen))
+        return atoi(chosen);
     if (plat_replay) {
         /* replays: the defaults, whatever CIV.INI says, but those of
            CIV2_TEST_SETTINGS ("Gamma=150,Brightness=10": tests) */
@@ -176,9 +157,18 @@ void extras_load(void)
     for (i = 0; i < sizeof extra_keys / sizeof extra_keys[0]; i++)
         if (extras_setting(extra_keys[i].key, 1))
             extras_enabled |= (uint64_t)1 << extra_keys[i].item;
-    if (plat_replay)    /* "1": the additions; "all": and the rule changes */
+    if (plat_replay) {  /* "1": the additions; "all": and the rule changes */
+        char chosen[16];
         extras_rules = test && !strcmp(test, "all") ? rule_bits : 0;
-    else
+        /* (and those chosen in the opening window in a test run) */
+        for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)
+            if (launcher_setting(rule_keys[i].key, chosen, sizeof chosen)) {
+                if (atoi(chosen))
+                    extras_rules |= (uint64_t)1 << rule_keys[i].item;
+                else
+                    extras_rules &= ~((uint64_t)1 << rule_keys[i].item);
+            }
+    } else
         for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)
             if (extras_setting(rule_keys[i].key, 0))
                 extras_rules |= (uint64_t)1 << rule_keys[i].item;
@@ -206,55 +196,6 @@ static const struct { const char *key, *english; } texts[] = {
     {"size", "Size"}, {"name", "Name"}, {"production", "Production"},
     {"menu.arrange_s", "Arrange Windows S"},        /* X38 (default: the game's Arrange Windows, S) */
     {"menu.arrange_l", "Arrange Windows L"},
-    {"menu.options", "Ope&nCiv2 Options"},          /* the Game menu; & before the hotkey */
-    /* the options dialog */
-    {"options.title", "OpenCiv2 Options"},
-    {"options.interface", "Interface additions"},
-    {"options.rules", "Rule changes"},
-    {"options.limits", "Limits"},
-    {"options.other", "Display and messages"},
-    {"options.network", "Rule changes and limits are off in network games."},
-    {"options.rules_note", "For the human players' units only."},
-    {"options.other_note", "Messages shown on the map: GAME.TXT sections, separated by commas."},
-    {"option.MouseWheel", "Mouse wheel and button"},
-    {"option.UnitListScroll", "Unit list past 9 units"},
-    {"option.UnitListKeys", "Keys in that unit list"},
-    {"option.WorkCounter", "Settlers' work counter"},
-    {"option.GameTurn", "Turn in the status panel"},
-    {"option.ResearchNumbers", "Research figures"},
-    {"option.ZeroUpkeep", "Free buildings listed"},
-    {"option.SupportScroll", "Supported units: scroll"},
-    {"option.SupportSort", "Supported units sorted"},
-    {"option.AttitudeColors", "Attitude Advisor colours"},
-    {"option.CityAttitude", "City window attitude"},
-    {"option.RadioHotkeys", "Hotkeys for options"},
-    {"option.Quickinfo", "Quick information with Ctrl"},
-    {"option.ProductionCancel", "Cancel in Change Production"},
-    {"option.ProductionCost", "Costs in Change Production"},
-    {"option.CityStatus", "City Status: sort, change"},
-    {"option.MassSpecialists", "Shift on specialists"},
-    {"option.SuppressPopups", "Messages on the map"},
-    {"option.ColorCorrection", "Colour correction"},
-    {"option.ForeignGold", "Gold in Foreign Minister"},
-    {"option.ArrangeWindowsSL", "Arrange Windows S and L"},
-    {"option.PathLines", "Path lines with Shift"},
-    {"option.SentryHalftone", "Sentries in grey shades"},
-    {"option.DefaultZoom1", "New games at zoom 1:1"},
-    {"option.WorkerHandover", "Workers hand over their work"},
-    {"option.GotoNoZocStop", "Go To past foreign units"},
-    {"option.UnitRotation", "Units of a stack in turn"},
-    {"option.MassMove", "Shift+right click moves the type"},
-    {"option.StackSentry", "U sentries the stack"},
-    {"option.RetirementYear", "Retirement year"},
-    {"option.RetirementWarningYear", "Its warning"},
-    {"option.PopulationLimit", "Population (10,000s)"},
-    {"option.GoldLimit", "Gold"},
-    {"option.MapTilesLimit", "Custom map squares"},
-    {"option.FullScreen", "Full screen (1: yes, from restart)"},
-    {"option.Gamma", "Gamma (%, 100: none)"},
-    {"option.Brightness", "Brightness (-100 to 100)"},
-    {"option.Contrast", "Contrast (-100 to 100)"},
-    {"option.SuppressList", "Messages"},
 };
 
 static int text_entry(const char *key)
@@ -1436,14 +1377,11 @@ void extras_note_dialog(Dialog *d, const char *file, const char *section)
 
 /* Whether section is in the setting SuppressList (sections of GAME.TXT,
    separated by commas or spaces). */
-static char suppress_changed[256];     /* SuppressList as the options dialog set it */
-static int suppress_was_changed;
-
 static void suppress_list_get(char *list, int n)
 {
     const char *t = getenv("CIV2_TEST_SUPPRESS");
-    if (suppress_was_changed)
-        snprintf(list, n, "%s", suppress_changed);
+    if (launcher_setting("SuppressList", list, n))
+        ;                       /* (chosen in the opening window in a test run) */
     else if (plat_replay)
         snprintf(list, n, "%s", t ? t : "");
     else
@@ -1893,228 +1831,4 @@ int extras_stack_sentry(void)
     if (any)
         map_redraw_tile_all_views(units[game.active_unit].x, units[game.active_unit].y);
     return any;
-}
-
-
-/* ---- The options dialog (Game > OpenCiv2 Options) ---- */
-
-/* The game's dialogs, built as the game builds those of GAME.TXT (a
-   @checkbox section: checkboxes; text fields as @CUSTOMSIZE's), with our
-   texts.  A change is written to CIV.INI and kept for this run
-   (setting_changed: in replays too, where CIV.INI is not read). */
-
-static int network_game(void)
-{
-    return game.multiplayer >= 3;
-}
-
-static void setting_write(const char *key, int value)
-{
-    char v[16];
-    snprintf(v, sizeof v, "%d", value);
-    WritePrivateProfileStringA("OpenCiv2", key, v, "CIV.INI");
-    setting_changed(key, value);
-}
-
-/* A page of checkboxes, keys[n] by their bits in *bits: 1 if OK (*bits
-   changed and the changes written). */
-static int options_checks(const char *title, const char *note, const KeyItem *keys, int n, uint64_t *bits,
-                          int columns)
-{
-    char k[64];
-    int i, result;
-    uint64_t now = *bits;
-    Dialog d(0x4000);
-    d.init(0, 0, 0, 1);
-    d.set_width(columns > 1 ? 600 : 400);
-    d.set_title(title);
-    if (note)
-        d.add_line(note, -1, -1, -1, 0);
-    d.set_columns(columns);
-    for (i = 0; i < n; i++) {
-        snprintf(k, sizeof k, "option.%s", keys[i].key);
-        d.add_checkbox_option(extras_text(k), i, (int)((*bits >> keys[i].item) & 1));
-    }
-    result = d.show_modal(0);
-    if (result != 0)
-        return 0;
-    for (i = 0; i < n; i++) {
-        uint64_t bit = (uint64_t)1 << keys[i].item;
-        int on = d.option_is_checked(i) != 0;
-        if (on == ((now & bit) != 0))
-            continue;
-        now ^= bit;
-        setting_write(keys[i].key, on);
-    }
-    *bits = now;
-    return 1;
-}
-
-/* A page of numbers (and text): keys[n], each shown as shown[i]; those
-   changed written.  Returns 1 if OK (value[i]: the numbers, text: the last
-   field's text if is_text). */
-static int options_fields(const char *title, const char *note, const char *const *keys, int n,
-                          char shown[][256], int is_text, int *value, int *changed_field)
-{
-    char k[64];
-    int i, result;
-    Dialog d(0x4000);
-    d.init(0, 0, 0, 1);
-    d.set_width(400);
-    d.set_title(title);
-    if (note)
-        d.add_line(note, -1, -1, -1, 0);
-    for (i = 0; i < n; i++) {
-        snprintf(k, sizeof k, "option.%s", keys[i]);
-        d.add_edit_field(extras_text(k), shown[i], is_text && i == n - 1 ? 255 : 7);
-    }
-    result = d.show_modal(0);
-    if (result < 0)
-        return 0;
-    /* the fields' texts: as the game's @CUSTOMSIZE, in the text arguments */
-    for (i = 0; i < n; i++) {
-        const char *t = (const char *)&text_args.strings + i * 0x104;
-        changed_field[i] = strcmp(t, shown[i]) != 0;
-        value[i] = atoi(t);
-        snprintf(shown[i], 256, "%s", t);
-    }
-    return 1;
-}
-
-static void options_limits(void)
-{
-    static const char *const keys[5] = {
-        "RetirementYear", "RetirementWarningYear", "PopulationLimit", "GoldLimit", "MapTilesLimit",
-    };
-    static const int items[5] = {X_RETIREMENT, -1, X_POP_LIMIT, X_GOLD_LIMIT, X_MAP_TILES};
-    static const int original[5] = {2020, 2000, 32000, 30000, 10000};
-    char shown[5][256];
-    int value[5], changed_field[5], i, year, warn;
-    /* the limits in force: the original's while a rule is off */
-    int now[5] = {extras_retirement_year(), extras_retirement_warning_year(), extras_population_limit(),
-                  extras_gold_limit(), extras_map_tiles_limit()};
-    for (i = 0; i < 5; i++)
-        snprintf(shown[i], 256, "%d", now[i]);
-    if (!options_fields(extras_text("options.limits"), NULL, keys, 5, shown, 0, value, changed_field))
-        return;
-    if (changed_field[0] || changed_field[1]) {
-        year = value[0];
-        warn = value[1];
-        if (!changed_field[1] && now[1] == now[0] - 20)
-            warn = year - 20;  /* a warning 20 years before moves with the year */
-        if (year == original[0] && warn == original[1]) {
-            setting_write(keys[0], 0);
-            extras_rules &= ~((uint64_t)1 << X_RETIREMENT);
-        } else {
-            setting_write(keys[0], year);
-            setting_write(keys[1], warn);
-            extras_rules |= (uint64_t)1 << X_RETIREMENT;
-        }
-    }
-    /* a limit set back to the original's (or 0) turns its rule off */
-    for (i = 2; i < 5; i++) {
-        if (!changed_field[i])
-            continue;
-        if (value[i] == original[i])
-            value[i] = 0;
-        setting_write(keys[i], value[i]);
-        if (value[i])
-            extras_rules |= (uint64_t)1 << items[i];
-        else
-            extras_rules &= ~((uint64_t)1 << items[i]);
-    }
-    limits_load();
-}
-
-static void options_other(void)
-{
-    static const char *const keys[5] = {"FullScreen", "Gamma", "Brightness", "Contrast", "SuppressList"};
-    char shown[5][256];
-    int value[5], changed_field[5], i;
-    /* FullScreen: what is in force (src/platform/main.c), read at start */
-    snprintf(shown[0], 256, "%d", plat_fullscreen);
-    snprintf(shown[1], 256, "%d", extras_setting("Gamma", 100));
-    snprintf(shown[2], 256, "%d", extras_setting("Brightness", 0));
-    snprintf(shown[3], 256, "%d", extras_setting("Contrast", 0));
-    suppress_list_get(shown[4], 256);
-    if (!options_fields(extras_text("options.other"), extras_text("options.other_note"), keys, 5, shown, 1,
-                        value, changed_field))
-        return;
-    if (changed_field[0])
-        setting_write(keys[0], value[0] != 0);
-    for (i = 1; i < 4; i++)
-        if (changed_field[i])
-            setting_write(keys[i], value[i]);
-    if (changed_field[4]) {
-        WritePrivateProfileStringA("OpenCiv2", "SuppressList", shown[4], "CIV.INI");
-        snprintf(suppress_changed, sizeof suppress_changed, "%s", shown[4]);
-        suppress_was_changed = 1;
-    }
-}
-
-/* What the interface additions changed shows at once: the menu (X38), the
-   colours (X35), the map and the status panel (X3, X5, X41 ...). */
-static void options_apply(uint64_t before)
-{
-    GameMenu *menu = (GameMenu *)((i8 *)&main_menu_block.main_menu);
-    color_correction_load();
-    if (((before ^ extras_enabled) >> X_ARRANGE) & 1) {
-        if (!extra_ui(X_ARRANGE))
-            extras_set_panel_size(0);
-        menu->set_item_hidden(CMD_ARRANGE_WINDOWS_S, !extra_ui(X_ARRANGE));
-        menu->set_item_hidden(CMD_ARRANGE_WINDOWS_L, !extra_ui(X_ARRANGE));
-        menu->rebuild(0);
-    }
-    tip_hide();
-    path_hide();
-    if (turn_loop.active != '\0') {
-        map_redraw_all_views(human_civ[0], 1);
-        status_draw_info(1);
-    }
-}
-
-void extras_options_dialog(void)
-{
-    int choice = 0;
-    if (!plat_extras)
-        return;
-    for (;;) {
-        uint64_t before = extras_enabled;
-        {
-            Dialog d(0x4000);
-            d.init(0, 0, 0, 1);
-            d.set_width(320);
-            d.set_title(extras_text("options.title"));
-            if (network_game())
-                d.add_line(extras_text("options.network"), -1, -1, -1, 0);
-            d.add_option(extras_text("options.interface"), 0, 0);
-            d.add_option(extras_text("options.rules"), 1, 0);
-            d.add_option(extras_text("options.limits"), 2, 0);
-            d.add_option(extras_text("options.other"), 3, 0);
-            if (network_game()) {
-                /* the rules are the original's in network games (extra_rule) */
-                d.set_option_disabled(1, 1);
-                d.set_option_disabled(2, 1);
-                if (choice == 1 || choice == 2)
-                    choice = 0;
-            }
-            d.set_default_choice(choice);
-            choice = d.show_modal(0);
-        }
-        if (choice < 0)
-            return;
-        if (choice == 0) {
-            if (options_checks(extras_text("options.interface"), 0, extra_keys,
-                               (int)(sizeof extra_keys / sizeof extra_keys[0]), &extras_enabled, 2))
-                options_apply(before);
-        } else if (choice == 1 && !network_game()) {
-            options_checks(extras_text("options.rules"), extras_text("options.rules_note"), rule_keys, 5,
-                           &extras_rules, 1);
-        } else if (choice == 2 && !network_game()) {
-            options_limits();
-        } else if (choice == 3) {
-            options_other();
-            options_apply(before);
-        }
-    }
 }

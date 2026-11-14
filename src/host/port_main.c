@@ -107,6 +107,33 @@ void HOST(present)(Host *h, u32 pixels, u32 stride) { (void)h; host_present(MEM(
 void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density)
 { (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
+void HOST(close_window)(Host *h) { (void)h; host_close_window(); }
+u32 HOST(launcher)(Host *h) { (void)h; return (u32)host_launcher(); }
+u32 HOST(user_dir)(Host *h, u32 buf, u32 size)
+{
+    char p[4096];
+    (void)h;
+    if (!host_user_dir(p, sizeof p) || !size)
+        return 0;
+    module_path(p, MEM(buf), size);
+    return (u32)strlen(MEM(buf));
+}
+u32 HOST(hd_fetch)(Host *h, u32 op, u32 info, u32 msg, u32 size)
+{
+    int32_t in[3] = {0, 0, 0};
+    char m[512] = "";
+    int r;
+    (void)h;
+    r = host_hd_fetch((int)op, in, m, sizeof m);
+    if (info) {
+        PUT32(info, (u32)in[0]);
+        PUT32(info + 4, (u32)in[1]);
+        PUT32(info + 8, (u32)in[2]);
+    }
+    if (msg && size)
+        snprintf(MEM(msg), size, "%s", m);
+    return (u32)r;
+}
 void HOST(resize_desktop)(Host *h, u32 w, u32 hh) { (void)h; host_resize_desktop((int)w, (int)hh); }
 
 static u32 event_out(int got, const HostEvent *e, u32 out)

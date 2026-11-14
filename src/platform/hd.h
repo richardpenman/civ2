@@ -53,6 +53,9 @@ void hd_bits_redrawn(void *bits, int x, int y, int w, int h);
 /* The platform's side (src/platform). */
 struct Bitmap;
 void hd_init(int classic, int unit_test, int scale);
+/* The art's file (CIV2_HD_PACK, the program's data/hd, the user's folder's
+   hd): 1 if it is there. */
+int hd_pack_path(char *path, int size);
 void hd_bitmap_free(struct Bitmap *b);
 void hd_redrawn(struct Bitmap *b, int x, int y, int w, int h);     /* fills */
 /* Text (text.c): b's plane (NULL: none); before drawing, the rectangle's

@@ -331,6 +331,12 @@ export async function runGame(opts) {
                 setDesktop(w, h);
         },
         host_minimize: () => {},
+        // The opening window (src/platform/launcher.c) is not in the browser
+        // version, which has its own set-up page (-1); nor HD graphics.
+        host_close_window: () => {},
+        host_launcher: () => -1,
+        host_user_dir: () => 0,
+        host_hd_fetch: () => -1,
         host_time_us: () => BigInt(Math.round(performance.now() * 1000)),
         host_cursor_system: (kind) => cursorSlot({css: SYSTEM_CURSORS[kind] || 'default'}),
         host_cursor_image: (argb, w, h, x, y) => {
