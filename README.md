@@ -66,13 +66,18 @@ What to install first:
 
 - **macOS:** `xcode-select --install` (compiler and make) and `brew install sdl2`.
 - **Linux:** a C compiler, make, Python 3 and `libsdl2-dev` from the package manager.
-- **Windows:** in an [MSYS2](https://www.msys2.org) **MINGW64** shell, `pacman -S git make
-  mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL2 mingw-w64-x86_64-python`, then `make` and
-  `make run` there as above (the game is looked for in `%USERPROFILE%\Civ2`). Outside MSYS2,
-  play with `tools\run-civ2.bat [GAMEDIR]` from a Command Prompt or by double-clicking it.
+- **Windows:** in an [MSYS2](https://www.msys2.org) **UCRT64** shell, `pacman -S git make python
+  mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-SDL2`, then `make` and `make run` there as
+  above (the game is looked for in `%USERPROFILE%\Civ2`). MSYS2's own `python`, not
+  `mingw-w64-ucrt-x86_64-python`: the build runs `sdl2-config`, a shell script, which a Windows
+  Python cannot start. (MINGW64, with the `mingw-w64-x86_64-` packages, still builds, but MSYS2
+  has deprecated it.) Outside MSYS2, play with `tools\run-civ2.bat [GAMEDIR]` from a Command
+  Prompt or by double-clicking it.
 
 `make windows` cross-compiles `build/OpenCiv2.exe` on Linux (it also downloads SDL2's MinGW
-release): the one file the release has, SDL2 and the fonts built in.
+release): the one file the release has, SDL2 and the fonts built in. It uses the older C
+runtime (`msvcrt.dll`); a build in MSYS2's UCRT64 uses the Universal C Runtime, with `SDL2.dll`
+beside it. Both run on Windows 10 and later.
 
 ## Browser version
 

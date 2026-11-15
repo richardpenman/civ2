@@ -12,7 +12,8 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 .PHONY: all build run windows web web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
-# Python 3 (README "Build and run").  On Windows: in an MSYS2 MINGW64 shell.
+# Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
+# with MSYS2's python.
 ifeq ($(OS),Windows_NT)
 EXE  := .exe
 PLAY  = cmd //c "tools\run-civ2.bat $(GAME)"
