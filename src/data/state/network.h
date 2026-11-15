@@ -271,17 +271,7 @@ extern i32 *const difficulty_names;  /* = civ_unit_counts_block.difficulty_names
 extern i8 *const wonder_expires;  /* = civ_unit_counts_block.wonder_expires */
 #pragma pack(push, 1)
 typedef struct net_map_lock_slots_block {
-    union {
-        struct {
-            i8 net_map_lock_slots[4];  /* 0064ba48 */
-            i8 net_map_lock_replies[4];  /* 0064ba4c */
-            i8 net_map_lock_src_x[4];  /* 0064ba50 */
-            i8 net_map_lock_src_y[4];  /* 0064ba54 */
-            i8 net_map_lock_dst_x[4];  /* 0064ba58 */
-            i8 net_map_lock_dst_y[172];  /* 0064ba5c */
-        };
-        NetMapLock net_map_locks[8];  /* 0064ba48 per civ */
-    };
+    NetMapLock net_map_locks[8];  /* 0064ba48 per civ */
     i8 scenario_dir_path[264];  /* 0064bb08 */
 } NetMapLockBlock;
 #pragma pack(pop)
@@ -368,18 +358,7 @@ typedef struct NetSession {
     int server_conn_id;  /* 006ad300 */
     int local_slot;  /* 006ad304 */
     iptr net_player_count[1];  /* 006ad308 */
-    union {
-        struct {
-            i32 player_slots[1];  /* 006ad30c */
-            i8 slot_addresses[32];  /* 006ad310 */
-            i8 slot_player_names[36];  /* 006ad330 */
-            i8 slot_lobby_ids[4];  /* 006ad354 */
-            i8 slot_host_flags[1];  /* 006ad358 */
-            i8 slot_active_flags[3];  /* 006ad359 */
-            i32 slot_civs[127];  /* 006ad35c */
-        };
-        NetPlayerSlot net_slots[7];  /* 006ad30c */
-    };
+    NetPlayerSlot net_slots[7];  /* 006ad30c: the players' slots, the local player's first */
     i32 net_civ_slots[8];  /* 006ad558 */
     i32 mp_turn_civ;  /* 006ad578 */
     i8 net_server_address[32];  /* 006ad57c */

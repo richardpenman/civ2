@@ -1256,10 +1256,10 @@ void __cdecl passwords_reset(void)
   for (i = 0; i < 0xff; i++) {
     rnd = _rand();
     sign = (byte)(rnd >> 0x1f);
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] = (((byte)rnd ^ sign) - sign ^ sign) - sign;
+    civ_saved_cursor_x_block.civ_passwords_bytes[i] = (((byte)rnd ^ sign) - sign ^ sign) - sign;
   }
   for (civ = 0; civ < 8; civ++) {
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[civ * 0x20] = 0;
+    civ_saved_cursor_x_block.civ_passwords[civ][0] = 0;
     map_views_block.civ_password_prompt_pending[civ] = 0;
     map_views_block.civ_has_password[civ] = 0;
   }
@@ -1275,7 +1275,7 @@ void __cdecl passwords_refresh_flags(void)
   
   passwords_unscramble();
   for (civ = 0; civ < 8; civ++) {
-    if ((((i8 *)&civ_saved_cursor_x_block.civ_passwords))[civ * 0x20] == '\0') {
+    if (civ_saved_cursor_x_block.civ_passwords[civ][0] == '\0') {
       map_views_block.civ_password_prompt_pending[civ] = 0;
       map_views_block.civ_has_password[civ] = 0;
     }
@@ -1296,11 +1296,11 @@ void __cdecl passwords_scramble(void)
   iptr i;
   byte carry;
   
-  prev_byte = civ_saved_cursor_x_block.civ_passwords_last_byte;
+  prev_byte = civ_saved_cursor_x_block.civ_passwords_bytes[255];
   for (i = 0; carry = prev_byte << 5, i < 0x100; i++) {
-    prev_byte = (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i];
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] =
-         ((byte)((uint)(int)(((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] >> 3) & 0x1f | carry) ^ (byte)i
+    prev_byte = civ_saved_cursor_x_block.civ_passwords_bytes[i];
+    civ_saved_cursor_x_block.civ_passwords_bytes[i] =
+         ((byte)((uint)(int)civ_saved_cursor_x_block.civ_passwords_bytes[i] >> 3) & 0x1f | carry) ^ (byte)i
     ;
   }
   return;
@@ -1314,12 +1314,12 @@ void __cdecl passwords_unscramble(void)
   iptr i;
   char prev_byte;
   
-  prev_byte = civ_saved_cursor_x_block.civ_passwords[0];
+  prev_byte = civ_saved_cursor_x_block.civ_passwords_bytes[0];
   for (i = 0xff; -1 < i; i--) {
     carry = (uint)prev_byte;
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] = (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] ^ (byte)i;
-    prev_byte = (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i];
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] = (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[i] << 3 | (byte)(carry >> 5) & 7;
+    civ_saved_cursor_x_block.civ_passwords_bytes[i] = civ_saved_cursor_x_block.civ_passwords_bytes[i] ^ (byte)i;
+    prev_byte = civ_saved_cursor_x_block.civ_passwords_bytes[i];
+    civ_saved_cursor_x_block.civ_passwords_bytes[i] = civ_saved_cursor_x_block.civ_passwords_bytes[i] << 3 | (byte)(carry >> 5) & 7;
   }
   return;
 }

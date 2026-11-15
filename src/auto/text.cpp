@@ -89,7 +89,7 @@ i32 __cdecl text_set_string_arg(int index,const char *str)
 {
   i32 result;
   
-  result = (i32)crt_strcpy(((i8 *)&text_args.strings) + index * 0x104,(const char *)((void *)str));
+  result = (i32)crt_strcpy(text_args.strings[index],(const char *)((void *)str));
   return result;
 }
 
@@ -231,7 +231,7 @@ i32 __cdecl text_set_string_arg_b(int index,const char *text)
 {
   i32 result;
   
-  result = (i32)crt_strcpy(((i8 *)&text_args.strings) + index * 0x104,(const char *)((void *)text));
+  result = (i32)crt_strcpy(text_args.strings[index],(const char *)((void *)text));
   return result;
 }
 
@@ -287,8 +287,8 @@ void __cdecl text_expand_vars_max(const char *src,char *dest,size_t size)
            (24 of 0x104 bytes after the numbers; the game's text names 0..9);
            another is left out */
         if ((0 <= arg_index) &&
-           (arg_index < (int)((sizeof(TextArgs) - offsetof(TextArgs,strings)) / 0x104))) {
-          str_append_max((char *)((void *)dest),((i8 *)&text_args.strings) + arg_index * 0x104,size);
+           (arg_index < (int)(sizeof text_args.strings / sizeof text_args.strings[0]))) {
+          str_append_max((char *)((void *)dest),text_args.strings[arg_index],size);
         }
         src = (percent_pos + 8);
         if (9 < arg_index) {

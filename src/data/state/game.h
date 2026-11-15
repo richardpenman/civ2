@@ -295,20 +295,24 @@ typedef struct BlinkTimers {
 #pragma pack(push, 1)
 typedef struct TextArgs {
     i32 numbers[6];  /* 0063cc30 */
-    i8 strings[1];  /* 0063cc48 */
-    i8 strings_plus1;  /* 0063cc49 */
-    u8 strings_plus1_rest[258];
-    i8 string1[260];  /* 0063cd4c */
-    i8 string2[260];  /* 0063ce50 */
-    i8 string3[260];  /* 0063cf54 */
-    u8 profile_difficulty[260];  /* 0063d058 */
-    i8 string5[260];  /* 0063d15c */
-    u8 profile_barbarians[260];  /* 0063d260 */
-    i8 profile_timer[260];  /* 0063d364 */
-    u8 profile_count[260];  /* 0063d468 */
-    u8 profile_count2[260];  /* 0063d56c */
-    u8 profile_map_width[260];  /* 0063d670 */
-    u8 profile_map_height[3396];  /* 0063d774 */
+    union {
+        i8 strings[24][260];  /* 0063cc48: %STRING0.. (the game's texts name 0 to 9) */
+        struct {
+            i8 string0[260];
+            i8 string1[260];  /* 0063cd4c */
+            i8 string2[260];  /* 0063ce50 */
+            i8 string3[260];  /* 0063cf54 */
+            u8 profile_difficulty[260];  /* 0063d058 */
+            i8 string5[260];  /* 0063d15c */
+            u8 profile_barbarians[260];  /* 0063d260 */
+            i8 profile_timer[260];  /* 0063d364 */
+            u8 profile_count[260];  /* 0063d468 */
+            u8 profile_count2[260];  /* 0063d56c */
+            u8 profile_map_width[260];  /* 0063d670 */
+            u8 profile_map_height[260];  /* 0063d774 */
+        };
+    };
+    u8 strings_rest[16];
 } TextArgs;
 #pragma pack(pop)
 #pragma pack(push, 1)
@@ -444,13 +448,15 @@ typedef struct GameDirs {
 struct civ_saved_cursor_x_block {
     CivViewState civ_view;  /* 00654b40 */
     int mp_turn_time_limit_ms;  /* 00654b70 */
-    i8 civ_passwords[255];  /* 00654b74 */
-    char civ_passwords_last_byte;  /* 00654c73 */
+    union {
+        i8 civ_passwords[8][32];  /* 00654b74: by civilization, scrambled */
+        i8 civ_passwords_bytes[256];  /* (scrambled as one buffer) */
+    };
     MpGameOptions mp_options;  /* 00654c74 */
     i32 cheat_saved_turn_time_ms;  /* 00654c7e */
     u8 cheat_saved_turn_time_ms_rest[290];
-    i8 civ_email_addresses[256];  /* 00654da4 */
-    i8 net_player_setup_table[256];  /* 00654ea4 */
+    i8 civ_email_addresses[8][32];  /* 00654da4: by civilization */
+    i8 net_player_setup_table[8][32];  /* 00654ea4 */
     SavedTurn saved_turn;  /* 00654fa4 */
     AutoplayState autoplay;  /* 00654fa8 */
     MpDoubles mp_doubles;  /* 00654fac */

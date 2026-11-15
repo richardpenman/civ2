@@ -151,7 +151,8 @@ typedef struct DestroyedCivs {
     i16 turns[12];  /* 0065512a */
     i8 killers[12];  /* 00655142 */
     i8 portraits[12];  /* 0065514e */
-    i8 names[294];  /* 0065515a */
+    i8 names[12][24];  /* 0065515a */
+    u8 names_rest[6];
 } DestroyedCivs;
 #pragma pack(pop)
 #pragma pack(push, 1)

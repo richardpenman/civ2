@@ -2770,7 +2770,7 @@ void FrameWindow::append_turn_status(char *caption)
         }
       }
       else if ((uint)net.net_civ_slots[net.mp_turn_civ] < 7) {   /* (BF-203) -1: its player left */
-        crt_strcat(caption,((i8 *)&net.slot_player_names) + net.net_civ_slots[net.mp_turn_civ] * 0x54);
+        crt_strcat(caption,net.net_slots[net.net_civ_slots[net.mp_turn_civ]].name);
       }
     }
     else {

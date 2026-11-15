@@ -57,8 +57,8 @@ static FILE *_fopen(const char *path, char *) {
 #pragma pack(push, 1)
 struct TextArgs {
     i32 numbers[6];
-    i8 strings[1];
-    u8 rest[0x1888 - 25];
+    i8 strings[24][260];
+    u8 strings_rest[16];
 };
 #pragma pack(pop)
 static TextArgs text_args;
@@ -187,8 +187,8 @@ static std::string expand(const char *text) {
 }
 static void text_vars() {
     memset(&text_args, 0, sizeof text_args);
-    strcpy((char *)text_args.strings + 3 * 0x104, "Rome");
-    strcpy((char *)text_args.strings + 23 * 0x104, "last");
+    strcpy(text_args.strings[3], "Rome");
+    strcpy(text_args.strings[23], "last");
     text_args.numbers[2] = 42;
     text_args.numbers[5] = 0xab;
     text_args.numbers[0] = 0x12345;

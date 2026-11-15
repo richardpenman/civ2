@@ -4925,7 +4925,7 @@ void EndgameMovieWindow::defeat_movie_wnd_play()
   }
   str = (iptr)label_string(advances[advance].name);
   text_set_string_arg(0,(const char *)str);
-  CharLowerA(((i8 *)&text_args.strings));
+  CharLowerA(text_args.strings[0]);
   str = (iptr)(civ_leader_name(advance_civ));
   text_set_string_arg(1,(const char *)str);
   for (page = 0; page < 3; page++) {
@@ -5437,8 +5437,8 @@ void __cdecl destroyed_civs_clear(void)
   destroyed_civs.count[0] = 0;
   for (i = 0; i < 0xc; i++) {
     destroyed_civs.turns[i] = 0;
-    (((i8 *)&destroyed_civs.killers))[i] = 0;
-    (((i8 *)&destroyed_civs.names))[i * 0x18] = 0;
+    destroyed_civs.killers[i] = 0;
+    destroyed_civs.names[i][0] = 0;
   }
   return;
 }
@@ -6081,7 +6081,7 @@ i32 DestroyedCivsWindow::create(uint killer)
     civs_art_surface.DibSurface::blit((DibSurface *)&destroyed_civs_text_bg,(RECT *)slot_sprites,
                (RECT *)slot_sprites);
     for (entry = 0;
-        (entry < 0xc && ((uint)(byte)(((i8 *)&destroyed_civs.killers))[entry] != (killer & 0xff)));
+        (entry < 0xc && ((uint)(byte)destroyed_civs.killers[entry] != (killer & 0xff)));
         entry = entry + 1) {
     }
     destroyed_civs_show_date = 0;
@@ -6116,12 +6116,12 @@ void DestroyedCivsWindow::run()
   wnd_flush_paint();
   surface_wnd.window.set_capture();
   for (entry = 0; entry < 0xc; entry++) {
-    if ((((i8 *)&destroyed_civs.killers))[entry] == (char)killer_civ) {
+    if (destroyed_civs.killers[entry] == (char)killer_civ) {
       draw_entry(entry);
       destroyed_civs_show_date = 1;
       draw_portrait(entry);
       start_tick = timeGetTime();
-      snd_play_effect(((uint)(byte)(((i8 *)&destroyed_civs.portraits))[entry] + (uint)map.seed & 7) + 0x53,1,0,0)
+      snd_play_effect(((uint)(byte)destroyed_civs.portraits[entry] + (uint)map.seed & 7) + 0x53,1,0,0)
       ;
       slide_up();
       ui_delay_ticks(0x3c);
@@ -6189,7 +6189,7 @@ void DestroyedCivsWindow::draw_entry(int entry)
     ((DibSurface *)((i8 *)&destroyed_civs_text_bg))->DibSurface::blit(&civs_art_surface,(RECT *)&slot_sprites,
                (RECT *)&slot_sprites);
     text_clear();
-    text_append((const char *)(((i8 *)&destroyed_civs.names) + entry * 0x18));
+    text_append((const char *)destroyed_civs.names[entry]);
     gfx_set_text_color_index(0x21);
     OffsetRect((LPRECT)&slot_sprites,1,1);
     civs_art_surface.draw_text_rect(&caption_font_2,(const char *)&textbuf.buf,(RECT *)&slot_sprites
@@ -6203,7 +6203,7 @@ void DestroyedCivsWindow::draw_entry(int entry)
     ((DibSurface *)((i8 *)&destroyed_civs_text_bg))->DibSurface::blit(&civs_art_surface,(RECT *)&slot_sprites,
                (RECT *)&slot_sprites);
     text_clear();
-    text_append((const char *)(((i8 *)&destroyed_civs.names) + entry * 0x18));
+    text_append((const char *)destroyed_civs.names[entry]);
     text_append_colon();
     text_append_space();
     label = (iptr)label_string(label_table.string_ids[0x1c7]);
@@ -6244,7 +6244,7 @@ void DestroyedCivsWindow::draw_portrait(int entry)
   ON_SCOPE_EXIT(palette.destroy());
   civs_art_surface.DibSurface::blit(&surface_wnd,
              (RECT *)&panel_clip_rect,(RECT *)&panel_clip_rect);
-  portrait_surface.load_gif_resource((byte)(((i8 *)&destroyed_civs.portraits))[entry] + 0xdc,10,0xec,&palette);
+  portrait_surface.load_gif_resource((byte)destroyed_civs.portraits[entry] + 0xdc,10,0xec,&palette);
   palette.get_rgb((u8 *)rgb_buf,0x2a,0x40);
   this->palette.set_rgb(0x2a,0x40,(u8 *)rgb_buf);
   portrait_surface.set_palette(&this->palette);

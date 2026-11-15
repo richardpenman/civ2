@@ -478,7 +478,7 @@ static int fields(Dialog &d, char (*values)[256], const int *sizes, int n)
     if (d.show_modal(0) < 0)
         return 0;
     for (i = 0; i < n; i++)
-        snprintf(values[i], (size_t)sizes[i], "%s", (const char *)&text_args.strings + i * 0x104);
+        snprintf(values[i], (size_t)sizes[i], "%s", text_args.strings[i]);
     return 1;
 }
 

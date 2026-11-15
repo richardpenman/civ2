@@ -3971,7 +3971,7 @@ void __cdecl civ_password_ensure_set(int civ)
   
   mp_turn_timer_stop(1);
   passwords_unscramble();
-  crt_strcpy(password,((i8 *)&civ_saved_cursor_x_block.civ_passwords) + civ * 0x20);
+  crt_strcpy(password,civ_saved_cursor_x_block.civ_passwords[civ]);
   passwords_scramble();
   if (password[0] == '\0') {
     civ_change_password_dialog(civ);
@@ -3994,7 +3994,7 @@ void __cdecl civ_change_password_dialog(int civ)
     map_views_block.civ_password_prompt_pending[civ] = 0;
     mp_turn_timer_resume(1));
   passwords_unscramble();
-  crt_strcpy(current_password,((i8 *)&civ_saved_cursor_x_block.civ_passwords) + civ * 0x20);
+  crt_strcpy(current_password,civ_saved_cursor_x_block.civ_passwords[civ]);
   passwords_scramble();
   if (current_password[0] == '\0') {
     dialog2.load_text_section((const char *)&str_game_7,(const char *)&str_password1_3,0x1f,(const char*)&str_empty_112,0,0,0,1);
@@ -4017,7 +4017,7 @@ void __cdecl civ_change_password_dialog(int civ)
   }
   if (-1 < result) {
     passwords_unscramble();
-    crt_strcpy(((i8 *)&civ_saved_cursor_x_block.civ_passwords) + civ * 0x20,entered);
+    crt_strcpy(civ_saved_cursor_x_block.civ_passwords[civ],entered);
     crt_strcpy(current_password,entered);
     passwords_scramble();
     if (current_password[0] != '\0') {
@@ -4046,7 +4046,7 @@ i32 __cdecl civ_password_prompt(int civ)
   }
   else {
     passwords_unscramble();
-    result = _strcmp(entered,((i8 *)&civ_saved_cursor_x_block.civ_passwords) + civ * 0x20);
+    result = _strcmp(entered,civ_saved_cursor_x_block.civ_passwords[civ]);
     passwords_scramble();
     if (result == 0) {
       status = 0;
@@ -4840,11 +4840,11 @@ int __cdecl civ_check_destroyed(int civ,int civ2)
         if (destroyed_civs.count[0] < 0xc) {
           result = (int)destroyed_civs.count[0];
           destroyed_civs.count[0]++;
-          *(i16 *)(((i8 *)&destroyed_civs.turns) + result * 2) = game.turn;
-          (((i8 *)&destroyed_civs.killers))[result] = (i8)civ2;
-          (((i8 *)&destroyed_civs.portraits))[result] = civs[civ].leader_portrait;
+          destroyed_civs.turns[result] = game.turn;
+          destroyed_civs.killers[result] = (i8)civ2;
+          destroyed_civs.portraits[result] = civs[civ].leader_portrait;
           plural_name = (i32)(civ_name_plural(civ));
-          crt_strcpy(((i8 *)&destroyed_civs.names) + result * 0x18,(const char *)plural_name);
+          crt_strcpy(destroyed_civs.names[result],(const char *)plural_name);
         }
         civ_spaceship_lost_notify(civ);
       }
@@ -4874,7 +4874,7 @@ int __cdecl civ_check_destroyed(int civ,int civ2)
                              game.game_flags,4,0,0,0,0,0,0);
         }
         passwords_unscramble();
-        (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[civ * 0x20] = 0;
+        civ_saved_cursor_x_block.civ_passwords[civ][0] = 0;
         passwords_scramble();
         if ((~(1 << ((byte)civ & 0x1f)) & (uint)game.human_players) == 0) {
           net.civ_check_destroyed_busy = 0;
@@ -6727,7 +6727,7 @@ void __cdecl civ_eliminate(int civ,i32 kill_units,i32 recreate)
       net_batch_flush();
     }
     passwords_unscramble();
-    (((i8 *)&civ_saved_cursor_x_block.civ_passwords))[civ * 0x20] = 0;
+    civ_saved_cursor_x_block.civ_passwords[civ][0] = 0;
     passwords_scramble();
     if (2 < game.multiplayer) {
       snd_cd_stop();

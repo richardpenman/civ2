@@ -1651,8 +1651,8 @@ void __cdecl spaceship_status_dialog(int civ,int allow_launch)
   text_set_string_arg(1,(const char *)str);
   str = (iptr)(civ_name_plural(civ));
   text_set_string_arg(0,(const char *)str);
-  text_args.strings_plus1 = 0;
-  __strupr(((i8 *)&text_args.strings));
+  text_args.strings[0][1] = 0;
+  __strupr(text_args.strings[0]);
   dlg.load_game_text((const char *)&str_spaceship);
   for (part = 0; part < 6; part++) {
     part_count = civs[civ].spaceship_parts[part];

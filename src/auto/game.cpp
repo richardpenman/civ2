@@ -315,12 +315,12 @@ int __cdecl game_main_menu_loop(void)
         }
       }
       else {
-        str_clear((char *)&text_args.strings);
-        str_append_int(text_args.strings,xdaemon_required.major);
-        crt_strcat(((i8 *)&text_args.strings),((i8 *)&xdaemon_req_ver_dot1_str));
-        str_append_int(text_args.strings,xdaemon_required.minor);
-        crt_strcat(((i8 *)&text_args.strings),((i8 *)&xdaemon_req_ver_dot2_str));
-        str_append_int(text_args.strings,xdaemon_required.build);
+        str_clear(text_args.strings[0]);
+        str_append_int(text_args.strings[0],xdaemon_required.major);
+        crt_strcat(text_args.strings[0],((i8 *)&xdaemon_req_ver_dot1_str));
+        str_append_int(text_args.strings[0],xdaemon_required.minor);
+        crt_strcat(text_args.strings[0],((i8 *)&xdaemon_req_ver_dot2_str));
+        str_append_int(text_args.strings[0],xdaemon_required.build);
         str_clear((char *)&text_args.string1);
         str_append_int(text_args.string1,xd_major);
         crt_strcat(((i8 *)&text_args.string1),((i8 *)&xdaemon_got_ver_dot1_str));
@@ -405,7 +405,7 @@ void __cdecl game_session_begin(void)
     }
   }
   if (2 < game.multiplayer) {
-    human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+    human_civ[0] = net.net_slots[net.local_slot].civ;
   }
   return;
 }
@@ -517,7 +517,7 @@ void __cdecl game_main(void)
       }
       passwords_reset();
       ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->reset(50000);
-      _memset(((i8 *)&net_map_lock_slots_block.net_map_lock_slots),-1,0xc0);
+      _memset(net_map_lock_slots_block.net_map_locks,-1,0xc0);
       for (unit = 0; unit < 0x800; unit++) {
         units[unit].id = 0;
         units[unit].prev_in_stack = -1;
@@ -684,8 +684,8 @@ i32 __cdecl game_profile_popup(int is_join)
   slot_masks[6] = 0x3f;
   slot_masks[7] = 0x7f;
   slot_masks[8] = 0xff;
-  str_clear((char *)&text_args.strings);
-  crt_strcat(((i8 *)&text_args.strings),((i8 *)&net.net_game_name));
+  str_clear(text_args.strings[0]);
+  crt_strcat(text_args.strings[0],((i8 *)&net.net_game_name));
   str_clear((char *)&text_args.string1);
   str_append_label(text_args.string1,(mp_options.open_game == 0) + 0x277);
   str_clear((char *)&text_args.string2);
@@ -2367,7 +2367,7 @@ static int play_loop_human_turn_start(uptr civ,bool *pbem_saved,int *views_hidde
   if (game.multiplayer == 2) {
     if (*pbem_saved) {
       game_save_dialog(0);
-      if ((((i8 *)&civ_saved_cursor_x_block.civ_email_addresses))[civ * 0x20] == '\0') {
+      if (civ_saved_cursor_x_block.civ_email_addresses[civ][0] == '\0') {
         name_str = civ_leader_name(civ);
         text_set_string_arg(0,name_str);
         popup_game((const char *)&str_emaildone2);
@@ -2375,7 +2375,7 @@ static int play_loop_human_turn_start(uptr civ,bool *pbem_saved,int *views_hidde
       else {
         name_str = civ_leader_name(civ);
         text_set_string_arg(0,name_str);
-        text_set_string_arg(1,(const char *)(((i8 *)&civ_saved_cursor_x_block.civ_email_addresses) + civ * 0x20));
+        text_set_string_arg(1,(const char *)civ_saved_cursor_x_block.civ_email_addresses[civ]);
         popup_game((const char *)&str_emaildone1);
       }
       turn_loop.active = '\0';
@@ -2611,8 +2611,8 @@ i32 __cdecl game_mp_client_turn_loop(void)
   first_turn = 1;
   Dialog dialog2(0x4000);
   still_playing = 1;
-  slot_civ = net.slot_civs[0];
-  name_str = civ_name_plural(net.slot_civs[0]);
+  slot_civ = net.net_slots[0].civ;
+  name_str = civ_name_plural(net.net_slots[0].civ);
   dbg_logf_str_int((const char *)&str_server_s_d,(const char *)name_str,slot_civ);
   for (civ = 1; civ < 8; civ++) {
     if (((net.net_slots[net.net_civ_slots[civ]].id != 0) &&
@@ -2624,7 +2624,7 @@ i32 __cdecl game_mp_client_turn_loop(void)
     }
   }
   net_reset_error_counts();
-  human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+  human_civ[0] = net.net_slots[net.local_slot].civ;
   (*(byte *)&turn_loop.resume_civ) = (*(byte *)&saved_turn.civ);
   turn_resume_new_game = (int)saved_turn.resume_new_game;
   ((PictureWindow *)((i8 *)&advisor_state.window))->close();
@@ -2655,7 +2655,7 @@ i32 __cdecl game_mp_client_turn_loop(void)
   ui_redraw_all_maps(1);
   resume_civ = (*(byte *)&turn_loop.resume_civ);
   if ((1 << ((byte)human_civ[0] & 0x1f) & (uint)game.human_players) == 0) {
-    net_heartbeat_send(net.slot_civs[0]);
+    net_heartbeat_send(net.net_slots[0].civ);
     dlg_style.pending_idle_callback = net_client_hot_wait_idle;
     popup_game_sprite_flags(str_clienthotwait,0x2000000,(Sprite *)&popup_info_icon_sprite,0);
     resume_civ = (*(byte *)&turn_loop.resume_civ);
@@ -2669,11 +2669,11 @@ i32 __cdecl game_mp_client_turn_loop(void)
         }
       }
     }
-    net_heartbeat_send(net.slot_civs[0]);
+    net_heartbeat_send(net.net_slots[0].civ);
     while ((((net.nm_start_civ_count == 0 && (net.host_handoff_stage == '\0')) && (net.nm_end_sequence_count == 0)) &&
            ((net.player_has_quit == '\0' && (turn_loop.active != '\0'))))) {
       net.process_messages(1,0);
-      net_heartbeat_check(net.slot_civs[0]);
+      net_heartbeat_check(net.net_slots[0].civ);
       result = net_check_lost_connections();
       if (result != 0) {
         ret = 0;
@@ -2696,7 +2696,7 @@ i32 __cdecl game_mp_client_turn_loop(void)
     }
     if ((net.nm_end_sequence_count == 0) && (turn_loop.active != '\0')) {
       net.nm_start_civ_count = 0;
-      human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+      human_civ[0] = net.net_slots[net.local_slot].civ;
       game.player_civ = (byte)human_civ[0];
       game.turn_civ = (byte)human_civ[0];
       if ((uint)(*(byte *)&turn_loop.resume_civ) != human_civ[0]) {
@@ -2838,8 +2838,8 @@ static void mp_host_remote_turn(uptr civ)
   net_send_message(NM_START_CIVILIZATION,net.net_slots[result].id,0,0,0,0,0,0,0,0);
   if (net.civ_new_player_flags[civ] != 0) {
     net.civ_new_player_flags[civ] = 0;
-    crt_strcpy(((i8 *)&text_args.strings),
-                 ((i8 *)&net.slot_player_names) + net.net_civ_slots[civ] * 0x54);
+    crt_strcpy(text_args.strings[0],
+                 net.net_slots[net.net_civ_slots[civ]].name);
     net_send_text_args(0x3f,0xff,1,0,
                        net.net_slots[net.net_civ_slots[civ]].id,0);
     popup_game_with_sprite(str_newplayer,(Sprite *)&popup_info_icon_sprite,0);
@@ -3101,7 +3101,7 @@ void __cdecl game_mp_host_turn_loop(i32 force_process)
     for (civ = 0; (turn_loop.active != '\0' && ((int)civ < 8)); civ++) {
       game.human_players = (net.pending_human_players | game.human_players) & (byte)civ_saved_cursor_x_block.net_claimed_civs_mask;
       net.pending_human_players = 0;
-      human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+      human_civ[0] = net.net_slots[net.local_slot].civ;
       game.player_civ = (i8)human_civ[0];
       if (((int)(uint)(*(byte *)&turn_loop.resume_civ) <= (int)civ) &&
          ((1 << ((byte)civ & 0x1f) & (uint)game.civs_alive) != 0)) {

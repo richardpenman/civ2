@@ -1442,7 +1442,7 @@ void NetSession::recv_join_request(int *msg_hdr,int sender)
             slot = slot + 1) {
         }
         if (slot < 7) {
-          civ_flag = (u8 *)civ_new_player_flags + (((i32 *)&net.slot_civs))[slot * 0x15] * 4;
+          civ_flag = (u8 *)civ_new_player_flags + net.net_slots[slot].civ * 4;
           civ_flag[0] = 1;
           civ_flag[1] = '\0';
           civ_flag[2] = '\0';
@@ -2564,7 +2564,7 @@ int NetSession::dispatch_diplomacy_message(int *&msg,int *msg_hdr,uint *payload,
     (*(uptr *)&advisor_window_block.mp_meeting_reply) = a.unit;
     break;
   case NM_PARLEYREQUEST_CANCEL:
-    if ((((((i32 *)&net.slot_civs))[sender * 0x15] == parley_wnd_block.other_civ) || (parley_wnd_block.other_civ == 0xfffffffe))
+    if (((net.net_slots[sender].civ == parley_wnd_block.other_civ) || (parley_wnd_block.other_civ == 0xfffffffe))
        || (parley_wnd_block.closed == 0)) {
       if (parley_wnd_block.closed == 0) {
         parley_wnd_close();

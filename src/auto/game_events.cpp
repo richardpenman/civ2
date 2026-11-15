@@ -809,7 +809,7 @@ i32 ScenarioEvents::action_text(ScenarioEvent *event)
       add_line((const char *)event->text[line],0xffffffff,0xffffffff,
                  0xffffffff,0);
       if (2 < game.multiplayer) {
-        crt_strcpy(((i8 *)&text_args.strings) + arg_count * 0x104,(const char *)event->text[line]);
+        crt_strcpy(text_args.strings[arg_count],(const char *)event->text[line]);
         arg_count++;
       }
     }

@@ -97,8 +97,8 @@ static int text_open_section(const char *, const char *) {
 #pragma pack(push, 1)
 struct TextArgs {
     i32 numbers[6];
-    i8 strings[1];
-    u8 rest[0x1888 - 25];
+    i8 strings[24][260];
+    u8 strings_rest[16];
 };
 #pragma pack(pop)
 static TextArgs text_args;
@@ -301,7 +301,7 @@ static void bounded_copies() {
     text_expand_vars_max(line, dest, 256);
     assert(strlen(dest) == 255 && guard_ok(dest + 256, 16));
     strcpy(line, "in %STRING0, 100%%");
-    strcpy((char *)text_args.strings, "Rome");
+    strcpy(text_args.strings[0], "Rome");
     text_expand_vars_max(line, dest, 256);
     assert(strcmp(dest, "in Rome, 100%") == 0);
 }

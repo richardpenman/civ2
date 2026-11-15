@@ -247,8 +247,8 @@ void __cdecl menu_game_options(void)
   dlg_check_set_bool(9,game.game_options & OPT_MOVE_WITH_MOUSE);
   dlg_check_set_bool(10,game.game_options & OPT_ENTER_CLOSES_CITY);
   text_set_string_arg(0,(const char *)str_ptr_5_4_0f_multiplayer_26_march_99);
-  crt_strcat(((i8 *)&text_args.strings),((i8 *)&game_options_version_sep_str));
-  crt_strcat(((i8 *)&text_args.strings),(*(i8 * *)str_ptr_5_4_0f_multiplayer_26_march_99_rest));
+  crt_strcat(text_args.strings[0],((i8 *)&game_options_version_sep_str));
+  crt_strcat(text_args.strings[0],(*(i8 * *)str_ptr_5_4_0f_multiplayer_26_march_99_rest));
   result = popup_game_flags((const char *)&str_gameoptions,1);
   if (result == 0) {
     game.game_options = game.game_options & 0xffff8027;
@@ -401,7 +401,7 @@ void __cdecl menu_multiplayer_options(void)
       (*(ushort *)&menu_prefs.mp_double_moves) = (ushort)(result != 0);
       if (((*(ushort *)&mp_doubles.production) != (*(ushort *)&menu_prefs.mp_double_production)) || ((*(ushort *)&mp_doubles.moves) != (*(ushort *)&menu_prefs.mp_double_moves))) {
         if ((2 < game.multiplayer) && (1 < net.net_player_count[0])) {
-          crt_strcpy(((i8 *)&text_args.strings),((i8 *)&net.local_player_name));
+          crt_strcpy(text_args.strings[0],((i8 *)&net.local_player_name));
           str_clear((char *)&text_args.string1);
           str_append_label(text_args.string1,0x350 - (uint)((*(ushort *)&menu_prefs.mp_double_production) == 0));
           crt_strcat(((i8 *)&text_args.string1),((i8 *)&mp_options_vote_sep_str));

@@ -1088,7 +1088,7 @@ void __cdecl cheat_edit_king(void)
         dialog2.load_text_section((const char *)&str_game_7,(const char *)&str_editkingname,0x17,(const char*)&civ_names[civ].leader_name,0,0,0,1);
         choice = dialog2.show_modal(0);
         if (-1 < choice) {
-          crt_strcpy((char *)(&civ_names[civ].leader_name),((i8 *)&text_args.strings));
+          crt_strcpy((char *)(&civ_names[civ].leader_name),text_args.strings[0]);
           crt_strcpy((char *)(&civ_names[civ].tribe_name),((i8 *)&text_args.string1));
           crt_strcpy((char *)(&civ_names[civ].adjective),((i8 *)&text_args.string2));
         }

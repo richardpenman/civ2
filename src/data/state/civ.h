@@ -157,10 +157,9 @@ typedef struct CosmicEditValues {
 /* The rules editors' name lists and controls. */
 #pragma pack(push, 1)
 typedef struct EditorLists {
-    i8 govt_names[14];  /* 006a1b98 */
-    i8 govt_name_ends[306];  /* 006a1ba6 */
-    i8 commodity_names[9];  /* 006a1cd8 */
-    i8 commodity_name_ends[151];  /* 006a1ce1 */
+    i8 govt_names[21][15];  /* 006a1b98: the 7 governments, then their male and female leaders' titles */
+    u8 govt_names_rest[5];
+    i8 commodity_names[16][10];  /* 006a1cd8 */
     i32 *text_lines_out;  /* 006a1d78 */
     i32 running;  /* 006a1d7c */
     int next_ctrl_id;  /* 006a1d80 */

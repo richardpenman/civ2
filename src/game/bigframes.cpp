@@ -174,7 +174,7 @@ static int setup_custom_tribe_dialogs(Dialog &dlg)
       snd_play_effect(SND_MENUOK,0,0,0);
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
       if (choice < 0) return 1;
-      crt_strcpy(&civ_names[game.player_civ].leader_name[0],((i8 *)&text_args.strings));
+      crt_strcpy(&civ_names[game.player_civ].leader_name[0],text_args.strings[0]);
       crt_strcpy(&civ_names[game.player_civ].tribe_name[0],((i8 *)&text_args.string1));
       crt_strcpy(&civ_names[game.player_civ].adjective[0],((i8 *)&text_args.string2));
       if ((int)dlg.result_extra != 1) break;
@@ -199,7 +199,7 @@ static int setup_custom_tribe_dialogs(Dialog &dlg)
       if (choice == 0) {
         for (title_i = 0; title_i < 7; title_i = title_i + 1) {
           crt_strcpy(&civ_names[game.player_civ].titles[title_i][0],
-                       ((i8 *)&text_args.strings) + title_i * 0x104);
+                       text_args.strings[title_i]);
         }
       }
       snd_play_effect(SND_MENUOK,0,0,0);
@@ -1220,7 +1220,7 @@ void __cdecl net_host_turn_loop(void)
   do {
     game.human_players = net.pending_human_players | game.human_players;
     net.pending_human_players = 0;
-    _memset(((i8 *)&net_map_lock_slots_block.net_map_lock_slots),-1,0xc0);
+    _memset(net_map_lock_slots_block.net_map_locks,-1,0xc0);
     units_reset_for_turn(0xfffffffd);
     net_send_state_diff(0xff,2,0,0,0);
     XD_FlushSendBuffer(60000);
@@ -1264,7 +1264,7 @@ void __cdecl net_host_turn_loop(void)
       dialog_text_font_obj_block.net_civ_phase_done[civ] = 0;
     }
     net_send_message(NM_PRODUCTION_BEGIN,0xff,0,0,0,0,0,0,0,0);
-    human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+    human_civ[0] = net.net_slots[net.local_slot].civ;
     game.player_civ = (byte)human_civ[0];
     game.turn_civ = (byte)human_civ[0];
     if ((*(byte *)&turn_loop.resume_civ) == 0) {
@@ -1280,7 +1280,7 @@ void __cdecl net_host_turn_loop(void)
     net_send_state_diff(0xff,2,0,0,0);
     XD_FlushSendBuffer(60000);
     net_send_message(NM_AI_MOVEMENT,0xff,0,0,0,0,0,0,0,0);
-    human_civ[0] = (((i32 *)&net.slot_civs))[net.local_slot * 0x15];
+    human_civ[0] = net.net_slots[net.local_slot].civ;
     game.player_civ = (byte)human_civ[0];
     net.tile_sync_enabled = 0;
     if ((*(byte *)&turn_loop.resume_civ) == 0) {

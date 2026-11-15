@@ -229,22 +229,22 @@ void __cdecl tribe_editor_load_tables(void)
   for (leader = 0; leader < 7; leader++) {
     max_len = 0xf;
     text = label_string(government_names[leader]);
-    _strncpy(((i8 *)&editor_lists.govt_names) + leader * 0xf,text,max_len);
-    (((i8 *)&editor_lists.govt_name_ends))[leader * 0xf] = 0;
+    _strncpy(editor_lists.govt_names[leader],text,max_len);
+    editor_lists.govt_names[leader][14] = 0;
     max_len = 0xf;
     text = label_string(government_titles[leader].male);
-    _strncpy(((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x15) * 5,text,max_len);
-    (((i8 *)&editor_lists.govt_name_ends))[leader * 0xf] = 0;
+    _strncpy(editor_lists.govt_names[leader + 7],text,max_len);
+    editor_lists.govt_names[leader][14] = 0;
     max_len = 0xf;
     text = label_string(government_titles[leader].female);
-    _strncpy(((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x2a) * 5,text,max_len);
-    (((i8 *)&editor_lists.govt_name_ends))[leader * 0xf] = 0;
+    _strncpy(editor_lists.govt_names[leader + 14],text,max_len);
+    editor_lists.govt_names[leader][14] = 0;
   }
   for (leader = 0; leader < 0x10; leader++) {
     max_len = 10;
     text = label_string(commodity_names[leader]);
-    _strncpy(((i8 *)&editor_lists.commodity_names) + leader * 10,text,max_len);
-    (((i8 *)&editor_lists.commodity_name_ends))[leader * 10] = 0;
+    _strncpy(editor_lists.commodity_names[leader],text,max_len);
+    editor_lists.commodity_names[leader][9] = 0;
   }
   return;
 }
@@ -274,21 +274,21 @@ void __cdecl tribe_editor_apply_tables(void)
   }
   for (leader = 0; leader < 7; leader++) {
     max_len = 0xf;
-    src = ((i8 *)&editor_lists.govt_names) + leader * 0xf;
+    src = editor_lists.govt_names[leader];
     dest = label_string(government_names[leader]);
     editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
     max_len = 0xf;
-    src = ((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x15) * 5;
+    src = editor_lists.govt_names[leader + 7];
     dest = label_string(government_titles[leader].male);
     editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
     max_len = 0xf;
-    src = ((i8 *)&editor_lists.govt_names) + (leader * 3 + 0x2a) * 5;
+    src = editor_lists.govt_names[leader + 14];
     dest = label_string(government_titles[leader].female);
     editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
   }
   for (leader = 0; leader < 0x10; leader++) {
     max_len = 10;
-    src = ((i8 *)&editor_lists.commodity_names) + leader * 10;
+    src = editor_lists.commodity_names[leader];
     dest = label_string(commodity_names[leader]);
     editor_copy_pool_name(dest,src,max_len);  /* B32 (docs/BUGS.md) */
   }
@@ -653,19 +653,19 @@ void __cdecl tribe_editor_rename_commodity(void)
   dialog2.set_width(0xdc);
   dialog2.set_listbox(0x10,0xdc,0);
   for (choice = 0; choice < 0x10; choice++) {
-    dialog2.add_option((const char *)(((i8 *)&editor_lists.commodity_names) + choice * 10),choice,0);
+    dialog2.add_option((const char *)editor_lists.commodity_names[choice],choice,0);
   }
   dialog2.option_width = 0xdc;
   choice = dialog2.show_modal(0);
   if (-1 < choice) {
     do {
-      input_result = dlg_text_input(str_debug_11,str_commoname,9,(((i8 *)&editor_lists.commodity_names) + choice * 10),
+      input_result = dlg_text_input(str_debug_11,str_commoname,9,editor_lists.commodity_names[choice],
                                     input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
     if (-1 < input_result) {
-      _strncpy(((i8 *)&editor_lists.commodity_names) + choice * 10,input_buf,10);
+      _strncpy(editor_lists.commodity_names[choice],input_buf,10);
     }
   }
   dlg_set_parent_window(0);
@@ -695,19 +695,19 @@ void __cdecl tribe_editor_rename_govt(void)
   dialog2.set_width(0xdc);
   dialog2.set_listbox(7,0xdc,0);
   for (choice = 0; choice < 7; choice++) {
-    dialog2.add_option((const char *)(((i8 *)&editor_lists.govt_names) + choice * 0xf),choice,0);
+    dialog2.add_option((const char *)editor_lists.govt_names[choice],choice,0);
   }
   dialog2.option_width = 0xdc;
   choice = dialog2.show_modal(0);
   if (-1 < choice) {
     do {
-      input_result = dlg_text_input(str_debug_11,str_govtname,0xe,(((i8 *)&editor_lists.govt_names) + choice * 0xf),
+      input_result = dlg_text_input(str_debug_11,str_govtname,0xe,editor_lists.govt_names[choice],
                                     input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
     if (-1 < input_result) {
-      _strncpy(((i8 *)&editor_lists.govt_names) + choice * 0xf,input_buf,0xf);
+      _strncpy(editor_lists.govt_names[choice],input_buf,0xf);
     }
   }
   dlg_set_parent_window(0);
@@ -744,19 +744,19 @@ void __cdecl tribe_editor_rename_title(void)
   dialog2.set_listbox(0xe,400,0);
   for (choice = 0; (int)choice < 0xe; choice++) {
     if ((choice & 1) == 0) {
-      title_slot = ((int)choice >> 1) * 3 + 0x15;
+      title_slot = ((int)choice >> 1) + 7;     /* a title of government choice / 2 */
     }
     else {
-      title_slot = ((int)choice >> 1) * 3 + 0x2a;
+      title_slot = ((int)choice >> 1) + 14;    /* its other title */
     }
-    title_name = ((i8 *)&editor_lists.govt_names) + title_slot * 5;
+    title_name = editor_lists.govt_names[title_slot];
     if ((choice & 1) == 0) {
       gender_label = (i32)(label_string(label_table.string_ids[0x23f]));
     }
     else {
       gender_label = (i32)(label_string(label_table.string_ids[0x240]));
     }
-    _sprintf(option_text,str_s_s_s_3,((i8 *)&editor_lists.govt_names) + ((int)choice >> 1) * 0xf,gender_label,
+    _sprintf(option_text,str_s_s_s_3,editor_lists.govt_names[((int)choice >> 1)],gender_label,
              title_name);
     dialog2.add_option((const char *)option_text,choice,0);
   }
@@ -765,24 +765,24 @@ void __cdecl tribe_editor_rename_title(void)
   if (-1 < (int)choice) {
     do {
       if ((choice & 1) == 0) {
-        title_slot = ((int)choice >> 1) * 3 + 0x15;
+        title_slot = ((int)choice >> 1) + 7;     /* a title of government choice / 2 */
       }
       else {
-        title_slot = ((int)choice >> 1) * 3 + 0x2a;
+        title_slot = ((int)choice >> 1) + 14;    /* its other title */
       }
-      current_title = ((i8 *)&editor_lists.govt_names) + title_slot * 5;
+      current_title = editor_lists.govt_names[title_slot];
       input_result = dlg_text_input(str_debug_11,str_titlename,0xe,current_title,input_buf);
       if (input_result == -1) break;
       len = _strlen(input_buf);
     } while (len == 0);
     if (-1 < input_result) {
       if ((choice & 1) == 0) {
-        title_slot = ((int)choice >> 1) * 3 + 0x15;
+        title_slot = ((int)choice >> 1) + 7;     /* a title of government choice / 2 */
       }
       else {
-        title_slot = ((int)choice >> 1) * 3 + 0x2a;
+        title_slot = ((int)choice >> 1) + 14;    /* its other title */
       }
-      dest_title = ((i8 *)&editor_lists.govt_names) + title_slot * 5;
+      dest_title = editor_lists.govt_names[title_slot];
       _strncpy(dest_title,input_buf,0xf);
     }
   }

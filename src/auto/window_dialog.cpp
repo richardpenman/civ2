@@ -4006,7 +4006,7 @@ u32 Dialog::run_modal(char *out_text,int timeout_secs)
       if (1 < (int)edit_count) {
         for (i = 0; i < (int)edit_count; i++) {
           ((Control *)(edit_controls + i * 0x48))->Control::get_text(
-                     (((i8 *)&text_args.strings) + i * 0x104));
+                     text_args.strings[i]);
         }
       }
       if ((style_flags & 0x1000) == 0) {
@@ -4319,7 +4319,7 @@ i32 Dialog::load_text_section(const char *file_name,const char *section,int defa
             }
             edit_buf = edit_text;
             if (edit_count != 0) {
-              edit_buf = ((i8 *)&text_args.strings) + edit_count * 0x104;
+              edit_buf = text_args.strings[edit_count];
             }
             add_edit_field((const char *)expanded,edit_buf,default_value);
           }

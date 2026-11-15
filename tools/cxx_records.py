@@ -4,13 +4,15 @@ element type (step 6, the records' layout):
 
     cxx_records.py SPEC FILE...
 
-SPEC lines (# comments): OLD NEW BASE DIMS ELEM KIND
+SPEC lines (# comments): OLD NEW BASE DIMS ELEM KIND [SUFFIX]
   OLD   the member as the code names it (`pollution_sprite_block.unit_sprites`)
   NEW   the array it is part of (`pollution_sprite_block.unit_sprites`)
   BASE  OLD's byte offset in NEW (0x3c: NEW[1])
   DIMS  NEW's strides in bytes, outermost first, the last the element's size
         (0x1e0,0x78,0x3c: Sprite city_sprites[6][4][2])
   ELEM  the element's type (Sprite, i32, i8[260] for a string slot ...)
+  SUFFIX (optional) a member of the element (`.civ`), BASE then OLD's
+        offset less the member's
   KIND  ptr: `(ELEM *)(((i8 *)&OLD) + E)` -> `&NEW[i]...`;
         val: `*(ELEM *)(((i8 *)&OLD) + E)` -> `NEW[i]...`;
         str: `((i8 *)&OLD) + E` -> `NEW[i]...` (a char array, decaying as the
@@ -86,6 +88,14 @@ def terms(e, mult=1):
             if not match_ok(t):
                 return None
         inner = strip_parens(x)
+        if inner != x.strip() and len(split_terms(inner)) == 1 and re.fullmatch(r'\(.*\)', x.strip()) and \
+                (re.fullmatch(r'(.*\S)\s*\*\s*(-?\s*(?:0x[0-9a-fA-F]+|\d+))', inner) or
+                 re.fullmatch(r'(-?(?:0x[0-9a-fA-F]+|\d+))\s*\*\s*(.*)', inner)):
+            sub = terms(inner, s * mult * c)
+            if sub is None:
+                return None
+            out += sub
+            continue
         if (inner != x.strip() and len(split_terms(inner)) > 1 and re.fullmatch(r'\(.*\)', x.strip()) and
                 all(match_ok(t2) for _, t2 in split_terms(inner))):
             sub = terms(inner, s * mult * c)
@@ -162,14 +172,16 @@ def load(spec):
         line = line.split('#')[0].strip()
         if not line:
             continue
-        old, new, base, dims, elem, kind = line.split()
-        rows.append((old, new, int(base, 0), [int(x, 0) for x in dims.split(',')], elem, kind))
+        f = line.split()
+        old, new, base, dims, elem, kind = f[:6]
+        suffix = f[6] if len(f) > 6 else ''
+        rows.append((old, new, int(base, 0), [int(x, 0) for x in dims.split(',')], elem, kind, suffix))
     return rows
 
 
 def rewrite(s, row, fname, report):
-    old, new, base, dims, elem, kind = row
-    pat = re.compile(r'\(\((i8|u8|char|byte|i16|u16|short|ushort|i32|u32|int|uint) \*\)&%s\)(?![\w.\[])' % re.escape(old))
+    old, new, base, dims, elem, kind, suffix = row
+    pat = re.compile(r'(?<![\w\])\]])\(\((i8|u8|char|byte|i16|u16|short|ushort|i32|u32|int|uint) \*\)&%s\)(?![\w.\[])' % re.escape(old))
     out, pos, n = [], 0, 0
     for m in pat.finditer(s):
         if m.start() < pos:
@@ -179,20 +191,19 @@ def rewrite(s, row, fname, report):
         after = s[m.end():]
         start, end = m.start(), m.end()
         e = '0'
-        mb = re.match(r'\)\[', after)
-        if mb and s[m.start() - 1] == '(':
+        mb = re.match(r'\)\[', after) if s[m.start() - 1] == '(' else None
+        if mb:
             # (((T *)&OLD))[E]
             o = m.end() + 1
             cl = match_paren(s, o)
             e = '(%s) * %d' % (s[o + 1:cl - 1], TSIZE[ctype])
             start, end = m.start() - 1, cl
-            wrapped = None
         else:
             # find the enclosing parenthesis when followed by ' + '
             ma = re.match(r'\s*\+\s*', after)
             if ma:
                 o = m.start() - 1
-                while o >= 0 and s[o] == ' ':
+                while o >= 0 and s[o] in ' \n\t':
                     o -= 1
                 if s[o] == '(':
                     cl = match_paren(s, o)
@@ -214,6 +225,22 @@ def rewrite(s, row, fname, report):
                                                    (re.search(r'\)\s*$', s[:o]) and not
                                                     re.search(r'\(\s*(?:const\s+)?\w+\s*\*+\s*\)\s*$', s[:o]))):
                         start, end = o, cl          # the whole parenthesis
+                elif s[o] == ',':
+                    # a call's argument after the first: up to the next top-level , or )
+                    depth, i = 0, m.end() + ma.end()
+                    while i < len(s):
+                        ch = s[i]
+                        if ch in '([':
+                            depth += 1
+                        elif ch in ')]':
+                            if depth == 0:
+                                break
+                            depth -= 1
+                        elif ch == ',' and depth == 0:
+                            break
+                        i += 1
+                    e = s[m.end() + ma.end():i]
+                    end = i
                 elif re.search(r'(^|[^=!<>])=\s*$', s[:m.start()]):
                     semi = s.index(';', m.end())
                     e = s[m.end() + ma.end():semi]
@@ -227,7 +254,9 @@ def rewrite(s, row, fname, report):
         if idx is None:
             report.append('%s:%d: left: %s' % (fname, line, ' '.join(s[m.start():end + 10].split())))
             continue
-        ref = new + ''.join('[%s]' % i for i in idx)
+        if kind == 'str' and not mb and len(idx) > 1 and idx[-1] == '0':
+            idx = idx[:-1]          # the row (a string), decaying as the byte pointer did
+        ref = new + ''.join('[%s]' % i for i in idx) + suffix
         # the cast round it
         pre = s[:start]
         mc = re.search(r'(\*\s*)?\(\s*((?:const\s+)?[A-Za-z_]\w*)\s*\*\s*\)\s*$', pre)

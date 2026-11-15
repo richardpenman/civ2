@@ -304,7 +304,7 @@ i32 __cdecl setup_choose_map_size(void)
       snd_play_effect(SND_MENUOK,0,0,0);
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
       if (choice < 0) break;
-      choice = _atoi(((i8 *)&text_args.strings));
+      choice = _atoi(text_args.strings[0]);
       map.width = (i16)choice;
       choice = _atoi(((i8 *)&text_args.string1));
       map.height = (i16)choice;
@@ -748,7 +748,7 @@ static int setup_net_join(int conn_type,uint *eh_state)
   transport_ok = net.init_transport((*(uint *)&net.net_protocol),0);
   if (transport_ok == '\0') {
     dbg_log((const char *)&str_startup_lan_failure_of_connecttonet_as_c);
-    crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
+    crt_strcpy(text_args.strings[0],(*(char * *)&net.connection_title));
     popup_game_with_sprite(str_lanconnectfail,(Sprite *)&popup_info_icon_sprite,0);
     return 0;
   }
@@ -848,7 +848,7 @@ static int setup_net_host(Dialog *dlg,char *ip_buf,int conn_type,i32 map_source,
     if (transport_ok == '\0') {
       if (((*(uint *)&net.net_protocol) != 2) && ((*(uint *)&net.net_protocol) != 3)) {
         dbg_log((const char *)&str_startup_lan_failure_of_connecttonet_as_s);
-        crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
+        crt_strcpy(text_args.strings[0],(*(char * *)&net.connection_title));
         popup_game_with_sprite(str_lanconnectfail_2,(Sprite *)&popup_info_icon_sprite,0);
       }
       return 0;
@@ -929,7 +929,7 @@ static void setup_net_reset_game(int first_pass,GamePalette *palette)
   }
   for (i = 0; i < 8; i++) {
     civ_view.intro_shown[i] = 0;
-    (((i8 *)&civ_saved_cursor_x_block.net_player_setup_table))[i * 0x20] = 0;
+    civ_saved_cursor_x_block.net_player_setup_table[i][0] = 0;
   }
   civ_saved_cursor_x_block.mp_turn_time_limit_ms = 0;
   turn_loop.resume_civ = 0;
@@ -1057,7 +1057,7 @@ i32 __cdecl setup_network_game(int conn_type)
   for (;;) {
     setup_net_reset_game(first_pass,&palette);
     setup_show_side_picture(0xffffffff,0);
-    crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
+    crt_strcpy(text_args.strings[0],(*(char * *)&net.connection_title));
     dlg.load_game_section((const char *)&str_lan1,1);
     choice = -(((int)(caption_font_block.screen_height - 0x1e0 + (caption_font_block.screen_height - 0x1e0 >> 0x1f & 7U)) >> 3) + 1);
     result = setup_next_dialog_x(0);
@@ -1139,7 +1139,7 @@ i32 __cdecl setup_network_game(int conn_type)
       rc2 = game_load_dialog(0,3,1);
       if (rc2 == 0) {
         if (2 < game.multiplayer) break;
-        crt_strcpy(((i8 *)&text_args.strings),(*(char * *)&net.connection_title));
+        crt_strcpy(text_args.strings[0],(*(char * *)&net.connection_title));
         popup_game_with_sprite(str_lannot,(Sprite *)&popup_info_icon_sprite,0);
       }
       else if (game_palette_block.event_dont_play_wonders != 0) {
@@ -1871,7 +1871,7 @@ i32 __cdecl setup_choose_game_timer(int in_game)
     return result;
   }
   if (1 < net.net_player_count[0]) {
-    crt_strcpy(((i8 *)&text_args.strings),((i8 *)&net.local_player_name));
+    crt_strcpy(text_args.strings[0],((i8 *)&net.local_player_name));
     str_clear((char *)&text_args.string1);
     if (civ_saved_cursor_x_block.mp_turn_time_limit_ms == 0) {
       str_append_label(text_args.string1,0x285);
@@ -1920,7 +1920,7 @@ enum TribeStep { TRIBE_NEXT, TRIBE_RETRY, TRIBE_FINISH };
 static void setup_tribe_server_lost_popup(const char *lost_msg,const char *quit_msg)
 {
   text_set_string_arg(1,(const char *)&net.net_game_name);
-  crt_strcpy(((i8 *)&text_args.strings),(const char *)((const void *)net.connection_title));
+  crt_strcpy(text_args.strings[0],(const char *)((const void *)net.connection_title));
   if (net.nm_server_canceled_count == 0) {
     popup_game_with_sprite(lost_msg,(Sprite *)&popup_info_icon_sprite,0);
   }
@@ -2160,10 +2160,10 @@ static TribeStep setup_tribe_custom_names(Dialog *dlg,int *choice,int *result,ip
       return TRIBE_FINISH;
     }
     if (*choice < 0) break;
-    crt_strcpy((char *)(&civ_names[game.player_civ].leader_name),((i8 *)&text_args.strings));
+    crt_strcpy((char *)(&civ_names[game.player_civ].leader_name),text_args.strings[0]);
     crt_strcpy((char *)(&civ_names[game.player_civ].tribe_name),((i8 *)&text_args.string1));
     crt_strcpy((char *)(&civ_names[game.player_civ].adjective),((i8 *)&text_args.string2));
-    crt_strcpy(((i8 *)&net.player_info_leader_name),((i8 *)&text_args.strings));
+    crt_strcpy(((i8 *)&net.player_info_leader_name),text_args.strings[0]);
     crt_strcpy(((i8 *)&net.player_info_tribe_name),((i8 *)&text_args.string1));
     crt_strcpy(((i8 *)&net.player_info_adjective),((i8 *)&text_args.string2));
     net.player_info_has_names = 1;
@@ -2187,12 +2187,12 @@ static TribeStep setup_tribe_custom_names(Dialog *dlg,int *choice,int *result,ip
       text_clear();
       text_append_string_id(government_names[title]);
       text_append_colon();
-      if (((((i8 *)&net.player_info_govt_titles))[title * 0x18] == '\0') || (game_mode == 1)) {
+      if ((net.player_info_msg.govt_titles[title][0] == '\0') || (game_mode == 1)) {
         dlg->add_edit_field((const char *)&textbuf.buf,(const char*)&civ_names[game.player_civ].titles[title],0x17);
       }
       else {
         dlg->add_edit_field((const char *)&textbuf.buf,
-                   (((i8 *)&net.player_info_govt_titles) + title * 0x18),0x17);
+                   net.player_info_msg.govt_titles[title],0x17);
       }
     }
     if (in_game == 0) {
@@ -2207,8 +2207,8 @@ static TribeStep setup_tribe_custom_names(Dialog *dlg,int *choice,int *result,ip
     if (*choice == 0) {
       for (title = 0; title < 7; title++) {
         crt_strcpy((char *)(&civ_names[game.player_civ].titles[title]),
-                     ((i8 *)&text_args.strings) + title * 0x104);
-        crt_strcpy(((i8 *)&net.player_info_govt_titles) + title * 0x18,((i8 *)&text_args.strings) + title * 0x104);
+                     text_args.strings[title]);
+        crt_strcpy(net.player_info_msg.govt_titles[title],text_args.strings[title]);
       }
       net.player_info_has_titles = 1;
     }
@@ -2315,7 +2315,7 @@ static TribeStep setup_tribe_city_style(Dialog *dlg,char *input_text,int *choice
       ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
     }
     if (cancelled == 0) {
-      crt_strcpy(((i8 *)&civ_saved_cursor_x_block.civ_email_addresses) + game.player_civ * 0x20,input_text);
+      crt_strcpy(civ_saved_cursor_x_block.civ_email_addresses[game.player_civ],input_text);
       if (player_slot == 0) {
         crt_strcpy(((i8 *)&menu_prefs.email_address),input_text);
         saved_turn.civ = *(i8 *)&human_civ;
@@ -3739,7 +3739,7 @@ i32 __cdecl setup_pbem_game(void)
   Dialog dialog2(0x4000);
   for (i = 0; i < 8; i++) {
     civ_view.intro_shown[i] = 0;
-    (((i8 *)&civ_saved_cursor_x_block.civ_email_addresses))[i * 0x20] = 0;
+    civ_saved_cursor_x_block.civ_email_addresses[i][0] = 0;
   }
   civ_saved_cursor_x_block.mp_turn_time_limit_ms = 0;
   game.multiplayer = 2;
