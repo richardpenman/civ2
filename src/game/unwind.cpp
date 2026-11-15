@@ -187,20 +187,20 @@ void SpaceshipWindow::make_button_sprites()
 
     surface_ctor((DibSurface *)surface);
     gfx_set_text_color_index(0x8b);
-    loaded = ((DibSurface *)surface)->load_gif_resource( 0x1f1, 10, 0xec, (GamePalette *)((iptr)this + 0x1f8));
+    loaded = ((DibSurface *)surface)->load_gif_resource( 0x1f1, 10, 0xec, &ship_palette);
     if (loaded != 0) {
         text_clear();
         label_text = (i32)label_string(label_table.string_ids[0xfe]);
         text_append((const char *)label_text);
         SetRect(&rect, 0, 0, 0x34, 0x24);
         OffsetRect(&rect, 1, 1);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         close_btn_disabled_sprite.grab_from_surface( (DibSurface *)surface, 9, 1, 1, 0x34, 0x24);
         OffsetRect(&rect, 0x35, 0);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         close_btn_pressed_sprite.grab_from_surface( (DibSurface *)surface, 9, 0x36, 1, 0x34, 0x24);
         OffsetRect(&rect, 0x35, 0);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         close_btn_normal_sprite.grab_from_surface( (DibSurface *)surface, 9, 0x6b, 1, 0x34, 0x24);
         gfx_set_text_color_index(0xc6);
         text_clear();
@@ -216,13 +216,13 @@ void SpaceshipWindow::make_button_sprites()
         }
         SetRect(&rect, 0, 0, 0x43, 0x24);
         OffsetRect(&rect, 1, 0x26);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         launch_btn_disabled_sprite.grab_from_surface( (DibSurface *)surface, 9, 1, 0x26, 0x43, 0x24);
         OffsetRect(&rect, 0x44, 0);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         launch_btn_pressed_sprite.grab_from_surface( (DibSurface *)surface, 9, 0x45, 0x26, 0x43, 0x24);
         OffsetRect(&rect, 0x44, 0);
-        ((DibSurface *)surface)->draw_text_in_rect( (GameFont *)((iptr)this + 0x8d4), (const char *)((i8 *)&textbuf.buf), &rect, 0);
+        ((DibSurface *)surface)->draw_text_in_rect( &typing_font, (const char *)((i8 *)&textbuf.buf), &rect, 0);
         launch_btn_normal_sprite.grab_from_surface( (DibSurface *)surface, 9, 0x89, 0x26, 0x43, 0x24);
     }
     /* funclet 004d56ea: lea ecx,[ebp-0x64] */

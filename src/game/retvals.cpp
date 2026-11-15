@@ -226,7 +226,7 @@ static int save_read_events(FILE *_File)
 /* Part of save_read_game (00475666): marks the player's (or, in multiplayer, each
    human player's) leader name, and the tribe names and titles the file had
    marked, as used (negative label ids). */
-static void save_mark_player_names(char saved_player_civ,i8 *leader_buf)
+static void save_mark_player_names(char saved_player_civ,const Leader *leader_buf)
 {
   int civ;
   int idx;
@@ -235,17 +235,17 @@ static void save_mark_player_names(char saved_player_civ,i8 *leader_buf)
   if (game.multiplayer == 0) {
     leaders[civs[game.player_civ].tribe].leader_name =
          -leaders[civs[game.player_civ].tribe].leader_name;
-    if (((short *)(leader_buf + 12))[0] < 0) {
+    if (leader_buf[0].plural < 0) {
       leaders[civs[game.player_civ].tribe].plural =
            -leaders[civs[game.player_civ].tribe].plural;
     }
-    if (((short *)(leader_buf + 12))[1] < 0) {
+    if (leader_buf[0].adjective < 0) {
       leaders[civs[game.player_civ].tribe].adjective =
            -leaders[civs[game.player_civ].tribe].adjective;
     }
     for (idx = 0; idx < 7; idx = idx + 1) {
       for (gender = 0; gender < 2; gender = gender + 1) {
-        if (((short *)(leader_buf + 12))[gender + idx * 2 + 4] < 0) {
+        if (leader_buf[0].titles[idx][gender] < 0) {
           leaders[civs[game.player_civ].tribe].titles[idx][gender]
                = -leaders[civs[game.player_civ].tribe].titles[idx][gender];
         }
@@ -258,17 +258,15 @@ static void save_mark_player_names(char saved_player_civ,i8 *leader_buf)
         game.player_civ = (byte)civ;
         leaders[civs[(char)(byte)civ].tribe].leader_name =
              -leaders[civs[(char)(byte)civ].tribe].leader_name;
-        if (((short *)(leader_buf + 12))[civs[game.player_civ].tribe * 0x18] < 0) {
+        if (leader_buf[civs[game.player_civ].tribe].plural < 0) {
           leaders[civs[game.player_civ].tribe].plural = -leaders[civs[game.player_civ].tribe].plural;
         }
-        if (((short *)(leader_buf + 12))[civs[game.player_civ].tribe * 0x18 + 1] < 0) {
+        if (leader_buf[civs[game.player_civ].tribe].adjective < 0) {
           leaders[civs[game.player_civ].tribe].adjective = -leaders[civs[game.player_civ].tribe].adjective;
         }
         for (idx = 0; idx < 7; idx = idx + 1) {
           for (gender = 0; gender < 2; gender = gender + 1) {
-            if (((short *)(leader_buf + 12))[idx * 2 +
-                          gender +
-                          civs[game.player_civ].tribe * 0x18 + 4] < 0)
+            if (leader_buf[civs[game.player_civ].tribe].titles[idx][gender] < 0)
             {
               leaders[civs[game.player_civ].tribe].titles[idx][gender] =
                    -leaders[civs[game.player_civ].tribe].titles[idx][gender];
@@ -403,7 +401,7 @@ int __cdecl save_read_game(char *path)
   size_t count_read;
   size_t name_len;
   int screen_h;
-  i8 leader_buf[0x3f0];  /* 21 tribes x 0x30 bytes read from the file */
+  Leader leader_buf[21];  /* the human players' tribes' records read from the file */
   int status;
   uint saved_multiplayer;
   uint version;
@@ -533,8 +531,7 @@ int __cdecl save_read_game(char *path)
     for (idx = 0; game.player_civ = saved_player_civ, idx < 8; idx = idx + 1) {
       if ((1 << ((byte)idx & 0x1f) & (uint)game.human_players) != 0) {
         game.player_civ = (byte)idx;
-        count_read = _fread(leader_buf + civs[(char)(byte)idx].tribe * 0x30,
-                       0x30,1,_File);
+        count_read = _fread(&leader_buf[civs[(char)(byte)idx].tribe],0x30,1,_File);
         game.player_civ = saved_player_civ;
         if (count_read == 0) return status;
       }

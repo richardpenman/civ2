@@ -736,57 +736,57 @@ int SpaceshipWindow::render_ship_load_surfaces(ShipSurfaces &sf)
 {
   int load_ok;
 
-  load_ok = ((DibSurface *)sf.surf_1b9)->load_gif_resource(0x1b9,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1b9)->load_gif_resource(0x1b9,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1e0)->load_gif_resource(0x1e0,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1e0)->load_gif_resource(0x1e0,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1c7)->load_gif_resource(0x1c7,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1c7)->load_gif_resource(0x1c7,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1ea)->load_gif_resource(0x1ea,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1ea)->load_gif_resource(0x1ea,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1d6)->load_gif_resource(0x1d6,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1d6)->load_gif_resource(0x1d6,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1ba)->load_gif_resource(0x1ba,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1ba)->load_gif_resource(0x1ba,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1e1)->load_gif_resource(0x1e1,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1e1)->load_gif_resource(0x1e1,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1c8)->load_gif_resource(0x1c8,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1c8)->load_gif_resource(0x1c8,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1e9)->load_gif_resource(0x1e9,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1e9)->load_gif_resource(0x1e9,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1d7)->load_gif_resource(0x1d7,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1d7)->load_gif_resource(0x1d7,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
   win_flush_pending_msgs();
-  load_ok = ((DibSurface *)sf.surf_1eb)->load_gif_resource(0x1eb,10,0xec,(GamePalette *)((iptr)this + 0x1f8));
+  load_ok = ((DibSurface *)sf.surf_1eb)->load_gif_resource(0x1eb,10,0xec,&ship_palette);
   if (load_ok == 0) {
     return 0;
   }
@@ -941,7 +941,7 @@ i32 SpaceshipWindow::render_ship()
   }
   win_flush_pending_msgs();
   load_ok = ((DibSurface *)sf.surf_part)->load_gif_resource(part_rows[struct_row].v[0],10,0xec,
-                       (GamePalette *)((iptr)this + 0x1f8));
+                       &ship_palette);
   if (load_ok == 0) {
     render_ship_free_surfaces(sf,unwind_state);
     return 0;
@@ -958,7 +958,7 @@ i32 SpaceshipWindow::render_ship()
     win_flush_pending_msgs();
     render_ship_draw_part(sf,&part_rows[row_i],sprite_part);
   }
-  ship_image_sprite.grab_from_surface((DibSurface *)((iptr)this + 0x8f4),9,0,0,0x1c9,
+  ship_image_sprite.grab_from_surface(&ship_view_surface,9,0,0,0x1c9,
                0x130);
   win_flush_pending_msgs();
   if ((int)launch_state == 3) {
