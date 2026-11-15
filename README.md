@@ -83,8 +83,8 @@ scripts, the game as a 2.9 MB WebAssembly module, the fonts) with no server-side
 that folder from any web server, e.g.
 
 ```sh
-make web                                   # first time: downloads Binaryen into tools/toolchain
-python3 -m http.server -d build/web 8000   # then open http://localhost:8000
+make serve        # builds build/web (first time: downloads Binaryen into tools/toolchain)
+                  # and serves it: open http://localhost:8000 (PORT=8080 for another port)
 ```
 
 More details in [BROWSER.md](docs/BROWSER.md).

@@ -12,8 +12,8 @@ graphics' art too, below). There is no server-side
 code: any web server can serve the folder.
 
 ```sh
-make web                                   # first time: downloads Binaryen into tools/toolchain
-python3 -m http.server -d build/web 8000   # then open http://localhost:8000
+make serve        # builds build/web (first time: downloads Binaryen into tools/toolchain)
+                  # and serves it: open http://localhost:8000 (PORT=8080 for another port)
 ```
 
 It is tested in Chrome, and should run in any browser from 2023 on (Edge 103, Firefox 113,

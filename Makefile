@@ -9,7 +9,9 @@ SEED   ?= 7
 SCRIPT ?= harness/scripts/newgame.txt
 NAME   := $(basename $(notdir $(SCRIPT)))
 
-.PHONY: all build run windows web web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless unit-record clean
+PORT ?= 8000
+
+.PHONY: all build run windows web serve web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -40,6 +42,10 @@ windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
 # x86-64; they need the game files, $$CIV2_GAME or ~/Civ2).
 web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; HD=1: with the HD graphics' art on the site)
 	HD=$(HD) python3 tools/build_web.py
+
+serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000; HD=1 as for web); Ctrl+C stops it
+	@echo "OpenCiv2: http://localhost:$(PORT)"
+	python3 -m http.server -d build/web $(PORT)
 
 web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke), then HD graphics (run/web-hd)
 	sh tools/fetch-toolchain.sh browser
