@@ -124,7 +124,8 @@ The rest is in the platform layer (`src/platform/hd.c`):
   by comparing the surface's pixels with the plane's copy, and shown enlarged.  Fills, and
   copies from surfaces without a plane, are shown even where the pixels did not change.
 * **Copies** between surfaces (`BitBlt`, `gfx_copy_pixels`) copy the planes too, with which
-  of their pixels show the game's pixels enlarged (`hd_big`: not art, nor sharp text), so that
+  of their pixels show the game's pixels enlarged (`hd_big`: not art, nor sharp text; of a
+  picture with transparent pixels copied, those where it is opaque), so that
   a copy between surfaces whose colour tables differ recolours only those (below: the
   herald's backdrop); before, a black pixel of a unit's picture copied back from the slide's
   background surface, whose colour table had black for that index, took the map's colour.

@@ -472,7 +472,7 @@ void hd_bits_redrawn(void *bits, int x, int y, int w, int h)
 }
 
 /* The game's pixels in the rectangle are shown as the plane has them. */
-static void commit_rect(Bitmap *b, int l, int t, int r, int bot)
+static void commit_pixels(Bitmap *b, int l, int t, int r, int bot, int art)
 {
     int n, y;
     if (!valid(b) || !clip_rect(b, &l, &t, &r, &bot))
@@ -480,8 +480,16 @@ static void commit_rect(Bitmap *b, int l, int t, int r, int bot)
     n = pixel_bytes(b);
     for (y = t; y < bot; y++) {
         memcpy(b->hd_prev + ((size_t)y * b->w + l) * n, bmp_row(b, y) + l * n, (size_t)(r - l) * n);
-        memset(b->hd_big + (size_t)y * b->w + l, 0, (size_t)(r - l));
+        if (art)
+            memset(b->hd_big + (size_t)y * b->w + l, 0, (size_t)(r - l));
     }
+}
+
+/* ... and the plane there is art (a picture, sharp text), not the game's
+   pixels enlarged. */
+static void commit_rect(Bitmap *b, int l, int t, int r, int bot)
+{
+    commit_pixels(b, l, t, r, bot, 1);
 }
 
 /* Draws w x h premultiplied pixels at physical (x, y), clipped to the
@@ -607,11 +615,23 @@ static void transfer(Bitmap *dst, Bitmap *src, int x, int y, int w, int h, int s
             }
     } else
         return;     /* a scaled copy within a surface: left to the game's pixels */
-    commit_rect(dst, l, t, r, b);
-    /* which pixels the plane shows enlarged: the source's (not where a
-       picture with transparent pixels was drawn over: art) */
+    commit_pixels(dst, l, t, r, b, 0);
+    /* which pixels the plane shows enlarged: the source's (a picture with
+       transparent pixels: where it is opaque; where it is transparent, the
+       destination's stay; where it is blended over them, art) */
     if (src->hd_alpha && src != dst)
-        ;
+        for (j = t; j < b; j++)
+            for (i = l; i < r; i++) {
+                int ax = sx + (int)((int64_t)(i - x) * sw / w), ay = sy + (int)((int64_t)(j - y) * sh / h);
+                uint32_t a;
+                if (ax < 0 || ay < 0 || ax >= src->w || ay >= src->h)
+                    continue;
+                a = src->hd[(size_t)ay * d * src->w * d + (size_t)ax * d] >> 24;
+                if (a == 255)
+                    dst->hd_big[(size_t)j * dst->w + i] = src->hd_big[(size_t)ay * src->w + ax];
+                else if (a)
+                    dst->hd_big[(size_t)j * dst->w + i] = 0;
+            }
     else if (w == sw && h == sh) {
         int first = t, end = b, step = 1;
         if (src == dst && y > sy) { first = b - 1; end = t - 1; step = -1; }
