@@ -202,8 +202,13 @@ The rest is in the platform layer (`src/platform/hd.c`):
   shadows'), where the game draws its own and then recolours it (`replace_color` of its marker
   colours 5 and 6, whose result is taken as shown: `hd_shield_begin`/`hd_shield_end` in
   `src/game/hd_graphics.cpp`); the black bands, the hit points and the order's letter are drawn
-  over it as ever.  The occupied airbase's aircraft is the pack's variant in the owner's colour,
-  and the city's disorder marker is tinted in it (`hd_recolour_begin`/`end`).  The pack numbers
+  over it as ever.  The occupied airbase's aircraft is the pack's variant in the owner's colour
+  (`hd_recolour_begin`/`end`).  The city's disorder marker is the original's, enlarged (its box
+  in the owner's colour, as the game recolours it, with a black fist): the pack's
+  (`ICONS` 166,223) is a thin "!" on nothing, which tinted in the owner's colour was all but
+  invisible over the city (`harness/hd/hd-disorder.txt`); all of its pixels are shown over the
+  city's picture, also those the same colour as the city's underneath, which were not seen as
+  drawn (`hd_sprite_pixels_shown`).  The pack numbers
   its colour variants (`tint/KEY/COLOUR`) 208 + 3 x the colour's slot (red, white, green, blue,
   yellow, cyan, orange, purple), not by the game's palette (`pack_tint`).  The diplomacy room,
   whose original shows the civilization's colour on its banners (palette entry 0x91), has the
@@ -338,7 +343,9 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
   the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its
   scaled terrain clipped rounds otherwise, a unit's frame is not compared), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
-  `harness/hd/hd-units.txt` (the shields, a stack, an
+  `harness/hd/hd-disorder.txt` (a city in civil disorder, `hd_test_city_disorder`: the
+  marker at five zooms, the Romans' and the Sioux'; logical screenshots and `rand()` trace those
+  of HD off), `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
   tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
@@ -355,10 +362,11 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,252 pictures, 100 MB of PNGs, about 80 MB with each
+For a stripped pack, the keys hd.c draws (1,251 pictures, 100 MB of PNGs, about 80 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
-* `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
+* `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
+  the city's disorder marker (`crop/file/icons/166,223,30,30`: `NOT_CROPPED_KEYS`);
 * `crop/resource/...` (127): the sprites taken from the libraries' pictures, but for the
   leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`), three of
   `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city

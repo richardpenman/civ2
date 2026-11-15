@@ -26,12 +26,18 @@ void hd_shield_end(DibSurface *surface, const RECT *recoloured);
    colour (flat: the picture tinted; else its pack's variant of that colour). */
 void hd_recolour_begin(Sprite *sprite, DibSurface *surface, const RECT *area, int colour, int flat);
 void hd_recolour_end(DibSurface *surface, const RECT *area);
+/* The game's pixels of a sprite drawn without a picture (drawn: the
+   rectangle its draw gave) shown, where they are the same as underneath. */
+void hd_sprite_pixels_shown(Sprite *sprite, DibSurface *surface, int x, int y, const RECT *drawn);
 /* The city window's food (food) or production box as a meter: value of
    capacity, the granary's mark at threshold (0: none). */
 void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacity, int threshold, int food);
 /* A test: a trireme slid from the map's centre in the 8 directions, alone
    and stacked, must leave the plane as it was (harness/hd/hd-redraw.txt). */
 void hd_map_redraw_probe(void);
+/* A test: the city at (x, y) in civil disorder, the map centred on it at
+   zoom and redrawn (harness/hd/hd-disorder.txt). */
+void hd_test_city_disorder(int x, int y, int zoom);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 

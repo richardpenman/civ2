@@ -303,6 +303,38 @@ void hd_shield_end(DibSurface *surface, const RECT *recoloured)
     shield_drawn = 0;
 }
 
+/* A sprite drawn without a picture over the plane's art (the city's
+   disorder marker over the city): the game's pixels of its shape, which
+   are shown enlarged only where they differ from what was there, are all
+   shown, also where the city's pixels underneath happened to be the same
+   colour (the city's picture showed through the marker).  drawn: the
+   rectangle the game's draw gave; its shape is found as
+   extras_draw_grey_sprite finds it (a silhouette in a marker colour, the
+   pixels put back after). */
+void hd_sprite_pixels_shown(Sprite *sprite, DibSurface *s, int x, int y, const RECT *drawn)
+{
+    enum { MARK = 0xfe };
+    int w = drawn->right - drawn->left, h = drawn->bottom - drawn->top, px, py;
+    RECT r;
+    u8 *keep;
+    if (!hd_on || w <= 0 || h <= 0 || w > 1024 || h > 1024 || !(keep = (u8 *)malloc((size_t)w * h)))
+        return;
+    for (py = 0; py < h; py++)
+        for (px = 0; px < w; px++)
+            keep[py * w + px] = (u8)(s->in_clip(drawn->left + px, drawn->top + py) ?
+                                          s->get_pixel(drawn->left + px, drawn->top + py) : MARK);
+    sprite->draw_silhouette(&r, s, x, y, MARK);
+    for (py = 0; py < h; py++)
+        for (px = 0; px < w; px++) {
+            int c = keep[py * w + px], X = drawn->left + px, Y = drawn->top + py;
+            if (!s->in_clip(X, Y) || (int)s->get_pixel(X, Y) != MARK)
+                continue;
+            s->set_pixel(X, Y, c);
+            hd_bits_redrawn((void *)s->bits, X, Y, 1, 1);
+        }
+    free(keep);
+}
+
 /* The pack's colours of the civilizations (its tint/KEY/COLOUR variants):
    208 + 3 x the colour's slot (red, white, green, blue, yellow, cyan,
    orange, purple: civ_colors), for a palette colour the game gives one;
@@ -318,8 +350,7 @@ static int pack_tint(int colour)
 }
 
 /* A sprite of the map recoloured by the game after it is drawn (the
-   occupied airbase's aircraft, the city's disorder marker: the marker
-   colour 6 in the owner's): the area synced before, the sprite drawn in
+   occupied airbase's aircraft: the marker colour 6 in the owner's): the area synced before, the sprite drawn in
    that colour (its pack's variant tint/KEY/COLOUR, or tinted flat), and
    the recoloured pixels taken as shown after.  Only for a sprite drawn
    from a picture of the pack. */
@@ -477,4 +508,20 @@ void hd_map_redraw_probe(void)
     replay_hold--;
     plat_log("map redraw probe: zoom %d: %d of 16 slides left pixels (most %d; %d%% of the area compared)\n",
              (int)m->zoom, bad, worst, (int)(100 - skipped * 100 / ((long)w * h * 16)));
+}
+
+/* A test (harness/hd/hd-disorder.txt): the city at (x, y) in civil
+   disorder, its marker drawn in place of the size box; the map centred on
+   it at zoom (-7 to 8) and redrawn. */
+void hd_test_city_disorder(int x, int y, int zoom)
+{
+    MapView *m = &map_views_block.map_view_recs[0];
+    int city = city_at(x, y);
+    if (city < 0)
+        return;
+    cities[city].flags |= CITYF_DISORDER;
+    m->zoom = (i16)zoom;
+    replay_hold++;      /* (the redraw idles: the script waits for it) */
+    m->center_on(x, y);
+    replay_hold--;
 }

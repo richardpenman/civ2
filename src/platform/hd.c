@@ -949,8 +949,13 @@ static const struct {
 /* Single crops of the pack not drawn either: in tiles.dll 86, the pack's
    information seal (the popups' icon, the quit confirmation's) and the
    tutorial's owl are a thin pale "i" and "?" on nothing, the podium in a
-   civilization's colour a flat shield; the original's are kept, enlarged. */
+   civilization's colour a flat shield; the city's disorder marker (ICONS
+   at 166,223) is a thin "!" on nothing, which the game's recolouring for
+   the owner (hd_recolour_begin) made a faint stroke, the marker all but
+   invisible: the original's are kept, enlarged (the disorder marker's box
+   in the owner's colour, as the game recolours it, with its black fist). */
 static const char *const NOT_CROPPED_KEYS[] = {
+    "crop/file/icons/166,223,30,30",
     "crop/resource/tiles.dll/gifs/86/398,134,64,64",
     "crop/resource/tiles.dll/gifs/86/134,398,64,64",
     "crop/resource/tiles.dll/gifs/86/2,398,64,64",

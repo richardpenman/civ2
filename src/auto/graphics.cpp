@@ -3446,12 +3446,11 @@ gfx_draw_city(DibSurface *surface,int city,uint draw_flags,int px,int py,int zoo
       gfx_draw_text((const char *)size_text,label_rect.left + (pad >> 1) + 1,label_rect.top);
     }
     else {
-      /* (port) HD: the marker tinted in the owner's colour */
-      hd_recolour_begin((Sprite *)&fortify_overlay_sprites_block.city_disorder_icon_sprite,surface,
-                        (RECT *)&label_rect.left,color_primary,1);
       ((Sprite *)((i8 *)&fortify_overlay_sprites_block.city_disorder_icon_sprite))->draw((RECT *)clip_disorder,surface,px,py);
       (surface)->replace_color((RECT *)&label_rect.left,0x106,color_primary);
-      hd_recolour_end(surface,(RECT *)&label_rect.left);
+      if (hd_on)        /* (port) HD: all of the marker shown over the city's picture */
+        hd_sprite_pixels_shown((Sprite *)&fortify_overlay_sprites_block.city_disorder_icon_sprite,surface,px,py,
+                               (RECT *)clip_disorder);
     }
   }
   gfx_reset_zoom_scale();

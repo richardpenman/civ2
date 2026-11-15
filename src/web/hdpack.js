@@ -30,7 +30,9 @@ export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/', 'a
 // era's rows (y 231 and 512).
 const CV = 'crop/resource/cv.dll/gifs/310/';
 export const DROP = ['palace/decor-', 'crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
-    // its NOT_CROPPED_KEYS: tiles.dll 86's information seal, tutorial owl, podium
+    // its NOT_CROPPED_KEYS: the city's disorder marker; tiles.dll 86's information seal,
+    // tutorial owl, podium
+    'crop/file/icons/166,223,30,30', 'tint/crop/file/icons/166,223,30,30',
     'crop/resource/tiles.dll/gifs/86/398,134,', 'crop/resource/tiles.dll/gifs/86/134,398,',
     'crop/resource/tiles.dll/gifs/86/2,398,', 'tint/crop/resource/tiles.dll/gifs/86/2,398,',
     'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',

@@ -1,0 +1,32 @@
+# HD graphics (docs/HD-GRAPHICS.md): a city in civil disorder, its marker
+# (the game's, in place of the size box) tinted in the owner's colour:
+# Rome (36,60) of the autosave put in disorder and the map centred on it
+# (hd_test_city_disorder, a test hook: address 0) at the zooms 0, 2, 4, -2
+# and -4; then the Sioux' Slim Buttes (38,76): its marker in purple.
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call hd_test_city_disorder 0 36 60 0
+wait 1000
+shot d-0
+call hd_test_city_disorder 0 36 60 2
+wait 1000
+shot d-2
+call hd_test_city_disorder 0 36 60 4
+wait 1000
+shot d-4
+call hd_test_city_disorder 0 36 60 -2
+wait 1000
+shot d-m2
+call hd_test_city_disorder 0 36 60 -4
+wait 1000
+shot d-m4
+call hd_test_city_disorder 0 38 76 2    # Slim Buttes (near the map's edge: shown below Rome)
+wait 1000
+shot d-sioux
