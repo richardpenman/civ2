@@ -5,7 +5,7 @@
 OUT=/work/run/xd/cap/$1; ROLE=$2; D=${DISP:-7}; G=/tmp/ours$D
 mkdir -p $OUT
 pkill -f "Xvfb :$D" 2>/dev/null; sleep 1
-rm -rf $G; cp -r /civ2 $G; chmod -R u+w $G
+rm -rf $G; cp -r /civ2 $G; chmod -R u+w $G; [ -n "$CIV2_KEEP_MEDIA" ] || find $G -maxdepth 1 -type d \( -iname kings -o -iname video -o -iname music \) -exec rm -rf {} +
 cp /work/harness/CIV2.DAT /work/harness/CIV.INI $G/
 [ -n "$SIMUL" ] && printf 'Simultaneous=1\r\n' >> $G/CIV.INI   # SIMUL=1: simultaneous moves offered
 [ -n "$SAVE" ] && cp "$SAVE" $G/     # SAVE=FILE: a saved game to load

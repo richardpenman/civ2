@@ -8,6 +8,10 @@
 # killed TIMEOUT_KILL seconds (default 10) after.
 script=$1; out=$2
 rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g && cp /work/harness/CIV2.DAT /tmp/g/
+# (the recordings were made without the CD's videos and music: a copy of the
+# game that has them, KINGS, Video, Music, plays them, and its timing differs;
+# CIV2_KEEP_MEDIA=1 keeps them)
+[ -n "$CIV2_KEEP_MEDIA" ] || find /tmp/g -maxdepth 1 -type d \( -iname kings -o -iname video -o -iname music \) -exec rm -rf {} +
 [ -f /work/harness/CIV.INI ] && cp /work/harness/CIV.INI /tmp/g/
 mkdir -p "$out"
 cd /tmp/g

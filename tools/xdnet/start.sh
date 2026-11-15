@@ -6,7 +6,7 @@ OUT=/work/run/xd/cap/$1
 mkdir -p $OUT
 wineserver -k 2>/dev/null
 for n in 1 2; do
-  g=/tmp/g$n; rm -rf $g; cp -r /civ2 $g; chmod -R u+w $g
+  g=/tmp/g$n; rm -rf $g; cp -r /civ2 $g; chmod -R u+w $g; [ -n "$CIV2_KEEP_MEDIA" ] || find $g -maxdepth 1 -type d \( -iname kings -o -iname video -o -iname music \) -exec rm -rf {} +
   mv $g/XDaemon.dll $g/XDaemon_orig.dll
   cp /work/run/xd/logproxy/XDaemon.dll $g/XDaemon_real.dll
   cp /work/hook/XDaemon.dll $g/XDaemon.dll

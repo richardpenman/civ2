@@ -58,7 +58,11 @@ def xdo(*args):
 
 
 def prepare_game_dir(build, gamedir):
-    shutil.copytree(paths.GAME, gamedir)
+    # (recorded without the CD's videos and music: KINGS, Video, Music left
+    # out, as tools/native-run.sh does; CIV2_KEEP_MEDIA=1 keeps them)
+    keep = os.environ.get('CIV2_KEEP_MEDIA')
+    shutil.copytree(paths.GAME, gamedir, ignore=None if keep else
+                    lambda d, names: [n for n in names if d == paths.GAME and n.lower() in ('kings', 'video', 'music')])
     for d, _, fs in os.walk(gamedir):        # (the game may be mounted read-only)
         for f in fs:
             os.chmod(os.path.join(d, f), 0o644)
