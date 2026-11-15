@@ -77,7 +77,7 @@ static const struct { const char *key, *label; } extras[] = {
     {"ColorCorrection", "Colour correction"}, {"ForeignGold", "Gold in Foreign Minister"},
     {"ArrangeWindowsSL", "Arrange Windows S and L"}, {"PathLines", "Path lines with Shift"},
     {"SentryHalftone", "Sentries in grey shades"}, {"DefaultZoom1", "New games at zoom 1:1"},
-    {"HotkeyUnderlines", "Underline options' hotkeys"}, {"TurnsLeft", "Turns to growth, production"},
+    {"HotkeyUnderlines", "Underline options' hotkeys"},
 };
 #define NEXTRAS ((int)(sizeof extras / sizeof extras[0]))
 

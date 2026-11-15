@@ -56,7 +56,6 @@ enum {
     X_SENTRY_GREY = 41,     /* SentryHalftone */
     X_ZOOM_1 = 43,          /* DefaultZoom1: new games at zoom 1:1 */
     X_HOTKEY_LINES = 44,    /* HotkeyUnderlines: options' hotkey letters underlined (off by default) */
-    X_TURNS_LEFT = 45,      /* TurnsLeft: the city window's turns to growth and completion (OpenCiv2's own) */
     /* Rule changes (extra_rule): off unless switched on in CIV.INI */
     X_WORKER_HANDOVER = 17, /* WorkerHandover: the worker already there stops */
     X_GOTO_ZOC = 18,        /* GotoNoZocStop: Go To does not stop next to foreign units */
@@ -148,9 +147,6 @@ int extras_path_input(const MSG *m, HWND under, POINT pt);
 int extras_panel_width(int width);
 void extras_draw_work_counter(iptr surface, int unit, int px, int py, int zoom);
 void extras_draw_grey_sprite(struct Sprite *sprite, iptr surface, int x, int y);
-int extras_food_turns(int box, int capacity, int surplus);
-int extras_production_turns(int box, int cost, int net);
-void extras_city_turns(struct CityWindow *w, int food, int taken_right, int right, int y);
 /* the rule changes' */
 int extras_rotation_origin(int unit, int *x, int *y);
 void extras_rotation_found(int unit);

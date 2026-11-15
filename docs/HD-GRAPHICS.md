@@ -215,14 +215,6 @@ The rest is in the platform layer (`src/platform/hd.c`):
   pack's flag (`faction/flag`) in that colour in its corner (`hd_diplomacy_flag`).  After Peter
   Johnson's `gfx_draw_unit_shield`, `hd_sprite_tint` and `hd_diplomacy_flag` (PR #11).  The
   game's own pixels (which map picking reads) are the original's.
-* **The city window's stores**: its food and production boxes (rows of the game's icons) are
-  shown as meters on the plane (`hd_stock_meter`, at the end of `CityWindow::draw_food_box` and
-  `draw_production`, after Peter Johnson's `hd_stockpile`, PR #11): a dark panel filled from the
-  bottom as far as the box is full, the granary's mark where the food it keeps reaches, the
-  pack's food or production picture (`economy/food`, `economy/production`); the turns to growth
-  and to completion are the *TurnsLeft* addition's ([EXTRAS.md](EXTRAS.md)), on the boxes' title
-  lines, drawn sharp.  Where the box holds more shields than the item costs (a unit bought, a
-  shortened box), the game's icons past the box stay as they are.
 * **Units on sentry** (*SentryHalftone*, [EXTRAS.md](EXTRAS.md)): the unit's picture in grey
   shades (`hd_sprite_mode(HD_SPRITES_GREY)` around the game's draw in
   `extras_draw_grey_sprite`, the game's own halftone pixels then taken as shown).
@@ -342,7 +334,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   every zoom, each slide's plane compared with a full render: its results in `hook.log`, "0 of
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
   the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its
-  scaled terrain clipped rounds otherwise, a unit's frame is not compared), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
+  scaled terrain clipped rounds otherwise, a unit's frame is not compared),
   `harness/hd/hd-sentry.txt` with `CIV2_TEST_EXTRAS=41` (a unit on sentry, grey, on the
   view mode's cursor's square), `harness/hd/hd-disorder.txt` (a city in civil disorder, `hd_test_city_disorder`: the
   marker at five zooms, the Romans' and the Sioux'; logical screenshots and `rand()` trace those

@@ -29,9 +29,6 @@ void hd_recolour_end(DibSurface *surface, const RECT *area);
 /* The game's pixels of a sprite drawn without a picture (drawn: the
    rectangle its draw gave) shown, where they are the same as underneath. */
 void hd_sprite_pixels_shown(Sprite *sprite, DibSurface *surface, int x, int y, const RECT *drawn);
-/* The city window's food (food) or production box as a meter: value of
-   capacity, the granary's mark at threshold (0: none). */
-void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacity, int threshold, int food);
 /* A test: a trireme slid from the map's centre in the 8 directions, alone
    and stacked, must leave the plane as it was (harness/hd/hd-redraw.txt). */
 void hd_map_redraw_probe(void);
