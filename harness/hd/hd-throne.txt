@@ -12,9 +12,10 @@
 # mixed, up-27: every section at 4, up-34: complete, all the bonus pieces),
 # complete (the room looked at: throneroom_show); choices-first,
 # choices-mixed, choices-bonus, choices-lastbonus (the choice screens).
-# (The waits are long: the dissolves take minutes of the replay's clock,
-# and a click before an improvement's room is shown with its prompt is not
-# the click to continue, so the next improvement would open inside it.)
+# (The waits are long: the dissolves take minutes of the replay's clock, a
+# click while the choices dissolve in is dropped, as by the original, and the
+# shots want each room whole.  A room opened inside another no longer crashes
+# the game: docs/BUGS.md, memory errors.)
 # run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
 wait 8000
 key Down Down Down Down     # "Load a Game"

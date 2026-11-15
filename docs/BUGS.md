@@ -780,6 +780,16 @@ for good and keeps the original's results:
   tables with them (the same [evidence page](bugfix-evidence-text.md)).
 - The opening video's audio flags never set (BF-297), and the registry key closed when it was
   not opened (BF-301; a bad close in the Windows build only).
+- A throne room opened while another is showing (`throneroom_show`, `throneroom_show_upgrade`):
+  the window's destructor clears `throneroom_wnd`, and the outer room's next click or key reads
+  through it (`throneroom_on_click`, `throneroom_on_key`): the original crashes (an access
+  violation at 0044f4dd, recorded under Wine: a replay's `call throneroom_show` in an
+  improvement's final screen or its dissolve). Not reached in play: the room covers the screen,
+  takes the keys (Shift+H and Alt+K, H do nothing while it shows, in the original as in ours) and
+  the improvement comes only from the turn's start; a replay's `call` reached it
+  (`harness/hd/hd-throne.txt`, where a click lost in a dissolve let the next improvement open
+  inside the last). `src/game/throneroom.cpp` makes the outer room the throne room again when
+  the inner one has gone, so its click ends it (`tests/throneroom_nested_test.cpp`).
 
 ## Uninitialised locals that are not bugs
 
@@ -834,6 +844,11 @@ Well-known Civ2 "bugs" that are design, balance or art, or fixed before 5.4.0f:
   ([Civilization Wiki](https://civilization.fandom.com/wiki/Bugs_(Civ2))): errors in the art
   of `mk.dll` and `pv.dll`, not in the code. The right pictures are not in the game's files,
   so the code cannot fix them.
+- **A click while the throne room's choices dissolve in is lost**: the original drains the
+  mouse and keys when the dissolve ends (`input_flush_events` in `ThroneRoomWindow::run_upgrade`),
+  as before its first screen, so a click meant for "continue" cannot pick a section unseen
+  (recorded under Wine: the same in ours). A click while the chosen piece's room dissolves is
+  kept and ends the last screen as soon as it shows. Kept in every mode.
 - **Fixed before or in MGE 5.4.0f** (the patch notes shipped with the game, `PATCH.TXT` and
   `Readmev13.txt`): units without a home city after city 127, Pikemen in double-movement games,
   bribing under Democracy, disbanding a unit several times in a laggy network game, enemy
