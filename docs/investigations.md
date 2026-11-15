@@ -29,7 +29,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
    </details>
 
-4. <details><summary>duplij-4 (L4): (also see duplij-156 (N100)) - Feature? — Click to expand</summary>
+4. <details><summary>duplij-4 (L4) - Feature?: (also see duplij-156 (N100)) — Click to expand</summary>
 
    - Status:
    - Description: The number of autosaves has been increased from two to five (\*\*_auto, \*\*_auto0, \*\*_auto1, \*\*_auto2, \*\*_auto3)
@@ -50,7 +50,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
    </details>
 
-7. <details><summary><del>duplij-7 (L7)</del>: (also see duplij-58 (N2)) - Fix? — Click to expand</summary>
+7. <details><summary><del>duplij-7 (L7)</del> - Fix?: (also see duplij-58 (N2)) — Click to expand</summary>
 
    - Status: Resolved; fixed previously in OC2; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124
    - Description: Added variable initialization that corrects constantly bad relations with AI (taken from FoxAHead)
@@ -64,14 +64,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
    </details>
 
-9. <details><summary>duplij-9 (L9): (also see duplij-77 (N21)) - Mod? — Click to expand</summary>
+9. <details><summary>duplij-9 (L9) - Mod?: (also see duplij-77 (N21)) — Click to expand</summary>
 
    - Status:
    - Description: Now, when a unit of another race enters the city zone of another player with whom there is a peaceful or allied relationship, the worker processing that cell in the city will not be reset
 
    </details>
 
-10. <details><summary>duplij-10 (L10): (also see duplij-81 (N25)) - Feature? — Click to expand</summary>
+10. <details><summary>duplij-10 (L10) - Feature?: (also see duplij-81 (N25)) — Click to expand</summary>
 
     - Status:
     - Description: Speed up the movement of units when the option is inactive "Fast piece slide"
@@ -127,7 +127,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-18. <details><summary><del>dupe: duplij-18 (L18)</del> - Fix, Mod? — Click to expand</summary>
+18. <details><summary><del>dupe: duplij-18 (L18)</del> - Combo? Fix?/Mod? — Click to expand</summary>
 
     - Status: Duplicate; track via duplij-124 (N68)
     - Description: The defensive bonus that terrain gives to units has been fixed. Flying units will no longer receive the terrain bonus. For water and flying units it will be equal to the base value of 2 (100%). The river gives ground units an additional bonus of +50%
@@ -218,7 +218,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-31. <details><summary>duplij-31 (L31): (also see duplij-61 (N5)) - Feature? — Click to expand</summary>
+31. <details><summary>duplij-31 (L31) - Feature?: (also see duplij-61 (N5)) — Click to expand</summary>
 
     - Status:
     - Description: Added a message about the completion of construction of any city unit, not just non-military units. Depends on the active option "Show completion of construction of all units"
@@ -253,14 +253,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-36. <details><summary>duplij-36 (L36): (also see duplij-86 (N30)) - Feature? — Click to expand</summary>
+36. <details><summary>duplij-36 (L36) - Feature?: (also see duplij-86 (N30)) — Click to expand</summary>
 
     - Status:
     - Description: Added the ability to set the minimum distance between an existing and a new city in the form of specifying variables in the rules.txt file of the @Cosmic parameter
 
     </details>
 
-37. <details><summary>duplij-37 (L37): (also see duplij-173 (N117)) - Feature? — Click to expand</summary>
+37. <details><summary>duplij-37 (L37) - Feature?: (also see duplij-173 (N117)) — Click to expand</summary>
 
     - Status:
     - Description: Added the ability to create very large maps (up to 65535 cells in size) both in the map editor (Civ2Map.exe) and through the new game menu. Two templates for creating maps have been added to the menu when creating a map: very large and huge. Slightly increased the amount of land when choosing to create maps with a lot of land. Although large maps work, the AI on such maps may play worse due to the large number of objects and large distances. This addition may break compatibility with the CivUIA patch, so the file in the folder (Without_very_large_maps) containing all positions except 37 and 41 is saved separately
@@ -295,7 +295,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-42. <details><summary>duplij-42 (L42): (also see duplij-197 (N141)) - Feature? — Click to expand</summary>
+42. <details><summary>duplij-42 (L42) - Feature?: (also see duplij-197 (N141)) — Click to expand</summary>
 
     - Status:
     - Description: Added support for images that will be displayed in the Civilopedia when viewing buildings, wonders, units and technologies. Images are in the Pictures folder. Supported format is GIF 256 colors
@@ -323,7 +323,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-46. <details><summary><del>dupe: duplij-46 (L46)</del> - Fix, Mod? — Click to expand</summary>
+46. <details><summary><del>dupe: duplij-46 (L46)</del> - Combo? Fix?/Mod? — Click to expand</summary>
 
     - Status: Duplicate; track via duplij-227 (N171)
     - Description: A fix has been added to correctly calculate the trading goods Copper and Dyes, and the values for the Uranium product have been changed so that it appears more frequently in the Offer list.
@@ -351,7 +351,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-50. <details><summary>duplij-50 (L50): (also see duplij-158 (N102)) - Feature? — Click to expand</summary>
+50. <details><summary>duplij-50 (L50) - Feature?: (also see duplij-158 (N102)) — Click to expand</summary>
 
     - Status:
     - Description: The 'hidden terrain' option (T key) will no longer hide rivers, but will remove pollution from the map
@@ -400,7 +400,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-57. <details><summary>duplij-57 (N1): (contains duplij-3 (L3)) - Mod, Fix? — Click to expand</summary>
+57. <details><summary>duplij-57 (N1) - Combo? Fix?/Mod?: (contains duplij-3 (L3)) — Click to expand</summary>
 
     - Status:
     - Description: The font used in the game has been changed, mostly replaced by Arial Narrow, thereby reducing the number of places where words and phrases overlapped each other. Times is used in some places, for example, in the names of cities and the numerical display of the city size. Translation was corrected in many places to a more adequate language, many spelling errors were corrected, and several words and phrases were shortened to fit into the window.
@@ -512,7 +512,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-73. <details><summary>duplij-73 (N17): (also see duplij-12 (L12), duplij-16 (L16)) - Feature? — Click to expand</summary>
+73. <details><summary>duplij-73 (N17) - Feature?: (also see duplij-12 (L12), duplij-16 (L16)) — Click to expand</summary>
 
     - Status:
     - Description: Previously, it was impossible to set up another AI government in the Editor menu; now the condition has been corrected, so you can change it for yourself and the AI. In addition, the editor has been updated with the ability to lay riverbeds on the map, as well as found/delete cities through the same menu. In order to found a city, you need to select the desired square with a unit on it, then press Shift+F8 (after activating the cheat mode) and check the City option. The unit is needed to determine the ownership of the new city. The distance from another city must be at least 2 squares.
@@ -533,7 +533,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-76. <details><summary>duplij-76 (N20) - Mod, Fix? — Click to expand</summary>
+76. <details><summary>duplij-76 (N20) - Combo? Fix?/Mod? — Click to expand</summary>
 
     - Status:
     - Description: A bypass has been made to the function that reset the auto-move order with command G if any other unit was encountered nearby; now this function is bypassed, provided that the meeting occurs with another nation with which the player has an alliance, peace, or cease fire and will enter the function with the reset of the order if there is a war, only contact without agreements, or no relations at all. Also added a limitation on destination point: if the auto-move ends in a place where another unit or city is located, then a one-time notification will occur, the auto-move order will be reset, and the unit will not hammer again and again into the same place as before until it spends all the moves (the limitation may not work with the Civ2UIA patch).
@@ -582,7 +582,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-83. <details><summary>duplij-83 (N27): (contains duplij-6 (L6)) - Mod, Feature? — Click to expand</summary>
+83. <details><summary>duplij-83 (N27) - Combo? Feature?/Mod?: (contains duplij-6 (L6)) — Click to expand</summary>
 
     - Status:
     - Description: The bonuses received from special resources in this modification have been changed; the attack and defense factors of many units, especially of the Modern Epoch, have been redefined, and several new technologies and units have been added. Interlayer technologies allow you to move a little faster when changing units with the rapid development of technologies. A value has been added for new technologies that will allow the AI to research them too (up to a maximum of 100 technology pieces can be added by default, but the AI will not research new technologies; you need to specify in the code the last two technologies up to which the AI will allocate funds from the budget for research; now these are Energy Transition and Mobile Warfare III, and by default it was Fusion Power and The Laser). To increase the cost of each new technology, you need to adjust the Tech paradigm parameter (higher # slows research) in the Rules.txt file, @Cosmic tag, by increasing the value (was 10 by default). This parameter was previously locked in the code to a maximum value of 10; now it is unlocked and can be increased in a new and current game. A new parameter, which is responsible for the maximum cost of the technology, has been added to the @Cosmic tag list.
@@ -610,7 +610,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-87. <details><summary>duplij-87 (N31) - Mod, Feature? — Click to expand</summary>
+87. <details><summary>duplij-87 (N31) - Combo? Feature?/Mod? — Click to expand</summary>
 
     - Status:
     - Description: All sorts of units have been added to the game, up to the maximum allowed by the game. In particular, two units are provided with the ability to transport units, one from the Industrial Revolution Epoch, an Airship, and the second from the Modern Epoch, a Heavy Cargo Aircraft (HCA). Previously, the game allowed only sea units to carry out transportation; a change has been made to the code for air units. So, in order for a unit to be transported, it is necessary to give it the order S (sleep), and in this state, fly on it with a transport unit, or vice versa, with the unit that needs transport, go under the air unit and press S.
@@ -631,7 +631,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
     </details>
 
-90. <details><summary>duplij-90 (N34) - Fix, Mod? — Click to expand</summary>
+90. <details><summary>duplij-90 (N34) - Combo? Fix?/Mod? — Click to expand</summary>
 
     - Status:
     - Description: The defense bonus for units with the AEGIS flag has been changed, i.e., against air strikes. From the description, it followed that the defense was increased by two times; in fact, it turned out that it was increased by three times; therefore, this flag has been brought into line with the description. Also, the defense of units with this flag against missiles has been reduced; previously, the defense was increased by 5 times, now it will be 4 times higher (except for the AEGIS cruiser, where it remains 5 times against missiles and 3 times against other aircraft). A 50% defense bonus has been added to the battleship when attacked by a missile.
@@ -750,7 +750,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-107. <details><summary>duplij-107 (N51) - Mod, Fix? — Click to expand</summary>
+107. <details><summary>duplij-107 (N51) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: A mechanism for calculating pollution has been slightly changed, now the construction of the Recycling Center, Hydro Plant, Nuclear Plant, Hoover Dam and Solar Plant will increase the calculation variable (divider) reducing pollution, rather than setting an exact value in it, also the Solar Plant now levels out pollution not by 100%, thus the relevance of building the Recycling Center after the construction of the Solar Plant remains. Hydro Plant or Power Plant reduces pollution by increasing the divisor by two, the Hoover Dam by three, the Recycling Center adds another four, and the Solar Plant increases the resulting value by six times. A large contribution to pollution (divisible) is made by the Factory, Manufacturing Plant, Power Plant, Hydro Plant, Nuclear Plant, Solar Plant (as manufacturing enterprises, the more production from squares, the more noticeable the effect), a small contribution is made by any improvement built in the city, of which Airport and Offshore Platform act on the divisor variable, reducing it (this will be especially noticeable if the city is small, but already has these improvements), and each new citizen makes his minimal contribution to pollution. Pollution starts to be calculated little by little after researching the Railroad, next strong polluter is the research of Industrialization, then Automobile, and finally Plastics. On average, 24 is subtracted from the calculated pollution so that small cities are not immediately covered in emissions (it was 20, but since there is more food in the game, the city can easily grow higher). If the city becomes an industrial center with production above 100, it may not cope with all the pollution, for such a center, it is better to keep the city size around 20-30 or dismantle some of the improvements. Solar Plant is corrected, now it gives +25% to production (in the original game, from the description it follows that the Solar Plant should give +50% to production, which it does not, but perhaps it should not be a separate improvement, but should be in a combination of Power Plant, Hydro Plant, Nuclear Plant, i.e. you choose to build one thing, but in the game this is not done either on purpose or they did not take this into account). The presence of pollution in a square will now significantly reduce the resource received (it was minus 1 resource; now it is minus 2 of any resource from the square).
@@ -764,7 +764,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-109. <details><summary>duplij-109 (N53): (contains duplij-5 (L5)) - Fix? — Click to expand</summary>
+109. <details><summary>duplij-109 (N53) - Fix?: (contains duplij-5 (L5)) — Click to expand</summary>
 
      - Status: duplij-5 (L5): fixed on OC2 main; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: disbanding a transport also disbands its passengers, including HCA air transport
      - Description: A bug that caused the entire stack of sea units to be deleted instead of just one has been fixed. This happened when disbanding sea units if there were more than one in one square. Now each ship will be deleted separately. When disbanding a Transport with units on board, all passenger units will also be disbanded. This also applies to air transport (Heavy Cargo Aircraft (HCA)).
@@ -792,7 +792,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-113. <details><summary>duplij-113 (N57) - Fix, Mod? — Click to expand</summary>
+113. <details><summary>duplij-113 (N57) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: A certain condition (what value 20 is responsible for is not yet clear), which led to the reset of the peace treaty with the AI player after some time, has been changed. The player did not notice this because, in diplomacy on his side, there was no reset, and in diplomacy, it was indicated that there was an agreement, but if you go for the AI and look at its status, it turned out that instead of peace, there was already just contact, so periodically, suddenly, the AI attacked the player. Now this condition is also tied to the vendetta; if there is such a flag, then the mechanism will be active, and then the variable responsible for the reputation will be connected. If the player who can be attacked has a reputation lower than Excellent, there is a probability of breaking the agreement; the lower the reputation, the greater the probability. I also tied in a variable responsible for power. If the difference is large, for example, the attacking side is Strong, and the one that can be attacked is Supreme, the mechanism will not work, but if the attacking side is Mighty, then it will work.
@@ -820,7 +820,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-117. <details><summary>duplij-117 (N61) - Mod, Fix? — Click to expand</summary>
+117. <details><summary>duplij-117 (N61) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: The cost of bribing a city with a spy has increased. Cost takes into account the distance from the capital, the size of the city, and the number of improvements built in it, and also checks for the presence of the Courthouse; if there is an improvement, the bribery cost increases by one and a half/two times. The government also contributes: if a bribed player has Communism, then a fixed value is used that determines the distance from the capital; if it is below a certain limit (10), then bribing under Communism will end up being more expensive. The final increase in the bribe turned out to be about 2-3 times. It is worth noting that the main parameter determining the cost of a bribe depends on the treasury of the bribed player; the more gold he has, the more expensive the bribe. Since the limit on the accumulation of gold in the treasury of players over 32,000 has now been removed, bribing can become quite expensive. In addition, I fixed the point that slightly changed the cost depending on the side from which the spy approached the city, if it was closer to the capital of the bribed player, the cost was higher, i.e. from the square where the spy was, it turned out that the distance check is not from the city, but from the unit that causes the action. As a result, I redid it so that the calculation was from the city. A similar bribery system is also for units, where the cost of a unit is multiplied by its distance from the capital, and further, if it is a settler, it is doubled. I almost did not touch this function, except for editing the minimum cost and the item related to communism. For some reason, in the unit function, it was checked not with the bribed side, but with the side of the player who wanted to bribe. I redid it in the same way as in the city function.
@@ -848,7 +848,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-121. <details><summary>duplij-121 (N65) - Fix, Mod? — Click to expand</summary>
+121. <details><summary>duplij-121 (N65) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: A mechanism that switches the cost of technology has been fixed. If the number of technologies of one of the players exceeds that of the other, then the cost of research for the player who has fewer of them is reduced by three times. This applies to both humans and AI. Previously, this mechanism did not work quite correctly. If a player was the first to research a specific technology, it is highlighted in white in the F6 window. Initially, starting cost of a technology for a player is lower than for AI at the Chieftain level by ~142%, at the Warlord level it is lower by ~60%, at the Prince level it is lower by ~17%, at the King level it is higher by ~9%, at the Emperor level it is higher by ~30% and at the Deity level it is higher by ~60%. Also, at a high difficulty level and after the 150th turn, the cost of a new technology is slightly reduced for the AI.
@@ -862,14 +862,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-123. <details><summary><del>dupe: duplij-123 (N67)</del> - Mod, Fix? — Click to expand</summary>
+123. <details><summary><del>dupe: duplij-123 (N67)</del> - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status: Duplicate; track via duplij-252 (SET9)
      - Description: The background of the communist and anarchist government in diplomacy has been changed; now, next to the portrait of the leader will be a star or a symbol of anarchy, instead of the previous icon of monarchy. Portrait of Frederick of the Germans has been replaced with Hitler (resource images 200, 203, 222 in the mk.dll file have been replaced with the eXeScope program).
 
      </details>
 
-124. <details><summary>duplij-124 (N68): (contains duplij-11 (L11), duplij-13 (L13), duplij-14 (L14), duplij-18 (L18)) - Mod, Fix, Feature? — Click to expand</summary>
+124. <details><summary>duplij-124 (N68) - Combo? Fix?/Feature?/Mod?: (contains duplij-11 (L11), duplij-13 (L13), duplij-14 (L14), duplij-18 (L18)) — Click to expand</summary>
 
      - Status: duplij-13 (L13): OC2 code appears not affected, would need more details or a recreate or a .SAV file to dig deeper; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: the other bundled tweaks (editing improvements on ocean squares, best defender for water cities, SAM/SDI defender firepower, deleting cities in any mode, AI capitalization exit, AI airport transfer rules, AI build priorities, damaged sea unit repair turns, AI carrier builds)
      - Description: Minor tweaks: Terrain defense bonus for air and sea units has been removed (now their terrain defense is always the same as that of a grassland or ocean); now you can change square type under a city in the editor, as well as edit improvements on ocean squares; added a check and selection of the best defender for a water city when attacking it; defenders in a city with SAM Missile Battery and SDI Defense have their firepower increased +1 in defense (except for ships in harbor, there is always 1); cities can now be deleted in any game mode (improved in future versions); fixed mechanism when exiting capitalization for the AI player; several air units in a fortress will now be destroyed en masse when attacked, not one by one; player can now see units in AI stack (except for the city) if they are nearby; AI has been given the same requirements for transferring units through airport as a human, and the AI is also prohibited from transferring units with zero moves; the priorities for building AI units and automation in cities have been slightly redefined; the minimum number of turns for a damaged sea unit has been increased from 2 to 3; in test files, the construction of carrier has been unlocked for the AI, however, as far as I understood, it does not know how to use them (their construction has a very low priority); and some other things.
@@ -946,7 +946,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-135. <details><summary>duplij-135 (N79) - Fix, Feature? — Click to expand</summary>
+135. <details><summary>duplij-135 (N79) - Combo? Fix?/Feature? — Click to expand</summary>
 
      - Status:
      - Description: Spelling errors in Civilopedia descriptions have been fixed; added "Effect of Roads: Trade: +1" description to Civilopedia when viewing terrain (tundra, forest, hills, mountains); unlocked 'Description' button when viewing Civilization Advances in Civilopedia.
@@ -974,7 +974,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-139. <details><summary>duplij-139 (N83) - Fix, Mod? — Click to expand</summary>
+139. <details><summary>duplij-139 (N83) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Several inaccuracies and bugs, that sometimes caused freezing, have been fixed; airship is now completely untied from the government (as it replaces fanatics) and is available in the game; barbarians/mercenaries should now appear on transports in the Modern Epoch.
@@ -1044,14 +1044,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-149. <details><summary>duplij-149 (N93): (contains duplij-21 (L21)) - Fix, Mod? — Click to expand</summary>
+149. <details><summary>duplij-149 (N93) - Combo? Fix?/Mod?: (contains duplij-21 (L21)) — Click to expand</summary>
 
      - Status: duplij-21 (L21): does not affect OC2; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: passing through allied units on Go To, the 'Long-distance' message and AI move limits, the hex option to disable passing through allies
      - Description: Tried to fix an inaccuracy in the 'Go To' auto-movement, where the transition at the place where the map was glued along the X coordinate was incorrect, and the units went in the opposite direction. This glitch appeared on round maps in which the Y coordinate exceeded the X coordinate, i.e., on all regular maps, which, when created, are designated as 50x80, etc. In fact, the X size in the game then doubles. I did not find a specific reason, which, in my opinion, was strange and incomprehensible; I just removed one of the checks that filtered out the movement of the unit to the new coordinate. After changing it, units began to move more or less normally, crossing the border as they should. However, it is possible that this can cause some problems, for example, an increase in units getting stuck, which already happens when moving, or other glitches, so for now, this is a test version (actually fixed in version 1.15). Overall, the Go To movement is still pretty bad, especially for ships and infantry units that need to respect terrain restrictions. Ships often take longer routes, especially if there are a lot of bends and narrow straits to their final destination, and occasionally get stuck. The ability to pass through allied units when auto-moving via Go To has been added, both for the player and the AI. Sometimes it happens that a message about 'Long-distance' pops up. To activate it, a unit must make 51 moves approximately in one direction or less, if back and forth (about 4 moves without taking into account the contribution of normal moves), then the game seems to understand that the unit probably cannot pass and gets stuck. There is a special limit for AI to make a maximum of 20 (25) moves, so they do not move very far along the railway. If instead of 75 09 you put 90 90 in two places, 92 F5 FF 85 C0 75 09 and here 8C F5 FF 85 C0 75 09, then this will cancel the ability to pass through allies on auto-move for both the player and the AI.
 
      </details>
 
-150. <details><summary>duplij-150 (N94): (contains duplij-24 (L24)) - Fix? — Click to expand</summary>
+150. <details><summary>duplij-150 (N94) - Fix?: (contains duplij-24 (L24)) — Click to expand</summary>
 
      - Status: duplij-24 (L24): fixed on OC2 main; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: Advisors window line layout, Democracy shown under Communism, text file fixes
      - Description: Arrangement of text lines in the window called from the 'Advisors' menu has been optimized. An error has been corrected when under the Democracy, the line Republic was displayed in this window, and under Communism - Democracy; several errors in text files have been corrected.
@@ -1114,7 +1114,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-159. <details><summary>duplij-159 (N103): (contains duplij-25 (L25), duplij-34 (L34)) - Feature? — Click to expand</summary>
+159. <details><summary>duplij-159 (N103) - Feature?: (contains duplij-25 (L25), duplij-34 (L34)) — Click to expand</summary>
 
      - Status:
      - Description: Several variables have been moved to the Rules.txt file under the @Cosmic tag to reduce the number of nested executable files. Now you can set the ability to steal technologies, the global warming limit, as well as the level of AI pollution and city emissions there. In addition, the end-of-game date has been displayed, which can be replaced with your own (after completing the game and choosing to continue playing, a certain flag is set that changes some of the AI's actions, for example, the AI will not build a Spaceship, even if no one has built or launched a Spaceship by the end of the game). The date option in the Civ2UIA patch is now disabled, because it began to cause an error. The level of global warming is calculated approximately as follows: all squares with a pollution icon are counted, cities with a built 'Recycling Center' (previously Solar Plant) are subtracted from them. If the value is negative, global warming is not threatened; if positive, another variable is increased by one each turn, with which the comparison is made. When a critical value is reached, a message appears about the approaching global warming. Somewhere, the transition will occur in two turns, and global warming will be inevitable. Thus, between the appearance of the message about global warming and the process itself, there are about two or three turns to try to do something and prevent it. After the first global warming, another variable increases by four, which adds an increase in range to the calculation. The next global warming will occur when the same limit is reached plus four. Another +4 will be added thirty times to subsequent warmings, and so on up to the maximum limit of 120. If more than one human player is involved in the game, then all pollution is divided by the number of human players. AI, as you can see, was almost not involved here, because its cities emit no pollution by default. With the AI pollution option enabled, emissions will increase.
@@ -1142,7 +1142,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-163. <details><summary>duplij-163 (N107): (contains duplij-23 (L23)) - Mod, Fix? — Click to expand</summary>
+163. <details><summary>duplij-163 (N107) - Combo? Fix?/Mod?: (contains duplij-23 (L23)) — Click to expand</summary>
 
      - Status:
      - Description: Capitalization check for the AI player has been improved. Now if AI has less than 4 units in the city, and also every three turns this mode will be reset and its necessity will be analyzed anew; slightly changed priority for several units that AI builds (decreased for Missiles, increased for Air Defense System and Converter); @GAPE tag in Game.txt about the presentation of a new technology has been corrected (for some reason, the code indicated that its appearance is active for AI players, I remade it for human players, the conditions for its appearance are: the presence of contact, the absence of war, alliance, embassy built by Marco Polo's Embassy and United Nations, the presence of an unresearched technology by the player); ransom received for captured barbarian leader has been reduced by half (paragraph 32).
@@ -1170,14 +1170,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-167. <details><summary>duplij-167 (N111) - Mod, Fix? — Click to expand</summary>
+167. <details><summary>duplij-167 (N111) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Capitalization and Spaceship parts have been transferred from the category of wonders to the category of city improvements, which will affect the penalty when switching production; railways on ocean squares have been fixed, which are energy receivers, now they will not give a bonus of moves to units landing from sea transport (mercenaries have been added to the exception to have the ability to quickly attack).
 
      </details>
 
-168. <details><summary>duplij-168 (N112): (contains duplij-15 (L15)) - Mod, Feature? — Click to expand</summary>
+168. <details><summary>duplij-168 (N112) - Combo? Feature?/Mod?: (contains duplij-15 (L15)) — Click to expand</summary>
 
      - Status:
      - Description: Ability to transport units not only by sea or air transport, but also by land, has been added; one-time profit from organizing a trade route between cities has been reduced; value of some goods has been slightly changed (Rules.txt file, @Caravan tag); if there are trade routes between two nations and a war begins, profit from such trade routes will be reduced by four times during the war; city growth will now occur immediately as soon as food exceeds the limit without skipping a turn; a square with an airbase will now give only a basic resource, and not like a city; paratroopers can land from a Heavy Cargo Aircraft (HCA), provided that it has not moved during new turn; removed the ability to search for a city on a unexplored map due to lack of map centralization; coordinates and object number will not be displayed on unexplored territory; built units of Sputnik and UAV (Unmanned Aerial Vehicle) type will not cause unhappy citizens under Republic/Democracy (linked by line number at @UNITS tag, Rules.txt file); after researching Genetic Engineering, infantry units outside the city will recover +2 points to health faster; description of the unit recovery process has been added to the Civilopedia -> Game Concepts -> Unit Recovery; several errors and inaccuracies have been corrected.
@@ -1205,7 +1205,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-172. <details><summary>duplij-172 (N116) - Mod, Feature? — Click to expand</summary>
+172. <details><summary>duplij-172 (N116) - Combo? Feature?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Another parameter has been added to the Rules.txt file, the @Cosmic tag, allowing use of the new unit exhaustion system. By default, this option is enabled (it can be disabled). A detailed description of how it works is in the Civilopedia -> Game Concepts -> Unit Exhaustion or at the end of the Describe.txt file. Sea and air units, with exhaustion enabled, can use fortification mode to recover; however, they will not receive an actual defense bonus from it.
@@ -1226,7 +1226,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-175. <details><summary>duplij-175 (N119): (contains duplij-38 (L38)) - Feature, Mod? — Click to expand</summary>
+175. <details><summary>duplij-175 (N119) - Combo? Feature?/Mod?: (contains duplij-38 (L38)) — Click to expand</summary>
 
      - Status:
      - Description: A variable has been added to the Rules.txt file, @Cosmic tag, prohibiting or allowing the destruction of units in a stack one by one, as in a city or fort (by default, the parameter prohibits destruction one by one). An ability to attack ground units in a stack, if they are covered by some air unit, has been added. The most protected unit will be selected first (a built-in procedure is used to find the best defender, no matter what type, similar to an attack on a city). If only air units remain in the stack, then they will no longer be able to be attacked by a ground unit. If an air transport, such as an HCA, hovers over land with units on board, it will not be possible to attack it, provided that the HCA is the main one in the stack, but if other units are in the stack, then such a block may not work.
@@ -1240,7 +1240,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-177. <details><summary>duplij-177 (N121) - Mod, Feature? — Click to expand</summary>
+177. <details><summary>duplij-177 (N121) - Combo? Feature?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: The global warming system, with the transformation of squares into other terrain types, has changed. Another climate change scenario has been added - global cooling. A number of conditions have been added to these scenarios that change the terrain of squares more smoothly with each new wave, forming areas of the same type. Ultimately, with global warming, with each new wave, there will be more and more deserts, and with global cooling, glaciers. A parameter has been added that allows, in addition to changing the terrain, to change part of the ocean coastal squares during global warming into oceans, during global cooling into glaciers, as well as a parameter that allows you to remove all pollution from the map after each wave of climate change. You can select a scenario and settings parameters in the Rules.txt file, @Cosmic tag. A more detailed description of the new climate change mechanism in Civilopedia -> Game concepts -> Global Warming/Cooling (advanced); @GLOBALCOOLING tag has been added to the Game.txt file.
@@ -1303,14 +1303,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-186. <details><summary>duplij-186 (N130) - Mod, Fix? — Click to expand</summary>
+186. <details><summary>duplij-186 (N130) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Minor text edits; accidentally deleted Civ2Art.dll file returned, which allows displaying videos and correct display of a window with animation of the High Council; four more tracks from the Conflicts in Civilization add-on have been added.
 
      </details>
 
-187. <details><summary>duplij-187 (N131): (also see duplij-26 (L26), duplij-27 (L27)) - Feature? — Click to expand</summary>
+187. <details><summary>duplij-187 (N131) - Feature?: (also see duplij-26 (L26), duplij-27 (L27)) — Click to expand</summary>
 
      - Status:
      - Description: Playback of music tracks will now be interrupted during Consult High Council, diplomatic screen, playback of a video about a completed wonder, and exit to the menu. An additional trigger has been added to start a music track when pressing any command button or performing any action. A button has been displayed at the top of the map on the left, allowing you to randomly start another track, interrupting the previous one. If music is turned off via the @Cosmic tag in the Rules.txt file, the button will not be displayed.
@@ -1338,14 +1338,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-191. <details><summary>duplij-191 (N135) - Fix, Mod? — Click to expand</summary>
+191. <details><summary>duplij-191 (N135) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: The condition under which AI players changed their attitude towards another player if he dominated has been fixed. The limitation was set after the 250th turn (instead of the default 200th). Also, a condition for checking an alliance between the dominant player and another player has been added; if there is an alliance between them, then the check is bypassed. Thus, the player's attitude should not change towards a strong player if there is an alliance between them and one of them has moved to the dominant category. Added a description of "Domination" to the Civilopedia -> Game Concepts, with all the conditions that must be met for domination to work.
 
      </details>
 
-192. <details><summary>duplij-192 (N136): (contains duplij-39 (L39), duplij-40 (L40)) - Feature, Mod, Fix? — Click to expand</summary>
+192. <details><summary>duplij-192 (N136) - Combo? Fix?/Feature?/Mod?: (contains duplij-39 (L39), duplij-40 (L40)) — Click to expand</summary>
 
      - Status:
      - Description: Minor edits: The minimum value of "Communism is equivalent of this palace distance" item, that can be set in the Rules.txt file, @Cosmic tag, has been changed from 1 to 0, so that communism can be completely corruption-free; glacier and tundra have been removed from all sides of the map border, border is edged now only by the ocean (as a result, there is no glacier on random maps); probability of rivers appearing on the map during world formation has been slightly increased, in addition to the world size and humidity variables involved in calculating the number of rivers, a temperature variable has been added (by default, a river appears only on a plain/grassland, forest/jungle/swamp); icon display of the launch file in the upper left corner, when registering the main window, has been fixed. Now loading of the first ICON resource image is explicitly specified in the program (applies to all civ2 and civ2map exe files); a bug where the AI did not found cities well, or could not do it at all, has been fixed; names of cities founded by barbarians will be taken from the @EXTRA tag (CITY.TXT file).
@@ -1387,21 +1387,21 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-198. <details><summary>duplij-198 (N142): (also see duplij-43 (L43), duplij-44 (L44)) - Feature? — Click to expand</summary>
+198. <details><summary>duplij-198 (N142) - Feature?: (also see duplij-43 (L43), duplij-44 (L44)) — Click to expand</summary>
 
      - Status:
      - Description: The window used in the Civilopedia has been slightly increased vertically from 640x400 to 640x480. Display parameters for text lines of titles have been adapted to the new window sizes, taking into account the output of 12 lines instead of 9. The Improvements.gif file has been added to the Pictures folder, from which small images will be taken in Civilopedia, and sometimes in the game itself during certain events or actions. When using this file, a window in Civilopedia will be increased to 700x600 in order to better accommodate the new images. If you delete this file, the game will only use thumbnails from the ICONS.GIF file with a window size of 640x480, so the player can choose between the old look and the new one.
 
      </details>
 
-199. <details><summary>duplij-199 (N143) - Feature, Mod? — Click to expand</summary>
+199. <details><summary>duplij-199 (N143) - Combo? Feature?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: A parameter that allows you to set financial assistance to AI players has been added to the Rules.txt file, @Cosmic tag. After I enabled the AI improvement maintenance cost, its game quality dropped; this parameter can help. The parameter allows you to add gold to AI players depending on the sum of indicators (turns completed, number of cities and their size, units and their power) adjusted for odds and divided inversely proportional to the difficulty level of the game. More details in Civilopedia -> Game Concepts -> Complicator or in the Describe.txt file.
 
      </details>
 
-200. <details><summary>duplij-200 (N144): (contains duplij-8 (L8)) - Feature, Fix, Mod? — Click to expand</summary>
+200. <details><summary>duplij-200 (N144) - Combo? Fix?/Feature?/Mod?: (contains duplij-8 (L8)) — Click to expand</summary>
 
      - Status:
      - Description: Two parameters 'Treasury' and 'Final Balance' have been moved to the Wealth Distribution window (Shift+T) for greater clarity and assessment of the situation when distributing budget allocations; auto-close time for many windows has been increased; colored pixels have been added to explosion animation during the battle (ICONS file); the Elite line and general support for up to 910 text lines have been added to the Labels.txt file; the @CITYRAZE, @BOND0072 and @PROMOTED2 tags have been added to the Game.txt file; an inaccuracy has been fixed where a spy with an invisibility flag could take missiles from the city; empty barbarian ships far from the city will no longer stand still for a long time, but will immediately disappear; city support for specialists has been increased to 48; behavior of AI transport ships when transporting units has been improved; several checks have been added to improve the movement of AI units on the map; other various fixes.
@@ -1429,7 +1429,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-204. <details><summary>duplij-204 (N148) - Feature, Mod? — Click to expand</summary>
+204. <details><summary>duplij-204 (N148) - Combo? Feature?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: A mechanism for selecting your unit from a square in which an ally unit is also located has been improved. Now the player's unit will automatically become first in the list when you right-click. Now all units located in the same square, even those of different players, will be displayed in the left window of the information panel when you select at least one or hover over it. Transport ships can now transport allied units. To do this, the allied unit must be stationary in the square and must have the S order. When moving an air transport to it, the unit will be automatically loaded on board. Similarly, you can send your unit to an ally's sea transport near the shore. Such transportation does not provide visibility of movement after loading, since the leading unit-carrier has the main view, so you will have to track your unit yourself, as a passenger; visibility of movement of allied units has been added along those sections of the map that were previously opened by the player (to speed up the movement, you can press and hold SHIFT during a turn of other players); visibility of mercenaries/barbarians movement has been removed (except for the first two easiest difficulty levels), now any enemy units will be visible only next to player's units, or in open areas of the map near cities at a distance of three or less squares (four squares after researching Mobile Forces technology).
@@ -1485,7 +1485,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-212. <details><summary>duplij-212 (N156) - Feature, Mod? — Click to expand</summary>
+212. <details><summary>duplij-212 (N156) - Combo? Feature?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: The ability to set the Long-range Strike attribute to units has been added. For this purpose, a corresponding column has been added to the @UNITS tag of the Rules.txt file. More details about this mechanism can be found in Civilopedia -> Game Concepts -> Long-range Strike. In this version, the unit's hit points and firepower variables have been added to the final calculations for choosing who will strike in a battle, the attacking or defending unit, in addition to the attack and defense factors. This will probably change the result slightly, since, for example, a damaged unit will be slightly weaker than before, and a unit with high firepower will become stronger in any role. More details on this in Civilopedia -> Game Concepts -> Battle Calculation.
@@ -1506,14 +1506,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-215. <details><summary>duplij-215 (N159) - Fix, Mod? — Click to expand</summary>
+215. <details><summary>duplij-215 (N159) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Other fixes: A visible overview at the start of the game is brought into line with the new city boundaries; white frame of the city boundaries when activating Show Map Grid is expanded to the new city sizes, taking into account the additional squares; barracks in the city will no longer fully restore a damaged ground unit on the next turn, if unit has a damage level of approximately more than half of its Hit points; units with an invisibility flag cannot establish contact, the same applies to units with domain 3 (except for the Converter); the Converter can now be transported by Transport, same applies to the Radar; if a hidden infantry unit has a Ignore zones of control flag (spy), then any ground unit relative to it will also not have zones of control, thus it will be more difficult to detect the invisible unit; the AI will now build an Explorer (previously, the last slot where it was moved, did not participate in calculation of the unit selection for construction); in ICONS.BMP file of the HighColor folder, areas of frames that are loaded in the game, but not used, are marked with numbers (a mark is needed so that a warning about an incorrect color table does not appear when they are loaded in the smeds.log file when starting civ2hc version; a number of SendToConnections: FAILED on send to connection warnings that can be displayed in the smeds.log log has been significantly reduced (warnings for a section of the network game that should not be active in a regular game); remaining music tracks from the Expansion Packs have been added; autosaves will now be placed in the Save folder by default; brief information about the modification, in form of vertical moving lines from the modific.txt file, has been added to Civilopedia -> About Civilization II; picture of Fortress and Airbase has been changed.
 
      </details>
 
-216. <details><summary>duplij-216 (N160) - Fix, Mod? — Click to expand</summary>
+216. <details><summary>duplij-216 (N160) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Several errors have been fixed (fixed placement of citizens in the city on the central and processing squares when city's population grows or decreases; random event variables moved to a new location, since previous ones could be erased, giving an empty window; ability to expel spies and diplomats from your territory, if there is allied relationship between the players, has been returned); the procedure for bribing cities has been redesigned, with an increase in cost, depending on the presence of improvements, wonders, units and some researched technologies in the city, the procedure for bribing units has been improved. If a nation of the bribed city has Anarchy form of government, cost of bribing will be lower, and if Fundamentalism, then higher; a detailed description of bribery has been added to Civilopedia -> Game Concepts -> Bribery; when bribing or capturing a city, the remaining units from this city will remain at the disposal of the previous owner if they are located at a distance of no more than two squares from the city, while their support from this city will be removed; file WONDER05.AVI (Oracle wonder) has been replaced with a corrected one (previous one could have displayed a frame unpacking error message while playing the game); text limit in Describe.txt file expanded from 4095 to 10240 characters in a single @@ tag.
@@ -1527,7 +1527,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-218. <details><summary>duplij-218 (N162) - Fix, Feature? — Click to expand</summary>
+218. <details><summary>duplij-218 (N162) - Combo? Fix?/Feature? — Click to expand</summary>
 
      - Status:
      - Description: Several bugs have been fixed (fixed display of resource collection in the city on the central square when converting all citizens to specialists, with subsequent starvation and decreasing size of the city; fixed retention of units transported in water (ocean/river square) by AI transport ships, if they switch to fortification mode on board; fixed game crash when @FINDCITY window was opened while there were more than 535 cities in the game; fixed an error in Game.txt file, @CITYRAZE tag, with the lack of outcome choice; fixed an error introduced in version 1.16 after increasing the count of islands and continents, which could lead to deterioration of AI behavior); in Random Events, Fortress will no longer be created on ocean squares. 'Positive' improvements for Random Events can now appear on squares with a river; improvements that AI players periodically receive on squares without actually processing them, will no longer appear in the Ocean, except when this happens in Random Events; variable responsible for the counter of selecting the name of a new city from the CITY.TXT file has been expanded, now it is not a byte, but a word. When exceeding 255 cities, the list will not start over, but will be continued if there is a free text list of city names; zeroing of the variable responsible for selecting name of a new city from the CITY.TXT file has been added, now after exiting the current game in the menu and starting a new game, new cities will start from the beginning of the list, and not from the continuation of the list from the previous game; if you buy Settlers at city size 1, then the resulting settlers will always be without binding to the city, and the city itself will be disbanded; received unit in the Hut will always be without binding to the city; if in random events, that affect the population size, decrease exceeds the size of the city, then you can set the outcome scenario, either city is destroyed, or remains with a negative size and zero support, but can quickly grow to a positive size (Random Events parameter in Rulex.txt file, @Cosmic tag); the variable that takes into account existing, under construction and destroyed units, has been expanded from a byte to a double word (when pressing F2 Statistics/Casualties), now the values will not be reset when reaching 255; removal of a worker from a water city square has been added to the barb files, when an enemy unit, such as a ship, is in the city limits; the scenario editor has been improved to correctly account for the added variables when transferring - Long-range Strike, MODERN NEW (Ultramodern) city style and Domain 3 for units, the transfer of added effects from the Rules.txt file, @Cosmic tag remains unrealized, they need to be transferred to the created scenario manually; autosave has been improved, if it's a regular game, saves will now be written to the Save folder, and if a scenario, to the running Scenario folder. Support for searching BMP/GIF files not only in the current folder, but also in the root folder, has been added. (27/04/25) An error with establishing contacts when meeting ground units has been fixed. Contacts can be made by all ground units (except Spy), Converter, and sea units when encountering a city. A bug in the original game, where an air unit could contact a city in which there are no units, has been fixed.
@@ -1583,14 +1583,14 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-226. <details><summary>duplij-226 (N170): (contains duplij-47 (L47), duplij-48 (L48), duplij-52 (L52)) - Fix, Mod, Feature? — Click to expand</summary>
+226. <details><summary>duplij-226 (N170) - Combo? Fix?/Feature?/Mod?: (contains duplij-47 (L47), duplij-48 (L48), duplij-52 (L52)) — Click to expand</summary>
 
      - Status: duplij-47 (L47): OC2 code appears not affected, would need more details or a recreate or a .SAV file to dig deeper; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: the other fixes and features (Civilization Advances tree, Metrology rename and epochs, TUTORIAL.SAV removal, bold BUSY, Seal renamed Walrus, credits and title images, red UNHAPPY message, red disorder flag, larger High Council window, civ2hc colors, show allies' moves option, EDITTECH Cancel fix, Describe.txt fixes)
      - Description: Several bugs have been fixed, including the issue with the Civilization Advances tree, which is now functioning correctly. The technology previously known as Precision Measurement has been renamed to Metrology. Additionally, the technological epochs for both the Machine Tools and Metrology technologies have been corrected. The TUTORIAL.SAV file has been removed, as it was incompatible with the mod; the tutorial scenario is based on this file. The tutorial is available in any game by enabling the "Tutorial Help" option in the Game Options menu. The word BUSY displayed in the city's Resource Map is now bolded, and the black frame surrounding this square has been removed. The name of the Seal special resource has been changed to Walrus. New ACREDITS and SCREDITS images (in BMP and GIF formats) have been added when selecting About Civilization II in the Civilopedia menu and viewing internal options (View Credits). A TITLE image (also in BMP and GIF formats) has been added to the initial game launch window. These files are optional and can be deleted if desired, restoring the previous view. The city window will now display a red text message reading "Citizens are UNHAPPY!" instead of just "Citizens" when the number of dissatisfied citizens surpasses the number of satisfied citizens. This change makes it easier to identify when a city is experiencing disorder. The color of the disorder city flag on the world map has been changed back to red. Slightly increased the size of the "Consult High Council" window and enlarged the font size of the displayed text. The color in various windows was adjusted when using the civ2hc.exe file. A negative ID error that occurred when the entire map was revealed, specifically when a unit was positioned at coordinates 0, 0, has been fixed. This issue previously caused map distortion or crashes. A "Show allies' moves on the Open Map." option has been added to the Game Options, allowing you to show or hide allied moves on player-opened map sections. The accounting for technologies selected through the EDITTECH editor has been adjusted. Previously, selecting technologies individually, then clicking the "Give/Take All" button, and then closing the window by clicking "Cancel" would duplicate unlocked technologies. The variable accounting for the player's unlocked technologies would display incorrect values until updated. Now, clicking "Cancel" will completely recalculate unlocked technologies. Finally, the descriptions for certain variables in Describe.txt have been corrected for both the Russian and English versions.
 
      </details>
 
-227. <details><summary>duplij-227 (N171): (contains duplij-46 (L46)) - Fix, Mod, Feature? — Click to expand</summary>
+227. <details><summary>duplij-227 (N171) - Combo? Fix?/Feature?/Mod?: (contains duplij-46 (L46)) — Click to expand</summary>
 
      - Status: duplij-46 (L46): fixed previously in OC2; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: Uranium supply/demand changes, renamed goods (Meat, Jewelry, Fuel), trade-offer generation from city terrain, Food route limit and amount, cancelling trade routes
      - Description: A fix has been implemented to accurately calculate trade goods, such as dye and copper, in the Demand category. Uranium can now appear when determining the second good in the Supply list based on city coordinates. Some product names have been changed to be more general, such as Beads being renamed to Meat, Gems to Jewelry, and Oil to Fuel. Uranium demand has been reduced tenfold, yet it remains at a significantly elevated level. Additionally, the mechanism for generating trade offers in cities has been updated. The list of trade offers will now be influenced by the resources within the city's borders, as well as the type of terrain within them. For more details, please refer to the Civilopedia under Game Concepts -> Trade and Trade Routes. The number of Food trade routes a city can accept from other cities is now limited to 10 (the limit is tied to the variable "# of rows in food box \* 2"). The amount of food a Food route will transfer has been increased from 1 to 2. If a city's surplus is less than 2 units of food, the created merchant in that city will not have the option to select Food Supplies as a trade good. The ability to cancel trade routes in cities has been added. To do this, click on the trade route in the city window and select the desired option in the new window.
@@ -1604,7 +1604,7 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-229. <details><summary><del>dupe: duplij-229 (N173)</del> - Fix, Feature? — Click to expand</summary>
+229. <details><summary><del>dupe: duplij-229 (N173)</del> - Combo? Fix?/Feature? — Click to expand</summary>
 
      - Status: Duplicate; track via duplij-253 (SET10)
      - Description: Fixed the issue with technology where unlocking Tactics should grant Cavalry units in huts. Corrected the information window display to show the unit icon properly after unlocking Explosives with an Engineer, or Robotics with a Converter. Empty barbarian ships are now deleted immediately to prevent repeated landing messages when they linger near a city. Added the option to declare war through diplomacy, provided the player is not under a Republic or Democracy government, and the opponent does not have the Great Wall or United Nations wonders. Alternatively, if the player controls the United Nations, war can also be initiated with Senate approval, regardless of government type. The AI may attempt to appease you by offering tribute, such as gold or technology. You can choose to accept this offer or reject it by declaring war. The @DIPLOMACYMENU tag has been updated with a new entry, and the tags @THREATWAR(2) and @THRWAR(0,1,2) have been added to the Game.txt file; the @ALMOSTWONDER message has been updated to accurately reflect the production bonuses the AI receives.
@@ -1618,21 +1618,21 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-231. <details><summary>duplij-231 (N175) - Mod, Fix? — Click to expand</summary>
+231. <details><summary>duplij-231 (N175) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: AI construction priorities for Mass Transit, Recycling Centers, and Solar Plants have been slightly increased; the clickable area for selling buildings in the city window has been narrowed; the condition for unilaterally terminating agreements has been updated; a new check of the player's relations level (when possessing the UN) ensures the @ACCURSEDUN message is not always shown during diplomatic contact; saving and loading of discovered technologies is now supported, so the F6 window accurately records and highlights the first discoveries in white color; background music volume has been slightly reduced; after the first warming event, water improvements such as aquazones and aquafarms are now only partially removed rather than entirely erased. Terrestrial improvements are eliminated from all squares that undergo terrain changes (for example, a grassland converted to a swamp will lose its farm and irrigation); the irrigation texture will now be applied before the river texture, rather than after, and will thus not hide the river on the landscape; dithering on the border between open and hidden map areas (black spots) has been removed
 
      </details>
 
-232. <details><summary>duplij-232 (N176): (contains duplij-49 (L49)) - Feature, Mod? — Click to expand</summary>
+232. <details><summary>duplij-232 (N176) - Combo? Feature?/Mod?: (contains duplij-49 (L49)) — Click to expand</summary>
 
      - Status:
      - Description: The white highlighting frame on the map can now be moved with the keyboard even after all units have completed their turns; In random events, when a city is destroyed, a settler (engineer/converter) will now be able to appear on the site of the destroyed city; The connections and interdependencies for a number of @Civilize technologies have been changed in the rules.txt file; The probability of catching enemy spies when committing various types of sabotage in the cities of players with Communism and Fundamentalism will be slightly higher; The city's accumulated production, which could remain after the completion of a project (wonder of the world) by other players, will no longer be reset, but there will be a gradual decrease in accumulated shields until the production is changed to a new one or capitalization; Airships and Helicopters can be attacked if they missed a turn and did not move, thus it will be assumed that they landed this turn; Added technology tree file tech_tree.png (item 176 added 14/02/26)
 
      </details>
 
-233. <details><summary>duplij-233 (N177) - Fix, Mod? — Click to expand</summary>
+233. <details><summary>duplij-233 (N177) - Combo? Fix?/Mod? — Click to expand</summary>
 
      - Status:
      - Description: Several bugs have been fixed - stuck AI missiles near cities will now move into the city. Fixed the Helicopter spawning for mercenaries before players have unlocked the necessary technologies. Fixed the spawning of a pillbox unit for mercenaries on land; Added the ability to enter your city if an allied unit is located there; Added a description of how a target for a nuclear attack is selected to the Civilopedia, under the "Target Attractiveness Evaluation" section; The sale price of constructed buildings has been reduced by 10%, and the income from the sale will now be 90% of the invested shields instead of 100%; Network variables responsible for units have been increased to the new effective unit limit (5226 units); When the map scale is reduced to -3 or less, the rendering of units while moving will be disabled to avoid graphical distortions
@@ -1674,35 +1674,35 @@ NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it 
 
      </details>
 
-239. <details><summary>duplij-239 (N183): (contains duplij-53 (L53)) - Mod? — Click to expand</summary>
+239. <details><summary>duplij-239 (N183) - Mod?: (contains duplij-53 (L53)) — Click to expand</summary>
 
      - Status:
      - Description: Resource 219 has been added to the mk.dll file as an image of Attila, which will now be displayed in the diplomacy window when interacting with barbarians/mercenaries. The images for the leaders Louis XIV and Joan of Arc (229 and 250) in the diplomacy window have also been changed to look more like the originals, instead of the previous ones, which were the same for the Greeks and the French.
 
      </details>
 
-240. <details><summary>duplij-240 (N184): (contains duplij-54 (L54)) - Feature? — Click to expand</summary>
+240. <details><summary>duplij-240 (N184) - Feature?: (contains duplij-54 (L54)) — Click to expand</summary>
 
      - Status:
      - Description: The MsgWaitForMultipleObjectsEx procedure has been implemented in all civ2.exe modification files to reduce the load on the processor core, which adds a 1ms delay while waiting for new messages; The compatibility of the modification with the Civ2UIA patch up to version 1.22.2.3564 has been improved in terms of the first three executable files.
 
      </details>
 
-241. <details><summary>duplij-241 (N185) - Fix, Feature? — Click to expand</summary>
+241. <details><summary>duplij-241 (N185) - Combo? Fix?/Feature? — Click to expand</summary>
 
      - Status:
      - Description: Fixed the implementation of MsgWaitForMultipleObjectsEx to reduce CPU load when no messages are present (fixed a bug that caused audio distortion or lag; added thread suspension during idle wait cycles - one such cycle occurred during combat while waiting for explosion animation changes; reworked the message polling procedure for network mode so windows no longer lag or lose connection during multiplayer games); MsgWaitForMultipleObjectsEx has also been implemented in the civ2map.exe file; Menu audio (menuloop and menuend) switched to the PlaySound procedure for high-quality playback (an excellent choice when audio mixing isn't required); other audio fixes (when loading a scenario with a menuloop sound, it now starts playing, when exiting a scenario or multiplayer game, the standard menu sound now plays). Added playback of the unused sound `pompcirc.wav` when the Throne Room window appears during the event.
 
      </details>
 
-242. <details><summary>duplij-242 (N186): (contains duplij-35 (L35)) - Feature? — Click to expand</summary>
+242. <details><summary>duplij-242 (N186) - Feature?: (contains duplij-35 (L35)) — Click to expand</summary>
 
      - Status:
      - Description: Introduced a parameter in the @Cosmic tag in the rules.txt file that controls the ability to build Nuclear weapons in cities; adjusted variables to account for this parameter when creating scenarios. Added the corresponding line in the @EDITCOSMIC tag in the debug.txt file; The @NOCITY tag has been added to the game.txt file.
 
      </details>
 
-243. <details><summary>duplij-243 (N187): (contains duplij-55 (L55)) - Fix? — Click to expand</summary>
+243. <details><summary>duplij-243 (N187) - Fix?: (contains duplij-55 (L55)) — Click to expand</summary>
 
      - Status: duplij-55 (L55): fixed on OC2 main; see https://github.com/richardpenman/civ2/issues/24#issuecomment-6817643124; still unresolved: civ.ini read/write in the game folder, Simultaneous/MaxPlayers fields, MusicAndSoundVolume, Load/Scenario dialogs opening in the game folders, multiplayer crash, XDaemon.dll socket buffer
      - Description: Fixed how the game handles the civ.ini file. It now reads from and writes to the game folder instead of the Windows system folder. Fixed several fields that the game was recording incorrectly after reading a specified parameter into them (Simultaneous and MaxPlayers). All existing parameters are included in the file, and a new one, 'MusicAndSoundVolume', has been added, allowing you to set the volume level for music and sounds before starting a new game; When starting the game and selecting the "Load a Game" or "Begin Scenario" options, the window that opens will now point directly to the relevant folders within the game directory, rather than defaulting to the "Documents" folder; An issue causing crashes in multiplayer mode has been fixed; additionally, a patch has been implemented in XDaemon.dll that sets a fixed size for the socket buffer; Fixed a rare bug in a calculation related to the Civilizations array that produced a negative value, causing data in preceding memory locations to be overwritten. This often reset City Improvements names to null or filled them with garbage data, frequently leading to a crash.
