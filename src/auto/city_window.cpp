@@ -1,6 +1,7 @@
 /* The game, cities: the city window (its panels, buttons and menus): functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 /* 00500e00 auto */
 /* Library Function - Multiple Matches With Different Base Names
@@ -1863,6 +1864,9 @@ void CityWindow::draw_food_box(int blit)
     arg_x = food_box_rect;
     box_w = (iptr)label_string(label_table.string_ids[0x2b]);
     gfx_draw_text_centered((const char *)box_w,arg_x,arg_y,width);
+    if (extra_ui(X_TURNS_LEFT))   /* the turns to growth on the title's line */
+      extras_city_turns(this,1,food_box_rect + (width + text_style.font->text_width((const char *)box_w)) / 2,
+                        food_box_rect + width - scale(4),food_box_rect_top);
     box_w = scale(0xb7);
     box_h = scale(0x93);
     arg_y = scale(0xf);
@@ -1933,6 +1937,11 @@ void CityWindow::draw_food_box(int blit)
       extent = scale(2);
       city_draw_hline(box_rect.left + extent,icon_x,row_spacing,arg_y);
     }
+    /* (port) HD graphics: the box as a meter, on the plane */
+    hd_stock_meter((DibSurface *)&city_wnd.window,&box_rect,cities[city_index].food_box,
+                   (cities[city_index].size + 1) * city_calc.food_box_rows,
+                   (city_has_improvement(city_index,IMP_GRANARY) || civ_has_wonder(cities[city_index].owner,WONDER_PYRAMIDS)) ?
+                   (cities[city_index].size + 1) * ((int)(uint)cosmic.food_box_rows >> 1) : 0,1);
     if (blit != 0) {
       wnd_blit_surface_rect(((RECT *)&food_box_rect));
     }
@@ -2002,6 +2011,9 @@ void CityWindow::draw_production(int blit)
       arg_x = production_rect;
       arg_w = (iptr)label_string(improvements[improvement].name);
       gfx_draw_text_centered((const char *)arg_w,arg_x,arg_y,width);
+      if (extra_ui(X_TURNS_LEFT))   /* the turns to completion on the name's line */
+        extras_city_turns(this,0,arg_x + (width + text_style.font->text_width((const char *)arg_w)) / 2,
+                          arg_x + width - scale(4),arg_y);
       gfx_set_zoom_scale(view_scale * 4 - 8);
       scaled = scale(0x10);
       scaled = production_rect_top + scaled;
@@ -2028,6 +2040,11 @@ void CityWindow::draw_production(int blit)
       scaled_x = scale(0x49);
       gfx_draw_unit(&city_wnd.window,unit,0,production_rect + scaled_x,scaled,arg_y,
                          arg_x);
+      if (extra_ui(X_TURNS_LEFT)) {     /* the turns to completion, right of the unit */
+        text_set_colors(0x54,10,1,1);
+        extras_city_turns(this,0,production_rect + scaled_x + gfx_zoom_scale(0x40,zoom2),
+                          production_rect_right - scale(4),production_rect_top);
+      }
     }
     if (cities[city_index].building != -IMP_CAPITALIZATION) {
       arg_w = box_w;
@@ -2084,6 +2101,9 @@ void CityWindow::draw_production(int blit)
         row_y += row_spacing;
       }
       gfx_reset_zoom_scale();
+      /* (port) HD graphics: the box as a meter, on the plane */
+      hd_stock_meter((DibSurface *)&city_wnd.window,(RECT *)&box_rect.left,cities[city_index].shield_box,
+                     (int)build_cost * city_calc.shield_rows,0,0);
     }
     if (blit != 0) {
       wnd_blit_surface_rect(((RECT *)&production_rect));

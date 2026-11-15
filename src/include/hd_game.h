@@ -26,6 +26,9 @@ void hd_shield_end(DibSurface *surface, const RECT *recoloured);
    colour (flat: the picture tinted; else its pack's variant of that colour). */
 void hd_recolour_begin(Sprite *sprite, DibSurface *surface, const RECT *area, int colour, int flat);
 void hd_recolour_end(DibSurface *surface, const RECT *area);
+/* The city window's food (food) or production box as a meter: value of
+   capacity, the granary's mark at threshold (0: none). */
+void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacity, int threshold, int food);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 

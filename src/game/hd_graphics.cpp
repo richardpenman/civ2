@@ -357,3 +357,29 @@ void hd_diplomacy_flag(DibSurface *room, int colour)
     snprintf(key, sizeof key, "tint/faction/flag/%d", pack_tint(colour));
     hd_picture((void *)room->bits, key, 24, 16, 28, 44, 1);
 }
+
+/* The city window's food and production boxes as meters (after Peter
+   Johnson's hd_stockpile, PR #11): over the box the game drew (its rows of
+   icons), on the plane only, a dark panel filled from the bottom as far as
+   the box is full, the granary's mark where the food kept after growth
+   reaches (threshold, 0: none), and the pack's food or production picture;
+   the turns are the TurnsLeft addition's, on the box's title line
+   (extras_city_turns). */
+void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacity, int threshold, int food)
+{
+    void *bits = (void *)surface->bits;
+    double x = box->left, y = box->top, w = box->right - box->left, h = box->bottom - box->top, fill, icon;
+    if (!hd_art || capacity <= 0 || w < 8 || h < 8)
+        return;
+    hd_bits_sync(bits, box->left, box->top, (int)w, (int)h);
+    hd_picture_fill(bits, x, y, w, h, 0xff1a1712);
+    fill = (h - 4) * (value < 0 ? 0 : value > capacity ? capacity : value) / capacity;
+    hd_picture_fill(bits, x + 2, y + h - 2 - fill, w - 4, fill, food ? 0xffa8862c : 0xff3c6cb4);
+    if (threshold > 0 && threshold < capacity)
+        hd_picture_fill(bits, x + 1, y + h - 2 - (h - 4) * threshold / capacity - 1, w - 2, 2, 0xffe8d8a0);
+    icon = (w < h ? w : h) * .45;
+    hd_picture(bits, food ? "economy/food" : "economy/production", x + (w - icon) / 2, y + (h - icon) / 2, icon, icon,
+               1);
+    hd_bits_shown(bits, box->left, box->top, (int)w, (int)h);
+}
+

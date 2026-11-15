@@ -1,0 +1,38 @@
+# TurnsLeft (docs/EXTRAS.md): the city window's food box counts the turns to
+# the city's growth, its production box the turns to the item's completion,
+# each on its title's line: Rome building a Granary, then Warriors (a unit's
+# picture on that line), then the Hanging Gardens (a long name: the count is left
+# out where the name leaves no room).
+# test: CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call menu_command 4e2803 0 528
+wait 3000
+key Return
+wait 5000
+click 230 268               # Rome
+wait 5000
+shot t-a-granary
+click 595 252               # Change
+wait 4000
+shot t-b-list
+click 300 244               # Warriors
+wait 1000
+click 380 460               # OK
+wait 4000
+shot t-c-unit
+click 595 252               # Change
+wait 4000
+click 300 431               # Hanging Gardens
+wait 1000
+click 380 460               # OK
+wait 4000
+shot t-d-wonder
+key Escape
+wait 2000

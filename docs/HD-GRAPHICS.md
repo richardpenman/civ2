@@ -202,6 +202,14 @@ The rest is in the platform layer (`src/platform/hd.c`):
   pack's flag (`faction/flag`) in that colour in its corner (`hd_diplomacy_flag`).  After Peter
   Johnson's `gfx_draw_unit_shield`, `hd_sprite_tint` and `hd_diplomacy_flag` (PR #11).  The
   game's own pixels (which map picking reads) are the original's.
+* **The city window's stores**: its food and production boxes (rows of the game's icons) are
+  shown as meters on the plane (`hd_stock_meter`, at the end of `CityWindow::draw_food_box` and
+  `draw_production`, after Peter Johnson's `hd_stockpile`, PR #11): a dark panel filled from the
+  bottom as far as the box is full, the granary's mark where the food it keeps reaches, the
+  pack's food or production picture (`economy/food`, `economy/production`); the turns to growth
+  and to completion are the *TurnsLeft* addition's ([EXTRAS.md](EXTRAS.md)), on the boxes' title
+  lines, drawn sharp.  Where the box holds more shields than the item costs (a unit bought, a
+  shortened box), the game's icons past the box stay as they are.
 * **Advances**: where the game draws an advance's icon (its category's, 36x20, by category and
   epoch: the Science Advisor's list, the intelligence report's, the Civilopedia's list, an
   advance's page and its tree, the choice of research and its advice, the announcements of a
@@ -314,7 +322,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-units.txt` (the shields, a stack, an
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
+  `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
   tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the

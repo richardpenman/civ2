@@ -35,7 +35,7 @@ static const KeyItem extra_keys[] = {
     {X_SUPPRESS_POPUPS, "SuppressPopups"}, {X_COLOR, "ColorCorrection"},
     {X_FOREIGN_GOLD, "ForeignGold"}, {X_ARRANGE, "ArrangeWindowsSL"}, {X_PATH_LINES, "PathLines"},
     {X_SENTRY_GREY, "SentryHalftone"}, {X_ZOOM_1, "DefaultZoom1"},
-    {X_HOTKEY_LINES, "HotkeyUnderlines"},
+    {X_HOTKEY_LINES, "HotkeyUnderlines"}, {X_TURNS_LEFT, "TurnsLeft"},
 };
 
 /* The rule changes (extra_rule): off unless their key is set (=1; the
@@ -195,6 +195,9 @@ static const struct { const char *key, *english; } texts[] = {
     {"turn", "Turn"},                               /* X5: the status panel */
     {"cities", "cities"},                           /* X31: the City Status advisor */
     {"size", "Size"}, {"name", "Name"}, {"production", "Production"},
+    {"turns.1", "1 turn"}, {"turns.n", "turns"},    /* TurnsLeft: the city window */
+    {"turns.none", "No surplus"}, {"turns.famine", "Famine:"}, {"turns.idle", "No production"},
+    {"turns.needs", "Needs"},
     {"menu.arrange_s", "Arrange Windows S"},        /* X38 (default: the game's Arrange Windows, S) */
     {"menu.arrange_l", "Arrange Windows L"},
     {"mainmenu.options", "OpenCiv2 Options"},       /* the main menu's last choice (options.cpp) */
@@ -1832,4 +1835,88 @@ int extras_stack_sentry(void)
     if (any)
         map_redraw_tile_all_views(units[game.active_unit].x, units[game.active_unit].y);
     return any;
+}
+
+/* ---- TurnsLeft: the turns to a city's growth and to its production ----
+
+   Counted as the game's turn does them (src/auto/city.cpp,
+   city_process_turn): city_process_food first grows the city when its food
+   box is full (box >= (size + 1) x the food rows), or shrinks it when the
+   box is below 0, then the turn's food surplus is added; so a box filled
+   this turn grows the city at the next.  city_process_production adds the
+   turn's shields (none in disorder, none below 0), then completes the item
+   when the box holds its cost.  After Peter Johnson's countdown in PR #11's
+   HD stockpile meters (hd_stockpile).  tests/turns_left_test.cpp checks
+   these against a simulation of those turns. */
+
+/* > 0: the city grows in that many turns; < 0: it shrinks (famine) in
+   minus that many; 0: neither (no surplus). */
+int extras_food_turns(int box, int capacity, int surplus)
+{
+    if (box < 0)
+        return -1;
+    if (box >= capacity)
+        return 1;
+    if (surplus > 0)
+        return (capacity - box + surplus - 1) / surplus + 1;
+    if (surplus == 0)
+        return 0;
+    return -(box / -surplus + 2);
+}
+
+/* > 0: the item is completed in that many turns; 0: never at this rate. */
+int extras_production_turns(int box, int cost, int net)
+{
+    if (net < 0)
+        net = 0;
+    if (box >= cost)
+        return 1;
+    if (net == 0)
+        return 0;
+    return (cost - box + net - 1) / net;
+}
+
+/* The count in the city window's food (food) or production box, right
+   aligned at right on the box's title line y, in the title's font and
+   colours, where what the game draws on that line (taken up to taken_right)
+   leaves room: else nothing. */
+void extras_city_turns(struct CityWindow *w, int food, int taken_right, int right, int y)
+{
+    const City *c = &cities[w->city_index];
+    char text[64];
+    int n, room;
+    text[0] = 0;
+    if (food) {
+        int capacity = (c->size + 1) * city_calc.food_box_rows;
+        int surplus = city_calc.yield_totals[0] - c->size * (int)cosmic.food_per_citizen -
+                      city_calc.settlers_supported * city_calc.settler_food_cost;
+        int needed = city_needed_size_improvement(w->city_index);
+        n = extras_food_turns(c->food_box, capacity, surplus);
+        if (n > 0 && needed != IMP_NOTHING)
+            snprintf(text, sizeof text, "%s %s", extras_text("turns.needs"), label_string(improvements[needed].name));
+        else if (n == 1)
+            snprintf(text, sizeof text, "%s", extras_text("turns.1"));
+        else if (n > 1)
+            snprintf(text, sizeof text, "%d %s", n, extras_text("turns.n"));
+        else if (n == 0)
+            snprintf(text, sizeof text, "%s", extras_text("turns.none"));
+        else
+            snprintf(text, sizeof text, "%s %d", extras_text("turns.famine"), -n);
+    } else {
+        int cost, net = c->flags & CITYF_DISORDER ? 0 : city_calc.total_shields - city_calc.shield_support;
+        if (c->building == -IMP_CAPITALIZATION)
+            return;
+        cost = (c->building < 0 ? (int)improvements[-c->building].cost : (int)(char)unit_types[c->building].cost) *
+               city_calc.shield_rows;
+        n = extras_production_turns(c->shield_box, cost, net);
+        if (n == 1)
+            snprintf(text, sizeof text, "%s", extras_text("turns.1"));
+        else if (n > 1)
+            snprintf(text, sizeof text, "%d %s", n, extras_text("turns.n"));
+        else
+            snprintf(text, sizeof text, "%s", extras_text("turns.idle"));
+    }
+    room = right - text_style.font->text_width(text) - (text_style.shadow_color >= 0 ? 1 : 0);
+    if (room >= taken_right + 4)
+        gfx_draw_text_right(text, right, y, 0);
 }
