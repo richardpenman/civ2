@@ -3532,6 +3532,7 @@ void __cdecl dialog_list_on_lbuttondown(i32 x,i32 y)
       if (extra_ui(X_UNIT_LIST) && (option != 0) &&
           (dialog_state.active->on_draw_option == (DialogOptionDrawFn)extras_unit_list_draw)) {
         unit_dlg_wake_unit_cb(option->id);
+        dialog_state.active->draw_option(option,1);  /* drawn asleep by select_option */
       }
     }
   }
