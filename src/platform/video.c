@@ -9,6 +9,7 @@
  * not reproduced.)  The herald videos are transparent around the figure:
  * the decoder's mask says where, and there the game's background stays.
  */
+#include <math.h>
 #include "plat.h"
 #include "plat_files.h"
 #include "../third_party/indeo4/iv41.h"
@@ -431,6 +432,81 @@ static void build_lut(Codec *c)
     c->lut_ok = 1;
 }
 
+/* ---- the frames on an HD plane (docs/HD-GRAPHICS.md) ----
+   Where the destination has a plane (HD graphics, sharp text), the frame is
+   enlarged on it smoothly: each plane pixel of a pixel the decoder wrote is
+   sampled bilinearly from the decoded frame's own colours (not the
+   dithered 8-bit pixels), within the source rectangle and from its opaque
+   pixels only (no black of the transparent parts, nor anything outside the
+   frame, bleeds in); the pixels it leaves transparent keep what the plane
+   shows.  The sprites and pictures are not concerned. */
+typedef struct {
+    uint32_t *rgb;              /* the frame's colours, 0: transparent (opaque ones have alpha) */
+    int w, x0, y0, x1, y1;      /* the source rectangle, inclusive */
+    double kx, ky;              /* source pixels per destination pixel */
+    int xd, yd, dxd;            /* the destination's origin and width */
+    int *col;                   /* per plane column of the destination: two source columns and
+                                   the second's weight (0..256) */
+} Smooth;
+
+/* The source pixel and the next one (clamped to the rectangle) round
+   coordinate u, and the next one's weight. */
+static void taps(double u, int lo, int hi, int *a, int *b, int *wb)
+{
+    int i = (int)floor(u);
+    *wb = (int)((u - i) * 256 + .5);
+    *a = i < lo ? lo : i > hi ? hi : i;
+    *b = i + 1 < lo ? lo : i + 1 > hi ? hi : i + 1;
+}
+
+static void smooth_columns(Smooth *m)
+{
+    int d = hd_density, n = m->dxd * d, k;
+    if (!(m->col = malloc((size_t)n * 3 * sizeof *m->col)))
+        return;
+    for (k = 0; k < n; k++)
+        taps(m->x0 + (k + .5) / d * m->kx - .5, m->x0, m->x1, &m->col[3 * k], &m->col[3 * k + 1], &m->col[3 * k + 2]);
+}
+
+/* The written pixels tx0..tx1-1 of row ty: the plane's pixels sampled
+   (bilinear, from the opaque pixels only), the game's pixels taken as
+   shown; without a plane, shown enlarged. */
+static void frame_run(Bitmap *bm, const Smooth *m, unsigned int *plane, int tx0, int tx1, int ty)
+{
+    int d = hd_density, pitch, tx, i, j;
+    if (!plane || !m->rgb || !m->col) {
+        hd_redrawn(bm, tx0, ty, tx1 - tx0, 1);
+        return;
+    }
+    pitch = bm->w * d;
+    for (j = 0; j < d; j++) {
+        int ya, yb, wy, k;
+        const uint32_t *ra, *rb;
+        uint32_t *out = plane + (size_t)(ty * d + j) * pitch;
+        taps(m->y0 + ((ty - m->yd) + (j + .5) / d) * m->ky - .5, m->y0, m->y1, &ya, &yb, &wy);
+        ra = m->rgb + (size_t)ya * m->w;
+        rb = m->rgb + (size_t)yb * m->w;
+        for (tx = tx0; tx < tx1; tx++)
+            for (i = 0, k = ((tx - m->xd) * d) * 3; i < d; i++, k += 3) {
+                int xa = m->col[k], xb = m->col[k + 1], wx = m->col[k + 2];
+                uint32_t p[4] = {ra[xa], ra[xb], rb[xa], rb[xb]};
+                int w4[4] = {(256 - wx) * (256 - wy), wx * (256 - wy), (256 - wx) * wy, wx * wy}, q, sum = 0;
+                unsigned r = 0, g = 0, bl = 0;
+                for (q = 0; q < 4; q++)
+                    if (p[q]) {
+                        sum += w4[q];
+                        r += (unsigned)w4[q] * ((p[q] >> 16) & 255);
+                        g += (unsigned)w4[q] * ((p[q] >> 8) & 255);
+                        bl += (unsigned)w4[q] * (p[q] & 255);
+                    }
+                if (sum > 0)
+                    out[tx * d + i] = 0xff000000u | (r + sum / 2) / sum << 16 | (g + sum / 2) / sum << 8 |
+                                      (bl + sum / 2) / sum;
+            }
+    }
+    hd_bitmap_commit(bm, tx0, ty, tx1 - tx0, 1);
+}
+
 static int clamp8(int v) { return v < 0 ? 0 : v > 255 ? 255 : v; }
 
 /* Draw the decoded frame into the destination DIB (8, 16, 24 or 32 bits;
@@ -463,6 +539,37 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
         test_key = getenv("CIV2_TEST_VIDEO_KEY") != NULL;
     if (bpp == 8 && !c->lut_ok)
         build_lut(c);
+    Smooth sm;
+    unsigned int *plane = NULL;
+    memset(&sm, 0, sizeof sm);
+    if (bm && hd_on && (plane = hd_bitmap_want_plane(bm))) {
+        sm.w = fr->width;
+        sm.dxd = dxd;
+        sm.x0 = d->xSrc < 0 ? 0 : d->xSrc;
+        sm.y0 = d->ySrc < 0 ? 0 : d->ySrc;
+        sm.x1 = (d->xSrc + dxs < fr->width ? d->xSrc + dxs : fr->width) - 1;
+        sm.y1 = (d->ySrc + dys < fr->height ? d->ySrc + dys : fr->height) - 1;
+        sm.kx = (double)dxs / dxd;
+        sm.ky = (double)dys / dyd;
+        sm.xd = d->xDst;
+        sm.yd = d->yDst;
+        if (sm.x0 <= sm.x1 && sm.y0 <= sm.y1 && (sm.rgb = malloc((size_t)fr->width * fr->height * 4)))
+            for (y = sm.y0; y <= sm.y1; y++)
+                for (x = sm.x0; x <= sm.x1; x++) {
+                    int Y = fr->y[y * fr->y_stride + x], U = fr->u[(y >> 2) * fr->uv_stride + (x >> 2)] - 128,
+                        V = fr->v[(y >> 2) * fr->uv_stride + (x >> 2)] - 128;
+                    uint32_t px = 0;
+                    if (!(fr->mask ? fr->mask[y * fr->width + x] :
+                          (fr->has_transparency || test_key) && Y <= 16 && U >= -2 && U <= 2 && V >= -2 && V <= 2)) {
+                        Y = 298 * (Y - 16);
+                        px = 0xff000000u | (uint32_t)clamp8((Y + 409 * V + 128) >> 8) << 16 |
+                             (uint32_t)clamp8((Y - 100 * U - 208 * V + 128) >> 8) << 8 |
+                             (uint32_t)clamp8((Y + 516 * U + 128) >> 8);
+                    }
+                    sm.rgb[(size_t)y * fr->width + x] = px;
+                }
+        smooth_columns(&sm);
+    }
     for (y = 0; y < dyd; y++) {
         int ty = d->yDst + y, sy = d->ySrc + y * dys / dyd;
         unsigned char *row;
@@ -477,7 +584,7 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
                not, in runs; those left transparent keep what is there) */
             if (run >= 0 && (tx < 0 || tx >= w || sx < 0 || sx >= fr->width || tx != run_end)) {
                 if (bm)
-                    hd_redrawn(bm, run, ty, run_end - run, 1);
+                    frame_run(bm, &sm, plane, run, run_end, ty);
                 run = -1;
             }
             if (tx < 0 || tx >= w || sx < 0 || sx >= fr->width)
@@ -491,7 +598,7 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
             if (fr->mask ? fr->mask[sy * fr->width + sx] :
                 (fr->has_transparency || test_key) && Y <= 16 && U >= -2 && U <= 2 && V >= -2 && V <= 2) {
                 if (run >= 0 && bm)
-                    hd_redrawn(bm, run, ty, run_end - run, 1);
+                    frame_run(bm, &sm, plane, run, run_end, ty);
                 run = -1;
                 continue;
             }
@@ -525,8 +632,10 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
             }
         }
         if (run >= 0 && bm)
-            hd_redrawn(bm, run, ty, run_end - run, 1);
+            frame_run(bm, &sm, plane, run, run_end, ty);
     }
+    free(sm.rgb);
+    free(sm.col);
 }
 
 HIC WINAPI ICLocate(DWORD type, DWORD handler, LPBITMAPINFOHEADER in, LPBITMAPINFOHEADER out, WORD mode)

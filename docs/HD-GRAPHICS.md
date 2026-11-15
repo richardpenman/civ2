@@ -171,9 +171,9 @@ The rest is in the platform layer (`src/platform/hd.c`):
   Vikings' is a 19th-century man in a frock coat, the Babylonians' a red-bearded Celt), so
   their crops are not drawn (`NOT_CROPPED` in hd.c).  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
-  enlarged: the pack has no pictures for it.  Each pixel the decoder writes is shown as written,
-  opaque, even where its colour index is the one already there (`draw_frame` in
-  `src/platform/video.c` marks them redrawn, `hd_redrawn`, run by run); before, such pixels were
+  enlarged smoothly (below, *Videos*): the pack has no pictures for it.  Each pixel the decoder
+  writes is shown, opaque, even where its colour index is the one already there (`draw_frame` in
+  `src/platform/video.c`, run by run); before, such pixels were
   not seen as changed and the pack's room (in the video's backdrop, a copy of the room with its
   plane) showed through the leader in specks.  The pixels a herald leaves transparent show the
   room behind it, the civilization's portrait included: the video's backdrop is a copy of the
@@ -198,6 +198,16 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
   picture is loaded into it.
+* **Videos** (the heralds, the High Council, the wonders', the opening): wherever the planes are
+  on (HD graphics or sharp text), each frame is enlarged on the plane smoothly, not as its
+  8-bit pixels repeated: the decoder's own colours (before the game's palette and its dithering)
+  sampled bilinearly at the plane's resolution (`frame_run` in `src/platform/video.c`), from the
+  frame's opaque pixels within the source rectangle only, so that neither a herald's
+  transparent black nor anything outside the frame bleeds into its edges; the pixels a frame
+  leaves transparent keep what the plane shows (the room behind a herald), its outline at the
+  game's pixels.  The game's pixels are as ever.  Its cost, measured on this machine (one slow
+  core) with the Romans' herald (640x240): 6 ms a frame at density 2 and 11 at density 3 on
+  average (1.5 ms without the planes).
 * **Units' shields, owners' colours**: the units' shields are the pack's `shield`, an alpha mask,
   drawn in the colour the game gives each (the owner's, the stack's second shield's, the
   shadows'), where the game draws its own and then recolours it (`replace_color` of its marker
@@ -383,7 +393,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   surfaces whose colour tables differ (the slide's and the blink's background surfaces) could
   give art the destination's colour for its pixel's index (`hd_big`, above).
 * The leaders' portraits and their animation (the heralds' videos) are the original's,
-  enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.
+  enlarged (the videos smoothly): the pack's portraits are not the tribes' leaders, and it has
+  none for the videos.
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern
   landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
