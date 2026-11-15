@@ -4,8 +4,8 @@
 // X2 (UnitListScroll, docs/EXTRAS.md): the Activate Unit list of a stack of
 // more than 9 units.  In a large window the game scales dialogs by 3/2
 // (dlg_set_scale(3,2)): set_width scales the dialog's width, but set_listbox
-// takes the list's width as given, so the list must be scaled the same way
-// or it fills only two thirds of the dialog.
+// takes the list's width as given, so the list must be given the dialog's
+// own (scaled) width or it fills only part of the dialog.
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -69,17 +69,20 @@ i32 Dialog::show_modal(int) {
 #include "production.inc"
 
 int main() {
-    // 1:1 (a window up to 1000 pixels wide): 332 of 340, as before.
+    // The list as wide as the dialog, as the game's own list dialogs give it
+    // (set_width(w), set_listbox(rows, w, ...)): else a strip shows right of
+    // its scroll bar.  1:1 (a window up to 1000 pixels wide): 340.
     unit_stack_select_dialog(0, "Select Unit To Activate", 1);
+    std::printf("1:1: list %u of %u\n", shown_list_width, shown_content_width);
     assert(shown_content_width == 0x154);
-    assert(shown_list_width == 0x14c);
+    assert(shown_list_width == 0x154);
 
-    // 3/2 (a larger window): the dialog is 510 wide, the list scaled with it.
+    // 3/2 (a larger window): the dialog is 510 wide, the list with it.
     scale_num = 3;
     scale_den = 2;
     unit_stack_select_dialog(0, "Select Unit To Activate", 1);
-    assert(shown_content_width == 510);
     std::printf("3/2: list %u of %u\n", shown_list_width, shown_content_width);
-    assert(shown_list_width == 498);
+    assert(shown_content_width == 510);
+    assert(shown_list_width == 510);
     return 0;
 }
