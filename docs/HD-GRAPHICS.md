@@ -204,13 +204,20 @@ The rest is in the platform layer (`src/platform/hd.c`):
 * **Videos** (the heralds, the High Council, the wonders', the opening): wherever the planes are
   on (HD graphics or sharp text), each frame is enlarged on the plane smoothly, not as its
   8-bit pixels repeated: the decoder's own colours (before the game's palette and its dithering)
-  sampled bilinearly at the plane's resolution (`frame_run` in `src/platform/video.c`), from the
-  frame's opaque pixels within the source rectangle only, so that neither a herald's
-  transparent black nor anything outside the frame bleeds into its edges; the pixels a frame
-  leaves transparent keep what the plane shows (the room behind a herald), its outline at the
-  game's pixels.  The game's pixels are as ever.  Its cost, measured on this machine (one slow
-  core) with the Romans' herald (640x240): 6 ms a frame at density 2 and 11 at density 3 on
-  average (1.5 ms without the planes).
+  sampled bilinearly at the plane's resolution (`frame_plane_row` in `src/platform/video.c`),
+  from the frame's opaque pixels within the source rectangle only, so that neither a herald's
+  transparent black nor anything outside the frame bleeds into its edges.  A frame with a
+  transparent area (the heralds) has its outline smooth at the plane's resolution, not a
+  staircase of game pixels: its opacity, smoothed by a 3 x 3 binomial filter, is sampled
+  bilinearly too, sharpened by a smoothstep from 1/4 to 3/4 (a crisp edge about one plane pixel
+  wide at density 2, isolated pixels of the mask rounded off), and the frame's colour is drawn
+  with that coverage over what the plane shows (the room and the portrait behind a herald, which
+  the game puts back before each frame); the plane pixels of the game pixels next to the figure
+  can so take some of it, and those at its edge some of the room.  The game's pixels are as
+  ever.  Its cost, measured on this machine (one slow core) with the Romans' herald (640x240):
+  about 5 ms a frame at density 2 and 7 at density 3 (4 and 6 with the outline at the game's
+  pixels; 1.5 ms without the planes); frames without transparency (the High Council, the
+  opening) take the same path without the coverage, as before.
 * **Units' shields, owners' colours**: the units' shields are the pack's `shield`, an alpha mask,
   drawn in the colour the game gives each (the owner's, the stack's second shield's, the
   shadows'), where the game draws its own and then recolours it (`replace_color` of its marker
