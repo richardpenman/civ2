@@ -7093,6 +7093,20 @@ void __cdecl civ_turn_update_diplomacy(uptr civ)
                 value = game.turn - 8;
               }
               civs[civ2].last_contact_turn[civ] = (short)value;
+              if (bugfix_state()) {  /* B37 */
+                /* the treaty ends on both sides, and the player is told when
+                   it was peace (the original ended it on the AI's side only and
+                   said nothing: the player's side still read peace) */
+                if (((*(byte *)&civs[civ2].treaties[civ] & TREATY_PEACE) != 0) &&
+                    (human_civ[0] == civ2) && (autoplay.active == 0)) {
+                  civ_plural = (iptr)(civ_name_plural(civ));
+                  text_set_string_arg(0,(const char *)civ_plural);
+                  civ_plural = (iptr)(civ_name_plural(civ2));
+                  text_set_string_arg(1,(const char *)civ_plural);
+                  popup_game_with_sprite(str_cancelpeace_3,(Sprite *)&war_icon_sprite_block.war_icon_sprite,0);
+                }
+                diplo_clear_treaty_flags(civ,civ2,TREATY_CEASEFIRE | TREATY_PEACE);
+              }
             }
             else {
               civ_adjust_attitude(civ,civ2,100);
