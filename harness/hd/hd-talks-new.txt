@@ -1,0 +1,45 @@
+# HD graphics (docs/HD-GRAPHICS.md): the diplomacy room of a new game's
+# leader, here the Vikings' (male).  The new game's default choices but the
+# gender and the tribe; then the room opened for the player's own leader
+# (diplo_leader_wnd_launch VIEWER LEADER: the player's civilization is the
+# tribe's colour, tribe % 7 + 1), with no dialog over the portrait, and the
+# same leader's emissary (diplo_ai_meet_player: its second civilization's
+# leader).  harness/hd/hd-talks-all.sh makes this script for every tribe and
+# gender (the lines marked GENDER, TRIBE, VIEWER and LEADER).
+# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Return              # Start a New Game
+wait 3000
+key Return              # world size
+wait 3000
+key Return              # difficulty
+wait 3000
+key Return              # competition
+wait 3000
+key Return              # aggression
+wait 3000
+key Return              # rules
+wait 3000
+key Return              # GENDER (male; female: key Down first)
+wait 3000
+key Down Down Down Down Down Down Down Down Down Down Down Down Down Down Down Down    # TRIBE (16: the Vikings)
+wait 500
+shot tribe
+key Return
+wait 3000
+key Return              # the leader's name
+wait 5000
+key Return              # city style
+wait 600000             # world generation
+key Return
+wait 5000
+key Return
+wait 5000
+call diplo_leader_wnd_launch 493f0f 4 3     # VIEWER LEADER
+wait 3000
+shot room
+call diplo_leader_wnd_close 494148
+wait 2000
+call diplo_ai_meet_player 460129 4 3 -1 -1 1    # VIEWER LEADER
+wait 5000
+shot talk
