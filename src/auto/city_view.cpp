@@ -1,6 +1,8 @@
 /* The game, cities: the city view (the picture of a city's buildings) and the wonder movies: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
+void hd_bind_cityview(CityViewWindow *w);
 
 /* 00454260 auto */
 void __cdecl cityview_open(uptr city)
@@ -194,6 +196,7 @@ i32 CityViewWindow::load(uptr city)
             small_building_sprites_b[i].replace_color(7,9);
             src_x += 0x7c;
           }
+          if (hd_on) hd_bind_cityview(this);     /* (port) HD graphics: the houses' pictures by era */
           ok = load_icon_surface();
           if (ok == 0) {
             result = 0;

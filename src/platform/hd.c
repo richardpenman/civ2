@@ -826,7 +826,13 @@ static const struct {
     {"tiles.dll", 65, 66, 45},  /* (without its frame: the game's windows are smaller) */
     {"tiles.dll", 90, 90, 0},   /* the new game's backdrop */
     {"intro.dll", 901, 913, 0}, /* the new game's pictures */
-    {"cv.dll", 340, 353, 0},    /* the city view's landscapes */
+    /* the city view's landscapes (340 + 5 x the site + civ_city_art_era):
+       the pack's are grass with dirt tracks in every era, so only those of
+       the eras before the paved roads (0, 1); the modern ones (2, and 3
+       with Superhighways) are the original's, enlarged */
+    {"cv.dll", 340, 341, 0},
+    {"cv.dll", 345, 346, 0},
+    {"cv.dll", 350, 351, 0},
     {"ss.dll", 498, 499, 0},    /* the spaceship's window */
 };
 

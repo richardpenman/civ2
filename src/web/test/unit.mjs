@@ -216,6 +216,10 @@ assert.equal(await sha256(pack), hex(pack));
 assert.deepEqual(packIndex(pack).map((e) => e.key), Object.keys(pics).sort());
 // the leaders' portraits not drawn (hd.c's NOT_CROPPED), the diplomacy icons drawn
 assert.ok(!drawn('crop/resource/mk.dll/gifs/236/1,1,225,275') && drawn('crop/resource/mk.dll/gifs/215/1,1,108,30'));
+// the city view's houses of the industrial era only, its early landscapes only
+assert.ok(drawn('crop/resource/cv.dll/gifs/310/1,231,158,114') && !drawn('crop/resource/cv.dll/gifs/310/1,116,158,114'));
+assert.ok(!drawn('crop/resource/cv.dll/gifs/310/1,1,158,114') && !drawn('crop/resource/cv.dll/gifs/310/125,429,123,82'));
+assert.ok(drawn('resource/cv.dll/gifs/351') && !drawn('resource/cv.dll/gifs/352'));
 // the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
 for (const chunk of [64, 100, 1 << 20]) {
     const reads = [];

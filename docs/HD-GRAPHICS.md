@@ -154,10 +154,22 @@ The rest is in the platform layer (`src/platform/hd.c`):
   Vikings' is a 19th-century man in a frock coat, the Babylonians' a red-bearded Celt), so
   their crops are not drawn (`NOT_CROPPED` in hd.c).  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
-  enlarged: the pack has no pictures for it.  A picture with transparent parts (the new game's
-  pictures) is drawn, where the game copies it, over what the destination's plane showed; a
-  sprite taken from such a picture keeps its transparency.  A surface's plane is drawn anew from
-  its pixels whenever another picture is loaded into it.
+  enlarged: the pack has no pictures for it.  The city view's houses (`cv.dll` 310: the
+  original's cottages for ancient and renaissance cities, a row of towns from Industrialization
+  on, by `civ_city_style_era` of the owner, the same for the whole view) are the pack's only in
+  the industrial era: its houses are all 19th-century buildings (terraced houses, a tenement
+  with a fire escape, a clapboard house, a shop row), the same pictures for both rows, so the
+  other eras keep the original's, enlarged (`hd_bind_cityview` in `src/game/hd_graphics.cpp`,
+  called once the view has taken its sprites), awaiting art of their own; so do the empty lots,
+  the original's woods, which the pack leaves empty (its renderer drew lot pictures of its
+  own).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
+  tracks in every era, so only those of the eras before the paved roads (340, 341, 345, 346,
+  350, 351) are the pack's; the modern ones and those with Superhighways are the original's,
+  enlarged.  Its improvements and wonders are one picture each in every era, the original's as
+  the pack's.  A picture with transparent parts (the new game's pictures) is drawn, where the
+  game copies it, over what the destination's plane showed; a sprite taken from such a picture
+  keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
+  picture is loaded into it.
 * **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: the throne room's
   fade in, a palette loaded for another picture), the plane's pixels that are the surface's
   pixels enlarged in the old colour take the new one.  The art (sprites, pictures) and sharp
@@ -235,7 +247,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   (the city view), and any replay script with `CIV2_TEST_HD=2`, looking at its `-hd` shots:
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
-  room under each of the seven governments), `advisors.txt` (the advisors' parchment), `reports.txt` (the
+  room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
+  ancient, industrial and modern, on a 640x480 desktop), `advisors.txt` (the advisors' parchment), `reports.txt` (the
   throne room), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
   `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
@@ -247,21 +260,24 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,242 pictures, 121 MB of PNGs, 73 MB with each
+For a stripped pack, the keys hd.c draws (1,220 pictures, 92 MB of PNGs, 73 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
-* `crop/resource/...` (146): the sprites taken from the libraries' pictures, but for the
-  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`);
+* `crop/resource/...` (130): the sprites taken from the libraries' pictures, but for the
+  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`) and of the city
+  view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
 * `palace-resource/ID` (28): the throne room's pieces;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
-  `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340` to `353`,
+  `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
 
 ## Not yet done
 
 * The leaders' portraits and their animation (the heralds' videos) are the original's,
   enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.
+* The city view's houses but in the industrial era, its empty lots (woods), and its modern
+  landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's background (`pv.dll` 100, the hall the game colours to choose a section) and
   `pv.dll` 170 to 184, the `palace/` set; the announcements' pictures (`tiles.dll` 70 to 77,
@@ -270,7 +286,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
   (`ss.dll` 400 to 491, one placeholder); the advance pictures (`advance/`), the city view's
   larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
-  their crops); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
+  their crops; `house/` and `lot/` are the same 19th-century houses); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
   editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).
 * The new game's pictures are vignettes over black (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where

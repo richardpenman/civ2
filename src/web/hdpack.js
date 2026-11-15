@@ -18,13 +18,20 @@ export const CHUNK = 4 << 20;
 export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace-resource/',
     'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/5', 'resource/tiles.dll/gifs/65',
     'resource/tiles.dll/gifs/66', 'resource/tiles.dll/gifs/90',
-    'resource/intro.dll/', 'resource/cv.dll/gifs/34', 'resource/cv.dll/gifs/35',
+    'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',
+    'resource/cv.dll/gifs/345', 'resource/cv.dll/gifs/346', 'resource/cv.dll/gifs/350',
+    'resource/cv.dll/gifs/351',
     'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
-// Of those, the crops hd.c does not draw (its NOT_CROPPED: the pack's
-// leaders' portraits, not the tribes' leaders).
+// Of those, the crops hd.c does not draw: its NOT_CROPPED (the pack's
+// leaders' portraits, not the tribes' leaders), and of the city view's
+// houses (cv.dll 310, src/game/hd_graphics.cpp) all but the industrial
+// era's rows (y 231 and 512).
+const CV = 'crop/resource/cv.dll/gifs/310/';
 export const DROP = ['crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
     'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',
-    'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26'];
+    'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26',
+    ...[1, 160, 319, 478].flatMap((x) => [`${CV}${x},1,`, `${CV}${x},116,`]),
+    ...[1, 125, 249, 373].flatMap((x) => [`${CV}${x},346,`, `${CV}${x},429,`])];
 // A key of a picture hd.c draws.
 export const drawn = (key, keep = KEEP) => keep.some((p) => key.startsWith(p)) && !DROP.some((p) => key.startsWith(p));
 const HEAD = 12 + 768, ENTRY = 180;
