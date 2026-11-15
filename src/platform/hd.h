@@ -68,6 +68,12 @@ int hd_sprite_pictured(const void *sprite, unsigned handle);
    game drew there afterwards, recolouring a sprite drawn from a picture). */
 void hd_bits_sync(void *bits, int x, int y, int w, int h);
 void hd_bits_shown(void *bits, int x, int y, int w, int h);
+/* Tests (hd_map_redraw_probe): a copy of the plane's rectangle, the game's
+   pixels synced first (free it); the plane pixels of the rectangle that
+   differ from such a copy by more than tolerance in a channel. */
+unsigned int *hd_debug_capture(void *bits, int x, int y, int w, int h);
+int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance);
+void hd_debug_dump(const char *path, const unsigned int *px, int w, int h);     /* a PPM */
 /* gfx_copy_pixels: before (copy_begin) and after (copy_end). */
 void hd_copy_begin(void *src_bits, int sx, int sy, int w, int h);
 void hd_copy_end(void *dst_bits, void *src_bits, int dx, int dy, int sx, int sy, int w, int h);

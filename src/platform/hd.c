@@ -1526,3 +1526,53 @@ void hd_init(int classic, int unit_test, int scale)
     if (hd_on && !hd_art)
         plat_log("Sharp text and interface: density %d\n", hd_density);
 }
+
+/* ---- tests ---- */
+
+unsigned int *hd_debug_capture(void *bits, int x, int y, int w, int h)
+{
+    Bitmap *b = bmp_of_bits(bits);
+    int d = hd_density, j;
+    uint32_t *out;
+    if (!hd_on || !valid(b) || w <= 0 || h <= 0 || x < 0 || y < 0 || x + w > b->w || y + h > b->h)
+        return NULL;
+    sync_rect(b, x, y, x + w, y + h);
+    if (!(out = malloc((size_t)w * h * d * d * 4)))
+        return NULL;
+    for (j = 0; j < h * d; j++)
+        memcpy(out + (size_t)j * w * d, b->hd + (size_t)(y * d + j) * b->w * d + x * d, (size_t)w * d * 4);
+    return out;
+}
+
+int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance)
+{
+    Bitmap *b = bmp_of_bits(bits);
+    int d = hd_density, i, j, k, n = 0;
+    if (!before || !valid(b))
+        return -1;
+    sync_rect(b, x, y, x + w, y + h);
+    for (j = 0; j < h * d; j++)
+        for (i = 0; i < w * d; i++) {
+            uint32_t p = b->hd[(size_t)(y * d + j) * b->w * d + x * d + i], q = before[(size_t)j * w * d + i];
+            for (k = 0; k < 24; k += 8)
+                if (abs((int)((p >> k) & 255) - (int)((q >> k) & 255)) > tolerance) {
+                    n++;
+                    break;
+                }
+        }
+    return n;
+}
+
+void hd_debug_dump(const char *path, const unsigned int *px, int w, int h)
+{
+    FILE *f;
+    int i;
+    if (!px || !(f = fopen(path, "wb")))
+        return;
+    fprintf(f, "P6 %d %d 255\n", w, h);
+    for (i = 0; i < w * h; i++) {
+        unsigned char c[3] = {(unsigned char)(px[i] >> 16), (unsigned char)(px[i] >> 8), (unsigned char)px[i]};
+        fwrite(c, 1, 3, f);
+    }
+    fclose(f);
+}

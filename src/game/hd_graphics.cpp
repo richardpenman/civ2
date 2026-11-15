@@ -9,6 +9,7 @@
 #include "auto_common.h"
 #include "../platform/hd.h"
 #include "hd_game.h"
+extern "C" void plat_log(const char *fmt, ...);
 
 void hd_bind_terrain(void)
 {
@@ -383,3 +384,61 @@ void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacit
     hd_bits_shown(bits, box->left, box->top, (int)w, (int)h);
 }
 
+/* A test (harness/hd/hd-redraw.txt, after Peter Johnson's map redraw
+   probe and tools/test_map_redraw.py in PR #11): a trireme, alone and
+   stacked (its second shield reaches outside its sprite), slid from the
+   map's centre in each of the 8 directions; after each slide the plane
+   around the centre must be what it was (no trail, gap or seam left).
+   Logs its result (hook.log); the game's state is restored. */
+void hd_map_redraw_probe(void)
+{
+    MapView *m = &map_views_block.map_view_recs[0];
+    DummyUnit saved_dummy = dummy_unit;
+    u32 saved_options = game.game_options;
+    RECT r;
+    unsigned int *clean;
+    int x = m->center_x, y = m->center_y, unit, stacked, dir, bad = 0, worst = 0, n;
+    BlinkState saved_blink = blink;
+    if (!hd_on)
+        return;
+    game.game_options |= OPT_FAST_PIECE_SLIDE;
+    /* the map whole, without the active unit's blinking */
+    blink.unit_active = 0;
+    m->draw_all_tiles(human_civ[0]);
+    m->tile_radius_rect(x, y, 2, &r);
+    if (r.left < 0) r.left = 0;
+    if (r.top < 0) r.top = 0;
+    if (r.right > (int)m->client_width) r.right = (int)m->client_width;
+    if (r.bottom > (int)m->client_height) r.bottom = (int)m->client_height;
+    clean = hd_debug_capture((void *)m->bits, r.left, r.top, r.right - r.left, r.bottom - r.top);
+    unit = unit_make_dummy(UNIT_TRIREME, human_civ[0]);
+    for (stacked = 0; stacked <= 1; stacked++)
+        for (dir = 0; dir < 8; dir++) {
+            dummy_unit.prev_in_stack = stacked ? 0 : -1;
+            map_animate_unit_move(unit, x, y, dir, -1, -1);
+            n = hd_debug_compare((void *)m->bits, r.left, r.top, r.right - r.left, r.bottom - r.top, clean, 8);
+            if (n != 0) {
+                if (!bad && getenv("CIV2_HD_PROBE_DUMP")) {
+                    char path[256];
+                    unsigned int *now = hd_debug_capture((void *)m->bits, r.left, r.top, r.right - r.left,
+                                                         r.bottom - r.top);
+                    snprintf(path, sizeof path, "%s/probe-%d-before.ppm", getenv("CIV2_HD_PROBE_DUMP"), (int)m->zoom);
+                    hd_debug_dump(path, clean, (r.right - r.left) * hd_density, (r.bottom - r.top) * hd_density);
+                    snprintf(path, sizeof path, "%s/probe-%d-after-%d-%d.ppm", getenv("CIV2_HD_PROBE_DUMP"), (int)m->zoom,
+                             stacked, dir);
+                    hd_debug_dump(path, now, (r.right - r.left) * hd_density, (r.bottom - r.top) * hd_density);
+                    free(now);
+                }
+                bad++;
+                if (n > worst)
+                    worst = n;
+                plat_log("map redraw probe: zoom %d, %s, direction %d: %d pixels differ\n", (int)m->zoom,
+                         stacked ? "stacked" : "alone", dir, n);
+            }
+        }
+    free(clean);
+    dummy_unit = saved_dummy;
+    game.game_options = saved_options;
+    blink = saved_blink;
+    plat_log("map redraw probe: zoom %d: %d of 16 slides left pixels (most %d)\n", (int)m->zoom, bad, worst);
+}

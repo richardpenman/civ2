@@ -210,6 +210,9 @@ The rest is in the platform layer (`src/platform/hd.c`):
   and to completion are the *TurnsLeft* addition's ([EXTRAS.md](EXTRAS.md)), on the boxes' title
   lines, drawn sharp.  Where the box holds more shields than the item costs (a unit bought, a
   shortened box), the game's icons past the box stay as they are.
+* **Units on sentry** (*SentryHalftone*, [EXTRAS.md](EXTRAS.md)): the unit's picture in grey
+  shades (`hd_sprite_mode(HD_SPRITES_GREY)` around the game's draw in
+  `extras_draw_grey_sprite`, the game's own halftone pixels then taken as shown).
 * **Advances**: where the game draws an advance's icon (its category's, 36x20, by category and
   epoch: the Science Advisor's list, the intelligence report's, the Civilopedia's list, an
   advance's page and its tree, the choice of research and its advice, the announcements of a
@@ -322,7 +325,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at every zoom: its
+  results in `hook.log`), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
   `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
@@ -356,6 +360,17 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
 
 ## Not yet done
+
+* *SentryHalftone*: in `harness/hd` runs the sprite's draws through `extras_draw_grey_sprite`
+  are grey on the plane, yet on the map a sentried unit on the cursor's square was still seen in
+  its colours in the HD frame (the tile's blinking redraws, clipped to the tile's row): not found.
+* The map's partial redraws (`harness/hd/hd-redraw.txt`, `hd_map_redraw_probe`: a trireme,
+  alone and stacked, slid from the map's centre in the 8 directions at each zoom, the plane
+  compared with a full render before): no trail of the unit or its shields is left, but the
+  plane differs from a full render by up to some 150 pixels at density 2: a line one plane
+  pixel wide along the antialiased edges where tiles meet (blended again over what the partial
+  redraw finds there, not over what a full render had beneath), and the end of a hit points
+  bar.
 
 * The leaders' portraits and their animation (the heralds' videos) are the original's,
   enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.

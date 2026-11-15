@@ -8,6 +8,7 @@
 #include <math.h>
 #include "game.h"
 #include "lang.h"
+#include "../platform/hd.h"
 
 EXTERN_C int plat_replay;
 
@@ -389,8 +390,15 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
     int px, py, w, h;
     u8 *keep;
     DibSurface *s = (DibSurface *)surface;
+    /* HD graphics: the sprite's picture in grey shades on the plane, and
+       nothing else there (after Peter Johnson's hd_sprite_greyscale, PR #11) */
+    int pictured = hd_art && hd_sprite_pictured(sprite, sprite->data_handle);
     grey_map_update();
+    if (pictured)
+        hd_sprite_mode(HD_SPRITES_GREY);
     sprite->draw(&r, (DibSurface *)surface, x, y);
+    if (pictured)
+        hd_sprite_mode(0);
     w = r.right - r.left;
     h = r.bottom - r.top;
     if (w <= 0 || h <= 0 || w > 1024 || h > 1024)
@@ -399,7 +407,11 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++)
             keep[py * w + px] = (u8)(s->in_clip(r.left + px, r.top + py) ? s->get_pixel(r.left + px, r.top + py) : 0);
+    if (pictured)
+        hd_sprite_mode(HD_SPRITES_OFF);
     sprite->draw_silhouette(&r, (DibSurface *)surface, x, y, MARK);
+    if (pictured)
+        hd_sprite_mode(0);
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++) {
             int c = keep[py * w + px];
@@ -411,6 +423,8 @@ void extras_draw_grey_sprite(Sprite *sprite, iptr surface, int x, int y)
                 s->set_pixel(r.left + px, r.top + py, c);
         }
     free(keep);
+    if (pictured)
+        hd_bits_shown((void *)s->bits, r.left, r.top, w, h);
 }
 
 /* ---- X30: the shields an item costs, in the Change Production list ---- */

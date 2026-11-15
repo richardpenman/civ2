@@ -1,0 +1,96 @@
+# HD graphics (docs/HD-GRAPHICS.md): the map redrawn under a moving unit
+# leaves no trail, gap or seam on the plane: at each of the 16 zooms (from
+# the furthest out, zooming in step by step), a trireme, alone and stacked
+# (its second shield reaches outside its sprite), slid from the map's
+# centre in each of the 8 directions (hd_map_redraw_probe; after Peter
+# Johnson's tools/test_map_redraw.py, PR #11).  The result is in hook.log:
+# "map redraw probe: zoom Z: N of 16 slides left pixels".
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call menu_command 4e2803 0 804      # the furthest zoom out
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-8
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-7
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-6
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-5
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-4
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-3
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-2
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z-1
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z0
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z1
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z2
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z3
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z4
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z5
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z6
+call menu_command 4e2803 0 784     # zoom in
+wait 3000
+call hd_map_redraw_probe 0
+wait 30000                 # (the slides idle: nothing else meanwhile)
+shot z7

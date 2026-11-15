@@ -29,6 +29,9 @@ void hd_recolour_end(DibSurface *surface, const RECT *area);
 /* The city window's food (food) or production box as a meter: value of
    capacity, the granary's mark at threshold (0: none). */
 void hd_stock_meter(DibSurface *surface, const RECT *box, int value, int capacity, int threshold, int food);
+/* A test: a trireme slid from the map's centre in the 8 directions, alone
+   and stacked, must leave the plane as it was (harness/hd/hd-redraw.txt). */
+void hd_map_redraw_probe(void);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 
