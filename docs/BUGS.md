@@ -28,8 +28,8 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 37 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
-B23 to B25, B28 and B32 to B37. Fixed in every mode: B1 (our build reads the original's usual
+Status of the list: 38 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
+B23 to B25, B28 and B32 to B38. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
 anyway. Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
@@ -709,6 +709,19 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** clamp to 5. **UI only.** (Anarchy still shows "Empire".)
 - **Saves:** none.
 - **Status: fixed** (`bugfix_ui()`; also in the `CityStatus` extra's own City Status view).
+
+### B38. A Civilopedia description does not take the keyboard
+- **Where:** `src/game/retvals.cpp`, `PediaWindow::load_description` (the description's edit
+  control, `description_edit`, is filled and shown, but the focus stays with the Civilopedia's
+  window).
+- **What goes wrong:** Page Up, Page Down and the arrows do nothing in a description longer than
+  its box: only its scroll bar (and with `MouseWheel` the wheel) scrolls it.
+- **Source:** Peter Johnson (PR #11, "Fix scrolling in Civilopedia descriptions").
+- **Fix:** the description takes the focus when it is shown (`Control::set_focus`). **UI only.**
+  Back at the list (Go Back), the arrows move the list's selection as before; Escape does what it
+  did.
+- **Saves:** none.
+- **Status: fixed** (`bugfix_ui()`). `harness/extras/x-pediakeys.txt` (with `CIV2_TEST_FIXES=1`).
 
 ## Memory errors of the original (fixed in every mode)
 

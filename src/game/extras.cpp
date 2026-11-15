@@ -1018,12 +1018,11 @@ static void status_draw_production_icon(int city, int x, int y)
     } else if (-b < 0x27)
         ((Sprite *)(caption_close_button_sprite_block.improvement_icon_sprites + -b * 0x3c))
             ->draw((RECT *)r, &advisor_state.window, x, y);
-    else {
-        gfx_set_zoom_scale(-4);
+    else
+        /* a wonder: its 36x20 icon at full size, as an improvement's (Peter
+           Johnson's fix, PR #11: it was drawn at half size) */
         ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (-b * 4 - 0x9c) * 0xf))
             ->draw((RECT *)r, &advisor_state.window, x, y);
-        gfx_reset_zoom_scale();
-    }
 }
 
 void extras_city_status_draw(void)
@@ -1111,7 +1110,7 @@ void extras_city_status_draw(void)
         }
         x = status_col_prod;
         status_draw_production_icon(city, x, ty);
-        x += 0x18;
+        x += 36 + 4;    /* the icon's width (36), then a gap */
         text_clear();
         if (cities[city].building < 0) {
             int imp = -cities[city].building;

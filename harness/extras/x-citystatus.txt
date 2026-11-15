@@ -29,5 +29,14 @@ wait 3000
 mousemove 601 470
 wait 1000
 shot x31-d-back
+click 450 160
+wait 4000
+click 240 431               # Hanging Gardens: a wonder's icon, full size
+wait 1000
+click 380 460               # OK
+wait 4000
+mousemove 600 470
+wait 1000
+shot x31-e-wonder
 key Escape
 wait 2000

@@ -129,6 +129,10 @@ void PediaWindow::load_description(int topic2)
     }
     description_edit.set_text((const char *)desc_text);
     description_edit.show_and_redraw();
+    /* B38: the description takes the keyboard, so that Page Up/Down and the
+       arrows scroll it (Peter Johnson's fix, PR #11) */
+    if (bugfix_ui())
+      description_edit.set_focus();
   }
   return;
 }

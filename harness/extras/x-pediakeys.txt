@@ -1,0 +1,38 @@
+# The keyboard in a Civilopedia description longer than its box (Republic):
+# the description takes the focus when it is opened (B38, docs/BUGS.md), so
+# Page Down, Down and Page Up scroll it; then back at the list (Go Back),
+# the arrows still move the list's selection.
+# test: CIV2_TEST_FIXES=1
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call menu_command 4e2803 0 2313     # Civilopedia: governments
+wait 3000
+click 42 260                # Republic
+wait 1000
+click 144 382               # Info
+wait 3000
+shot k0
+key Next                    # Page Down
+wait 1000
+shot k1
+key Down Down
+wait 1000
+shot k2
+key Prior                   # Page Up
+wait 1000
+shot k3
+click 141 374               # Go Back: the list
+wait 2000
+shot k4
+key Up                      # Monarchy
+wait 1000
+shot k5
+key Up                      # Fundamentalism
+wait 1000
+shot k6
