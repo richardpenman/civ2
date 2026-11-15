@@ -4,7 +4,8 @@
 // Activate dialog (9 units or fewer) a click on a unit's picture wakes it
 // (unit_dlg_wake_unit_cb: no orders, not automated), so a few clicks wake
 // several sleeping units.  X2's list of more than 9 units must too: a click
-// on a unit's row wakes it, in that list only, and not with the extra off.
+// on a unit's row wakes it, in that list only, and not with the extra off,
+// and the row is drawn again so its picture shows the unit awake.
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -35,7 +36,14 @@ static DialogOption row = {};
 void Dialog::pick_pane_at(int, int) {}
 i32 Dialog::option_at_point(int, int) { return 3; }
 DialogOption *Dialog::option_at(int index) { return index == 3 ? &row : 0; }
+static bool awake();
+static int drawn_awake;     // the row redrawn after the unit woke
 void Dialog::select_option(DialogOption *option, int) { selected_option = option; }
+uint Dialog::draw_option(DialogOption *option, int) {
+    if (option == &row && awake())
+        drawn_awake = 1;
+    return 0;
+}
 void WndBase::set_capture() {}
 
 #include "production.inc"
@@ -59,6 +67,7 @@ static void sleep_unit() {
     units[7].orders = ORDER_SLEEP;
     units[7].flags = UNITF_AUTOMATED;
     row.id = 7;
+    drawn_awake = 0;
 }
 
 static bool awake() { return units[7].orders == ORDER_NONE && (units[7].flags & UNITF_AUTOMATED) == 0; }
@@ -71,6 +80,10 @@ int main() {
     assert(dialog_state.active->selected_option == &row);
     std::printf("X2 list: unit %s\n", awake() ? "woken" : "still asleep");
     assert(awake());
+    // ...and its row is drawn again, awake: select_option drew it before the
+    // unit woke, so its picture would stay greyed (asleep) until redrawn.
+    std::printf("X2 list: row %s\n", drawn_awake ? "redrawn awake" : "not redrawn");
+    assert(drawn_awake);
 
     // Another list: nothing woken.
     sleep_unit();
