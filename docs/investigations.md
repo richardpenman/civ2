@@ -1,3 +1,13 @@
+* The list number itself is our arbitrary number, i.e. duplij-244
+* The identifier in parenthesis, such as (L1), indicates which item it is from which list:
+  * L means civfanatic duplij's Legacy [list](https://forums.civfanatics.com/threads/civ2-mge-several-fixes-and-additions-with-support-for-music-tracks.688546/)
+  * N means civfanatic duplij's New [list](https://forums.civfanatics.com/threads/sid-meiers-civilization-ii-mge-5-4-0f-advanced-mod-1-24-eng-rus.702468/)
+  * The number following L or N indicates which number in that list
+
+NOTE: If classification has a question mark (i.e., Fix? or Feature? or Mod?) it means this was Claude's estimation, as-yet-unconfirmed
+
+---
+
 1. <details><summary><del>duplij-1 (L1)</del> - Fix? — Click to expand</summary>
 
    - Status: Resolved; does not affect OC2 by design
