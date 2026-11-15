@@ -156,7 +156,7 @@ def exe(cross_windows=False):
         sdl_cflags = [f for f in sdl if f.startswith(('-I', '-D'))]
         sdl_libs = [f for f in sdl if not f.startswith(('-I', '-D'))]
         sdl_dll = None
-        if windows:     # MSYS2: the DLL next to sdl2-config
+        if windows and not static:      # MSYS2: the DLL next to sdl2-config (not with SDL2 linked in)
             prefix = subprocess.run(['sdl2-config', '--prefix'], capture_output=True, text=True).stdout.strip()
             sdl_dll = os.path.join(prefix, 'bin', 'SDL2.dll')
         obj = OBJ
