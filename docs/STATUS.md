@@ -142,7 +142,8 @@ message by message and clock event by clock event.
   procedure its SurfaceWindow *, the AVI sound its u16 * status.  The 7
   left: the two debug-log format arguments (a number or a string), and five
   values the game keeps as integers (the dialog parent and palette globals,
-  the active child window, the DDControl message target).
+  the active child window, the DDControl message target); re-checked after
+  the records' pass, the same 7 for the same reasons.
   Checked function by function: the machine code is the same but for about
   150 functions that differ in register choice and stack slots (the address
   of a stack buffer computed before or after the other arguments), sources
@@ -167,7 +168,7 @@ message by message and clock event by clock event.
   and fields are recovered per subsystem: raw offset accesses
   (`*(T *)(p + 0x34)`, `(T *)((int)this + 0x34)`) went from over 5,100 to
   22 in src/auto and src/game (64 and then 573 before the last two passes;
-  tools/cxx_subobjects.py lists them, with the casts it leaves: 76, 120
+  tools/cxx_subobjects.py lists them, with the casts it leaves: 71, 120
   before), now struct members (network sessions
   and messages, native windows, dialog lists, scenario events, Civilopedia
   lists; the surfaces, palettes, fonts, sprites, buttons, click maps and video
@@ -183,7 +184,12 @@ message by message and clock event by clock event.
   compressed-data decoders' cursors, a palette's RGB triples: 16), the
   original's vtable addresses (3), and records no code describes beyond the
   one access (the MCI device a movie window keeps where a Wnd keeps its
-  controls, at 0x8 and 0x10; the DirectDraw window's native record: 3).
+  controls, at 0x8 and 0x10; the DirectDraw window's native record: 3);
+  re-checked after the records' pass, the same 22.  Offsets written since
+  the count are members too: the spaceship window's palette, view surface
+  and typing font in src/game (bigframes.cpp, unwind.cpp: 20) and the
+  saved game's leader records (retvals.cpp: a Leader[21] read from the
+  file, 6 accesses).
   Strings read from their second character are `buf + 1`.  Offsets written
   as indexes, which the count misses, are members too (223 sites): the
   dialog's added labels and buttons (`extra_button_labels[6]`,
@@ -191,10 +197,49 @@ message by message and clock event by clock event.
   selections and rectangles (`list_items[pane][i]` for
   `list_items[pane * 0x801 + i]`, `&window->list_selected[pane][row]` for
   `pane * 0x2004 + 0x8400 + (iptr)window`), the Civilopedia's sort keys
-  (byte overlays at offsets from the wrong list).  Members of the state
-  records indexed past a scalar or by bytes (`((i8 *)&text_args.strings) +
-  i * 0x104`, the sprite blocks' `+ i * 0x3c`: about 970) are the records'
-  layout, left for their own pass.  The 529 casts in
+  (byte overlays at offsets from the wrong list).  The state records'
+  members indexed past a scalar or by bytes have their layout too (indexed
+  byte accesses `((T *)&rec.member) + E` and `(((T *)&rec.member))[E]`,
+  E not a constant, in src/auto, src/game, src/native: 1,108 -> 15;
+  tools/cxx_records.py rewrites them from a specification of each array,
+  the offset decomposed over its strides): the sprite blocks are arrays of
+  Sprite of the lengths the original's start-up initializers give
+  (unit_sprites[63], improvement_icon_sprites[67] with the wonders from
+  IMP_FIRST_WONDER, citizen_sprites[4][11], city_sprites[6][4][2],
+  coast_quarter_sprites[8][4] ...), the string slots arrays of strings
+  (text_args.strings[24][260], the passwords [8][32], the editors' names
+  [21][15]), the tables read past a one-element array their real lengths
+  (the direction tables [9], the diagonal ones [5]: the square itself last;
+  by_commodity[16], tile_yields[3], mode_kinds[6][2], victory_thresholds[4]
+  ...), the per-view and per-slot fields reached through the records
+  (map_view_recs[view].origin_x, net_slots[slot].civ, the stacked draws,
+  the editors' editor_item_recs[item].values[ctrl_id - 0xca]), positions and
+  places EditorPos, PicPlace (x, y, width, height), RECT, the path grid
+  [48][48]; elements the decompiler named on their own are indexes
+  (research_popup_sprite -> unit_sprites[1]) or, where the name says what
+  the element is, a union's names beside the array (fortress_sprite,
+  shield_icon_sprite, tile_shields, profile_difficulty); the flat overlays
+  of the network's slots, map locks, stacked draws and spaceship parts are
+  gone.  The 15 left are text: the original's .rdata string pools read by
+  row (str_nm_datagram + type * 0x20, str_aircombt + effect * 9: rows
+  followed by other strings, which no array describes) and two strings in
+  an 8- or 12-byte symbol picked without a branch (`+ ((with_comma != 0) -
+  1 & 8)`).  Checked: every member's offset as before (the data's bytes the
+  same, GAMEDATA unchanged), and the machine code of every function against
+  the previous commit's, both built clean: the functions that differ (about
+  100 over the four passes) make the same calls on every path
+  (tools/calls_compare.py), refer to the same data and keep their immediate
+  comparisons and conditional jumps (a table declared too short lets gcc drop
+  a bound check: the irrigation source's fifth direction showed it); the
+  constants that scale an index (imul, shl) were compared too: a byte offset
+  still added to an array now of Sprite, scaled twice, had made the city
+  status report's improvement icons disappear (OpenCiv2's x-citystatus test
+  failed; fixed in the last pass, the only one); and they
+  differ in register choice, instruction order, an index's constant added
+  before the scaling instead of folded into the displacement, loops counting
+  elements instead of bytes, or a path the first test rules out
+  (spaceship_add_part).  A change to src/data/state/*.h now rebuilds the
+  objects (tools/build_native.py looked at src/*/*.h only).  The 529 casts in
   gamedata.cpp's initializers point into the original's string pool and data
   blocks: data addresses, not field accesses.  The decompiler's byte-joining
   macros (CONCAT11, CONCAT12, CONCAT22, CONCAT31, CONCAT44: 73 uses on 57
@@ -473,7 +518,17 @@ message by message and clock event by clock event.
   just before the caller returned (the network popups, the client's turn
   loop) the caller's destructor does it; the scenario intro's cancellation
   (net_join_cancel_scenario) runs in the part, so its dialog is its own.
-  Left with explicit construct/destruct, and why: the classes that are the
+  Re-examined after the records' pass: none of the classes below can have a
+  C++ constructor or destructor yet (more static data is typed now: 65
+  declarations of Sprite arrays and members alone); keeping those objects as
+  raw storage built by placement new, as the six window classes are, would
+  take their types away again (the code would reach them through casts).  A
+  constexpr constructor would avoid the start-up run only where the
+  original's only clears fields (Sprite's: clear_fields), and the destructor
+  it pairs with (sprite_destroy, freeing the data) would still be registered
+  at exit for every static Sprite.  GamePalette, AviPlayer and
+  TimerManager are members still destroyed mid-body by their owners, plain
+  members in four of them.  Their 182 funclets stay with them.  Left with explicit construct/destruct, and why: the classes that are the
   declared type of static data (gamedata.cpp, state/*.h), or a base or a
   member of one (23: DibSurface, SurfaceWindow, FrameWindow, WndBase,
   ModalMenuWindow, Wnd, WndHandlers, Control, Button, Scrollbar, GameFont,

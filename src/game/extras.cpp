@@ -1030,13 +1030,11 @@ static void status_draw_production_icon(int city, int x, int y)
         pollution_sprite_block.unit_sprites[b].draw((RECT *)r, &advisor_state.window, x, y - 2);
         gfx_reset_zoom_scale();
     } else if (-b < 0x27)
-        ((Sprite *)(caption_close_button_sprite_block.improvement_icon_sprites + -b * 0x3c))
-            ->draw((RECT *)r, &advisor_state.window, x, y);
+        caption_close_button_sprite_block.improvement_icon_sprites[-b].draw((RECT *)r, &advisor_state.window, x, y);
     else
         /* a wonder: its 36x20 icon at full size, as an improvement's (Peter
            Johnson's fix, PR #11: it was drawn at half size) */
-        (&caption_close_button_sprite_block.improvement_icon_sprites[-b])
-            ->draw((RECT *)r, &advisor_state.window, x, y);
+        caption_close_button_sprite_block.improvement_icon_sprites[-b].draw((RECT *)r, &advisor_state.window, x, y);
 }
 
 void extras_city_status_draw(void)

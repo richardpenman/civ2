@@ -27,7 +27,8 @@ EXTRA_NAMES = {'credits_text_block', 'casualty_log_killer_name_ends', 'textbuf'}
 # +0x134 of their window objects; the formatted message's arguments.
 EXTRA_RANGES = [('city_window_block', 0x134, 0x100), ('map_views_block', 0x134, 0x100),
                 ('minimap_window_block', 0x134, 0x100), ('status_window_block', 0x134, 0x100),
-                ('minimap_window_block', 1048 + 24, 6280 - 24)]
+                ('minimap_window_block', 1048 + 24, 6280 - 24),
+                ('civ_saved_cursor_x_block', 0x34, 255)]   # the passwords (a union's members are not listed)
 MEMBER = re.compile(r'^/\*\s*(\d+)(?::\s*\d+)?\s*\|\s*(\d+)\s*\*/\s*(.*)$')
 FIELD = re.compile(r'^(?:const |volatile |struct |class |union |enum )*([\w:]+)\s+(\w+)((?:\[\d+\])*)(?:\s*:\s*\d+)?;$')
 SCALARS = {'char', 'i8', 'u8', 'i16', 'u16', 'i32', 'u32', 'i64', 'u64', 'int', 'uint', 'short', 'long', 'unsigned',
