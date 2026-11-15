@@ -1,0 +1,36 @@
+# HD graphics (docs/HD-GRAPHICS.md), SentryHalftone (docs/EXTRAS.md, X41):
+# a unit on sentry drawn in grey shades on the plane, also on the cursor's
+# square: the phalanx at (22,58) of the autosave chosen (s-0: active, in its
+# colours), put on sentry, the view mode's cursor put on its square and the
+# map centred there (s-a to s-c: grey).
+# run: CIV2_TEST_HD=2 CIV2_TEST_EXTRAS=41 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+key v                       # view mode
+wait 1500
+call map_set_cursor_pos 410d98 22 58
+wait 300
+call ui_pick_unit_from_stack 58d442
+wait 1500
+key Return                  # the phalanx active
+wait 2000
+shot s-0
+key s                       # the phalanx on sentry
+wait 3000
+key v                       # view mode
+wait 1500
+call map_set_cursor_pos 410d98 22 58
+wait 300
+key c                       # the map centred on the cursor
+wait 1500
+shot s-a
+wait 250
+shot s-b
+wait 250
+shot s-c

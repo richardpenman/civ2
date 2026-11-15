@@ -343,7 +343,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
   the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its
   scaled terrain clipped rounds otherwise, a unit's frame is not compared), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
-  `harness/hd/hd-disorder.txt` (a city in civil disorder, `hd_test_city_disorder`: the
+  `harness/hd/hd-sentry.txt` with `CIV2_TEST_EXTRAS=41` (a unit on sentry, grey, on the
+  view mode's cursor's square), `harness/hd/hd-disorder.txt` (a city in civil disorder, `hd_test_city_disorder`: the
   marker at five zooms, the Romans' and the Sioux'; logical screenshots and `rand()` trace those
   of HD off), `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
@@ -380,9 +381,14 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 ## Not yet done
 
-* *SentryHalftone*: in `harness/hd` runs the sprite's draws through `extras_draw_grey_sprite`
-  are grey on the plane, yet on the map a sentried unit on the cursor's square was still seen in
-  its colours in the HD frame (the tile's blinking redraws, clipped to the tile's row): not found.
+* *SentryHalftone*: a sentried unit on the cursor's square was once seen in its colours in the
+  HD frame; not seen again.  Every draw of a sleeping unit on the map goes through
+  `extras_draw_grey_sprite` (`gfx_draw_unit`; the blinking redraws the cursor's tile from
+  scratch, `MapView::redraw_area`, and keeps no unit's picture), and `harness/hd/hd-sentry.txt`
+  (the phalanx of the autosave active, then on sentry with the view mode's cursor on its square)
+  shows it grey at every moment looked at.  A possible cause, since removed: a copy between
+  surfaces whose colour tables differ (the slide's and the blink's background surfaces) could
+  give art the destination's colour for its pixel's index (`hd_big`, above).
 * The leaders' portraits and their animation (the heralds' videos) are the original's,
   enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern
