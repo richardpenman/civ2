@@ -78,6 +78,19 @@ Where the recording has a `calls.log` it must match too: the sounds the game pla
 device, no video files or Indeo codec). The hook logs them from breakpoints on the
 original's two functions (`CIV2_CALL_LOG`, hook/stackprobe.c), the native builds
 from the same functions (src/platform/replay.c).
+A free IV41 decoder in the reference's Wine prefix does not help. ffdshow-tryouts
+rev4531 (VfW codec `ff_vfw.dll`, `iv41` set to libavcodec) decodes IV41 through
+`ICDecompress`, but only to RGB24/32 or YUV. The original's player calls
+`ICDecompressEx` (`ICM_DECOMPRESSEX_QUERY` gets `ICERR_UNSUPPORTED`), wants 8-bit
+frames and the codec's palette (`ICM_DECOMPRESS_GET_PALETTE` fails), and uses
+Intel's private message 0x5001 for the heralds' drawn area. So the game closes the
+codec and shows no video. The codec does change the replay: the same script loads
+into a different game, with a different emissary and a different video for
+the council (council0, not anarchy0), so such recordings do not match the stock ones. ffdshow's luma is
+bit-identical to `src/third_party/indeo4` (FFmpeg 6.1.2) for the first 40 frames
+of COUNCIL0.AVI and HRLDROM.AVI. The chroma could not be compared exactly because
+ffdshow resamples 4:1:0 to 4:2:0. Only Intel's own `ir41_32` codec would play the
+videos in the reference.
 Both `native_suite.sh` and `diff_suite.sh` fail a scenario if its runner or BMP
 conversion fails, then continue with the remaining scenarios and return failure
 for the suite. A failed run is not subsequently reported as `PASS` or `SAME`.
