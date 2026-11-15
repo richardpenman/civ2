@@ -33,7 +33,7 @@ game starts.
 | Key | What |
 | --- | --- |
 | `MouseWheel` | Use the mouse wheel and middle button. The wheel scrolls whatever list or scroll bar is under the pointer (advisors, dialogs, the city window, the Civilopedia), changes the specialist under the pointer in the city window, and moves the tax rate bars. Ctrl+wheel zooms the map and Ctrl+middle click returns to normal zoom. Middle click centres the map on that spot; dragging with the middle button pans it. |
-| `UnitListScroll` | When you click a stack of more than 9 units, the list of units to activate shows all of them and scrolls, instead of stopping at 9. |
+| `UnitListScroll` | When you click a stack of more than 9 units, the list of units to activate shows all of them and scrolls, instead of stopping at 9. As in the game's own list, clicking a unit wakes it, even if you then press Cancel. |
 | `UnitListKeys` | In that scrolling unit list, the arrow keys, Page Up/Down and the mouse wheel move through the list. Needs `UnitListScroll`. |
 | `WorkCounter` | Your settlers and engineers show on the map how much terrain work they have done so far. |
 | `GameTurn` | The status panel shows the turn number after the year. |
