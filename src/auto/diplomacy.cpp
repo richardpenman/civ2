@@ -1,6 +1,7 @@
 /* The game, diplomacy and treaties: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 /* 00448cc0 auto */
 void __cdecl diplo_status_icons_global_init(void)
@@ -4659,6 +4660,7 @@ uint DiploLeaderWindow::init_main_art()
     leader_palette.set_rgb(0x6a,0x28,(u8 *)rgb_buf)
     ;
     leader_surface.set_palette(&leader_palette);
+    hd_diplomacy_flag(&leader_surface,color_index);   /* (port) HD: the room's flag */
   }
   return (uint)(loaded != 0);
 }

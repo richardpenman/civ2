@@ -18,5 +18,15 @@ void hd_advance_end(void);
 void hd_dialog_advance(int advance);
 void hd_dialog_sprite_added(const void *entry, const void *sprite);
 void hd_dialog_sprite_begin(const void *entry);
+/* A unit's shield (each of its draws, in that palette colour), until the
+   game has recoloured it in that rectangle. */
+void hd_shield_begin(int colour);
+void hd_shield_end(DibSurface *surface, const RECT *recoloured);
+/* A sprite the game recolours in that area after drawing it, in that
+   colour (flat: the picture tinted; else its pack's variant of that colour). */
+void hd_recolour_begin(Sprite *sprite, DibSurface *surface, const RECT *area, int colour, int flat);
+void hd_recolour_end(DibSurface *surface, const RECT *area);
+/* The diplomacy room's flag in the civilization's colour. */
+void hd_diplomacy_flag(DibSurface *room, int colour);
 
 #endif

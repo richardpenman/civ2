@@ -1,0 +1,43 @@
+# HD graphics (docs/HD-GRAPHICS.md): the units' shields from the pack (its
+# shield, an alpha mask, in the owner's colour, the stack's second shield
+# and the shadows in theirs, the order's letter over it), a stack of three
+# units beside Rome, and a fighter on an airbase (the pack's aircraft in the
+# owner's colour), at the normal zoom, zoomed out twice and zoomed in twice.
+# Each logical screenshot and the rand() trace are those of the run with HD
+# graphics off.
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call unit_create 5b3d06 2 1 22 60
+wait 500
+call unit_create 5b3d06 3 1 22 60
+wait 500
+call unit_create 5b3d06 4 1 22 60
+wait 500
+call tile_set_improvements 5b94fc 23 59 66 1 1
+wait 500
+call unit_create 5b3d06 27 1 23 59
+wait 3000
+shot u-normal
+key z                       # zoom out
+wait 5000
+shot u-out1
+key z
+wait 5000
+shot u-out2
+key x
+wait 3000
+key x
+wait 3000
+key x                       # zoom in
+wait 5000
+shot u-in1
+key x
+wait 5000
+shot u-in2

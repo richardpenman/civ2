@@ -54,8 +54,8 @@ void hd_sprite_end(const void *sprite, unsigned handle, void *bits, int x, int y
 /* The sprite's next draws, until hd_sprite_as(NULL, ...): the pack's
    picture KEY (NULL: its own), fitted inside the sprite's frame keeping its
    proportions (contain) or stretched, tinted flat in palette colour tint
-   (-1: its own colours).  Only with HD graphics (hd_art). */
-void hd_sprite_as(const void *sprite, unsigned handle, const char *key, int contain, int tint);
+   (-1: its own colours).  Only with HD graphics (hd_art): 1 if so. */
+int hd_sprite_as(const void *sprite, unsigned handle, const char *key, int contain, int tint);
 /* The sprites drawn next: as ever (0), in grey shades (HD_SPRITES_GREY),
    or not on the plane at all (HD_SPRITES_OFF: their pixels are left to
    hd_bits_shown or to show enlarged). */

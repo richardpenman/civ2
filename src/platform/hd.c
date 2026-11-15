@@ -1095,21 +1095,21 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
     }
 }
 
-void hd_sprite_as(const void *s, unsigned handle, const char *key, int contain, int tint)
+int hd_sprite_as(const void *s, unsigned handle, const char *key, int contain, int tint)
 {
     Spr *p;
     int id;
     as_sprite = NULL;
     if (!hd_art || !s)
-        return;
+        return 0;
     if (key) {
         if (!(id = find(key)))
-            return;
+            return 0;
         memset(&as_spr, 0, sizeof as_spr);
         as_spr.id = id;
     } else {
         if (!(p = lookup(s, handle)) || (!p->id && !p->snap))
-            return;
+            return 0;
         as_spr = *p;
         as_spr.next = NULL;
     }
@@ -1118,6 +1118,7 @@ void hd_sprite_as(const void *s, unsigned handle, const char *key, int contain, 
     as_spr.contain = contain;
     as_spr.tint = tint >= 0 ? (tint & 255) + 1 : 0;
     as_sprite = s;
+    return 1;
 }
 
 void hd_sprite_mode(int mode)

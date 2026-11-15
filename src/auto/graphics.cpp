@@ -2,6 +2,7 @@
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
 #include "../platform/hd.h"
+#include "hd_game.h"
 void hd_bind_terrain(void);
 
 /* 00407f90 auto */
@@ -3073,28 +3074,36 @@ gfx_draw_unit(DibSurface *surface,int unit,uint draw_flags,int px,int py,int zoo
       abs_dx = stack_dx;
     }
     if (2 < (int)abs_dx) {
+      hd_shield_begin(0xf);     /* (port) HD: the pack's shield in that colour */
       ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_stack_shadow,surface,
                  side + stack_dx + shield_x,stack_dy + shield_y + 1);
       rect_offset(&shield_rect,side,1);
       (surface)->replace_color((RECT *)&shield_rect.left,0x106,0xf);
       (surface)->replace_color((RECT *)&shield_rect.left,0x105,0xf);
+      hd_shield_end(surface,&shield_rect);
       rect_offset(&shield_rect,-side,0xffffffff);
     }
+    hd_shield_begin(color_mid);
     ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_stack,surface,stack_dx + shield_x,
                stack_dy + shield_y);
     (surface)->replace_color((RECT *)&shield_rect.left,0x106,color_mid);
     (surface)->replace_color((RECT *)&shield_rect.left,0x105,color_mid);
+    hd_shield_end(surface,&shield_rect);
   }
   rect_set_xywh(&shield_rect,shield_x,shield_y,shield_width,shield_height);
+  hd_shield_begin(0x10);
   ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_shield_shadow,surface,side + shield_x,shield_y + 1
             );
   rect_offset(&shield_rect,side,1);
   (surface)->replace_color((RECT *)&shield_rect.left,0x106,0x10);
   (surface)->replace_color((RECT *)&shield_rect.left,0x105,0x10);
+  hd_shield_end(surface,&shield_rect);
   rect_offset(&shield_rect,-side,0xffffffff);
+  hd_shield_begin(color_primary);
   ((Sprite *)((i8 *)&unit_shield_sprite))->draw((RECT *)clip_shield,surface,shield_x,shield_y);
   (surface)->replace_color((RECT *)&shield_rect.left,0x106,color_primary);
   (surface)->replace_color((RECT *)&shield_rect.left,0x105,color_mid);
+  hd_shield_end(surface,&shield_rect);
   scaled = gfx_zoom_scale(2,zoom);
   rect_set_xywh(&band_rect,shield_x,shield_y,shield_width,scaled);
   gfx_fill_rect(surface,&band_rect,10);
@@ -3437,8 +3446,12 @@ gfx_draw_city(DibSurface *surface,int city,uint draw_flags,int px,int py,int zoo
       gfx_draw_text((const char *)size_text,label_rect.left + (pad >> 1) + 1,label_rect.top);
     }
     else {
+      /* (port) HD: the marker tinted in the owner's colour */
+      hd_recolour_begin((Sprite *)&fortify_overlay_sprites_block.city_disorder_icon_sprite,surface,
+                        (RECT *)&label_rect.left,color_primary,1);
       ((Sprite *)((i8 *)&fortify_overlay_sprites_block.city_disorder_icon_sprite))->draw((RECT *)clip_disorder,surface,px,py);
       (surface)->replace_color((RECT *)&label_rect.left,0x106,color_primary);
+      hd_recolour_end(surface,(RECT *)&label_rect.left);
     }
   }
   gfx_reset_zoom_scale();

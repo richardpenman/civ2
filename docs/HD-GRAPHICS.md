@@ -189,6 +189,19 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
   picture is loaded into it.
+* **Units' shields, owners' colours**: the units' shields are the pack's `shield`, an alpha mask,
+  drawn in the colour the game gives each (the owner's, the stack's second shield's, the
+  shadows'), where the game draws its own and then recolours it (`replace_color` of its marker
+  colours 5 and 6, whose result is taken as shown: `hd_shield_begin`/`hd_shield_end` in
+  `src/game/hd_graphics.cpp`); the black bands, the hit points and the order's letter are drawn
+  over it as ever.  The occupied airbase's aircraft is the pack's variant in the owner's colour,
+  and the city's disorder marker is tinted in it (`hd_recolour_begin`/`end`).  The pack numbers
+  its colour variants (`tint/KEY/COLOUR`) 208 + 3 x the colour's slot (red, white, green, blue,
+  yellow, cyan, orange, purple), not by the game's palette (`pack_tint`).  The diplomacy room,
+  whose original shows the civilization's colour on its banners (palette entry 0x91), has the
+  pack's flag (`faction/flag`) in that colour in its corner (`hd_diplomacy_flag`).  After Peter
+  Johnson's `gfx_draw_unit_shield`, `hd_sprite_tint` and `hd_diplomacy_flag` (PR #11).  The
+  game's own pixels (which map picking reads) are the original's.
 * **Advances**: where the game draws an advance's icon (its category's, 36x20, by category and
   epoch: the Science Advisor's list, the intelligence report's, the Civilopedia's list, an
   advance's page and its tree, the choice of research and its advice, the announcements of a
@@ -301,7 +314,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-advances.txt` (the
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-units.txt` (the shields, a stack, an
+  occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
   tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
@@ -317,7 +331,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,251 pictures, 100 MB of PNGs, about 80 MB with each
+For a stripped pack, the keys hd.c draws (1,252 pictures, 100 MB of PNGs, about 80 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
@@ -326,6 +340,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city
   view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
 * `advance/` (58): the advances;
+* `shield`: the units' shields;
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
@@ -351,8 +366,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * The new game's pictures are vignettes over black (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where
   the game puts its harbour.
-* Unit shields and the city size box are the original's, enlarged (the pack's `shield` is an
-  alpha mask to be tinted); in places the larger unit art covers the shield.
+* The city size box is the original's, enlarged; in places the larger unit art covers the
+  shield (the game draws the unit after its shield).
 * Palette changes of an 8-bit surface (a fade) reach only the pixels shown enlarged, not the
   art nor sharp text; the screen's grey fade does not grey the frame.
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,

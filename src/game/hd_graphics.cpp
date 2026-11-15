@@ -272,3 +272,88 @@ void hd_dialog_sprite_begin(const void *entry)
             return;
         }
 }
+
+/* The units' shields: the pack's shield is an alpha mask (12x20), drawn in
+   the colour the game gives the shield (its owner's, the stack's, the
+   shadow's) where the game draws its own and recolours it
+   (DibSurface::replace_color: the marker colours 5 and 6), so that the
+   recoloured pixels are taken as shown (hd_shield_end); the black bands,
+   the hit points and the order's letter are drawn over it as ever (after
+   Peter Johnson's gfx_draw_unit_shield and gfx_recolor_unit_shield in
+   PR #11, which draw the shield as a silhouette of its owner's colour). */
+static int shield_drawn;
+
+void hd_shield_begin(int colour)
+{
+    Sprite *s = (Sprite *)&unit_shield_sprite;
+    shield_drawn = hd_art && hd_sprite_as(s, s->data_handle, "shield", 0, colour);
+}
+
+void hd_shield_end(DibSurface *surface, const RECT *recoloured)
+{
+    if (!shield_drawn)
+        return;
+    hd_sprite_as(NULL, 0, NULL, 0, -1);
+    hd_bits_shown((void *)surface->bits, recoloured->left, recoloured->top, recoloured->right - recoloured->left,
+                  recoloured->bottom - recoloured->top);
+    shield_drawn = 0;
+}
+
+/* The pack's colours of the civilizations (its tint/KEY/COLOUR variants):
+   208 + 3 x the colour's slot (red, white, green, blue, yellow, cyan,
+   orange, purple: civ_colors), for a palette colour the game gives one;
+   -1 for another. */
+static int pack_tint(int colour)
+{
+    int k;
+    for (k = 0; k < 8; k++)
+        if ((civ_primary_colors_block.civ_colors[k].primary & 255) == (colour & 255) ||
+            (civ_primary_colors_block.civ_colors[k].mid & 255) == (colour & 255))
+            return 208 + 3 * k;
+    return -1;
+}
+
+/* A sprite of the map recoloured by the game after it is drawn (the
+   occupied airbase's aircraft, the city's disorder marker: the marker
+   colour 6 in the owner's): the area synced before, the sprite drawn in
+   that colour (its pack's variant tint/KEY/COLOUR, or tinted flat), and
+   the recoloured pixels taken as shown after.  Only for a sprite drawn
+   from a picture of the pack. */
+static int recolour_drawn;
+
+void hd_recolour_begin(Sprite *sprite, DibSurface *surface, const RECT *area, int colour, int flat)
+{
+    recolour_drawn = 0;
+    if (!hd_art || !hd_sprite_pictured(sprite, sprite->data_handle))
+        return;
+    hd_bits_sync((void *)surface->bits, area->left, area->top, area->right - area->left, area->bottom - area->top);
+    if (flat)
+        recolour_drawn = hd_sprite_as(sprite, sprite->data_handle, NULL, 0, colour);
+    else if (pack_tint(colour) >= 0) {
+        hd_sprite_recolor(sprite, sprite->data_handle, 8, pack_tint(colour));
+        recolour_drawn = 1;
+    }
+}
+
+void hd_recolour_end(DibSurface *surface, const RECT *area)
+{
+    if (!recolour_drawn)
+        return;
+    hd_sprite_as(NULL, 0, NULL, 0, -1);
+    hd_bits_shown((void *)surface->bits, area->left, area->top, area->right - area->left, area->bottom - area->top);
+    recolour_drawn = 0;
+}
+
+/* The diplomacy room: the original's rooms show the civilization's colour
+   in a palette entry (0x91) of their banners; the pack's rooms have no
+   such banner, so its flag (faction/flag, in the civilization's colour:
+   tint/faction/flag/COLOUR) is drawn on the room's plane in its corner, as
+   Peter Johnson's hd_diplomacy_flag (PR #11) does. */
+void hd_diplomacy_flag(DibSurface *room, int colour)
+{
+    char key[40];
+    if (!hd_art || pack_tint(colour) < 0)
+        return;
+    snprintf(key, sizeof key, "tint/faction/flag/%d", pack_tint(colour));
+    hd_picture((void *)room->bits, key, 24, 16, 28, 44, 1);
+}
