@@ -12,22 +12,25 @@ export const CHUNK = 4 << 20;
 // The pictures src/platform/hd.c draws, by their keys' first part
 // ("crop/file/SHEET/x,y,w,h", "crop/resource/MODULE/gifs/ID/x,y,w,h",
 // "tint/crop/...", "dither/T/Q", "fog/Q", "file/SHEET"; the resource
-// pictures it paints whole, hd.c's WHOLE, and the throne room's pieces,
-// "palace-resource/ID"): the rest of the pack (the pictures made for other
+// pictures it paints whole, hd.c's WHOLE; the throne room's, which
+// src/game/hd_graphics.cpp composes: "palace/" but its "decor-", and the
+// empty hall, "resource/pv.dll/gifs/100"): the rest of the pack (the pictures made for other
 // renderers) is left out of the game's memory.
-export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace-resource/',
+export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/',
+    'resource/pv.dll/gifs/100',
     'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/5', 'resource/tiles.dll/gifs/65',
     'resource/tiles.dll/gifs/66', 'resource/tiles.dll/gifs/90',
     'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',
     'resource/cv.dll/gifs/345', 'resource/cv.dll/gifs/346', 'resource/cv.dll/gifs/350',
     'resource/cv.dll/gifs/351',
     'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
-// Of those, the crops hd.c does not draw: its NOT_CROPPED (the pack's
+// Of those, the throne room's decorations (not drawn), the crops hd.c does
+// not draw: its NOT_CROPPED (the pack's
 // leaders' portraits, not the tribes' leaders), and of the city view's
 // houses (cv.dll 310, src/game/hd_graphics.cpp) all but the industrial
 // era's rows (y 231 and 512).
 const CV = 'crop/resource/cv.dll/gifs/310/';
-export const DROP = ['crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
+export const DROP = ['palace/decor-', 'crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
     'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',
     'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26',
     ...[1, 160, 319, 478].flatMap((x) => [`${CV}${x},1,`, `${CV}${x},116,`]),

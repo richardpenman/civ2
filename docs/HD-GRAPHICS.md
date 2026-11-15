@@ -87,8 +87,9 @@ here:
 | `file/SHEET` | the whole sheets at the original's size |
 | `resource/MODULE/gifs/ID` | the pictures of the game's libraries (`mk.dll`, `pv.dll`, `cv.dll`, `tiles.dll` ...) by resource id, at the original's size (below) |
 | `crop/resource/MODULE/gifs/ID/x,y,w,h` | the sprites the game takes from those pictures (the city view's improvements and houses, the leaders' portraits, the diplomacy screen's icons, the spaceship's buttons) |
-| `palace-resource/ID` | the throne room's pieces (`pv.dll`), each at its piece's size |
-| `city/...`, `palace/...`, `building/...`, `house/...`, `lot/...`, `advance/...`, `wonder/...` ... | pictures that PR #11's renderers of their own place themselves (not used here) |
+| `palace/FAMILY-LEVEL`, `palace/bonus-I` | the throne room's furnishings (arch, rug, dais, columns, tapestry, brazier, throne, ceiling medallion; levels 1 to 4) and its seven bonus pieces, which `src/game/hd_graphics.cpp` places in the pack's empty hall (`resource/pv.dll/gifs/100`) |
+| `palace-resource/ID` | the original's throne room pieces redrawn (`pv.dll`; not used here) |
+| `city/...`, `building/...`, `house/...`, `lot/...`, `advance/...`, `wonder/...` ... | pictures that PR #11's renderers of their own place themselves (not used here) |
 
 ## How it is drawn
 
@@ -137,8 +138,7 @@ The rest is in the platform layer (`src/platform/hd.c`):
   resources (`DibSurface::load_gif_resource`), the surface remembers it as
   `resource/MODULE/gifs/ID` (the module the platform's `FindResourceA` found it in,
   `plat_res_module`), and the sprites the game takes from it get the pack's
-  `crop/resource/MODULE/gifs/ID/x,y,w,h` as sprites from sheets do (the throne room's pieces
-  `palace-resource/ID`, where the size is the piece's).  The pack's whole pictures were made for
+  `crop/resource/MODULE/gifs/ID/x,y,w,h` as sprites from sheets do.  The pack's whole pictures were made for
   PR #11's renderers: many are laid out otherwise than the original's (the throne room's
   pieces, the spaceship's parts, the announcements' pictures are vignettes, the advisors'
   photographs a framed parchment), so only those that work as the same picture are painted on
@@ -170,11 +170,33 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
   picture is loaded into it.
-* **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: the throne room's
-  fade in, a palette loaded for another picture), the plane's pixels that are the surface's
-  pixels enlarged in the old colour take the new one.  The art (sprites, pictures) and sharp
-  text keep their colours: they do not fade with the palette (the throne room's pieces appear
-  at once rather than fading in).
+* **The throne room** is drawn whole from the pack's art, as PR #11's renderer drew it (its
+  placement and order of the pieces): the game draws its own room as ever (the same pictures
+  loaded, palettes and `rand()` calls), then, at the end of `ThroneRoomWindow::render`,
+  `hd_throne_room` (`src/game/hd_graphics.cpp`) paints on the room's plane the pack's empty
+  hall (`resource/pv.dll/gifs/100`), the furnishings at the civilization's levels
+  (`palace/arch-1` ... `palace/ceiling-medallion-4`, from `throne_room[0..7]`; 0: none) and,
+  the room complete, the bonus pieces built (`palace/bonus-0` to `6`, the bits of
+  `throne_room[8]`), and the game's pixels are taken as shown (`hd_picture`,
+  `hd_picture_done` in hd.c).  The text the game writes over it afterwards is drawn sharp on
+  it.  The choice ("Which section shall we improve?", end of `render_choices`): the game
+  still chooses by the regions of its click map over its own colour-coded hall
+  (`add_choice_regions`: the first region holding the point gives the section, or 10 + the bonus
+  piece); the plane shows the pack's room, darkened, and for each section that can be chosen
+  the piece that would be built (`palace/FAMILY-(level+1)`, or the bonus piece), framed, in the
+  largest rectangle of the part of the screen whose clicks choose it, so that a click on a
+  piece chooses it (PR #11 drew its boxes at the screen's sides, with a click map of its own;
+  bonus pieces 4 and 5 share their regions: the one shown is the one the game gives, 5 first).
+  Some regions are narrow (the throne's, the bonus pieces'), so some pieces are small.
+  The pictures the original drew for the room, enlarged, are no longer seen.
+* **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: a palette loaded
+  for another picture, the throne room's colours given to its surface, all black until it is
+  first shown), the plane's pixels that are the surface's pixels enlarged in the old colour
+  take the new one.  The art (sprites, pictures) and sharp text keep their colours: they do
+  not fade with the palette.  A plane composed whole (the throne room's) is left as it is by
+  such a change (`hd_own`: it holds no pixels of the game's, enlarged, and a black part of
+  the art must not take the colour of the pixel under it), so the room appears at once, in its
+  colours, where the original's turns from black to its colours.
 
 So nothing the game computes changes, nor any `rand()` call: the game's own pixels, which its
 code reads back (map picking masks, editors), are the original's.  PR #11 learned the hard way
@@ -249,7 +271,9 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
   ancient, industrial and modern, on a 640x480 desktop), `advisors.txt` (the advisors' parchment), `reports.txt` (the
-  throne room), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
+  throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
+  times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
+  logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
   `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
   original's recording; the `-hd` screenshots are looked at by eye.  On the replays'
@@ -260,14 +284,15 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,220 pictures, 92 MB of PNGs, 73 MB with each
+For a stripped pack, the keys hd.c draws (1,232 pictures, 97 MB of PNGs, 78 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
 * `crop/resource/...` (130): the sprites taken from the libraries' pictures, but for the
   leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`) and of the city
   view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
-* `palace-resource/ID` (28): the throne room's pieces;
+* `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
+  `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
   `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
@@ -279,8 +304,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern
   landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
-  throne room's background (`pv.dll` 100, the hall the game colours to choose a section) and
-  `pv.dll` 170 to 184, the `palace/` set; the announcements' pictures (`tiles.dll` 70 to 77,
+  throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
+  the announcements' pictures (`tiles.dll` 70 to 77,
   vignettes) and the wonders' (`wonder.dll`), whose windows the replays do not reach and
   which were not looked at; the advisors' framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts

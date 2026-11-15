@@ -55,6 +55,21 @@ void hd_sprite_end(const void *sprite, unsigned handle, void *bits, int x, int y
 void hd_copy_begin(void *src_bits, int sx, int sy, int w, int h);
 void hd_copy_end(void *dst_bits, void *src_bits, int dx, int dy, int sx, int sy, int w, int h);
 
+/* Pictures the game's side composes on a surface's plane itself (the
+   throne room, src/game/hd_graphics.cpp), over the game's own picture: the
+   pack's picture KEY in the rectangle x, y, w x h (surface pixels,
+   fractional), fitted inside it keeping its proportions (contain) or
+   stretched; 0 if the pack has none (nothing drawn). */
+int hd_picture(void *bits, const char *key, double x, double y, double w, double h, int contain);
+/* The pack's picture's proportions (its size in the game's pixels): 0 none. */
+int hd_picture_size(const char *key, int *w, int *h);
+/* A rectangle of colour 0xAARRGGBB (AA the opacity) over the plane. */
+void hd_picture_fill(void *bits, double x, double y, double w, double h, unsigned int argb);
+/* Done: the game's pixels as they are now are shown as the plane has them,
+   and the plane is a picture of its own, which a change of the surface's
+   colour table leaves as it is (until another picture is loaded there). */
+void hd_picture_done(void *bits);
+
 /* The game drew this rectangle anew (DibSurface::fill_rect): it shows as
    the game's pixels even where they did not change. */
 void hd_bits_redrawn(void *bits, int x, int y, int w, int h);

@@ -98,6 +98,8 @@ typedef struct Bitmap {
     char hd_sheet[48];          /* the picture loaded here: the pack's key (file/terrain1,
                                    resource/mk.dll/gifs/200 ...) */
     int hd_alpha;               /* the plane has transparent pixels (a picture's) */
+    int hd_own;                 /* the plane is a picture composed whole (hd_picture_done):
+                                   a change of the colour table leaves it */
 } Bitmap;
 
 unsigned char *bmp_row(const Bitmap *b, int y);     /* row y, top = 0 */

@@ -298,6 +298,7 @@ void hd_bitmap_free(Bitmap *b)
     free(b->hd_prev);
     b->hd = NULL;
     b->hd_prev = NULL;
+    b->hd_own = 0;
 }
 
 static int valid(const Bitmap *b)
@@ -387,7 +388,7 @@ void hd_colors_changed(Bitmap *b, const void *old_table)
     uint32_t was[256], now[256];
     unsigned char changed[256];
     int d = hd_density, pitch, x, y, i, j, any = 0;
-    if (!hd_on || !valid(b) || b->bpp != 8)
+    if (!hd_on || !valid(b) || b->bpp != 8 || b->hd_own)
         return;
     for (i = 0; i < 256; i++) {
         was[i] = 0xff000000u | (uint32_t)old[i].rgbRed << 16 | (uint32_t)old[i].rgbGreen << 8 | old[i].rgbBlue;
@@ -774,6 +775,7 @@ static void reloaded(Bitmap *b)
     if (valid(b))
         redraw_rect(b, 0, 0, b->w, b->h);
     b->hd_alpha = 0;
+    b->hd_own = 0;
 }
 
 void hd_sheet_clear(void *bits)
@@ -813,7 +815,8 @@ void hd_sheet_loaded(void *bits, const char *filename)
    sprites the game takes from it are "crop/resource/MODULE/gifs/ID/x,y,w,h".
    The pack's pictures were made for PR #11's own renderers: many are laid
    out otherwise than the original's (the throne room's pieces, the
-   spaceship's parts, the advisors' rooms), so only those that are the same
+   spaceship's parts, the advisors' rooms; the throne room is composed by
+   src/game/hd_graphics.cpp, hd_picture below), so only those that are the same
    picture, whole, are painted on the surface's plane (WHOLE, each looked
    at in its window); the others give only their crops. */
 static const struct {
@@ -1011,16 +1014,6 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
             p->id = id;
             return;
         }
-        /* the throne room's pieces (pv.dll), each the whole of its own
-           picture in the pack, at the piece's size */
-        if (!strncmp(b->hd_sheet, "resource/pv.dll/gifs/", 21)) {
-            snprintf(name, sizeof name, "palace-resource/%s", b->hd_sheet + 21);
-            if ((id = find(name)) && (int)entries[id - 1].w == w && (int)entries[id - 1].h == h &&
-                (p = add(s, handle))) {
-                p->id = id;
-                return;
-            }
-        }
         /* a sheet's sprite without a picture keeps its pixels; a resource
            picture's is taken from its plane (below) */
         if (!strncmp(b->hd_sheet, "file/", 5))
@@ -1078,6 +1071,67 @@ void hd_sprite_end(const void *s, unsigned handle, void *bits, int x, int y, int
                   clip[3] * d, tint);
     }
     commit_rect(b, drawn[0], drawn[1], drawn[2], drawn[3]);
+}
+
+/* ---- pictures the game's side composes (hd.h: hd_picture) ---- */
+
+int hd_picture_size(const char *key, int *w, int *h)
+{
+    int id;
+    if (!hd_art || !(id = find(key)))
+        return 0;
+    *w = (int)entries[id - 1].w;
+    *h = (int)entries[id - 1].h;
+    return 1;
+}
+
+int hd_picture(void *bits, const char *key, double x, double y, double w, double h, int contain)
+{
+    Bitmap *b;
+    const uint32_t *px;
+    int id, d = hd_density, l, t, pw, ph;
+    if (!hd_art || !(id = find(key)) || !(b = bmp_of_bits(bits)) || b->bpp != 8 || !plane(b) || w <= 0 || h <= 0)
+        return 0;
+    if (contain) {
+        double k = w / entries[id - 1].w < h / entries[id - 1].h ? w / entries[id - 1].w : h / entries[id - 1].h;
+        x += (w - entries[id - 1].w * k) / 2;
+        y += (h - entries[id - 1].h * k) / 2;
+        w = entries[id - 1].w * k;
+        h = entries[id - 1].h * k;
+    }
+    l = (int)floor(x * d + .5);
+    t = (int)floor(y * d + .5);
+    pw = (int)floor((x + w) * d + .5) - l;
+    ph = (int)floor((y + h) * d + .5) - t;
+    if (pw <= 0 || ph <= 0 || !(px = picture(id, pw, ph, 0)))
+        return 0;
+    paint(b, px, pw, ph, l, t, pw, ph, 0, 0, b->w * d, b->h * d, -1);
+    return 1;
+}
+
+void hd_picture_fill(void *bits, double x, double y, double w, double h, unsigned int argb)
+{
+    Bitmap *b;
+    int d = hd_density, l, t;
+    unsigned a = argb >> 24;
+    /* premultiplied */
+    uint32_t px = a << 24 | (((argb >> 16) & 255) * a / 255) << 16 | (((argb >> 8) & 255) * a / 255) << 8 |
+                  (argb & 255) * a / 255;
+    if (!hd_on || !(b = bmp_of_bits(bits)) || !plane(b))
+        return;
+    l = (int)floor(x * d + .5);
+    t = (int)floor(y * d + .5);
+    paint(b, &px, 1, 1, l, t, (int)floor((x + w) * d + .5) - l, (int)floor((y + h) * d + .5) - t, 0, 0, b->w * d,
+          b->h * d, -1);
+}
+
+void hd_picture_done(void *bits)
+{
+    Bitmap *b;
+    if (!hd_on || !(b = bmp_of_bits(bits)) || !valid(b))
+        return;
+    commit_rect(b, 0, 0, b->w, b->h);
+    b->hd_own = 1;
 }
 
 /* ---- the desktop ---- */

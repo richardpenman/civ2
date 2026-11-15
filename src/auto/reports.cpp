@@ -1,6 +1,8 @@
 /* The game, the advisors, the High Council and the reports: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
+void hd_throne_room(ThroneRoomWindow *v, int choices);
 
 /* 00419ed3 auto */
 void __cdecl leaders_fixup_names(void)
@@ -4352,6 +4354,7 @@ i32 ThroneRoomWindow::render()
                throneroom_piece_rects[7][level].y - 1);
   }
   win_flush_pending_msgs();
+  if (hd_art) hd_throne_room(this,0);     /* (port) HD graphics: the pack's room */
   result = 1;
   return result;
 }
@@ -4667,6 +4670,7 @@ i32 ThroneRoomWindow::render_choices()
         }
       }
     }
+    if (hd_art) hd_throne_room(this,1);     /* (port) HD graphics: the pack's room, the choices */
     result = 1;
   }
   return result;
