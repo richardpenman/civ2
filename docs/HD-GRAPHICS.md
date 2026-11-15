@@ -190,7 +190,10 @@ The rest is in the platform layer (`src/platform/hd.c`):
   other eras keep the original's, enlarged (`hd_bind_cityview` in `src/game/hd_graphics.cpp`,
   called once the view has taken its sprites), awaiting art of their own; so do the empty lots,
   the original's woods, which the pack leaves empty (its renderer drew lot pictures of its
-  own).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
+  own).  All of such a picture's pixels are shown over the pack's landscape, also those the
+  same colour as the landscape the game has underneath, which were not seen as drawn and let
+  the landscape show through the trees in specks (`hd_sprite_pixels_shown` after each lot's
+  draw in `CityViewWindow::draw_buildings`, as for the city's disorder marker).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
   tracks in every era, so only those of the eras before the paved roads (340, 341, 345, 346,
   350, 351) are the pack's; the modern ones and those with Superhighways are the original's,
   enlarged.  Its improvements and wonders are one picture each in every era, the original's as

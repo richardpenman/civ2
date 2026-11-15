@@ -2,6 +2,7 @@
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
 #include "../platform/hd.h"
+#include "hd_game.h"
 void hd_bind_cityview(CityViewWindow *w);
 
 /* 00454260 auto */
@@ -540,6 +541,12 @@ void CityViewWindow::draw_buildings()
                  &backbuffer,
                  *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_x_table) + i * 8 + terrain_kind * 0x1e0),
                  *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_y_table) + i * 8 + terrain_kind * 0x1e0));
+      /* (port) HD: an original's picture (houses, woods) all shown over the pack's landscape */
+      if (hd_on && !hd_sprite_pictured(slot_sprite_ptrs[i],slot_sprite_ptrs[i]->data_handle))
+        hd_sprite_pixels_shown(slot_sprite_ptrs[i],&backbuffer,
+                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_x_table) + i * 8 + terrain_kind * 0x1e0),
+                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_y_table) + i * 8 + terrain_kind * 0x1e0),
+                 (RECT *)draw_rect);
     }
   }
   redraw_scrolled();
