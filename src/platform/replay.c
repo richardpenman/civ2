@@ -28,6 +28,7 @@ static FILE *rand_log;
 static FILE *call_log;
 static int seed_forced;
 static unsigned forced_seed;
+int replay_hold;        /* > 0: the script waits (a test's call that idles: hd_map_redraw_probe) */
 
 /* ---- sounds and videos (CIV2_CALL_LOG) ----
  * The reference has no audio device, no video files and no Indeo codec,
@@ -279,7 +280,7 @@ static void finish(void)
 void replay_run_script(void)
 {
     static int running;
-    if (!plat_replay || running)
+    if (!plat_replay || running || replay_hold)
         return;
     running = 1;
     while (script_pos < script_len && vclock_us >= next_action_us) {

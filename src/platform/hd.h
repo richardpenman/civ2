@@ -37,7 +37,11 @@ void hd_sheet_clear(void *bits);
 /* Sprite::encode_from_surface took sprite (its data handle) from the
    rectangle of the surface, with this transparent colour (-2: none). */
 void hd_sprite_captured(const void *sprite, unsigned handle, void *bits, int x, int y, int w, int h, int key);
-/* The sprite (its data handle) is drawn with this picture of the pack. */
+/* The sprite (its data handle) is drawn with this picture of the pack;
+   opaque_tile 1: opaque inside its diamond, nothing outside (the base
+   terrain); 2: nothing outside its diamond (the terrain's overlays); 3 + Q:
+   nothing outside the diamond of the tile whose quarter Q it fills (0 to
+   3: top right, bottom right, bottom left, top left: the blends). */
 void hd_sprite_bind(const void *sprite, unsigned handle, const char *key, int opaque_tile);
 void hd_sprite_forget(const void *sprite);
 /* Sprite::replace_color: a flag in a civilization's colour. */
@@ -70,9 +74,12 @@ void hd_bits_sync(void *bits, int x, int y, int w, int h);
 void hd_bits_shown(void *bits, int x, int y, int w, int h);
 /* Tests (hd_map_redraw_probe): a copy of the plane's rectangle, the game's
    pixels synced first (free it); the plane pixels of the rectangle that
-   differ from such a copy by more than tolerance in a channel. */
+   differ from such a copy by more than tolerance in a channel, but where
+   skip (w x h, NULL: none) is set; a copy of the game's own pixels. */
 unsigned int *hd_debug_capture(void *bits, int x, int y, int w, int h);
-int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance);
+int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance,
+                     const unsigned char *skip);
+unsigned char *hd_debug_capture_pixels(void *bits, int x, int y, int w, int h);
 void hd_debug_dump(const char *path, const unsigned int *px, int w, int h);     /* a PPM */
 /* gfx_copy_pixels: before (copy_begin) and after (copy_end). */
 void hd_copy_begin(void *src_bits, int sx, int sy, int w, int h);

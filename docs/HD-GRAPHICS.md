@@ -114,12 +114,20 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game draws a sprite (`Sprite::blit_to_surface`, `blit_silhouette_to_surface`), it draws as
   ever, then the picture is drawn on the plane over the sprite's frame, scaled to the zoom and
   the density (filtered; the base terrain diamonds exactly inside their diamond, so that tiles
-  meet without seams), and the game's pixels it covered are taken as shown.  A flag recoloured
+  meet without seams, a pixel of the diamond where the picture's antialiased edge leaves
+  nothing taking the colour of its nearest pixel that is there, not black; the terrain's
+  overlays (`TERRAIN1`, `TERRAIN2` tiles and quarters) and blends only inside their tile's
+  diamond, so that none reaches a neighbour, where it was blended again over what a partial
+  redraw of the neighbour left), and the game's pixels it covered are taken as shown.  A flag recoloured
   to a civilization (`Sprite::replace_color`) takes the pack's picture in that colour.
 * **Everything else** the game draws (text, fills, lines, sprites without a picture) is found
   by comparing the surface's pixels with the plane's copy, and shown enlarged.  Fills, and
   copies from surfaces without a plane, are shown even where the pixels did not change.
-* **Copies** between surfaces (`BitBlt`, `gfx_copy_pixels`) copy the planes too.
+* **Copies** between surfaces (`BitBlt`, `gfx_copy_pixels`) copy the planes too, with which
+  of their pixels show the game's pixels enlarged (`hd_big`: not art, nor sharp text), so that
+  a copy between surfaces whose colour tables differ recolours only those (below: the
+  herald's backdrop); before, a black pixel of a unit's picture copied back from the slide's
+  background surface, whose colour table had black for that index, took the map's colour.
 * **Text** on a surface with a plane is drawn again there from the glyphs of the same font
   density times as tall (OpenCiv2's own fonts, to 48 pixels), each glyph where the game's is.
 * **The platform's shapes** that are not straight lines (the check boxes' marks and the
@@ -325,8 +333,11 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at every zoom: its
-  results in `hook.log`), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
+  every zoom, each slide's plane compared with a full render: its results in `hook.log`, "0 of
+  16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
+  the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its
+  scaled terrain clipped rounds otherwise, a unit's frame is not compared), `harness/extras/x-turns.txt` with `CIV2_TEST_HD=2` (the meters),
   `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
@@ -364,14 +375,6 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * *SentryHalftone*: in `harness/hd` runs the sprite's draws through `extras_draw_grey_sprite`
   are grey on the plane, yet on the map a sentried unit on the cursor's square was still seen in
   its colours in the HD frame (the tile's blinking redraws, clipped to the tile's row): not found.
-* The map's partial redraws (`harness/hd/hd-redraw.txt`, `hd_map_redraw_probe`: a trireme,
-  alone and stacked, slid from the map's centre in the 8 directions at each zoom, the plane
-  compared with a full render before): no trail of the unit or its shields is left, but the
-  plane differs from a full render by up to some 150 pixels at density 2: a line one plane
-  pixel wide along the antialiased edges where tiles meet (blended again over what the partial
-  redraw finds there, not over what a full render had beneath), and the end of a hit points
-  bar.
-
 * The leaders' portraits and their animation (the heralds' videos) are the original's,
   enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern

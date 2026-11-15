@@ -173,6 +173,34 @@ static int in_diamond(int x, int y, int w, int h)
     return (int64_t)abs(2 * x + 1 - w) * h + (int64_t)abs(2 * y + 1 - h) * w < (int64_t)w * h;
 }
 
+/* A pixel of a diamond drawn opaque where the picture has nothing (its
+   antialiased edge falls a little inside the diamond the game's tile
+   fills): the colour of the picture's nearest pixel that is there, not
+   the transparent pixels' black (which showed as a dotted line along the
+   tiles' edges, and differed after a partial redraw). */
+static int edge_colour(const Entry *a, double u, double v, double *r, double *g, double *b)
+{
+    int cx = (int)u, cy = (int)v, rad, i, j, best = -1;
+    double bd = 0;
+    for (rad = 1; rad <= 16 && best < 0; rad++)
+        for (j = cy - rad; j <= cy + rad; j++)
+            for (i = cx - rad; i <= cx + rad; i++) {
+                double dx = i + .5 - u, dy = j + .5 - v, dd = dx * dx + dy * dy;
+                if (i < 0 || j < 0 || i >= a->pw || j >= a->ph || a->rgba[4 * ((size_t)j * a->pw + i) + 3] < 128)
+                    continue;
+                if (best < 0 || dd < bd) {
+                    best = j * a->pw + i;
+                    bd = dd;
+                }
+            }
+    if (best < 0)
+        return 0;
+    *r = a->rgba[4 * (size_t)best];
+    *g = a->rgba[4 * (size_t)best + 1];
+    *b = a->rgba[4 * (size_t)best + 2];
+    return 1;
+}
+
 static uint32_t *make_scaled(Entry *a, int w, int h, int opaque)
 {
     uint32_t *out = malloc((size_t)w * h * 4);
@@ -214,13 +242,21 @@ static uint32_t *make_scaled(Entry *a, int w, int h, int opaque)
                         rr += p[0]; gg += p[1]; bb += p[2]; n++;
                     }
             }
-            if (opaque) {
+            if ((opaque == 2 && !in_diamond(x, y, w, h)) ||
+                (opaque >= 3 && !in_diamond(x + (opaque == 3 || opaque == 4) * w, y + (opaque == 4 || opaque == 5) * h,
+                                            2 * w, 2 * h))) {
+                out[y * w + x] = 0;
+                continue;
+            }
+            if (opaque == 1) {
                 if (!in_diamond(x, y, w, h)) {
                     out[y * w + x] = 0;
                     continue;
                 }
                 if (al > 0) { r /= al; g /= al; b /= al; }
-                else { r = rr / n; g = gg / n; b = bb / n; }
+                else if (!edge_colour(a, (x + .5) * a->pw / w, (y + .5) * a->ph / h, &r, &g, &b)) {
+                    r = rr / n; g = gg / n; b = bb / n;
+                }
                 out[y * w + x] = 0xff000000u | (uint32_t)(r + .5) << 16 | (uint32_t)(g + .5) << 8 | (uint32_t)(b + .5);
             } else {
                 unsigned A = (unsigned)(al / n + .5);
@@ -287,6 +323,7 @@ static void block(Bitmap *b, int x, int y, uint32_t c)
 {
     int d = hd_density, pitch = b->w * d, i, j;
     uint32_t *p = b->hd + (size_t)y * d * pitch + (size_t)x * d;
+    b->hd_big[(size_t)y * b->w + x] = 1;
     for (j = 0; j < d; j++, p += pitch)
         for (i = 0; i < d; i++)
             p[i] = c;
@@ -296,8 +333,10 @@ void hd_bitmap_free(Bitmap *b)
 {
     free(b->hd);
     free(b->hd_prev);
+    free(b->hd_big);
     b->hd = NULL;
     b->hd_prev = NULL;
+    b->hd_big = NULL;
     b->hd_own = 0;
 }
 
@@ -317,7 +356,8 @@ static int plane(Bitmap *b)
     hd_bitmap_free(b);
     b->hd = malloc((size_t)b->w * b->h * hd_density * hd_density * 4);
     b->hd_prev = malloc((size_t)b->w * b->h * n);
-    if (!b->hd || !b->hd_prev) {
+    b->hd_big = malloc((size_t)b->w * b->h);
+    if (!b->hd || !b->hd_prev || !b->hd_big) {
         hd_bitmap_free(b);
         return 0;
     }
@@ -438,8 +478,10 @@ static void commit_rect(Bitmap *b, int l, int t, int r, int bot)
     if (!valid(b) || !clip_rect(b, &l, &t, &r, &bot))
         return;
     n = pixel_bytes(b);
-    for (y = t; y < bot; y++)
+    for (y = t; y < bot; y++) {
         memcpy(b->hd_prev + ((size_t)y * b->w + l) * n, bmp_row(b, y) + l * n, (size_t)(r - l) * n);
+        memset(b->hd_big + (size_t)y * b->w + l, 0, (size_t)(r - l));
+    }
 }
 
 /* Draws w x h premultiplied pixels at physical (x, y), clipped to the
@@ -497,7 +539,7 @@ static void recolor_copied(Bitmap *dst, const Bitmap *src, int l, int t, int r, 
         for (x = l; x < r; x++) {
             uint32_t was = logical(src, row, x), now = logical(dst, row, x), *p;
             int same = 1;
-            if (was == now)
+            if (was == now || !dst->hd_big[(size_t)y * dst->w + x])
                 continue;
             p = dst->hd + (size_t)y * d * pitch + (size_t)x * d;
             for (j = 0; j < d && same; j++)
@@ -565,9 +607,26 @@ static void transfer(Bitmap *dst, Bitmap *src, int x, int y, int w, int h, int s
             }
     } else
         return;     /* a scaled copy within a surface: left to the game's pixels */
+    commit_rect(dst, l, t, r, b);
+    /* which pixels the plane shows enlarged: the source's (not where a
+       picture with transparent pixels was drawn over: art) */
+    if (src->hd_alpha && src != dst)
+        ;
+    else if (w == sw && h == sh) {
+        int first = t, end = b, step = 1;
+        if (src == dst && y > sy) { first = b - 1; end = t - 1; step = -1; }
+        for (j = first; j != end; j += step)
+            memmove(dst->hd_big + (size_t)j * dst->w + l, src->hd_big + (size_t)(j + sy - y) * src->w + l + sx - x,
+                    (size_t)(r - l));
+    } else
+        for (j = t; j < b; j++)
+            for (i = l; i < r; i++) {
+                int ax = sx + (int)((int64_t)(i - x) * sw / w), ay = sy + (int)((int64_t)(j - y) * sh / h);
+                if (ax >= 0 && ay >= 0 && ax < src->w && ay < src->h)
+                    dst->hd_big[(size_t)j * dst->w + i] = src->hd_big[(size_t)ay * src->w + ax];
+            }
     if (w == sw && h == sh && src != dst)
         recolor_copied(dst, src, l, t, r, b);
-    commit_rect(dst, l, t, r, b);
 }
 
 unsigned int *hd_bitmap_plane(Bitmap *b)
@@ -1068,6 +1127,10 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
                 return;
         if ((id = find(name)) && (p = add(s, handle))) {
             p->id = id;
+            /* the terrain's tiles and quarters: inside their diamond only */
+            if ((!strcmp(b->hd_sheet, "file/terrain1") || !strcmp(b->hd_sheet, "file/terrain2")) &&
+                ((w == 64 && h == 32) || (w == 32 && h == 16)))
+                p->opaque = 2;
             return;
         }
         /* a sheet's sprite without a picture keeps its pixels; a resource
@@ -1544,7 +1607,21 @@ unsigned int *hd_debug_capture(void *bits, int x, int y, int w, int h)
     return out;
 }
 
-int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance)
+unsigned char *hd_debug_capture_pixels(void *bits, int x, int y, int w, int h)
+{
+    Bitmap *b = bmp_of_bits(bits);
+    unsigned char *out;
+    int j;
+    if (!b || b->bpp != 8 || w <= 0 || h <= 0 || x < 0 || y < 0 || x + w > b->w || y + h > b->h ||
+        !(out = malloc((size_t)w * h)))
+        return NULL;
+    for (j = 0; j < h; j++)
+        memcpy(out + (size_t)j * w, bmp_row(b, y + j) + x, (size_t)w);
+    return out;
+}
+
+int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int *before, int tolerance,
+                     const unsigned char *skip)
 {
     Bitmap *b = bmp_of_bits(bits);
     int d = hd_density, i, j, k, n = 0;
@@ -1554,6 +1631,8 @@ int hd_debug_compare(void *bits, int x, int y, int w, int h, const unsigned int 
     for (j = 0; j < h * d; j++)
         for (i = 0; i < w * d; i++) {
             uint32_t p = b->hd[(size_t)(y * d + j) * b->w * d + x * d + i], q = before[(size_t)j * w * d + i];
+            if (skip && skip[(size_t)(j / d) * w + i / d])
+                continue;
             for (k = 0; k < 24; k += 8)
                 if (abs((int)((p >> k) & 255) - (int)((q >> k) & 255)) > tolerance) {
                     n++;

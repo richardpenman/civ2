@@ -93,6 +93,8 @@ typedef struct Bitmap {
     /* HD graphics (hd.c): the plane, w*d x h*d, and the pixels it took */
     uint32_t *hd;
     unsigned char *hd_prev;
+    unsigned char *hd_big;      /* per pixel: 1 where the plane shows it enlarged (not art, nor
+                                   sharp text) */
     int hd_w, hd_h, hd_d;       /* (as the surface was then, at density hd_d) */
     const void *hd_bits;
     char hd_sheet[48];          /* the picture loaded here: the pack's key (file/terrain1,
@@ -313,6 +315,7 @@ extern unsigned wnd_generation;
 extern unsigned long long vclock_us;
 extern char plat_game_dir[], plat_win_dir[], plat_data_dir[];
 void replay_run_script(void);
+extern int replay_hold;         /* > 0: the replay's script waits */
 int replay_file_dialog(OPENFILENAMEA *ofn, const char *kind);
 void sound_init(void);
 HMODULE plat_exe_module(void);
