@@ -154,7 +154,13 @@ The rest is in the platform layer (`src/platform/hd.c`):
   Vikings' is a 19th-century man in a frock coat, the Babylonians' a red-bearded Celt), so
   their crops are not drawn (`NOT_CROPPED` in hd.c).  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
-  enlarged: the pack has no pictures for it.  The city view's houses (`cv.dll` 310: the
+  enlarged: the pack has no pictures for it.  Each pixel the decoder writes is shown as written,
+  opaque, even where its colour index is the one already there (`draw_frame` in
+  `src/platform/video.c` marks them redrawn, `hd_redrawn`, run by run); before, such pixels were
+  not seen as changed and the pack's room (in the video's backdrop, a copy of the room with its
+  plane) showed through the leader in specks.  The pixels a herald leaves transparent show the
+  room behind it (`harness/hd/hd-herald.txt`, with a stand-in video where the CD's `KINGS` folder
+  is missing).  The city view's houses (`cv.dll` 310: the
   original's cottages for ancient and renaissance cities, a row of towns from Industrialization
   on, by `civ_city_style_era` of the owner, the same for the whole view) are the pack's only in
   the industrial era: its houses are all 19th-century buildings (terraced houses, a tenement
@@ -270,7 +276,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `advisors.txt` (the advisors' parchment), `reports.txt` (the
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `advisors.txt` (the advisors' parchment), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
   logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for

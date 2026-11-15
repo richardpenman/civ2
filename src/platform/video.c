@@ -12,6 +12,7 @@
 #include "plat.h"
 #include "plat_files.h"
 #include "../third_party/indeo4/iv41.h"
+#include "hd.h"
 
 #ifndef DRV_USER
 #define DRV_USER 0x4000
@@ -439,7 +440,7 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
     static const int bayer[4][4] = {{-24, 8, -16, 16}, {20, -8, 28, 0}, {-12, 20, -20, 12}, {24, 0, 16, -4}};
     BITMAPINFOHEADER *bi = d->lpbiDst;
     int bpp = bi->biBitCount, w = bi->biWidth, h = bi->biHeight < 0 ? -bi->biHeight : bi->biHeight;
-    int stride = ((w * bpp + 31) / 32) * 4, top_down = bi->biHeight < 0, x, y;
+    int stride = ((w * bpp + 31) / 32) * 4, top_down = bi->biHeight < 0, x, y, run, run_end = 0;
     /* The destination is a DIB of ours: its real size, which can be smaller
        than the header says (a window's client area clamped to its maximum). */
     Bitmap *bm = bmp_of_bits(d->lpDst);
@@ -450,10 +451,16 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
         h = bm->h;
         stride = bm->stride;
         top_down = !bm->bottom_up;
-    }
+    } else
+        bm = NULL;
     int dxs = d->dxSrc ? d->dxSrc : fr->width, dys = d->dySrc ? d->dySrc : fr->height;
     int dxd = d->dxDst ? d->dxDst : dxs, dyd = d->dyDst ? d->dyDst : dys;
     unsigned char *base = d->lpDst;
+    /* CIV2_TEST_VIDEO_KEY=1 (tests): a video without transparency (LOSER.AVI
+       standing for a herald) drawn as if its black were transparent */
+    static int test_key = -1;
+    if (test_key < 0)
+        test_key = getenv("CIV2_TEST_VIDEO_KEY") != NULL;
     if (bpp == 8 && !c->lut_ok)
         build_lut(c);
     for (y = 0; y < dyd; y++) {
@@ -462,9 +469,17 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
         if (ty < 0 || ty >= h || sy < 0 || sy >= fr->height)
             continue;
         row = base + (size_t)(top_down ? ty : h - 1 - ty) * stride;
+        run = -1;
         for (x = 0; x < dxd; x++) {
             int tx = d->xDst + x, sx = d->xSrc + x * dxs / dxd;
             int Y, U, V, r, g, b;
+            /* (HD planes: the pixels written shown as they are, changed or
+               not, in runs; those left transparent keep what is there) */
+            if (run >= 0 && (tx < 0 || tx >= w || sx < 0 || sx >= fr->width || tx != run_end)) {
+                if (bm)
+                    hd_redrawn(bm, run, ty, run_end - run, 1);
+                run = -1;
+            }
             if (tx < 0 || tx >= w || sx < 0 || sx >= fr->width)
                 continue;
             Y = fr->y[sy * fr->y_stride + sx];
@@ -474,8 +489,15 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
                leave the background the game put there; they are encoded
                black, which stands for them should a frame's mask be missing. */
             if (fr->mask ? fr->mask[sy * fr->width + sx] :
-                fr->has_transparency && Y <= 16 && U >= -2 && U <= 2 && V >= -2 && V <= 2)
+                (fr->has_transparency || test_key) && Y <= 16 && U >= -2 && U <= 2 && V >= -2 && V <= 2) {
+                if (run >= 0 && bm)
+                    hd_redrawn(bm, run, ty, run_end - run, 1);
+                run = -1;
                 continue;
+            }
+            if (run < 0)
+                run = run_end = tx;
+            run_end = tx + 1;
             Y = 298 * (Y - 16);
             r = clamp8((Y + 409 * V + 128) >> 8);
             g = clamp8((Y - 100 * U - 208 * V + 128) >> 8);
@@ -502,6 +524,8 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
                 break;
             }
         }
+        if (run >= 0 && bm)
+            hd_redrawn(bm, run, ty, run_end - run, 1);
     }
 }
 
