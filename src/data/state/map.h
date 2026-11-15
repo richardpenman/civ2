@@ -215,12 +215,8 @@ typedef struct TextParse {
 /* The text being composed (messages, dialogs); the bytes before and after it are read too. */
 #pragma pack(push, 1)
 typedef struct TextBuffer {
-    i8 before[1];  /* 0067963f */
-    i8 buf[1];  /* 00679640 */
-    i8 char_1;  /* 00679641 */
-    i8 plus2[1];  /* 00679642 */
-    i8 char_3;  /* 00679643 */
-    u8 char_3_rest[2468];
+    i8 before;  /* 0067963f */
+    i8 buf[2472];  /* 00679640 */
 } TextBuffer;
 #pragma pack(pop)
 #pragma pack(push, 1)

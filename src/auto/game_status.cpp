@@ -427,10 +427,10 @@ void __cdecl status_draw_info(int full_redraw)
   text_append_space();
   text_append_space();
   text_append_int(civs[human_civ[0]].tax_rate);
-  crt_strcat(((i8 *)&textbuf.buf),((i8 *)&status_tax_sep_str));
+  crt_strcat(textbuf.buf,((i8 *)&status_tax_sep_str));
   text_append_int(10 - ((uint)civs[human_civ[0]].science_rate +
                           (uint)civs[human_civ[0]].tax_rate));
-  crt_strcat(((i8 *)&textbuf.buf),((i8 *)&status_lux_sep_str));
+  crt_strcat(textbuf.buf,((i8 *)&status_lux_sep_str));
   text_append_int(civs[human_civ[0]].science_rate);
   text_x2 = gfx_draw_text((const char *)&textbuf.buf,text_x2,text_y2);
   icon_size = gfx_zoom_scale(0xe,zoom2);
@@ -677,7 +677,7 @@ static void status_draw_active_unit(iptr unit2,int text_x,int *text_y2,int line_
   if (scaled != 0) {
     text_append_space();
     text_append_int(scaled);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&status_moves_frac_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&status_moves_frac_sep_str));
     text_append_int(cosmic.road_move_mult);
   }
   if ('\0' < (char)unit_types[units[unit2].type].range) {

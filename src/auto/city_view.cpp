@@ -265,8 +265,8 @@ void CityViewWindow::classify_site()
   y2 = cities[city_id].y;
   if ((cities[city_id].flags & CITYF_COASTAL) == 0) {
     for (dir = 0; dir < 9; dir++) {
-      x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x2);
-      y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y2;
+      x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x2);
+      y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y2;
       in_bounds = map_in_bounds(x,y);
       if ((in_bounds != 0) && (tile = (byte *)tile_at(x,y), (*tile & 0x80) != 0)) {
         slot_count = 0x39;

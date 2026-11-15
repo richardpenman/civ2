@@ -155,7 +155,7 @@ typedef struct DummyUnit {
 #pragma pack(pop)
 #pragma pack(push, 1)
 struct power_graph_history_block {
-    i8 power_graph_history[1208];  /* 00655c38 */
+    i8 power_graph_history[151][8];  /* 00655c38: by sample and civilization */
     Unit units[2048];  /* 006560f0 */
     DummyUnit dummy_unit;  /* 006660f0 */
     short stacked_draw_unit_copy[1];  /* 00666110 */

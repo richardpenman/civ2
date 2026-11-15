@@ -982,12 +982,12 @@ static void setup_net_connection_title(int conn_type)
     operator_delete((*(char * *)&net.connection_title));
     (*(char * *)&net.connection_title) = (char *)0x0;
   }
-  len = _strlen(((i8 *)&textbuf.buf));
+  len = _strlen(textbuf.buf);
   (*(char * *)&net.connection_title) = (char *)operator_new(len + 1);
   if ((*(char * *)&net.connection_title) == (char *)0x0) {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_gnetmgr_pdescription,(const char*)&str_d_ss_franklinton_startup_lan_cpp_2,0x79);
   }
-  crt_strcpy((*(char * *)&net.connection_title),((i8 *)&textbuf.buf));
+  crt_strcpy((*(char * *)&net.connection_title),textbuf.buf);
 }
 
 /* 00444310 auto */
@@ -3143,7 +3143,7 @@ void __cdecl setup_choose_opponents(int num_humans)
           return;
         }
         if (leader < 0x15) {
-          (((i8 *)&setup_chosen_leaders))[civ] = (byte)leader;
+          setup_chosen_leaders[civ] = (byte)leader;
         }
       }
     }

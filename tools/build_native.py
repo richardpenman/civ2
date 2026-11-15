@@ -328,7 +328,9 @@ def main():
         # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.
         sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     sources += [os.path.join(ROOT, f) for f in t.get('extra', [])]
-    headers = max(os.path.getmtime(h) for h in glob.glob(os.path.join(ROOT, 'src', '*', '*.h')))
+    # (the state headers too: src/data/state/*.h)
+    headers = max(os.path.getmtime(h) for h in glob.glob(os.path.join(ROOT, 'src', '*', '*.h')) +
+                  glob.glob(os.path.join(ROOT, 'src', '*', '*', '*.h')))
     jobs = []
     tflags = t.get('cflags', [])
     for src in sources:

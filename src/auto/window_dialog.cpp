@@ -518,7 +518,7 @@ void Dialog::close()
       ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_popupstackindex_0_popupstackindex_17,(const char*)&str_d_ss_franklinton_popup_1_cpp,0x19c);
     }
     dlg_style.stack_depth--;
-    (*(iptr *)&net.dialog_stack_top) = (((i32 *)&dlg_style.stack))[dlg_style.stack_depth];
+    (*(iptr *)&net.dialog_stack_top) = dlg_style.stack[dlg_style.stack_depth];
     dialog_state.active = (Dialog *)(*(iptr *)&net.dialog_stack_top);
     dialog_state.timeout_start = timer_ticks();
   }
@@ -2925,7 +2925,7 @@ void Dialog::create_controls()
     dlg_style.stack_depth++;
     (*(Dialog * *)&net.dialog_stack_top) = this;
     dialog_state.active = this;
-    (((i32 *)&dlg_style.stack))[dlg_style.stack_depth] = (i32)this;
+    dlg_style.stack[dlg_style.stack_depth] = (i32)this;
   }
   if ((style_flags & 0x200) == 0) {
     unused_flag = 0;

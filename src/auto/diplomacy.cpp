@@ -4376,7 +4376,7 @@ void __cdecl diplo_leader_wnd_launch(int civ2,int civ)
   else {
     tribe_idx = (iptr)civs[civ].tribe;
   }
-  diplo_leader.sound_ids[0] = (uint)(byte)(((i8 *)&tribe_leader_sound_set))[tribe_idx] * 4 + 0x70;
+  diplo_leader.sound_ids[0] = (uint)(byte)tribe_leader_sound_set[tribe_idx] * 4 + 0x70;
   for (i = 0; i < 3; i++) {
     diplo_leader.reaction_sound_ids[i] = diplo_leader.sound_ids[0] + i + 1;
   }
@@ -5131,7 +5131,7 @@ void __cdecl diplo_leader_video_end_cb(void)
       wnd->leader_video_wnd.play_range(
                  leader_anim_frame_starts_block.leader_anim_frames[(uint)wnd->leader_tribe][reaction][0]
                  ,leader_anim_frame_starts_block.leader_anim_frames[(uint)wnd->leader_tribe][reaction][1]);
-      snd_play_effect((((i32 *)&diplo_leader.sound_ids))[reaction],1,0,0);
+      snd_play_effect(diplo_leader.sound_ids[reaction],1,0,0);
     }
   }
   return;
@@ -5345,8 +5345,8 @@ int __cdecl diplo_count_border_intruders(int civ,int intruder_civ)
       if ((cities[city].id != 0) && (cities[city].owner == civ)) {
         intruders = 0;
         for (tile = 0; tile < 0x14; tile++) {
-          x = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile]);
-          y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile];
+          x = map_wrap_x((int)cities[city].x + (int)dir_dy_table_block.city_tile_dx_table[tile]);
+          y = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[tile];
           check = map_in_bounds(x,y);
           if ((((check == 0) || (check = tile_is_ocean(x,y), check != 0)) ||
               (check = tile_city_owner(x,y), -1 < check)) ||

@@ -603,17 +603,17 @@ static void menu_cmd_view_zoom(int cmd)
 {
   switch(cmd) {
   case CMD_STANDARD_ZOOM:
-    map_views_block.mapview_zoom[0] = 0;
-    map_views_block.map_view_center_x[0] = map_cursor.x[0];
-    map_views_block.mapview_center_y[0] = map_cursor.y[0];
+    map_views_block.map_view_recs[0].zoom = 0;
+    map_views_block.map_view_recs[0].center_x = map_cursor.x[0];
+    map_views_block.map_view_recs[0].center_y = map_cursor.y[0];
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
   case CMD_MEDIUM_ZOOM_OUT:
-    map_views_block.mapview_zoom[0] = -3;
+    map_views_block.map_view_recs[0].zoom = -3;
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
   case CMD_MAX_ZOOM_OUT:
-    map_views_block.mapview_zoom[0] = -7;
+    map_views_block.map_view_recs[0].zoom = -7;
     ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     break;
   case CMD_MAP_GRID:
@@ -942,8 +942,8 @@ void __cdecl menu_command(i32 menu,int cmd)
         }
         else if (cmd < 0x311) {
           if (cmd == CMD_ZOOM_IN) {
-            if (map_views_block.mapview_zoom[0] < 8) {
-              map_views_block.mapview_zoom[0]++;
+            if (map_views_block.map_view_recs[0].zoom < 8) {
+              map_views_block.map_view_recs[0].zoom++;
               ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
             }
           }
@@ -953,11 +953,11 @@ void __cdecl menu_command(i32 menu,int cmd)
         }
         else if (cmd < 0x321) {
           if (cmd == CMD_MAX_ZOOM_IN) {
-            map_views_block.mapview_zoom[0] = 8;
+            map_views_block.map_view_recs[0].zoom = 8;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
-          else if ((cmd == CMD_ZOOM_OUT) && (-7 < map_views_block.mapview_zoom[0])) {
-            map_views_block.mapview_zoom[0]--;
+          else if ((cmd == CMD_ZOOM_OUT) && (-7 < map_views_block.map_view_recs[0].zoom)) {
+            map_views_block.map_view_recs[0].zoom--;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
         }
@@ -1289,8 +1289,8 @@ static void menu_update_settler_orders(int unit,int x,int y,int civ,uptr terrain
 
   no_adjacent_city = true;
   for (dir = 0; dir < 8; dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    dy = dir_dy_table_block.dir_dy_table[dir];
     city = map_in_bounds(x2,dy + y);
     if ((city != 0) && (city = tile_city_owner(x2,dy + y), -1 < city)) {
       no_adjacent_city = false;

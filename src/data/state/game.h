@@ -360,11 +360,16 @@ typedef struct GamePrefs {
     short enemies_choice;  /* 0064bc24 */
     short map_size;  /* 0064bc26 */
     short barbarity;  /* 0064bc28 */
-    short world_params[1];  /* 0064bc2a */
-    short world_land_form;  /* 0064bc2c */
-    short world_temperature;  /* 0064bc2e */
-    short world_climate;  /* 0064bc30 */
-    short world_age;  /* 0064bc32 */
+    union {
+        short world_params[5];  /* 0064bc2a: the custom world's choices */
+        struct {
+            short world_land_mass;
+            short world_land_form;  /* 0064bc2c */
+            short world_temperature;  /* 0064bc2e */
+            short world_climate;  /* 0064bc30 */
+            short world_age;  /* 0064bc32 */
+        };
+    };
     i8 text_field[32];  /* 0064bc34 */
     short rules_choice;  /* 0064bc54 */
     short accelerated_start;  /* 0064bc56 */
@@ -377,14 +382,19 @@ typedef struct ScenarioHeader {
     ushort flags[1];  /* 0064bc60 */
     i8 name[80];  /* 0064bc62 */
     short tech_paradigm;  /* 0064bcb2 */
-    short year_increment[1];  /* 0064bcb4 */
+    short year_increment;  /* 0064bcb4 */
     i16 start_year;  /* 0064bcb6 */
     short max_turns;  /* 0064bcb8 */
     short objective_civ;  /* 0064bcba */
-    i16 victory_thresholds[1];  /* 0064bcbc */
-    short marginal_victory_score;  /* 0064bcbe */
-    short marginal_defeat_score;  /* 0064bcc0 */
-    short decisive_defeat_score;  /* 0064bcc2 */
+    union {
+        i16 victory_thresholds[4];  /* 0064bcbc */
+        struct {
+            i16 decisive_victory_score;
+            short marginal_victory_score;  /* 0064bcbe */
+            short marginal_defeat_score;  /* 0064bcc0 */
+            short decisive_defeat_score;  /* 0064bcc2 */
+        };
+    };
     u8 decisive_defeat_score_rest[4];
 } ScenarioHeader;
 #pragma pack(pop)
@@ -550,7 +560,7 @@ typedef struct MenuPrefs {
     u8 mp_prefs_setting_3_rest[23];
     i8 mp_prefs_setting_4;  /* 00666632 */
     u8 mp_prefs_setting_4_rest[23];
-    i8 mp_prefs_settings_table[168];  /* 0066664a */
+    i8 mp_prefs_settings_table[7][24];  /* 0066664a */
     i16 mp_prefs_setting_5;  /* 006666f2 */
     u8 mp_prefs_setting_5_rest[22404];
 } MenuPrefs;

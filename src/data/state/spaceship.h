@@ -19,24 +19,7 @@ extern u8 str_empty_126[4];  /* only SpaceshipWindow::create uses it */
 extern u8 str_empty_136[4];  /* only SpaceshipWindow::play_launch_video uses it */
 #pragma pack(push, 1)
 struct spaceship_part_table_block {
-    union {
-        struct {
-            i8 spaceship_part_table[4];  /* 00634f60 */
-            int spaceship_part_max_counts[1];  /* 00634f64 */
-            i8 spaceship_part_masses[8];  /* 00634f68 */
-            int spaceship_propulsion_max;  /* 00634f70 */
-            u8 spaceship_propulsion_max_rest[8];
-            int spaceship_fuel_max;  /* 00634f7c */
-            u8 spaceship_fuel_max_rest[8];
-            int spaceship_habitation_max;  /* 00634f88 */
-            u8 spaceship_habitation_max_rest[8];
-            int spaceship_life_support_max;  /* 00634f94 */
-            u8 spaceship_life_support_max_rest[8];
-            int spaceship_solar_panel_max;  /* 00634fa0 */
-            u8 spaceship_solar_panel_max_rest[4];
-        };
-        SpaceshipPartKind spaceship_parts[6];  /* 00634f60 */
-    };
+    SpaceshipPartKind spaceship_parts[6];  /* 00634f60: structurals, components (propulsion, fuel), modules (habitation, life support, solar panels) */
 };
 #pragma pack(pop)
 extern struct spaceship_part_table_block spaceship_part_table_block;

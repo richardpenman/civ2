@@ -292,8 +292,8 @@ static void unit_move_dir_viewers(iptr unit,uptr civ,iptr x2,int y2,uptr city,ui
            ((int)units[unit].owner != (other_civ & 0xff))) && (civ != other_civ)) &&
          (game.reveal_map == '\0')) {
         for (adj_dir = 0; adj_dir < 8; adj_dir++) {
-          x5 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[adj_dir] + x2);
-          y5 = (((i8 *)&dir_dy_table_block.dir_dy_table))[adj_dir] + y2;
+          x5 = map_wrap_x(dir_dx_table_block.dir_dx_table[adj_dir] + x2);
+          y5 = dir_dy_table_block.dir_dy_table[adj_dir] + y2;
           city3 = map_in_bounds(x5,y5);
           if ((city3 != 0) &&
              (adj_owner = tile_city_or_unit_owner(x5,y5), adj_owner == other_civ)) {
@@ -620,8 +620,8 @@ static int unit_move_dir_trireme_loss(iptr unit,uptr civ,iptr x2,int y2,bool &fl
     if (trireme_roll == 0) {
       flag = false;
       for (adj_dir = 0; adj_dir < 9; adj_dir++) {
-        x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[adj_dir] + x2);
-        y4 = (((i8 *)&dir_dy_table_block.dir_dy_table))[adj_dir] + y2;
+        x = map_wrap_x(dir_dx_table_block.dir_dx_table[adj_dir] + x2);
+        y4 = dir_dy_table_block.dir_dy_table[adj_dir] + y2;
         city3 = map_in_bounds(x,y4);
         if ((city3 != 0) && (city3 = tile_is_ocean(x,y4), city3 == 0)) {
           flag = true;
@@ -668,15 +668,15 @@ static void unit_move_dir_wake_settlers(iptr unit,uptr civ,byte civ3,iptr x2,int
       (city3 = unit_stack_count_role(unit,ROLE_ATTACK), city3 != 0)))) {
     flag = false;
     for (adj_dir = 0; adj_dir < 8; adj_dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[adj_dir] + x2);
-      y4 = (((i8 *)&dir_dy_table_block.dir_dy_table))[adj_dir] + y2;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[adj_dir] + x2);
+      y4 = dir_dy_table_block.dir_dy_table[adj_dir] + y2;
       adj_in_bounds = map_in_bounds(x,y4);
       if (((adj_in_bounds != 0) && (adj_ocean = tile_is_ocean(x,y4), adj_ocean == 0)) &&
          (city3 = tile_landmass(x,y4),
          *(char *)&civs[civ].continent_policy[city3] != 4)) {
         for (dir2 = 0; dir2 < 8; dir2++) {
-          x4 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir2] + x);
-          city3 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir2] + y4;
+          x4 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir2] + x);
+          city3 = dir_dy_table_block.dir_dy_table[dir2] + y4;
           value = map_in_bounds(x4,city3);
           if ((value != 0) && (city3 = tile_visible_to(x4,city3,civ), city3 == 0)) {
             flag = true;
@@ -1441,8 +1441,8 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
     y2 = y3;
     x2 = x3;
     if (-1 < (int)dir) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+      x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x3);
+      y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
     }
     unit_domain = unit_types[units[unit].type].domain;
     civ3 = units[unit].owner;

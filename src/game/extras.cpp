@@ -600,10 +600,10 @@ static int city_specialists(int citizen, int dir, int all)
 static void map_zoom_to(int zoom)
 {
     zoom = zoom < -7 ? -7 : zoom > 8 ? 8 : zoom;
-    if (zoom == map_views_block.mapview_zoom[0])
+    if (zoom == map_views_block.map_view_recs[0].zoom)
         return;
     int keep = map_click_in_progress;
-    map_views_block.mapview_zoom[0] = (i16)zoom;
+    map_views_block.map_view_recs[0].zoom = (i16)zoom;
     map_click_in_progress = 1;
     main_map()->redraw(human_civ[0], 1);
     map_click_in_progress = keep;
@@ -703,7 +703,7 @@ static int wheel_message(const MSG *m, HWND under, POINT pt)
         return 1;
     }
     if (keys & MK_CONTROL) {
-        map_zoom_to(map_views_block.mapview_zoom[0] + (notches > 0 ? 1 : -1));
+        map_zoom_to(map_views_block.map_view_recs[0].zoom + (notches > 0 ? 1 : -1));
         return 1;
     }
     return 0;

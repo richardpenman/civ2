@@ -6,15 +6,15 @@
 
 #pragma pack(push, 1)
 struct dir_dx_table_block {
-    i8 dir_dx_table[1];  /* 00628350 */
-    i8 mapgen_cardinal_dx_table[15];  /* 00628351 */
+    i8 dir_dx_table[9];  /* 00628350: by direction, then the square itself (8) */
+    u8 dir_dx_table_rest[7];
 };
 #pragma pack(pop)
 extern struct dir_dx_table_block dir_dx_table_block;
 #pragma pack(push, 1)
 struct dir_dy_table_block {
-    i8 dir_dy_table[1];  /* 00628360 */
-    i8 mapgen_cardinal_dy_table[15];  /* 00628361 */
+    i8 dir_dy_table[9];  /* 00628360 */
+    u8 dir_dy_table_rest[7];
     i8 city_tile_dx_table[48];  /* 00628370 */
     i8 city_tile_dy_table[48];  /* 006283a0 */
     i8 coarse_dir_dx_table[16];  /* 006283d0 */

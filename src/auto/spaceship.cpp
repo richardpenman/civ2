@@ -122,7 +122,7 @@ void __cdecl spaceship_wnd_draw_title(int civ)
   text_clear();
   text = (iptr)(civ_name_plural(civ));
   text_append((const char *)text);
-  textbuf.char_1 = 0;
+  textbuf.buf[1] = 0;
   text_append((const char *)&str_s_s);
   text = (iptr)(civ_leader_name(civ));
   text_append((const char *)text);
@@ -1310,7 +1310,7 @@ int __cdecl spaceship_part_limit(int civ,int part)
   int structurals;
   iptr limit;
   
-  limit = (((int *)&spaceship_part_table_block.spaceship_part_max_counts))[part * 3];
+  limit = spaceship_part_table_block.spaceship_parts[part].max_count;
   if ((part == 1) || (part == 2)) {
     structurals = (civs[civ].spaceship_parts[0] + 1) - (part * 2 - 2);
     limit = int_clamp(limit,0,(int)(structurals + (structurals >> 0x1f & 3U)) >> 2);
@@ -1372,13 +1372,13 @@ int __cdecl spaceship_group_max(int group)
 {
   int max_count;
   
-  max_count = spaceship_part_table_block.spaceship_part_max_counts[0];
+  max_count = spaceship_part_table_block.spaceship_parts[0].max_count;
   if (group != 0) {
     if (group == 1) {
-      max_count = spaceship_part_table_block.spaceship_fuel_max + spaceship_part_table_block.spaceship_propulsion_max;
+      max_count = spaceship_part_table_block.spaceship_parts[2].max_count + spaceship_part_table_block.spaceship_parts[1].max_count;
     }
     else {
-      max_count = spaceship_part_table_block.spaceship_solar_panel_max + spaceship_part_table_block.spaceship_habitation_max + spaceship_part_table_block.spaceship_life_support_max;
+      max_count = spaceship_part_table_block.spaceship_parts[5].max_count + spaceship_part_table_block.spaceship_parts[3].max_count + spaceship_part_table_block.spaceship_parts[4].max_count;
     }
   }
   return max_count;
@@ -1876,14 +1876,14 @@ int __cdecl spaceship_add_part(int civ,int group)
   if (result == 0) {
     while( true ) {
       if (group == 0) {
-        if (spaceship_part_table_block.spaceship_part_max_counts[0] <= civs[civ].spaceship_parts[0]) {
+        if (spaceship_part_table_block.spaceship_parts[0].max_count <= civs[civ].spaceship_parts[0]) {
           return part;
         }
         part = 0;
       }
       else if (group == 1) {
-        if ((spaceship_part_table_block.spaceship_propulsion_max <= civs[civ].spaceship_parts[1]) &&
-           (spaceship_part_table_block.spaceship_fuel_max <= civs[civ].spaceship_parts[2])) {
+        if ((spaceship_part_table_block.spaceship_parts[1].max_count <= civs[civ].spaceship_parts[1]) &&
+           (spaceship_part_table_block.spaceship_parts[2].max_count <= civs[civ].spaceship_parts[2])) {
           return part;
         }
         if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
@@ -1902,9 +1902,9 @@ int __cdecl spaceship_add_part(int civ,int group)
         }
       }
       else {
-        if (((spaceship_part_table_block.spaceship_habitation_max <= civs[civ].spaceship_parts[3]) &&
-            (spaceship_part_table_block.spaceship_life_support_max <= civs[civ].spaceship_parts[4])) &&
-           (spaceship_part_table_block.spaceship_solar_panel_max <= civs[civ].spaceship_parts[5])) {
+        if (((spaceship_part_table_block.spaceship_parts[3].max_count <= civs[civ].spaceship_parts[3]) &&
+            (spaceship_part_table_block.spaceship_parts[4].max_count <= civs[civ].spaceship_parts[4])) &&
+           (spaceship_part_table_block.spaceship_parts[5].max_count <= civs[civ].spaceship_parts[5])) {
           return part;
         }
         if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
@@ -1925,7 +1925,7 @@ int __cdecl spaceship_add_part(int civ,int group)
         }
       }
       if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) ||
-         ((int)civs[civ].spaceship_parts[part] < (((int *)&spaceship_part_table_block.spaceship_part_max_counts))[part * 3]
+         ((int)civs[civ].spaceship_parts[part] < spaceship_part_table_block.spaceship_parts[part].max_count
          )) break;
       text_set_label_arg(0,label_table.string_ids[spaceship_part_table_block.spaceship_parts[part].label_id]);
       popup_game((const char *)&str_nofurther);
@@ -1949,7 +1949,7 @@ int __cdecl spaceship_add_part(int civ,int group)
       should_launch = true;
       for (part = 0; part < 3; part++) {
         if ((int)civs[civ].spaceship_parts[part] <
-            (((int *)&spaceship_part_table_block.spaceship_part_max_counts))[part * 3]) {
+            spaceship_part_table_block.spaceship_parts[part].max_count) {
           should_launch = false;
         }
       }

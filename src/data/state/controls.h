@@ -58,8 +58,8 @@ typedef struct CtrlRgb {
 #pragma pack(pop)
 #pragma pack(push, 1)
 struct wnd_modal_stack_below_block {
-    i32 wnd_modal_stack_below[1];  /* 00637eac */
-    i32 wnd_modal_stack[17];  /* 00637eb0 */
+    u8 wnd_modal_stack_before[4];  /* 00637eac */
+    i32 wnd_modal_stack[17];  /* 00637eb0: the modal windows by depth */
     TimerManager *game_timer_mgr;  /* 00637ef4 */
     int timer_alt_kind_request;  /* 00637ef8 */
     int avi_idle_update_enabled;  /* 00637efc */

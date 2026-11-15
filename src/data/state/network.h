@@ -57,15 +57,23 @@ extern DiffEngState diffeng;
 /* The parley window: the kinds of list in its left and right panes per mode. */
 #pragma pack(push, 1)
 typedef struct ParleyPaneKinds {
-    i32 mode_left_kinds[1];  /* 0062d7d0 */
-    i32 mode_right_kinds[3];  /* 0062d7d4 */
-    i32 mode2_left_kind;  /* 0062d7e0 */
-    i32 mode2_right_kind;  /* 0062d7e4 */
-    u32 mode3_left_kind;  /* 0062d7e8 */
-    u32 mode3_right_kind;  /* 0062d7ec */
-    u8 mode3_right_kind_rest[8];
-    u32 mode5_left_kind;  /* 0062d7f8 */
-    u32 mode5_right_kind;  /* 0062d7fc */
+    union {
+        i32 mode_kinds[6][2];  /* 0062d7d0: by mode, the left and the right pane's */
+        struct {
+            i32 mode0_left_kind;
+            i32 mode0_right_kind;
+            i32 mode1_left_kind;
+            i32 mode1_right_kind;
+            i32 mode2_left_kind;  /* 0062d7e0 */
+            i32 mode2_right_kind;  /* 0062d7e4 */
+            u32 mode3_left_kind;  /* 0062d7e8 */
+            u32 mode3_right_kind;  /* 0062d7ec */
+            i32 mode4_left_kind;
+            i32 mode4_right_kind;
+            u32 mode5_left_kind;  /* 0062d7f8 */
+            u32 mode5_right_kind;  /* 0062d7fc */
+        };
+    };
     u8 mode5_right_kind_rest[88];
 } ParleyPaneKinds;
 #pragma pack(pop)

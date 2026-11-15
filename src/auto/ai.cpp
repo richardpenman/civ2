@@ -22,8 +22,8 @@ i32 __cdecl ai_city_touches_landmass(int city,int landmass)
   }
   else {
     for (dir = 0; (int)dir < 8; dir++) {
-      x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x2);
-      y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y2;
+      x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x2);
+      y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y2;
       check = map_in_bounds(x,y);
       if ((check != 0) && (check = tile_is_ocean(x,y), check != 0)) {
         x = tile_landmass(x,y);
@@ -500,8 +500,8 @@ i32 __cdecl ai_find_road_link_tile(int city)
             path_queue.goal_x = x;
             path_queue.goal_y = y;
             while ((dir = map_path_next_dir(x2,y2,99), -1 < dir && (dir != 8))) {
-              x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-              y2 += (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+              x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+              y2 += dir_dy_table_block.dir_dy_table[dir];
               if ((x2 == x) && (y2 == y)) break;
               dir = tile_city_owner(x2,y2);
               if (dir < 0) {
@@ -580,15 +580,15 @@ int __cdecl ai_ship_best_landing_dir(int unit)
   best_score = -1;
   best_dir = -1;
   for (dir = 0; dir < 9; dir++) {
-    x2 = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x3);
-    y2 = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y3;
+    x2 = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x3);
+    y2 = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y3;
     y = map_in_bounds(x2,y2);
     if (((y != 0) && (y = tile_is_ocean(x2,y2), y != 0)) &&
        ((dir == 8 || (y = tile_unit_owner(x2,y2), y < 0)))) {
       score = 0;
       for (dir2 = 0; dir2 < 8; dir2++) {
-        x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir2] + x2);
-        y = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir2] + y2;
+        x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir2] + x2);
+        y = dir_dy_table_block.dir_dy_table[dir2] + y2;
         owner_civ = map_in_bounds(x,y);
         if ((((owner_civ != 0) && (owner_civ = tile_is_ocean(x,y), owner_civ == 0)) &&
             (owner_civ = tile_unit_owner(x,y), owner_civ < 0)) &&
@@ -635,15 +635,15 @@ void __cdecl ai_ship_goto_near_shore(int unit,i32 goto_mode,int x,int y)
   ship_landmass = tile_landmass(units[unit].x,units[unit].y);
   target_landmass = tile_landmass(x,y);
   for (offset = 0; y3 = dest_y, x3 = dest_x, offset < 0x14; offset++) {
-    x3 = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[offset] + x);
-    y3 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[offset] + y;
+    x3 = map_wrap_x(dir_dy_table_block.city_tile_dx_table[offset] + x);
+    y3 = dir_dy_table_block.city_tile_dy_table[offset] + y;
     y2 = map_in_bounds(x3,y3);
     if (((y2 != 0) && (y2 = tile_is_ocean(x3,y3), y2 != 0)) &&
        (y2 = tile_landmass(x3,y3), y2 == ship_landmass)) {
       found_land = false;
       for (dir = 0; dir < 8; dir++) {
-        x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3);
-        y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+        x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x3);
+        y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
         check = map_in_bounds(x2,y2);
         if (((check != 0) && (check = tile_is_ocean(x2,y2), check == 0)) &&
            ((check = tile_landmass(x2,y2), check == target_landmass &&
@@ -1691,7 +1691,7 @@ static int ai_barb_demand_ransom(AiBarbMove *o)
     }
     __chdir(((i8 *)&game_dirs.home));
     text_read_line(1);
-    value = _atoi(((i8 *)&textbuf.buf));
+    value = _atoi(textbuf.buf);
     if (0 < value) {
       y5 = cities[city].y;
       x4 = cities[city].x;
@@ -1707,8 +1707,8 @@ static int ai_barb_demand_ransom(AiBarbMove *o)
         status_draw_info(1);
         for (line = 0; line < 0x14; line++) {
           x = map_wrap_x((int)cities[city].x +
-                              (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[line]);
-          x2 = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[line];
+                              (int)dir_dy_table_block.city_tile_dx_table[line]);
+          x2 = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[line];
           y3 = map_in_bounds(x,x2);
           if (((y3 != 0) &&
               (y3 = tile_first_unit(x,x2), -1 < y3)) &&
@@ -1745,8 +1745,8 @@ static int ai_barb_score_dir(AiBarbMove *o)
   int &dy_toward = o->dy_toward; uint &x3 = o->x3;
   iptr &best_dir = o->best_dir; iptr &dir = o->dir;
   int &best_score = o->best_score;
-  x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-  y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+  x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+  y2 = dir_dy_table_block.dir_dy_table[dir] + y;
   check = map_in_bounds(x,y2);
   if (check != 0) {
     terrain = tile_terrain(x,y2);
@@ -1819,8 +1819,8 @@ static int ai_barb_score_dir(AiBarbMove *o)
             score += 6;
           }
           if (x3 != -3) {
-            if ((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] < 1) {
-              if ((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] < '\0') {
+            if (dir_dx_table_block.dir_dx_table[dir] < 1) {
+              if (dir_dx_table_block.dir_dx_table[dir] < '\0') {
                 step_dx = -1;
               }
               else {
@@ -1835,8 +1835,8 @@ static int ai_barb_score_dir(AiBarbMove *o)
             }
           }
           if (dy_toward != -3) {
-            if ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] < 1) {
-              if ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] < '\0') {
+            if (dir_dy_table_block.dir_dy_table[dir] < 1) {
+              if (dir_dy_table_block.dir_dy_table[dir] < '\0') {
                 step_dy = -1;
               }
               else {
@@ -2047,8 +2047,8 @@ static int ai_barb_ship_land(AiBarbMove *o)
   int &y2 = o->y2; int &check = o->check; iptr &city = o->city;
   iptr &best_dir = o->best_dir; iptr &dir = o->dir;
   for (dir = 0; dir < 8; dir++) {
-    x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-    y3 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+    y3 = dir_dy_table_block.dir_dy_table[dir] + y;
     valid = map_in_bounds(x,y3);
     if (valid != 0) {
       if (((-1 < city) && (advisor_window_block.nearest_city_dist < 9)) &&
@@ -2136,9 +2136,9 @@ static i32 ai_barb_finalize_dir(AiBarbMove *o,short y4)
   }
   else {
     units[unit].orders = ORDER_AI_GOTO;
-    misc = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
+    misc = map_wrap_x(dir_dx_table_block.dir_dx_table[best_dir] + x2);
     units[unit].goto_x = (i16)misc;
-    units[unit].goto_y = (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir] + y4;
+    units[unit].goto_y = dir_dy_table_block.dir_dy_table[best_dir] + y4;
   }
   return ai_barb_clear_goto_done(o);
 }
@@ -2364,8 +2364,8 @@ i32 __cdecl ai_nuke_pick_target(int unit)
       if ((10 - y <= best_score) &&
          (1 < civs[civ].units_active[units[unit].type])) {
         for (dir = 0; (int)dir < 8; dir++) {
-          x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)cities[city2].x);
-          y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)cities[city2].y;
+          x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)cities[city2].x);
+          y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)cities[city2].y;
           owner_civ = map_in_bounds(x,y);
           if (((owner_civ != 0) && (owner_civ = tile_city_owner(x,y), owner_civ < 0)) &&
              (owner_civ = tile_unit_owner(x,y), owner_civ < 0)) {
@@ -2403,8 +2403,8 @@ i32 __cdecl ai_nuke_pick_target(int unit)
        && ((civs[civ].treaties[civ2] & (TREATY_PEACE | TREATY_NUCLEAR_THREAT)) == 0x100)) {
       score = 0;
       for (dir = 0; (int)dir < 9; dir++) {
-        x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)cities[city].x);
-        y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)cities[city].y;
+        x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)cities[city].x);
+        y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)cities[city].y;
         owner_civ = map_in_bounds(x,y);
         if ((owner_civ != 0) && (owner_civ = tile_unit_owner(x,y), 0 < owner_civ)) {
           if (owner_civ == civ) {
@@ -2538,8 +2538,8 @@ static i32 ai_air_raid_city(AiAirOrders *o)
               score += 0x28;
             }
             for (dir = 0; (int)dir < 8; dir++) {
-              x2 = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir]);
-              value = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+              x2 = map_wrap_x((int)cities[city].x + (int)dir_dx_table_block.dir_dx_table[dir]);
+              value = (int)cities[city].y + (int)dir_dy_table_block.dir_dy_table[dir];
               y2 = map_in_bounds(x2,value);
               if ((y2 != 0) && (value = tile_unit_owner(x2,value), value == civ)) {
                 score += 0x3c;
@@ -2593,8 +2593,8 @@ static i32 ai_air_strike_target(AiAirOrders *o)
       }
       best_threat = 9999;
       for (dir = 0; (int)dir < 8; dir++) {
-        x2 = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)units[unit3].x);
-        value = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)units[unit3].y;
+        x2 = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)units[unit3].x);
+        value = (int)dir_dy_table_block.dir_dy_table[dir] + (int)units[unit3].y;
         y2 = map_in_bounds(x2,value);
         if ((((y2 != 0) && (y2 = tile_city_owner(x2,value), y2 < 0)) &&
             ((y2 = tile_unit_owner(x2,value), y2 < 0 || (civ == y2)))) &&
@@ -2770,8 +2770,8 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
           x4 = units[unit3].x;
           y4 = units[unit3].y;
           for (dir = 0; (int)dir < 8; dir++) {
-            x2 = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x4);
-            value = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y4;
+            x2 = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x4);
+            value = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y4;
             y2 = map_in_bounds(x2,value);
             if ((y2 != 0) && (y2 = tile_city_or_unit_owner(x2,value), y2 < 0)) {
               unit_relocate(unit2,x2,value,1);
@@ -2832,8 +2832,8 @@ static i32 ai_air_jump_attack(AiAirOrders *o)
                   score = score << 1;
                 }
                 for (dir = 0; (int)dir < 8; dir++) {
-                  x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + value);
-                  small_val = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+                  x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + value);
+                  small_val = dir_dy_table_block.dir_dy_table[dir];
                   check = map_in_bounds(x2,small_val + y2);
                   if ((check != 0) &&
                      (check = tile_unit_owner(x2,small_val + y2), check == civ)) {
@@ -3084,8 +3084,8 @@ static int ai_orders_caravan(AiUnitOrders *o)
     city6 = 0xffffffff;
     best_score = 0;
     for (dir = 0; (int)dir < 8; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+      y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
       city7 = map_in_bounds(x,y2);
       if (((city7 != 0) && (city7 = tile_is_ocean(x,y2), city7 == 0)) &&
          (city7 = tile_landmass(x,y2),
@@ -3222,8 +3222,8 @@ static int ai_orders_diplomat(AiUnitOrders *o)
           else {
             flag = 0;
             for (dir = 0; (int)dir < 8; dir++) {
-              x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-              y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+              x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+              y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
               y = map_in_bounds(x,y2);
               if (((y != 0) && (y = tile_is_ocean(x,y2), y == 0)
                   ) && (y = tile_landmass(x,y2), y == city7)) {
@@ -3346,8 +3346,8 @@ static int ai_orders_paratrooper(AiUnitOrders *o)
             best_score = 0;
             city6 = 0xffffffff;
             for (dir = 9; -1 < (int)dir; dir--) {
-              x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x6);
-              y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y4;
+              x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x6);
+              y2 = dir_dy_table_block.dir_dy_table[dir] + y4;
               city7 = map_in_bounds(x,y2);
               if ((city7 != 0) &&
                  (city7 = map_distance(x2,y3,x,y2),
@@ -3378,9 +3378,9 @@ static int ai_orders_paratrooper(AiUnitOrders *o)
               }
             }
             if (-1 < (int)city6) {
-              x6 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[city6] + x6);
+              x6 = map_wrap_x(dir_dx_table_block.dir_dx_table[city6] + x6);
               unit_paradrop(unit,x6,
-                                 y4 + (((i8 *)&dir_dy_table_block.dir_dy_table))[city6]);
+                                 y4 + dir_dy_table_block.dir_dy_table[city6]);
               return AI_ORDERS_RETURN_0;
             }
           }
@@ -3453,8 +3453,8 @@ static int ai_orders_city_site(AiUnitOrders *o)
       tile_count = 8;
     }
     for (dir = 0; (int)dir < tile_count; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[dir] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[dir] + y3;
+      x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[dir] + x2);
+      y2 = dir_dy_table_block.city_tile_dy_table[dir] + y3;
       city7 = map_in_bounds(x,y2);
       if (((city7 != 0) && (city7 = tile_is_ocean(x,y2), city7 == 0)) &&
          (city7 = tile_landmass(x,y2), city7 == landmass)) {
@@ -3487,15 +3487,15 @@ static int ai_orders_city_site(AiUnitOrders *o)
         units[unit].ai_task = '2';
         city3 = best_dir;
         if ((int)best_dir < 8) return AI_ORDERS_APPLY_DIR;
-        city7 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[best_dir] + y3;
-        result = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[best_dir] + x2);
+        city7 = dir_dy_table_block.city_tile_dy_table[best_dir] + y3;
+        result = map_wrap_x(dir_dy_table_block.city_tile_dx_table[best_dir] + x2);
         unit_set_goto(unit,0x32,result,city7);
       }
       else if ((-1 < (int)best_dir) && ((int)best_dir < 8)) {
         y = 2;
         arg_hi = 5;
-        city7 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[best_dir] + y3;
-        result = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[best_dir] + x2);
+        city7 = dir_dy_table_block.city_tile_dy_table[best_dir] + y3;
+        result = map_wrap_x(dir_dy_table_block.city_tile_dx_table[best_dir] + x2);
         civ_add_standing_goal(civ,result,city7,arg_hi,y);
       }
     }
@@ -3705,9 +3705,9 @@ static void ai_orders_ship_goal_land(AiUnitOrders *o)
   if (units[unit].orders != ORDER_GOTO) {
     for (dir = 2; (int)dir < 0x18; dir++) {
       dir2 = rand_range(0,7);
-      x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir2] * dir +
+      x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir2] * dir +
                           x2);
-      y2 = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir2] * dir + y3;
+      y2 = (int)dir_dy_table_block.dir_dy_table[dir2] * dir + y3;
       city7 = map_in_bounds(x,y2);
       if (((city7 != 0) && (1 < (int)y2)) &&
          (((int)y2 <= map.height - 3 &&
@@ -3997,8 +3997,8 @@ static int ai_orders_transport_unload(AiUnitOrders *o)
   int &own_dist = o->own_dist; uint &tasks_mask = o->tasks_mask;
   cond = tasks_mask == 0x80;
   for (dir = 0; (int)dir < 8; dir++) {
-    x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+    x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
     city7 = map_in_bounds(x,y2);
     if (((city7 != 0) && (city7 = tile_is_ocean(x,y2), city7 == 0)
         ) && ((civ2 = tile_unit_owner(x,y2), (int)civ2 < 0 ||
@@ -4425,8 +4425,8 @@ static void ai_orders_fortress_site(AiUnitOrders *o)
       sea_east = 0;
       sea_west = 0;
       for (dir = 0; (int)dir < 8; dir++) {
-        x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-        y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+        x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+        y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
         city7 = map_in_bounds(x,y2);
         if (city7 != 0) {
           result = tile_improvements(x,y2);
@@ -4437,16 +4437,16 @@ static void ai_orders_fortress_site(AiUnitOrders *o)
           if (city7 != 0) {
             ocean_count++;
             if (3 < ocean_count) return;
-            if ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] < '\0') {
+            if (dir_dy_table_block.dir_dy_table[dir] < '\0') {
               sea_north = 1;
             }
-            if ('\0' < (((i8 *)&dir_dy_table_block.dir_dy_table))[dir]) {
+            if ('\0' < dir_dy_table_block.dir_dy_table[dir]) {
               sea_south = 1;
             }
-            if ((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] < '\0') {
+            if (dir_dx_table_block.dir_dx_table[dir] < '\0') {
               sea_west = 1;
             }
-            if ('\0' < (((i8 *)&dir_dx_table_block.dir_dx_table))[dir]) {
+            if ('\0' < dir_dx_table_block.dir_dx_table[dir]) {
               sea_east = 1;
             }
           }
@@ -4588,9 +4588,9 @@ static int ai_orders_terraformer(AiUnitOrders *o)
     }
     city3 = city2;
     for (dir = 0; (int)dir < 0x14; dir++) {
-      x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[dir] +
+      x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[dir] +
                           (int)cities[city3].x);
-      y2 = (int)cities[city3].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[dir];
+      y2 = (int)cities[city3].y + (int)dir_dy_table_block.city_tile_dy_table[dir];
       city7 = map_in_bounds(x,y2);
       if (city7 != 0) {
         tile_byte = tile_terrain(x,y2);
@@ -4656,8 +4656,8 @@ static int ai_orders_settler_work(AiUnitOrders *o)
   flag = (uint)(1 < city7);
   if (flag == 0) {
     for (dir = 0; (int)dir < 8; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+      y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
       city7 = map_in_bounds(x,y2);
       if ((city7 != 0) && (city7 = tile_unit_owner(x,y2), -1 < city7))
       {
@@ -4785,8 +4785,8 @@ static int ai_orders_settler_work(AiUnitOrders *o)
       if (own_dist < 2) {
         for (dir = 0; (int)dir < 8; dir++) {
           dir2 = (int)game.turn + dir & 7;
-          x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir2] + x2);
-          y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir2] + y3;
+          x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir2] + x2);
+          y2 = dir_dy_table_block.dir_dy_table[dir2] + y3;
           city7 = map_in_bounds(x,y2);
           if (((city7 != 0) &&
               (city7 = tile_city_owner(x,y2), city7 < 0)) &&
@@ -4834,8 +4834,8 @@ static void ai_orders_move_explore_bonus(AiUnitOrders *o)
   bool &settler_type = o->settler_type; int &unit_domain = o->unit_domain;
   int &y3 = o->y3; int &x2 = o->x2; uptr &dir2 = o->dir2; uptr &dir = o->dir;
   int &score = o->score;
-  x5 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] * 4 + x2);
-  city7 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] * 4 + y3;
+  x5 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] * 4 + x2);
+  city7 = dir_dy_table_block.dir_dy_table[dir] * 4 + y3;
   y = map_in_bounds(x5,city7);
   if ((y != 0) &&
      (y = tile_visible_to(x5,city7,civ), y == 0)) {
@@ -4848,8 +4848,8 @@ static void ai_orders_move_explore_bonus(AiUnitOrders *o)
     }
   }
   for (dir2 = 0; (int)dir2 < 8; dir2++) {
-    x3 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir2] + x5);
-    y = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir2] + city7;
+    x3 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir2] + x5);
+    y = dir_dy_table_block.dir_dy_table[dir2] + city7;
     check = map_in_bounds(x3,y);
     if (check != 0) {
       check = tile_visible_to(x3,y,civ);
@@ -5263,8 +5263,8 @@ static void ai_orders_move_score_dir(AiUnitOrders *o)
   uptr &city2 = o->city2; int &own_dist = o->own_dist;
   int &best_score = o->best_score; int &score = o->score;
   uint &tile_flags = o->tile_flags;
-  x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-  y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+  x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+  y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
   city7 = map_in_bounds(x,y2);
   if (city7 != 0) {
     civ2 = tile_owner(x,y2);
@@ -5682,8 +5682,8 @@ static int ai_orders_partisan(AiUnitOrders *o)
                                   (int)cities[city3].y);
     city6 = 0xffffffff;
     for (dir = 0; (int)dir < 8; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y3;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+      y2 = dir_dy_table_block.dir_dy_table[dir] + y3;
       city7 = map_in_bounds(x,y2);
       if ((city7 != 0) && (city7 = tile_unit_owner(x,y2), city7 < 0)) {
         city7 = tile_city_owner(x,y2);
@@ -6055,8 +6055,8 @@ static i32 ai_orders_apply_dir(AiUnitOrders *o)
     units[unit].orders = ORDER_NONE;
   }
   else {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[best_dir] + x2);
-    y3 += (((i8 *)&dir_dy_table_block.dir_dy_table))[best_dir];
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[best_dir] + x2);
+    y3 += dir_dy_table_block.dir_dy_table[best_dir];
     near_dist = map_in_bounds(x2,y3);
     if (near_dist == 0) {
       units[unit].orders = ORDER_NONE;

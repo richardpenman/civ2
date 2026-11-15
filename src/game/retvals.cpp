@@ -71,7 +71,7 @@ void PediaWindow::load_description(int topic2)
     section_missing = true;
     while (remaining != 0) {
       text_read_line(1);
-      _strncpy(marker,((i8 *)&textbuf.buf),2);
+      _strncpy(marker,textbuf.buf,2);
       found = _strcmp(marker,((i8 *)&pedia_desc_marker_str));
       if (found == 0) {
         remaining = remaining + -1;
@@ -104,28 +104,28 @@ void PediaWindow::load_description(int topic2)
           break;
         }
         if (CRT_FEOF(text_file_handle) != 0) break;
-        line = _fgets(((i8 *)&textbuf.buf),0x800,text_file_handle);
+        line = _fgets(textbuf.buf,0x800,text_file_handle);
         if ((line == (char *)0x0) || (textbuf.buf[0] == '@')) break;
         if (textbuf.buf[0] == ';') continue;
-        newline_ptr = STRRCHR(((i8 *)&textbuf.buf),10);
+        newline_ptr = STRRCHR(textbuf.buf,10);
         if (newline_ptr != (char *)0x0) {
           *newline_ptr = '\0';
-          crt_strcat(((i8 *)&textbuf.buf),((i8 *)&pedia_desc_crlf_str));
+          crt_strcat(textbuf.buf,((i8 *)&pedia_desc_crlf_str));
         }
         cur_len = _strlen(desc_text);
-        line_len = _strlen(((i8 *)&textbuf.buf));
+        line_len = _strlen(textbuf.buf);
         if (0xffe < cur_len + line_len) {
           cur_len = _strlen(desc_text);
           *(i8 *)((iptr)(((u8 *)&diffeng_events_section_block.diffeng_events_section + 7)) - cur_len) = 0;
         }
-        crt_strcat(desc_text,((i8 *)&textbuf.buf));
+        crt_strcat(desc_text,textbuf.buf);
         cur_len = _strlen(desc_text);
         if (cur_len == 0xfff) break;
       }
     }
     else {
       text_append_label(0xe);
-      crt_strcpy(desc_text,((i8 *)&textbuf.buf));
+      crt_strcpy(desc_text,textbuf.buf);
     }
     description_edit.set_text((const char *)desc_text);
     description_edit.show_and_redraw();
@@ -540,20 +540,20 @@ int __cdecl save_read_game(char *path)
       }
     }
   }
-  count_read = _fread(((i8 *)&power_graph_history_block.power_graph_history),0x4b0,1,_File);
+  count_read = _fread(power_graph_history_block.power_graph_history,0x4b0,1,_File);
   if ((count_read == 0) || (count_read = _fread(((i16 *)&grey_palette_block.save_layout_record),0x6a,1,_File), count_read == 0)) return status;
   save_unpack_layout_rects();
   ui_flush_input();
   for (idx = 0; idx < 8; idx = idx + 1) {
     count_read = _fread(&map_views_block.map_view_recs[idx].open,2,1,_File);
     if ((((count_read == 0) || (count_read = _fread(&map_views_block.map_view_recs[idx].track_moves,2,1,_File), count_read == 0))
-        || (count_read = _fread(((i16 *)&map_views_block.map_view_center_x) + idx * 0x1f8,2,1,_File), count_read == 0)) ||
-       ((count_read = _fread(((i16 *)&map_views_block.mapview_center_y) + idx * 0x1f8,2,1,_File), count_read == 0 ||
-        (count_read = _fread(((i16 *)&map_views_block.mapview_zoom) + idx * 0x1f8,2,1,_File), count_read == 0))))
+        || (count_read = _fread(&map_views_block.map_view_recs[idx].center_x,2,1,_File), count_read == 0)) ||
+       ((count_read = _fread(&map_views_block.map_view_recs[idx].center_y,2,1,_File), count_read == 0 ||
+        (count_read = _fread(&map_views_block.map_view_recs[idx].zoom,2,1,_File), count_read == 0))))
     return status;
     /* BF-282: a zoom the map window can draw at (-7..8) */
-    if ((((i16 *)&map_views_block.mapview_zoom)[idx * 0x1f8] < -7) ||
-       (8 < ((i16 *)&map_views_block.mapview_zoom)[idx * 0x1f8])) return status;
+    if ((map_views_block.map_view_recs[idx].zoom < -7) ||
+       (8 < map_views_block.map_view_recs[idx].zoom)) return status;
   }
   if ((is_scenario == 0) && ((game.game_flags & GAME_SCENARIO) == 0)) {
     scenario_reset_params();
@@ -1440,9 +1440,9 @@ int __cdecl city_process_pollution(int city)
   if (pollution_roll < city_calc.pollution * 2) {
     roll = _rand();
     tile_x = map_wrap_x((int)cities[city].x +
-                               (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[roll % 0x14]);
+                               (int)dir_dy_table_block.city_tile_dx_table[(roll % 0x14)]);
     roll = (int)cities[city].y +
-            (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[roll % 0x14];
+            (int)dir_dy_table_block.city_tile_dy_table[(roll % 0x14)];
     check = map_in_bounds(tile_x,roll);
     if (check != 0) {
       improvements2 = tile_improvements(tile_x,roll);
@@ -1709,8 +1709,8 @@ static uint hut_barbarians(uint civ,int x,uint y)
     }
     rnd = game.turn + step >> 0x1f;
     tmp = ((game.turn + step ^ rnd) - rnd & 7 ^ rnd) - rnd;
-    tile_x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[tmp] + x);
-    tmp = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[tmp] + y;
+    tile_x = map_wrap_x(dir_dx_table_block.dir_dx_table[tmp] + x);
+    tmp = (int)dir_dy_table_block.dir_dy_table[tmp] + y;
     check = map_in_bounds(tile_x,tmp);
     if ((((check != 0) && (check = tile_unit_owner(tile_x,tmp), check < 0)) &&
         (check = tile_city_owner(tile_x,tmp), check < 0)) &&

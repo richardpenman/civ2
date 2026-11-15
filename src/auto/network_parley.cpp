@@ -95,7 +95,7 @@ void __cdecl chat_insert_macro_text(EditControl *edit,i32 macro_id)
   }
   edit->replace_sel((const char *)&textbuf.buf);
   civ = edit->get_sel_end();
-  text_len = _strlen(((i8 *)&textbuf.buf));
+  text_len = _strlen(textbuf.buf);
   edit->set_sel(civ - text_len,civ);
   return;
 }
@@ -127,7 +127,7 @@ void __cdecl chat_read_macro_line(const char *path,i32 *file_offset)
     else {
       ((FileObject *)file)->read_line((char *)&textbuf.buf,0x100);
       ((FileObject *)file)->map_close();
-      line_len = _strlen(((i8 *)&textbuf.buf));
+      line_len = _strlen(textbuf.buf);
       *(size_t *)file_offset = *file_offset + line_len + 2;
     }
   }
@@ -1660,7 +1660,7 @@ void ParleyWindow::build_title()
   if (mode == 4) {
     text = (label_string(label_table.string_ids[0x2d5]));
     text_append(text);
-    crt_strcpy(&title[0],((i8 *)&textbuf.buf));
+    crt_strcpy(&title[0],textbuf.buf);
   }
   else {
     text = (label_string(label_table.string_ids[0x2d4]));
@@ -1678,7 +1678,7 @@ void ParleyWindow::build_title()
     }
     text_append_string_id(attitude_names[attitude_level]);
     text_append_rparen();
-    crt_strcpy(&title[0],((i8 *)&textbuf.buf));
+    crt_strcpy(&title[0],textbuf.buf);
   }
   return;
 }
@@ -1755,8 +1755,8 @@ void ParleyWindow::open(int other_civ,u32 mode)
     wnd2->other_civ = other_civ;
     if (mode != 3) {
       wnd2->mode = mode;
-      wnd2->left_kind = (((i32 *)&parley_panes.mode_left_kinds))[mode * 2];
-      wnd2->right_kind = (((i32 *)&parley_panes.mode_right_kinds))[mode * 2];
+      wnd2->left_kind = parley_panes.mode_kinds[mode][0];
+      wnd2->right_kind = parley_panes.mode_kinds[mode][1];
     }
     wnd2->build_title();
     ((u8 *)wnd2 + 0x1f8)[0] = 21;
@@ -1860,11 +1860,11 @@ void __cdecl parley_poll_net_replies(void)
     }
     else {
       parley_wnd_block.mode = 0;
-      parley_wnd_block.left_kind = parley_panes.mode_left_kinds[0];
-      parley_wnd_block.right_kind = parley_panes.mode_right_kinds[0];
+      parley_wnd_block.left_kind = parley_panes.mode0_left_kind;
+      parley_wnd_block.right_kind = parley_panes.mode0_right_kind;
       parley_wnd_block.shown_left_kind = (i32)parley_wnd_block.left_kind;
       parley_wnd_block.shown_right_kind = (i32)parley_wnd_block.right_kind;
-      parley_wnd_block.add_side_dialog(parley_panes.mode_left_kinds[0],0);
+      parley_wnd_block.add_side_dialog(parley_panes.mode0_left_kind,0);
       parley_wnd_block.add_side_dialog((i32)parley_wnd_block.right_kind,1);
     }
   }
@@ -1991,8 +1991,8 @@ void ParleyWindow::set_mode_sides(int refresh)
     parley_wnd_block.mode = 0xf;
     ((Button *)parley_wnd_block.never_mind_button)->enable();
   }
-  parley_wnd_block.left_kind = (((i32 *)&parley_panes.mode_left_kinds))[(int)parley_wnd_block.mode * 2];
-  parley_wnd_block.right_kind = (((i32 *)&parley_panes.mode_right_kinds))[(int)parley_wnd_block.mode * 2];
+  parley_wnd_block.left_kind = parley_panes.mode_kinds[(int)parley_wnd_block.mode][0];
+  parley_wnd_block.right_kind = parley_panes.mode_kinds[(int)parley_wnd_block.mode][1];
   parley_wnd_block.shown_left_kind = (i32)parley_wnd_block.left_kind;
   parley_wnd_block.shown_right_kind = (i32)parley_wnd_block.right_kind;
   if (refresh != 0) {
@@ -2243,31 +2243,31 @@ void ParleyWindow::chat_receive_message(int civ,int civ2,int is_private,const ch
   text_clear();
   log_len = _strlen(chat.log_buffer);
   if (log_len != 0) {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_recv_newline_str));
+    crt_strcat(textbuf.buf,((i8 *)&chat_recv_newline_str));
   }
   if ((char)is_private == '\0') {
     label = (label_string(label_table.string_ids[0x2d8]));
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)label);
+    crt_strcat(textbuf.buf,(const char *)label);
     text_append_space();
     chat_append_sender_name(civ);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_recv_year_open_str));
+    crt_strcat(textbuf.buf,((i8 *)&chat_recv_year_open_str));
     text_append_year((int)game.year);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_recv_year_close_str));
+    crt_strcat(textbuf.buf,((i8 *)&chat_recv_year_close_str));
   }
   else {
     label = (label_string(label_table.string_ids[0x2d6]));
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)label);
+    crt_strcat(textbuf.buf,(const char *)label);
     text_append_space();
     chat_append_sender_name(civ);
     label = (label_string(label_table.string_ids[0x2d7]));
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)label);
+    crt_strcat(textbuf.buf,(const char *)label);
     text_append_space();
     chat_append_sender_name(civ2);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_recv_private_year_open_str));
+    crt_strcat(textbuf.buf,((i8 *)&chat_recv_private_year_open_str));
     text_append_year((int)game.year);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_recv_private_year_close_str));
+    crt_strcat(textbuf.buf,((i8 *)&chat_recv_private_year_close_str));
   }
-  crt_strcat(((i8 *)&textbuf.buf),(const char *)((const void *)message));
+  crt_strcat(textbuf.buf,(const char *)((const void *)message));
   if ((civ == 0) && (chat_wnd_block.mute_anonymous != 0)) {
     return;
   }
@@ -2344,14 +2344,14 @@ void __cdecl chat_append_sender_name(int civ)
   
   if (civ == 0) {
     name_text = (i32)(label_string(label_table.string_ids[0x2d9]));
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)((const void *)name_text));
+    crt_strcat(textbuf.buf,(const char *)((const void *)name_text));
   }
   else {
     name_text = civ_leader_title(civ);
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)((const void *)name_text));
+    crt_strcat(textbuf.buf,(const char *)((const void *)name_text));
     text_append_space();
     name_text = (i32)(civ_leader_name(civ));
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)((const void *)name_text));
+    crt_strcat(textbuf.buf,(const char *)((const void *)name_text));
   }
   return;
 }
@@ -2436,17 +2436,17 @@ i32 __cdecl chat_input_on_key(i32 control,int key)
       text_clear();
       len = _strlen(chat.log_buffer);
       if (len != 0) {
-        crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_send_newline_str));
+        crt_strcat(textbuf.buf,((i8 *)&chat_send_newline_str));
       }
       label = (label_string(label_table.string_ids[0x2da]));
-      crt_strcat(((i8 *)&textbuf.buf),(const char *)label);
+      crt_strcat(textbuf.buf,(const char *)label);
       text_append_space();
       if ((int)wnd2->mode == 4) {
         count = 0;
         for (civ = 1; civ < 8; civ++) {
           if (chat_wnd_block.send_to_civs[civ] != 0) {
             if (count != 0) {
-              crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_send_recipient_sep_str));
+              crt_strcat(textbuf.buf,((i8 *)&chat_send_recipient_sep_str));
             }
             chat_append_sender_name(civ);
             count++;
@@ -2460,10 +2460,10 @@ i32 __cdecl chat_input_on_key(i32 control,int key)
       if (count == 0) {
         return 0;
       }
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_send_year_open_str));
+      crt_strcat(textbuf.buf,((i8 *)&chat_send_year_open_str));
       text_append_year((int)game.year);
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&chat_send_year_close_str));
-      crt_strcat(((i8 *)&textbuf.buf),(*(char * *)&chat.input_buffer));
+      crt_strcat(textbuf.buf,((i8 *)&chat_send_year_close_str));
+      crt_strcat(textbuf.buf,(*(char * *)&chat.input_buffer));
       chat_log_append(textbuf.buf);
       if ((int)wnd2->mode == 4) {
         for (civ = 1; civ < 8; civ++) {
@@ -3448,8 +3448,8 @@ void __cdecl parley_give_maps(int receiver,int civ,int map_kind)
         tile = tile_at(units[unit].x,units[unit].y);
         if (((recv_mask & tile->visible) == 0) || ((giver_mask & tile->visible) == 0)) {
           for (i = 0; i < 0x15; i++) {
-            x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
-            y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
+            x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[i] + x2);
+            y = (int)dir_dy_table_block.city_tile_dy_table[i] + y2;
             in_bounds = map_in_bounds(x,y);
             if (in_bounds != 0) {
               tile_set_visible(x,y,recv_mask,1,1);
@@ -3476,8 +3476,8 @@ void __cdecl parley_give_maps(int receiver,int civ,int map_kind)
         tile = tile_at(cities[city].x,cities[city].y);
         if (((recv_mask & tile->visible) == 0) || ((giver_mask & tile->visible) == 0)) {
           for (i = 0; i < 0x15; i++) {
-            x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
-            y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
+            x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[i] + x2);
+            y = (int)dir_dy_table_block.city_tile_dy_table[i] + y2;
             in_bounds = map_in_bounds(x,y);
             if (in_bounds != 0) {
               tile_set_visible(x,y,recv_mask,1,1);
@@ -3615,8 +3615,8 @@ void __cdecl parley_cede_city(uptr city,int civ)
   }
   net_batch_begin();
   for (i = 0; i < 0x15; i++) {
-    x2 = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x);
-    y3 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y;
+    x2 = map_wrap_x(dir_dy_table_block.city_tile_dx_table[i] + x);
+    y3 = dir_dy_table_block.city_tile_dy_table[i] + y;
     in_bounds = map_in_bounds(x2,y3);
     if (in_bounds != 0) {
       tile_set_radius_civ(x2,y3,civ,1);
@@ -3705,8 +3705,8 @@ void __cdecl parley_cede_city(uptr city,int civ)
     map_redraw_tile_all_views(x,y);
   }
   for (i = 0; i < 8; i++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[i] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[i] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[i] + x);
+    y2 = dir_dy_table_block.dir_dy_table[i] + y;
     in_bounds2 = map_in_bounds(x2,y2);
     if ((in_bounds2 != 0) &&
        (tile = tile_at(x2,y2),
@@ -3825,9 +3825,9 @@ i32 __cdecl parley_find_unit_drop_tile(int unit,i32 *x,i32 *y,int civ,int must_m
      (result = unit_stack_sum(unit,2), 1 < result)) {
     found = 0;
     for (i = 0; i < 0x2d; i++) {
-      wrapped_x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x2);
+      wrapped_x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[i] + x2);
       *x = wrapped_x;
-      *y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y2;
+      *y = dir_dy_table_block.city_tile_dy_table[i] + y2;
       if ((((((must_move == 0) || (*x != x2)) || (*y != y2)) &&
            (result = map_in_bounds(*x,*y), result != 0)) &&
           (((result = tile_city_owner(*x,*y), result == civ ||
@@ -4008,7 +4008,7 @@ void __cdecl parley_on_gift_kind_select(i32 ctrl_id,u32 gift_kind)
   case 4:
     this2->mode = 0xb;
   }
-  this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+  this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
   this2->right_kind = this2->shown_right_kind;
   this2->add_side_dialog(this2->right_kind,1);
   return;
@@ -4036,7 +4036,7 @@ void __cdecl parley_on_proposal_kind_select(i32 ctrl_id,u32 proposal_kind)
   else if (proposal_kind == 1) {
     this2->mode = 0xd;
   }
-  this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+  this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
   this2->right_kind = this2->shown_right_kind;
   this2->add_side_dialog(this2->right_kind,1);
   return;
@@ -4262,9 +4262,9 @@ void __cdecl parley_on_mode_chosen(i32 ctrl_id)
       this2->mode = 0xf;
       ((Button *)this2->never_mind_button)->enable();
     }
-    this2->shown_left_kind = (((i32 *)&parley_panes.mode_left_kinds))[this2->mode * 2];
+    this2->shown_left_kind = parley_panes.mode_kinds[this2->mode][0];
     this2->left_kind = (i32)this2->shown_left_kind;
-    this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+    this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
     this2->right_kind = (i32)this2->shown_right_kind;
     this2->add_side_dialog((i32)this2->left_kind,0);
     this2->add_side_dialog((i32)this2->right_kind,1);
@@ -4275,9 +4275,9 @@ void __cdecl parley_on_mode_chosen(i32 ctrl_id)
     value = ((RadioGroup *)this2->side_radios[1])->get_selected();
     this2->exchange_kind[1] = value;
     this2->mode = 0xe;
-    this2->shown_left_kind = (((i32 *)&parley_panes.mode_left_kinds))[this2->mode * 2];
+    this2->shown_left_kind = parley_panes.mode_kinds[this2->mode][0];
     this2->left_kind = (i32)this2->shown_left_kind;
-    this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+    this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
     this2->right_kind = (i32)this2->shown_right_kind;
     this2->add_side_dialog((i32)this2->left_kind,0);
     this2->add_side_dialog((i32)this2->right_kind,1);
@@ -4320,9 +4320,9 @@ void __cdecl parley_on_mode_chosen(i32 ctrl_id)
     }
     else if (this2->received_offer != 0) {
       this2->mode = 1;
-      this2->shown_left_kind = (((i32 *)&parley_panes.mode_left_kinds))[this2->mode * 2];
+      this2->shown_left_kind = parley_panes.mode_kinds[this2->mode][0];
       this2->left_kind = (i32)this2->shown_left_kind;
-      this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+      this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
       this2->right_kind = (i32)this2->shown_right_kind;
       this2->add_side_dialog((i32)this2->left_kind,0);
       this2->add_side_dialog((i32)this2->right_kind,1);
@@ -4423,9 +4423,9 @@ void __cdecl parley_on_no_thanks(void)
   net_send_message(NM_PARLEY_NO_THANKS,net.net_slots[net.net_civ_slots[(int)parley_wnd_block.other_civ]].id,0,0,0
                      ,0,0,0,0,0);
   this2->mode = 2;
-  this2->shown_left_kind = (((i32 *)&parley_panes.mode_left_kinds))[this2->mode * 2];
+  this2->shown_left_kind = parley_panes.mode_kinds[this2->mode][0];
   this2->left_kind = this2->shown_left_kind;
-  this2->shown_right_kind = (((i32 *)&parley_panes.mode_right_kinds))[this2->mode * 2];
+  this2->shown_right_kind = parley_panes.mode_kinds[this2->mode][1];
   this2->right_kind = this2->shown_right_kind;
   this2->add_side_dialog(this2->left_kind,0);
   this2->add_side_dialog(this2->right_kind,1);
@@ -4624,8 +4624,8 @@ int ParleyWindow::find_unit_by_id(int unit_id)
   y2 = units[unit].y;
   near_land = false;
   for (dir = 0; dir < 8; dir++) {
-    x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x2);
-    y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y2;
+    x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x2);
+    y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y2;
     in_bounds = map_in_bounds(x,y);
     if ((in_bounds != 0) && (y = tile_is_ocean(x,y), y == 0)) {
       near_land = true;

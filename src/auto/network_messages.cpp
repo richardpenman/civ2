@@ -1652,7 +1652,7 @@ void NetSession::recv_turn_time_limit(int *msg,MsgArgs &a)
   net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
   (*(uptr *)&civ_saved_cursor_x_block.mp_turn_time_limit_ms) = a.unit;
   if (a.unit == 0) {
-    map_views_block.main_view_timer_shown[0] = 0;
+    map_views_block.map_view_recs[0].timer_shown = 0;
     ((FrameWindow *)((i8 *)&map_views_block.map_views))->FrameWindow::draw_caption();
     timer_rect.left = map_views_block.main_view_frame_left;
     timer_rect.top = map_views_block.main_view_frame_top;
@@ -1661,7 +1661,7 @@ void NetSession::recv_turn_time_limit(int *msg,MsgArgs &a)
     ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&timer_rect);
   }
   else {
-    map_views_block.main_view_timer_shown[0] = 1;
+    map_views_block.map_view_recs[0].timer_shown = 1;
     mp_turn_timer_start(1);
   }
 }
@@ -2374,7 +2374,7 @@ int NetSession::dispatch_turn_message(int *&msg,int *msg_hdr,uint *payload,int s
     break;
   case NM_START_TURN_TIMER:
     if ((*(uptr *)&civ_saved_cursor_x_block.mp_turn_time_limit_ms) != 0) {
-      map_views_block.main_view_timer_shown[0] = 1;
+      map_views_block.map_view_recs[0].timer_shown = 1;
     }
     mp_turn_timer_start(0);
     break;
@@ -2451,8 +2451,8 @@ int NetSession::dispatch_display_message(int *&msg,int *msg_hdr,uint *payload,in
   case NM_SLIDE_PIECE:
     net_msg_get_args((NetMsg *)msg,(i32 *)(&a.unit));
     if (a.y3 != 0) {
-      x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[a.y2] + a.civ3);
-      city = city_at(x,(int)(((i8 *)&dir_dy_table_block.dir_dy_table))[a.y2] + a.unit3);
+      x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[a.y2] + a.civ3);
+      city = city_at(x,(int)dir_dy_table_block.dir_dy_table[a.y2] + a.unit3);
       if ((city < 0) && ((game.game_options & OPT_SHOW_ENEMY_MOVES) == 0)) {
         msg_hdr[1] = 0x72;
         a.unit = a.civ3;

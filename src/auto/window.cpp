@@ -468,7 +468,7 @@ i32 __cdecl ui_paradrop_cursor_active(void)
 {
   i32 active;
   
-  if ((map_views_block.mapview_cursor_id[0] == 0x202) || (map_views_block.mapview_cursor_id[0] == 0x203)) {
+  if ((map_views_block.map_view_recs[0].cursor_id == 0x202) || (map_views_block.map_view_recs[0].cursor_id == 0x203)) {
     active = 1;
   }
   else {
@@ -1963,8 +1963,8 @@ void __cdecl accel_start_develop_city(int city,int num_tiles)
     best_score = 0;
     best_tile = -1;
     for (tile = 0; tile < 0x14; tile++) {
-      x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile] + x2);
-      y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile] + y2;
+      x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[tile] + x2);
+      y = dir_dy_table_block.city_tile_dy_table[tile] + y2;
       result = map_in_bounds(x,y);
       if ((result != 0) && (result = tile_improvements(x,y), result == 0)) {
         score = 0;
@@ -2004,8 +2004,8 @@ void __cdecl accel_start_develop_city(int city,int num_tiles)
       }
     }
     if (best_tile < 0) break;
-    x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[best_tile] + x2);
-    y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[best_tile] + y2;
+    x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[best_tile] + x2);
+    y = dir_dy_table_block.city_tile_dy_table[best_tile] + y2;
     best_terrain = tile_terrain(x,y);
     tile_at(x,y);
     tile_set_improvements(x,y,0x10,1,1);
@@ -2019,8 +2019,8 @@ void __cdecl accel_start_develop_city(int city,int num_tiles)
   }
   civ = cities[city].owner;
   for (tile = 0; tile < 0x2d; tile++) {
-    x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile] + x2);
-    y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile] + y2;
+    x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[tile] + x2);
+    y = dir_dy_table_block.city_tile_dy_table[tile] + y2;
     result = map_in_bounds(x,y);
     if ((result != 0) && (result = tile_is_ocean(x,y), result == 0)) {
       result = tile_landmass(cities[city].x,cities[city].y);
@@ -5223,12 +5223,12 @@ void ModalMenuWindow::run_modal_loop()
   if (modal_wnd.depth != 0xf) {
     modal_running = 1;
     modal_wnd.depth++;
-    (((i32 *)&wnd_modal_stack_below_block.wnd_modal_stack))[modal_wnd.depth] = (i32)this;
+    wnd_modal_stack_below_block.wnd_modal_stack[modal_wnd.depth] = (i32)this;
     if (modal_wnd.depth == 0) {
       owner2 = 0;
     }
     else {
-      owner2 = ((WndBase *)(((i32 *)&wnd_modal_stack_below_block.wnd_modal_stack_below))[modal_wnd.depth])->get_window();
+      owner2 = ((WndBase *)wnd_modal_stack_below_block.wnd_modal_stack[modal_wnd.depth - 1])->get_window();
     }
     wnd = get_window();
     wnd_obj_disable_owner(wnd,owner2);
@@ -5242,7 +5242,7 @@ void ModalMenuWindow::run_modal_loop()
       owner_after = 0;
     }
     else {
-      owner_after = ((WndBase *)(((i32 *)&wnd_modal_stack_below_block.wnd_modal_stack_below))[modal_wnd.depth])->get_window();
+      owner_after = ((WndBase *)wnd_modal_stack_below_block.wnd_modal_stack[modal_wnd.depth - 1])->get_window();
     }
     wnd = get_window();
     wnd_obj_enable_owner(wnd,owner_after);

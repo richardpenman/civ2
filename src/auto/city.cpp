@@ -204,14 +204,14 @@ static void city_commodity_count_terrain(int &road_tiles,int terrain_counts[11],
     terrain_counts[i] = 0;
   }
   for (i = 0; i < 0x10; i++) {
-    (((int *)&commodity_demand.by_commodity))[i] = 0;
-    (((int *)&commodity_supply.by_commodity))[i] = (((int *)&commodity_demand.by_commodity))[i];
+    commodity_demand.by_commodity[i] = 0;
+    commodity_supply.by_commodity[i] = commodity_demand.by_commodity[i];
     demand_order[i] = i;
     supply_order[i] = demand_order[i];
   }
   for (i = 0; i < 0x15; i++) {
-    x2 = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + x3);
-    y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + y3;
+    x2 = map_wrap_x(dir_dy_table_block.city_tile_dx_table[i] + x3);
+    y2 = dir_dy_table_block.city_tile_dy_table[i] + y3;
     in_bounds = map_in_bounds(x2,y2);
     if (in_bounds != 0) {
       terrain_byte = tile_terrain(x2,y2);
@@ -268,7 +268,7 @@ static void city_commodity_supply_scores(uptr city,iptr civ,int terrain_counts[1
   if ((int)map.height / 3 < (int)center_dy) {
     wool_factor = terrain_counts[6] + 3;
   }
-  commodity_supply.wool[0] = (river_tiles / 2 + terrain_counts[4] * 2 + terrain_counts[2]) * wool_factor;
+  commodity_supply.wool = (river_tiles / 2 + terrain_counts[4] * 2 + terrain_counts[2]) * wool_factor;
   commodity_supply.beads = terrain_counts[10] * 8 - center_dy;
   if ('\t' < cities[city].size) {
     commodity_supply.beads = commodity_supply.beads >> 1;
@@ -484,10 +484,10 @@ static void city_commodity_demand_scores(uptr city,iptr civ,int road_tiles,int t
   else {
     polar_dist = ((int)map.height >> 2) - center_dy;
   }
-  commodity_demand.wool[0] = polar_dist * 2 + terrain_counts[1] * 2 + terrain_counts[3];
+  commodity_demand.wool = polar_dist * 2 + terrain_counts[1] * 2 + terrain_counts[3];
   city2 = civ_has_advance(civ,ADV_INDUSTRIALIZATION);
   if (city2 != 0) {
-    commodity_demand.wool[0] = commodity_demand.wool[0] << 1;
+    commodity_demand.wool = commodity_demand.wool << 1;
   }
   commodity_demand.beads = center_dy + ((0x15 - terrain_counts[10]) * 3) / 2;
   if (cities[city].size < 4) {
@@ -596,22 +596,22 @@ static void city_commodity_demand_scores(uptr city,iptr civ,int road_tiles,int t
   }
   city2 = city_has_improvement(city,IMP_CATHEDRAL);
   if ((city2 != 0) || (city2 = civ_has_wonder(civ,WONDER_MICHELANGELO), city2 != 0)) {
-    (((int *)&commodity_demand.by_commodity))[metal_commodity] = (((int *)&commodity_demand.by_commodity))[metal_commodity] * 3 >> 1;
+    commodity_demand.by_commodity[metal_commodity] = commodity_demand.by_commodity[metal_commodity] * 3 >> 1;
   }
   city2 = city_has_improvement(city,IMP_BANK);
   if (city2 != 0) {
-    (((int *)&commodity_demand.by_commodity))[metal_commodity] = (((int *)&commodity_demand.by_commodity))[metal_commodity] * 3 >> 1;
+    commodity_demand.by_commodity[metal_commodity] = commodity_demand.by_commodity[metal_commodity] * 3 >> 1;
   }
   city2 = civ_has_advance(civ,ADV_ECONOMICS);
   if (city2 != 0) {
-    (((int *)&commodity_demand.by_commodity))[metal_commodity] = (((int *)&commodity_demand.by_commodity))[metal_commodity] >> 1;
+    commodity_demand.by_commodity[metal_commodity] = commodity_demand.by_commodity[metal_commodity] >> 1;
   }
   city2 = civ_has_advance(civ,ADV_COMPUTERS);
   if (city2 != 0) {
-    (((int *)&commodity_demand.by_commodity))[metal_commodity] = (((int *)&commodity_demand.by_commodity))[metal_commodity] >> 1;
+    commodity_demand.by_commodity[metal_commodity] = commodity_demand.by_commodity[metal_commodity] >> 1;
   }
   if (civs[civ].tribe == 0x11) {
-    (((int *)&commodity_demand.by_commodity))[metal_commodity] = (((int *)&commodity_demand.by_commodity))[metal_commodity] << 1;
+    commodity_demand.by_commodity[metal_commodity] = commodity_demand.by_commodity[metal_commodity] << 1;
   }
   city2 = advance_count - 0xc;
   if (city2 < 1) {
@@ -709,13 +709,13 @@ static void city_commodity_pick(uptr city,iptr civ,iptr supply_order[16],uint ad
   uint extra_supply;
 
   for (i = 0; i < 0x10; i++) {
-    if ((((int *)&commodity_supply.by_commodity))[i] < (((int *)&commodity_demand.by_commodity))[i]) {
-      if (0 < (((int *)&commodity_supply.by_commodity))[i]) {
-        (((int *)&commodity_supply.by_commodity))[i] = 0;
+    if (commodity_supply.by_commodity[i] < commodity_demand.by_commodity[i]) {
+      if (0 < commodity_supply.by_commodity[i]) {
+        commodity_supply.by_commodity[i] = 0;
       }
     }
-    else if (0 < (((int *)&commodity_demand.by_commodity))[i]) {
-      (((int *)&commodity_demand.by_commodity))[i] = 0;
+    else if (0 < commodity_demand.by_commodity[i]) {
+      commodity_demand.by_commodity[i] = 0;
     }
   }
   int_pairs_bubble_sort(0x10,(i32 *)supply_order,(i32 *)&commodity_supply.by_commodity);
@@ -727,7 +727,7 @@ static void city_commodity_pick(uptr city,iptr civ,iptr supply_order[16],uint ad
       commodity = *entry;
       saved_supply = commodity;
       slot--;
-    } while (*(int *)(((i8 *)&commodity_supply.wool) + slot * 4) < 0);
+    } while (commodity_supply.by_commodity[slot + 1] < 0);
     (*((char *)&commodity + 0)) = (i8)*entry;
     *(i8 *)&cities[city].supplies[i] = (i8)commodity;
     commodity = saved_supply;
@@ -739,7 +739,7 @@ static void city_commodity_pick(uptr city,iptr civ,iptr supply_order[16],uint ad
       commodity = *entry;
       saved_demand = commodity;
       slot--;
-    } while ((((i32 *)&commodity_demand.wool))[slot] < 0);
+    } while (commodity_demand.by_commodity[slot + 1] < 0);
     (*((char *)&commodity + 0)) = (i8)*entry;
     *(i8 *)&cities[city].demands[i] = (i8)commodity;
     commodity = saved_demand;
@@ -947,8 +947,8 @@ void __cdecl city_assign_default_name(int city)
     __chdir(((i8 *)&game_dirs.home));
     for (; 0 < (int)skip_count; skip_count--) {
       text_read_line(1);
-      len = _strlen(((i8 *)&textbuf.buf));
-      if ((len == 0) || (result = __strnicmp(((i8 *)&textbuf.buf),str_stop,5), result == 0)) break;
+      len = _strlen(textbuf.buf);
+      if ((len == 0) || (result = __strnicmp(textbuf.buf,str_stop,5), result == 0)) break;
     }
     if (0 < (int)skip_count) {
       result = text_open_section(0,(const char *)&str_extra);
@@ -958,14 +958,14 @@ void __cdecl city_assign_default_name(int city)
       }
       for (; 0 < (int)skip_count; skip_count--) {
         text_read_line(1);
-        len = _strlen(((i8 *)&textbuf.buf));
-        if ((len == 0) || (result = __strnicmp(((i8 *)&textbuf.buf),str_stop_2,5), result == 0))
+        len = _strlen(textbuf.buf);
+        if ((len == 0) || (result = __strnicmp(textbuf.buf,str_stop_2,5), result == 0))
         break;
       }
     }
     if ((int)skip_count < 1) {
       _memset(cities[city].name,0,0x10);
-      _strncpy(cities[city].name,((i8 *)&textbuf.buf),0xf);
+      _strncpy(cities[city].name,textbuf.buf,0xf);
       break;
     }
     leaders[civs[civ].tribe].city_name_index = '\0';
@@ -993,8 +993,8 @@ void __cdecl city_refresh_area_tiles(int city)
   civ = cities[city].owner;
   net_batch_begin();
   for (tile_idx = 0; tile_idx < 0x2d; tile_idx++) {
-    x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_idx] + (int)x2);
-    y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_idx] + (int)y2;
+    x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[tile_idx] + (int)x2);
+    y = (int)dir_dy_table_block.city_tile_dy_table[tile_idx] + (int)y2;
     in_bounds = map_in_bounds(x,y);
     if (in_bounds != 0) {
       notify = 1;
@@ -1110,8 +1110,8 @@ uptr __cdecl city_create(int x,int y,int civ)
       if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) {
         net_batch_begin();
         for (tile_idx = 0; tile_idx < 0x14; tile_idx++) {
-          x2 = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_idx] + x);
-          y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_idx] + y;
+          x2 = map_wrap_x(dir_dy_table_block.city_tile_dx_table[tile_idx] + x);
+          y2 = dir_dy_table_block.city_tile_dy_table[tile_idx] + y;
           in_bounds = map_in_bounds(x2,y2);
           if ((((in_bounds != 0) &&
                (tile_set_visible(x2,y2,1 << ((byte)civ & 0x1f),1,1), 0x27 < game.turn)) &&
@@ -1139,8 +1139,8 @@ uptr __cdecl city_create(int x,int y,int civ)
     _memset(cities[city].route_partner,0,3);
     _memset(cities[city].route_goods,0,3);
     for (tile_idx = 0; tile_idx < 9; tile_idx++) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[tile_idx] + x);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[tile_idx] + y;
+      x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[tile_idx] + x);
+      y2 = dir_dy_table_block.dir_dy_table[tile_idx] + y;
       result = map_in_bounds(x2,y2);
       if (result != 0) {
         result = tile_is_ocean(x2,y2);
@@ -1351,8 +1351,8 @@ void __cdecl city_delete(uptr city,i32 from_network)
                 net_batch_begin();
                 tile_set_improvements(x2,y2,2,0,1);
                 for (city2 = 0; city2 < 0x2d; city2++) {
-                  x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[city2] + x2);
-                  y = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[city2] + y2;
+                  x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[city2] + x2);
+                  y = dir_dy_table_block.city_tile_dy_table[city2] + y2;
                   result = map_in_bounds(x,y);
                   if ((result != 0) && (result = tile_is_ocean(x,y), result == 0)) {
                     notify = 1;
@@ -1556,9 +1556,9 @@ void __cdecl city_set_production(int city,int production)
             dialog2.show_modal(0);
           }
         }
-        else if ((((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] & 1) == 0) &&
-                ((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] =
-                      (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] | 1, autoplay.active == 0)) {
+        else if (((advisor_window_block.wonder_notice_flags[civ][wonder] & 1) == 0) &&
+                (advisor_window_block.wonder_notice_flags[civ][wonder] =
+                      advisor_window_block.wonder_notice_flags[civ][wonder] | 1, autoplay.active == 0)) {
           text_set_label_arg(2,improvements[improvement].name);
           dialog2.load_game_text((const char *)&str_startwonder);
           dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],0,0);
@@ -1603,8 +1603,8 @@ void __cdecl city_set_production(int city,int production)
       wonder = improvement - IMP_FIRST_WONDER;
       if (((game.wonder_city[improvement - IMP_FIRST_WONDER] != city) &&
           (bonus_mult = civ_has_wonder(civ,improvement - IMP_FIRST_WONDER), bonus_mult == 0)) &&
-         ((((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] & 2) == 0 &&
-          ((((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] = (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] | 2,
+         (((advisor_window_block.wonder_notice_flags[civ][wonder] & 2) == 0 &&
+          (advisor_window_block.wonder_notice_flags[civ][wonder] = advisor_window_block.wonder_notice_flags[civ][wonder] | 2,
           autoplay.active == 0)))) {
         civ_name = civ_name_plural(civ);
         text_set_string_arg(1,civ_name);
@@ -1637,8 +1637,8 @@ i32 __cdecl city_adjacent_to_body(int city,int landmass)
   
   if (landmass < 0x3f) {
     for (dir = 0; dir < 8; dir++) {
-      x = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir]);
-      y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+      x = map_wrap_x((int)cities[city].x + (int)dir_dx_table_block.dir_dx_table[dir]);
+      y = (int)cities[city].y + (int)dir_dy_table_block.dir_dy_table[dir];
       ok = map_in_bounds(x,y);
       if (((ok != 0) && (ok = tile_is_ocean(x,y), ok != 0)) &&
          (y = tile_landmass(x,y), y == landmass)) {
@@ -1668,8 +1668,8 @@ int __cdecl city_adjacent_sea_info(int city,int *out_max_size,uptr *out_dir)
   x2 = cities[city].x;
   y2 = cities[city].y;
   for (dir = 0; (int)dir < 8; dir++) {
-    x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x2);
-    y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y2;
+    x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x2);
+    y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y2;
     ok = map_in_bounds(x,y);
     if ((ok != 0) && (ok = tile_is_ocean(x,y), ok != 0)) {
       landmass2 = tile_landmass(x,y);
@@ -1708,8 +1708,8 @@ i32 __cdecl cities_share_ocean(int city,int city2)
     if (7 < dir) {
       return 0;
     }
-    x = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir]);
-    y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+    x = map_wrap_x((int)cities[city].x + (int)dir_dx_table_block.dir_dx_table[dir]);
+    y = (int)cities[city].y + (int)dir_dy_table_block.dir_dy_table[dir];
     ok = map_in_bounds(x,y);
     if ((((ok != 0) && (ok = tile_is_ocean(x,y), ok != 0)) &&
         (y = tile_landmass(x,y), y != last_landmass)) &&
@@ -2120,7 +2120,7 @@ void __cdecl city_load_citypref(void)
         }
       }
       if (0 < found) {
-        (((i32 *)&map_views_block.citypref_improvements))[citypref.count] = found;
+        map_views_block.citypref_improvements[citypref.count] = found;
         citypref.count++;
       }
     } while (citypref.count < 0x20 && 0 < found);
@@ -2218,8 +2218,8 @@ void __cdecl city_incite_transfer(int city,int civ,i32 reason)
   if (-1 < civ) {
     net_batch_begin();
     for (tile_index = 0; tile_index < 0x15; tile_index++) {
-      x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_index] + (int)x2);
-      y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_index] + (int)y2;
+      x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[tile_index] + (int)x2);
+      y = (int)dir_dy_table_block.city_tile_dy_table[tile_index] + (int)y2;
       ok = map_in_bounds(x,y);
       if (ok != 0) {
         tile_set_visible(x,y,1 << ((byte)civ & 0x1f),1,1);
@@ -2443,9 +2443,9 @@ void __cdecl city_calc_tile_flags(int city)
     if (0x18 < tile_index) {
       return;
     }
-    x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_index] + (int)cities[city].x);
-    y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_index];
-    tile_flags = (byte *)(((i8 *)&city_calc.tile_flags) + tile_index);
+    x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[tile_index] + (int)cities[city].x);
+    y = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[tile_index];
+    tile_flags = (byte *)&city_calc.tile_flags[tile_index];
     *tile_flags = 0;
     result = map_in_bounds(x,y);
     if ((result == 0) || (0x14 < tile_index)) {
@@ -2549,14 +2549,14 @@ void __cdecl city_calc_capital_link(int city)
         for (tile_index = 0; tile_index < 0x15; tile_index++) {
           x3 = city_tile_worked(city2,tile_index);
           if ((x3 != 0) || (tile_index == 0x14)) {
-            x3 = (int)cities[city2].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_index];
-            y3 = (int)cities[city2].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_index];
+            x3 = (int)cities[city2].x + (int)dir_dy_table_block.city_tile_dx_table[tile_index];
+            y3 = (int)cities[city2].y + (int)dir_dy_table_block.city_tile_dy_table[tile_index];
             dist = map_distance_diag(x,y,x3,y3);
             if (dist < 3) {
               for (near_tile = 0; near_tile < 0x14; near_tile++) {
-                if (((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[near_tile] == x3 - x) &&
-                   ((int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[near_tile] == y3 - y)) {
-                  (((i8 *)&city_calc.tile_flags))[near_tile] = (((i8 *)&city_calc.tile_flags))[near_tile] | 0x10;
+                if (((int)dir_dy_table_block.city_tile_dx_table[near_tile] == x3 - x) &&
+                   ((int)dir_dy_table_block.city_tile_dy_table[near_tile] == y3 - y)) {
+                  city_calc.tile_flags[near_tile] = city_calc.tile_flags[near_tile] | 0x10;
                 }
               }
             }
@@ -2808,8 +2808,8 @@ int __cdecl city_tile_yield(int city,int tile_index,int yield_type)
   byte improv_bits;
   
   civ = (iptr)cities[city].owner;
-  x = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_index]);
-  y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_index];
+  x = map_wrap_x((int)cities[city].x + (int)dir_dy_table_block.city_tile_dx_table[tile_index]);
+  y = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[tile_index];
   result = map_in_bounds(x,y);
   if (result == 0) {
     yield_value = 0;
@@ -2999,9 +2999,9 @@ void __cdecl city_calc_tile_yields(int city,int tile_index,int worked)
   city_turn.yield_tile_worked = worked;
   for (yield_type = 0; yield_type < 3; yield_type++) {
     yield_value = city_tile_yield(city,tile_index,yield_type);
-    (((i32 *)&city_calc.tile_yields))[yield_type] = yield_value;
+    city_calc.tile_yields[yield_type] = yield_value;
     if (city_turn.yield_tile_worked != 0) {
-      (((int *)&city_calc.yield_totals))[yield_type] = (((int *)&city_calc.yield_totals))[yield_type] + (((i32 *)&city_calc.tile_yields))[yield_type];
+      city_calc.yield_totals[yield_type] = city_calc.yield_totals[yield_type] + city_calc.tile_yields[yield_type];
     }
   }
   city_turn.yield_tile_worked = 0;
@@ -3073,7 +3073,7 @@ void __cdecl city_assign_workers(int city)
   }
   score = city_release_blocked_tiles(city);
   for (tile_index = 0; tile_index < 3; tile_index++) {
-    (((int *)&city_calc.yield_totals))[tile_index] = 0;
+    city_calc.yield_totals[tile_index] = 0;
   }
   for (tile_index = 0; tile_index < 0x14; tile_index++) {
     shield_score = city_tile_status_flags(city,tile_index);
@@ -3484,9 +3484,9 @@ void __cdecl city_happy_clamp_stage(int city,int stage)
     (*(i8 *)&city_calc.angry_count)--;
   }
   if (-1 < stage) {
-    (((i8 *)&city_calc.happy_by_stage))[stage] = *(i8 *)&city_calc.happy_count;
-    (((i8 *)&city_calc.unhappy_by_stage))[stage] = *(i8 *)&city_calc.unhappy_count;
-    (((i8 *)&city_calc.angry_by_stage))[stage] = *(i8 *)&city_calc.angry_count;
+    city_calc.happy_by_stage[stage] = *(i8 *)&city_calc.happy_count;
+    city_calc.unhappy_by_stage[stage] = *(i8 *)&city_calc.unhappy_count;
+    city_calc.angry_by_stage[stage] = *(i8 *)&city_calc.angry_count;
   }
   return;
 }
@@ -4379,8 +4379,8 @@ void __cdecl city_add_terraform_goals(int city)
   civ2 = cities[city].owner;
   civ = (int)(char)civ2;
   for (tile_idx = 0; tile_idx < 0x14; tile_idx++) {
-    x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_idx] + (int)cities[city].x);
-    y = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_idx];
+    x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[tile_idx] + (int)cities[city].x);
+    y = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[tile_idx];
     in_bounds = map_in_bounds(x,y);
     if ((in_bounds != 0) && (improvements2 = tile_improvements(x,y), (improvements2 & TILE_POLLUTION) != 0)) {
       civ_add_ai_goal(civ,x,y,0x15,6);
@@ -4647,7 +4647,7 @@ void __cdecl wonder_apollo_reveal_map(void)
 uint __cdecl city_tile_status_flags(int city,int tile_idx)
 
 {
-  return (uint)(byte)(((i8 *)&city_calc.tile_flags))[tile_idx];
+  return (uint)(byte)city_calc.tile_flags[tile_idx];
 }
 
 /* 004f3d60 auto */
@@ -4980,8 +4980,8 @@ static void city_capture_aftermath_take_tiles(uptr city,iptr civ,int x2,int y,ip
   civ_clear_standing_goals_near(civ,ROLE_SETTLE,x2,y,4);
   net_batch_begin();
   for (improvement = 0; improvement < 0x15; improvement++) {
-    x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[improvement] + x2);
-    y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[improvement] + y;
+    x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[improvement] + x2);
+    y2 = dir_dy_table_block.city_tile_dy_table[improvement] + y;
     improvement2 = map_in_bounds(x,y2);
     if ((improvement2 != IMP_NOTHING) && (tile_set_radius_civ(x,y2,civ,1), civ == 0)) {
       tile_set_visible(x,y2,1,1,1);
@@ -5202,8 +5202,8 @@ static void city_capture_aftermath_rehome_units(uptr city,iptr civ,int x2,int y,
     }
     net_batch_begin();
     for (improvement = 0; improvement < 8; improvement++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[improvement] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[improvement] + y;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[improvement] + x2);
+      y2 = dir_dy_table_block.dir_dy_table[improvement] + y;
       improvement2 = map_in_bounds(x,y2);
       if ((improvement2 != IMP_NOTHING) &&
          (map_tile = tile_at(x,y2),
@@ -5296,8 +5296,8 @@ static void city_capture_aftermath_partisans(uptr city,iptr civ,int capture_mode
   for (partisan_idx = 0; partisan_idx < partisan_count; partisan_idx++) {
     best_score = 0;
     for (improvement = 0; improvement < 0x14; improvement++) {
-      x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[improvement] + x2);
-      y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[improvement] + y;
+      x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[improvement] + x2);
+      y2 = dir_dy_table_block.city_tile_dy_table[improvement] + y;
       value = map_in_bounds(x,y2);
       if (((value != 0) && (value = tile_is_ocean(x,y2), value == 0)) &&
          (value = tile_city_or_unit_owner(x,y2), value < 0)) {

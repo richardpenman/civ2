@@ -21,11 +21,11 @@ extern MapClickState map_click;
 extern int map_layout_wide;
 #pragma pack(push, 1)
 struct diag_neighbor_bits_block {
-    i8 diag_neighbor_bits[3];  /* 00628338 */
-    i8 pick_quadrant_dx_table[1];  /* 0062833b */
-    i8 diag_dx_table[7];  /* 0062833c */
-    i8 pick_quadrant_dy_table[1];  /* 00628343 */
-    i8 diag_dy_table[12];  /* 00628344 */
+    i8 diag_neighbor_bits[4];  /* 00628338: by diagonal direction */
+    i8 diag_dx_table[5];  /* 0062833c: by diagonal direction, then the square itself (4) */
+    u8 diag_dx_table_rest[3];
+    i8 diag_dy_table[5];  /* 00628344 */
+    u8 diag_dy_table_rest[7];
 };
 #pragma pack(pop)
 extern struct diag_neighbor_bits_block diag_neighbor_bits_block;

@@ -469,7 +469,7 @@ void __cdecl impr_editor_load_controls(void)
       ctrl_id = ((Control *)
                          &editor_active.wnd->edits[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot])->get_id();
       _sprintf(value_text,((i8 *)&impr_editor_ctrl_kinds_block.impr_editor_value_fmt),
-               *(i32 *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58));
+               editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca]);
       ((Control *)
                  &editor_active.wnd->edits[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot])->set_text(
                  (const char *)value_text);
@@ -477,7 +477,7 @@ void __cdecl impr_editor_load_controls(void)
     else if (impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].kind == 0xc) {
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot])->get_id();
-      sel_index = *(int *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58) + 2;
+      sel_index = editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca] + 2;
       editor_active.wnd->combos[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot].set_cur_sel(sel_index);
     }
   }
@@ -517,7 +517,7 @@ int __cdecl impr_editor_save_controls(void)
       value -= 2;
       field = ((Control *)
                          &editor_active.wnd->combos[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot])->get_id();
-      *(int *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + editor_active.wnd->item * 0x58 + field * 4) = value;
+      editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field - 0xca] = value;
     }
   }
   return clamp_count;
@@ -543,7 +543,7 @@ i32 __cdecl impr_editor_write_section(FILE *file)
   for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     text_clear();
     text_append_string_id(improvements[improvement].name);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&impr_editor_ctrl_kinds_block.rules_improve_name_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&impr_editor_ctrl_kinds_block.rules_improve_name_sep_str));
     name_str = label_string(improvements[improvement].name);
     len = _strlen(name_str);
     if (len < 0x19) {
@@ -555,12 +555,12 @@ i32 __cdecl impr_editor_write_section(FILE *file)
     }
     text_append_spaces(0x19 - name_len);
     text_append_int_2d((uint)improvements[improvement].cost);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&impr_editor_ctrl_kinds_block.rules_improve_cost_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&impr_editor_ctrl_kinds_block.rules_improve_cost_sep_str));
     text_append_int_2d((uint)improvements[improvement].upkeep);
-    crt_strcat(((i8 *)&textbuf.buf),str_empty_137);
+    crt_strcat(textbuf.buf,str_empty_137);
     text_append_advance_abbrev(improvements[improvement].preq,1);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&rules_improve_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&rules_improve_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }
@@ -575,10 +575,10 @@ i32 __cdecl impr_editor_write_endwonder(FILE *file)
     text_clear();
     text_append_advance_abbrev(wonder_expires[improvement - IMP_FIRST_WONDER],1);
     text_append_spaces(8);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&rules_endwonder_comment_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&rules_endwonder_comment_sep_str));
     text_append_string_id(improvements[improvement].name);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&rules_endwonder_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&rules_endwonder_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }

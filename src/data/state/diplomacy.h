@@ -49,8 +49,14 @@ typedef struct DiploLeaderScreen {
     char video_active;  /* 0062ca40 */
     u8 video_active_rest[3];
     int greeting_sound_id;  /* 0062ca44 */
-    int sound_ids[2];  /* 0062ca48 */
-    int reaction_sound_ids[3];  /* 0062ca50 */
+    union {
+        int sound_ids[5];  /* 0062ca48: by reaction */
+        struct {
+            int sound_id_0;
+            int sound_id_1;
+            int reaction_sound_ids[3];  /* 0062ca50 */
+        };
+    };
 } DiploLeaderScreen;
 #pragma pack(pop)
 extern DiploLeaderScreen diplo_leader;

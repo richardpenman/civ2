@@ -337,8 +337,8 @@ void __cdecl cheat_change_terrain(void)
           *tile = 10;
           min_landmass = 0x3f;
           for (dir = 0; dir < 8; dir++) {
-            x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)map_cursor.x[0]);
-            y2 = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)map_cursor.y[0];
+            x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)map_cursor.x[0]);
+            y2 = (int)dir_dy_table_block.dir_dy_table[dir] + (int)map_cursor.y[0];
             result = map_in_bounds(x,y2);
             if (((result != 0) && (result = tile_is_ocean(x,y2), result != 0)) &&
                (result = tile_landmass(x,y2), result < min_landmass)) {
@@ -353,8 +353,8 @@ void __cdecl cheat_change_terrain(void)
           if (old_terrain == 10) {
             min_landmass = 0x3f;
             for (dir = 0; dir < 8; dir++) {
-              x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)map_cursor.x[0]);
-              y2 = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)map_cursor.y[0];
+              x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)map_cursor.x[0]);
+              y2 = (int)dir_dy_table_block.dir_dy_table[dir] + (int)map_cursor.y[0];
               result = map_in_bounds(x,y2);
               if (((result != 0) && (result = tile_is_ocean(x,y2), result == 0)) &&
                  (result = tile_landmass(x,y2), result < min_landmass)) {
@@ -1205,9 +1205,9 @@ void __cdecl cheat_edit_victory(void)
       if ((choice < 4) || (7 < choice)) {
         return;
       }
-      result = dlg_input_number_game((const char *)&str_editvictoryobj,(int)(((i16 *)&scenario.year_increment))[choice],(int *)number_input);
+      result = dlg_input_number_game((const char *)&str_editvictoryobj,(int)scenario.victory_thresholds[choice - 4],(int *)number_input);
       if (result == 0) {
-        (((i16 *)&scenario.year_increment))[choice] = (*(i16 *)((char *)&number_input + 0));
+        scenario.victory_thresholds[choice - 4] = (*(i16 *)((char *)&number_input + 0));
       }
     }
   }
@@ -1272,7 +1272,7 @@ void __cdecl cheat_scenario_params(void)
     status_redraw(1);
     ((CityWindow *)((i8 *)&city_wnd.window))->refresh();
     text_set_number_arg(0,(int)scenario.tech_paradigm);
-    text_set_number_arg(1,(int)scenario.year_increment[0]);
+    text_set_number_arg(1,(int)scenario.year_increment);
     text_set_number_arg(2,(int)scenario.start_year);
     text_set_number_arg(3,(int)scenario.max_turns);
     text_set_number_arg(4,(int)(short)scenario.flags[0] & 1);
@@ -1294,9 +1294,9 @@ void __cdecl cheat_scenario_params(void)
       }
     }
     else if (choice == 2) {
-      value = dlg_input_number_game((const char *)&str_editincrement,(int)scenario.year_increment[0],(int *)number_input);
+      value = dlg_input_number_game((const char *)&str_editincrement,(int)scenario.year_increment,(int *)number_input);
       if (value == 0) {
-        scenario.year_increment[0] = (*(i16 *)((char *)&number_input + 0));
+        scenario.year_increment = (*(i16 *)((char *)&number_input + 0));
       }
     }
     else if (choice == 3) {

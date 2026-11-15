@@ -89,8 +89,8 @@ static void city_choose_production_scan_tiles(ChooseProdState *s,iptr city)
   s->enemy_strength = 0;
   s->farmland_count = 0;
   for (unit_type2 = 0; unit_type2 < 0x14; unit_type2++) {
-    x2 = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[unit_type2]);
-    y2 = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[unit_type2];
+    x2 = map_wrap_x((int)cities[city].x + (int)dir_dy_table_block.city_tile_dx_table[unit_type2]);
+    y2 = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[unit_type2];
     ret = map_in_bounds(x2,y2);
     if (ret != 0) {
       terrain_byte = tile_terrain(x2,y2);
@@ -125,8 +125,8 @@ static void city_choose_production_scan_tiles(ChooseProdState *s,iptr city)
     }
   }
   if (-1 < irrigate_tile) {
-    x2 = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[irrigate_tile]);
-    y2 = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[irrigate_tile];
+    x2 = map_wrap_x((int)cities[city].x + (int)dir_dy_table_block.city_tile_dx_table[irrigate_tile]);
+    y2 = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[irrigate_tile];
     map_tile = tile_at(x2,y2);
     if ((map_tile->visible & game.human_players) == 0) {
       tmp = 4;
@@ -1328,7 +1328,7 @@ static void city_choose_production_try_wonder(ChooseProdState *s,iptr city,iptr 
     }
     wonder_group = wonder / 7;
     score = ret + (uint)civs[s->civ].wonders_by_group[wonder_group];
-    if ((byte)(((i8 *)&map_views_block.human_wonders_by_group_min))[wonder_group] < civs[s->civ].wonders_by_group[wonder_group]) {
+    if ((byte)map_views_block.human_wonders_by_group_min[wonder_group] < civs[s->civ].wonders_by_group[wonder_group]) {
       score += 2;
     }
     if (civs[s->civ].wonders_by_group[wonder_group] <
@@ -2244,7 +2244,7 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
   pref_chosen = 0;
   if (((1 << (st.civ5 & 0x1f) & (uint)game.human_players) != 0) && (citypref.count != 0)) {
     for (unit_type2 = 0; unit_type2 < citypref.count; unit_type2++) {
-      improvement = (((i32 *)&map_views_block.citypref_improvements))[unit_type2];
+      improvement = map_views_block.citypref_improvements[unit_type2];
       ret = city_has_improvement(city,improvement);
       if ((ret == 0) && (ret = city_can_build_improvement(st.civ,city,improvement), ret != 0)) {
         st.best_build = -improvement;
@@ -2935,10 +2935,10 @@ static void city_process_production_ai_buy(uptr city,uptr civ,int net_shields)
   if (0x26 < improvement) {
     group = (improvement - IMP_FIRST_WONDER) / 7;
     if ((*(char *)&civs[civ].wonders_by_group[group] == '\0') ||
-       (civs[civ].wonders_by_group[group] < (byte)(((i8 *)&map_views_block.human_wonders_by_group_min))[group])) {
+       (civs[civ].wonders_by_group[group] < (byte)map_views_block.human_wonders_by_group_min[group])) {
       gold_spent = civs[civ].gold >> 6;
     }
-    else if ((byte)(((i8 *)&map_views_block.human_wonders_by_group_max))[group] + 1 <
+    else if ((byte)map_views_block.human_wonders_by_group_max[group] + 1 <
              (uint)civs[civ].wonders_by_group[group]) {
       gold_spent = civs[civ].gold >> 8;
     }

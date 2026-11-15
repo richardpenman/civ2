@@ -1117,7 +1117,7 @@ GAMEDATA(16) char str_d_ss_franklinton_difference_engine_cpp_12[40] = "D:\\Ss\\F
 GAMEDATA(8) char str_blocktype_btmapstruct[28] = "blockType == btMapStruct";  /* 0062d628 */
 GAMEDATA(4) char str_d_ss_franklinton_difference_engine_cpp_13[40] = "D:\\Ss\\Franklinton\\Difference Engine.cpp";  /* 0062d644 */
 GAMEDATA(4) char str_pnode_type_0_pnode_type_num_block_types_2[356] = "pNode->type >= 0 && pNode->type < NUM_BLOCK_TYPES";  /* 0062d66c */
-GAMEDATA(16) ParleyPaneKinds parley_panes = {{0}, {0x14, 0, 0x13}, {0}, 0x12, {0}, 2, "\0\0\0\0\x01", 3, 4, "\x05\0\0\0\x06\0\0\0\x07\0\0\0\x08\0\0\0\x07\0\0\0\x09\0\0\0\x07\0\0\0\n\0\0\0\x07\0\0\0\x11\0\0\0\x07\0\0\0\x0d\0\0\0\x0b\0\0\0\x0c\0\0\0\x0b\0\0\0\x0d\0\0\0\x0e\0\0\0\x0e\0\0\0\x0f\0\0\0\x10"};  /* 0062d7d0 */
+GAMEDATA(16) ParleyPaneKinds parley_panes = {{{{0, 0x14}, {0, 0x13}, {0, 0x12}, {0, 2}, {0, 1}, {3, 4}}}, "\x05\0\0\0\x06\0\0\0\x07\0\0\0\x08\0\0\0\x07\0\0\0\x09\0\0\0\x07\0\0\0\n\0\0\0\x07\0\0\0\x11\0\0\0\x07\0\0\0\x0d\0\0\0\x0b\0\0\0\x0c\0\0\0\x0b\0\0\0\x0d\0\0\0\x0e\0\0\0\x0e\0\0\0\x0f\0\0\0\x10"};  /* 0062d7d0 */
 GAMEDATA(8) PanelLayout panel_layout = {2, 2, 8, 2, 2};  /* 0062d858 */
 GAMEDATA(4) ChatBuffers chat = {0};  /* 0062d86c */
 GAMEDATA(4) char str_chatlog_txt_2[12] = "chatlog.txt";  /* 0062d874 */
@@ -3452,8 +3452,7 @@ static_assert(offsetof(PathSearch, debug_requested) == 0x14, "pathfind.debug_req
 static_assert(offsetof(DiffEngState, mirror_buf) == 0x0, "diffeng.mirror_buf");
 static_assert(offsetof(DiffEngState, packet_flush_size) == 0x4, "diffeng.packet_flush_size");
 static_assert(offsetof(DiffEngState, send_count) == 0x8, "diffeng.send_count");
-static_assert(offsetof(ParleyPaneKinds, mode_left_kinds) == 0x0, "parley_panes.mode_left_kinds");
-static_assert(offsetof(ParleyPaneKinds, mode_right_kinds) == 0x4, "parley_panes.mode_right_kinds");
+static_assert(offsetof(ParleyPaneKinds, mode_kinds) == 0x0, "parley_panes.mode_kinds");
 static_assert(offsetof(ParleyPaneKinds, mode2_left_kind) == 0x10, "parley_panes.mode2_left_kind");
 static_assert(offsetof(ParleyPaneKinds, mode2_right_kind) == 0x14, "parley_panes.mode2_right_kind");
 static_assert(offsetof(ParleyPaneKinds, mode3_left_kind) == 0x18, "parley_panes.mode3_left_kind");
@@ -4325,9 +4324,6 @@ static_assert(offsetof(TextParse, line_cursor) == 0x104, "text_parse.line_cursor
 static_assert(offsetof(struct map_views_block, textbuf) == 0xce97, "textbuf");
 static_assert(offsetof(TextBuffer, before) == 0x0, "textbuf.before");
 static_assert(offsetof(TextBuffer, buf) == 0x1, "textbuf.buf");
-static_assert(offsetof(TextBuffer, char_1) == 0x2, "textbuf.char_1");
-static_assert(offsetof(TextBuffer, plus2) == 0x3, "textbuf.plus2");
-static_assert(offsetof(TextBuffer, char_3) == 0x4, "textbuf.char_3");
 static_assert(offsetof(struct editor_text_dlg_wnd_block, editor_lists) == 0x2d8, "editor_lists");
 static_assert(offsetof(EditorLists, govt_names) == 0x0, "editor_lists.govt_names");
 static_assert(offsetof(EditorLists, commodity_names) == 0x140, "editor_lists.commodity_names");

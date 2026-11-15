@@ -560,7 +560,7 @@ void __cdecl unit_editor_load_controls(void)
       ctrl_id = ((Control *)
                          &editor_active.wnd->edits[unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].slot])->get_id();
       _sprintf(num_buf,((i8 *)&unit_editor_ctrl_kinds_block.unit_editor_int_fmt),
-               *(i32 *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58));
+               editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca]);
       ((Control *)
                  &editor_active.wnd->edits[unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].slot])->set_text(
                  (const char *)num_buf);
@@ -568,7 +568,7 @@ void __cdecl unit_editor_load_controls(void)
     else if (unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].kind == 0xc) {
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].slot])->get_id();
-      sel = *(iptr *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58);
+      sel = editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca];
       if ((i == 1) || (i == 2)) {
         sel += 2;
       }
@@ -613,7 +613,7 @@ int __cdecl unit_editor_store_controls(void)
       }
       field = ((Control *)
                          &editor_active.wnd->combos[unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].slot])->get_id();
-      *(int *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + editor_active.wnd->item * 0x58 + field * 4) = value;
+      editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field - 0xca] = value;
     }
   }
   return changed_count;
@@ -640,7 +640,7 @@ i32 __cdecl unit_editor_write_units(FILE *file)
   for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     text_clear();
     text_append_string_id(unit_types[unit_type].name);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_name_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_name_sep));
     type_name = label_string(unit_types[unit_type].name);
     name_len = _strlen(type_name);
     if (name_len < 0xd) {
@@ -653,37 +653,37 @@ i32 __cdecl unit_editor_write_units(FILE *file)
     text_append_spaces(0xd - pad_len);
     text_append_advance_abbrev(unit_types[unit_type].obsolete_by,1);
     text_append_int_2d((int)(char)unit_types[unit_type].domain);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_domain_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_domain_sep));
     text_append_int_2d((int)(char)unit_types[unit_type].move / (int)(uint)cosmic.road_move_mult);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_move_suffix));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_move_suffix));
     text_append_int((int)(char)unit_types[unit_type].range);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_range_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_range_sep));
     text_append_int_2d((int)(char)unit_types[unit_type].attack);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_attack_suffix));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_attack_suffix));
     text_append_int((int)(char)unit_types[unit_type].defense);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_defense_suffix));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_defense_suffix));
     if ((char)unit_types[unit_type].defense < '\n') {
       text_append_space();
     }
     text_append_int_2d((int)(char)unit_types[unit_type].hit_points / 10);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_hp_suffix));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_hp_suffix));
     text_append_int((int)(char)unit_types[unit_type].firepower);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_firepower_suffix));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_firepower_suffix));
     text_append_int_2d((int)(char)unit_types[unit_type].cost);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_cost_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_cost_sep));
     text_append_int((int)(char)unit_types[unit_type].hold);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_hold_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_hold_sep));
     text_append_int_2d((int)(char)unit_types[unit_type].role);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_role_sep));
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_role_sep));
     text_append_advance_abbrev(unit_types[unit_type].prerequisite,1);
     text_append_space();
     for (bit = 0xe; -1 < bit; bit--) {
-      crt_strcat(((i8 *)&textbuf.buf),
+      crt_strcat(textbuf.buf,
                    ((i8 *)&unit_editor_ctrl_kinds_block.units_txt_flag_digits) +
                    (((unit_types[unit_type].flags & 1 << ((byte)bit & 0x1f)) != 0) - 1 & 4));
     }
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&unit_editor_ctrl_kinds_block.units_txt_line_end));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&unit_editor_ctrl_kinds_block.units_txt_line_end));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }

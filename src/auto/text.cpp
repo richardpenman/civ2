@@ -15,7 +15,7 @@ void __cdecl text_clear(void)
 void __cdecl text_append(const char *str)
 
 {
-  crt_strcat(((i8 *)&textbuf.buf),(const char *)((void *)str));
+  crt_strcat(textbuf.buf,(const char *)((void *)str));
   return;
 }
 
@@ -853,7 +853,7 @@ void __cdecl str_append_year(char *dest,uint year)
   int month_neg;
   int month_pos;
   
-  if (((game.game_flags & GAME_SCENARIO) == 0) || (-1 < scenario.year_increment[0])) {
+  if (((game.game_flags & GAME_SCENARIO) == 0) || (-1 < scenario.year_increment)) {
     if ((-1 < (int)year) && (game_language == 0)) {
       str_append_label(dest,1);
       str_append_space(dest);
@@ -1046,18 +1046,18 @@ int __cdecl text_open_file_section(const char *filename,const char *section)
         allow_rewind = false;
         _rewind(text_file_handle);
       }
-      line = _fgets(((i8 *)&textbuf.buf),0xff,text_file_handle);
+      line = _fgets(textbuf.buf,0xff,text_file_handle);
       if (line != (char *)0x0) {
         str_strip_newline((char *)(&textbuf.buf));
         str_trim((char *)&textbuf.buf);
-        cmp = __strcmpi(((i8 *)&textbuf.buf),section_tag);
+        cmp = __strcmpi(textbuf.buf,section_tag);
         if (cmp == 0) {
           found = true;
         }
       }
     }
-    len = _strlen(((i8 *)&textbuf.buf));
-    (*(i8 * *)&text_parse.line_cursor) = ((i8 *)&textbuf.buf) + len;
+    len = _strlen(textbuf.buf);
+    (*(i8 * *)&text_parse.line_cursor) = &textbuf.buf[len];
     result = 0;
   }
   if (result != 0) {
@@ -1099,17 +1099,17 @@ i8 * __cdecl text_read_line(int trim)
     if (trim == 1) {
       str_trim((char *)&textbuf.buf);
     }
-    (*(i8 * *)&text_parse.line_cursor) = ((i8 *)&textbuf.buf);
-    return ((i8 *)&textbuf.buf);
+    (*(i8 * *)&text_parse.line_cursor) = textbuf.buf;
+    return textbuf.buf;
   }
   if (((CRT_FEOF(text_file_handle)) == 0) &&
-     (line = _fgets(((i8 *)&textbuf.buf),0xff,text_file_handle), line != (char *)0x0)) {
+     (line = _fgets(textbuf.buf,0xff,text_file_handle), line != (char *)0x0)) {
     str_strip_newline((char *)(&textbuf.buf));
     if (trim == 1) {
       str_trim((char *)&textbuf.buf);
     }
-    (*(i8 * *)&text_parse.line_cursor) = ((i8 *)&textbuf.buf);
-    result = ((i8 *)&textbuf.buf);
+    (*(i8 * *)&text_parse.line_cursor) = textbuf.buf;
+    result = textbuf.buf;
   }
   if (result == (i8 *)0x0) {
     textbuf.buf[0] = 0;
@@ -1131,8 +1131,8 @@ i8 * __cdecl text_read_line_or_end(int trim)
   if (line == (i8 *)0x0) {
     textbuf.buf[0] = '@';
     textbuf.buf[1] = '\0';
-    (*(i8 * *)&text_parse.line_cursor) = ((i8 *)&textbuf.buf);
-    line = ((i8 *)&textbuf.buf);
+    (*(i8 * *)&text_parse.line_cursor) = textbuf.buf;
+    line = textbuf.buf;
   }
   return line;
 }
@@ -1430,7 +1430,7 @@ void __cdecl text_append_int_2d(i32 value)
   char num_buf[20];
   
   _sprintf(num_buf,((i8 *)&int_2d_fmt),value);
-  crt_strcat(((i8 *)&textbuf.buf),num_buf);
+  crt_strcat(textbuf.buf,num_buf);
   return;
 }
 
@@ -1442,15 +1442,15 @@ void __cdecl text_append_advance_abbrev(int advance,int with_comma)
   size_t len;
   
   if (advance == -2) {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_no_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&advance_abbrev_no_strs) + ((with_comma != 0) - 1 & 8));
   }
   else if (advance == -1) {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_nil_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&advance_abbrev_nil_strs) + ((with_comma != 0) - 1 & 8));
   }
   else if (advance < ADV_COUNT) {
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)(advances + advance));
+    crt_strcat(textbuf.buf,(const char *)(advances + advance));
     if (with_comma != 0) {
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_comma_str));
+      crt_strcat(textbuf.buf,((i8 *)&advance_abbrev_comma_str));
     }
     abbrev_len = _strlen(advances[advance].abbrev);
     if (abbrev_len < 3) {
@@ -1462,7 +1462,7 @@ void __cdecl text_append_advance_abbrev(int advance,int with_comma)
     text_append_spaces(3 - len);
   }
   else {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&advance_abbrev_err_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&advance_abbrev_err_strs) + ((with_comma != 0) - 1 & 8));
   }
   return;
 }
@@ -1686,7 +1686,7 @@ int __cdecl str_find_bad_filename_char(const char *filename)
 
 {
   __strupr((char *)filename);
-  while ((*(char *)filename != '\0' && ((((i8 *)&filename_valid_chars))[*(char *)filename] != '\0'))) {
+  while ((*(char *)filename != '\0' && (filename_valid_chars[(*(char *)filename)] != '\0'))) {
     filename++;
   }
   return (int)*(char *)filename;
@@ -1763,7 +1763,7 @@ i8 * __cdecl file_find_fallback_drive(const char *filename)
         text_clear();
         text_append((const char *)drive_root);
         text_append(filename);
-        hfile = OpenFile(((i8 *)&textbuf.buf),&of_struct,0x4000);
+        hfile = OpenFile(textbuf.buf,&of_struct,0x4000);
         str_clear((char *)&setup_picwnd_block.fallback_drive_root);
         setup_picwnd_block.fallback_drive_root[0] = *drive_root;
         setup_picwnd_block.fallback_drive_root_end = 0;

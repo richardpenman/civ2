@@ -65,8 +65,8 @@ static void unit_reveal_surroundings_tiles(int x2,int y,uptr civ2,uint civ_bit,u
   char *known;
   iptr dir;
   for (dir = 0; dir < 0x19; dir++) {
-    x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[dir] + x2);
-    y4 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[dir] + y;
+    x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[dir] + x2);
+    y4 = dir_dy_table_block.city_tile_dy_table[dir] + y;
     in_bounds = map_in_bounds(x,y4);
     if ((in_bounds != 0) &&
        (((dir < 8 || (dir == 0x14)) ||
@@ -113,8 +113,8 @@ static void unit_reveal_surroundings_adjacent(iptr unit,int allow_contact,int x2
   iptr dir;
   int goal_priority;
   for (dir = 0; dir < 8; dir++) {
-    x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     city = map_in_bounds(x,y2);
     if (city != 0) {
       city = city_at(x,y2);
@@ -253,8 +253,8 @@ static void unit_reveal_surroundings_far(iptr unit,int x2,int y,uptr civ2,uint c
   iptr dir;
   for (dir = 8; dir < 0x19; dir++) {
     if (dir != 0x14) {
-      x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[dir] + x2);
-      y3 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[dir] + y;
+      x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[dir] + x2);
+      y3 = dir_dy_table_block.city_tile_dy_table[dir] + y;
       y2 = map_in_bounds(x,y3);
       if (y2 != 0) {
         y2 = tile_first_unit(x,y3);
@@ -1107,8 +1107,8 @@ int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y)
     cell = (i8 *)map_coarse2_at(path_queue.goal_x,path_queue.goal_y);
     *cell = 1;
     while( true ) {
-      cx = (((i32 *)&path_queue.queue_x))[path_queue.queue_head];
-      cy = (((i32 *)&path_queue.queue_y))[path_queue.queue_head];
+      cx = path_queue.queue_x[path_queue.queue_head];
+      cy = path_queue.queue_y[path_queue.queue_head];
       path_queue.queue_head = path_queue.queue_head + 1U & 0xff;
       if ((cx == start_cx) && (cy == start_cy)) {
         found = 1;
@@ -1128,15 +1128,15 @@ int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y)
       dir_mask = cur_dirs;
       for (dir = 0; dir < 8; dir++) {
         if ((dir_mask & 1 << ((byte)dir & 0x1f)) != 0) {
-          nx = coarse_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[dir] + cx);
-          ny = (((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[dir] + cy;
+          nx = coarse_wrap_x(dir_dy_table_block.coarse_dir_dx_table[dir] + cx);
+          ny = dir_dy_table_block.coarse_dir_dy_table[dir] + cy;
           if ((((-1 < nx) && (nx < map.quarter_w)) && (-1 < ny)) &&
              ((ny < map.quarter_h &&
               (visited = (char *)map_coarse2_at(nx,ny), *visited == '\0')))) {
             visited = (char *)map_coarse2_at(nx,ny);
             *visited = (char)cur_step + 1;
-            (((i32 *)&path_queue.queue_x))[path_queue.queue_tail] = nx;
-            (((i32 *)&path_queue.queue_y))[path_queue.queue_tail] = ny;
+            path_queue.queue_x[path_queue.queue_tail] = nx;
+            path_queue.queue_y[path_queue.queue_tail] = ny;
             path_queue.queue_tail = path_queue.queue_tail + 1U & 0xff;
           }
         }
@@ -1159,8 +1159,8 @@ int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y)
       dir_mask = start_dirs;
       for (dir = 0; dir < 8; dir++) {
         if ((dir_mask & 1 << ((byte)dir & 0x1f)) != 0) {
-          nx = coarse_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[dir] + start_cx);
-          ny = (((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[dir] + start_cy;
+          nx = coarse_wrap_x(dir_dy_table_block.coarse_dir_dx_table[dir] + start_cx);
+          ny = dir_dy_table_block.coarse_dir_dy_table[dir] + start_cy;
           if ((((-1 < nx) && (nx < map.quarter_w)) && (-1 < ny)) &&
              (ny < map.quarter_h)) {
             cell_ptr = map_coarse2_at(nx,ny);
@@ -1183,9 +1183,9 @@ int __cdecl path_coarse_find_waypoint(i32 from_x,i32 from_y,int to_x,int to_y)
         }
       }
       if (-1 < best_dir) {
-        start_cx = coarse_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[best_dir] + start_cx);
+        start_cx = coarse_wrap_x(dir_dy_table_block.coarse_dir_dx_table[best_dir] + start_cx);
         waypoint_x = start_cx * 4 + 1;
-        waypoint_y = ((((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[best_dir] + start_cy) * 4 + 1;
+        waypoint_y = (dir_dy_table_block.coarse_dir_dy_table[best_dir] + start_cy) * 4 + 1;
         has_waypoint = 1;
         raw_wp_x = waypoint_x;
         raw_wp_y = waypoint_y;
@@ -1252,8 +1252,8 @@ uint __cdecl path_coarse_snap_cell(int x,int y,int is_sea)
   if (best_dir < 0) {
     best_dist = 99;
     for (dir = 0; dir < 8; dir++) {
-      nx = coarse_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + cx);
-      ny = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + cy;
+      nx = coarse_wrap_x(dir_dx_table_block.dir_dx_table[dir] + cx);
+      ny = dir_dy_table_block.dir_dy_table[dir] + cy;
       if (((((-1 < nx) && (nx < map.quarter_w)) && (-1 < ny)) && (ny < map.quarter_h))
          && (((is_sea != 0 && (cell = (char *)map_coarse1_at(nx,ny), *cell != '\0')) ||
              ((is_sea == 0 && (cell = (char *)map_coarse0_at(nx,ny), *cell != '\0'))))))
@@ -1277,8 +1277,8 @@ uint __cdecl path_coarse_snap_cell(int x,int y,int is_sea)
   if (best_dir < 0) {
     dir = 8;
   }
-  path_queue.goal_x = coarse_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + cx);
-  path_queue.goal_y = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + cy;
+  path_queue.goal_x = coarse_wrap_x(dir_dx_table_block.dir_dx_table[dir] + cx);
+  path_queue.goal_y = dir_dy_table_block.dir_dy_table[dir] + cy;
   return (uint)(-1 < best_dir);
 }
 
@@ -1358,10 +1358,10 @@ static uptr unit_goto_greedy_dir(iptr unit,int x2,int y,int civ,uint is_human,ui
   cur_improvements = tile_improvements(x2,y);
   dist = tile_in_enemy_zoc(x2,y,civ);
   for (dir = 0; (int)dir < 8; dir++) {
-    x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
-    adx = delta_x - (int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir];
-    ady = dy - (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+    x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
+    adx = delta_x - (int)dir_dx_table_block.dir_dx_table[dir];
+    ady = dy - (int)dir_dy_table_block.dir_dy_table[dir];
     if ((int)adx < 1) {
       adx = ~adx + 1;
     }
@@ -2156,8 +2156,8 @@ static void unit_paradrop_viewers(int x,int y,uptr civ,uptr civ4,uptr city2,int 
         civ_sees[civ2] = 1;
       }
       for (dir = 0; (int)dir < 9; dir++) {
-        x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-        y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+        x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+        y2 = dir_dy_table_block.dir_dy_table[dir] + y;
         ret = map_in_bounds(x2,y2);
         if ((ret != 0) &&
            (tile_civ = tile_city_or_unit_owner(x2,y2), tile_civ == civ2)) {
@@ -2220,13 +2220,13 @@ static uint unit_paradrop_approach(int x,int y,iptr &from_x,int &from_y)
   best_score = 0;
   anim_dir = 0xffffffff;
   for (dir = 0; (int)dir < 8; dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     ret = map_in_bounds(x2,y2);
     if (ret != 0) {
       score = crt_rand_at("unit_paradrop");
       score = score % 6;
-      if (((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] != '\0') && ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] != '\0')) {
+      if ((dir_dx_table_block.dir_dx_table[dir] != '\0') && (dir_dy_table_block.dir_dy_table[dir] != '\0')) {
         score += 3;
       }
       ret = tile_city_or_unit_owner(x2,y2);
@@ -2529,8 +2529,8 @@ void __cdecl unit_cmd_build_city(void)
       city2 = city_at(x2,y2);
       if (city2 < 0) {
         for (dir = 0; dir < 8; dir++) {
-          x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-          y3 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y2;
+          x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+          y3 = dir_dy_table_block.dir_dy_table[dir] + y2;
           ret = map_in_bounds(x,y3);
           if ((ret != 0) && (ret = tile_city_owner(x,y3), -1 < ret)) {
             x = city_at(x,y3);
@@ -2889,8 +2889,8 @@ void __cdecl unit_cmd_sleep(void)
   if ((unit_types[units[unit].type].flags & UTYPE_COAST_BOUND) != 0) {
     ok = false;
     for (dir = 0; dir < 9; dir++) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-      dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+      x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+      dy = dir_dy_table_block.dir_dy_table[dir];
       result = map_in_bounds(x2,dy + y);
       if ((result != 0) && (result = tile_is_ocean(x2,dy + y), result == 0)) {
         ok = true;
@@ -3112,8 +3112,8 @@ void __cdecl unit_cmd_goto_city(void)
           if (unit_role == ROLE_SETTLE) {
             improved_tiles = 0;
             for (tile_index = 0; tile_index < 0x14; tile_index++) {
-              x2 = map_wrap_x((int)cities[city].x + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_index]);
-              y2 = (int)cities[city].y + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_index];
+              x2 = map_wrap_x((int)cities[city].x + (int)dir_dy_table_block.city_tile_dx_table[tile_index]);
+              y2 = (int)cities[city].y + (int)dir_dy_table_block.city_tile_dy_table[tile_index];
               city2 = map_in_bounds(x2,y2);
               if ((city2 != 0) &&
                  (move_mult = tile_improvements(x2,y2), (move_mult & 0x80) != 0)) {
@@ -5111,8 +5111,8 @@ void __cdecl nuclear_blast(int center_x,int center_y)
   if (y != 0) {
     net_batch_begin();
     for (dir = 0; dir < 9; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + center_x);
-      y = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + center_y;
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + center_x);
+      y = dir_dy_table_block.dir_dy_table[dir] + center_y;
       in_bounds = map_in_bounds(x,y);
       if (in_bounds != 0) {
         city = city_at(x,y);

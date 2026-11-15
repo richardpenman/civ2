@@ -60,6 +60,11 @@ TSIZE = {'i8': 1, 'u8': 1, 'char': 1, 'byte': 1, 'i16': 2, 'u16': 2, 'short': 2,
          'i32': 4, 'u32': 4, 'int': 4, 'uint': 4, 'iptr': 4, 'uptr': 4}
 
 
+# integer types of the same size and signedness
+SAME = {'i32': 'int', 'int': 'int', 'iptr': 'int', 'u32': 'uint', 'uint': 'uint', 'uptr': 'uint',
+        'i16': 'short', 'short': 'short', 'u16': 'ushort', 'ushort': 'ushort', 'i8': 'char', 'char': 'char'}
+
+
 def strip_parens(t):
     t = t.strip()
     while t.startswith('(') and match_paren(t, 0) == len(t):
@@ -103,7 +108,10 @@ def terms(e, mult=1):
                 return None
             out += sub
             continue
-        out.append((s * mult * c, x.strip()))
+        x = x.strip()
+        if re.fullmatch(r'\((?:[\w.\[\]]|->)+\)', x) and match_paren(x, 0) == len(x):
+            x = x[1:-1]             # (i) -> i
+        out.append((s * mult * c, x))
     return out
 
 
@@ -158,10 +166,11 @@ def index(total_terms, base, dims):
             else:
                 s += (' - ' if q < 0 else ' + ') + tt
         c = consts[d]
+        cs = (lambda v: ('0x%x' % v) if v >= 10 else str(v))
         if not s:
-            s = str(c)
+            s = ('-' + cs(-c)) if c < 0 else cs(c)
         elif c:
-            s += (' - %d' % -c) if c < 0 else (' + %d' % c)
+            s += (' - %s' % cs(-c)) if c < 0 else (' + %s' % cs(c))
         out.append(s)
     return out
 
@@ -254,9 +263,18 @@ def rewrite(s, row, fname, report):
         if idx is None:
             report.append('%s:%d: left: %s' % (fname, line, ' '.join(s[m.start():end + 10].split())))
             continue
-        if kind == 'str' and not mb and len(idx) > 1 and idx[-1] == '0':
-            idx = idx[:-1]          # the row (a string), decaying as the byte pointer did
-        ref = new + ''.join('[%s]' % i for i in idx) + suffix
+        amp = ''
+        if kind == 'str' and not mb:
+            if idx[-1] == '0' and len(idx) > 1:
+                idx = idx[:-1]      # the row (a string), decaying as the byte pointer did
+            elif dims[-1] == 1:
+                amp = '&'           # a char inside it: its address
+        if '%s' in new:
+            ref = new % tuple(idx) + suffix
+        elif kind == 'str' and not mb and len(dims) == 1 and idx == ['0']:
+            ref = new + suffix      # the array itself, decaying
+        else:
+            ref = amp + new + ''.join('[%s]' % i for i in idx) + suffix
         # the cast round it
         pre = s[:start]
         mc = re.search(r'(\*\s*)?\(\s*((?:const\s+)?[A-Za-z_]\w*)\s*\*\s*\)\s*$', pre)
@@ -267,7 +285,7 @@ def rewrite(s, row, fname, report):
                 pos = end
                 n += 1
                 continue
-            if kind == 'val' and castT == elem and mc.group(1):
+            if kind == 'val' and SAME.get(castT, castT) == SAME.get(elem, elem) and mc.group(1):
                 out.append(s[pos:mc.start()] + ref)
                 pos = end
                 n += 1

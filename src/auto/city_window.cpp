@@ -758,12 +758,12 @@ void __cdecl city_window_toggle_worked_tile(int mouse_x,int mouse_y)
         quadrant = city2 - 10 >> 4;
       }
       if (quadrant != 0) {
-        dx += (((i8 *)&diag_neighbor_bits_block.pick_quadrant_dx_table))[quadrant];
-        dy += (((i8 *)&diag_neighbor_bits_block.pick_quadrant_dy_table))[quadrant];
+        dx += diag_neighbor_bits_block.diag_dx_table[quadrant - 1];
+        dy += diag_neighbor_bits_block.diag_dy_table[quadrant - 1];
       }
       for (i = 0; i < 0x15; i++) {
-        if (((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] == dx) &&
-           ((((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] == dy)) {
+        if ((dir_dy_table_block.city_tile_dx_table[i] == dx) &&
+           (dir_dy_table_block.city_tile_dy_table[i] == dy)) {
           tile_idx = i;
           break;
         }
@@ -778,7 +778,7 @@ void __cdecl city_window_toggle_worked_tile(int mouse_x,int mouse_y)
           city5 = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
           city2 = city_tile_worked(city5,city);
           if (city2 == 0) {
-            if ((((i8 *)&city_calc.tile_flags))[tile_idx] != '\0') {
+            if (city_calc.tile_flags[tile_idx] != '\0') {
               return;
             }
             if (city_calc.specialist_count == 0) {
@@ -830,16 +830,16 @@ void CityWindow::draw_resource_tiles(int half_tile_w,int half_tile_h,int origin_
 
   for (i = 0; i < 0x15; i++) {
     x2 = map_wrap_x((int)cities[city_index].x +
-                          (int)(((i8 *)&city_resmap_draw_dx_table))[i]);
-    y2 = (int)cities[city_index].y + (int)(((i8 *)&city_resmap_draw_dy_table))[i]
+                          (int)city_resmap_draw_dx_table[i]);
+    y2 = (int)cities[city_index].y + (int)city_resmap_draw_dy_table[i]
     ;
-    tile_x = (((i8 *)&city_resmap_draw_dx_table))[i] * half_tile_w + origin_x2;
-    tile_y = (((i8 *)&city_resmap_draw_dy_table))[i] * half_tile_h + origin_y2;
+    tile_x = city_resmap_draw_dx_table[i] * half_tile_w + origin_x2;
+    tile_y = city_resmap_draw_dy_table[i] * half_tile_h + origin_y2;
     unit_y = tile_y - half_tile_h;
     tile_idx = 0;
     for (j = 0; j < 0x15; j++) {
-      if (((((i8 *)&dir_dy_table_block.city_tile_dx_table))[j] == (((i8 *)&city_resmap_draw_dx_table))[i]) &&
-         ((((i8 *)&dir_dy_table_block.city_tile_dy_table))[j] == (((i8 *)&city_resmap_draw_dy_table))[i])) {
+      if ((dir_dy_table_block.city_tile_dx_table[j] == city_resmap_draw_dx_table[i]) &&
+         (dir_dy_table_block.city_tile_dy_table[j] == city_resmap_draw_dy_table[i])) {
         tile_idx = j;
         break;
       }
@@ -848,9 +848,9 @@ void CityWindow::draw_resource_tiles(int half_tile_w,int half_tile_h,int origin_
                (int)cities[city_index].owner,
                map_zoom_level,tile_idx);
     if (i < 0x15) {
-      if (((((i8 *)&city_calc.tile_flags))[tile_idx] & 8) == 0) {
-        if (((((i8 *)&city_calc.tile_flags))[tile_idx] & 4) == 0) {
-          if (((((i8 *)&city_calc.tile_flags))[tile_idx] & 2) != 0) {
+      if ((city_calc.tile_flags[tile_idx] & 8) == 0) {
+        if ((city_calc.tile_flags[tile_idx] & 4) == 0) {
+          if ((city_calc.tile_flags[tile_idx] & 2) != 0) {
             gfx_set_zoom_scale(map_zoom_level);
             ((Sprite *)((i8 *)&hut_sprite))->draw((RECT *)hut_rect,this,tile_x,tile_y
                       );
@@ -876,7 +876,7 @@ void CityWindow::draw_resource_tiles(int half_tile_w,int half_tile_h,int origin_
                              map_zoom_level);
         }
       }
-      if ((((((i8 *)&city_calc.tile_flags))[tile_idx] & 0x10) != 0) && (((((i8 *)&city_calc.tile_flags))[tile_idx] & 9) == 0)) {
+      if (((city_calc.tile_flags[tile_idx] & 0x10) != 0) && ((city_calc.tile_flags[tile_idx] & 9) == 0)) {
         gfx_set_zoom_scale(map_zoom_level);
         ((Sprite *)((i8 *)&map_cursor_sprite_block.map_cursor_sprite))->draw((RECT *)cursor_rect,this,tile_x,tile_y);
         gfx_reset_zoom_scale();
@@ -915,16 +915,16 @@ void CityWindow::draw_resource_yields(int tile_w,int half_tile_w,int half_tile_h
 
   for (i = 0; i < 0x15; i++) {
     x2 = map_wrap_x((int)cities[city_index].x +
-                          (int)(((i8 *)&city_resmap_draw_dx_table))[i]);
-    y2 = (int)cities[city_index].y + (int)(((i8 *)&city_resmap_draw_dy_table))[i]
+                          (int)city_resmap_draw_dx_table[i]);
+    y2 = (int)cities[city_index].y + (int)city_resmap_draw_dy_table[i]
     ;
-    tile_x = (((i8 *)&city_resmap_draw_dx_table))[i] * half_tile_w + origin_x2;
-    tile_y = (((i8 *)&city_resmap_draw_dy_table))[i] * half_tile_h + origin_y2;
+    tile_x = city_resmap_draw_dx_table[i] * half_tile_w + origin_x2;
+    tile_y = city_resmap_draw_dy_table[i] * half_tile_h + origin_y2;
     unit_y = tile_y - half_tile_h;
     tile_idx = 0;
     for (j = 0; j < 0x15; j++) {
-      if (((((i8 *)&dir_dy_table_block.city_tile_dx_table))[j] == (((i8 *)&city_resmap_draw_dx_table))[i]) &&
-         ((((i8 *)&dir_dy_table_block.city_tile_dy_table))[j] == (((i8 *)&city_resmap_draw_dy_table))[i])) {
+      if ((dir_dy_table_block.city_tile_dx_table[j] == city_resmap_draw_dx_table[i]) &&
+         (dir_dy_table_block.city_tile_dy_table[j] == city_resmap_draw_dy_table[i])) {
         tile_idx = j;
         break;
       }
@@ -961,7 +961,7 @@ void CityWindow::draw_resource_yields(int tile_w,int half_tile_w,int half_tile_h
       scaled = scale(10);
       icon_y = scaled2 - (scaled >> 1);
       for (; yield_kind < 3; yield_kind++) {
-        while ((((i32 *)&city_calc.tile_yields))[yield_kind] != 0) {
+        while (city_calc.tile_yields[yield_kind] != 0) {
           small_resource_icon_sprites_block.small_resource_icon_sprites[yield_kind].draw((RECT *)yield_icon_rect,this
                      ,icon_x,icon_y);
           row_count++;
@@ -975,7 +975,7 @@ void CityWindow::draw_resource_yields(int tile_w,int half_tile_w,int half_tile_h
             scaled = scale(0xb);
             icon_y += scaled;
           }
-          (((i32 *)&city_calc.tile_yields))[yield_kind] = (((i32 *)&city_calc.tile_yields))[yield_kind] - 1;
+          city_calc.tile_yields[yield_kind] = city_calc.tile_yields[yield_kind] - 1;
         }
       }
       if (no_yield != 0) {
@@ -2822,7 +2822,7 @@ void CityWindow::draw_units_present()
       else {
         text_append((const char *)((uint)(byte)units[unit].home_city * 0x58 + (iptr)((u8 *)&cities + 32)));
       }
-      textbuf.char_3 = 0;
+      textbuf.buf[3] = 0;
       text_set_colors(10,0x1a,1,1);
       gfx_draw_text_centered((const char *)&textbuf.buf,cell_x,label_y,cell_w);
     }
@@ -3282,7 +3282,7 @@ void CityWindow::draw_happiness()
     case 0:
       break;
     case 1:
-      if ((uint)(byte)(((i8 *)&city_calc.happy_by_stage))[prev_stage] - (uint)(byte)(((i8 *)&city_calc.unhappy_by_stage))[prev_stage] ==
+      if ((uint)(byte)city_calc.happy_by_stage[prev_stage] - (uint)(byte)city_calc.unhappy_by_stage[prev_stage] ==
           (uint)city_calc.happy_after_lux - (uint)city_calc.unhappy_after_lux) continue;
       prev_stage = 1;
       icon_w = scale(0xe);
@@ -3306,7 +3306,7 @@ void CityWindow::draw_happiness()
       happy_draw_building_icons(&right_x,row_y,row_h);
       break;
     case 3:
-      if ((uint)(byte)(((i8 *)&city_calc.happy_by_stage))[prev_stage] - (uint)(byte)(((i8 *)&city_calc.unhappy_by_stage))[prev_stage] ==
+      if ((uint)(byte)city_calc.happy_by_stage[prev_stage] - (uint)(byte)city_calc.unhappy_by_stage[prev_stage] ==
           (uint)city_calc.happy_after_units - (uint)city_calc.unhappy_after_units) continue;
       happy_draw_unit_effects(&right_x,row_y,row_h,area_w);
       break;
@@ -3351,8 +3351,8 @@ void CityWindow::draw_happiness()
     }
     else {
       happy_draw_citizen_row(area_x,row_y + row_offset,scaled,
-                         (uint)(byte)(((i8 *)&city_calc.happy_by_stage))[stage],(uint)(byte)(((i8 *)&city_calc.unhappy_by_stage))[stage]
-                         ,(uint)(byte)(((i8 *)&city_calc.angry_by_stage))[stage]);
+                         (uint)(byte)city_calc.happy_by_stage[stage],(uint)(byte)city_calc.unhappy_by_stage[stage]
+                         ,(uint)(byte)city_calc.angry_by_stage[stage]);
     }
     row_y += row_h;
   }

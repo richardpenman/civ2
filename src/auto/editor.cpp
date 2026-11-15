@@ -312,7 +312,7 @@ void __cdecl tribe_editor_load_controls(void)
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[tribe_editor_ctrl_kinds_block.tribe_editor_ctrl_rows[i].slot])->get_id();
       editor_active.wnd->combos[tribe_editor_ctrl_kinds_block.tribe_editor_ctrl_rows[i].slot].set_cur_sel(
-                 *(iptr *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58));
+                 editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca]);
     }
   }
   return;
@@ -338,7 +338,7 @@ void __cdecl tribe_editor_store_controls(void)
       selection = editor_active.wnd->combos[tribe_editor_ctrl_kinds_block.tribe_editor_ctrl_rows[i].slot].get_cur_sel();
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[tribe_editor_ctrl_kinds_block.tribe_editor_ctrl_rows[i].slot])->get_id();
-      *(i32 *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + editor_active.wnd->item * 0x58 + ctrl_id * 4) = selection;
+      editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca] = selection;
     }
   }
   return;
@@ -365,7 +365,7 @@ i32 __cdecl tribe_editor_write_governments(FILE *file)
   for (gov = 0; gov < 7; gov++) {
     text_clear();
     text_append_string_id(government_names[gov]);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_name_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_name_sep_str));
     text = label_string(government_names[gov]);
     len = _strlen(text);
     if (len < 0xf) {
@@ -377,7 +377,7 @@ i32 __cdecl tribe_editor_write_governments(FILE *file)
     }
     text_append_spaces(0xf - name_len);
     text_append_string_id(government_titles[gov].male);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_male_title_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_male_title_sep_str));
     text = label_string(government_titles[gov].male);
     len = _strlen(text);
     if (len < 0xc) {
@@ -389,8 +389,8 @@ i32 __cdecl tribe_editor_write_governments(FILE *file)
     }
     text_append_spaces(0xc - title_len);
     text_append_string_id(government_titles[gov].female);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_gov_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }
@@ -450,7 +450,7 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
       male_id = (int)leaders[leader].names[0];
     }
     text_append_string_id(male_id);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_male_name_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_male_name_sep_str));
     if (leaders[leader].names[0] < 1) {
       male_id2 = ~(int)leaders[leader].names[0] + 1;
     }
@@ -480,7 +480,7 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
       female_id = (int)leaders[leader].names[1];
     }
     text_append_string_id(female_id);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_female_name_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_female_name_sep_str));
     if (leaders[leader].names[1] < 1) {
       female_id2 = ~(int)leaders[leader].names[1] + 1;
     }
@@ -504,11 +504,11 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
     }
     text_append_spaces(0x14 - female_len);
     text_append_int(female_flag);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_female_flag_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_female_flag_sep_str));
     text_append_int(leaders[leader].color);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_color_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_color_sep_str));
     text_append_int(leaders[leader].city_style);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_city_style_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_city_style_sep_str));
     if (leaders[leader].plural < 1) {
       plural_id = ~(int)leaders[leader].plural + 1;
     }
@@ -516,7 +516,7 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
       plural_id = (int)leaders[leader].plural;
     }
     text_append_string_id(plural_id);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_plural_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_plural_sep_str));
     if (leaders[leader].plural < 1) {
       plural_id2 = ~(int)leaders[leader].plural + 1;
     }
@@ -546,7 +546,7 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
       adjective_id = (int)leaders[leader].adjective;
     }
     text_append_string_id(adjective_id);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_adjective_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_adjective_sep_str));
     if (leaders[leader].adjective < 1) {
       adjective_id2 = ~(int)leaders[leader].adjective + 1;
     }
@@ -570,14 +570,14 @@ i32 __cdecl tribe_editor_write_leaders(FILE *file,i32 src_handle)
     }
     text_append_spaces(0xb - adjective_len);
     text_append_int_2d((int)leaders[leader].attack);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_attack_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_attack_sep_str));
     text_append_int_2d((int)leaders[leader].expand);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_expand_sep_str));
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_expand_sep_str));
     text_append_int_2d((int)leaders[leader].civilize);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_civilize_sep_str));
-    crt_strcat(((i8 *)&textbuf.buf),line_tail);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_civilize_sep_str));
+    crt_strcat(textbuf.buf,line_tail);
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_leader_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   (*(i32 *)&text_file_handle) = saved_handle;
   return 1;
@@ -592,8 +592,8 @@ i32 __cdecl tribe_editor_write_caravan(FILE *file)
   for (commodity = 0; commodity < 0x10; commodity++) {
     text_clear();
     text_append_string_id(commodity_names[commodity]);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&tribe_editor_ctrl_kinds_block.rules_commodity_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&tribe_editor_ctrl_kinds_block.rules_commodity_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }
@@ -1701,14 +1701,14 @@ uint __cdecl editor_check_city_name(const char *name2)
       rc = (int)(text_read_line(1));
       if (rc == 0) break;
       name_len = _strlen((char *)name2);
-      line_len = _strlen(((i8 *)&textbuf.buf));
+      line_len = _strlen(textbuf.buf);
       if (line_len < name_len) {
         cmp_len = _strlen((char *)name2);
       }
       else {
-        cmp_len = _strlen(((i8 *)&textbuf.buf));
+        cmp_len = _strlen(textbuf.buf);
       }
-      rc = __strnicmp((char *)name2,((i8 *)&textbuf.buf),cmp_len);
+      rc = __strnicmp((char *)name2,textbuf.buf,cmp_len);
       if (rc == 0) {
         text_close_file();
         result = 1;

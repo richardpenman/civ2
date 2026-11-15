@@ -1295,7 +1295,7 @@ static void edit_action_move_unit(ScenarioEvent *event,uint *changed)
           if (result != -1) {
             len = _strlen(input_buf);
             if (len != 0) {
-              crt_strcpy(((i8 *)&textbuf.buf),input_buf);
+              crt_strcpy(textbuf.buf,input_buf);
               for (idx = 0; idx < 4; idx++) {
                 event->move_rect[idx * 2] = edit_action_read_coord();
                 event->move_rect[idx * 2 + 1] = edit_action_read_coord();
@@ -1320,7 +1320,7 @@ static void edit_action_move_unit(ScenarioEvent *event,uint *changed)
             if (result != -1) {
               len = _strlen(input_buf);
               if (len != 0) {
-                crt_strcpy(((i8 *)&textbuf.buf),input_buf);
+                crt_strcpy(textbuf.buf,input_buf);
                 event->move_to_x = edit_action_read_coord();
                 event->move_to_y = edit_action_read_coord();
               }
@@ -1459,7 +1459,7 @@ static void edit_action_create_unit(ScenarioEvent *event,uint *changed)
                   else {
                     len = _strlen(input_buf);
                     if (len != 0) {
-                      crt_strcpy(((i8 *)&textbuf.buf),input_buf);
+                      crt_strcpy(textbuf.buf,input_buf);
                       event->create_locations[idx * 2] = edit_action_read_coord();
                       event->create_locations[idx * 2 + 1] = edit_action_read_coord();
                     }
@@ -1606,7 +1606,7 @@ static void edit_action_change_terrain(ScenarioEvent *event,uint *changed)
     if (result != -1) {
       len = _strlen(input_buf);
       if (len != 0) {
-        crt_strcpy(((i8 *)&textbuf.buf),input_buf);
+        crt_strcpy(textbuf.buf,input_buf);
         for (idx = 0; idx < 4; idx++) {
           event->terrain_rect[idx * 2] = edit_action_read_coord();
           event->terrain_rect[idx * 2 + 1] = edit_action_read_coord();
@@ -1879,7 +1879,7 @@ void EditorWindow::events_editor_draw()
   x = top + 0x211;
   bar_y = client_y + 0x1a;
   text_clear();
-  _sprintf(((i8 *)&textbuf.buf),((i8 *)&events_pool_free_fmt),(uint)unit_types_block.events_pool_bytes_free);
+  _sprintf(textbuf.buf,((i8 *)&events_pool_free_fmt),(uint)unit_types_block.events_pool_bytes_free);
   text_draw_centered(this,textbuf.buf,top + 0x216,(bar_y - font_height_uptr) - 2,0);
   bar_height = ((uint)unit_types_block.events_pool_bytes_free * 0x13b) / (uint)unit_types_block.events_pool_size;
   gfx_fill_rect_xywh(this,x,bar_y,10,bar_height,0x2a);

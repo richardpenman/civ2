@@ -113,13 +113,13 @@ void __cdecl minimap_calc_layout(void)
   minimap_state.margin_x = tile_size >> 1;
   minimap_state.margin_y = minimap_state.margin_y >> 1;
   if (minimap_layout.view_rows < map.height) {
-    (*(uint *)&minimap_layout.origin_y) = (int)map_views_block.mapview_center_y[0] - (minimap_layout.view_rows >> 1);
+    (*(uint *)&minimap_layout.origin_y) = (int)map_views_block.map_view_recs[0].center_y - (minimap_layout.view_rows >> 1);
     (*(uint *)&minimap_layout.origin_y) = int_clamp((*(uint *)&minimap_layout.origin_y),0,map_views_block.mapview_layout_height - minimap_layout.view_rows);
   }
   else {
     (*(uint *)&minimap_layout.origin_y) = 0;
   }
-  (*(uint *)&minimap_layout.origin_x) = map_wrap_x(map_views_block.map_view_center_x[0] - minimap_layout.view_cols);
+  (*(uint *)&minimap_layout.origin_x) = map_wrap_x(map_views_block.map_view_recs[0].center_x - minimap_layout.view_cols);
   if ((game.rules & RULE_FLAT_WORLD) != 0) {
     if (minimap_layout.view_cols < map.width) {
       (*(uint *)&minimap_layout.origin_x) = int_clamp((*(uint *)&minimap_layout.origin_x),0,map_views_block.mapview_layout_width - minimap_layout.view_cols);
@@ -216,7 +216,7 @@ void __cdecl minimap_draw_view_rect(void)
   i8 rect[16];
   
   if ((map_views_block.mapview_margin_x == 0) && (map_views_block.mapview_margin_y == 0)) {
-    minimap_tile_to_screen(map_views_block.mapview_origin_x[0],map_views_block.mapview_origin_y[0],&left,&top);
+    minimap_tile_to_screen(map_views_block.map_view_recs[0].origin_x,map_views_block.map_view_recs[0].origin_y,&left,&top);
     minimap_tile_to_screen(map_views_block.mapview_end_x,map_views_block.mapview_end_y,&right,&bottom);
     if (left < right) {
       rect_set((RECT *)rect,left,top,right + 1,bottom + 1);
@@ -745,8 +745,8 @@ void __cdecl mapview_cancel_drag(void)
     game_timer_destroy(map_click.drag_hold_timer);
     map_click.drag_hold_timer = -1;
   }
-  if ((-1 < map_click.drag_view_index) && ((((i32 *)&map_views_block.mapview_cursor_id))[map_click.drag_view_index * 0xfc] == 0x1fe)) {
-    (((i32 *)&map_views_block.mapview_cursor_id))[map_click.drag_view_index * 0xfc] = 0x201;
+  if ((-1 < map_click.drag_view_index) && (map_views_block.map_view_recs[map_click.drag_view_index].cursor_id == 0x1fe)) {
+    map_views_block.map_view_recs[map_click.drag_view_index].cursor_id = 0x201;
     ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->set_cursor_now(0x201,1);
     ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->release_capture();
   }
@@ -762,7 +762,7 @@ void __cdecl mapview_drag_hold_expired(void)
     game_timer_destroy(map_click.drag_hold_timer);
     map_click.drag_hold_timer = -1;
     if (-1 < map_click.drag_view_index) {
-      (((i32 *)&map_views_block.mapview_cursor_id))[map_click.drag_view_index * 0xfc] = 0x1fe;
+      map_views_block.map_view_recs[map_click.drag_view_index].cursor_id = 0x1fe;
       ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->set_cursor_now(0x1fe,1);
       ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->set_capture();
     }
@@ -796,7 +796,7 @@ void __cdecl mapview_on_lbuttondown(void)
         map_click.drag_hold_timer = game_timer_create((TimerFn)mapview_drag_hold_expired,400,1);
       }
       else {
-        (((i32 *)&map_views_block.mapview_cursor_id))[map_click.drag_view_index * 0xfc] = 0x1fe;
+        map_views_block.map_view_recs[map_click.drag_view_index].cursor_id = 0x1fe;
         ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->set_cursor_now(0x1fe,1)
         ;
         ((WndBase *)&map_views_block.map_view_recs[map_click.drag_view_index].window)->set_capture();
@@ -837,7 +837,7 @@ void __cdecl mapviews_set_paradrop_cursor(void)
   
   for (view = 0; view < 8; view++) {
     if ((view == 0) || (map_views_block.map_view_recs[view].open != 0)) {
-      (((i32 *)&map_views_block.mapview_cursor_id))[view * 0xfc] = 0x202;
+      map_views_block.map_view_recs[view].cursor_id = 0x202;
       ((WndBase *)&map_views_block.map_view_recs[view].window)->set_cursor_now(0x202,1);
     }
   }
@@ -855,7 +855,7 @@ void __cdecl mapviews_reset_cursor(void)
   if (paradrop != 0) {
     for (view = 0; view < 8; view++) {
       if ((view == 0) || (map_views_block.map_view_recs[view].open != 0)) {
-        (((i32 *)&map_views_block.mapview_cursor_id))[view * 0xfc] = 0x201;
+        map_views_block.map_view_recs[view].cursor_id = 0x201;
         ((WndBase *)&map_views_block.map_view_recs[view].window)->set_cursor_now(0x201,1);
       }
     }
@@ -1164,7 +1164,7 @@ void __cdecl mapviews_create_all(void)
   }
   map_views_block.main_view_status_shown_i32 = 1;
   if (civ_saved_cursor_x_block.mp_turn_time_limit_ms != 0) {
-    map_views_block.main_view_timer_shown[0] = 1;
+    map_views_block.map_view_recs[0].timer_shown = 1;
   }
   wnd_modal_stack_below_block.timer_alt_kind_request = 1;
   blink_timers.unit = game_timer_create((TimerFn)unit_blink_timer_tick,0x96,0xffffffff);
@@ -1308,8 +1308,8 @@ void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color)
   in_view = ((MapView *)((i8 *)&map_views_block.map_views))->tile_in_view(x,y);
   if (in_view != 0) {
     ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen(&screen_x,&screen_y,x,y);
-    width = gfx_zoom_scale(0x40,(int)map_views_block.mapview_zoom[0]);
-    height = gfx_zoom_scale(0x20,(int)map_views_block.mapview_zoom[0]);
+    width = gfx_zoom_scale(0x40,(int)map_views_block.map_view_recs[0].zoom);
+    height = gfx_zoom_scale(0x20,(int)map_views_block.map_view_recs[0].zoom);
     rect_set_xywh((RECT *)rect,screen_x,screen_y,width,height);
     __itoa(number,num_text,10);
     gfx_set_text_color_index(10);
@@ -1472,8 +1472,8 @@ i32 MapView::screen_to_tile(i32 *out_x,i32 *out_y,i32 mouse_x,i32 mouse_y)
                        (int)(short)((int)py % (int)tile_height_u));
     quadrant = pixel - 10 >> 4;
     if (quadrant != 0) {
-      tile_x += (((i8 *)&diag_neighbor_bits_block.pick_quadrant_dx_table))[quadrant];
-      tile_y += (((i8 *)&diag_neighbor_bits_block.pick_quadrant_dy_table))[quadrant];
+      tile_x += diag_neighbor_bits_block.diag_dx_table[quadrant - 1];
+      tile_y += diag_neighbor_bits_block.diag_dy_table[quadrant - 1];
     }
     result = map_wrap_x(tile_x);
     *out_x = (int)(short)result;
@@ -1527,12 +1527,12 @@ void MapView::draw_tile_ocean(DibSurface *surface,int screen_x,int screen_y,int 
     for (quarter = 0; quarter < 4; quarter++) {
       quarter_x = (coast_quarter_dx_table[quarter] + 1) * ((int)half_w >> 1) + screen_x;
       quarter_y = coast_quarter_dy_table[quarter] * ((int)half_h >> 1) + screen_y;
-      tutorial_icon_sprite_block.coast_quarter_sprites[(uint)(byte)(((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter]][quarter].draw(
+      tutorial_icon_sprite_block.coast_quarter_sprites[(uint)(byte)scenario_title_surface_block.coast_quarter_land_masks[quarter]][quarter].draw(
                  (RECT *)coast_rect,surface,quarter_x,quarter_y);
     }
     for (dir = 0; dir < 4; dir++) {
-      x2 = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + x);
-      y2 = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + y;
+      x2 = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[dir] + x);
+      y2 = diag_neighbor_bits_block.diag_dy_table[dir] + y;
       check = map_in_bounds(x2,y2);
       if ((check != 0) && (known = (byte *)tile_at(x2,y2), (*known & 0x80) != 0)) {
         tile_pick_mask_sprite_block.river_mouth_sprites[dir].draw((RECT *)mouth_rect,surface,
@@ -1583,8 +1583,8 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
   }
   else {
     for (dir = 0; dir < 4; dir++) {
-      x2 = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + x);
-      y2 = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + y;
+      x2 = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[dir] + x);
+      y2 = diag_neighbor_bits_block.diag_dy_table[dir] + y;
       check = map_in_bounds(x2,y2);
       if (check != 0) {
         nbr_tile = (byte *)tile_at(x2,y2);
@@ -1592,7 +1592,7 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
         nbr_byte = (uint)nbr_raw;
         nbr_terrain = nbr_byte & 0xf;
         if (nbr_terrain == terrain2) {
-          variant += (((i8 *)&diag_neighbor_bits_block.diag_neighbor_bits))[dir];
+          variant += diag_neighbor_bits_block.diag_neighbor_bits[dir];
         }
         else if (nbr_terrain == 10) {
           dither_terrain[dir] = 0xc;
@@ -1601,7 +1601,7 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
           dither_terrain[dir] = nbr_terrain;
         }
         if (((nbr_raw & 0x80) != 0) || (nbr_terrain == 10)) {
-          river_mask += (((i8 *)&diag_neighbor_bits_block.diag_neighbor_bits))[dir];
+          river_mask += diag_neighbor_bits_block.diag_neighbor_bits[dir];
         }
       }
     }
@@ -1653,8 +1653,8 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
     irrig_flags = 0;
     if (((byte)improvements2 & 0x42) == 2) {
       for (dir = 2; dir < 5; dir += 2) {
-        x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-        y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+        x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+        y2 = dir_dy_table_block.dir_dy_table[dir] + y;
         check = map_in_bounds(x2,y2);
         new_flags = irrig_flags;
         if (((check != 0) &&
@@ -1707,8 +1707,8 @@ void MapView::draw_tile_roads(DibSurface *surface,int screen_x,int screen_y,int 
     has_rail = 1;
   }
   for (dir = 0; dir < 8; dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     check = map_in_bounds(x2,y2);
     if (check != 0) {
       if (viewer_civ < 1) {
@@ -1727,8 +1727,8 @@ void MapView::draw_tile_roads(DibSurface *surface,int screen_x,int screen_y,int 
   }
   if (has_rail != 0) {
     for (dir = 0; dir < 8; dir++) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-      y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+      x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+      y2 = dir_dy_table_block.dir_dy_table[dir] + y;
       check = map_in_bounds(x2,y2);
       if (check != 0) {
         if (viewer_civ < 1) {
@@ -1827,8 +1827,8 @@ void MapView::draw_tile_unexplored_edges(DibSurface *surface,int screen_x,int sc
   int draw_x;
 
   for (dir = 0; dir < 4; dir++) {
-    x2 = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + x);
-    y2 = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + y;
+    x2 = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[dir] + x);
+    y2 = diag_neighbor_bits_block.diag_dy_table[dir] + y;
     nbr_hidden = 0;
     if (city_tile_idx < 0) {
       check = map_in_bounds(x2,y2);
@@ -1840,19 +1840,19 @@ void MapView::draw_tile_unexplored_edges(DibSurface *surface,int screen_x,int sc
         if (check == 0) {
           nbr_hidden = 1;
         }
-        if ((int)(((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[city_tile_idx] < 1) {
-          abs_dx = ~((int)(((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[city_tile_idx])
+        if ((int)diag_neighbor_bits_block.diag_dx_table[dir] + (int)dir_dy_table_block.city_tile_dx_table[city_tile_idx] < 1) {
+          abs_dx = ~((int)diag_neighbor_bits_block.diag_dx_table[dir] + (int)dir_dy_table_block.city_tile_dx_table[city_tile_idx])
                      + 1;
         }
         else {
-          abs_dx = (int)(((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[city_tile_idx];
+          abs_dx = (int)diag_neighbor_bits_block.diag_dx_table[dir] + (int)dir_dy_table_block.city_tile_dx_table[city_tile_idx];
         }
-        if ((int)(((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[city_tile_idx] < 1) {
-          abs_dy = ~((int)(((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[city_tile_idx])
+        if ((int)diag_neighbor_bits_block.diag_dy_table[dir] + (int)dir_dy_table_block.city_tile_dy_table[city_tile_idx] < 1) {
+          abs_dy = ~((int)diag_neighbor_bits_block.diag_dy_table[dir] + (int)dir_dy_table_block.city_tile_dy_table[city_tile_idx])
                      + 1;
         }
         else {
-          abs_dy = (int)(((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[city_tile_idx];
+          abs_dy = (int)diag_neighbor_bits_block.diag_dy_table[dir] + (int)dir_dy_table_block.city_tile_dy_table[city_tile_idx];
         }
         check = dist_from_deltas(abs_dx,abs_dy);
         if (2 < check) {
@@ -2616,7 +2616,7 @@ i32 __cdecl mapviews_tile_visible(int x,int y)
 void __cdecl mapview_center_if_moved(int center_x,int center_y)
 
 {
-  if ((map_views_block.map_view_center_x[0] != center_x) || (map_views_block.mapview_center_y[0] != center_y)) {
+  if ((map_views_block.map_view_recs[0].center_x != center_x) || (map_views_block.map_view_recs[0].center_y != center_y)) {
     ((MapView *)((i8 *)&map_views_block.map_views))->center_on(center_x,center_y);
   }
   return;

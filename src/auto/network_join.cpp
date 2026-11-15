@@ -339,9 +339,9 @@ static NetJoinScenario net_join_load_scenario(void)
       input_flush_events();
     }
     __chdir(((i8 *)&game_dirs.home));
-    crt_strcpy(((i8 *)&textbuf.buf),((i8 *)&net_map_lock_slots_block.scenario_dir_path));
-    crt_strcat(((i8 *)&textbuf.buf),"\\");
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&net.loaded_file_name));
+    crt_strcpy(textbuf.buf,((i8 *)&net_map_lock_slots_block.scenario_dir_path));
+    crt_strcat(textbuf.buf,"\\");
+    crt_strcat(textbuf.buf,((i8 *)&net.loaded_file_name));
     path_set_extension(scen_file,(char *)(&textbuf.buf),lang_file_ext);
     if (cd_music.available != 0) {
       snd_play_effect(SND_MENUOK,0,0,0);
@@ -940,7 +940,7 @@ i32 __cdecl net_gamelist_show_game_info(void *dialog,i32 unused)
       str_append_lparen(text);
       game.game_flags = found_game->game_flags;
       game.first_launch_turn = found_game->first_launch_turn;
-      scenario.year_increment[0] = found_game->year_increment;
+      scenario.year_increment = found_game->year_increment;
       scenario.start_year = found_game->start_year;
       game.difficulty = found_game->difficulty;
       year = game_turn_to_year((int)found_game->turn);
@@ -1650,8 +1650,8 @@ i32 LobbyList::host_wait_players(i32 map_arg,int launch_mode)
     text_clear();
     text_append_label(0x288);
     if (launch_mode == 0) {
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&lobby_ip_sep_str));
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&menu_prefs.net_ip_address));
+      crt_strcat(textbuf.buf,((i8 *)&lobby_ip_sep_str));
+      crt_strcat(textbuf.buf,((i8 *)&menu_prefs.net_ip_address));
     }
     dialog->set_title((const char *)&textbuf.buf);
     text_clear();
@@ -2041,7 +2041,7 @@ DialogOption *LobbyList::find_waiting_entry()
   text_append_label(0x28c);
   entry = first_entry;
   if (((entry != 0) && (entry->next == 0)) &&
-     (cmp = _strcmp(((i8 *)&textbuf.buf),entry->text), cmp == 0)) {
+     (cmp = _strcmp(textbuf.buf,entry->text), cmp == 0)) {
     return entry;
   }
   return 0;

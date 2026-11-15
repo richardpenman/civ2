@@ -1192,8 +1192,8 @@ void ParleyWindow::build_unit_list(int pane,int keep_selection)
       y2 = units[unit].y;
       near_land = false;
       for (dir = 0; dir < 8; dir++) {
-        x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)x2);
-        y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + (int)y2;
+        x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)x2);
+        y = (int)dir_dy_table_block.dir_dy_table[dir] + (int)y2;
         in_bounds = map_in_bounds(x,y);
         if ((in_bounds != 0) && (y = tile_is_ocean(x,y), y == 0)) {
           near_land = true;

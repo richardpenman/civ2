@@ -268,7 +268,7 @@ static int setup_choose_opponents(Dialog &dlg,int pick_opponents,int &leader_i)
         ((SetupPicWindow *)((i8 *)&setup_picwnd_state.window))->close();
         if (leader_pick < 0) return 1;
         if (leader_pick < 0x15) {
-          (((i8 *)&setup_chosen_leaders))[leader_i] = (i8)leader_pick;
+          setup_chosen_leaders[leader_i] = (i8)leader_pick;
         }
       }
       leader_i = leader_i + 1;

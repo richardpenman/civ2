@@ -97,8 +97,8 @@ void __cdecl mapgen_calc_fertility(void)
         total_score = 0;
         for (tile_idx = 0; tile_idx < 0x15; tile_idx++) {
           tile_score = 0;
-          x2 = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[tile_idx] + x3);
-          y2 = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[tile_idx] + y3;
+          x2 = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[tile_idx] + x3);
+          y2 = (int)dir_dy_table_block.city_tile_dy_table[tile_idx] + y3;
           in_bounds = map_in_bounds(x2,y2);
           if (in_bounds != 0) {
             terrain_byte = tile_terrain(x2,y2);
@@ -557,8 +557,8 @@ static void mapgen_age_terrain(void)
       rnd = crt_rand_at("map_generate");
       sign3 = (int)rnd >> 0x1f;
       tmp = ((rnd ^ sign3) - sign3 & 7 ^ sign3) - sign3;
-      x2 = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[tmp] + x2);
-      y2 += (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[tmp];
+      x2 = map_wrap_x((int)dir_dx_table_block.dir_dx_table[tmp] + x2);
+      y2 += (int)dir_dy_table_block.dir_dy_table[tmp];
     }
     if ((int)map.height >> 1 == y2 || (int)(((int)map.height >> 1) - y2) < 0) {
       lat = ~(((int)map.height >> 1) - y2) + 1;
@@ -655,8 +655,8 @@ static void mapgen_smooth_terrain(void)
       rnd = crt_rand_at("map_generate");
       sign3 = (int)rnd >> 0x1f;
       tmp = ((rnd ^ sign3) - sign3 & 7 ^ sign3) - sign3;
-      x2 = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[tmp] + x2);
-      y2 += (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[tmp];
+      x2 = map_wrap_x((int)dir_dx_table_block.dir_dx_table[tmp] + x2);
+      y2 += (int)dir_dy_table_block.dir_dy_table[tmp];
     }
     tmp = map_in_bounds(x2,y2);
     if ((tmp != 0) && (tmp = tile_is_ocean(x2,y2), tmp == 0)) {
@@ -695,8 +695,8 @@ static void mapgen_smooth_terrain(void)
           }
         }
         for (idx = 0; (int)idx < 8; idx++) {
-          x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[idx] + x2);
-          y3 = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[idx] + y2;
+          x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[idx] + x2);
+          y3 = (int)dir_dy_table_block.dir_dy_table[idx] + y2;
           tmp = map_in_bounds(x,y3);
           if (tmp != 0) {
             terrain_byte = tile_terrain(x,y3);
@@ -809,8 +809,8 @@ static void mapgen_hide_far_ocean_resources(void)
       if ((tile->terrain == '\n') && (tmp = tile_resource(x2,y2), tmp != 0)) {
         has_land = 0;
         for (idx = 0; (has_land == 0 && ((int)idx < 0x14)); idx++) {
-          x = map_wrap_x((int)(((i8 *)&dir_dy_table_block.city_tile_dx_table))[idx] + x2);
-          y3 = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[idx] + y2;
+          x = map_wrap_x((int)dir_dy_table_block.city_tile_dx_table[idx] + x2);
+          y3 = (int)dir_dy_table_block.city_tile_dy_table[idx] + y2;
           tmp = map_in_bounds(x,y3);
           if ((tmp != 0) && (tmp = tile_is_ocean(x,y3), tmp == 0)) {
             has_land = 1;
@@ -1000,8 +1000,8 @@ void __cdecl mapgen_land_walk(int x,int y)
     rnd = _rand();
     sign = (int)rnd >> 0x1f;
     dir_idx = (((rnd ^ sign) - sign & 3 ^ sign) - sign) * 2;
-    x += (((i8 *)&dir_dx_table_block.mapgen_cardinal_dx_table))[dir_idx];
-    y += (((i8 *)&dir_dy_table_block.mapgen_cardinal_dy_table))[dir_idx];
+    x += dir_dx_table_block.dir_dx_table[dir_idx + 1];
+    y += dir_dy_table_block.dir_dy_table[dir_idx + 1];
     steps--;
   }
   ui_pump_messages_net();
@@ -1102,8 +1102,8 @@ void __cdecl mapgen_land_walk_wide(int x,int y)
     rnd = _rand();
     sign = (int)rnd >> 0x1f;
     dir_idx = (((rnd ^ sign) - sign & 3 ^ sign) - sign) * 2;
-    x += (((i8 *)&dir_dx_table_block.mapgen_cardinal_dx_table))[dir_idx];
-    y += (((i8 *)&dir_dy_table_block.mapgen_cardinal_dy_table))[dir_idx];
+    x += dir_dx_table_block.dir_dx_table[dir_idx + 1];
+    y += dir_dy_table_block.dir_dy_table[dir_idx + 1];
     steps--;
   }
   ui_pump_messages_net();
@@ -1131,8 +1131,8 @@ void __cdecl mapgen_islet_walk(int x,int y)
     rnd = _rand();
     sign = (int)rnd >> 0x1f;
     dir_idx = (((rnd ^ sign) - sign & 3 ^ sign) - sign) * 2;
-    x += (((i8 *)&dir_dx_table_block.dir_dx_table))[dir_idx];
-    y += (((i8 *)&dir_dy_table_block.dir_dy_table))[dir_idx];
+    x += dir_dx_table_block.dir_dx_table[dir_idx];
+    y += dir_dy_table_block.dir_dy_table[dir_idx];
     steps--;
   }
   ui_pump_messages_net();
@@ -1291,8 +1291,8 @@ void __cdecl mapgen_place_rivers(void)
       river_len++;
       reached_ocean = false;
       for (i = 0; (!reached_ocean && (i < 4)); i++) {
-        x = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[i] + x2);
-        dy = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[i];
+        x = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[i] + x2);
+        dy = diag_neighbor_bits_block.diag_dy_table[i];
         nb_in_bounds = map_in_bounds(x,(int)dy + y2);
         if ((nb_in_bounds != 0) && (nb_is_ocean = tile_is_ocean(x,(int)dy + y2), nb_is_ocean != 0)) {
           reached_ocean = true;
@@ -1302,8 +1302,8 @@ void __cdecl mapgen_place_rivers(void)
       sign = (int)rnd >> 0x1f;
       dir = (dir + (((rnd ^ sign) - sign & 1 ^ sign) - sign)) - (river_len & 1) &
                  3;
-      x2 = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + x2);
-      y2 += (int)(((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir];
+      x2 = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[dir] + x2);
+      y2 += (int)diag_neighbor_bits_block.diag_dy_table[dir];
       y = map_in_bounds(x2,y2);
       if (y != 0) {
         map_tile = tile_at(x2,y2);
@@ -1314,8 +1314,8 @@ void __cdecl mapgen_place_rivers(void)
     if (((reached_ocean) || ((terrain & 0x80) != 0)) && (5 - attempts / 800 <= (int)river_len)) {
       rivers_placed++;
       for (i = 0; i < 0x14; i++) {
-        x = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[i] + start_x2);
-        y = (int)(((i8 *)&dir_dy_table_block.city_tile_dy_table))[i] + start_y2;
+        x = map_wrap_x(dir_dy_table_block.city_tile_dx_table[i] + start_x2);
+        y = (int)dir_dy_table_block.city_tile_dy_table[i] + start_y2;
         in_bounds = map_in_bounds(x,y);
         if (in_bounds != 0) {
           if ((int)map.height >> 1 == y || ((int)map.height >> 1) - y < 0) {
@@ -1633,8 +1633,8 @@ void __cdecl map_cursor_step_dir(int dir)
   int moved;
   int cursor_y;
   
-  new_x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + (int)map_cursor.x[0]);
-  dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+  new_x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + (int)map_cursor.x[0]);
+  dy = dir_dy_table_block.dir_dy_table[dir];
   cursor_y = (int)map_cursor.y[0];
   moved = map_set_cursor_pos(new_x,dy + cursor_y);
   if (moved != 0) {
@@ -1899,13 +1899,13 @@ void __cdecl map_window_ascii(uint key)
         taxrate_dialog_show(human_civ[0]);
         break;
       case 0x58:
-        map_views_block.mapview_zoom[0] = -3;
+        map_views_block.map_view_recs[0].zoom = -3;
         ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
         break;
       case 0x5a:
-        map_views_block.mapview_zoom[0] = 0;
-        map_views_block.map_view_center_x[0] = map_cursor.x[0];
-        map_views_block.mapview_center_y[0] = map_cursor.y[0];
+        map_views_block.map_view_recs[0].zoom = 0;
+        map_views_block.map_view_recs[0].center_x = map_cursor.x[0];
+        map_views_block.map_view_recs[0].center_y = map_cursor.y[0];
         ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
       }
       if (unhandled) {
@@ -1925,14 +1925,14 @@ void __cdecl map_window_ascii(uint key)
           }
           break;
         case 0x58:
-          if (-7 < map_views_block.mapview_zoom[0]) {
-            map_views_block.mapview_zoom[0]--;
+          if (-7 < map_views_block.map_view_recs[0].zoom) {
+            map_views_block.map_view_recs[0].zoom--;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
           break;
         case 0x5a:
-          if (map_views_block.mapview_zoom[0] < 8) {
-            map_views_block.mapview_zoom[0]++;
+          if (map_views_block.map_view_recs[0].zoom < 8) {
+            map_views_block.map_view_recs[0].zoom++;
             ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
           }
         }
@@ -2104,7 +2104,7 @@ static void map_key_game_command(int cmd)
       civ_change_password_dialog(human_civ[0]);
       break;
     case 600:
-      map_views_block.mapview_zoom[0] = 0xfff9;
+      map_views_block.map_view_recs[0].zoom = 0xfff9;
       ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
       break;
     case 0x259:
@@ -2113,7 +2113,7 @@ static void map_key_game_command(int cmd)
       }
       break;
     case 0x25a:
-      map_views_block.mapview_zoom[0] = 8;
+      map_views_block.map_view_recs[0].zoom = 8;
       ((MapView *)((i8 *)&map_views_block.map_views))->redraw(human_civ[0],1);
     }
   }
@@ -3349,7 +3349,7 @@ int __cdecl tile_calc_coast_masks(int base_x,int base_y)
   
   land_count = 0;
   for (dir = 0; (int)dir < 4; dir++) {
-    (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[dir] = 0;
+    scenario_title_surface_block.coast_quarter_land_masks[dir] = 0;
   }
   in_bounds = map_in_bounds(base_x,base_y);
   if (in_bounds == 0) {
@@ -3357,8 +3357,8 @@ int __cdecl tile_calc_coast_masks(int base_x,int base_y)
   }
   else {
     for (dir = 0; (int)dir < 8; dir++) {
-      x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + base_x);
-      dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+      x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + base_x);
+      dy = dir_dy_table_block.dir_dy_table[dir];
       nb_in_bounds = map_in_bounds(x,dy + base_y);
       if (nb_in_bounds == 0) {
         terrain2 = 7;
@@ -3371,12 +3371,12 @@ int __cdecl tile_calc_coast_masks(int base_x,int base_y)
         if ((dir & 1) == 0) {
           quarter_a = (int)dir >> 1;
           quarter_b = quarter_a + 1U & 3;
-          (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter_a] = (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter_a] | 4;
-          (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter_b] = (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter_b] | 1;
+          scenario_title_surface_block.coast_quarter_land_masks[quarter_a] = scenario_title_surface_block.coast_quarter_land_masks[quarter_a] | 4;
+          scenario_title_surface_block.coast_quarter_land_masks[quarter_b] = scenario_title_surface_block.coast_quarter_land_masks[quarter_b] | 1;
         }
         else {
           quarter = (dir + 1 & 6) >> 1;
-          (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter] = (((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter] | 2;
+          scenario_title_surface_block.coast_quarter_land_masks[quarter] = scenario_title_surface_block.coast_quarter_land_masks[quarter] | 2;
         }
       }
     }
@@ -3532,8 +3532,8 @@ void __cdecl map_apply_global_warming(uint severity)
     if (terrain < 4) {
       ocean_count = 0;
       for (dir = 0; dir < 0x14; dir++) {
-        x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-        dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+        x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + x2);
+        dy = dir_dy_table_block.dir_dy_table[dir];
         result = map_in_bounds(x,(int)dy + y2);
         if ((result != 0) && (result = tile_is_ocean(x,(int)dy + y2), result != 0)) {
           ocean_count++;
@@ -3653,8 +3653,8 @@ i32 __cdecl map_road_connection(int civ,int x,int y,int x2,int y2)
       while( true ) {
         dir = map_path_next_dir(x3,y3,99);
         if ((dir < 0) || (dir == 8)) break;
-        x3 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3);
-        y3 += (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+        x3 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x3);
+        y3 += dir_dy_table_block.dir_dy_table[dir];
         dir = map_in_bounds(x3,y3);
         if (dir == 0) break;
         if ((x3 == x2) && (y3 == y2)) {
@@ -3733,8 +3733,8 @@ int __cdecl map_dir_from_delta(int dx,int dy)
     dy = 1;
   }
   for (dir = 0; dir < 8; dir++) {
-    if ((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] < 1) {
-      if ((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] < '\0') {
+    if (dir_dx_table_block.dir_dx_table[dir] < 1) {
+      if (dir_dx_table_block.dir_dx_table[dir] < '\0') {
         sign_dx = -1;
       }
       else {
@@ -3745,8 +3745,8 @@ int __cdecl map_dir_from_delta(int dx,int dy)
       sign_dx = 1;
     }
     if (dx == sign_dx) {
-      if ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] < 1) {
-        if ((((i8 *)&dir_dy_table_block.dir_dy_table))[dir] < '\0') {
+      if (dir_dy_table_block.dir_dy_table[dir] < 1) {
+        if (dir_dy_table_block.dir_dy_table[dir] < '\0') {
           sign_dy = -1;
         }
         else {
@@ -3803,8 +3803,8 @@ static void map_path_flood(int x,int y,int max_cost,bool uses_terrain_cost,bool 
   path_grid_set_cost(path_queue.goal_x,path_queue.goal_y,1);
   path_queue.result_cost = max_cost;
   do {
-    x3 = (((i32 *)&path_queue.queue_x))[path_queue.queue_head];
-    y4 = (((i32 *)&path_queue.queue_y))[path_queue.queue_head];
+    x3 = path_queue.queue_x[path_queue.queue_head];
+    y4 = path_queue.queue_y[path_queue.queue_head];
     path_queue.queue_head++;
     if (0x8ff < path_queue.queue_head) {
       path_queue.queue_head = 0;
@@ -3831,8 +3831,8 @@ static void map_path_flood(int x,int y,int max_cost,bool uses_terrain_cost,bool 
         has_rail = true;
       }
       for (dir = 0; nb_x = path_queue.result_cost, dir < 8; dir++) {
-        nb_x = (((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x3;
-        y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y4;
+        nb_x = dir_dx_table_block.dir_dx_table[dir] + x3;
+        y2 = dir_dy_table_block.dir_dy_table[dir] + y4;
         x2 = map_wrap_x(nb_x);
         if (nb_x - path_queue.goal_x < 1) {
           dist_x = ~(nb_x - path_queue.goal_x) + 1;
@@ -3921,8 +3921,8 @@ static void map_path_flood(int x,int y,int max_cost,bool uses_terrain_cost,bool 
             check = path_grid_get_cost(nb_x,y2);
             if ((check == 0) || (new_cost < check)) {
               path_grid_set_cost(nb_x,y2,new_cost);
-              (((i32 *)&path_queue.queue_x))[path_queue.queue_tail] = nb_x;
-              (((i32 *)&path_queue.queue_y))[path_queue.queue_tail] = y2;
+              path_queue.queue_x[path_queue.queue_tail] = nb_x;
+              path_queue.queue_y[path_queue.queue_tail] = y2;
               path_queue.queue_tail++;
               if (0x8ff < path_queue.queue_tail) {
                 path_queue.queue_tail = 0;
@@ -3988,8 +3988,8 @@ static void map_path_pick_dir(int x,int y,int rel_x,bool uses_terrain_cost,bool 
   }
   y4 = path_grid_get_cost(rel_x,y);
   for (dir = 0; dir < 8; dir++) {
-    nb_x = (((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x;
-    y3 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    nb_x = dir_dx_table_block.dir_dx_table[dir] + x;
+    y3 = dir_dy_table_block.dir_dy_table[dir] + y;
     x3 = map_wrap_x(nb_x);
     if (nb_x - path_queue.goal_x < 1) {
       dist_x = ~(nb_x - path_queue.goal_x) + 1;
@@ -4110,8 +4110,8 @@ static void map_path_debug_show(int x,int y,int debug_mode)
   int col;
   int row;
 
-  map_views_block.map_view_center_x[0] = (i16)x;
-  map_views_block.mapview_center_y[0] = (i16)y;
+  map_views_block.map_view_recs[0].center_x = (i16)x;
+  map_views_block.map_view_recs[0].center_y = (i16)y;
   while( true ) {
     while( true ) {
       while( true ) {
@@ -4129,10 +4129,10 @@ static void map_path_debug_show(int x,int y,int debug_mode)
           }
           debug_mode = popup_debug_text((const char *)&str_movedebug);
           if (debug_mode != 1) break;
-          map_views_block.mapview_zoom[0]--;
+          map_views_block.map_view_recs[0].zoom--;
         }
         if (debug_mode != 2) break;
-        map_views_block.mapview_zoom[0]++;
+        map_views_block.map_view_recs[0].zoom++;
       }
       if (debug_mode != 3) break;
       ((MapView *)((i8 *)&map_views_block.map_views))->center_on(x,y);
@@ -4333,8 +4333,8 @@ void __cdecl landmass_compute_borders(void)
       if (y == 0) {
         landmass = tile_landmass(x2,y2);
         for (dir = 0; (int)dir < 8; dir++) {
-          x = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-          y = (int)(((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y2;
+          x = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + x2);
+          y = (int)dir_dy_table_block.dir_dy_table[dir] + y2;
           check = map_in_bounds(x,y);
           if ((check != 0) && (check = tile_is_ocean(x,y), check != 0)) {
             ocean_id = tile_landmass(x,y);
@@ -4416,8 +4416,8 @@ uint __cdecl map_assign_landmass_ids(void)
               if (y2 != 0) {
                 for (idx = 0; idx < 3; idx++) {
                   dir = idx - 2U & 7;
-                  nb_id = map_wrap_x((int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-                  dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+                  nb_id = map_wrap_x((int)dir_dx_table_block.dir_dx_table[dir] + x2);
+                  dy = dir_dy_table_block.dir_dy_table[dir];
                   check = map_in_bounds(nb_id,(int)dy + y2);
                   if ((check != 0) &&
                      (nb_id = (uint)*(ushort *)
@@ -4670,7 +4670,7 @@ void __cdecl terrain_editor_load_controls(void)
       ctrl_id = ((Control *)
                          &editor_active.wnd->edits[terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].slot])->get_id();
       _sprintf(text,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_editor_int_fmt),
-               *(i32 *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58));
+               editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca]);
       ((Control *)
                  &editor_active.wnd->edits[terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].slot])->set_text(
                  (const char *)text);
@@ -4678,7 +4678,7 @@ void __cdecl terrain_editor_load_controls(void)
     else if (terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].kind == 0xc) {
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].slot])->get_id();
-      sel = *(int *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + ctrl_id * 4 + editor_active.wnd->item * 0x58);
+      sel = editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca];
       if (field == 0) {
         sel = terrain_editor_terrain_to_sel(sel);
       }
@@ -4735,7 +4735,7 @@ int __cdecl terrain_editor_store_controls(void)
       }
       ctrl_id = ((Control *)
                          &editor_active.wnd->combos[terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].slot])->get_id();
-      *(int *)(((i8 *)&editor_text_dlg_wnd_block.editor_ctrl_values) + editor_active.wnd->item * 0x58 + ctrl_id * 4) = value;
+      editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id - 0xca] = value;
     }
   }
   return err_count;
@@ -4754,19 +4754,19 @@ void __cdecl terrain_editor_append_rule_ref(int terrain,int with_comma)
 
 {
   if (terrain == -1) {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_no_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_no_strs) + ((with_comma != 0) - 1 & 8));
   }
   else if (terrain == -2) {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_yes_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_yes_strs) + ((with_comma != 0) - 1 & 8));
   }
   else if (terrain < TERRAIN_COUNT) {
-    crt_strcat(((i8 *)&textbuf.buf),(const char *)(terrain_types + terrain));
+    crt_strcat(textbuf.buf,(const char *)(terrain_types + terrain));
     if (with_comma != 0) {
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_comma_str));
+      crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_comma_str));
     }
   }
   else {
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_err_strs) + ((with_comma != 0) - 1 & 8));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ref_err_strs) + ((with_comma != 0) - 1 & 8));
   }
   return;
 }
@@ -4784,7 +4784,7 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
   for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     text_clear();
     text_append_string_id(terrain_types[terrain2].name);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_name_sep));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_name_sep));
     name2 = label_string(terrain_types[terrain2].name);
     len = _strlen(name2);
     if (len < 0xb) {
@@ -4796,35 +4796,35 @@ i32 __cdecl terrain_editor_write_section(FILE *file)
     }
     text_append_spaces(0xb - name_len);
     text_append_int((int)(char)terrain_types[terrain2].move_cost);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_move_sep));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_move_sep));
     text_append_int((int)(char)terrain_types[terrain2].defense);
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_defense_sep));
+    crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_defense_sep));
     text_append_spaces(2);
     for (i = 0; i < 3; i++) {
       text_append_int((int)(char)terrain_types[terrain2].yields[i]);
-      crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_yield_sep));
+      crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_yield_sep));
     }
     if (terrain2 < TERRAIN_COUNT) {
       for (i = 0; i < 2; i++) {
         text_append_spaces(3);
         terrain_editor_append_rule_ref(terrain_types[terrain2].improve_to[i],1);
         text_append_int_2d((int)(char)terrain_types[terrain2].improve_bonus[i]);
-        crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_bonus_sep));
+        crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_bonus_sep));
         text_append_int_2d((int)(char)terrain_types[terrain2].improve_turns[i]);
-        crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_turns_sep));
+        crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_turns_sep));
         if (i == 1) {
           text_append_space();
         }
         text_append_int_2d((int)(char)terrain_types[terrain2].improve_ai_govt[i]);
-        crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ai_gov_sep));
+        crt_strcat(textbuf.buf,((i8 *)&terrain_editor_ctrl_kinds_block.terrain_txt_ai_gov_sep));
       }
       text_append_spaces(2);
       terrain_editor_append_rule_ref(terrain_types[terrain2].transform_to,1);
-      crt_strcat(((i8 *)&textbuf.buf),str_empty_161);
+      crt_strcat(textbuf.buf,str_empty_161);
       terrain_editor_append_rule_ref(terrain2,0);
     }
-    crt_strcat(((i8 *)&textbuf.buf),((i8 *)&terrain_txt_line_end_str));
-    _fputs(((i8 *)&textbuf.buf),file);
+    crt_strcat(textbuf.buf,((i8 *)&terrain_txt_line_end_str));
+    _fputs(textbuf.buf,file);
   }
   return 1;
 }
@@ -5855,8 +5855,8 @@ void __cdecl map_build_coarse_connectivity(void)
         landmass2 = map_coarse_cell_landmass(tile_x,tile_y,&x2,&y2,want_ocean);
         if (-1 < landmass2) {
           for (dir = 0; dir < 4; dir++) {
-            adj_x = map_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[dir] * 4 + tile_x);
-            adj_y = (((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[dir] * 4 + tile_y;
+            adj_x = map_wrap_x(dir_dy_table_block.coarse_dir_dx_table[dir] * 4 + tile_x);
+            adj_y = dir_dy_table_block.coarse_dir_dy_table[dir] * 4 + tile_y;
             in_bounds = map_in_bounds(adj_x,adj_y);
             if ((((in_bounds != 0) &&
                  (nbr_landmass = map_coarse_cell_landmass(adj_x,adj_y,&nbr_x,&nbr_y,want_ocean)
@@ -5866,8 +5866,8 @@ void __cdecl map_build_coarse_connectivity(void)
               grid[map.quarter_w * cy + cx] =
                    grid[map.quarter_w * cy + cx] |
                    (byte)(1 << ((byte)dir & 0x1f));
-              adj_x = coarse_wrap_x((((i8 *)&dir_dy_table_block.coarse_dir_dx_table))[dir] + cx);
-              adj_y = (((i8 *)&dir_dy_table_block.coarse_dir_dy_table))[dir] + cy;
+              adj_x = coarse_wrap_x(dir_dy_table_block.coarse_dir_dx_table[dir] + cx);
+              adj_y = dir_dy_table_block.coarse_dir_dy_table[dir] + cy;
               if (((-1 < adj_x) && (-1 < adj_y)) &&
                  ((adj_x < map.quarter_w && (adj_y < map.quarter_h)))) {
                 grid[map.quarter_w * adj_y + adj_x] =
@@ -6001,8 +6001,8 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
   net.map_redraw_busy = 1;
   net.move_anim_sound = 0xffffffff;
   net.move_anim_sound_arg = 0xffffffff;
-  dx = (int)(((i8 *)&dir_dx_table_block.dir_dx_table))[dir];
-  dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+  dx = (int)dir_dx_table_block.dir_dx_table[dir];
+  dy = dir_dy_table_block.dir_dy_table[dir];
   to_x = map_wrap_x(dx + from_x);
   to_y = dy + from_y;
   map_redraw_area_all_views(from_x,from_y,0,human_civ[0],0);
@@ -6016,14 +6016,14 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
         (tmp = map_views_block.map_view_recs[view].tile_in_view(to_x,to_y
                            ), tmp != 0)))) {
       view_active[view] = 1;
-      saved_origin_x[view] = (((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc];
-      saved_origin_y[view] = (((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc];
+      saved_origin_x[view] = map_views_block.map_view_recs[view].origin_x;
+      saved_origin_y[view] = map_views_block.map_view_recs[view].origin_y;
       map_views_block.map_view_recs[view].tile_to_screen(&from_sx,
                  &from_sy,from_x,from_y);
       map_views_block.map_view_recs[view].tile_to_screen(&to_sx,
                  &to_sy,to_x,to_y);
-      from_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
-      to_sy -= (((i32 *)&map_views_block.mapview_half_tile_height))[view * 0xfc];
+      from_sy -= map_views_block.map_view_recs[view].half_tile_height;
+      to_sy -= map_views_block.map_view_recs[view].half_tile_height;
       tmp = to_sx;
       if (from_sx <= to_sx) {
         tmp = from_sx;
@@ -6079,7 +6079,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
       (saved_bg + view)->DibSurface::create(save_w[view],save_h[view]);
       gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],(saved_bg + view),
                          rect_left2[view],rect_top2[view],
-                         (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,
+                         map_views_block.map_view_recs[view].client_origin_x,map_views_block.map_view_recs[view].client_origin_y,0,0,0,0,
                          save_w[view],save_h[view]);
       step_x[view] = step[view] * dx;
       step_y[view] = (step[view] * (int)dy) / 2;
@@ -6094,8 +6094,8 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
       for (view = 0; view < 8; view++) {
         if (view_active[view] != '\0') {
           tmp = map_views_block.map_view_recs[view].tile_in_view(from_x,from_y);
-          if (((tmp == 0) || ((((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc] != saved_origin_x[view])) ||
-             ((((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc] != saved_origin_y[view])) {
+          if (((tmp == 0) || (map_views_block.map_view_recs[view].origin_x != saved_origin_x[view])) ||
+             (map_views_block.map_view_recs[view].origin_y != saved_origin_y[view])) {
             view_active[view] = '\0';
           }
           else {
@@ -6105,7 +6105,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
             }
             gfx_draw_unit(&map_views_block.map_view_recs[view],unit,5,
                                cur_sx[view],cur_sy[view],
-                               (int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8],1);
+                               (int)map_views_block.map_view_recs[view].zoom,1);
             rect_set_xywh(&dirty_rect,cur_sx[view] + step[view] * -2,
                                cur_sy[view] + step[view] * -2,
                                step[view] * 4 + map_views_block.map_view_recs[view].tile_width
@@ -6136,7 +6136,7 @@ map_animate_unit_move(int unit,int from_x,int from_y,int dir,int sound_id,int so
                                ,cur_sx[view] - rect_left2[view],
                                cur_sy[view] - rect_top2[view],0,0,
                                cur_sx[view],cur_sy[view],
-                               (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],
+                               map_views_block.map_view_recs[view].client_origin_x,map_views_block.map_view_recs[view].client_origin_y,
                                map_views_block.map_view_recs[view].tile_width,
                                map_views_block.map_view_recs[view].unit_sprite_height);
             cur_sx[view] += step_x[view];
@@ -6205,8 +6205,8 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
        in_view != 0)) {
       view_active[view] = 1;
       any_visible = 1;
-      saved_origin_x[view] = (((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc];
-      saved_origin_y[view] = (((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc];
+      saved_origin_x[view] = map_views_block.map_view_recs[view].origin_x;
+      saved_origin_y[view] = map_views_block.map_view_recs[view].origin_y;
       scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
       sprite_w[view] = scaled;
       scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
@@ -6220,7 +6220,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                  map_views_block.map_view_recs[view].tile_height);
       gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],(saved_bg + view),
                          screen_x[view],screen_y[view],
-                         (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,
+                         map_views_block.map_view_recs[view].client_origin_x,map_views_block.map_view_recs[view].client_origin_y,0,0,0,0,
                          sprite_w[view],sprite_h[view]);
     }
   }
@@ -6244,10 +6244,10 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
             view_active[view] = 0;
           }
           else {
-            if (((((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc] != saved_origin_x[view]) ||
-               ((((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc] != saved_origin_y[view])) {
-              saved_origin_x[view] = (((i32 *)&map_views_block.mapview_origin_x))[view * 0xfc];
-              saved_origin_y[view] = (((i32 *)&map_views_block.mapview_origin_y))[view * 0xfc];
+            if ((map_views_block.map_view_recs[view].origin_x != saved_origin_x[view]) ||
+               (map_views_block.map_view_recs[view].origin_y != saved_origin_y[view])) {
+              saved_origin_x[view] = map_views_block.map_view_recs[view].origin_x;
+              saved_origin_y[view] = map_views_block.map_view_recs[view].origin_y;
               scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
               sprite_w[view] = scaled;
               scaled = map_views_block.map_view_recs[view].zoom_scale(0x20);
@@ -6263,11 +6263,11 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                          map_views_block.map_view_recs[view].tile_height);
               gfx_copy_rect_clipped(&map_views_block.map_view_recs[view],
                                  (saved_bg + view),screen_x[view],
-                                 screen_y[view],(((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],
-                                 (((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],0,0,0,0,sprite_w[view],
+                                 screen_y[view],map_views_block.map_view_recs[view].client_origin_x,
+                                 map_views_block.map_view_recs[view].client_origin_y,0,0,0,0,sprite_w[view],
                                  sprite_h[view]);
             }
-            gfx_set_zoom_scale((int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8]);
+            gfx_set_zoom_scale((int)map_views_block.map_view_recs[view].zoom);
             government_sprites_block.explosion_sprites[frame2].draw((RECT *)clip_rect,
                        &map_views_block.map_view_recs[view],screen_x[view],
                        screen_y[view]);
@@ -6288,7 +6288,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
         if (view_active[view] != 0) {
           gfx_copy_rect_clipped((saved_bg + view),&map_views_block.map_view_recs[view],0
                              ,0,0,0,screen_x[view],screen_y[view],
-                             (((i32 *)&map_views_block.mapview_client_origin_x))[view * 0xfc],(((i32 *)&map_views_block.mapview_client_origin_y))[view * 0xfc],
+                             map_views_block.map_view_recs[view].client_origin_x,map_views_block.map_view_recs[view].client_origin_y,
                              sprite_w[view],sprite_h[view]);
         }
       }
@@ -6349,8 +6349,8 @@ void __cdecl map_animate_nuke(int x,int y)
     saved_bg->DibSurface::create(anim_w,anim_h);
     ((MapView *)((i8 *)&map_views_block.map_views))->tile_to_screen(&screen_x,&screen_y,x,y);
     anim_x = (map_views_block.mapview_half_tile_width + screen_x) - (anim_w >> 1);
-    anim_y = (map_views_block.mapview_half_tile_height[0] + screen_y) - (anim_h >> 1);
-    gfx_copy_rect_clipped(&map_views_block.map_views,saved_bg,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],map_views_block.mapview_client_origin_y[0],0,0,0,0,
+    anim_y = (map_views_block.map_view_recs[0].half_tile_height + screen_y) - (anim_h >> 1);
+    gfx_copy_rect_clipped(&map_views_block.map_views,saved_bg,anim_x,anim_y,map_views_block.map_view_recs[0].client_origin_x,map_views_block.map_view_recs[0].client_origin_y,0,0,0,0,
                        anim_w,anim_h);
     rect_set_xywh(&dirty_rect,anim_x,anim_y,anim_w,anim_h);
     if (dirty_rect.left < 0) {
@@ -6375,8 +6375,8 @@ void __cdecl map_animate_nuke(int x,int y)
           now = timeGetTime();
         } while ((int)(now - last_time) < 100);
         last_time = now;
-        gfx_copy_rect_clipped(saved_bg,&map_views_block.map_views,0,0,0,0,anim_x,anim_y,map_views_block.mapview_client_origin_x[0],
-                           map_views_block.mapview_client_origin_y[0],anim_w,anim_h);
+        gfx_copy_rect_clipped(saved_bg,&map_views_block.map_views,0,0,0,0,anim_x,anim_y,map_views_block.map_view_recs[0].client_origin_x,
+                           map_views_block.map_view_recs[0].client_origin_y,anim_w,anim_h);
       }
       gfx_reset_zoom_scale();
       ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&dirty_rect);
@@ -6415,8 +6415,8 @@ i32 __cdecl tile_has_irrigation_source(int x2,int y2)
     if (4 < dir) {
       return 0;
     }
-    x = map_wrap_x((((i8 *)&diag_neighbor_bits_block.diag_dx_table))[dir] + x2);
-    y = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + y2;
+    x = map_wrap_x(diag_neighbor_bits_block.diag_dx_table[dir] + x2);
+    y = diag_neighbor_bits_block.diag_dy_table[dir] + y2;
     ok = map_in_bounds(x,y);
     if (ok != 0) {
       ok = tile_is_ocean(x,y);
@@ -6449,8 +6449,8 @@ void __cdecl map_reveal_adjacent_units(int x,int y,int civ)
   is_ocean = tile_is_ocean(x,y);
   net_batch_begin();
   for (dir = 0; dir < 8; dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     ok = map_in_bounds(x2,y2);
     if ((((ok != 0) && (ok = tile_is_ocean(x2,y2), ok == is_ocean)) &&
         (ok = tile_unit_owner(x2,y2), -1 < ok)) &&
@@ -6584,8 +6584,8 @@ uint __cdecl tile_adjacent_nonallied_civ(int x,int y,int civ)
   city_owner = tile_city_owner(x,y);
   dialog_text_font_obj_block.adjacent_foreign_civ = -1;
   for (dir = 0; (dialog_text_font_obj_block.adjacent_foreign_civ < 0 && (dir < 8)); dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     ok = map_in_bounds(x2,y2);
     if (ok != 0) {
       if (city_owner < 0) {
@@ -6621,8 +6621,8 @@ uint __cdecl tile_adjacent_nonallied_unit(int x2,int y,int civ)
   
   dialog_text_font_obj_block.adjacent_foreign_civ = -1;
   for (dir = 0; (dialog_text_font_obj_block.adjacent_foreign_civ < 0 && (dir < 8)); dir++) {
-    x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-    dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+    x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+    dy = dir_dy_table_block.dir_dy_table[dir];
     owner = map_in_bounds(x,dy + y);
     if ((owner != 0) &&
        (((owner = tile_unit_owner(x,dy + y), -1 < owner && (civ != owner)) &&
@@ -6646,8 +6646,8 @@ uint __cdecl tile_zoc_unit_adjacent(int x,int y,int civ)
   dialog_text_font_obj_block.adjacent_foreign_civ = -1;
   is_ocean = tile_is_ocean(x,y);
   for (dir = 0; (dialog_text_font_obj_block.adjacent_foreign_civ < 0 && (dir < 8)); dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    y2 = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y;
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    y2 = dir_dy_table_block.dir_dy_table[dir] + y;
     owner = map_in_bounds(x2,y2);
     if (((owner != 0) &&
         (((owner = tile_unit_owner(x2,y2), -1 < owner && (owner != civ)) &&

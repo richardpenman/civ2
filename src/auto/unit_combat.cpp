@@ -300,8 +300,8 @@ i32 __cdecl unit_nuclear_attack(int civ,int x,int y,int check_sdi)
   }
   map_animate_nuke(x,y);
   for (dir = 0; dir < 9; dir++) {
-    x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-    dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+    x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+    dy = dir_dy_table_block.dir_dy_table[dir];
     unit = map_in_bounds(x2,dy + y);
     if ((unit != 0) && (unit = tile_first_unit(x2,dy + y), -1 < unit)) {
       if (units[unit].owner != civ) {
@@ -1432,8 +1432,8 @@ i32 __cdecl unit_resolve_attack(int unit,int dir,int execute)
   if (execute != 0) {
     attack_power = (int)(attack_power * moves_avail) / (int)(uint)cosmic.road_move_mult;
   }
-  x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x2);
-  y = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir] + y2;
+  x = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x2);
+  y = dir_dy_table_block.dir_dy_table[dir] + y2;
   target_y = y;
   target_x = x;
   unit2 = tile_first_unit(x,y);

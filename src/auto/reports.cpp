@@ -2001,8 +2001,8 @@ void __cdecl powergraph_show(void)
     max_power = 0x32;
     for (civ = 1; civ < 8; civ++) {
       for (sample = 0; sample < sample_count; sample++) {
-        if (max_power < (byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ]) {
-          max_power = (uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ];
+        if (max_power < (byte)power_graph_history_block.power_graph_history[sample][civ]) {
+          max_power = (uint)(byte)power_graph_history_block.power_graph_history[sample][civ];
         }
       }
     }
@@ -2032,7 +2032,7 @@ void __cdecl powergraph_show(void)
         prev_y = 0;
         for (sample = 0; (sample < sample_count && (sample < 0x96)); sample++) {
           point_x = sample * 4;
-          point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
+          point_y = (int)((uint)(byte)power_graph_history_block.power_graph_history[sample][civ] * 0x168) /
                      (int)max_power;
           gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 9,(origin_y2 - prev_y) + 0x171,
                              point_x + origin_x2 + 9,(origin_y2 - point_y) + 0x171,0x12);
@@ -2059,7 +2059,7 @@ void __cdecl powergraph_show(void)
         for (sample = 0; (legend_row = next_row, sample < sample_count && (sample < 0x96));
             sample = sample + 1) {
           point_x = sample * 4;
-          point_y = (int)((uint)(byte)(((i8 *)&power_graph_history_block.power_graph_history))[sample * 8 + civ] * 0x168) /
+          point_y = (int)((uint)(byte)power_graph_history_block.power_graph_history[sample][civ] * 0x168) /
                      (int)max_power;
           gfx_draw_line_color(&graph_wnd,prev_x + origin_x2 + 8,(origin_y2 + 0x170) - prev_y,
                              point_x + origin_x2 + 8,(origin_y2 + 0x170) - point_y,civ_color);
@@ -2114,7 +2114,7 @@ void __cdecl historian_report_show(void)
   category = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_historians);
   if (category == 0) {
     text_read_line(1);
-    category = _atoi(((i8 *)&textbuf.buf));
+    category = _atoi(textbuf.buf);
     if (category != 0) {
       quote_index = rand_range(0,category - 1);
       for (i = 0; i <= quote_index; i++) {
@@ -2163,7 +2163,7 @@ void __cdecl historian_report_show(void)
       if (category == 0) {
         for (rank = 1; rank < 8; rank++) {
           text_read_line(1);
-          crt_strcpy(title_buf,((i8 *)&textbuf.buf));
+          crt_strcpy(title_buf,textbuf.buf);
           civ2 = -1;
           best_score = 0;
           for (civ = 1; civ < 8; civ++) {
@@ -2924,7 +2924,7 @@ void __cdecl hall_of_fame_draw(void)
           line = line + 1) {
         if (open_err == 0) {
           text_read_line(1);
-          str_copy_max(line_buf,((i8 *)&textbuf.buf),sizeof line_buf);
+          str_copy_max(line_buf,textbuf.buf,sizeof line_buf);
         }
         else if (advisor_window_block.hall_of_fame[entry].title_index == line) {
           crt_strcpy(line_buf,str_string0_2);
@@ -3244,7 +3244,7 @@ void __cdecl hall_of_fame_add_entry(int civ)
   else {
     advisor_font_block.hof_new_entry.objective_score = (i16)civ_score.civ_objective_value;
   }
-  advisor_font_block.hof_new_entry.year_increment = scenario.year_increment[0];
+  advisor_font_block.hof_new_entry.year_increment = scenario.year_increment;
   advisor_font_block.hof_new_entry.start_year = scenario.start_year;
   advisor_font_block.hof_new_entry.is_scenario = game.game_flags & GAME_SCENARIO;
   advisor_font_block.hof_new_entry.rating = (short)casualty_window_block.civ_rating_percent;
@@ -3372,7 +3372,7 @@ i32 __cdecl credits_load_section(i32 section)
   }
   if (status == 0) {
     while ((line = text_read_line(1), line != 0 && (textbuf.buf[0] != '@'))) {
-      credits_add_line(((i8 *)&textbuf.buf));
+      credits_add_line(textbuf.buf);
     }
     result = 0;
   }
@@ -3475,7 +3475,7 @@ void __cdecl credits_draw_scroll(int full_redraw)
           line_text++;
           text_clear();
           text_append((const char *)line_text);
-          line_text = ((i8 *)&textbuf.buf);
+          line_text = textbuf.buf;
           text_set_colors(0xba,0x12,0xffffffff,0xffffffff);
         }
         else {
@@ -3775,16 +3775,16 @@ void __cdecl casualty_timeline_draw(void)
       text_append((const char *)unit);
       while (text_width = ((GameFont *)((i8 *)&advisor_bold_font))->text_width((const char *)&textbuf.buf),
             0x60 < text_width) {
-        len = _strlen(((i8 *)&textbuf.buf));
-        (((i8 *)&textbuf.before))[len] = 0;
+        len = _strlen(textbuf.buf);
+        textbuf.buf[len - 1] = 0;
       }
       gfx_draw_text((const char *)&textbuf.buf,name_x,text_y);
       text_clear();
       text_append_year((int)net.casualty_log[civ * 0x12c + log_index].year);
       while (name_x = ((GameFont *)((i8 *)&advisor_bold_font))->text_width((const char *)&textbuf.buf),
             0x4c < name_x) {
-        len2 = _strlen(((i8 *)&textbuf.buf));
-        (((i8 *)&textbuf.before))[len2] = 0;
+        len2 = _strlen(textbuf.buf);
+        textbuf.buf[len2 - 1] = 0;
       }
       gfx_draw_text((const char *)&textbuf.buf,row_x + 0xec,text_y);
       text_set_colors(0x5e,10,0xffffffff,0xffffffff);
@@ -3802,8 +3802,8 @@ void __cdecl casualty_timeline_draw(void)
       }
       while (name_x = ((GameFont *)((i8 *)&advisor_bold_font))->text_width((const char *)&textbuf.buf),
             0xaa < name_x) {
-        len3 = _strlen(((i8 *)&textbuf.buf));
-        (((i8 *)&textbuf.before))[len3] = 0;
+        len3 = _strlen(textbuf.buf);
+        textbuf.buf[len3 - 1] = 0;
       }
       gfx_draw_text((const char *)&textbuf.buf,row_x + 0x138,text_y);
       text_set_colors((int)net.casualty_log[civ * 0x12c + log_index].killer_color,0x12,
@@ -3813,8 +3813,8 @@ void __cdecl casualty_timeline_draw(void)
       while (text_width = casualty.client_right - casualty.vscroll_width,
             name_x = ((GameFont *)((i8 *)&advisor_bold_font))->text_width((const char *)&textbuf.buf),
             (text_width - 2) - (row_x + 0x1e2) < name_x) {
-        len3 = _strlen(((i8 *)&textbuf.buf));
-        (((i8 *)&textbuf.before))[len3] = 0;
+        len3 = _strlen(textbuf.buf);
+        textbuf.buf[len3 - 1] = 0;
       }
       gfx_draw_text((const char *)&textbuf.buf,row_x + 0x1e2,text_y);
       entry++;
@@ -4993,7 +4993,7 @@ void __cdecl defeat_movie_on_video_end(void)
       str_append_max((char *)((*(int *)&endgame_movie_window) + 0xf24),(const char *)&str_empty_87,0x400);
     }
     text_expand_vars_max((const char *)((*(int *)&endgame_movie_window) + 0xf24),textbuf.buf,TEXTBUF_SIZE);
-    CharUpperA(((i8 *)&textbuf.buf));
+    CharUpperA(textbuf.buf);
     rect_set_xywh((RECT *)((*(int *)&endgame_movie_window) + 0x136c),0xe5,0x4c,200,0x85);
     gfx_set_text_color_index(0);
     ((DibSurface *)((*(int *)&endgame_movie_window) + 0x4ec))->draw_text_rect((GameFont *)((*(int *)&endgame_movie_window) + 0xf1c),(const char *)&textbuf.buf,

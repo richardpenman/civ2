@@ -2054,7 +2054,7 @@ void __cdecl mp_turn_timer_resume(int notify)
   intel_report_end_modal();
   throneroom_close();
   pedia_end_modal();
-  if ((mp_timer.seconds_left != 0) && (map_views_block.main_view_timer_shown[0] != 0)) {
+  if ((mp_timer.seconds_left != 0) && (map_views_block.map_view_recs[0].timer_shown != 0)) {
     if (mp_timer.handle != 0) {
       game_timer_destroy(mp_timer.handle);
     }
@@ -2081,7 +2081,7 @@ void __cdecl mp_cmd_change_timer(void)
   cancelled = setup_choose_game_timer(1);
   if (cancelled == 0) {
     if (civ_saved_cursor_x_block.mp_turn_time_limit_ms == 0) {
-      map_views_block.main_view_timer_shown[0] = 0;
+      map_views_block.map_view_recs[0].timer_shown = 0;
       ((FrameWindow *)((i8 *)&map_views_block.map_views))->FrameWindow::draw_caption();
       caption_rect.left = map_views_block.main_view_frame_left;
       caption_rect.top = map_views_block.main_view_frame_top;
@@ -2090,7 +2090,7 @@ void __cdecl mp_cmd_change_timer(void)
       ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&caption_rect);
     }
     else {
-      map_views_block.main_view_timer_shown[0] = 1;
+      map_views_block.map_view_recs[0].timer_shown = 1;
       mp_turn_timer_start(1);
     }
     if (2 < game.multiplayer) {
@@ -2941,7 +2941,7 @@ void __cdecl net_fill_game_info(NetGameInfo *info)
   info->double_production = mp_doubles.production;
   info->game_flags = game.game_flags;
   info->first_launch_turn = game.first_launch_turn;
-  info->year_increment = scenario.year_increment[0];
+  info->year_increment = scenario.year_increment;
   info->start_year = scenario.start_year;
   info->turn = game.turn;
   info->simultaneous = mp_options.simultaneous_setting;

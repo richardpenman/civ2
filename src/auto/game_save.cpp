@@ -675,7 +675,7 @@ i32 __cdecl save_write_game(const char *file_name,int is_scenario)
             }
             game.player_civ = (byte)civ;
           }
-          nwritten = _fwrite(((i8 *)&power_graph_history_block.power_graph_history),0x4b0,1,file);
+          nwritten = _fwrite(power_graph_history_block.power_graph_history,0x4b0,1,file);
           if (nwritten != 0) {
             saved_screen_rect_block.saved_screen_rect[0] = caption_small_font_block.screen_rect[0];
             saved_screen_rect_block.saved_screen_rect_top = caption_small_font_block.screen_rect_top;
@@ -688,10 +688,10 @@ i32 __cdecl save_write_game(const char *file_name,int is_scenario)
                 nwritten = _fwrite(&map_views_block.map_view_recs[leader].open,2,1,file);
                 if (((nwritten == 0) ||
                     (nwritten = _fwrite(&map_views_block.map_view_recs[leader].track_moves,2,1,file), nwritten == 0))
-                   || ((nwritten = _fwrite(((i16 *)&map_views_block.map_view_center_x) + leader * 0x1f8,2,1,file), nwritten == 0
-                       || ((nwritten = _fwrite(((i16 *)&map_views_block.mapview_center_y) + leader * 0x1f8,2,1,file),
+                   || ((nwritten = _fwrite(&map_views_block.map_view_recs[leader].center_x,2,1,file), nwritten == 0
+                       || ((nwritten = _fwrite(&map_views_block.map_view_recs[leader].center_y,2,1,file),
                            nwritten == 0 ||
-                           (nwritten = _fwrite(((i16 *)&map_views_block.mapview_zoom) + leader * 0x1f8,2,1,file),
+                           (nwritten = _fwrite(&map_views_block.map_view_recs[leader].zoom,2,1,file),
                            nwritten == 0)))))) return result;
               }
               if ((((is_scenario == 0) && ((game.game_flags & GAME_SCENARIO) == 0)) ||
@@ -892,7 +892,7 @@ void __cdecl game_save_dialog(int is_scenario)
       crt_strcat(file_name_buf + 1,((i8 *)&save_name_ext_dot_str));
       crt_strcat(file_name_buf + 1,((i8 *)&grey_palette_block.save_file_ext_bare));
       __strlwr(file_name_buf + 1);
-      if (((is_scenario != 0) || ((game.game_flags & GAME_SCENARIO) != 0)) && (scenario.year_increment[0] < 0)) {
+      if (((is_scenario != 0) || ((game.game_flags & GAME_SCENARIO) != 0)) && (scenario.year_increment < 0)) {
         str_clear((file_name_buf + 1));
         if ((int)game.year / 0xc < 1) {
           abs_year_div = ~((int)game.year / 0xc) + 1;
@@ -1106,14 +1106,14 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
         crt_strcat(events_path,((i8 *)&lang_file_ext));
         result = file_exists((const char *)events_path);
         if (result != 0) {
-          crt_strcpy(events_path,((i8 *)&textbuf.buf));
+          crt_strcpy(events_path,textbuf.buf);
           ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->reset(50000);
           result = ((ScenarioEvents *)((i8 *)&unit_types_block.scenario_events))->parse_file((const char *)&str_events_2,(const char *)&str_beginevents);
           if (result == 0) {
             events_compact();
             scenario_events_loaded = 1;
           }
-          crt_strcpy(((i8 *)&textbuf.buf),events_path);
+          crt_strcpy(textbuf.buf,events_path);
         }
       }
       if (scenario_events_loaded == 0) {
@@ -1371,7 +1371,7 @@ void __cdecl prefs_set_defaults(void)
   (*(i16 *)&prefs.message_options) = 0;
   prefs.barbarity = 2;
   for (i = 0; i < 5; i++) {
-    (((i16 *)&prefs.world_params))[i] = 0;
+    prefs.world_params[i] = 0;
   }
   crt_strcpy(((i8 *)&prefs.text_field),((i8 *)&prefs_defaults_empty_str));
   prefs.rules_choice = 0;
@@ -1418,7 +1418,7 @@ void __cdecl prefs_set_mp_defaults(void)
   menu_prefs.mp_prefs_setting_4 = 0;
   for (i = 0; i < 7; i++) {
     for (j = 0; j < 0x18; j++) {
-      (((i8 *)&menu_prefs.mp_prefs_settings_table))[i * 0x18 + j] = 0;
+      menu_prefs.mp_prefs_settings_table[i][j] = 0;
     }
   }
   menu_prefs.mp_prefs_setting_5 = 0;

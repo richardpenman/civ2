@@ -40,7 +40,7 @@ i32 __cdecl app_startup_init(void)
   crt_strcpy(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&game_dirs.home));
   for (i = 0; i < 8; i++) {
     map_views_block.map_view_recs[i].open = 0;
-    (((i32 *)&map_views_block.main_view_timer_shown))[i * 0xfc] = 0;
+    map_views_block.map_view_recs[i].timer_shown = 0;
   }
   timeBeginPeriod(4);
   result = timer_ticks();
@@ -1126,12 +1126,12 @@ void __cdecl scenario_reset_params(void)
   (*(i16 *)&scenario.flags) = 0;
   scenario.name[0] = 0;
   scenario.tech_paradigm = 10;
-  scenario.year_increment[0] = 0;
+  scenario.year_increment = 0;
   scenario.start_year = 0;
   scenario.max_turns = 0;
   scenario.objective_civ = 0;
   for (i = 0; i < 4; i++) {
-    (((i16 *)&scenario.victory_thresholds))[i] = 0;
+    scenario.victory_thresholds[i] = 0;
   }
   return;
 }
@@ -1233,7 +1233,7 @@ int __cdecl game_turn_to_year(int turn)
     }
     turn -= extra_turns;
   }
-  if ((((game.game_flags & GAME_SCENARIO) == 0) || (scenario.year_increment[0] == 0)) || (scenario.start_year == 0)) {
+  if ((((game.game_flags & GAME_SCENARIO) == 0) || (scenario.year_increment == 0)) || (scenario.start_year == 0)) {
     if (turn != 0) {
       turn--;
     }
@@ -1255,11 +1255,11 @@ int __cdecl game_turn_to_year(int turn)
     }
   }
   else {
-    if (scenario.year_increment[0] < 1) {
-      abs_increment = ~(int)scenario.year_increment[0] + 1;
+    if (scenario.year_increment < 1) {
+      abs_increment = ~(int)scenario.year_increment + 1;
     }
     else {
-      abs_increment = (int)scenario.year_increment[0];
+      abs_increment = (int)scenario.year_increment;
     }
     year2 = (int)scenario.start_year + turn * abs_increment - 1;
   }
@@ -1802,11 +1802,11 @@ void __cdecl game_autosave(int civ)
     text_clear();
     leader_name = civ_leader_name(civ);
     text_append(leader_name);
-    textbuf.plus2[0] = 0;
+    textbuf.buf[2] = 0;
     str_trim((char *)&textbuf.buf);
     text_append((const char *)&str_empty_99);
     text_append_label(0x5c);
-    crt_strcpy(backup_path,((i8 *)&textbuf.buf));
+    crt_strcpy(backup_path,textbuf.buf);
     str_append((char *)backup_path,(const char *)&str_2);
     text_append((const char *)&str_empty_100);
     text_append((const char *)&grey_palette_block.save_file_ext_bare);
@@ -1814,7 +1814,7 @@ void __cdecl game_autosave(int civ)
     str_append((char *)backup_path,(const char *)&grey_palette_block.save_file_ext_bare);
     if ((game.turn & 4U) == 0) {
       crt_remove(backup_path);
-      crt_rename(((i8 *)&textbuf.buf),backup_path);
+      crt_rename(textbuf.buf,backup_path);
     }
     save_write_game((const char *)&textbuf.buf,0);
   }
@@ -1852,8 +1852,8 @@ void __cdecl tutorial_settler_hints(int unit)
     city = tile_owner_or_fertility(x,y);
     good_site = 9 < city && 1 < (int)(char)food_yield + (int)(char)shield_yield;
     for (dir = 0; dir < 8; dir++) {
-      x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[dir] + x);
-      dy = (((i8 *)&dir_dy_table_block.dir_dy_table))[dir];
+      x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[dir] + x);
+      dy = dir_dy_table_block.dir_dy_table[dir];
       value = map_in_bounds(x2,dy + y);
       if ((value != 0) && (value = tile_owner_or_fertility(x2,dy + y), city < value)) {
         good_site = false;
@@ -2145,20 +2145,20 @@ void __cdecl game_calc_human_wonder_range(void)
   iptr group;
   
   for (group = 0; group < 4; group++) {
-    (((i8 *)&map_views_block.human_wonders_by_group_max))[group] = 0;
-    (((i8 *)&map_views_block.human_wonders_by_group_min))[group] = 99;
+    map_views_block.human_wonders_by_group_max[group] = 0;
+    map_views_block.human_wonders_by_group_min[group] = 99;
     for (civ = 1; civ < 8; civ++) {
       if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
         count = civs[civ].wonders_by_group[group];
-        if (count <= (byte)(((i8 *)&map_views_block.human_wonders_by_group_max))[group]) {
-          count = (((i8 *)&map_views_block.human_wonders_by_group_max))[group];
+        if (count <= (byte)map_views_block.human_wonders_by_group_max[group]) {
+          count = map_views_block.human_wonders_by_group_max[group];
         }
-        (((i8 *)&map_views_block.human_wonders_by_group_max))[group] = count;
+        map_views_block.human_wonders_by_group_max[group] = count;
         count = civs[civ].wonders_by_group[group];
-        if ((byte)(((i8 *)&map_views_block.human_wonders_by_group_min))[group] <= count) {
-          count = (((i8 *)&map_views_block.human_wonders_by_group_min))[group];
+        if ((byte)map_views_block.human_wonders_by_group_min[group] <= count) {
+          count = map_views_block.human_wonders_by_group_min[group];
         }
-        (((i8 *)&map_views_block.human_wonders_by_group_min))[group] = count;
+        map_views_block.human_wonders_by_group_min[group] = count;
       }
     }
   }
@@ -2345,8 +2345,8 @@ static int play_loop_human_turn_start(uptr civ,bool *pbem_saved,int *views_hidde
     if (civ_view.intro_shown[civ] == 1) {
       map_cursor.x[0] = civ_view.saved_cursor_x[civ];
       map_cursor.y[0] = civ_view.saved_cursor_y[civ];
-      map_views_block.map_view_center_x[0] = map_cursor.x[0];
-      map_views_block.mapview_center_y[0] = map_cursor.y[0];
+      map_views_block.map_view_recs[0].center_x = map_cursor.x[0];
+      map_views_block.map_view_recs[0].center_y = map_cursor.y[0];
     }
     else {
       civ_intro_popup(civ);
@@ -2354,8 +2354,8 @@ static int play_loop_human_turn_start(uptr civ,bool *pbem_saved,int *views_hidde
         if ((cities[city].id != 0) && ((int)cities[city].owner == civ)) {
           map_cursor.x[0] = cities[city].x;
           map_cursor.y[0] = cities[city].y;
-          map_views_block.map_view_center_x[0] = map_cursor.x[0];
-          map_views_block.mapview_center_y[0] = map_cursor.y[0];
+          map_views_block.map_view_recs[0].center_x = map_cursor.x[0];
+          map_views_block.map_view_recs[0].center_y = map_cursor.y[0];
           break;
         }
       }
@@ -3247,8 +3247,8 @@ void __cdecl game_balance_start_positions(void)
       grass_count = 0;
       special_count = 0;
       for (k = 0; k < 0x15; k++) {
-        x2 = map_wrap_x((((i8 *)&dir_dy_table_block.city_tile_dx_table))[k] + x3);
-        y2 = (((i8 *)&dir_dy_table_block.city_tile_dy_table))[k] + y3;
+        x2 = map_wrap_x(dir_dy_table_block.city_tile_dx_table[k] + x3);
+        y2 = dir_dy_table_block.city_tile_dy_table[k] + y3;
         unit = map_in_bounds(x2,y2);
         if (unit != 0) {
           terrain_id = tile_terrain(x2,y2);
@@ -3447,8 +3447,8 @@ void __cdecl game_accelerated_start(int extra_level)
           best_dir = -1;
           unit2 = tile_landmass(x3,y);
           for (i = 0; i < 8; i++) {
-            x = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[i] * 5 + x3);
-            y3 = (((i8 *)&dir_dy_table_block.dir_dy_table))[i] * 5 + y;
+            x = map_wrap_x(dir_dx_table_block.dir_dx_table[i] * 5 + x3);
+            y3 = dir_dy_table_block.dir_dy_table[i] * 5 + y;
             result = map_in_bounds(x,y3);
             if (((result != 0) && (result = tile_is_ocean(x,y3), result == 0)) &&
                (result = tile_landmass(x,y3), result == unit2)) {
@@ -3527,8 +3527,8 @@ void __cdecl game_accelerated_start(int extra_level)
               do {
                 unit2 = map_path_next_dir(x2,y2,99);
                 if ((unit2 < 0) || (unit2 == 8)) break;
-                x2 = map_wrap_x((((i8 *)&dir_dx_table_block.dir_dx_table))[unit2] + x2);
-                y2 += (((i8 *)&dir_dy_table_block.dir_dy_table))[unit2];
+                x2 = map_wrap_x(dir_dx_table_block.dir_dx_table[unit2] + x2);
+                y2 += dir_dy_table_block.dir_dy_table[unit2];
                 if ((x3 == x2) && (y == y2)) break;
                 unit2 = tile_city_owner(x2,y2);
                 if ((((unit2 < 0) &&
@@ -3630,7 +3630,7 @@ void __cdecl game_init_new(void)
   game.next_history_turn = (i16)(value % 0x32);
   for (leader = 0; leader < 0x96; leader++) {
     for (j = 0; j < 8; j++) {
-      (((i8 *)&power_graph_history_block.power_graph_history))[leader * 8 + j] = 0;
+      power_graph_history_block.power_graph_history[leader][j] = 0;
     }
   }
   for (civ = 0; civ < 8; civ++) {
@@ -3912,7 +3912,7 @@ uint __cdecl main_frame_create(void)
   text_clear();
   text_append_label(2);
   WritePrivateProfileStringA
-            (str_civilization_gold_16,str_window_name,((i8 *)&textbuf.buf),str_civ_ini_16);
+            (str_civilization_gold_16,str_window_name,textbuf.buf,str_civ_ini_16);
   main_frame_wnd_block.main_frame_wnd.create_with_cmd_proc((const char *)&textbuf.buf,0x7c,0,0,600,400,(GamePalette *)&game_palette_block.game_palette);
   cd_ok = file_require_cdrom((const char *)&str_civ2_civ2_exe_2);
   if (cd_ok != 0) {

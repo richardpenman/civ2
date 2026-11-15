@@ -200,44 +200,54 @@ typedef struct AdvisorWindowState {
 /* Trade: how much a city demands each commodity. */
 #pragma pack(push, 1)
 typedef struct CommodityDemand {
-    int by_commodity[1];  /* 0063f540 */
-    i32 wool[1];  /* 0063f544 */
-    int beads;  /* 0063f548 */
-    i32 cloth;  /* 0063f54c */
-    i32 salt;  /* 0063f550 */
-    int coal;  /* 0063f554 */
-    int copper;  /* 0063f558 */
-    int dye;  /* 0063f55c */
-    i32 wine;  /* 0063f560 */
-    int silk;  /* 0063f564 */
-    int silver;  /* 0063f568 */
-    int spice;  /* 0063f56c */
-    i32 gems;  /* 0063f570 */
-    int gold;  /* 0063f574 */
-    int oil;  /* 0063f578 */
-    int uranium;  /* 0063f57c */
+    union {
+        int by_commodity[16];  /* 0063f540: by commodity */
+        struct {
+            int hides;
+            i32 wool;  /* 0063f544 */
+            int beads;  /* 0063f548 */
+            i32 cloth;  /* 0063f54c */
+            i32 salt;  /* 0063f550 */
+            int coal;  /* 0063f554 */
+            int copper;  /* 0063f558 */
+            int dye;  /* 0063f55c */
+            i32 wine;  /* 0063f560 */
+            int silk;  /* 0063f564 */
+            int silver;  /* 0063f568 */
+            int spice;  /* 0063f56c */
+            i32 gems;  /* 0063f570 */
+            int gold;  /* 0063f574 */
+            int oil;  /* 0063f578 */
+            int uranium;  /* 0063f57c */
+        };
+    };
 } CommodityDemand;
 #pragma pack(pop)
 /* Trade: how much a city supplies each commodity. */
 #pragma pack(push, 1)
 typedef struct CommoditySupply {
-    int by_commodity[1];  /* 0063f668 */
-    i32 wool[1];  /* 0063f66c */
-    int beads;  /* 0063f670 */
-    int cloth;  /* 0063f674 */
-    int salt;  /* 0063f678 */
-    int coal;  /* 0063f67c */
-    int copper;  /* 0063f680 */
-    int dye;  /* 0063f684 */
-    int wine;  /* 0063f688 */
-    int silk;  /* 0063f68c */
-    int silver;  /* 0063f690 */
-    int spice;  /* 0063f694 */
-    int gems;  /* 0063f698 */
-    int gold;  /* 0063f69c */
-    int oil;  /* 0063f6a0 */
-    int uranium;  /* 0063f6a4 */
-    u8 uranium_rest[72];
+    union {
+        int by_commodity[16];  /* 0063f668: by commodity */
+        struct {
+            int hides;
+            i32 wool;  /* 0063f66c */
+            int beads;  /* 0063f670 */
+            int cloth;  /* 0063f674 */
+            int salt;  /* 0063f678 */
+            int coal;  /* 0063f67c */
+            int copper;  /* 0063f680 */
+            int dye;  /* 0063f684 */
+            int wine;  /* 0063f688 */
+            int silk;  /* 0063f68c */
+            int silver;  /* 0063f690 */
+            int spice;  /* 0063f694 */
+            int gems;  /* 0063f698 */
+            int gold;  /* 0063f69c */
+            int oil;  /* 0063f6a0 */
+            int uranium;  /* 0063f6a4 */
+            u8 uranium_rest[72];
+        };
+    };
 } CommoditySupply;
 #pragma pack(pop)
 #pragma pack(push, 1)
@@ -253,7 +263,7 @@ struct advisor_window_block {
     int mp_meeting_reply;  /* 0063f278 */
     u8 mp_meeting_reply_rest[708];
     CommodityDemand commodity_demand;  /* 0063f540 */
-    i8 wonder_notice_flags[224];  /* 0063f580 */
+    i8 wonder_notice_flags[8][28];  /* 0063f580: by civilization and wonder */
     int nearest_city_dist;  /* 0063f660 */
     u8 nearest_city_dist_rest[4];
     CommoditySupply commodity_supply;  /* 0063f668 */
@@ -321,13 +331,23 @@ typedef struct CityCalc {
     int notify_enabled;  /* 006a65ac */
     int food_routes_out;  /* 006a65b0 */
     u8 food_routes_out_rest[4];
-    i32 tile_yields[1];  /* 006a65b8 */
-    int tile_shields;  /* 006a65bc */
-    int tile_trade;  /* 006a65c0 */
+    union {
+        i32 tile_yields[3];  /* 006a65b8: food, shields, trade of a tile */
+        struct {
+            int tile_food;
+            int tile_shields;  /* 006a65bc */
+            int tile_trade;  /* 006a65c0 */
+        };
+    };
     int pop_pollution_factor;  /* 006a65c4 */
-    int yield_totals[1];  /* 006a65c8 */
-    int total_shields;  /* 006a65cc */
-    int total_trade;  /* 006a65d0 */
+    union {
+        int yield_totals[3];  /* 006a65c8: food, shields, trade */
+        struct {
+            int total_food;
+            int total_shields;  /* 006a65cc */
+            int total_trade;  /* 006a65d0 */
+        };
+    };
     int tile_job_priority;  /* 006a65d4 */
     int settlers_supported;  /* 006a65d8 */
     i32 workers_overflow;  /* 006a65dc */
@@ -335,12 +355,16 @@ typedef struct CityCalc {
     int aggressive_units;  /* 006a65e4 */
     int tile_job_y;  /* 006a65e8 */
     u8 tile_job_y_rest[4];
-    i8 unhappy_by_stage[1];  /* 006a65f0 */
-    byte unhappy_after_lux;  /* 006a65f1 */
-    u8 unhappy_after_lux_rest[1];
-    byte unhappy_after_units;  /* 006a65f3 */
-    byte unhappy_after_wonders;  /* 006a65f4 */
-    u8 unhappy_after_wonders_rest[3];
+    union {
+        i8 unhappy_by_stage[8];  /* 006a65f0: the unhappy citizens by stage of the happiness calculation */
+        struct {
+            i8 unhappy_initially;
+            byte unhappy_after_lux;  /* 006a65f1 */
+            u8 unhappy_after_lux_rest[1];
+            byte unhappy_after_units;  /* 006a65f3 */
+            byte unhappy_after_wonders;  /* 006a65f4 */
+        };
+    };
     int pollution_divisor;  /* 006a65f8 */
     int lux_total;  /* 006a65fc */
     iptr capital_nearest;  /* 006a6600 */
@@ -351,12 +375,16 @@ typedef struct CityCalc {
     u8 completed_improvement_rest[4];
     int building_content;  /* 006a6618 */
     int food_surplus;  /* 006a661c */
-    i8 happy_by_stage[1];  /* 006a6620 */
-    byte happy_after_lux;  /* 006a6621 */
-    u8 happy_after_lux_rest[1];
-    byte happy_after_units;  /* 006a6623 */
-    byte happy_after_wonders;  /* 006a6624 */
-    u8 happy_after_wonders_rest[3];
+    union {
+        i8 happy_by_stage[8];  /* 006a6620: the happy citizens by stage of the happiness calculation */
+        struct {
+            i8 happy_initially;
+            byte happy_after_lux;  /* 006a6621 */
+            u8 happy_after_lux_rest[1];
+            byte happy_after_units;  /* 006a6623 */
+            byte happy_after_wonders;  /* 006a6624 */
+        };
+    };
     i8 angry_by_stage[64];  /* 006a6628 */
 } CityCalc;
 #pragma pack(pop)
