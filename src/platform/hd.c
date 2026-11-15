@@ -830,6 +830,20 @@ static const struct {
     {"ss.dll", 498, 499, 0},    /* the spaceship's window */
 };
 
+/* The crops of the pack's pictures that are not the original's sprite:
+   the leaders' portraits (mk.dll 220 + the tribe, + 21 for a woman, at
+   1,1,225,275 in the diplomacy room) are 42 people of their own, not the
+   tribes' leaders in the original's order (the Vikings' is a man in a
+   19th-century frock coat), so the original's portrait is drawn, enlarged;
+   210 and 211 (a sheet of small faces the game never loads) likewise. */
+static const struct {
+    const char *module;
+    int lo, hi;
+} NOT_CROPPED[] = {
+    {"mk.dll", 210, 211},
+    {"mk.dll", 220, 261},
+};
+
 extern char plat_res_module[];
 
 /* The picture without a border of inset/1000 of its size, scaled to w x h. */
@@ -979,6 +993,13 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
     if (!(b = bmp_of_bits(bits)) || w <= 0 || h <= 0 || x < 0 || y < 0 || x + w > b->w || y + h > b->h)
         return;
     if (b->hd_sheet[0]) {
+        for (i = 0; i < (int)(sizeof NOT_CROPPED / sizeof *NOT_CROPPED); i++) {
+            size_t n = strlen(NOT_CROPPED[i].module);
+            if (!strncmp(b->hd_sheet, "resource/", 9) && !strncmp(b->hd_sheet + 9, NOT_CROPPED[i].module, n) &&
+                !strncmp(b->hd_sheet + 9 + n, "/gifs/", 6) && (id = atoi(b->hd_sheet + 15 + n)) >= NOT_CROPPED[i].lo &&
+                id <= NOT_CROPPED[i].hi)
+                return;         /* (drawn as the game's pixels, enlarged) */
+        }
         snprintf(name, sizeof name, "crop/%s/%d,%d,%d,%d", b->hd_sheet, x, y, w, h);
         if ((id = find(name)) && (p = add(s, handle))) {
             p->id = id;

@@ -8,7 +8,7 @@ import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
-import {sha256, packFrom, keepPack, loadPack, packIndex, prunePack, KEEP} from '../hdpack.js';
+import {sha256, packFrom, keepPack, loadPack, packIndex, prunePack, drawn} from '../hdpack.js';
 import {iniGet, iniSet, hdWanted} from '../options.js';
 
 // keys
@@ -207,11 +207,15 @@ function makePack(pics) {
 }
 const pics = {'advance/0': Buffer.alloc(300, 1), 'crop/file/units/1,1,64,48': Buffer.alloc(200, 2),
               'dither/1/0': Buffer.from('dither'), 'file/units': Buffer.alloc(150, 4), 'fog/2': Buffer.from('f'),
+              'crop/resource/mk.dll/gifs/236/1,1,225,275': Buffer.alloc(40, 7),
+              'crop/resource/mk.dll/gifs/215/1,1,108,30': Buffer.alloc(30, 8),
               'resource/x/gifs/1': Buffer.alloc(500, 5), 'tint/crop/file/units/1,1,64,48/3': Buffer.alloc(90, 6)};
 const pack = makePack(pics);
 const hex = (b) => createHash('sha256').update(b).digest('hex');
 assert.equal(await sha256(pack), hex(pack));
 assert.deepEqual(packIndex(pack).map((e) => e.key), Object.keys(pics).sort());
+// the leaders' portraits not drawn (hd.c's NOT_CROPPED), the diplomacy icons drawn
+assert.ok(!drawn('crop/resource/mk.dll/gifs/236/1,1,225,275') && drawn('crop/resource/mk.dll/gifs/215/1,1,108,30'));
 // the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
 for (const chunk of [64, 100, 1 << 20]) {
     const reads = [];
@@ -220,7 +224,7 @@ for (const chunk of [64, 100, 1 << 20]) {
         return pack.subarray(k * chunk, (k + 1) * chunk);
     }, chunk);
     const idx = packIndex(pruned);
-    assert.deepEqual(idx.map((e) => e.key), Object.keys(pics).sort().filter((k) => KEEP.some((p) => k.startsWith(p))));
+    assert.deepEqual(idx.map((e) => e.key), Object.keys(pics).sort().filter((k) => drawn(k)));
     for (const e of idx)
         assert.deepEqual(Buffer.from(pruned.subarray(e.off, e.off + e.len)), pics[e.key]);
     assert.deepEqual(pruned.subarray(12, 12 + 768), pack.subarray(12, 12 + 768));

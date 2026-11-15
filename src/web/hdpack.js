@@ -20,6 +20,13 @@ export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace-resou
     'resource/tiles.dll/gifs/66', 'resource/tiles.dll/gifs/90',
     'resource/intro.dll/', 'resource/cv.dll/gifs/34', 'resource/cv.dll/gifs/35',
     'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
+// Of those, the crops hd.c does not draw (its NOT_CROPPED: the pack's
+// leaders' portraits, not the tribes' leaders).
+export const DROP = ['crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
+    'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',
+    'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26'];
+// A key of a picture hd.c draws.
+export const drawn = (key, keep = KEEP) => keep.some((p) => key.startsWith(p)) && !DROP.some((p) => key.startsWith(p));
 const HEAD = 12 + 768, ENTRY = 180;
 
 export async function sha256(bytes) {
@@ -108,7 +115,7 @@ export async function prunePack(read, chunk = CHUNK, keep = KEEP) {
     const first = await bytes(0, 12);
     const count = new DataView(first.buffer).getUint32(8, true);
     const head = await bytes(0, HEAD + count * ENTRY);
-    const kept = packIndex(head).filter((e) => keep.some((p) => e.key.startsWith(p)));
+    const kept = packIndex(head).filter((e) => drawn(e.key, keep));
     const index = HEAD + kept.length * ENTRY;
     // (the PNGs read in the stored pack's order: each chunk once; a PNG the
     // same as one already kept, as the city view's landscapes of one terrain,

@@ -133,22 +133,31 @@ The rest is in the platform layer (`src/platform/hd.c`):
   frame (`host_present_hd`) in the same place, at its density.  A replay's `shot NAME` also
   saves `NAME-hd.bmp` (the frame).
 
-* **The other windows' pictures**: when the game loads a picture from one of its libraries'
-  GIF resources (`DibSurface::load_gif_resource`), the surface remembers it as
+* **The other windows' pictures**: when the game loads a picture from one of its libraries' GIF
+  resources (`DibSurface::load_gif_resource`), the surface remembers it as
   `resource/MODULE/gifs/ID` (the module the platform's `FindResourceA` found it in,
   `plat_res_module`), and the sprites the game takes from it get the pack's
   `crop/resource/MODULE/gifs/ID/x,y,w,h` as sprites from sheets do (the throne room's pieces
-  `palace-resource/ID`, where the size is the piece's).  The pack's whole pictures were made
-  for PR #11's renderers: many are laid out otherwise than the original's (the throne room's
+  `palace-resource/ID`, where the size is the piece's).  The pack's whole pictures were made for
+  PR #11's renderers: many are laid out otherwise than the original's (the throne room's
   pieces, the spaceship's parts, the announcements' pictures are vignettes, the advisors'
-  photographs a framed parchment), so only those that work as the same picture are painted
-  on the surface's plane when it is loaded (`WHOLE` in hd.c, each looked at in its window):
-  the diplomacy rooms, the advisors' backgrounds (the parchment without its frame, which the
-  game's smaller windows would cut off), the new game's backdrop and pictures, the city
-  view's landscapes, the spaceship's window.  A picture with transparent parts (the new
-  game's pictures) is drawn, where the game copies it, over what the destination's plane
-  showed; a sprite taken from such a picture keeps its transparency.  A surface's plane is
-  drawn anew from its pixels whenever another picture is loaded into it.
+  photographs a framed parchment), so only those that work as the same picture are painted on
+  the surface's plane when it is loaded (`WHOLE` in hd.c, each looked at in its window): the
+  diplomacy rooms, the advisors' backgrounds (the parchment without its frame, which the game's
+  smaller windows would cut off), the new game's backdrop and pictures, the city view's
+  landscapes, the spaceship's window.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
+  government: anarchy to democracy) is the pack's, an empty hall with the panels where the game
+  draws the military icons, the portrait and the advances; the leader's portrait drawn in it
+  (`mk.dll` 220 + the tribe, + 21 for a woman: the 225x275 sprite at 1,1) is the original's,
+  enlarged: the pack's 42 portraits (and its sheet of small faces, 210 and 211, which the game
+  never loads) are people of their own, not the tribes' leaders in the original's order (the
+  Vikings' is a 19th-century man in a frock coat, the Babylonians' a red-bearded Celt), so
+  their crops are not drawn (`NOT_CROPPED` in hd.c).  The leader's animation (*Animated
+  Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
+  enlarged: the pack has no pictures for it.  A picture with transparent parts (the new game's
+  pictures) is drawn, where the game copies it, over what the destination's plane showed; a
+  sprite taken from such a picture keeps its transparency.  A surface's plane is drawn anew from
+  its pixels whenever another picture is loaded into it.
 * **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: the throne room's
   fade in, a palette loaded for another picture), the plane's pixels that are the surface's
   pixels enlarged in the old colour take the new one.  The art (sprites, pictures) and sharp
@@ -225,7 +234,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed), `harness/hd/hd-cityview.txt`
   (the city view), and any replay script with `CIV2_TEST_HD=2`, looking at its `-hd` shots:
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
-  leader's portrait, the icons), `advisors.txt` (the advisors' parchment), `reports.txt` (the
+  leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
+  room under each of the seven governments), `advisors.txt` (the advisors' parchment), `reports.txt` (the
   throne room), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
   `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
@@ -237,11 +247,12 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,363 pictures, 157 MB of PNGs, 109 MB with each
+For a stripped pack, the keys hd.c draws (1,242 pictures, 121 MB of PNGs, 73 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
-* `crop/resource/...` (230): the sprites taken from the libraries' pictures;
+* `crop/resource/...` (146): the sprites taken from the libraries' pictures, but for the
+  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`);
 * `palace-resource/ID` (28): the throne room's pieces;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
   `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340` to `353`,
@@ -249,6 +260,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 ## Not yet done
 
+* The leaders' portraits and their animation (the heralds' videos) are the original's,
+  enlarged: the pack's portraits are not the tribes' leaders, and it has none for the videos.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's background (`pv.dll` 100, the hall the game colours to choose a section) and
   `pv.dll` 170 to 184, the `palace/` set; the announcements' pictures (`tiles.dll` 70 to 77,
