@@ -143,8 +143,8 @@ void EditorWindow::city_editor_create_combo(int combo_index)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&city_editor_combo_x_table_block.city_editor_combo_x_table))[combo_index * 2] + client_x - 0x1e,
-                     (((i32 *)&city_editor_combo_x_table_block.city_editor_combo_y_table))[combo_index * 2] + client_y,0xa0,font_height_uptr << 3);
+  rect_set_xywh((RECT *)rect,city_editor_combo_x_table_block.city_editor_combo_pos[combo_index].x + client_x - 0x1e,
+                     city_editor_combo_x_table_block.city_editor_combo_pos[combo_index].y + client_y,0xa0,font_height_uptr << 3);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {
@@ -505,8 +505,8 @@ int __cdecl impr_editor_save_controls(void)
                          &editor_active.wnd->edits[impr_editor_ctrl_kinds_block.impr_editor_ctrl_rows[ctrl_index].slot])->get_id();
       field -= 0xca;
       value = _atoi(value_text);
-      clamped = int_clamp(value,*(i32 *)(((i8 *)&impr_editor_ctrl_kinds_block.impr_editor_field_min_table) + field * 4),
-                                 *(i32 *)(((i8 *)&impr_editor_ctrl_kinds_block.impr_editor_field_max_table) + field * 4));
+      clamped = int_clamp(value,impr_editor_ctrl_kinds_block.impr_editor_field_min_table[field],
+                                 impr_editor_ctrl_kinds_block.impr_editor_field_max_table[field]);
       editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field] = clamped;
       if (editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field] != value) {
         clamp_count++;
@@ -861,8 +861,8 @@ void EditorWindow::impr_editor_create_edit(int edit_index)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&impr_editor_edit_x_table_block.impr_editor_edit_x_table))[edit_index * 2] + client_x,
-                     (((i32 *)&impr_editor_edit_x_table_block.impr_editor_edit_y_table))[edit_index * 2] + client_y,0x30,font_height_uptr + 6);
+  rect_set_xywh((RECT *)rect,impr_editor_edit_x_table_block.impr_editor_edit_pos[edit_index].x + client_x,
+                     impr_editor_edit_x_table_block.impr_editor_edit_pos[edit_index].y + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {

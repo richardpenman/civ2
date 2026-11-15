@@ -164,7 +164,7 @@ void __cdecl menu_load_game(void)
         if (map_views_block.map_view_recs[view].open != 0) {
           map_views_block.map_view_recs[view].create();
           ((WndBase *)&map_views_block.map_view_recs[view].window)->move_to_rect(
-                     ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10)));
+                     (&map_view_saved_rects_block.map_view_saved_rects[view]));
           map_views_block.map_view_recs[view].update_title();
           ((SurfaceWindow *)&map_views_block.map_view_recs[view])->repaint();
         }
@@ -191,7 +191,7 @@ void __cdecl menu_load_game(void)
         if (map_views_block.map_view_recs[view].open != 0) {
           map_views_block.map_view_recs[view].create();
           ((WndBase *)&map_views_block.map_view_recs[view].window)->move_to_rect(
-                     ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + view * 0x10)));
+                     (&map_view_saved_rects_block.map_view_saved_rects[view]));
           map_views_block.map_view_recs[view].update_title();
           ((SurfaceWindow *)&map_views_block.map_view_recs[view])->repaint();
         }

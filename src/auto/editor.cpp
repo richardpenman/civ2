@@ -923,8 +923,8 @@ void EditorWindow::tribe_editor_create_edit(int slot)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&tribe_editor_combo_x_table_block.tribe_editor_edit_x_table))[slot * 2] + client_x,
-                     (((i32 *)&tribe_editor_combo_x_table_block.tribe_editor_edit_y_table))[slot * 2] + client_y,100,font_height_uptr + 6);
+  rect_set_xywh((RECT *)rect,tribe_editor_combo_x_table_block.tribe_editor_edit_pos[slot].x + client_x,
+                     tribe_editor_combo_x_table_block.tribe_editor_edit_pos[slot].y + client_y,100,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {

@@ -8,21 +8,14 @@ extern pointer ptr_fun;  /* only TaxRateDialog's constructor uses it */
 extern u8 ptr_fun_rest[16];
 #pragma pack(push, 1)
 struct cityview_improvement_art_x_block {
-    i8 cityview_improvement_art_x[4];  /* 0061c360 */
-    i8 cityview_improvement_art_y[4];  /* 0061c364 */
-    i8 cityview_improvement_art_w[4];  /* 0061c368 */
-    i8 cityview_improvement_art_h[532];  /* 0061c36c */
-    i8 cityview_wonder_art_x[4];  /* 0061c580 */
-    i8 cityview_wonder_art_y[4];  /* 0061c584 */
-    i8 cityview_wonder_art_w[4];  /* 0061c588 */
-    i8 cityview_wonder_art_h[436];  /* 0061c58c */
+    PicPlace cityview_improvement_art[34];  /* 0061c360: by improvement - 1 */
+    PicPlace cityview_wonder_art[28];  /* 0061c580: by wonder */
 };
 #pragma pack(pop)
 extern struct cityview_improvement_art_x_block cityview_improvement_art_x_block;
 #pragma pack(push, 1)
 struct cityview_slot_x_table_block {
-    i8 cityview_slot_x_table[4];  /* 0061c740 */
-    i8 cityview_slot_y_table[1436];  /* 0061c744 */
+    i32 cityview_slots[3][60][2];  /* 0061c740: by site, the lots' x and y */
     u8 cityview_slot_tables_init[376];  /* 0061cce0 */
 };
 #pragma pack(pop)
@@ -38,12 +31,17 @@ extern TaxRateDialogState taxrate_state;
 extern u8 str_empty_9[4];  /* only TaxRateDialog::run uses it */
 #pragma pack(push, 1)
 struct city_editor_combo_x_table_block {
-    i32 city_editor_combo_x_table[1];  /* 00625e70 */
-    i32 city_editor_combo_y_table[1];  /* 00625e74 */
-    int city_editor_combo2_x;  /* 00625e78 */
-    int city_editor_combo2_y;  /* 00625e7c */
-    int city_editor_combo3_x;  /* 00625e80 */
-    int city_editor_combo3_y;  /* 00625e84 */
+    union {
+        struct {
+            i32 city_editor_combo_x_table[1];  /* 00625e70 */
+            i32 city_editor_combo_y_table[1];  /* 00625e74 */
+            int city_editor_combo2_x;  /* 00625e78 */
+            int city_editor_combo2_y;  /* 00625e7c */
+            int city_editor_combo3_x;  /* 00625e80 */
+            int city_editor_combo3_y;  /* 00625e84 */
+        };
+        EditorPos city_editor_combo_pos[3];  /* 00625e70 */
+    };
 };
 #pragma pack(pop)
 extern struct city_editor_combo_x_table_block city_editor_combo_x_table_block;
@@ -93,10 +91,15 @@ struct impr_editor_combo_x_table_block {
 extern struct impr_editor_combo_x_table_block impr_editor_combo_x_table_block;
 #pragma pack(push, 1)
 struct impr_editor_edit_x_table_block {
-    i32 impr_editor_edit_x_table[1];  /* 0062e3b0 */
-    i32 impr_editor_edit_y_table[1];  /* 0062e3b4 */
-    int impr_editor_edit1_x;  /* 0062e3b8 */
-    int impr_editor_edit1_y;  /* 0062e3bc */
+    union {
+        struct {
+            i32 impr_editor_edit_x_table[1];  /* 0062e3b0 */
+            i32 impr_editor_edit_y_table[1];  /* 0062e3b4 */
+            int impr_editor_edit1_x;  /* 0062e3b8 */
+            int impr_editor_edit1_y;  /* 0062e3bc */
+        };
+        EditorPos impr_editor_edit_pos[2];  /* 0062e3b0 */
+    };
 };
 #pragma pack(pop)
 extern struct impr_editor_edit_x_table_block impr_editor_edit_x_table_block;
@@ -109,8 +112,8 @@ struct impr_editor_ctrl_kinds_block {
         };
         EditorCtrlRow impr_editor_ctrl_rows[5];  /* 0062e3c0 */
     };
-    i8 impr_editor_field_min_table[8];  /* 0062e3e8 */
-    i8 impr_editor_field_max_table[8];  /* 0062e3f0 */
+    i32 impr_editor_field_min_table[2];  /* 0062e3e8: by field */
+    i32 impr_editor_field_max_table[2];  /* 0062e3f0 */
     i8 impr_editor_value_fmt[4];  /* 0062e3f8 */
     i8 rules_improve_name_sep_str[4];  /* 0062e3fc */
     i8 rules_improve_cost_sep_str[4];  /* 0062e400 */

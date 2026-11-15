@@ -21,8 +21,13 @@ struct tribe_editor_combo_x_table_block {
         };
         EditorPos tribe_editor_combo_pos[5];  /* 0062cd38 */
     };
-    i32 tribe_editor_edit_x_table[1];  /* 0062cd60 */
-    i32 tribe_editor_edit_y_table[1];  /* 0062cd64 */
+    union {
+        struct {
+            i32 tribe_editor_edit_x_table[1];  /* 0062cd60 */
+            i32 tribe_editor_edit_y_table[1];  /* 0062cd64 */
+        };
+        EditorPos tribe_editor_edit_pos[1];  /* 0062cd60 */
+    };
 };
 #pragma pack(pop)
 extern struct tribe_editor_combo_x_table_block tribe_editor_combo_x_table_block;

@@ -1019,6 +1019,17 @@ typedef struct ThroneRect {
 #ifdef __cplusplus
 static_assert(sizeof(ThroneRect) == 0x10, "");
 #endif
+/* Where a picture is drawn: x, y, width, height (the city view's
+ * improvements and wonders, the spaceship's launch pictures). */
+typedef struct PicPlace {
+    i32 x;
+    i32 y;
+    i32 w;
+    i32 h;
+} PicPlace;
+#ifdef __cplusplus
+static_assert(sizeof(PicPlace) == 0x10, "");
+#endif
 /* A cached scaling table (default_draw_font_obj_block.gfx_scale_caches[16]):
  * table[i] = i * num / den, the least recently used is replaced. */
 typedef struct GfxScaleCache {

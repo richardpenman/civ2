@@ -766,7 +766,7 @@ net_send_text_args(int popup_kind,i32 player_id,int string_count,int number_coun
       }
       if (number_count != 0) {
         for (i = 0; i < number_count; i++) {
-          crt_memcpy(write_ptr,((i8 *)&text_args.numbers) + i * 4,4);
+          crt_memcpy(write_ptr,&text_args.numbers[i],4);
           write_ptr = (void *)((int)write_ptr + 4);
         }
       }
@@ -1024,7 +1024,7 @@ static void net_popup_load_args(int *entry)
   }
   if (entry[3] != 0) {
     for (i = 0; i < entry[3]; i++) {
-      crt_memcpy(((i8 *)&text_args.numbers) + i * 4,arg_ptr,4);
+      crt_memcpy(&text_args.numbers[i],arg_ptr,4);
       arg_ptr++;
     }
   }

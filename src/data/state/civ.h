@@ -26,10 +26,15 @@ struct tech_editor_combo_x_table_block {
 extern struct tech_editor_combo_x_table_block tech_editor_combo_x_table_block;
 #pragma pack(push, 1)
 struct tech_editor_edit_x_table_block {
-    i32 tech_editor_edit_x_table[1];  /* 00625150 */
-    i32 tech_editor_edit_y_table[1];  /* 00625154 */
-    int tech_editor_modifier_edit_x;  /* 00625158 */
-    int tech_editor_modifier_edit_y;  /* 0062515c */
+    union {
+        struct {
+            i32 tech_editor_edit_x_table[1];  /* 00625150 */
+            i32 tech_editor_edit_y_table[1];  /* 00625154 */
+            int tech_editor_modifier_edit_x;  /* 00625158 */
+            int tech_editor_modifier_edit_y;  /* 0062515c */
+        };
+        EditorPos tech_editor_edit_pos[2];  /* 00625150 */
+    };
 };
 #pragma pack(pop)
 extern struct tech_editor_edit_x_table_block tech_editor_edit_x_table_block;
@@ -38,8 +43,9 @@ struct tech_editor_ctrl_kinds_block {
     union {
         struct {
             u8 tech_editor_ctrl_rows_0_4[40];  /* 00625160 */
-            i8 tech_editor_field_min_table[8];  /* 00625188 */
-            i8 tech_editor_field_max_table[24];  /* 00625190 */
+            i32 tech_editor_field_min_table[2];  /* 00625188: by field */
+            i32 tech_editor_field_max_table[2];  /* 00625190 */
+            u8 tech_editor_field_max_table_rest[16];
         };
         EditorCtrlRow tech_editor_ctrl_rows[7];  /* 00625160 (rows 5-6 overlap the min/max tables) */
     };
@@ -69,8 +75,8 @@ extern RODATA i8 rules_advance_nil_str[4];
 extern RODATA i8 rules_terrain_no_str[4];
 extern RODATA i8 rules_terrain_yes_str[8];
 extern int research_notice_mode;  /* only civ_research_complete uses it */
-extern RODATA i8 cosmic_edit_min_values[88];
-extern RODATA i8 cosmic_edit_max_values[88];
+extern RODATA i32 cosmic_edit_min_values[22];
+extern RODATA i32 cosmic_edit_max_values[22];
 extern RODATA i8 cosmic_value_fmt_3digit[4];
 #pragma pack(push, 1)
 struct civ_rating_title_font_block {

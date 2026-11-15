@@ -337,13 +337,13 @@ void SpaceshipWindow::run_modal()
     if (launch_state == 3) {
       launch_surface.load_gif_resource(editor_text_edit_block.spaceship_wnd_component_count + 19999,10,0xec,&ship_palette);
       launch_sprite.grab_from_surface(&launch_surface,0xff,
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_xs) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_ys) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_widths) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_part_sprite_heights) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10));
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].x,
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].y,
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].w,
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].h);
       launch_sprite.draw((RECT *)clip_rect,&surface_wnd,
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_xs) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10),
-                 *(i32 *)(((i8 *)&spaceship_launch_sprite_xs_block.spaceship_launch_sprite_ys) + (editor_text_edit_block.spaceship_wnd_component_count - 1) * 0x10));
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].x,
+                 spaceship_launch_sprite_xs_block.spaceship_launch_places[editor_text_edit_block.spaceship_wnd_component_count - 1].y);
     }
     switch(launch_state) {
     case 0:

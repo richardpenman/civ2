@@ -136,8 +136,8 @@ int __cdecl tech_editor_store_controls(void)
       ctrl_id = ((Control *)
                          &editor_active.wnd->edits[tech_editor_ctrl_kinds_block.tech_editor_ctrl_rows[row].slot])->get_id();
       ctrl_id -= 0xca;
-      clamped = int_clamp(value,*(i32 *)(((i8 *)&tech_editor_ctrl_kinds_block.tech_editor_field_min_table) + ctrl_id * 4),
-                                 *(i32 *)(((i8 *)&tech_editor_ctrl_kinds_block.tech_editor_field_max_table) + ctrl_id * 4));
+      clamped = int_clamp(value,tech_editor_ctrl_kinds_block.tech_editor_field_min_table[ctrl_id],
+                                 tech_editor_ctrl_kinds_block.tech_editor_field_max_table[ctrl_id]);
       editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id] = clamped;
       ctrl_id = ((Control *)
                          &editor_active.wnd->edits[tech_editor_ctrl_kinds_block.tech_editor_ctrl_rows[row].slot])->get_id();
@@ -583,8 +583,8 @@ void EditorWindow::tech_editor_create_edit(int slot)
   u8 *parent_wnd2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&tech_editor_edit_x_table_block.tech_editor_edit_x_table))[slot * 2] + client_x,
-                     (((i32 *)&tech_editor_edit_x_table_block.tech_editor_edit_y_table))[slot * 2] + client_y,0x30,font_height_uptr + 6);
+  rect_set_xywh((RECT *)rect,tech_editor_edit_x_table_block.tech_editor_edit_pos[slot].x + client_x,
+                     tech_editor_edit_x_table_block.tech_editor_edit_pos[slot].y + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {
@@ -7747,14 +7747,14 @@ void __cdecl cosmic_editor_edit_value(void)
     parent_wnd2 = (iptr)&editor_active.wnd->window;
   }
   dlg_set_parent_window(parent_wnd2);
-  text_set_number_arg(0,*(i32 *)(((i8 *)&cosmic_edit_min_values) + sel * 4));
-  text_set_number_arg(1,*(i32 *)(((i8 *)&cosmic_edit_max_values) + sel * 4));
+  text_set_number_arg(0,cosmic_edit_min_values[sel]);
+  text_set_number_arg(1,cosmic_edit_max_values[sel]);
   out_buf = input;
   default_text = __itoa(editor_text_dlg_wnd_block.editor_item_recs[0].values[sel],num_buf,10);
   rc = dlg_text_input(str_debug_11,str_cpedit,3,default_text,out_buf);
   if (-1 < rc) {
-    max_value = *(i32 *)(((i8 *)&cosmic_edit_max_values) + sel * 4);
-    min_value = *(i32 *)(((i8 *)&cosmic_edit_min_values) + sel * 4);
+    max_value = cosmic_edit_max_values[sel];
+    min_value = cosmic_edit_min_values[sel];
     rc = _atoi(input);
     max_value = int_clamp(rc,min_value,max_value);
     editor_text_dlg_wnd_block.editor_item_recs[0].values[sel] = max_value;

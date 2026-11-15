@@ -55,22 +55,27 @@ struct terrain_editor_combo_pos_x_block {
 extern struct terrain_editor_combo_pos_x_block terrain_editor_combo_pos_x_block;
 #pragma pack(push, 1)
 struct terrain_editor_field_pos_x_block {
-    i32 terrain_editor_field_pos_x[1];  /* 00631bb0 */
-    i32 terrain_editor_field_pos_y[1];  /* 00631bb4 */
-    int terrain_editor_defense_field_x;  /* 00631bb8 */
-    int terrain_editor_defense_field_y;  /* 00631bbc */
-    int terrain_editor_food_field_x;  /* 00631bc0 */
-    int terrain_editor_food_field_y;  /* 00631bc4 */
-    int terrain_editor_shield_field_x;  /* 00631bc8 */
-    int terrain_editor_shield_field_y;  /* 00631bcc */
-    int terrain_editor_trade_field_x;  /* 00631bd0 */
-    int terrain_editor_trade_field_y;  /* 00631bd4 */
-    int terrain_editor_irrigate_bonus_x;  /* 00631bd8 */
-    int terrain_editor_irrigate_bonus_y;  /* 00631bdc */
-    int terrain_editor_irrigate_turns_x;  /* 00631be0 */
-    int terrain_editor_irrigate_turns_y;  /* 00631be4 */
-    int terrain_editor_mine_bonus_x;  /* 00631be8 */
-    int terrain_editor_mine_bonus_y;  /* 00631bec */
+    union {
+        struct {
+            i32 terrain_editor_field_pos_x[1];  /* 00631bb0 */
+            i32 terrain_editor_field_pos_y[1];  /* 00631bb4 */
+            int terrain_editor_defense_field_x;  /* 00631bb8 */
+            int terrain_editor_defense_field_y;  /* 00631bbc */
+            int terrain_editor_food_field_x;  /* 00631bc0 */
+            int terrain_editor_food_field_y;  /* 00631bc4 */
+            int terrain_editor_shield_field_x;  /* 00631bc8 */
+            int terrain_editor_shield_field_y;  /* 00631bcc */
+            int terrain_editor_trade_field_x;  /* 00631bd0 */
+            int terrain_editor_trade_field_y;  /* 00631bd4 */
+            int terrain_editor_irrigate_bonus_x;  /* 00631bd8 */
+            int terrain_editor_irrigate_bonus_y;  /* 00631bdc */
+            int terrain_editor_irrigate_turns_x;  /* 00631be0 */
+            int terrain_editor_irrigate_turns_y;  /* 00631be4 */
+            int terrain_editor_mine_bonus_x;  /* 00631be8 */
+            int terrain_editor_mine_bonus_y;  /* 00631bec */
+        };
+        EditorPos terrain_editor_field_pos[8];  /* 00631bb0 */
+    };
     u8 terrain_editor_mine_bonus_y_rest[8];
 };
 #pragma pack(pop)
@@ -84,8 +89,8 @@ struct terrain_editor_ctrl_kinds_block {
         };
         EditorCtrlRow terrain_editor_ctrl_rows[15];  /* 00631bf8 */
     };
-    i8 terrain_editor_field_min_table[48];  /* 00631c70 */
-    i8 terrain_editor_field_max_table[48];  /* 00631ca0 */
+    i32 terrain_editor_field_min_table[12];  /* 00631c70: by field */
+    i32 terrain_editor_field_max_table[12];  /* 00631ca0 */
     i8 terrain_editor_int_fmt[4];  /* 00631cd0 */
     i8 terrain_txt_ref_no_strs[12];  /* 00631cd4 */
     i8 terrain_txt_ref_yes_strs[12];  /* 00631ce0 */
@@ -304,8 +309,7 @@ struct dialog_text_font_obj_block {
     iptr adjacent_foreign_civ;  /* 006ced4c */
     int unit_nearest_dist;  /* 006ced50 */
     u8 unit_nearest_dist_rest[12];
-    i8 path_cost_grid[96];  /* 006ced60 */
-    u8 path_grid_costs[9120];  /* 006cedc0 */
+    i32 path_cost_grid[48][48];  /* 006ced60: round the path's start, [24][24] */
 };
 #pragma pack(pop)
 extern struct dialog_text_font_obj_block dialog_text_font_obj_block;

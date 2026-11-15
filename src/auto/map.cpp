@@ -3795,7 +3795,7 @@ static void map_path_flood(int x,int y,int max_cost,bool uses_terrain_cost,bool 
 
   path_queue.flood_goal_x = path_queue.goal_x;
   path_queue.flood_goal_y = path_queue.goal_y;
-  _memset(((i8 *)&dialog_text_font_obj_block.path_cost_grid),0,0x2400);
+  _memset(dialog_text_font_obj_block.path_cost_grid,0,0x2400);
   path_queue.queue_head = 0;
   path_queue.queue_x[0] = path_queue.goal_x;
   path_queue.queue_y[0] = path_queue.goal_y;
@@ -4119,10 +4119,10 @@ static void map_path_debug_show(int x,int y,int debug_mode)
           ((MapView *)((i8 *)&map_views_block.map_views))->redraw(-1,1);
           for (row = 0; row < 0x30; row++) {
             for (col = 0; col < 0x30; col++) {
-              if (*(int *)(((i8 *)&dialog_text_font_obj_block.path_cost_grid) + col * 4 + row * 0xc0) != 0) {
+              if (dialog_text_font_obj_block.path_cost_grid[row][col] != 0) {
                 mapview_draw_tile_number(col - 0x18 + row - 0x18 + path_queue.grid_center_x,
                                    ((col - 0x18) - (row - 0x18)) + path_queue.grid_center_y,
-                                   *(i32 *)(((i8 *)&dialog_text_font_obj_block.path_cost_grid) + col * 4 + row * 0xc0)
+                                   dialog_text_font_obj_block.path_cost_grid[row][col]
                                    ,0x29);
               }
             }
@@ -4715,8 +4715,8 @@ int __cdecl terrain_editor_store_controls(void)
                          &editor_active.wnd->edits[terrain_editor_ctrl_kinds_block.terrain_editor_ctrl_rows[field].slot])->get_id();
       ctrl_id -= 0xca;
       value = _atoi(text);
-      clamped = int_clamp(value,*(i32 *)(((i8 *)&terrain_editor_ctrl_kinds_block.terrain_editor_field_min_table) + ctrl_id * 4),
-                                 *(i32 *)(((i8 *)&terrain_editor_ctrl_kinds_block.terrain_editor_field_max_table) + ctrl_id * 4));
+      clamped = int_clamp(value,terrain_editor_ctrl_kinds_block.terrain_editor_field_min_table[ctrl_id],
+                                 terrain_editor_ctrl_kinds_block.terrain_editor_field_max_table[ctrl_id]);
       editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id] = clamped;
       if (editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[ctrl_id] != value) {
         err_count++;
@@ -5439,8 +5439,8 @@ void EditorWindow::terrain_editor_create_edit(int field_idx)
   u8 *parent2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&terrain_editor_field_pos_x_block.terrain_editor_field_pos_x))[field_idx * 2] + client_x,
-                     (((i32 *)&terrain_editor_field_pos_x_block.terrain_editor_field_pos_y))[field_idx * 2] + client_y,0x30,font_height_uptr + 6);
+  rect_set_xywh((RECT *)rect,terrain_editor_field_pos_x_block.terrain_editor_field_pos[field_idx].x + client_x,
+                     terrain_editor_field_pos_x_block.terrain_editor_field_pos[field_idx].y + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {

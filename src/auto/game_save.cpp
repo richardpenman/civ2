@@ -12,7 +12,7 @@ void __cdecl save_pack_layout_rects(void)
   rect_pack_to_short((RECT *)&saved_screen_rect_block.saved_screen_rect,(ShortRect *)&grey_palette_block.str_empty_189);
   rect_pack_to_short((RECT *)&saved_screen_rect_block.layout_rect_main,(ShortRect *)&grey_palette_block.saved_layout_rects);
   for (i = 0; i < 8; i++) {
-    rect_pack_to_short((RECT *)(iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + i * 0x10),(ShortRect *)(i * 8 + (iptr)(((u8 *)&grey_palette_block.saved_layout_rects + 8))));
+    rect_pack_to_short((RECT *)(iptr)(&map_view_saved_rects_block.map_view_saved_rects[i]),(ShortRect *)(i * 8 + (iptr)(((u8 *)&grey_palette_block.saved_layout_rects + 8))));
   }
   rect_pack_to_short((RECT *)&minimap_wnd_rect_block.minimap_wnd_rect,(ShortRect *)&grey_palette_block.str_empty_190);
   rect_pack_to_short((RECT *)&minimap_wnd_rect_block.status_wnd_rect,(ShortRect *)&grey_palette_block.str_empty_191);
@@ -30,7 +30,7 @@ void __cdecl save_unpack_layout_rects(void)
   rect_unpack_from_short((ShortRect *)&grey_palette_block.str_empty_189,(RECT *)&saved_screen_rect_block.saved_screen_rect);
   rect_unpack_from_short((ShortRect *)&grey_palette_block.saved_layout_rects,(RECT *)&saved_screen_rect_block.layout_rect_main);
   for (i = 0; i < 8; i++) {
-    rect_unpack_from_short((ShortRect *)(i * 8 + (iptr)(((u8 *)&grey_palette_block.saved_layout_rects + 8))),(RECT *)(iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + i * 0x10));
+    rect_unpack_from_short((ShortRect *)(i * 8 + (iptr)(((u8 *)&grey_palette_block.saved_layout_rects + 8))),(RECT *)(iptr)(&map_view_saved_rects_block.map_view_saved_rects[i]));
   }
   rect_unpack_from_short((ShortRect *)&grey_palette_block.str_empty_190,(RECT *)&minimap_wnd_rect_block.minimap_wnd_rect);
   rect_unpack_from_short((ShortRect *)&grey_palette_block.str_empty_191,(RECT *)&minimap_wnd_rect_block.status_wnd_rect);

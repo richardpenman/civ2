@@ -539,13 +539,13 @@ void CityViewWindow::draw_buildings()
     if (slot_sprite_ptrs[i] != 0) {
       slot_sprite_ptrs[i]->draw((RECT *)draw_rect,
                  &backbuffer,
-                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_x_table) + i * 8 + terrain_kind * 0x1e0),
-                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_y_table) + i * 8 + terrain_kind * 0x1e0));
+                 cityview_slot_x_table_block.cityview_slots[terrain_kind][i][0],
+                 cityview_slot_x_table_block.cityview_slots[terrain_kind][i][1]);
       /* (port) HD: an original's picture (houses, woods) all shown over the pack's landscape */
       if (hd_on && !hd_sprite_pictured(slot_sprite_ptrs[i],slot_sprite_ptrs[i]->data_handle))
         hd_sprite_pixels_shown(slot_sprite_ptrs[i],&backbuffer,
-                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_x_table) + i * 8 + terrain_kind * 0x1e0),
-                 *(i32 *)(((i8 *)&cityview_slot_x_table_block.cityview_slot_y_table) + i * 8 + terrain_kind * 0x1e0),
+                 cityview_slot_x_table_block.cityview_slots[terrain_kind][i][0],
+                 cityview_slot_x_table_block.cityview_slots[terrain_kind][i][1],
                  (RECT *)draw_rect);
     }
   }
@@ -601,10 +601,10 @@ void CityViewWindow::place_improvement(int slot,int improvement)
 {
   if (-1 < slot) {
     slot_sprites[slot].grab_from_surface(&improvement_art_surface,9,
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_x) + (improvement - 1) * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_y) + (improvement - 1) * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_w) + (improvement - 1) * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_improvement_art_h) + (improvement - 1) * 0x10));
+               cityview_improvement_art_x_block.cityview_improvement_art[improvement - 1].x,
+               cityview_improvement_art_x_block.cityview_improvement_art[improvement - 1].y,
+               cityview_improvement_art_x_block.cityview_improvement_art[improvement - 1].w,
+               cityview_improvement_art_x_block.cityview_improvement_art[improvement - 1].h);
     slot_sprites[slot].replace_color(7,9);
     slot_sprite_ptrs[slot] = &slot_sprites[slot];
   }
@@ -617,10 +617,10 @@ void CityViewWindow::place_wonder(int slot,int wonder)
 {
   if (-1 < slot) {
     slot_sprites[slot].grab_from_surface(&wonder_art_surface,9,
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_x) + wonder * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_y) + wonder * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_w) + wonder * 0x10),
-               *(i32 *)(((i8 *)&cityview_improvement_art_x_block.cityview_wonder_art_h) + wonder * 0x10));
+               cityview_improvement_art_x_block.cityview_wonder_art[wonder].x,
+               cityview_improvement_art_x_block.cityview_wonder_art[wonder].y,
+               cityview_improvement_art_x_block.cityview_wonder_art[wonder].w,
+               cityview_improvement_art_x_block.cityview_wonder_art[wonder].h);
     slot_sprites[slot].replace_color(7,9);
     slot_sprite_ptrs[slot] = &slot_sprites[slot];
   }

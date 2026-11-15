@@ -1701,9 +1701,9 @@ i32 __cdecl file_require_cdrom(const char *filename)
   int attempt;
   char *cursor;
   
-  GetModuleFileNameA((*&err_report_ctx_block.app_hinstance),((i8 *)&setup_picwnd_block.exe_dir_path),0x80);
-  len = lstrlenA(((i8 *)&setup_picwnd_block.exe_dir_path));
-  cursor = ((i8 *)&setup_picwnd_block.exe_dir_path) + len;
+  GetModuleFileNameA((*&err_report_ctx_block.app_hinstance),setup_picwnd_block.exe_dir_path,0x80);
+  len = lstrlenA(setup_picwnd_block.exe_dir_path);
+  cursor = &setup_picwnd_block.exe_dir_path[len];
   do {
     if (cursor == (char *)0x0) break;
     cursor--;

@@ -1035,18 +1035,19 @@ void __cdecl unit_activate_next(i32 search_mode)
 i32 __cdecl path_grid_get_cost(int x,int y)
 
 {
-  return *(i32 *)
-          ((x - path_queue.grid_center_x) * 0xc0 +
-           ((x - path_queue.grid_center_x) + (y - path_queue.grid_center_y) >> 1) * -0xbc + (iptr)(((u8 *)&dialog_text_font_obj_block.path_grid_costs + 4608)));
+  /* the grid turned by 45 degrees round its centre [24][24] */
+  return dialog_text_font_obj_block.path_cost_grid
+         [(x - path_queue.grid_center_x) - ((x - path_queue.grid_center_x) + (y - path_queue.grid_center_y) >> 1) + 24]
+         [((x - path_queue.grid_center_x) + (y - path_queue.grid_center_y) >> 1) + 24];
 }
 
 /* 004ad076 auto */
 void __cdecl path_grid_set_cost(int x,int y,i32 cost)
 
 {
-  *(i32 *)
-   ((x - path_queue.grid_center_x) * 0xc0 +
-    ((y - path_queue.grid_center_y) + (x - path_queue.grid_center_x) >> 1) * -0xbc + (iptr)(((u8 *)&dialog_text_font_obj_block.path_grid_costs + 4608))) = cost;
+  dialog_text_font_obj_block.path_cost_grid
+  [(x - path_queue.grid_center_x) - ((y - path_queue.grid_center_y) + (x - path_queue.grid_center_x) >> 1) + 24]
+  [((y - path_queue.grid_center_y) + (x - path_queue.grid_center_x) >> 1) + 24] = cost;
   return;
 }
 

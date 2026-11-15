@@ -6,10 +6,7 @@
 
 #pragma pack(push, 1)
 struct spaceship_launch_sprite_xs_block {
-    i8 spaceship_launch_sprite_xs[4];  /* 0062e250 */
-    i8 spaceship_launch_sprite_ys[4];  /* 0062e254 */
-    i8 spaceship_launch_sprite_widths[4];  /* 0062e258 */
-    i8 spaceship_part_sprite_heights[116];  /* 0062e25c */
+    PicPlace spaceship_launch_places[8];  /* 0062e250: by number of components - 1 */
     SpaceshipWindow *spaceship_wnd;  /* 0062e2d0 */
 };
 #pragma pack(pop)

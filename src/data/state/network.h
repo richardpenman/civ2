@@ -429,17 +429,7 @@ typedef struct NetSession {
     int stacked_draw_last;  /* 006ad914 */
     int unit_stack_check_enabled;  /* 006ad918 */
     uint stacked_draw_peak;  /* 006ad91c */
-    union {
-        struct {
-            i8 stacked_draw_kinds[4];  /* 006ad920 */
-            i8 stacked_draw_args[4];  /* 006ad924 */
-            i8 stacked_draw_arg1[4];  /* 006ad928 */
-            i8 stacked_draw_arg2[4];  /* 006ad92c */
-            i8 stacked_draw_arg3[4];  /* 006ad930 */
-            i8 stacked_draw_arg4[6380];  /* 006ad934 */
-        };
-        NetStackedDraw stacked_draw[100];  /* 006ad920 */
-    };
+    NetStackedDraw stacked_draw[100];  /* 006ad920 */
     i32 casualty_counts[8];  /* 006af220 */
     i32 casualty_reported_counts[8];  /* 006af240 */
     i32 casualty_log_first[8];  /* 006af260 */

@@ -941,7 +941,7 @@ void __cdecl mapview_on_size(void)
     view = (MapView *)(child_wnd - 0x48);
   }
   view->window.get_rect_in_parent(
-             ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10)));
+             (&map_view_saved_rects_block.map_view_saved_rects[(int)view->map_view_index]));
   return;
 }
 
@@ -960,7 +960,7 @@ void __cdecl mapview_on_move(void)
     view = (MapView *)(child_wnd - 0x48);
   }
   view->window.get_rect_in_parent(
-             ((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + (int)view->map_view_index * 0x10)));
+             (&map_view_saved_rects_block.map_view_saved_rects[(int)view->map_view_index]));
   return;
 }
 
@@ -1083,11 +1083,11 @@ void MapView::create()
     *(i16 *)((int)&open_u + 2) = 2;
   }
   if ((map_view_index == 0) || ((short)open_u != 0)) {
-    left = *(int *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10);
-    top = *(int *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rect_tops) + map_view_index * 0x10);
-    width2 = rect_width((RECT *)(iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10));
+    left = *(int *)&map_view_saved_rects_block.map_view_saved_rects[map_view_index];
+    top = map_view_saved_rects_block.map_view_saved_rects[map_view_index].top;
+    width2 = rect_width((RECT *)(iptr)(&map_view_saved_rects_block.map_view_saved_rects[map_view_index]));
     width2 -= ui_metrics.dlgframe_w2;
-    height2 = rect_height((RECT *)(iptr)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10));
+    height2 = rect_height((RECT *)(iptr)(&map_view_saved_rects_block.map_view_saved_rects[map_view_index]));
     height2 -= ui_metrics.dlgframe_h2;
   }
   else {
@@ -1095,7 +1095,7 @@ void MapView::create()
     top = map_view_index * 0x28;
     width2 = 500;
     height2 = 300;
-    rect_set_xywh(((RECT *)(((i8 *)&map_view_saved_rects_block.map_view_saved_rects) + map_view_index * 0x10)),left,top,
+    rect_set_xywh(&map_view_saved_rects_block.map_view_saved_rects[map_view_index],left,top,
                        ui_metrics.dlgframe_w2 + 500,ui_metrics.dlgframe_h2 + 300);
   }
   *(i16 *)&open_u = 1;

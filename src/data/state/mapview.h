@@ -48,8 +48,7 @@ extern MinimapLayout minimap_layout;
 extern int minimap_margin;
 #pragma pack(push, 1)
 struct map_view_saved_rects_block {
-    i8 map_view_saved_rects[4];  /* 006552a4 */
-    i8 map_view_saved_rect_tops[124];  /* 006552a8 */
+    RECT map_view_saved_rects[8];  /* 006552a4: by map view */
 };
 #pragma pack(pop)
 extern struct map_view_saved_rects_block map_view_saved_rects_block;

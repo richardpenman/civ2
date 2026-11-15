@@ -327,7 +327,7 @@ void __cdecl unit_sound_editor_set_slots(int unit_type,Button *buttons)
     else if (unit_type == UNIT_EXTRA_AIR) {
       main_frame_bg_surface_block.unit_sound_slot_effects[0] = 0x67;
     }
-    else if (((((i8 *)&editor_text_dlg_wnd_block.editor_item_flags_byte1))[unit_type * 0x58] & 0x10) == 0) {
+    else if ((((i8 *)&editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[0xc])[1] & 0x10) == 0) {
       if (editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[3] == 1) {
         if (editor_text_dlg_wnd_block.editor_item_recs[unit_type].values[7] == 0) {
           main_frame_bg_surface_block.unit_sound_slot_effects[0] = 0x21;
@@ -599,8 +599,8 @@ int __cdecl unit_editor_store_controls(void)
                  &editor_active.wnd->edits[unit_editor_ctrl_kinds_block.unit_editor_ctrl_rows[i].slot])->Control::get_text(
                  (char *)num_buf);
       value = _atoi(num_buf);
-      clamped = int_clamp(value,*(i32 *)(((i8 *)&unit_editor_ctrl_kinds_block.unit_editor_field_min_table) + field * 4),
-                                 *(i32 *)(((i8 *)&unit_editor_ctrl_kinds_block.unit_editor_field_max_table) + field * 4));
+      clamped = int_clamp(value,unit_editor_ctrl_kinds_block.unit_editor_field_min_table[field],
+                                 unit_editor_ctrl_kinds_block.unit_editor_field_max_table[field]);
       editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field] = clamped;
       if (editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[field] != value) {
         changed_count++;
@@ -1127,8 +1127,8 @@ void EditorWindow::unit_editor_create_edit(int index)
   u8 *parent2;
   i8 rect[16];
   
-  rect_set_xywh((RECT *)rect,(((i32 *)&unit_editor_edit_x_table_block.unit_editor_edit_x_table))[index * 2] + client_x,
-                     (((i32 *)&unit_editor_edit_x_table_block.unit_editor_edit_y_table))[index * 2] + client_y,0x30,font_height_uptr + 6);
+  rect_set_xywh((RECT *)rect,unit_editor_edit_x_table_block.unit_editor_edit_pos[index].x + client_x,
+                     unit_editor_edit_x_table_block.unit_editor_edit_pos[index].y + client_y,0x30,font_height_uptr + 6);
   ctrl_id = editor_lists.next_ctrl_id;
   editor_lists.next_ctrl_id++;
   if (this == (EditorWindow *)0x0) {

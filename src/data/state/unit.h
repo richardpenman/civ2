@@ -52,22 +52,27 @@ struct unit_editor_ctrl_positions_block {
 extern struct unit_editor_ctrl_positions_block unit_editor_ctrl_positions_block;
 #pragma pack(push, 1)
 struct unit_editor_edit_x_table_block {
-    i32 unit_editor_edit_x_table[1];  /* 00635e20 */
-    i32 unit_editor_edit_y_table[1];  /* 00635e24 */
-    int unit_editor_holds_x;  /* 00635e28 */
-    int unit_editor_holds_y;  /* 00635e2c */
-    int unit_editor_move_x;  /* 00635e30 */
-    i32 unit_editor_edit2_y_i32;  /* 00635e34 */
-    int unit_editor_edit3_x;  /* 00635e38 */
-    int unit_editor_edit3_y;  /* 00635e3c */
-    int unit_editor_edit4_x;  /* 00635e40 */
-    int unit_editor_edit4_y;  /* 00635e44 */
-    int unit_editor_edit5_x;  /* 00635e48 */
-    int unit_editor_edit5_y;  /* 00635e4c */
-    int unit_editor_edit6_x;  /* 00635e50 */
-    int unit_editor_edit6_y;  /* 00635e54 */
-    int unit_editor_edit7_x;  /* 00635e58 */
-    int unit_editor_edit7_y;  /* 00635e5c */
+    union {
+        struct {
+            i32 unit_editor_edit_x_table[1];  /* 00635e20 */
+            i32 unit_editor_edit_y_table[1];  /* 00635e24 */
+            int unit_editor_holds_x;  /* 00635e28 */
+            int unit_editor_holds_y;  /* 00635e2c */
+            int unit_editor_move_x;  /* 00635e30 */
+            i32 unit_editor_edit2_y_i32;  /* 00635e34 */
+            int unit_editor_edit3_x;  /* 00635e38 */
+            int unit_editor_edit3_y;  /* 00635e3c */
+            int unit_editor_edit4_x;  /* 00635e40 */
+            int unit_editor_edit4_y;  /* 00635e44 */
+            int unit_editor_edit5_x;  /* 00635e48 */
+            int unit_editor_edit5_y;  /* 00635e4c */
+            int unit_editor_edit6_x;  /* 00635e50 */
+            int unit_editor_edit6_y;  /* 00635e54 */
+            int unit_editor_edit7_x;  /* 00635e58 */
+            int unit_editor_edit7_y;  /* 00635e5c */
+        };
+        EditorPos unit_editor_edit_pos[8];  /* 00635e20 */
+    };
 };
 #pragma pack(pop)
 extern struct unit_editor_edit_x_table_block unit_editor_edit_x_table_block;
@@ -77,15 +82,20 @@ struct unit_editor_ctrl_kinds_block {
         struct {
             i8 unit_editor_ctrl_kinds[4];  /* 00635e60 */
             i8 unit_editor_ctrl_slots[84];  /* 00635e64 */
-            i8 unit_editor_field_min_table[32];  /* 00635eb8 */
+            i32 unit_editor_field_min_table[8];  /* 00635eb8: by field */
         };
         EditorCtrlRow unit_editor_ctrl_rows[13];  /* 00635e60 (rows 11-12 overlap the min table) */
     };
-    i8 unit_editor_field_max_table[24];  /* 00635ed8 */
-    i32 unit_editor_move_max_i32;  /* 00635ef0 */
-    u8 unit_editor_move_max_i32_rest[12];
-    i32 unit_editor_hp_max_i32;  /* 00635f00 */
-    u8 unit_editor_hp_max_i32_rest[4];
+    union {
+        i32 unit_editor_field_max_table[12];  /* 00635ed8: by field */
+        struct {
+            u8 unit_editor_field_max_table_0_5[24];
+            i32 unit_editor_move_max_i32;  /* 00635ef0 */
+            u8 unit_editor_move_max_i32_rest[12];
+            i32 unit_editor_hp_max_i32;  /* 00635f00 */
+            u8 unit_editor_hp_max_i32_rest[4];
+        };
+    };
     i8 unit_editor_int_fmt[4];  /* 00635f08 */
     i8 units_txt_name_sep[4];  /* 00635f0c */
     i8 units_txt_domain_sep[4];  /* 00635f10 */

@@ -1038,11 +1038,11 @@ int __cdecl net_stacked_draw_push(int kind,i32 *args,const void *unit_data)
     }
     net.stacked_draw[net.stacked_draw_last].kind = kind;
     for (i = 0; i < 7; i++) {
-      *(i32 *)(((i8 *)&net.stacked_draw_args) + i * 4 + net.stacked_draw_last * 0x40) =
+      net.stacked_draw[net.stacked_draw_last].args[i] =
            args[i];
     }
     if (kind == 0x70) {
-      crt_memcpy((void *)(net.stacked_draw_last * 0x40 + (iptr)(((u8 *)&net.stacked_draw_arg4 + 12))),unit_data,0x20);
+      crt_memcpy(&net.stacked_draw[net.stacked_draw_last].args[7],unit_data,0x20);
     }
     net.stacked_draw_count++;
     if ((int)net.stacked_draw_peak < (int)net.stacked_draw_count) {
@@ -1076,7 +1076,7 @@ int __cdecl net_stacked_draw_run_next(void)
     unit_stack_validate(net.stacked_draw[net.stacked_draw_first].args[0]);
     visible = mapviews_tile_visible(x,y);
     if (visible != 0) {
-      crt_memcpy(((short *)&power_graph_history_block.stacked_draw_unit_copy),(const void *)(net.stacked_draw_first * 0x40 + (iptr)(((u8 *)&net.stacked_draw_arg4 + 12))),0x20);
+      crt_memcpy(((short *)&power_graph_history_block.stacked_draw_unit_copy),&net.stacked_draw[net.stacked_draw_first].args[7],0x20);
       power_graph_history_block.stacked_draw_unit_prev = -1;
       power_graph_history_block.stacked_draw_unit_next = -1;
       mapviews_ensure_visible(x,y,power_graph_history_block.stacked_draw_unit_owner);
