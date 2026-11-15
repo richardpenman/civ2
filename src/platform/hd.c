@@ -858,8 +858,9 @@ static const struct {
     int inset;                  /* the picture's border left out, in 1/1000ths */
 } WHOLE[] = {
     {"mk.dll", 200, 206, 0},    /* diplomacy: the rooms, by government */
-    {"tiles.dll", 50, 59, 45},  /* the advisors' backgrounds: the pack's parchment */
-    {"tiles.dll", 65, 66, 45},  /* (without its frame: the game's windows are smaller) */
+    /* (not the advisors' backgrounds, tiles.dll 50 to 59, 65 and 66: the
+       pack's are a pale parchment, and the game's text on them, coloured
+       for the original's dark photographs, could not be read: docs/HD-GRAPHICS.md) */
     {"tiles.dll", 90, 90, 0},   /* the new game's backdrop */
     {"intro.dll", 901, 913, 0}, /* the new game's pictures */
     /* the city view's landscapes (340 + 5 x the site + civ_city_art_era):
@@ -884,6 +885,16 @@ static const struct {
 } NOT_CROPPED[] = {
     {"mk.dll", 210, 211},
     {"mk.dll", 220, 261},
+};
+
+/* Single crops of the pack not drawn either: in tiles.dll 86, the pack's
+   information seal (the popups' icon, the quit confirmation's) and the
+   tutorial's owl are a thin pale "i" and "?" on nothing, the podium in a
+   civilization's colour a flat shield; the original's are kept, enlarged. */
+static const char *const NOT_CROPPED_KEYS[] = {
+    "crop/resource/tiles.dll/gifs/86/398,134,64,64",
+    "crop/resource/tiles.dll/gifs/86/134,398,64,64",
+    "crop/resource/tiles.dll/gifs/86/2,398,64,64",
 };
 
 extern char plat_res_module[];
@@ -1043,6 +1054,9 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
                 return;         /* (drawn as the game's pixels, enlarged) */
         }
         snprintf(name, sizeof name, "crop/%s/%d,%d,%d,%d", b->hd_sheet, x, y, w, h);
+        for (i = 0; i < (int)(sizeof NOT_CROPPED_KEYS / sizeof *NOT_CROPPED_KEYS); i++)
+            if (!strcmp(name, NOT_CROPPED_KEYS[i]))
+                return;
         if ((id = find(name)) && (p = add(s, handle))) {
             p->id = id;
             return;

@@ -143,9 +143,17 @@ The rest is in the platform layer (`src/platform/hd.c`):
   pieces, the spaceship's parts, the announcements' pictures are vignettes, the advisors'
   photographs a framed parchment), so only those that work as the same picture are painted on
   the surface's plane when it is loaded (`WHOLE` in hd.c, each looked at in its window): the
-  diplomacy rooms, the advisors' backgrounds (the parchment without its frame, which the game's
-  smaller windows would cut off), the new game's backdrop and pictures, the city view's
-  landscapes, the spaceship's window.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
+  diplomacy rooms, the new game's backdrop and pictures, the city view's landscapes, the
+  spaceship's window.  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
+  graph, the Hall of Fame ...; 65 and 66: the tax rates) are the original's, enlarged: the pack's
+  are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
+  original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
+  is 1.0 to 1.4 on the parchment (its average colour under the text, 229,220,198) against 4.0 to
+  7.5 on the original's (about 90,90,90); a dark overlay bringing light grey text to 4.5 would
+  leave the parchment nearly black.  Single crops not drawn either (`NOT_CROPPED_KEYS` in hd.c):
+  in `tiles.dll` 86, the information seal of the popups (the quit confirmation's), the tutorial's
+  owl and the podium in a civilization's colour, which the pack has as a thin pale "i", a "?"
+  and a flat shield on nothing.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
   government: anarchy to democracy) is the pack's, an empty hall with the panels where the game
   draws the military icons, the portrait and the advances; the leader's portrait drawn in it
   (`mk.dll` 220 + the tribe, + 21 for a woman: the 225x275 sprite at 1,1) is the original's,
@@ -281,7 +289,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `advisors.txt` (the advisors' parchment), `reports.txt` (the
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
   logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
@@ -299,13 +307,13 @@ For a stripped pack, the keys hd.c draws (1,232 pictures, 97 MB of PNGs, 78 MB w
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
-* `crop/resource/...` (130): the sprites taken from the libraries' pictures, but for the
-  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`) and of the city
+* `crop/resource/...` (127): the sprites taken from the libraries' pictures, but for the
+  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`), three of
+  `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city
   view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
-* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
-  `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
+* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
 
 ## Not yet done
@@ -318,7 +326,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
   the announcements' pictures (`tiles.dll` 70 to 77,
   vignettes) and the wonders' (`wonder.dll`), whose windows the replays do not reach and
-  which were not looked at; the advisors' framed parchments of `mk.dll` 10000 to 10002 and
+  which were not looked at; the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
+  the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
   (`ss.dll` 400 to 491, one placeholder); the advance pictures (`advance/`), the city view's
   larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
@@ -326,8 +335,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).
 * The new game's pictures are vignettes over black (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where
-  the game puts its harbour; the advisors' text, coloured for the original's grey
-  photographs, is pale on the parchment.
+  the game puts its harbour.
 * Unit shields and the city size box are the original's, enlarged (the pack's `shield` is an
   alpha mask to be tinted); in places the larger unit art covers the shield.
 * Palette changes of an 8-bit surface (a fade) reach only the pixels shown enlarged, not the

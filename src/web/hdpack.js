@@ -18,8 +18,7 @@ export const CHUNK = 4 << 20;
 // renderers) is left out of the game's memory.
 export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/',
     'resource/pv.dll/gifs/100',
-    'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/5', 'resource/tiles.dll/gifs/65',
-    'resource/tiles.dll/gifs/66', 'resource/tiles.dll/gifs/90',
+    'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/90',
     'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',
     'resource/cv.dll/gifs/345', 'resource/cv.dll/gifs/346', 'resource/cv.dll/gifs/350',
     'resource/cv.dll/gifs/351',
@@ -31,6 +30,9 @@ export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/',
 // era's rows (y 231 and 512).
 const CV = 'crop/resource/cv.dll/gifs/310/';
 export const DROP = ['palace/decor-', 'crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
+    // its NOT_CROPPED_KEYS: tiles.dll 86's information seal, tutorial owl, podium
+    'crop/resource/tiles.dll/gifs/86/398,134,', 'crop/resource/tiles.dll/gifs/86/134,398,',
+    'crop/resource/tiles.dll/gifs/86/2,398,', 'tint/crop/resource/tiles.dll/gifs/86/2,398,',
     'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',
     'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26',
     ...[1, 160, 319, 478].flatMap((x) => [`${CV}${x},1,`, `${CV}${x},116,`]),
