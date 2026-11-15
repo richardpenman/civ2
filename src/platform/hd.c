@@ -481,6 +481,37 @@ static void paint(Bitmap *b, const uint32_t *px, int pw, int ph, int x, int y, i
 
 /* Copies the plane's rectangle (sw x sh at sx, sy of src) to dst's at x, y
    (w x h, scaled nearest), clipped to l, t, r, b (surface pixels). */
+/* A copy between 8-bit surfaces whose colour tables differ: where the
+   plane showed a pixel enlarged in the source's colour, it takes the
+   destination's colour for the same index, as the copied pixels do (the
+   herald's backdrop, taken from the diplomacy room while the portrait's
+   colours were not yet in the room's table, kept the portrait black in its
+   plane under the video). */
+static void recolor_copied(Bitmap *dst, const Bitmap *src, int l, int t, int r, int b)
+{
+    int d = hd_density, pitch = dst->w * d, x, y, i, j;
+    if (src->bpp != 8 || dst->bpp != 8 || !memcmp(src->colors, dst->colors, 256 * sizeof *src->colors))
+        return;
+    for (y = t; y < b; y++) {
+        const unsigned char *row = bmp_row(dst, y);
+        for (x = l; x < r; x++) {
+            uint32_t was = logical(src, row, x), now = logical(dst, row, x), *p;
+            int same = 1;
+            if (was == now)
+                continue;
+            p = dst->hd + (size_t)y * d * pitch + (size_t)x * d;
+            for (j = 0; j < d && same; j++)
+                for (i = 0; i < d; i++)
+                    if (p[j * pitch + i] != was) {
+                        same = 0;
+                        break;
+                    }
+            if (same)
+                block(dst, x, y, now);
+        }
+    }
+}
+
 static void transfer(Bitmap *dst, Bitmap *src, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int l,
                      int t, int r, int b)
 {
@@ -534,6 +565,8 @@ static void transfer(Bitmap *dst, Bitmap *src, int x, int y, int w, int h, int s
             }
     } else
         return;     /* a scaled copy within a surface: left to the game's pixels */
+    if (w == sw && h == sh && src != dst)
+        recolor_copied(dst, src, l, t, r, b);
     commit_rect(dst, l, t, r, b);
 }
 

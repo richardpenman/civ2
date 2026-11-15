@@ -159,8 +159,13 @@ The rest is in the platform layer (`src/platform/hd.c`):
   `src/platform/video.c` marks them redrawn, `hd_redrawn`, run by run); before, such pixels were
   not seen as changed and the pack's room (in the video's backdrop, a copy of the room with its
   plane) showed through the leader in specks.  The pixels a herald leaves transparent show the
-  room behind it (`harness/hd/hd-herald.txt`, with a stand-in video where the CD's `KINGS` folder
-  is missing).  The city view's houses (`cv.dll` 310: the
+  room behind it, the civilization's portrait included: the video's backdrop is a copy of the
+  room taken while the portrait's colours were not yet in the room's colour table, and a copy
+  between 8-bit surfaces whose colour tables differ now gives the pixels shown enlarged the
+  destination's colours for their index, as the copied pixels have (`recolor_copied` in hd.c);
+  before, the part of the portrait under the video's window (the left half of the Romans'
+  medallion) was black from the herald's first frame on.  `harness/hd/hd-herald.txt` (with the
+  CD's `KINGS` videos; where they are missing, a stand-in).  The city view's houses (`cv.dll` 310: the
   original's cottages for ancient and renaissance cities, a row of towns from Industrialization
   on, by `civ_city_style_era` of the owner, the same for the whole view) are the pack's only in
   the industrial era: its houses are all 19th-century buildings (terraced houses, a tenement

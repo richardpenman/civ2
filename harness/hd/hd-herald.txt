@@ -1,6 +1,8 @@
 # HD graphics (docs/HD-GRAPHICS.md): an animated herald (the video
 # KINGS\HRLDxxx.AVI from the CD, over the leader's portrait) in the HD
-# diplomacy room.  The video's pixels are shown as the decoder writes them,
+# diplomacy room: with the CD's videos in the game's folder, the Romans'
+# herald beside Caesar's medallion, which stays whole where the video's
+# transparent pixels show it.  The video's pixels are shown as the decoder writes them,
 # opaque, even where their colour is the one already there (before, such
 # pixels let the pack's room show through the leader); those it leaves
 # transparent show the room.  Without the CD's KINGS folder, a stand-in: a
@@ -8,9 +10,11 @@
 # each tribe (xxx: ROM BAB GER EGY AME GRE IND RUS ZUL FRE AZT CHI ENG MON
 # CEL JAP VIK SPA PER CAR SIO), CIV2_TEST_VIDEO_KEY=1 making its black
 # transparent as a herald's background is.  The autosave's game has
-# Animated Heralds on; the Japanese emissary.  Shots: h0 to h3 as the video
-# plays, h4 to h6 after the dialogs.
-# run: CIV2_GAME=.../copy CIV2_TEST_VIDEO_KEY=1 CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+# Animated Heralds on; the emissary is the Romans' with the CD's videos (the
+# opening video plays first), the Japanese with the stand-in.  Shots: h0 to
+# h3 as the video plays, h4 to h6 after the dialogs.
+# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack (the stand-in: and
+# CIV2_GAME=.../copy CIV2_TEST_VIDEO_KEY=1)
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500
