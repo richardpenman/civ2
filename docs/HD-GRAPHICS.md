@@ -189,6 +189,18 @@ The rest is in the platform layer (`src/platform/hd.c`):
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
   picture is loaded into it.
+* **Advances**: where the game draws an advance's icon (its category's, 36x20, by category and
+  epoch: the Science Advisor's list, the intelligence report's, the Civilopedia's list, an
+  advance's page and its tree, the choice of research and its advice, the announcements of a
+  discovery, of an advance acquired or stolen, the diplomacy's exchange lists), the plane shows
+  the pack's picture of that advance (`advance/N`, 58 of them, 72x48), fitted inside the icon's
+  frame; the game draws its icon as ever.  The calls added at those places
+  (`hd_advance_begin`/`hd_advance_end`, `src/game/hd_graphics.cpp`) bind the icon's sprite to
+  the picture for that draw only (`hd_sprite_as` in hd.c); a dialog draws its sprites later, so
+  the entry it adds for the icon is remembered with its advance (`hd_dialog_advance`,
+  `Dialog::add_sprite`).  The advances the pack has no picture for keep the original's icon.
+  (Peter Johnson's idea: `hd_advance` in PR #11.)  The advances editor keeps the category icons
+  it edits.
 * **The throne room** is drawn whole from the pack's art, as PR #11's renderer drew it (its
   placement and order of the pieces): the game draws its own room as ever (the same pictures
   loaded, palettes and `rand()` calls), then, at the end of `ThroneRoomWindow::render`,
@@ -289,7 +301,9 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-advances.txt` (the
+  advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
+  tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
   logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
@@ -303,7 +317,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,232 pictures, 97 MB of PNGs, 78 MB with each
+For a stripped pack, the keys hd.c draws (1,251 pictures, 100 MB of PNGs, about 80 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets;
@@ -311,6 +325,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`), three of
   `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city
   view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
+* `advance/` (58): the advances;
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
@@ -329,7 +344,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   which were not looked at; the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
   the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
-  (`ss.dll` 400 to 491, one placeholder); the advance pictures (`advance/`), the city view's
+  (`ss.dll` 400 to 491, one placeholder); the city view's
   larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
   their crops; `house/` and `lot/` are the same 19th-century houses); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
   editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).

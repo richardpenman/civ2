@@ -220,6 +220,8 @@ assert.ok(!drawn('crop/resource/mk.dll/gifs/236/1,1,225,275') && drawn('crop/res
 assert.ok(drawn('crop/resource/cv.dll/gifs/310/1,231,158,114') && !drawn('crop/resource/cv.dll/gifs/310/1,116,158,114'));
 assert.ok(!drawn('crop/resource/cv.dll/gifs/310/1,1,158,114') && !drawn('crop/resource/cv.dll/gifs/310/125,429,123,82'));
 assert.ok(drawn('resource/cv.dll/gifs/351') && !drawn('resource/cv.dll/gifs/352'));
+// the advances' pictures; not the advisors' parchments nor tiles.dll 86's thin glyphs
+assert.ok(drawn('advance/12') && !drawn('resource/tiles.dll/gifs/52') && !drawn('crop/resource/tiles.dll/gifs/86/398,134,64,64'));
 // the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
 for (const chunk of [64, 100, 1 << 20]) {
     const reads = [];

@@ -1,6 +1,7 @@
 /* The game, multiplayer: network sessions, negotiation, lobby and chat: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 
 /* 00421f40 auto */
@@ -1121,10 +1122,12 @@ static int net_popup_show_dialog(int *entry,Dialog &dlg)
     break;
   case 0x4d:
     dlg.load_game_text((const char *)&str_endwonder_4);
+    hd_dialog_advance(entry[4]);    /* (port) HD: the advance's picture */
     dlg.add_sprite(
                (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                      (char)advances[entry[4]].category * 0xf0 +
                      (char)advances[entry[4]].epoch * 0x3c),0,0);
+    hd_dialog_advance(-1);
     dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[5] * 0x3c)),0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);

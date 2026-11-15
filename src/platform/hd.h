@@ -51,6 +51,23 @@ int hd_sprite_begin(const void *sprite, unsigned handle, void *bits, int x, int 
    then takes the game's pixels drawn there (drawn) as shown. */
 void hd_sprite_end(const void *sprite, unsigned handle, void *bits, int x, int y, int w, int h, const int *clip,
                    int silhouette, const int *drawn);
+/* The sprite's next draws, until hd_sprite_as(NULL, ...): the pack's
+   picture KEY (NULL: its own), fitted inside the sprite's frame keeping its
+   proportions (contain) or stretched, tinted flat in palette colour tint
+   (-1: its own colours).  Only with HD graphics (hd_art). */
+void hd_sprite_as(const void *sprite, unsigned handle, const char *key, int contain, int tint);
+/* The sprites drawn next: as ever (0), in grey shades (HD_SPRITES_GREY),
+   or not on the plane at all (HD_SPRITES_OFF: their pixels are left to
+   hd_bits_shown or to show enlarged). */
+enum { HD_SPRITES_GREY = 1, HD_SPRITES_OFF = 2 };
+void hd_sprite_mode(int mode);
+/* The sprite (its data handle) is drawn from a picture of the pack. */
+int hd_sprite_pictured(const void *sprite, unsigned handle);
+/* The game's pixels in the rectangle: into the plane, enlarged where they
+   changed (sync); taken as shown as the plane has them (shown: what the
+   game drew there afterwards, recolouring a sprite drawn from a picture). */
+void hd_bits_sync(void *bits, int x, int y, int w, int h);
+void hd_bits_shown(void *bits, int x, int y, int w, int h);
 /* gfx_copy_pixels: before (copy_begin) and after (copy_end). */
 void hd_copy_begin(void *src_bits, int sx, int sy, int w, int h);
 void hd_copy_end(void *dst_bits, void *src_bits, int dx, int dy, int sx, int sy, int w, int h);

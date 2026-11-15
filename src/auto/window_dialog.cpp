@@ -1,6 +1,7 @@
 /* The game, windows: dialogs (their fonts, lines, options, buttons, lists and keys): functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 /* 0059d190 auto */
 void __cdecl dialog_text_font_global_init(void)
@@ -1096,6 +1097,7 @@ DialogSprite *Dialog::add_sprite(Sprite *sprite,int sprite_id,const char *label)
   }
   max_sprite_width = max_width;
   sprite_count++;
+  hd_dialog_sprite_added(entry,sprite);     /* (port) HD: an advance's picture */
   return entry;
 }
 
@@ -3830,7 +3832,9 @@ void Dialog::render()
       size = sprite->sprite->height();
       sprite_h = gfx_zoom_scale(size,zoom);
       if (on_draw_sprite == 0) {
+        hd_dialog_sprite_begin(sprite);     /* (port) HD: an advance's picture */
         sprite->sprite->draw((RECT *)sprite_rect,(DibSurface *)surf_wnd,sprite_x2,sprite_y2);
+        hd_advance_end();
       }
       else {
         on_draw_sprite((i32)sprite->sprite,surf_wnd,sprite->id,sprite->field_04,sprite_x2,sprite_y2);

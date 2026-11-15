@@ -16,7 +16,7 @@ export const CHUNK = 4 << 20;
 // src/game/hd_graphics.cpp composes: "palace/" but its "decor-", and the
 // empty hall, "resource/pv.dll/gifs/100"): the rest of the pack (the pictures made for other
 // renderers) is left out of the game's memory.
-export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/',
+export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/', 'advance/',
     'resource/pv.dll/gifs/100',
     'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/90',
     'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',

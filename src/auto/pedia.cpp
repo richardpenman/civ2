@@ -1,6 +1,7 @@
 /* The game, the Civilopedia: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 #include <stdarg.h>
 
 /* 00451af0 auto */
@@ -2565,8 +2566,11 @@ void PediaWindow::draw_item_list()
         default:
           text_append((const char *)&str_this_should_not_happen_2);
         }
+        if (category == 1)
+          hd_advance_begin(advance);    /* (port) HD: the advance's picture */
         draw_list_icon(icon_mode,is_selected,col_base,row,col_x,row_y,row_height,icon_sprite,row_rect,
                        text_x_off);
+        hd_advance_end();
         icon_mode = 0;
         gfx_set_scale_ratio(scale_num2,scale_den2);
         text_clear();
@@ -4217,10 +4221,12 @@ void PediaWindow::draw_advance_page()
   row_height = ((GameFont *)((i8 *)&font_size21))->font_cached_height();
   y2 = content_top + 5;
   advance = pedia_advance_ids[resize_border];
+  hd_advance_begin(advance);    /* (port) HD: the advance's picture */
   ((Sprite *)
              (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
              (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw(
              (RECT *)icon_ctx,&pedia_wnd.window,panel_layout.margin_x + x2,y2);
+  hd_advance_end();
   gfx_set_text_color_index(dlg_style.list_text);
   related_count = 0;
   for (advance2 = 0; advance2 < ADV_COUNT; advance2++) {
@@ -4379,7 +4385,9 @@ void PediaWindow::draw_advance_tree()
   x2 = (content_right - 3) - (icon_width + root_anchor_x[2]);
   measure = rect_height((RECT *)&content_left);
   y2 = (content_top + measure / 2) - line_height / 2;
+  hd_advance_begin(advance);    /* (port) HD: the advance's picture */
   icon_rect = (int *)icon->draw((RECT *)root_ctx,&pedia_wnd.window,x2,y2);
+  hd_advance_end();
   icon_box.left = *icon_rect;
   icon_box.top = icon_rect[1];
   icon_box.right = icon_rect[2];
@@ -4415,7 +4423,9 @@ void PediaWindow::draw_advance_tree()
       measure2 = rect_width((RECT *)&content_left);
       x2 = ((int)(measure * 2 + (measure * 2 >> 0x1f & 3U)) >> 2) +
                  ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
+      hd_advance_begin(parent_ids[i]);
       icon_rect = (int *)icon->draw((RECT *)parent_ctx,&pedia_wnd.window,x2,y2);
+      hd_advance_end();
       icon_box.left = *icon_rect;
       icon_box.top = icon_rect[1];
       icon_box.right = icon_rect[2];
@@ -4465,7 +4475,9 @@ void PediaWindow::draw_advance_tree()
         measure2 = rect_width((RECT *)&content_left);
         x2 = ((int)(measure + (measure >> 0x1f & 3U)) >> 2) +
                    ((int)(measure2 + (measure2 >> 0x1f & 7U)) >> 3) + content_left;
+        hd_advance_begin(tier2_ids[i * 2 + j]);
         icon_rect = (int *)icon->draw((RECT *)grand_ctx,&pedia_wnd.window,x2,y2);
+        hd_advance_end();
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];
@@ -4515,7 +4527,9 @@ void PediaWindow::draw_advance_tree()
                    (char)advances[tier3_ids[i * 2 + j]].epoch * 0x3c);
         icon_width = icon->get_width();
         icon_width += 3;
+        hd_advance_begin(tier3_ids[i * 2 + j]);
         icon_rect = (int *)icon->draw((RECT *)gp_ctx,&pedia_wnd.window,x2,y2);
+        hd_advance_end();
         icon_box.left = *icon_rect;
         icon_box.top = icon_rect[1];
         icon_box.right = icon_rect[2];

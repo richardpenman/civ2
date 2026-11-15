@@ -1,6 +1,7 @@
 /* The game, the advisors, the High Council and the reports: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 #include "../platform/hd.h"
 void hd_throne_room(ThroneRoomWindow *v, int choices);
 
@@ -1313,9 +1314,11 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
       item_y = line_height * row + y2;
       item_x = advisor_state.column_width * column + left_x;
       item_index = value;
+      hd_advance_begin(advance);    /* (port) HD: the advance's picture */
       ((Sprite *)
                  (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                  (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw((RECT *)icon_rect,&advisor_state.window,item_x,item_y);
+      hd_advance_end();
       text_x2 = item_x + 0x26;
       shadow_color = 1;
       bg_color = 1;

@@ -1,6 +1,7 @@
 /* The game, windows, dialogs and menus: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 #include "lang.h"
 
 /* 00408010 auto */
@@ -1836,10 +1837,12 @@ void __cdecl
 popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,int advance,i32 sprite_flags)
 
 {
+  hd_dialog_advance(advance);   /* (port) HD: the advance's picture */
   popup_text_with_sprite(filename,section,dlg_flags,
                      (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                            (char)advances[advance].category * 0xf0 +
                            (char)advances[advance].epoch * 0x3c),sprite_flags);
+  hd_dialog_advance(-1);
   return;
 }
 

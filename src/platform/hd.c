@@ -953,6 +953,8 @@ typedef struct Spr {
     int variant;
     uint32_t *snap;             /* the plane's pixels it was taken from, */
     int sw, sh;                 /* sw x sh */
+    int contain;                /* (hd_sprite_as) fitted inside the frame, */
+    int tint;                   /* in this palette colour + 1 (0: its own) */
     struct Spr *next;
 } Spr;
 static Spr *sprites[4096];
@@ -963,9 +965,16 @@ static Spr **bucket(const void *s)
     return &sprites[((k >> 2) ^ (k >> 14)) & 4095];
 }
 
+/* hd_sprite_as: one sprite drawn otherwise for a while */
+static const void *as_sprite;
+static Spr as_spr;
+static int sprite_mode;         /* hd_sprite_mode */
+
 static Spr *lookup(const void *s, unsigned handle)
 {
     Spr *p;
+    if (as_sprite && s == as_sprite)
+        return &as_spr;
     for (p = *bucket(s); p; p = p->next)
         if (p->sprite == s)
             return p->handle == handle ? p : NULL;
@@ -1086,10 +1095,72 @@ void hd_sprite_captured(const void *s, unsigned handle, void *bits, int x, int y
     }
 }
 
+void hd_sprite_as(const void *s, unsigned handle, const char *key, int contain, int tint)
+{
+    Spr *p;
+    int id;
+    as_sprite = NULL;
+    if (!hd_art || !s)
+        return;
+    if (key) {
+        if (!(id = find(key)))
+            return;
+        memset(&as_spr, 0, sizeof as_spr);
+        as_spr.id = id;
+    } else {
+        if (!(p = lookup(s, handle)) || (!p->id && !p->snap))
+            return;
+        as_spr = *p;
+        as_spr.next = NULL;
+    }
+    as_spr.sprite = s;
+    as_spr.handle = handle;
+    as_spr.contain = contain;
+    as_spr.tint = tint >= 0 ? (tint & 255) + 1 : 0;
+    as_sprite = s;
+}
+
+void hd_sprite_mode(int mode)
+{
+    sprite_mode = mode;
+}
+
+int hd_sprite_pictured(const void *s, unsigned handle)
+{
+    Spr *p;
+    return hd_art && (p = lookup(s, handle)) && p->id;
+}
+
+void hd_bits_sync(void *bits, int x, int y, int w, int h)
+{
+    if (hd_on)
+        sync_rect(bmp_of_bits(bits), x, y, x + w, y + h);
+}
+
+void hd_bits_shown(void *bits, int x, int y, int w, int h)
+{
+    if (hd_on)
+        commit_rect(bmp_of_bits(bits), x, y, x + w, y + h);
+}
+
+/* The picture in grey shades (SentryHalftone): a copy, premultiplied. */
+static uint32_t *greyed(const uint32_t *px, int n)
+{
+    uint32_t *g = malloc((size_t)n * 4);
+    int i;
+    if (!g)
+        return NULL;
+    for (i = 0; i < n; i++) {
+        uint32_t c = px[i], v = (((c >> 16) & 255) * 77 + ((c >> 8) & 255) * 150 + (c & 255) * 29) >> 8;
+        g[i] = (c & 0xff000000u) | v << 16 | v << 8 | v;
+    }
+    return g;
+}
+
 int hd_sprite_begin(const void *s, unsigned handle, void *bits, int x, int y, int w, int h)
 {
     Bitmap *b;
-    if (!hd_on || !lookup(s, handle) || !(b = bmp_of_bits(bits)) || !plane(b))
+    if (!hd_on || sprite_mode == HD_SPRITES_OFF || !lookup(s, handle) || !(b = bmp_of_bits(bits)) || !plane(b))
         return 0;
     sync_rect(b, x, y, x + w, y + h);
     return 1;
@@ -1104,18 +1175,33 @@ void hd_sprite_end(const void *s, unsigned handle, void *bits, int x, int y, int
     int64_t tint = -1;
     if (!(p = lookup(s, handle)) || !valid(b))
         return;
-    if (silhouette >= 0) {
-        RGBQUAD q = b->colors[silhouette & 255];
+    if (silhouette >= 0 || p->tint) {
+        RGBQUAD q = b->colors[(silhouette >= 0 ? silhouette : p->tint - 1) & 255];
         tint = (int64_t)q.rgbRed << 16 | q.rgbGreen << 8 | q.rgbBlue;
     }
     if (p->snap)
         paint(b, p->snap, p->sw, p->sh, x * d, y * d, w * d, h * d, clip[0] * d, clip[1] * d, clip[2] * d,
               clip[3] * d, tint);
     else {
-        const uint32_t *px = picture(p->variant ? p->variant : p->id, w * d, h * d, p->opaque);
-        if (px)
-            paint(b, px, w * d, h * d, x * d, y * d, w * d, h * d, clip[0] * d, clip[1] * d, clip[2] * d,
-                  clip[3] * d, tint);
+        int pw = w * d, ph = h * d, px0 = x * d, py0 = y * d, id = p->variant ? p->variant : p->id;
+        const uint32_t *px;
+        uint32_t *grey = NULL;
+        if (p->contain && entries[id - 1].w && entries[id - 1].h) {
+            /* inside the frame, keeping the picture's proportions */
+            double k = (double)pw / entries[id - 1].w < (double)ph / entries[id - 1].h ?
+                (double)pw / entries[id - 1].w : (double)ph / entries[id - 1].h;
+            int fw = (int)(entries[id - 1].w * k + .5), fh = (int)(entries[id - 1].h * k + .5);
+            px0 += (pw - fw) / 2;
+            py0 += (ph - fh) / 2;
+            pw = fw;
+            ph = fh;
+        }
+        if (pw > 0 && ph > 0 && (px = picture(id, pw, ph, p->opaque))) {
+            if (sprite_mode == HD_SPRITES_GREY && tint < 0 && (grey = greyed(px, pw * ph)))
+                px = grey;
+            paint(b, px, pw, ph, px0, py0, pw, ph, clip[0] * d, clip[1] * d, clip[2] * d, clip[3] * d, tint);
+            free(grey);
+        }
     }
     commit_rect(b, drawn[0], drawn[1], drawn[2], drawn[3]);
 }

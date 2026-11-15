@@ -1,6 +1,7 @@
 /* The game, units: diplomats and spies (their missions in cities, bribery, escape): functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 /* 004c5fae auto */
 i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
@@ -429,9 +430,11 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       }
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
+        hd_dialog_advance(advance); /* (port) HD: the advance's picture */
         popup_game_with_sprite(str_steal,(Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
                                           (char)advances[advance].epoch * 0x3c +
                                           (char)advances[advance].category * 0xf0),8);
+        hd_dialog_advance(-1);
       }
       civ_give_advance(civ,advance,civ2,0,0);
       cities[city].flags = cities[city].flags | CITYF_TECH_STOLEN;

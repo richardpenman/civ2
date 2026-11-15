@@ -8,6 +8,7 @@
  */
 #include "auto_common.h"
 #include "../platform/hd.h"
+#include "hd_game.h"
 
 void hd_bind_terrain(void)
 {
@@ -200,4 +201,74 @@ void hd_throne_room(ThroneRoomWindow *v, int choices)
             }
     }
     hd_picture_done((void *)v->throne_surface_wnd.bits);
+}
+
+/* Advances: the pack's picture of each (advance/N: 58 of them, 72x48) where
+   the game draws the advance's category icon (36x20, by category and
+   epoch), fitted inside the icon's frame (Peter Johnson's idea, hd_advance
+   in PR #11; here the game draws its icon as ever, and the plane shows the
+   picture instead: hd_sprite_as).  The pack has none for the others: their
+   icons stay the original's. */
+static Sprite *advance_icon(int advance)
+{
+    return (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
+                      (char)advances[advance].category * 0xf0 + (char)advances[advance].epoch * 0x3c);
+}
+
+void hd_advance_begin(int advance)
+{
+    char key[24];
+    Sprite *icon;
+    if (!hd_art || advance < 0 || advance >= ADV_COUNT)
+        return;
+    icon = advance_icon(advance);
+    snprintf(key, sizeof key, "advance/%d", advance);
+    hd_sprite_as(icon, icon->data_handle, key, 1, -1);
+}
+
+void hd_advance_end(void)
+{
+    if (hd_art)
+        hd_sprite_as(NULL, 0, NULL, 0, -1);
+}
+
+/* A dialog's entries are drawn after they are added: the entries whose
+   sprite is an advance's icon, added between hd_dialog_advance(advance)
+   and hd_dialog_advance(-1), with their advance.  Any entry added at the
+   same address since is forgotten, so an old entry is never taken for a
+   new one. */
+static int dialog_pending = -1;
+static struct { const void *entry; int advance; } dialog_advances[32];
+static int dialog_next;
+
+void hd_dialog_advance(int advance)
+{
+    dialog_pending = hd_art ? advance : -1;
+}
+
+void hd_dialog_sprite_added(const void *entry, const void *sprite)
+{
+    int i;
+    if (!hd_art)
+        return;
+    for (i = 0; i < 32; i++)
+        if (dialog_advances[i].entry == entry)
+            dialog_advances[i].entry = NULL;
+    if (dialog_pending >= 0 && dialog_pending < ADV_COUNT && sprite == advance_icon(dialog_pending)) {
+        dialog_advances[dialog_next].entry = entry;
+        dialog_advances[dialog_next].advance = dialog_pending;
+        dialog_next = (dialog_next + 1) % 32;
+    }
+}
+
+void hd_dialog_sprite_begin(const void *entry)
+{
+    int i;
+    if (!hd_art)
+        return;
+    for (i = 0; i < 32; i++)
+        if (dialog_advances[i].entry == entry) {
+            hd_advance_begin(dialog_advances[i].advance);
+            return;
+        }
 }

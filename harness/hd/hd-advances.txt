@@ -1,0 +1,45 @@
+# HD graphics (docs/HD-GRAPHICS.md): the advances' pictures (the pack's
+# advance/N) where the game draws an advance's category icon: the Science
+# Advisor's list, the discovery's announcement and the choice of the next
+# research (civ_research_complete), the Civilopedia's list of advances, an
+# advance's page and its tree; each logical screenshot and the rand() trace
+# are those of the run with HD graphics off.
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+key Escape                  # (the first key after loading is not taken)
+wait 2000
+key F6                      # the Science Advisor
+wait 3000
+shot a-science
+key Escape
+wait 2000
+call civ_research_complete 4c21d5 1 -1     # Seafaring, from the Great Library
+wait 3000
+shot a-discovery
+key Return
+wait 3000
+shot a-pedia-page           # (the game opens the advance's page)
+click 242 404               # Tree
+wait 3000
+shot a-pedia-tree
+key Escape
+wait 2000
+key Escape
+wait 2000
+call civ_choose_research 4c21ad 1
+wait 3000
+shot a-choose
+key Return
+wait 3000
+call menu_command 4e2803 0 2305     # Civilopedia: advances
+wait 3000
+shot a-pedia-list
+key Escape
+wait 2000

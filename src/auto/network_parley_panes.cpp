@@ -1,6 +1,7 @@
 /* The game, multiplayer: the parley window panes and its lists of advances, units, cities and civs: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
 
 /* 00450480 auto */
 void ParleyWindow::create_advance_list_pane(RECT *rect,int pane,int their_side)
@@ -398,7 +399,9 @@ void __cdecl parley_draw_advance_list(int pane)
         }
         tmp2 = row_top + row_height / 2;
         tmp = icon_sprite->get_height();
+        hd_advance_begin(advance);  /* (port) HD: the advance's picture */
         icon_sprite->draw((RECT *)sprite_rect,&parley_wnd_block,list_left + icon_x,tmp2 - tmp / 2);
+        hd_advance_end();
         text_clear();
         name_label = (label_string(advances[advance].name));
         text_append(name_label);
