@@ -64,7 +64,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
         if ((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) {
           if ((units[unit].flags & UNITF_VETERAN) == 0) {
             if (human_civ[0] == civ3) {
-              popup_game_with_sprite(str_bond007,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8
+              popup_game_with_sprite(str_bond007,&pollution_sprite_block.unit_sprites[(uint)units[unit].type],8
                                 );
             }
             else if (2 < game.multiplayer) {
@@ -73,7 +73,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
             }
           }
           else if (human_civ[0] == civ3) {
-            popup_game_with_sprite(str_bond,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8);
+            popup_game_with_sprite(str_bond,&pollution_sprite_block.unit_sprites[(uint)units[unit].type],8);
           }
           else if (2 < game.multiplayer) {
             net_send_text_args(0x27,net.net_slots[net.net_civ_slots[civ3]].id,2,
@@ -87,7 +87,7 @@ i32 __cdecl spy_try_escape(int unit,int mission_mode,int civ)
     if (((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) &&
        (-1 < mission_mode)) {
       if (human_civ[0] == civ3) {
-        popup_game_with_sprite(str_bondglory,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),8);
+        popup_game_with_sprite(str_bondglory,&pollution_sprite_block.unit_sprites[(uint)units[unit].type],8);
       }
       else if (game.multiplayer == 3) {
         net_send_text_args(0x28,net.net_slots[net.net_civ_slots[civ3]].id,0,0,
@@ -119,7 +119,7 @@ i32 __cdecl spy_check_caught(int unit,int civ)
   }
   else {
     if ((autoplay.active == 0) && ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0)) {
-      popup_game_with_sprite(str_nailed,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)unit_type * 0x3c)),8);
+      popup_game_with_sprite(str_nailed,&pollution_sprite_block.unit_sprites[(uint)unit_type],8);
     }
     result = 1;
   }
@@ -160,7 +160,7 @@ static int spy_city_mission_menu(Dialog &dlg,iptr unit,iptr city,uptr civ,uptr c
   text_set_label_arg(1,unit_types[units[unit].type].name);
   text_set_string_arg(2,(const char *)&cities[city].name);
   dlg.load_game_section((const char *)&str_spymenu,1);
-  dlg.add_sprite((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)
+  dlg.add_sprite(&pollution_sprite_block.unit_sprites[(uint)units[unit].type]
              ,0,0);
   dlg.set_image_zoom(8);
   ret = text_open_section((const char *)&main_frame_wnd_block.game_txt_path,(const char *)&str_spyoptions);
@@ -281,7 +281,7 @@ static int spy_city_mission_embassy(iptr unit,uptr civ,uptr civ2,uint is_spy,uin
       unit2 = (iptr)(civ_name_plural(civ));
       text_set_string_arg(0,(const char *)unit2);
       if ((game.multiplayer < 3) || (human_civ[0] == civ2)) {
-        popup_game_with_sprite(str_enemyembassy,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+        popup_game_with_sprite(str_enemyembassy,&pollution_sprite_block.unit_sprites[unit_type3],8);
       }
       else {
         net_send_text_args(0x55,net.net_slots[net.net_civ_slots[civ2]].id,1
@@ -320,7 +320,7 @@ static void spy_city_mission_investigate(iptr unit,iptr city,uptr civ,uptr civ2,
     text_set_string_arg(0,(const char *)unit2);
     text_set_string_arg(1,(const char *)&cities[city].name);
     if ((game.multiplayer < 3) || (human_civ[0] == civ2)) {
-      popup_game_with_sprite(str_enemyinvestigate,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+      popup_game_with_sprite(str_enemyinvestigate,&pollution_sprite_block.unit_sprites[unit_type3],8);
     }
     else {
       net_send_text_args(0x56,net.net_slots[net.net_civ_slots[civ2]].id,2,0
@@ -372,7 +372,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
     if ((cities[city].flags & CITYF_TECH_STOLEN) == 0) {
       if (((autoplay.active == 0) && (is_spy != 0)) &&
          ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
-        choice = popup_game_sprite_flags(str_stealspecific,1,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+        choice = popup_game_sprite_flags(str_stealspecific,1,&pollution_sprite_block.unit_sprites[unit_type3],8);
         if (choice < 0) return 0;
         if (choice == 1) {
           ret = spy_check_caught(unit,civ2);
@@ -431,9 +431,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
         hd_dialog_advance(advance); /* (port) HD: the advance's picture */
-        popup_game_with_sprite(str_steal,(Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                                          (char)advances[advance].epoch * 0x3c +
-                                          (char)advances[advance].category * 0xf0),8);
+        popup_game_with_sprite(str_steal,&government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],8);
         hd_dialog_advance(-1);
       }
       civ_give_advance(civ,advance,civ2,0,0);
@@ -448,7 +446,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
       text_set_string_arg(2,(const char *)unit2);
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) {
         snd_play_effect(SND_SPYSOUND,1,0,0);
-        popup_game_with_sprite(str_curses,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),8);
+        popup_game_with_sprite(str_curses,&pollution_sprite_block.unit_sprites[unit_type],8);
       }
       if ((((autoplay.active == 0) && ((1 << ((byte)civ2 & 0x1f) & (uint)game.human_players) != 0))
           && (2 < game.multiplayer)) && (human_civ[0] != civ2)) {
@@ -462,7 +460,7 @@ static int spy_city_mission_steal_tech(iptr unit,iptr city,uptr civ,uptr civ2,ui
     units[unit].moves_used += cosmic.road_move_mult;
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
-      popup_game_with_sprite(str_nosteal,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+      popup_game_with_sprite(str_nosteal,&pollution_sprite_block.unit_sprites[unit_type3],8);
     }
     return 0;
   }
@@ -515,11 +513,11 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
   }
   if ((((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0)) &&
       (is_spy != 0)) && (0 < improvement2)) {
-    choice = popup_game_sprite_flags(str_sabotagespecific,1,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+    choice = popup_game_sprite_flags(str_sabotagespecific,1,&pollution_sprite_block.unit_sprites[unit_type3],8);
     if (choice < 0) return;
     if (choice == 1) {
       dlg.load_game_section((const char *)&str_sabotage,1);
-      dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),0,0);
+      dlg.add_sprite(&pollution_sprite_block.unit_sprites[unit_type3],0,0);
       dlg.set_image_zoom(8);
       for (improvement = 1; improvement < IMP_FIRST_WONDER; improvement++) {
         if ((improvement != IMP_PALACE) && (ret = city_has_improvement(city,improvement), ret != 0)) {
@@ -547,7 +545,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       }
       ret = city_has_improvement(city,IMP_PALACE);
       if (((((ret != 0) || (improvement2 == IMP_CITY_WALLS)) &&
-           (choice = popup_game_with_sprite(str_sabotagehard,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8),
+           (choice = popup_game_with_sprite(str_sabotagehard,&pollution_sprite_block.unit_sprites[unit_type3],8),
            choice != 1)) ||
           ((ret = spy_check_caught(unit,civ2), ret != 0 ||
            ((ret = city_has_improvement(city,IMP_PALACE), ret != 0 &&
@@ -621,7 +619,7 @@ static void spy_city_mission_sabotage(Dialog &dlg,iptr unit,iptr city,uptr civ,u
       if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
       {
         ((CityWindow *)((i8 *)&city_wnd.window))->refresh_if_city(city);
-        popup_game_with_sprite(str_sabotageone,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),8);
+        popup_game_with_sprite(str_sabotageone,&caption_close_button_sprite_block.improvement_icon_sprites[improvement2],8);
       }
     }
   }
@@ -657,7 +655,7 @@ static void spy_city_mission_poison_water(iptr unit,iptr city,uptr civ,uptr civ2
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
       snd_play_effect(SND_SPYSOUND,1,0,0);
-      popup_game_with_sprite(str_watersupply,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+      popup_game_with_sprite(str_watersupply,&pollution_sprite_block.unit_sprites[unit_type3],8);
     }
     civ4 = civ2;
     rnd = crt_rand_at("spy_city_mission");
@@ -677,7 +675,7 @@ static void spy_city_mission_plant_nuke(iptr unit,iptr city,uptr civ,uptr civ2,u
   uptr civ3;
   int odds;
   if (((((autoplay.active == 0) &&
-        (ret = popup_game_with_sprite(str_majorincident,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8),
+        (ret = popup_game_with_sprite(str_majorincident,&pollution_sprite_block.unit_sprites[unit_type3],8),
         ret == 1)) && (ret = spy_check_caught(unit,civ2), ret == 0)) &&
       ((ret = spy_check_caught(unit,civ2), ret == 0 &&
        (ret = spy_check_caught(unit,civ2), ret == 0)))) &&
@@ -746,7 +744,7 @@ static int spy_city_mission_incite_revolt(Dialog &dlg,iptr unit,iptr city,uptr c
   if (civs[civ2].government == GOV_DEMOCRACY) {
     if ((autoplay.active == 0) && ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0))
     {
-      popup_game_with_sprite(str_norevolt,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
+      popup_game_with_sprite(str_norevolt,&government_sprites_block.government_sprites[6],0);
     }
     return 0;
   }
@@ -901,7 +899,7 @@ static void spy_city_mission_chat(iptr unit,uptr civ,uptr civ2,uint is_spy,uint 
   units[unit].flags = units[unit].flags | UNITF_SPY_ON_MISSION;
   treaty_ptr = (uint *)(civ * 0x594 + (iptr)((u8 *)&civs + 32) + civ2 * 4);
   *treaty_ptr = *treaty_ptr | 0x1000000;
-  popup_game_with_sprite(str_chatspystart,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type3 * 0x3c)),8);
+  popup_game_with_sprite(str_chatspystart,&pollution_sprite_block.unit_sprites[unit_type3],8);
 }
 
 /* 004c6bf5 auto */
@@ -1093,7 +1091,7 @@ void __cdecl unit_bribe(int unit,int civ)
                          0);
       return;
     }
-    popup_game_with_sprite(str_incorruptible,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
+    popup_game_with_sprite(str_incorruptible,&government_sprites_block.government_sprites[6],0);
     return;
   }
   if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0) &&

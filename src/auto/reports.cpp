@@ -380,7 +380,7 @@ advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int un
     draw_x = x;
     draw_y = y;
     era = civ_city_style_era(cities[city].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + (citizen_index & 1) * 0x3c))->draw((RECT *)clip_rect,
+    road_sprites_block.citizen_sprites[era][(citizen_index & 1)].draw((RECT *)clip_rect,
                (DibSurface *)surface,draw_x,draw_y);
     x += spacing;
     citizen_index++;
@@ -392,7 +392,7 @@ advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int un
     draw_x = x;
     draw_y = y;
     era = civ_city_style_era(cities[city].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + ((citizen_index & 1) * 4 + 8) * 0xf))->draw(
+    road_sprites_block.citizen_sprites[era][(citizen_index & 1) + 2].draw(
                (RECT *)clip_rect,(DibSurface *)surface,draw_x,draw_y);
     x += spacing;
     citizen_index++;
@@ -409,7 +409,7 @@ advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int un
     draw_x = x;
     draw_y = y;
     era = civ_city_style_era(cities[city].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + ((citizen_index & 1) + sprite_row) * 0x3c))->draw(
+    road_sprites_block.citizen_sprites[era][(citizen_index & 1) + sprite_row].draw(
                (RECT *)clip_rect,(DibSurface *)surface,draw_x,draw_y);
     x += spacing;
     citizen_index++;
@@ -421,7 +421,7 @@ advisor_draw_city_citizens(int city,int x,i32 y,i32 width,int happy_count,int un
     draw_y = y;
     era = civ_city_style_era(cities[city].owner);
     specialist = city_specialist_type(city,i);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + (specialist * 4 + 0x1c) * 0xf))->draw(
+    road_sprites_block.citizen_sprites[era][specialist + 7].draw(
                (RECT *)clip_rect,(DibSurface *)surface,draw_x,draw_y);
     x += spacing;
   }
@@ -1315,9 +1315,7 @@ static void intel_draw_advances(iptr civ,int y2,int list_bottom,int scroll_heigh
       item_x = advisor_state.column_width * column + left_x;
       item_index = value;
       hd_advance_begin(advance);    /* (port) HD: the advance's picture */
-      ((Sprite *)
-                 (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                 (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw((RECT *)icon_rect,&advisor_state.window,item_x,item_y);
+      government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch].draw((RECT *)icon_rect,&advisor_state.window,item_x,item_y);
       hd_advance_end();
       text_x2 = item_x + 0x26;
       shadow_color = 1;
@@ -2319,7 +2317,7 @@ void __cdecl top_cities_draw(void)
       wonder_x = mid_x;
       for (wonder = 0; wonder < WONDER_COUNT; wonder++) {
         if ((game.wonder_city[wonder] == city) && (0x23 < right_x - wonder_x)) {
-          ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c))->draw((RECT *)icon_rect,&advisor_state.window,
+          caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder].draw((RECT *)icon_rect,&advisor_state.window,
                      wonder_x,y2 + 6);
           wonder_x += 0x26;
         }

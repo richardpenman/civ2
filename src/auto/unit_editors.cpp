@@ -844,7 +844,7 @@ void __cdecl unit_editor_edit_sprite(void)
   save_cb = sprite_sheet_save_units;
   count = 0xb;
   title = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + editor_active.wnd->item * 0x3c)),(const char *)title,count,
+  sprite_editor_run(&pollution_sprite_block.unit_sprites[editor_active.wnd->item],(const char *)title,count,
                      save_cb);
   unit_editor_redraw();
   return;
@@ -1168,7 +1168,7 @@ void EditorWindow::unit_editor_paint()
   }
   pic_x = client_x + 0x20;
   pic_y = client_y + 0x20;
-  sprite = (Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + item_uptr * 0x3c);
+  sprite = &pollution_sprite_block.unit_sprites[item_uptr];
   key_color = sprite->get_key_color();
   gfx_fill_rect_xywh(this,pic_x,pic_y,0x40,0x40,(uint)key_color);
   sprite->draw_keyed((RECT *)sprite_rect,this,0,pic_x,pic_y + 8);
@@ -1372,12 +1372,12 @@ void EditorWindow::unit_editor_window_run()
   cancel_button.create((Wnd *)cancel_parent,0x66,(RECT *)rect,(const char *)label);
   cancel_button.set_callback((CtrlNotifyFn)unit_editor_on_cancel);
   cancel_button.set_cancel_button();
-  btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
+  btn_x = terrain_base_sprites_block.terrain_base_sprites[item_uptr].width();
   button_width_u = btn_x + 0xd;
   btn_x = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = btn_x + 8;
   btn_y = client_x + 0x19;
-  btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->height();
+  btn_x = terrain_base_sprites_block.terrain_base_sprites[item_uptr].height();
   btn_x = btn_x * 2 + client_y + 0x28;
   rect_set_xywh((RECT *)rect,btn_y,btn_x,button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {

@@ -274,9 +274,9 @@ void extras_draw_food_trend(iptr surface, int city, int x, int y)
     i8 rect[16];
     int surplus = extras_city_food_surplus(city);
     if (surplus > 0)
-        war_icon_sprite_block.resource_icon_sprites.draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
+        war_icon_sprite_block.food_icon_sprite.draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
     else if (surplus < 0)
-        ((Sprite *)war_icon_sprite_block.resource_shortage_icon_sprites)->draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
+        war_icon_sprite_block.food_shortage_icon_sprite.draw((RECT *)rect, (DibSurface *)surface, x, y + 2);
 }
 
 /* ---- X30, X37: icons in the text of a dialog's list rows ---- */
@@ -288,7 +288,7 @@ Sprite *extras_icon(int code)
     switch (code) {
     case 'g': return &tax_rate_icon_sprites_block.gold_coin_icon_sprite;
     case 's': return &war_icon_sprite_block.shield_icon_sprite;
-    case 'f': return &war_icon_sprite_block.resource_icon_sprites;
+    case 'f': return &war_icon_sprite_block.food_icon_sprite;
     }
     return 0;
 }
@@ -944,7 +944,7 @@ void extras_draw_supported_units(CityWindow *w, int blit)
         ix = x;
         if (unit_types[units[u].type].role == ROLE_SETTLE)
             for (k = 0; k < city_calc.settler_food_cost; k++, ix += sp)
-                small_resource_icon_sprites_block.small_resource_icon_sprites.draw((RECT *)r, w, ix, y + icon_offset_y);
+                small_resource_icon_sprites_block.small_food_icon_sprite.draw((RECT *)r, w, ix, y + icon_offset_y);
         if (units[u].flags & UNITF_COSTS_SHIELD) {
             small_resource_icon_sprites_block.small_shield_icon_sprite.draw((RECT *)r, w, ix, y + icon_offset_y);
             ix += sp;
@@ -1027,7 +1027,7 @@ static void status_draw_production_icon(int city, int x, int y)
     int b = cities[city].building;
     if (b >= 0) {
         gfx_set_zoom_scale(-4);
-        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + b * 0x3c))->draw((RECT *)r, &advisor_state.window, x, y - 2);
+        pollution_sprite_block.unit_sprites[b].draw((RECT *)r, &advisor_state.window, x, y - 2);
         gfx_reset_zoom_scale();
     } else if (-b < 0x27)
         ((Sprite *)(caption_close_button_sprite_block.improvement_icon_sprites + -b * 0x3c))
@@ -1035,7 +1035,7 @@ static void status_draw_production_icon(int city, int x, int y)
     else
         /* a wonder: its 36x20 icon at full size, as an improvement's (Peter
            Johnson's fix, PR #11: it was drawn at half size) */
-        ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (-b * 4 - 0x9c) * 0xf))
+        (&caption_close_button_sprite_block.improvement_icon_sprites[-b])
             ->draw((RECT *)r, &advisor_state.window, x, y);
 }
 
@@ -1090,7 +1090,7 @@ void extras_city_status_draw(void)
     text_set_colors(status_sort == SORT_NAME ? 0x72 : 0x29, 0x12, 1, 1);
     gfx_draw_text(extras_text("name"), status_col_name, status_header_top);
     for (i = 0; i < 3; i++) {
-        ((Sprite *)(((i8 *)&war_icon_sprite_block.resource_icon_sprites) + i * 0x78))
+        (&war_icon_sprite_block.resource_icon_sprites[i][1])
             ->draw((RECT *)sprite_rect, &advisor_state.window, status_col_res + 0x10 + i * 0x26, status_header_top + 2);
         if (status_sort == SORT_FOOD + i)
             gfx_draw_text("*", status_col_res + 0x10 + i * 0x26 + 0x10, status_header_top);
@@ -1118,7 +1118,7 @@ void extras_city_status_draw(void)
             text_append_int(i == 0 ? (int)cities[city].total_food : i == 1 ? (int)cities[city].total_shields
                                                                             : (int)cities[city].trade);
             x = gfx_draw_text((const char *)&textbuf.buf, x, ty) + 2;
-            ((Sprite *)(((i8 *)&war_icon_sprite_block.resource_icon_sprites) + i * 0x78))
+            (&war_icon_sprite_block.resource_icon_sprites[i][1])
                 ->draw((RECT *)sprite_rect, &advisor_state.window, x, ty);
             x += 0x12;
         }
@@ -1319,7 +1319,7 @@ static void tip_show(int x, int y, POINT at)
                 tx = gfx_draw_text(part, tx, ty);
             t += k;
             if (*t == EXTRAS_ICON && t[1]) {
-                Sprite *s = t[1] == 't' ? (Sprite *)&war_icon_sprite_block.trade_icon_sprite : extras_icon(t[1]);
+                Sprite *s = t[1] == 't' ? &war_icon_sprite_block.trade_icon_sprite : extras_icon(t[1]);
                 i8 sr[16];
                 if (s) {
                     s->draw((RECT *)sr, m, tx, ty + 1);

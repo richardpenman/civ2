@@ -1494,7 +1494,7 @@ int __cdecl city_process_pollution(int city)
           if (roll == 0) {
             /* city_notify_dialog is declared void but returns city_notify_dialog_ex's int:
                it is city_notify_dialog_ex(a, b, 0, c) */
-            roll = city_notify_dialog_ex(str_chernobyl,city,0,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
+            roll = city_notify_dialog_ex(str_chernobyl,city,0,&caption_close_button_sprite_block.improvement_icon_sprites[62]);
           }
         }
       }

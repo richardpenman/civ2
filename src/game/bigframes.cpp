@@ -514,7 +514,7 @@ i32 __cdecl setup_new_game_dialogs(int setup_mode)
           dlg.load_game_section((const char *)str_customcity,0x20001);
           for (style_i = 0; style_i < 4; style_i = style_i + 1) {
             label_text = label_string(label_table.string_ids[0xf6 + style_i]);
-            dlg.add_sprite((Sprite *)(style_i * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360))),style_i,(const char *)label_text);
+            dlg.add_sprite(&gfx_sheet_surface_block.city_sprites[style_i][3][1],style_i,(const char *)label_text);
           }
           dlg.set_default_choice(
                              (int)leaders[civs[game.player_civ].tribe].city_style);

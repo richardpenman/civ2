@@ -2522,7 +2522,7 @@ void __cdecl terrain_base_sprites_global_init(void)
 void __cdecl terrain_base_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&terrain_base_sprites_block.terrain_base_sprites),0x3c,0xb,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&terrain_base_sprites_block.terrain_base_sprites[0],0x3c,0xb,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2538,7 +2538,7 @@ void __cdecl terrain_base_sprites_reg_atexit(void)
 void __cdecl terrain_base_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&terrain_base_sprites_block.terrain_base_sprites),0x3c,0xb,sprite_destroy);
+  crt_vector_dtor_iterator(&terrain_base_sprites_block.terrain_base_sprites[0],0x3c,0xb,sprite_destroy);
   return;
 }
 
@@ -2555,7 +2555,7 @@ void __cdecl terrain_dither_sprites_global_init(void)
 void __cdecl terrain_dither_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&map_cursor_sprite_block.terrain_dither_sprites),0x3c,0x34,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&map_cursor_sprite_block.terrain_dither_sprites[0][0],0x3c,0x34,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2571,7 +2571,7 @@ void __cdecl terrain_dither_sprites_reg_atexit(void)
 void __cdecl terrain_dither_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&map_cursor_sprite_block.terrain_dither_sprites),0x3c,0x34,sprite_destroy);
+  crt_vector_dtor_iterator(&map_cursor_sprite_block.terrain_dither_sprites[0][0],0x3c,0x34,sprite_destroy);
   return;
 }
 
@@ -2588,7 +2588,7 @@ void __cdecl river_sprites_global_init(void)
 void __cdecl river_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&icon_misc_sprites_block.river_sprites),0x3c,0x10,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&icon_misc_sprites_block.river_sprites[0],0x3c,0x10,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2604,7 +2604,7 @@ void __cdecl river_sprites_reg_atexit(void)
 void __cdecl river_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&icon_misc_sprites_block.river_sprites),0x3c,0x10,sprite_destroy);
+  crt_vector_dtor_iterator(&icon_misc_sprites_block.river_sprites[0],0x3c,0x10,sprite_destroy);
   return;
 }
 
@@ -2621,7 +2621,7 @@ void __cdecl forest_sprites_global_init(void)
 void __cdecl forest_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&forest_sprites),0x3c,0x10,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&forest_sprites[0],0x3c,0x10,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2637,7 +2637,7 @@ void __cdecl forest_sprites_reg_atexit(void)
 void __cdecl forest_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&forest_sprites),0x3c,0x10,sprite_destroy);
+  crt_vector_dtor_iterator(&forest_sprites[0],0x3c,0x10,sprite_destroy);
   return;
 }
 
@@ -2654,7 +2654,7 @@ void __cdecl mountain_sprites_global_init(void)
 void __cdecl mountain_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&mountain_sprites),0x3c,0x10,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&mountain_sprites[0],0x3c,0x10,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2670,7 +2670,7 @@ void __cdecl mountain_sprites_reg_atexit(void)
 void __cdecl mountain_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&mountain_sprites),0x3c,0x10,sprite_destroy);
+  crt_vector_dtor_iterator(&mountain_sprites[0],0x3c,0x10,sprite_destroy);
   return;
 }
 
@@ -2687,7 +2687,7 @@ void __cdecl hill_sprites_global_init(void)
 void __cdecl hill_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&hill_sprites_block.hill_sprites),0x3c,0x10,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&hill_sprites_block.hill_sprites[0],0x3c,0x10,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2703,7 +2703,7 @@ void __cdecl hill_sprites_reg_atexit(void)
 void __cdecl hill_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&hill_sprites_block.hill_sprites),0x3c,0x10,sprite_destroy);
+  crt_vector_dtor_iterator(&hill_sprites_block.hill_sprites[0],0x3c,0x10,sprite_destroy);
   return;
 }
 
@@ -2761,7 +2761,7 @@ void __cdecl unused_sprite_pair_global_init(void)
 void __cdecl unused_sprite_pair_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&war_icon_sprite_block.unused_sprite_pair),0x3c,2,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&war_icon_sprite_block.unused_sprite_pair[0],0x3c,2,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2777,7 +2777,7 @@ void __cdecl unused_sprite_pair_reg_atexit(void)
 void __cdecl unused_sprite_pair_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&war_icon_sprite_block.unused_sprite_pair),0x3c,2,sprite_destroy);
+  crt_vector_dtor_iterator(&war_icon_sprite_block.unused_sprite_pair[0],0x3c,2,sprite_destroy);
   return;
 }
 
@@ -2917,7 +2917,7 @@ void __cdecl coast_quarter_sprites_global_init(void)
 void __cdecl coast_quarter_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites),0x3c,0x20,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&tutorial_icon_sprite_block.coast_quarter_sprites[0][0],0x3c,0x20,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2933,7 +2933,7 @@ void __cdecl coast_quarter_sprites_reg_atexit(void)
 void __cdecl coast_quarter_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites),0x3c,0x20,sprite_destroy);
+  crt_vector_dtor_iterator(&tutorial_icon_sprite_block.coast_quarter_sprites[0][0],0x3c,0x20,sprite_destroy);
   return;
 }
 
@@ -2950,7 +2950,7 @@ void __cdecl river_mouth_sprites_global_init(void)
 void __cdecl river_mouth_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites),0x3c,4,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&tile_pick_mask_sprite_block.river_mouth_sprites[0],0x3c,4,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2966,7 +2966,7 @@ void __cdecl river_mouth_sprites_reg_atexit(void)
 void __cdecl river_mouth_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites),0x3c,4,sprite_destroy);
+  crt_vector_dtor_iterator(&tile_pick_mask_sprite_block.river_mouth_sprites[0],0x3c,4,sprite_destroy);
   return;
 }
 
@@ -2983,7 +2983,7 @@ void __cdecl road_sprites_global_init(void)
 void __cdecl road_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&road_sprites_block.road_sprites),0x3c,0x12,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&road_sprites_block.road_sprites[0],0x3c,0x12,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2999,7 +2999,7 @@ void __cdecl road_sprites_reg_atexit(void)
 void __cdecl road_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&road_sprites_block.road_sprites),0x3c,0x12,sprite_destroy);
+  crt_vector_dtor_iterator(&road_sprites_block.road_sprites[0],0x3c,0x12,sprite_destroy);
   return;
 }
 
@@ -3016,7 +3016,7 @@ void __cdecl land_improvement_sprites_global_init(void)
 void __cdecl land_improvement_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&land_improvement_sprites_block.land_improvement_sprites),0x3c,3,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&land_improvement_sprites_block.land_improvement_sprites[0],0x3c,3,sprite_init,sprite_destroy);
   return;
 }
 
@@ -3032,7 +3032,7 @@ void __cdecl land_improvement_sprites_reg_atexit(void)
 void __cdecl land_improvement_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&land_improvement_sprites_block.land_improvement_sprites),0x3c,3,sprite_destroy);
+  crt_vector_dtor_iterator(&land_improvement_sprites_block.land_improvement_sprites[0],0x3c,3,sprite_destroy);
   return;
 }
 
@@ -3131,7 +3131,7 @@ void __cdecl terrain_resource_sprites_global_init(void)
 void __cdecl terrain_resource_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites),0x3c,0x16,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&city_down_arrow_sprite_block.terrain_resource_sprites[0][0],0x3c,0x16,sprite_init,sprite_destroy);
   return;
 }
 
@@ -3147,7 +3147,7 @@ void __cdecl terrain_resource_sprites_reg_atexit(void)
 void __cdecl terrain_resource_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites),0x3c,0x16,sprite_destroy);
+  crt_vector_dtor_iterator(&city_down_arrow_sprite_block.terrain_resource_sprites[0][0],0x3c,0x16,sprite_destroy);
   return;
 }
 
@@ -3164,7 +3164,7 @@ void __cdecl airbase_sprites_global_init(void)
 void __cdecl airbase_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&airbase_sprites_block.airbase_sprites),0x3c,2,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&airbase_sprites_block.airbase_sprites[0],0x3c,2,sprite_init,sprite_destroy);
   return;
 }
 
@@ -3180,7 +3180,7 @@ void __cdecl airbase_sprites_reg_atexit(void)
 void __cdecl airbase_sprites_atexit_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&airbase_sprites_block.airbase_sprites),0x3c,2,sprite_destroy);
+  crt_vector_dtor_iterator(&airbase_sprites_block.airbase_sprites[0],0x3c,2,sprite_destroy);
   return;
 }
 
@@ -3238,7 +3238,7 @@ void __cdecl resource_shortage_icon_sprites_global_init(void)
 void __cdecl resource_shortage_icon_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&war_icon_sprite_block.resource_shortage_icon_sprites),0x3c,6,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&war_icon_sprite_block.resource_icon_sprites[0][0],0x3c,6,sprite_init,sprite_destroy);
   return;
 }
 
@@ -3254,7 +3254,7 @@ void __cdecl resource_shortage_icon_sprites_reg_atexit(void)
 void __cdecl resource_shortage_icon_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&war_icon_sprite_block.resource_shortage_icon_sprites),0x3c,6,sprite_destroy);
+  crt_vector_dtor_iterator(&war_icon_sprite_block.resource_icon_sprites[0][0],0x3c,6,sprite_destroy);
   return;
 }
 
@@ -4985,11 +4985,11 @@ void __cdecl terrain_editor_on_edit_icon(void)
   iptr parent_wnd3;
   iptr parent_wnd2;
   iptr parent_wnd1;
-  i8 *sprites;
+  Sprite *sprites;
   i32 sheet_id;
   SpriteSheetSaveFn save_fn;
   
-  sprites = (i8 *)0x0;
+  sprites = (Sprite *)0x0;
   save_fn = sprite_sheet_save_terrain1;
   sheet_id = 7;
   if (editor_active.wnd->item == 3) {
@@ -5013,10 +5013,10 @@ void __cdecl terrain_editor_on_edit_icon(void)
     }
     if (choice != -1) {
       if (choice == 0) {
-        sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
+        sprites = &terrain_base_sprites_block.terrain_base_sprites[editor_active.wnd->item];
       }
       else {
-        sprites = ((i8 *)&forest_sprites) + (choice * 4 - 4) * 0xf;
+        sprites = &forest_sprites[choice - 1];
       }
     }
     if (0 < choice) {
@@ -5045,10 +5045,10 @@ void __cdecl terrain_editor_on_edit_icon(void)
     }
     if (choice != -1) {
       if (choice == 0) {
-        sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
+        sprites = &terrain_base_sprites_block.terrain_base_sprites[editor_active.wnd->item];
       }
       else {
-        sprites = ((i8 *)&hill_sprites_block.hill_sprites) + (choice * 4 - 4) * 0xf;
+        sprites = &hill_sprites_block.hill_sprites[choice - 1];
       }
     }
     if (0 < choice) {
@@ -5077,10 +5077,10 @@ void __cdecl terrain_editor_on_edit_icon(void)
     }
     if (choice != -1) {
       if (choice == 0) {
-        sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
+        sprites = &terrain_base_sprites_block.terrain_base_sprites[editor_active.wnd->item];
       }
       else {
-        sprites = ((i8 *)&mountain_sprites) + (choice * 4 - 4) * 0xf;
+        sprites = &mountain_sprites[choice - 1];
       }
     }
     if (0 < choice) {
@@ -5090,17 +5090,17 @@ void __cdecl terrain_editor_on_edit_icon(void)
     dlg_set_parent_window(0);
   }
   else if (editor_active.wnd->item < 0xb) {
-    sprites = ((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + editor_active.wnd->item * 0x3c;
+    sprites = &terrain_base_sprites_block.terrain_base_sprites[editor_active.wnd->item];
   }
   else if (editor_active.wnd->item < 0x16) {
-    sprites = ((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + (editor_active.wnd->item % 0xb) * 0x78;
+    sprites = &city_down_arrow_sprite_block.terrain_resource_sprites[(editor_active.wnd->item % 0xb)][0];
   }
   else {
-    sprites = ((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + (editor_active.wnd->item % 0xb) * 0x78;
+    sprites = &city_down_arrow_sprite_block.terrain_resource_sprites[(editor_active.wnd->item % 0xb)][1];
   }
-  if (sprites != (i8 *)0x0) {
+  if (sprites != (Sprite *)0x0) {
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run(sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5115,9 +5115,9 @@ void __cdecl terrain_editor_on_edit_river(void)
   i32 sheet_id;
   SpriteSheetSaveFn save_fn;
   iptr parent_wnd2;
-  i8 *sprites;
+  Sprite *sprites;
   
-  sprites = (i8 *)0x0;
+  sprites = (Sprite *)0x0;
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -5138,18 +5138,18 @@ void __cdecl terrain_editor_on_edit_river(void)
   }
   if (choice != -1) {
     if (choice < 0x10) {
-      sprites = ((i8 *)&icon_misc_sprites_block.river_sprites) + choice * 0x3c;
+      sprites = &icon_misc_sprites_block.river_sprites[choice];
     }
     else {
-      sprites = ((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + (choice * 4 - 0x40) * 0xf;
+      sprites = &tile_pick_mask_sprite_block.river_mouth_sprites[choice - 16];
     }
   }
   dlg_set_parent_window(0);
-  if (sprites != (i8 *)0x0) {
+  if (sprites != (Sprite *)0x0) {
     save_fn = sprite_sheet_save_terrain2;
     sheet_id = 8;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run(sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5165,9 +5165,9 @@ void __cdecl terrain_editor_on_edit_coast(void)
   i32 sheet_id;
   SpriteSheetSaveFn save_fn;
   iptr parent_wnd2;
-  i8 *sprites;
+  Sprite *sprites;
   
-  sprites = (i8 *)0x0;
+  sprites = (Sprite *)0x0;
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -5188,16 +5188,14 @@ void __cdecl terrain_editor_on_edit_coast(void)
   }
   if (choice != 0xffffffff) {
     sign = (int)choice >> 0x1f;
-    sprites = ((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) +
-               (((choice ^ sign) - sign & 3 ^ sign) - sign) * 0x3c +
-               ((int)(choice + (sign & 3)) >> 2) * 0xf0;
+    sprites = &tutorial_icon_sprite_block.coast_quarter_sprites[((int)(choice + (sign & 3)) >> 2)][((choice ^ sign) - sign & 3 ^ sign) - sign];
   }
   dlg_set_parent_window(0);
-  if (sprites != (i8 *)0x0) {
+  if (sprites != (Sprite *)0x0) {
     save_fn = sprite_sheet_save_terrain2;
     sheet_id = 9;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run(sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5212,9 +5210,9 @@ void __cdecl terrain_editor_on_edit_misc(void)
   i32 sheet_id;
   SpriteSheetSaveFn save_fn;
   iptr parent_wnd2;
-  i8 *sprites;
+  Sprite *sprites;
   
-  sprites = (i8 *)0x0;
+  sprites = (Sprite *)0x0;
   if (editor_active.wnd == 0) {
     parent_wnd2 = 0;
   }
@@ -5235,27 +5233,27 @@ void __cdecl terrain_editor_on_edit_misc(void)
   }
   if (choice != -1) {
     if (choice < 3) {
-      sprites = ((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + choice * 0x3c;
+      sprites = &land_improvement_sprites_block.land_improvement_sprites[choice];
     }
     else if (choice == 0xc) {
-      sprites = ((i8 *)&pollution_sprite_block.pollution_sprite);
+      sprites = (Sprite *)&pollution_sprite_block.pollution_sprite;
     }
     else if (choice == 0xd) {
-      sprites = ((i8 *)&grassland_shield_sprite);
+      sprites = (Sprite *)&grassland_shield_sprite;
     }
     else if (choice == 0xe) {
-      sprites = ((i8 *)&hut_sprite);
+      sprites = (Sprite *)&hut_sprite;
     }
     else if (2 < choice % 0xc) {
-      sprites = ((i8 *)&road_sprites_block.road_sprites) + ((choice % 0xc) * 4 - 0xc) * 0xf + (choice / 0xc) * 0x21c;
+      sprites = &road_sprites_block.roads_and_railroads[choice / 0xc][(choice % 0xc) - 3];
     }
   }
   dlg_set_parent_window(0);
-  if (sprites != (i8 *)0x0) {
+  if (sprites != (Sprite *)0x0) {
     save_fn = sprite_sheet_save_terrain1;
     sheet_id = 10;
     title = (iptr)label_string(label_table.string_ids[0x1f6]);
-    sprite_editor_run((Sprite *)sprites,(const char *)title,sheet_id,save_fn);
+    sprite_editor_run(sprites,(const char *)title,sheet_id,save_fn);
   }
   terrain_editor_redraw();
   return;
@@ -5486,13 +5484,13 @@ void EditorWindow::terrain_editor_draw()
   icon_x = client_x + 0x20;
   icon_y = client_y + 0x20;
   if ((int)item_uptr < 0xb) {
-    sprite = (Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c);
+    sprite = &terrain_base_sprites_block.terrain_base_sprites[item_uptr];
   }
   else if ((int)item_uptr < 0x16) {
-    sprite = (Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + ((int)item_uptr % 0xb) * 0x78);
+    sprite = &city_down_arrow_sprite_block.terrain_resource_sprites[((int)item_uptr % 0xb)][0];
   }
   else {
-    sprite = (Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + ((int)item_uptr % 0xb) * 0x78);
+    sprite = &city_down_arrow_sprite_block.terrain_resource_sprites[((int)item_uptr % 0xb)][1];
   }
   key_color = sprite->get_key_color();
   color = (uint)key_color;
@@ -5509,13 +5507,13 @@ void EditorWindow::terrain_editor_draw()
   gfx_draw_tiled_frame(this,icon_x,icon_y,width,height,frame_style);
   sprite = (Sprite *)0x0;
   if (item_uptr == 3) {
-    sprite = (Sprite *)((i8 *)&forest_sprites);
+    sprite = &forest_sprites[0];
   }
   else if (item_uptr == 4) {
-    sprite = (Sprite *)((i8 *)&hill_sprites_block.hill_sprites);
+    sprite = &hill_sprites_block.hill_sprites[0];
   }
   else if (item_uptr == 5) {
-    sprite = (Sprite *)((i8 *)&mountain_sprites);
+    sprite = &mountain_sprites[0];
   }
   if (sprite != (Sprite *)0x0) {
     height = sprite->height();
@@ -5733,12 +5731,12 @@ void EditorWindow::terrain_editor_run()
   cancel_button.create((Wnd *)cancel_parent,0x66,(RECT *)btn_rect,(const char *)btn_label);
   cancel_button.set_callback((CtrlNotifyFn)terrain_editor_on_cancel);
   cancel_button.set_cancel_button();
-  btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
+  btn_x = terrain_base_sprites_block.terrain_base_sprites[item_uptr].width();
   button_width_u = btn_x + 0xd;
   btn_x = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = btn_x + 8;
   wnd_height = client_x;
-  btn_x = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->height();
+  btn_x = terrain_base_sprites_block.terrain_base_sprites[item_uptr].height();
   rect_set_xywh((RECT *)btn_rect,wnd_height + 0x19,btn_x * 2 + client_y + 0x28,
                      button_width_u,button_height_u);
   if (this == (EditorWindow *)0x0) {
@@ -6270,7 +6268,7 @@ i32 __cdecl map_animate_explosion(i32 x,i32 y,int sound_id)
                                  sprite_h[view]);
             }
             gfx_set_zoom_scale((int)(((i16 *)&map_views_block.mapview_zoom))[view * 0x1f8]);
-            ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + frame2 * 0x3c))->draw((RECT *)clip_rect,
+            government_sprites_block.explosion_sprites[frame2].draw((RECT *)clip_rect,
                        &map_views_block.map_view_recs[view],screen_x[view],
                        screen_y[view]);
             map_views_block.map_view_recs[view].wnd_blit_surface_rect(
@@ -6366,7 +6364,7 @@ void __cdecl map_animate_nuke(int x,int y)
       last_time = timeGetTime();
       ((MapView *)((i8 *)&map_views_block.map_views))->apply_zoom();
       for (frame2 = 0; frame2 < 0xb; frame2++) {
-        ((Sprite *)(((i8 *)&hill_sprites_block.nuke_anim_sprites) + frame2 * 0x3c))->draw((RECT *)clip_rect,&map_views_block.map_views,
+        hill_sprites_block.nuke_anim_sprites[frame2].draw((RECT *)clip_rect,&map_views_block.map_views,
                    anim_x,anim_y);
         ((DibSurface *)((i8 *)&map_views_block.map_views))->wnd_blit_surface_rect(&dirty_rect);
         do {

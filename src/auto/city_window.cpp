@@ -492,14 +492,14 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
     rect_arg = happy_shadow_rect;
     view = this;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + (citizen_num & 1) * 0x3c))->draw_silhouette((RECT *)rect_arg,
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1)].draw_silhouette((RECT *)rect_arg,
                view,arg_x,arg_y,shadow_color);
     rect_arg = happy_rect;
     view = this;
     arg_y = x;
     arg_x = y;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + (citizen_num & 1) * 0x3c))->draw((RECT *)rect_arg,
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1)].draw((RECT *)rect_arg,
                view,arg_y,arg_x);
     x += spacing;
     citizen_num++;
@@ -513,14 +513,14 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
     rect_arg = content_shadow_rect;
     view = this;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + ((citizen_num & 1) * 4 + 8) * 0xf))->draw_silhouette(
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1) + 2].draw_silhouette(
                (RECT *)rect_arg,view,arg_x,arg_y,shadow_color);
     rect_arg = content_rect;
     view = this;
     arg_y = x;
     arg_x = y;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + ((citizen_num & 1) * 4 + 8) * 0xf))->draw(
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1) + 2].draw(
                (RECT *)rect_arg,view,arg_y,arg_x);
     x += spacing;
     citizen_num++;
@@ -538,14 +538,14 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
     rect_arg = unhappy_shadow_rect;
     view = this;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + ((citizen_num & 1) + mood_idx) * 0x3c))->draw_silhouette(
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1) + mood_idx].draw_silhouette(
                (RECT *)rect_arg,view,arg_x,arg_y,shadow_color);
     rect_arg = unhappy_rect;
     view = this;
     arg_y = x;
     arg_x = y;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + ((citizen_num & 1) + mood_idx) * 0x3c))->draw(
+    road_sprites_block.citizen_sprites[style_era][(citizen_num & 1) + mood_idx].draw(
                (RECT *)rect_arg,view,arg_y,arg_x);
     x += spacing;
     citizen_num++;
@@ -558,7 +558,7 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
     view = this;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
     spec_kind = city_specialist_type(((u32)city_index),i);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + (spec_kind * 4 + 0x1c) * 0xf))->draw_silhouette(
+    road_sprites_block.citizen_sprites[style_era][spec_kind + 7].draw_silhouette(
                (RECT *)rect_arg,view,arg_x,arg_y,shadow_color);
     rect_arg = spec_rect;
     view = this;
@@ -566,7 +566,7 @@ int CityWindow::draw_citizen_row(int x,int y,i32 width,int happy,int unhappy, in
     arg_x = y;
     style_era = civ_city_style_era(cities[((u32)city_index)].owner);
     spec_kind = city_specialist_type(((u32)city_index),i);
-    ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + style_era * 0x294 + (spec_kind * 4 + 0x1c) * 0xf))->draw(
+    road_sprites_block.citizen_sprites[style_era][spec_kind + 7].draw(
                (RECT *)rect_arg,view,arg_y,arg_x);
     x += spacing;
   }
@@ -602,7 +602,7 @@ int CityWindow::happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unha
   ;
   citizen_num = 0;
   for (i = 0; i < happy; i++) {
-    ((Sprite *)(((i8 *)&government_sprites_block.small_citizen_sprites) + (citizen_num & 1) * 0x3c))->draw((RECT *)happy_rect,this,
+    government_sprites_block.small_citizen_sprites[(citizen_num & 1)].draw((RECT *)happy_rect,this,
                x,y);
     x += spacing;
     citizen_num++;
@@ -610,7 +610,7 @@ int CityWindow::happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unha
   for (i = 0;
       i < (int)cities[((u32)city_index)].size - (unhappy + happy + city_calc.specialist_count);
       i = i + 1) {
-    ((Sprite *)(((i8 *)&government_sprites_block.small_citizen_sprites) + ((citizen_num & 1) * 4 + 8) * 0xf))->draw((RECT *)content_rect,
+    government_sprites_block.small_citizen_sprites[(citizen_num & 1) + 2].draw((RECT *)content_rect,
                this,x,y);
     x += spacing;
     citizen_num++;
@@ -622,7 +622,7 @@ int CityWindow::happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unha
     else {
       mood_idx = 6;
     }
-    ((Sprite *)(((i8 *)&government_sprites_block.small_citizen_sprites) + ((citizen_num & 1) + mood_idx) * 0x3c))->draw((RECT *)unhappy_rect,
+    government_sprites_block.small_citizen_sprites[(citizen_num & 1) + mood_idx].draw((RECT *)unhappy_rect,
                this,x,y);
     x += spacing;
     citizen_num++;
@@ -633,7 +633,7 @@ int CityWindow::happy_draw_citizen_row(int x,i32 y,i32 width,int happy, int unha
     arg_x = x;
     arg_y = y;
     spec_kind = city_specialist_type(((u32)city_index),i);
-    ((Sprite *)(((i8 *)&government_sprites_block.small_citizen_sprites) + (spec_kind * 4 + 0x1c) * 0xf))->draw((RECT *)rect_arg,view
+    government_sprites_block.small_citizen_sprites[spec_kind + 7].draw((RECT *)rect_arg,view
                ,arg_x,arg_y);
     x += spacing;
   }
@@ -962,7 +962,7 @@ void CityWindow::draw_resource_yields(int tile_w,int half_tile_w,int half_tile_h
       icon_y = scaled2 - (scaled >> 1);
       for (; yield_kind < 3; yield_kind++) {
         while ((((i32 *)&city_calc.tile_yields))[yield_kind] != 0) {
-          ((Sprite *)(((i8 *)&small_resource_icon_sprites_block.small_resource_icon_sprites) + yield_kind * 0x3c))->draw((RECT *)yield_icon_rect,this
+          small_resource_icon_sprites_block.small_resource_icon_sprites[yield_kind].draw((RECT *)yield_icon_rect,this
                      ,icon_x,icon_y);
           row_count++;
           if (row_count < per_row) {
@@ -1109,7 +1109,7 @@ void CityWindow::draw_resource_food(int panel_left,int panel_top2,uint big_zoom)
     x2 = scale(1);
     x2 = bar_x + x2;
     for (i = 0; i < food_eaten; i++) {
-      ((Sprite *)((i8 *)&war_icon_sprite_block.resource_icon_sprites))->draw((RECT *)food_rect,this,x2,y2);
+      war_icon_sprite_block.resource_icon_sprites[0][1].draw((RECT *)food_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1132,7 +1132,7 @@ void CityWindow::draw_resource_food(int panel_left,int panel_top2,uint big_zoom)
         food_surplus_count = surplus;
       }
       if ((int)food_surplus_count <= i) break;
-      ((Sprite *)(((i8 *)&war_icon_sprite_block.resource_shortage_icon_sprites) + (uint)(0 < (int)surplus) * 0x3c))->draw(
+      war_icon_sprite_block.resource_icon_sprites[0][(uint)(0 < (int)surplus)].draw(
                  (RECT *)food_surplus_rect,this,x2,y2);
       x2 += spacing;
       i++;
@@ -1346,7 +1346,7 @@ void CityWindow::draw_resource_shields(int panel_left,int panel_top2,uint big_zo
     x2 = scale(1);
     x2 = bar_x + x2;
     for (i = 0; i < shields_shown; i++) {
-      ((Sprite *)((i8 *)&war_icon_sprite_block.shield_icon_sprite))->draw((RECT *)shield_rect,this,x2,y2);
+      war_icon_sprite_block.shield_icon_sprite.draw((RECT *)shield_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1354,7 +1354,7 @@ void CityWindow::draw_resource_shields(int panel_left,int panel_top2,uint big_zo
     x2 = scale(2);
     x2 = mid_x + x2;
     for (i = 0; i < city_calc.shield_waste; i++) {
-      ((Sprite *)((i8 *)&war_icon_sprite_block.shield_shortage_icon_sprite))->draw((RECT *)waste_rect,this,x2,y2);
+      war_icon_sprite_block.resource_icon_sprites[1][0].draw((RECT *)waste_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1378,10 +1378,10 @@ void CityWindow::draw_resource_shields(int panel_left,int panel_top2,uint big_zo
       }
       if ((int)shield_surplus_count <= i) break;
       if (cities[city_index].building == -IMP_CAPITALIZATION) {
-        ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)coin_rect,this,x2,y2);
+        tax_rate_icon_sprites_block.gold_coin_icon_sprite.draw((RECT *)coin_rect,this,x2,y2);
       }
       else {
-        ((Sprite *)(((i8 *)&war_icon_sprite_block.shield_shortage_icon_sprite) + (uint)(0 < (int)surplus) * 0x3c))->draw(
+        war_icon_sprite_block.resource_icon_sprites[0][(uint)(0 < (int)surplus) + 2].draw(
                    (RECT *)shortage_rect,this,x2,y2);
       }
       x2 += spacing;
@@ -1516,7 +1516,7 @@ void CityWindow::draw_resource_trade(int panel_left,int panel_top2,uint big_zoom
   if (0 < (int)(city_calc.total_trade - (*(uint *)&city_calc.trade_corruption))) {
     x2 = bar_x + 1;
     for (i = 0; i < (int)(city_calc.total_trade - (*(uint *)&city_calc.trade_corruption)); i++) {
-      ((Sprite *)((i8 *)&war_icon_sprite_block.trade_icon_sprite))->draw((RECT *)trade_rect,this,x2,y2);
+      war_icon_sprite_block.trade_icon_sprite.draw((RECT *)trade_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1525,7 +1525,7 @@ void CityWindow::draw_resource_trade(int panel_left,int panel_top2,uint big_zoom
     scaled = scale(4);
     x2 += (scaled >> 1);
     for (i = 0; i < (int)(*(uint *)&city_calc.trade_corruption); i++) {
-      ((Sprite *)((i8 *)&war_icon_sprite_block.trade_corruption_icon_sprite))->draw((RECT *)corruption_rect,this,x2,y2);
+      war_icon_sprite_block.trade_corruption_icon_sprite.draw((RECT *)corruption_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1694,21 +1694,21 @@ void CityWindow::draw_resource_rates(int panel_left,int panel_top2,uint big_zoom
     x2 = scale(1);
     x2 = bar_x + x2;
     for (i = 0; i < tax_icons; i++) {
-      ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)tax_rect,this,x2,y2);
+      tax_rate_icon_sprites_block.gold_coin_icon_sprite.draw((RECT *)tax_rect,this,x2,y2);
       x2 += spacing;
     }
   }
   if (lux_icons != 0) {
     x2 = lux_x;
     for (i = 0; i < lux_icons; i++) {
-      ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.tax_rate_icon_sprites))->draw((RECT *)lux_rect,this,x2,y2);
+      tax_rate_icon_sprites_block.tax_rate_icon_sprites[0].draw((RECT *)lux_rect,this,x2,y2);
       x2 += spacing;
     }
   }
   if (sci_icons != 0) {
     x2 = right_x;
     for (i = 0; i < sci_icons; i++) {
-      ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.science_icon_sprite))->draw((RECT *)science_rect,this,x2,y2);
+      tax_rate_icon_sprites_block.science_icon_sprite.draw((RECT *)science_rect,this,x2,y2);
       x2 += spacing;
     }
   }
@@ -1914,7 +1914,7 @@ void CityWindow::draw_food_box(int blit)
       width = 1;
       arg_y = rect_width(&box_rect);
       arg_x = scale(0x11);
-      city_window_draw_icon_row(&war_icon_sprite_block.resource_icon_sprites,icon_x,row_y,extent,
+      city_window_draw_icon_row(&war_icon_sprite_block.food_icon_sprite,icon_x,row_y,extent,
                          cities[city_index].size + 1,arg_x,arg_y,width);
       food_left -= extent;
       row_y += row_spacing;
@@ -2006,7 +2006,7 @@ void CityWindow::draw_production(int blit)
       scaled = scale(0x10);
       scaled = production_rect_top + scaled;
       scaled_x = scale(0x50);
-      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)icon_rect,&city_wnd.window,
+      caption_close_button_sprite_block.improvement_icon_sprites[improvement].draw((RECT *)icon_rect,&city_wnd.window,
                  production_rect + scaled_x,scaled);
       gfx_reset_zoom_scale();
     }
@@ -2257,12 +2257,12 @@ void CityWindow::draw_supported_units(int blit)
         icon_x = cell_x;
         if (unit_types[units[unit].type].role == ROLE_SETTLE) {
           for (i = 0; i < city_calc.settler_food_cost; i++) {
-            ((Sprite *)((i8 *)&small_resource_icon_sprites_block.small_resource_icon_sprites))->draw((RECT *)food_rect,this,icon_x,icon_y);
+            small_resource_icon_sprites_block.small_resource_icon_sprites[0].draw((RECT *)food_rect,this,icon_x,icon_y);
             icon_x += icon_spacing;
           }
         }
         if ((units[unit].flags & UNITF_COSTS_SHIELD) != 0) {
-          ((Sprite *)((i8 *)&small_resource_icon_sprites_block.small_shield_icon_sprite))->draw((RECT *)shield_rect,this,icon_x,icon_y);
+          small_resource_icon_sprites_block.small_shield_icon_sprite.draw((RECT *)shield_rect,this,icon_x,icon_y);
           icon_x += icon_spacing;
         }
         if (unhappy_kind != 0) {
@@ -2454,11 +2454,11 @@ void CityWindow::draw_improvements(int blit)
          (shown_count <= improvement_scroll_pos + visible_rows)) {
         gfx_set_zoom_scale(zoom2);
         if (wonder_idx < 0) {
-          ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)imp_rect,this,
+          caption_close_button_sprite_block.improvement_icon_sprites[improvement].draw((RECT *)imp_rect,this,
                      row_x,row_y);
         }
         else {
-          ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder_idx * 0x3c))->draw((RECT *)wonder_rect,this,
+          caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder_idx].draw((RECT *)wonder_rect,this,
                      row_x,row_y);
         }
         gfx_reset_zoom_scale();
@@ -2475,7 +2475,7 @@ void CityWindow::draw_improvements(int blit)
         text_x2 = (list_right - scaled2) - text_x2;
         if (wonder_idx < 0) {
           gfx_set_zoom_scale(view_scale * 3 - 7);
-          ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)coin_rect,this,text_x2,name_y);
+          tax_rate_icon_sprites_block.gold_coin_icon_sprite.draw((RECT *)coin_rect,this,text_x2,name_y);
           gfx_reset_zoom_scale();
         }
         scaled2 = scale(0xc);
@@ -2972,7 +2972,7 @@ void CityWindow::draw_units_present()
       icon_x = scaled + icon_x;
       gfx_set_zoom_scale(view_scale * 4 - 8);
       scaled = scale(3);
-      ((Sprite *)((i8 *)&small_resource_icon_sprites_block.small_resource_icon_sprites))->draw((RECT *)food_icon_rect,this,icon_x,cell_y + scaled)
+      small_resource_icon_sprites_block.small_resource_icon_sprites[0].draw((RECT *)food_icon_rect,this,icon_x,cell_y + scaled)
       ;
       gfx_reset_zoom_scale();
     }
@@ -2984,7 +2984,7 @@ void CityWindow::draw_units_present()
       icon_x = scaled + icon_x;
       gfx_set_zoom_scale(view_scale * 4 - 8);
       scaled = scale(3);
-      ((Sprite *)((i8 *)&small_resource_icon_sprites_block.small_trade_icon_sprite))->draw((RECT *)trade_icon_rect,this,icon_x,cell_y + scaled)
+      small_resource_icon_sprites_block.small_trade_icon_sprite.draw((RECT *)trade_icon_rect,this,icon_x,cell_y + scaled)
       ;
       gfx_reset_zoom_scale();
     }
@@ -3108,7 +3108,7 @@ void CityWindow::happy_draw_building_icons(i32 *x_ptr,int row_top,int row_h)
       scaled = scale(0x24);
       *x_ptr = *x_ptr - scaled;
       gfx_set_zoom_scale(((u32)view_scale) * 4 - 8);
-      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement_id * 0x3c))->draw((RECT *)icon_rect,this,
+      caption_close_button_sprite_block.improvement_icon_sprites[improvement_id].draw((RECT *)icon_rect,this,
                  *x_ptr,icon_y);
       gfx_reset_zoom_scale();
     }
@@ -3291,7 +3291,7 @@ void CityWindow::draw_happiness()
       scaled = scale(0xe);
       icon_y = mid_y - (scaled >> 1);
       gfx_set_zoom_scale(((u32)view_scale) * 4 - 8);
-      ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.tax_rate_icon_sprites))->draw((RECT *)lux_rect,this,right_x,icon_y);
+      tax_rate_icon_sprites_block.tax_rate_icon_sprites[0].draw((RECT *)lux_rect,this,right_x,icon_y);
       gfx_reset_zoom_scale();
       break;
     case 2:
@@ -3343,7 +3343,7 @@ void CityWindow::draw_happiness()
       mid_y = (row_h >> 1) + row_y;
       scaled = scale(0xe);
       icon_y = mid_y - (scaled >> 1);
-      ((Sprite *)((i8 *)&tax_rate_icon_sprites_block.gold_coin_icon_sprite))->draw((RECT *)coin_rect,this,area_x,icon_y);
+      tax_rate_icon_sprites_block.gold_coin_icon_sprite.draw((RECT *)coin_rect,this,area_x,icon_y);
       scaled = icon_y;
       mid_y = scale(0xe);
       scaled2 = scale(3);
@@ -3921,10 +3921,10 @@ void __cdecl city_button_buy(i32 control_id)
           dialog2.load_game_text((const char *)text_key);
           city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
           if (cities[city].building < '\0') {
-            dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + building * -0x3c)),0,0);
+            dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[-building],0,0);
           }
           else {
-            dialog2.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0);
+            dialog2.add_sprite(&pollution_sprite_block.unit_sprites[unit_type],0,0);
           }
           dialog2.set_image_zoom(8);
           if (can_afford) {
@@ -3997,14 +3997,14 @@ city_change_draw_option_icon(i32 dialog,DibSurface *surface,int option,byte flag
     y_offset = (sprite_height2 - row_height) / 2;
     draw_y -= y_offset;
     gfx_set_zoom_scale(zoom2);
-    ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)unit_rect,surface,draw_x,
+    pollution_sprite_block.unit_sprites[unit_type].draw((RECT *)unit_rect,surface,draw_x,
                draw_y);
     gfx_reset_zoom_scale();
   }
   if (-1 < improvement) {
     y_offset = (0x14 - row_height) / 2;
     draw_y = y - y_offset;
-    ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)improvement_rect,surface,draw_x,
+    caption_close_button_sprite_block.improvement_icon_sprites[improvement].draw((RECT *)improvement_rect,surface,draw_x,
                draw_y);
   }
   return 0;
@@ -4034,7 +4034,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       str_clear((char *)caption);
       str_append((char *)caption,(const char *)&str_empty_145);
       str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
-      unit_dialog.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0);
+      unit_dialog.add_sprite(&pollution_sprite_block.unit_sprites[unit_type],0,0);
       city = unit_dialog.load_text((const char *)&str_advice_3,(const char *)caption,0x8000)
       ;
       if (city != 0) {
@@ -4052,13 +4052,13 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         text_set_label_arg(0,improvements[city].name);
         if (improvement < IMP_FIRST_WONDER) {
           str_append_max((char *)caption,label_string(improvements[improvement].name),sizeof caption);
-          improvement_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),
+          improvement_dialog.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
         else {
           str_append((char *)caption,(const char *)&str_wonder);
           improvement_dialog.add_sprite(
-                     ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf)),
+                     (&caption_close_button_sprite_block.improvement_icon_sprites[improvement]),
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
       }
@@ -4066,7 +4066,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         unit_type = improvement;
         text_set_label_arg(0,unit_types[improvement].name);
         str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
-        improvement_dialog.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),0,0
+        improvement_dialog.add_sprite(&pollution_sprite_block.unit_sprites[unit_type],0,0
                   );
       }
       city = improvement_dialog.load_text((const char *)&str_advice_6,(const char *)caption,0x8000)

@@ -1520,15 +1520,14 @@ void MapView::draw_tile_ocean(DibSurface *surface,int screen_x,int screen_y,int 
   iptr quarter;
 
   if (zoom < -3) {
-    ((Sprite *)((i8 *)&terrain_base_sprites_block.terrain_ocean_sprite))->draw((RECT *)ocean_rect,surface,screen_x,screen_y);
+    terrain_base_sprites_block.terrain_base_sprites[10].draw((RECT *)ocean_rect,surface,screen_x,screen_y);
   }
   else {
     variant = tile_calc_coast_masks(x,y);
     for (quarter = 0; quarter < 4; quarter++) {
       quarter_x = (coast_quarter_dx_table[quarter] + 1) * ((int)half_w >> 1) + screen_x;
       quarter_y = coast_quarter_dy_table[quarter] * ((int)half_h >> 1) + screen_y;
-      ((Sprite *)
-                 (((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + quarter * 0x3c + (uint)(byte)(((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter] * 0xf0))->draw(
+      tutorial_icon_sprite_block.coast_quarter_sprites[(uint)(byte)(((i8 *)&scenario_title_surface_block.coast_quarter_land_masks))[quarter]][quarter].draw(
                  (RECT *)coast_rect,surface,quarter_x,quarter_y);
     }
     for (dir = 0; dir < 4; dir++) {
@@ -1536,7 +1535,7 @@ void MapView::draw_tile_ocean(DibSurface *surface,int screen_x,int screen_y,int 
       y2 = (((i8 *)&diag_neighbor_bits_block.diag_dy_table))[dir] + y;
       check = map_in_bounds(x2,y2);
       if ((check != 0) && (known = (byte *)tile_at(x2,y2), (*known & 0x80) != 0)) {
-        ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + dir * 0x3c))->draw((RECT *)mouth_rect,surface,
+        tile_pick_mask_sprite_block.river_mouth_sprites[dir].draw((RECT *)mouth_rect,surface,
                    screen_x,screen_y);
       }
     }
@@ -1607,7 +1606,7 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
       }
     }
   }
-  ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->draw((RECT *)base_rect,surface,screen_x,
+  terrain_base_sprites_block.terrain_base_sprites[terrain2].draw((RECT *)base_rect,surface,screen_x,
              screen_y);
   if (-5 < zoom) {
     for (quad = 0; quad < 4; quad++) {
@@ -1626,29 +1625,28 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
           dither_dy = half_h;
         }
         draw_y = dither_dy + screen_y;
-        ((Sprite *)
-                   (((i8 *)&map_cursor_sprite_block.terrain_dither_sprites) + quad * 0x3c + dither_terrain[quad] * 0xf0))->draw((RECT *)dither_rect
+        map_cursor_sprite_block.terrain_dither_sprites[dither_terrain[quad]][quad].draw((RECT *)dither_rect
                    ,surface,draw_x,draw_y);
       }
     }
   }
   if (terrain2 == TERRAIN_FOREST) {
-    ((Sprite *)(((i8 *)&forest_sprites) + variant * 0x3c))->draw((RECT *)forest_rect,surface,screen_x,
+    forest_sprites[variant].draw((RECT *)forest_rect,surface,screen_x,
                screen_y);
   }
   else if (terrain2 == TERRAIN_MOUNTAINS) {
-    ((Sprite *)(((i8 *)&mountain_sprites) + variant * 0x3c))->draw((RECT *)mountain_rect,surface,screen_x,
+    mountain_sprites[variant].draw((RECT *)mountain_rect,surface,screen_x,
                screen_y);
   }
   else if (terrain2 == TERRAIN_HILLS) {
-    ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + variant * 0x3c))->draw((RECT *)hill_rect,surface,screen_x,
+    hill_sprites_block.hill_sprites[variant].draw((RECT *)hill_rect,surface,screen_x,
                screen_y);
   }
   if (((-4 < zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 0xc)) {
-    ((Sprite *)((i8 *)&land_improvement_sprites_block.farmland_sprite))->draw((RECT *)farmland_rect,surface,screen_x,screen_y);
+    land_improvement_sprites_block.farmland_sprite.draw((RECT *)farmland_rect,surface,screen_x,screen_y);
   }
   if (((-7 < zoom) && (has_river != 0)) && (map_show_hidden_terrain == 0)) {
-    ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + river_mask * 0x3c))->draw((RECT *)river_rect,surface,screen_x,
+    icon_misc_sprites_block.river_sprites[river_mask].draw((RECT *)river_rect,surface,screen_x,
                screen_y);
   }
   if (-4 < zoom) {
@@ -1669,10 +1667,10 @@ void MapView::draw_tile_land(DibSurface *surface,int screen_x,int screen_y,int x
     }
     if (map_show_hidden_terrain == 0) {
       if ((((byte)improvements2 & 0xc) == 4) || (irrig_flags == 1)) {
-        ((Sprite *)((i8 *)&land_improvement_sprites_block.land_improvement_sprites))->draw((RECT *)irrig_rect,surface,screen_x,screen_y);
+        land_improvement_sprites_block.land_improvement_sprites[0].draw((RECT *)irrig_rect,surface,screen_x,screen_y);
       }
       else if ((irrig_flags & 2) != 0) {
-        ((Sprite *)((i8 *)&land_improvement_sprites_block.farmland_sprite))->draw((RECT *)farm_rect,surface,screen_x,screen_y);
+        land_improvement_sprites_block.farmland_sprite.draw((RECT *)farm_rect,surface,screen_x,screen_y);
       }
     }
   }
@@ -1722,7 +1720,7 @@ void MapView::draw_tile_roads(DibSurface *surface,int screen_x,int screen_y,int 
       }
       if (((nbr_improvements & 0x12) != 0) &&
          ((road_count = road_count + 1, has_rail == 0 || ((nbr_improvements & 0x22) == 0)))) {
-        ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + (dir * 4 + 4) * 0xf))->draw((RECT *)road_rect,
+        road_sprites_block.road_sprites[dir + 1].draw((RECT *)road_rect,
                    surface,screen_x,screen_y);
       }
     }
@@ -1742,7 +1740,7 @@ void MapView::draw_tile_roads(DibSurface *surface,int screen_x,int screen_y,int 
         }
         if ((nbr_improvements & 0x22) != 0) {
           rail_count++;
-          ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + (dir * 4 + 4) * 0xf))->draw((RECT *)rail_rect,
+          road_sprites_block.railroad_sprites[dir + 1].draw((RECT *)rail_rect,
                      surface,screen_x,screen_y);
         }
       }
@@ -1752,11 +1750,11 @@ void MapView::draw_tile_roads(DibSurface *surface,int screen_x,int screen_y,int 
   if (check < 0) {
     if (has_rail == 0) {
       if (road_count == 0) {
-        ((Sprite *)((i8 *)&road_sprites_block.road_sprites))->draw((RECT *)road_dot_rect,surface,screen_x,screen_y);
+        road_sprites_block.road_sprites[0].draw((RECT *)road_dot_rect,surface,screen_x,screen_y);
       }
     }
     else if (rail_count == 0) {
-      ((Sprite *)((i8 *)&road_sprites_block.railroad_sprites))->draw((RECT *)rail_dot_rect,surface,screen_x,screen_y);
+      road_sprites_block.railroad_sprites[0].draw((RECT *)rail_dot_rect,surface,screen_x,screen_y);
     }
   }
 }
@@ -1784,7 +1782,7 @@ void MapView::draw_tile_specials(DibSurface *surface,int screen_x,int screen_y,i
     ((Sprite *)((i8 *)&hut_sprite))->draw((RECT *)hut_rect,surface,screen_x,screen_y);
   }
   if ((((byte)improvements2 & 0x42) == 0x40) && (map_show_hidden_terrain == 0)) {
-    ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->draw((RECT *)fortress_rect,surface,screen_x,screen_y - half_h);
+    fortify_overlay_sprites_block.fortress_sprite.draw((RECT *)fortress_rect,surface,screen_x,screen_y - half_h);
   }
   if ((((byte)improvements2 & 0x42) == 0x42) && (map_show_hidden_terrain == 0)) {
     variant = 0;
@@ -1798,10 +1796,10 @@ void MapView::draw_tile_specials(DibSurface *surface,int screen_x,int screen_y,i
     /* (port) HD: the aircraft in the owner's colour (the pack's variant) */
     if (hd_art) {
       rect_set_xywh((RECT *)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
-      hd_recolour_begin((Sprite *)(((i8 *)&airbase_sprites_block.airbase_sprites) + variant * 0x3c),surface,
+      hd_recolour_begin(&airbase_sprites_block.airbase_sprites[variant],surface,
                         (RECT *)airbase_area,civ_color_primary(tile_owner(x,y)),0);
     }
-    ((Sprite *)(((i8 *)&airbase_sprites_block.airbase_sprites) + variant * 0x3c))->draw((RECT *)airbase_rect,surface,screen_x,
+    airbase_sprites_block.airbase_sprites[variant].draw((RECT *)airbase_rect,surface,screen_x,
                screen_y - half_h);
     rect_set_xywh((RECT *)airbase_area,screen_x,screen_y - half_h,tile_w,half_h + tile_h);
     civ = tile_owner(x,y);
@@ -1889,7 +1887,7 @@ void MapView::draw_tile_unexplored_edges(DibSurface *surface,int screen_x,int sc
         unexp_dy = half_h;
       }
       draw_y = unexp_dy + screen_y;
-      ((Sprite *)(((i8 *)&map_cursor_sprite_block.unexplored_dither_sprites) + dir * 0x3c))->draw((RECT *)unexp_rect,surface,
+      map_cursor_sprite_block.unexplored_dither_sprites[dir].draw((RECT *)unexp_rect,surface,
                  draw_x,draw_y);
     }
   }
@@ -1997,7 +1995,7 @@ void MapView::draw_tile_terrain(DibSurface *surface,int screen_x,int screen_y,in
   }
   if (((-4 < zoom) && (hidden == 0)) &&
      (resource = tile_resource(x,y), resource != 0)) {
-    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78 + (resource * 4 - 4) * 0xf))->draw(
+    city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][resource - 1].draw(
                (RECT *)resource_rect,surface,screen_x,screen_y);
   }
   if (((-4 < zoom) && (map_show_hidden_terrain == 0)) &&
@@ -2005,7 +2003,7 @@ void MapView::draw_tile_terrain(DibSurface *surface,int screen_x,int screen_y,in
     draw_tile_roads(surface,screen_x,screen_y,x,y,viewer_civ,improvements2);
   }
   if (((-4 < zoom) && (map_show_hidden_terrain == 0)) && (((byte)improvements2 & 0xc) == 8)) {
-    ((Sprite *)((i8 *)&land_improvement_sprites_block.mine_sprite))->draw((RECT *)mine_rect,surface,screen_x,screen_y);
+    land_improvement_sprites_block.mine_sprite.draw((RECT *)mine_rect,surface,screen_x,screen_y);
   }
   if ((-5 < zoom) && (hidden == 0)) {
     draw_tile_specials(surface,screen_x,screen_y,x,y,improvements2,tile_w,tile_h,half_h);

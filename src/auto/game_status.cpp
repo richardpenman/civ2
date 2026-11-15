@@ -453,12 +453,12 @@ void __cdecl status_draw_info(int full_redraw)
   stage = civ_research_cost(human_civ[0]);
   stage = ((int)progress << 2) / stage;
   stage = int_clamp(stage,0,3);
-  ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.research_flask_sprites) + stage * 0x3c))->draw((RECT *)flask_rect,&status_wnd.window,icon_x,
+  city_down_arrow_sprite_block.research_flask_sprites[stage].draw((RECT *)flask_rect,&status_wnd.window,icon_x,
              icon_y);
   icon_x += (icon_width * 3) / 2;
   if (game.warming_counter != '\0') {
     stage = int_clamp((int)game.warming_counter >> 2,0,3);
-    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.global_warming_sprites) + stage * 0x3c))->draw((RECT *)warming_rect,&status_wnd.window,icon_x,
+    city_down_arrow_sprite_block.global_warming_sprites[stage].draw((RECT *)warming_rect,&status_wnd.window,icon_x,
                icon_y);
   }
   gfx_reset_zoom_scale();

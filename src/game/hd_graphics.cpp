@@ -215,8 +215,7 @@ void hd_throne_room(ThroneRoomWindow *v, int choices)
    icons stay the original's. */
 static Sprite *advance_icon(int advance)
 {
-    return (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                      (char)advances[advance].category * 0xf0 + (char)advances[advance].epoch * 0x3c);
+    return &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch];
 }
 
 void hd_advance_begin(int advance)

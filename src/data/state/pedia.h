@@ -40,13 +40,19 @@ extern RODATA i8 pedia_unit_move_fmt[4];
 #pragma pack(push, 1)
 struct war_icon_sprite_block {
     u8 war_icon_sprite[64];  /* 00644e48 */
-    i8 unused_sprite_pair[120];  /* 00644e88 */
-    i8 resource_shortage_icon_sprites[60];  /* 00644f00 */
-    Sprite resource_icon_sprites;  /* 00644f3c */
-    Sprite shield_shortage_icon_sprite;  /* 00644f78 */
-    Sprite shield_icon_sprite;  /* 00644fb4 */
-    Sprite trade_corruption_icon_sprite;  /* 00644ff0 */
-    Sprite trade_icon_sprite;  /* 0064502c */
+    Sprite unused_sprite_pair[2];  /* 00644e88 */
+    /* food, shields, trade: [0] the shortage's (the corruption's), [1] the yield's */
+    union {
+        Sprite resource_icon_sprites[3][2];  /* 00644f00 */
+        struct {
+            Sprite food_shortage_icon_sprite;
+            Sprite food_icon_sprite;
+            Sprite shield_shortage_icon_sprite;
+            Sprite shield_icon_sprite;
+            Sprite trade_corruption_icon_sprite;
+            Sprite trade_icon_sprite;
+        };
+    };
 };
 #pragma pack(pop)
 extern struct war_icon_sprite_block war_icon_sprite_block;

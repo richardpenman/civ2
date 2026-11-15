@@ -742,7 +742,7 @@ void __cdecl nuke_anim_sprites_global_init(void)
 void __cdecl nuke_anim_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&hill_sprites_block.nuke_anim_sprites),0x3c,0xb,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&hill_sprites_block.nuke_anim_sprites[0],0x3c,0xb,sprite_init,sprite_destroy);
   return;
 }
 
@@ -758,7 +758,7 @@ void __cdecl nuke_anim_sprites_reg_atexit(void)
 void __cdecl nuke_anim_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&hill_sprites_block.nuke_anim_sprites),0x3c,0xb,sprite_destroy);
+  crt_vector_dtor_iterator(&hill_sprites_block.nuke_anim_sprites[0],0x3c,0xb,sprite_destroy);
   return;
 }
 
@@ -816,7 +816,7 @@ void __cdecl unit_sprites_global_init(void)
 void __cdecl unit_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&pollution_sprite_block.unit_sprites),0x3c,0x3f,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&pollution_sprite_block.unit_sprites[0],0x3c,0x3f,sprite_init,sprite_destroy);
   return;
 }
 
@@ -832,7 +832,7 @@ void __cdecl unit_sprites_reg_atexit(void)
 void __cdecl unit_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&pollution_sprite_block.unit_sprites),0x3c,0x3f,sprite_destroy);
+  crt_vector_dtor_iterator(&pollution_sprite_block.unit_sprites[0],0x3c,0x3f,sprite_destroy);
   return;
 }
 
@@ -849,7 +849,7 @@ void __cdecl fortify_overlay_sprites_global_init(void)
 void __cdecl fortify_overlay_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites),0x3c,8,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&fortify_overlay_sprites_block.fortify_overlay_sprites[0],0x3c,8,sprite_init,sprite_destroy);
   return;
 }
 
@@ -865,7 +865,7 @@ void __cdecl fortify_overlay_sprites_reg_atexit(void)
 void __cdecl fortify_overlay_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites),0x3c,8,sprite_destroy);
+  crt_vector_dtor_iterator(&fortify_overlay_sprites_block.fortify_overlay_sprites[0],0x3c,8,sprite_destroy);
   return;
 }
 
@@ -882,7 +882,7 @@ void __cdecl explosion_sprites_global_init(void)
 void __cdecl explosion_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&government_sprites_block.explosion_sprites),0x3c,8,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&government_sprites_block.explosion_sprites[0],0x3c,8,sprite_init,sprite_destroy);
   return;
 }
 
@@ -898,7 +898,7 @@ void __cdecl explosion_sprites_reg_atexit(void)
 void __cdecl explosion_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&government_sprites_block.explosion_sprites),0x3c,8,sprite_destroy);
+  crt_vector_dtor_iterator(&government_sprites_block.explosion_sprites[0],0x3c,8,sprite_destroy);
   return;
 }
 
@@ -2755,7 +2755,7 @@ void __cdecl unit_cmd_terraform(int order)
     if (order == 7) {
       tile_impr = tile_improvements(x,y);
       if (((byte)tile_impr & TILE_FARMLAND) == 8) {
-        popup_game_with_sprite(str_alreadymining,(Sprite *)&land_improvement_sprites_block.mine_sprite,0);
+        popup_game_with_sprite(str_alreadymining,&land_improvement_sprites_block.mine_sprite,0);
         return;
       }
     }
@@ -3374,7 +3374,7 @@ i32 __cdecl unit_caravan_enter_city(int unit,uptr city)
       }
       dialog2.load_game_text((const char *)&str_caravanmenu);
       dialog2.add_sprite(
-                 ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0,0);
+                 (&pollution_sprite_block.unit_sprites[(uint)units[unit].type]),0,0);
       if (-1 < (char)units[unit].counter) {
         text_clear();
         text_append((const char *)(city * 0x58 + (iptr)((u8 *)&cities + 32)));

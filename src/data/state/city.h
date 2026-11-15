@@ -265,21 +265,23 @@ inline constexpr CommodityDemand &commodity_demand = advisor_window_block.commod
 inline constexpr AdvisorWindowState &advisor_state = advisor_window_block.advisor_state;
 #pragma pack(push, 1)
 struct small_resource_icon_sprites_block {
-    Sprite small_resource_icon_sprites;  /* 00645068 */
-    Sprite small_shield_icon_sprite;  /* 006450a4 */
-    u8 small_trade_icon_sprite[64];  /* 006450e0 */
+    union {
+        Sprite small_resource_icon_sprites[3];  /* 00645068: food, shields, trade */
+        struct {
+            Sprite small_food_icon_sprite;
+            Sprite small_shield_icon_sprite;
+            Sprite small_trade_icon_sprite;
+        };
+    };
+    u8 small_resource_icon_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct small_resource_icon_sprites_block small_resource_icon_sprites_block;
 #pragma pack(push, 1)
 struct caption_close_button_sprite_block {
     u8 caption_close_button_sprite[64];  /* 00645120 */
-    i8 improvement_icon_sprites[120];  /* 00645160 */
-    u8 notify_sprites[1320];  /* 006451d8 */
-    u8 research_dialog_sprite[480];  /* 00645700 */
-    u8 research_popup_sprite3[420];  /* 006458e0 */
-    i8 wonder_icon_sprites[1380];  /* 00645a84 */
-    i32 city_notify_sprite[76];  /* 00645fe8 */
+    Sprite improvement_icon_sprites[67];  /* 00645160: by improvement, the wonders from IMP_FIRST_WONDER */
+    u8 improvement_icon_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct caption_close_button_sprite_block caption_close_button_sprite_block;

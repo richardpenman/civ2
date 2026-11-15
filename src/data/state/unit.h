@@ -109,9 +109,8 @@ extern RODATA i8 path_separator_str[8];
 #pragma pack(push, 1)
 struct pollution_sprite_block {
     u8 pollution_sprite[64];  /* 00641808 */
-    i8 unit_sprites[60];  /* 00641848 */
-    u8 research_popup_sprite[720];  /* 00641884 */
-    u8 research_popup_sprite2[3004];  /* 00641b54 */
+    Sprite unit_sprites[63];  /* 00641848: by unit type (62) and one more */
+    u8 unit_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct pollution_sprite_block pollution_sprite_block;

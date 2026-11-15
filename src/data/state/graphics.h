@@ -80,13 +80,8 @@ typedef struct DibRowOrder {
 extern DibRowOrder dib_rows;
 #pragma pack(push, 1)
 struct icon_misc_sprites_block {
-    Sprite icon_misc_sprites;  /* 0063f6f0 */
-    Sprite icon_sprite_1;  /* 0063f72c */
-    Sprite icon_sprite_2;  /* 0063f768 */
-    Sprite icon_sprite_3;  /* 0063f7a4 */
-    Sprite icon_sprite_4;  /* 0063f7e0 */
-    Sprite icon_sprite_5;  /* 0063f81c */
-    i8 river_sprites[960];  /* 0063f858 */
+    Sprite icon_misc_sprites[6];  /* 0063f6f0 */
+    Sprite river_sprites[16];  /* 0063f858 */
 };
 #pragma pack(pop)
 extern struct icon_misc_sprites_block icon_misc_sprites_block;
@@ -94,34 +89,38 @@ extern u8 grassland_shield_sprite[64];
 #pragma pack(push, 1)
 struct tile_pick_mask_sprite_block {
     u8 tile_pick_mask_sprite[64];  /* 0063fcd8 */
-    i8 river_mouth_sprites[240];  /* 0063fd18 */
+    Sprite river_mouth_sprites[4];  /* 0063fd18 */
 };
 #pragma pack(pop)
 extern struct tile_pick_mask_sprite_block tile_pick_mask_sprite_block;
 #pragma pack(push, 1)
 struct gfx_sheet_surface_block {
     DibSurface gfx_sheet_surface;  /* 0063fe08 */
-    i8 city_sprites[60];  /* 0063fe50 */
-    i8 city_walled_sprites[2820];  /* 0063fe8c */
+    Sprite city_sprites[6][4][2];  /* 0063fe50: by style, size, without and with walls */
 };
 #pragma pack(pop)
 extern struct gfx_sheet_surface_block gfx_sheet_surface_block;
 #pragma pack(push, 1)
 struct map_cursor_sprite_block {
     u8 map_cursor_sprite[64];  /* 00640b98 */
-    i8 terrain_dither_sprites[2640];  /* 00640bd8 */
-    i8 unexplored_dither_sprites[480];  /* 00641628 */
+    Sprite terrain_dither_sprites[11][4];  /* 00640bd8: by terrain and quarter */
+    Sprite unexplored_dither_sprites[8];  /* 00641628 */
 };
 #pragma pack(pop)
 extern struct map_cursor_sprite_block map_cursor_sprite_block;
 #pragma pack(push, 1)
 struct road_sprites_block {
-    Sprite road_sprites[9];  /* 00642710 */
-    Sprite railroad_sprites[9];  /* 0064292c */
+    union {
+        struct {
+            Sprite road_sprites[9];  /* 00642710: the dot, then by direction */
+            Sprite railroad_sprites[9];  /* 0064292c */
+        };
+        Sprite roads_and_railroads[2][9];  /* 00642710 */
+    };
     i32 unit_shield_y_offsets[64];  /* 00642b48 */
     i32 unit_shield_x_offsets[64];  /* 00642c48 */
-    i8 citizen_sprites[2640];  /* 00642d48 */
-    i8 civ_portrait_sprites[480];  /* 00643798 */
+    Sprite citizen_sprites[4][11];  /* 00642d48: by era */
+    Sprite civ_portrait_sprites[8];  /* 00643798 */
     i32 city_size_box_x_offsets[48];  /* 00643978 */
     i32 city_label_y_offsets[48];  /* 00643a38 */
 };
@@ -130,33 +129,36 @@ extern struct road_sprites_block road_sprites_block;
 #pragma pack(push, 1)
 struct tutorial_icon_sprite_block {
     u8 tutorial_icon_sprite[64];  /* 00643af8 */
-    i8 coast_quarter_sprites[60];  /* 00643b38 */
-    i8 coast_quarter_east_sprites[60];  /* 00643b74 */
-    i8 coast_quarter_south_sprites[60];  /* 00643bb0 */
-    i8 coast_quarter_west_sprites[1740];  /* 00643bec */
+    Sprite coast_quarter_sprites[8][4];  /* 00643b38: by coast shape, the quarters N, E, S, W */
 };
 #pragma pack(pop)
 extern struct tutorial_icon_sprite_block tutorial_icon_sprite_block;
 #pragma pack(push, 1)
 struct editor_tile_backdrop_sprite_block {
     u8 editor_tile_backdrop_sprite[64];  /* 006442b8 */
-    i8 civ_flag_sprites[60];  /* 006442f8 */
-    i8 civ_flag_dark_sprites[900];  /* 00644334 */
+    Sprite civ_flag_sprites[8][2];  /* 006442f8: by colour, light and dark */
 };
 #pragma pack(pop)
 extern struct editor_tile_backdrop_sprite_block editor_tile_backdrop_sprite_block;
 #pragma pack(push, 1)
 struct land_improvement_sprites_block {
-    Sprite land_improvement_sprites;  /* 006446b8 */
-    Sprite farmland_sprite;  /* 006446f4 */
-    u8 mine_sprite[64];  /* 00644730 */
+    union {
+        Sprite land_improvement_sprites[3];  /* 006446b8: irrigation, farmland, mine */
+        struct {
+            Sprite irrigation_sprite;
+            Sprite farmland_sprite;
+            Sprite mine_sprite;
+        };
+    };
+    u8 land_improvement_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct land_improvement_sprites_block land_improvement_sprites_block;
 #pragma pack(push, 1)
 struct hill_sprites_block {
     Sprite hill_sprites[16];  /* 006447b0 */
-    i8 nuke_anim_sprites[664];  /* 00644b70 */
+    Sprite nuke_anim_sprites[11];  /* 00644b70 */
+    u8 nuke_anim_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct hill_sprites_block hill_sprites_block;
@@ -168,29 +170,31 @@ extern Sprite forest_sprites[16];
 extern u8 small_unhappy_icon_sprite[64];
 #pragma pack(push, 1)
 struct fortify_overlay_sprites_block {
-    Sprite fortify_overlay_sprites;  /* 006465d8 */
-    Sprite fortify_overlay_alt_sprite;  /* 00646614 */
-    Sprite fortress_sprite;  /* 00646650 */
-    Sprite icon_sprite_6;  /* 0064668c */
-    Sprite pollution_icon_sprite;  /* 006466c8 */
-    Sprite icon_sprite_7;  /* 00646704 */
-    Sprite icon_sprite_8;  /* 00646740 */
-    u8 city_disorder_icon_sprite[252];  /* 0064677c */
+    union {
+        Sprite fortify_overlay_sprites[8];  /* 006465d8 */
+        struct {
+            Sprite fortify_overlay_sprite;
+            Sprite fortify_overlay_alt_sprite;
+            Sprite fortress_sprite;
+            Sprite icon_sprite_6;
+            Sprite pollution_icon_sprite;
+            Sprite icon_sprite_7;
+            Sprite icon_sprite_8;
+            Sprite city_disorder_icon_sprite;
+        };
+    };
+    u8 fortify_overlay_sprites_rest[192];
 };
 #pragma pack(pop)
 extern struct fortify_overlay_sprites_block fortify_overlay_sprites_block;
 #pragma pack(push, 1)
 struct government_sprites_block {
-    Sprite government_sprites;  /* 00646878 */
-    Sprite government_despotism_sprite;  /* 006468b4 */
-    Sprite government_monarchy_sprite;  /* 006468f0 */
-    Sprite government_sprite_communism;  /* 0064692c */
-    Sprite government_sprite_fundamentalism;  /* 00646968 */
-    Sprite government_sprite_republic;  /* 006469a4 */
-    u8 government_sprite_democracy[64];  /* 006469e0 */
-    i8 small_citizen_sprites[664];  /* 00646a20 */
-    i8 advance_category_icon_sprites[1200];  /* 00646cb8 */
-    i8 explosion_sprites[480];  /* 00647168 */
+    Sprite government_sprites[7];  /* 00646878: by government */
+    u8 government_sprites_rest[4];
+    Sprite small_citizen_sprites[11];  /* 00646a20 */
+    u8 small_citizen_sprites_rest[4];
+    Sprite advance_category_icon_sprites[5][4];  /* 00646cb8: by category and epoch */
+    Sprite explosion_sprites[8];  /* 00647168 */
 };
 #pragma pack(pop)
 extern struct government_sprites_block government_sprites_block;
@@ -198,7 +202,8 @@ extern Sprite mountain_sprites[16];
 #pragma pack(push, 1)
 struct caption_zoom_out_button_sprite_block {
     u8 caption_zoom_out_button_sprite[64];  /* 00647788 */
-    i8 sprite_editor_tool_sprites[904];  /* 006477c8 */
+    Sprite sprite_editor_tool_sprites[15];  /* 006477c8 */
+    u8 sprite_editor_tool_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct caption_zoom_out_button_sprite_block caption_zoom_out_button_sprite_block;
@@ -212,8 +217,8 @@ struct icons_pair_sprites_block {
 extern struct icons_pair_sprites_block icons_pair_sprites_block;
 #pragma pack(push, 1)
 struct terrain_base_sprites_block {
-    Sprite terrain_base_sprites[10];  /* 00647c40 */
-    u8 terrain_ocean_sprite[64];  /* 00647e98 */
+    Sprite terrain_base_sprites[11];  /* 00647c40: by terrain, Ocean last */
+    u8 terrain_base_sprites_rest[4];
 };
 #pragma pack(pop)
 extern struct terrain_base_sprites_block terrain_base_sprites_block;
@@ -222,8 +227,13 @@ extern DibSurface window_border_tile_surface;
 extern u8 unit_shield_sprite[64];
 #pragma pack(push, 1)
 struct airbase_sprites_block {
-    Sprite airbase_sprites;  /* 00647fa0 */
-    Sprite airbase_occupied_sprite;  /* 00647fdc */
+    union {
+        Sprite airbase_sprites[2];  /* 00647fa0 */
+        struct {
+            Sprite airbase_sprite;
+            Sprite airbase_occupied_sprite;
+        };
+    };
 };
 #pragma pack(pop)
 extern struct airbase_sprites_block airbase_sprites_block;
@@ -231,10 +241,9 @@ extern u8 icons_unused_tall_sprite[64];
 #pragma pack(push, 1)
 struct city_down_arrow_sprite_block {
     u8 city_down_arrow_sprite[64];  /* 006480d8 */
-    i8 research_flask_sprites[240];  /* 00648118 */
-    i8 global_warming_sprites[240];  /* 00648208 */
-    i8 terrain_resource_sprites[60];  /* 006482f8 */
-    i8 terrain_resource2_sprites[1260];  /* 00648334 */
+    Sprite research_flask_sprites[4];  /* 00648118 */
+    Sprite global_warming_sprites[4];  /* 00648208 */
+    Sprite terrain_resource_sprites[11][2];  /* 006482f8: by terrain, its two specials */
 };
 #pragma pack(pop)
 extern struct city_down_arrow_sprite_block city_down_arrow_sprite_block;

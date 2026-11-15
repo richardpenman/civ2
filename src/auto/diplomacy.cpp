@@ -5265,7 +5265,7 @@ void __cdecl diplo_espionage_incident(int civ,int civ2)
             if (autoplay.active == 0) {
               civ_name = civ_get_adjective(civ);
               text_set_string_arg(0,(const char *)civ_name);
-              popup_game_with_sprite(str_incidentterror,&government_sprites_block.government_sprite_fundamentalism,0);
+              popup_game_with_sprite(str_incidentterror,&government_sprites_block.government_sprites[4],0);
             }
           }
           else {
@@ -5312,8 +5312,7 @@ void __cdecl diplo_espionage_incident(int civ,int civ2)
           if (autoplay.active == 0) {
             civ_name = civ_get_adjective(civ);
             text_set_string_arg(0,(const char *)civ_name);
-            popup_game_with_sprite(str_senatescandal,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) + (uint)civs[civ].government * 0x3c
-                                              ),0);
+            popup_game_with_sprite(str_senatescandal,&government_sprites_block.government_sprites[(uint)civs[civ].government],0);
           }
           civ_change_government(civ,0);
         }
@@ -6928,26 +6927,22 @@ i32 __cdecl diplo_confirm_attack(int civ,int civ2,uint treaty_mask)
               if (check == 0) {
                 if ((((byte)(civs[civ2].treaties[civ] >> 8) & (TREATY_SNEAK_ATTACK >> 8)) == 0) &&
                    (civs[civ2].reputation == '\0')) {
-                  popup_game_with_sprite(str_allowhawks,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) +
-                                                    (uint)civs[civ].government * 0x3c),0);
+                  popup_game_with_sprite(str_allowhawks,&government_sprites_block.government_sprites[(uint)civs[civ].government],0);
                 }
                 else {
                   civ_name = civ_get_adjective(civ2);
                   text_set_string_arg(0,(const char *)civ_name);
-                  popup_game_with_sprite(str_allowaggressor,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) +
-                                                    (uint)civs[civ].government * 0x3c),0);
+                  popup_game_with_sprite(str_allowaggressor,&government_sprites_block.government_sprites[(uint)civs[civ].government],0);
                 }
               }
               else {
-                popup_game_with_sprite(str_allowun,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) +
-                                                  (uint)civs[civ].government * 0x3c),0);
+                popup_game_with_sprite(str_allowun,&government_sprites_block.government_sprites[(uint)civs[civ].government],0);
               }
             }
             result = 0;
           }
           else {
-            popup_game_with_sprite(str_overrule,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) + (uint)civs[civ].government * 0x3c
-                                              ),0);
+            popup_game_with_sprite(str_overrule,&government_sprites_block.government_sprites[(uint)civs[civ].government],0);
             result = 1;
           }
         }

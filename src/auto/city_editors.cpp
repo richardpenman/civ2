@@ -58,10 +58,7 @@ void __cdecl city_editor_on_edit_icon(void)
   save_callback = sprite_sheet_save_cities;
   sprite_count = 1;
   title_text = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) +
-                           editor_active.wnd->item_3 * 0x3c +
-                           editor_active.wnd->item * 0x1e0 +
-                           editor_active.wnd->item_2 * 0x78),(const char *)title_text,sprite_count,save_callback);
+  sprite_editor_run(&gfx_sheet_surface_block.city_sprites[editor_active.wnd->item][editor_active.wnd->item_2][editor_active.wnd->item_3],(const char *)title_text,sprite_count,save_callback);
   city_editor_request_redraw();
   return;
 }
@@ -74,7 +71,7 @@ void __cdecl city_editor_on_edit_misc(void)
   i32 title_text;
   SpriteSheetSaveFn save_callback;
   iptr parent_wnd2;
-  i8 *sprites;
+  Sprite *sprites;
   i32 sprite_count2;
   
   sprite_count2 = 2;
@@ -91,30 +88,30 @@ void __cdecl city_editor_on_edit_misc(void)
   if ((choice != -1) && (-1 < choice) && (choice < 0x14)) {
     switch(choice) {
     case 0:
-      sprites = ((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites);
+      sprites = &fortify_overlay_sprites_block.fortify_overlay_sprites[0];
       break;
     case 1:
-      sprites = ((i8 *)&airbase_sprites_block.airbase_sprites);
+      sprites = &airbase_sprites_block.airbase_sprites[0];
       break;
     default:
       if (choice < 10) {
-        sprites = ((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + (choice * 8 - 0x10) * 0xf;
+        sprites = &editor_tile_backdrop_sprite_block.civ_flag_sprites[choice - 2][0];
       }
       else {
-        sprites = ((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + (choice * 8 - 0x60) * 0xf;
+        sprites = &editor_tile_backdrop_sprite_block.civ_flag_sprites[choice - 12][1];
       }
       sprite_count2 = 3;
       break;
     case 10:
-      sprites = ((i8 *)&fortify_overlay_sprites_block.fortress_sprite);
+      sprites = &fortify_overlay_sprites_block.fortress_sprite;
       break;
     case 0xb:
-      sprites = ((i8 *)&airbase_sprites_block.airbase_occupied_sprite);
+      sprites = &airbase_sprites_block.airbase_occupied_sprite;
     }
-    if (sprites != (i8 *)0x0) {
+    if (sprites != (Sprite *)0x0) {
       save_callback = sprite_sheet_save_cities;
       title_text = (iptr)label_string(label_table.string_ids[0x1f6]);
-      sprite_editor_run((Sprite *)sprites,(const char *)title_text,sprite_count2,save_callback);
+      sprite_editor_run(sprites,(const char *)title_text,sprite_count2,save_callback);
     }
   }
   dlg_set_parent_window(0);
@@ -216,9 +213,7 @@ void EditorWindow::city_editor_draw()
   }
   icon_x = client_x + 0x20;
   icon_y = client_y + 0x20;
-  sprite = (Sprite *)
-             (((i8 *)&gfx_sheet_surface_block.city_sprites) +
-             item_3_u * 0x3c + item_uptr * 0x1e0 + item_2_uptr * 0x78);
+  sprite = &gfx_sheet_surface_block.city_sprites[item_uptr][item_2_uptr][item_3_u];
   key_color = sprite->get_key_color();
   gfx_fill_rect_xywh(this,icon_x,icon_y,0x40,0x40,(uint)key_color);
   sprite->draw_keyed((RECT *)draw_rect,this,0,icon_x,icon_y + 8);
@@ -718,7 +713,7 @@ void __cdecl impr_editor_edit_icon(void)
   save_callback = sprite_sheet_save_building_icons;
   sprite_count = 4;
   title = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + editor_active.wnd->item * 0x3c)),(const char *)title,sprite_count,
+  sprite_editor_run(&caption_close_button_sprite_block.improvement_icon_sprites[editor_active.wnd->item],(const char *)title,sprite_count,
                      save_callback);
   impr_editor_redraw();
   return;
@@ -732,7 +727,7 @@ void __cdecl impr_editor_edit_misc_icon(void)
   i32 title;
   SpriteSheetSaveFn save_callback;
   iptr parent_wnd2;
-  i8 *sprites;
+  Sprite *sprites;
   i32 sprite_count2;
   
   if (editor_active.wnd == 0) {
@@ -747,17 +742,17 @@ void __cdecl impr_editor_edit_misc_icon(void)
      explosions (a row added to a scenario's DEBUG.TXT) is no choice */
   if ((choice != -1) && (-1 < choice) && (choice < 9)) {
     if (choice == 0) {
-      sprites = ((i8 *)&map_cursor_sprite_block.map_cursor_sprite);
+      sprites = (Sprite *)&map_cursor_sprite_block.map_cursor_sprite;
       sprite_count2 = 5;
     }
     else {
-      sprites = ((i8 *)&government_sprites_block.explosion_sprites) + (choice * 4 - 4) * 0xf;
+      sprites = &government_sprites_block.explosion_sprites[choice - 1];
       sprite_count2 = 6;
     }
-    if (sprites != (i8 *)0x0) {
+    if (sprites != (Sprite *)0x0) {
       save_callback = sprite_sheet_save_building_icons;
       title = (iptr)label_string(label_table.string_ids[0x1f6]);
-      sprite_editor_run((Sprite *)sprites,(const char *)title,sprite_count2,save_callback);
+      sprite_editor_run(sprites,(const char *)title,sprite_count2,save_callback);
     }
   }
   dlg_set_parent_window(0);
@@ -910,10 +905,10 @@ void EditorWindow::impr_editor_paint()
   icon_x = client_x + 0x20;
   icon_y = client_y + 0x20;
   if ((int)item_uptr < IMP_FIRST_WONDER) {
-    icon_sprite = (Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + item_uptr * 0x3c);
+    icon_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[item_uptr];
   }
   else {
-    icon_sprite = (Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (item_uptr * 4 - 0x9c) * 0xf);
+    icon_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[item_uptr];
   }
   if (item_uptr == 0) {
     gfx_fill_rect_xywh(this,icon_x,icon_y,0x48,0x28,10);

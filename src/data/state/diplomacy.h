@@ -104,10 +104,17 @@ typedef struct DiploEval {
 #pragma pack(pop)
 #pragma pack(push, 1)
 struct tax_rate_icon_sprites_block {
-    Sprite tax_rate_icon_sprites;  /* 00648860 */
-    Sprite gold_coin_icon_sprite;  /* 0064889c */
-    u8 science_icon_sprite[64];  /* 006488d8 */
-    i8 lux_tax_sci_icon_sprites[7704];  /* 00648918 */
+    union {
+        Sprite tax_rate_icon_sprites[3];  /* 00648860 */
+        struct {
+            Sprite tax_rate_icon_sprite;
+            Sprite gold_coin_icon_sprite;
+            Sprite science_icon_sprite;
+        };
+    };
+    u8 tax_rate_icon_sprites_rest[4];
+    Sprite lux_tax_sci_icon_sprites[3];  /* 00648918 */
+    u8 lux_tax_sci_icon_sprites_rest[7524];
     i8 registry_value_buffer[2464];  /* 0064a730 */
     int cityview_screen_rect;  /* 0064b0d0 */
     int cityview_screen_rect_top;  /* 0064b0d4 */

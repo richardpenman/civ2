@@ -458,9 +458,7 @@ void __cdecl tech_editor_on_edit_icon(void)
   save_fn = sprite_sheet_save_tech_icons;
   flags = 0;
   title = (iptr)label_string(label_table.string_ids[0x1f6]);
-  sprite_editor_run((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                           editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[3] * 0xf0 +
-                           editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[2] * 0x3c),
+  sprite_editor_run(&government_sprites_block.advance_category_icon_sprites[editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[3]][editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[2]],
                      (const char *)title,flags,save_fn);
   tech_editor_redraw();
   return;
@@ -626,10 +624,7 @@ void EditorWindow::tech_editor_paint()
   }
   icon_x = client_x + 0x20;
   icon_y = client_y + 0x20;
-  icon = (Sprite *)
-             (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-             editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[3] * 0xf0 +
-             editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[2] * 0x3c);
+  icon = &government_sprites_block.advance_category_icon_sprites[editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[3]][editor_text_dlg_wnd_block.editor_item_recs[item_uptr].values[2]];
   key_color = icon->get_key_color();
   gfx_fill_rect_xywh(this,icon_x,icon_y,0x48,0x28,(uint)key_color);
   gfx_set_scale_ratio(2,1);
@@ -1840,7 +1835,7 @@ void __cdecl science_advisor_draw(void)
     value -= 10;
     bar_height = 0xe;
     max_value = civ_research_cost(civ);
-    sprite_draw_spaced_row(&advisor_state.window,(Sprite *)&tax_rate_icon_sprites_block.science_icon_sprite,advisor_state.client_rect + 5,draw_y,
+    sprite_draw_spaced_row(&advisor_state.window,&tax_rate_icon_sprites_block.science_icon_sprite,advisor_state.client_rect + 5,draw_y,
                        (int)civs[civ].research_progress,max_value,bar_height,value,bar_flag);
     box_bottom = cur_y + 0x20;
     cur_y = box_bottom;
@@ -1904,9 +1899,7 @@ void __cdecl science_advisor_draw(void)
       item_x = advisor_state.column_width * column + list_left;
       item_index = value;
       hd_advance_begin(advance);    /* (port) HD: the advance's picture */
-      ((Sprite *)
-                 (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                 (char)advances[advance].epoch * 0x3c + (char)advances[advance].category * 0xf0))->draw(
+      government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch].draw(
                  (RECT *)sprite_rect,&advisor_state.window,item_x,draw_y);
       hd_advance_end();
       text_x2 = item_x + 0x26;
@@ -2082,7 +2075,7 @@ static int civ_score_draw_citizens(iptr civ,int left_x,int text_y3)
           sprite_index = value + 7;
         }
         citizen_count++;
-        ((Sprite *)(((i8 *)&road_sprites_block.citizen_sprites) + era * 0x294 + sprite_index * 0x3c))->draw(
+        road_sprites_block.citizen_sprites[era][sprite_index].draw(
                    (RECT *)citizen_rect,&advisor_state.window,draw_x,draw_y);
         row_wrapped = 0;
         draw_x += icon_width;
@@ -2133,7 +2126,7 @@ static int civ_score_draw_wonders(iptr civ,int left_x,int text_y3)
     if ((((-1 < game.wonder_city[wonder]) && (game.wonder_city[wonder] < game.num_cities))
         && (cities[game.wonder_city[wonder]].id != 0)) &&
        (city = (iptr)game.wonder_city[wonder], cities[city].owner == civ)) {
-      ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c))->draw((RECT *)wonder_rect,&advisor_state.window,
+      caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder].draw((RECT *)wonder_rect,&advisor_state.window,
                  draw_x,draw_y);
       text_x2 = draw_x + 0x26;
       text_set_colors(0x5e,0x12,0xffffffff,0xffffffff);
@@ -2727,7 +2720,7 @@ void __cdecl civ_flag_sprites_global_init(void)
 void __cdecl civ_flag_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites),0x3c,0x10,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&editor_tile_backdrop_sprite_block.civ_flag_sprites[0][0],0x3c,0x10,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2743,7 +2736,7 @@ void __cdecl civ_flag_sprites_reg_atexit(void)
 void __cdecl civ_flag_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites),0x3c,0x10,sprite_destroy);
+  crt_vector_dtor_iterator(&editor_tile_backdrop_sprite_block.civ_flag_sprites[0][0],0x3c,0x10,sprite_destroy);
   return;
 }
 
@@ -2760,7 +2753,7 @@ void __cdecl research_flask_sprites_global_init(void)
 void __cdecl research_flask_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&city_down_arrow_sprite_block.research_flask_sprites),0x3c,4,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&city_down_arrow_sprite_block.research_flask_sprites[0],0x3c,4,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2776,7 +2769,7 @@ void __cdecl research_flask_sprites_reg_atexit(void)
 void __cdecl research_flask_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&city_down_arrow_sprite_block.research_flask_sprites),0x3c,4,sprite_destroy);
+  crt_vector_dtor_iterator(&city_down_arrow_sprite_block.research_flask_sprites[0],0x3c,4,sprite_destroy);
   return;
 }
 
@@ -2793,7 +2786,7 @@ void __cdecl global_warming_sprites_global_init(void)
 void __cdecl global_warming_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&city_down_arrow_sprite_block.global_warming_sprites),0x3c,4,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&city_down_arrow_sprite_block.global_warming_sprites[0],0x3c,4,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2809,7 +2802,7 @@ void __cdecl global_warming_sprites_reg_atexit(void)
 void __cdecl global_warming_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&city_down_arrow_sprite_block.global_warming_sprites),0x3c,4,sprite_destroy);
+  crt_vector_dtor_iterator(&city_down_arrow_sprite_block.global_warming_sprites[0],0x3c,4,sprite_destroy);
   return;
 }
 
@@ -2826,7 +2819,7 @@ void __cdecl advance_cat_icon_sprites_global_init(void)
 void __cdecl advance_category_icon_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&government_sprites_block.advance_category_icon_sprites),0x3c,0x14,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&government_sprites_block.advance_category_icon_sprites[0][0],0x3c,0x14,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2842,7 +2835,7 @@ void __cdecl advance_category_icon_sprites_reg_atexit(void)
 void __cdecl advance_cat_icon_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&government_sprites_block.advance_category_icon_sprites),0x3c,0x14,sprite_destroy);
+  crt_vector_dtor_iterator(&government_sprites_block.advance_category_icon_sprites[0][0],0x3c,0x14,sprite_destroy);
   return;
 }
 
@@ -2859,7 +2852,7 @@ void __cdecl government_sprites_global_init(void)
 void __cdecl government_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&government_sprites_block.government_sprites),0x3c,7,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&government_sprites_block.government_sprites[0],0x3c,7,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2875,7 +2868,7 @@ void __cdecl government_sprites_reg_atexit(void)
 void __cdecl government_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&government_sprites_block.government_sprites),0x3c,7,sprite_destroy);
+  crt_vector_dtor_iterator(&government_sprites_block.government_sprites[0],0x3c,7,sprite_destroy);
   return;
 }
 
@@ -2892,7 +2885,7 @@ void __cdecl civ_portrait_sprites_global_init(void)
 void __cdecl civ_portrait_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&road_sprites_block.civ_portrait_sprites),0x3c,8,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&road_sprites_block.civ_portrait_sprites[0],0x3c,8,sprite_init,sprite_destroy);
   return;
 }
 
@@ -2908,7 +2901,7 @@ void __cdecl civ_portrait_sprites_reg_atexit(void)
 void __cdecl civ_portrait_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&road_sprites_block.civ_portrait_sprites),0x3c,8,sprite_destroy);
+  crt_vector_dtor_iterator(&road_sprites_block.civ_portrait_sprites[0],0x3c,8,sprite_destroy);
   return;
 }
 
@@ -3555,12 +3548,12 @@ void __cdecl civ_check_pop_and_funds(int civ,int prev_gold)
     text_clear();
     text_append_population(civ,milestone_pop);
     text_set_string_arg(2,(const char *)&textbuf.buf);
-    popup_game_with_sprite(str_fertile,((Sprite *)(((i8 *)&road_sprites_block.civ_portrait_sprites) + civ * 0x3c)),0);
+    popup_game_with_sprite(str_fertile,&road_sprites_block.civ_portrait_sprites[civ],0);
   }
   if ((((((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) && (autoplay.active == 0)) &&
        ((turn_loop.active != '\0' && ((1 < civs[civ].num_cities && (civs[civ].gold < 100))))))
       && ((civs[civ].gold - prev_gold) * 10 + civs[civ].gold < 0)) &&
-     (total_pop = popup_game_with_sprite(str_taxes,((Sprite *)(((i8 *)&road_sprites_block.civ_portrait_sprites) + civ * 0x3c)),0), total_pop != 0)) {
+     (total_pop = popup_game_with_sprite(str_taxes,&road_sprites_block.civ_portrait_sprites[civ],0), total_pop != 0)) {
     taxrate_dialog_show(civ);
   }
   return;
@@ -4842,7 +4835,7 @@ int __cdecl civ_check_destroyed(int civ,int civ2)
             net_send_text_args(0xe,0xff,2,0,civ,0);
           }
           music_play_track(2,1);
-          popup_game_with_sprite(str_destroyed,((Sprite *)(((i8 *)&road_sprites_block.civ_portrait_sprites) + civ * 0x3c)),0);
+          popup_game_with_sprite(str_destroyed,&road_sprites_block.civ_portrait_sprites[civ],0);
         }
         if (destroyed_civs.count[0] < 0xc) {
           result = (int)destroyed_civs.count[0];
@@ -5147,7 +5140,7 @@ void __cdecl civ_advance_gov_prompts(int civ,int advance)
   
   if (advance == ADV_MONARCHY) {
     if ((civs[civ].government == GOV_DESPOTISM) &&
-       (choice = popup_game_with_sprite(str_automonarchy,&government_sprites_block.government_monarchy_sprite,0), choice == 1)) {
+       (choice = popup_game_with_sprite(str_automonarchy,&government_sprites_block.government_sprites[2],0), choice == 1)) {
       civ_plural = (iptr)(civ_name_plural(civ));
       text_set_string_arg(0,(const char *)civ_plural);
       popup_game_with_sprite(str_startrev_2,(Sprite *)&popup_info_icon_sprite,0);
@@ -5184,7 +5177,7 @@ void __cdecl civ_advance_gov_prompts(int civ,int advance)
     if ((civs[civ].government != GOV_DEMOCRACY) && (civs[civ].government != GOV_ANARCHY)) {
       text_set_label_arg(0,advances[advance].name);
       text_set_label_arg(1,government_names[civs[civ].government]);
-      choice = popup_game_with_sprite(str_autorev,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + gov_sprite_index * 0x3c)),0);
+      choice = popup_game_with_sprite(str_autorev,&government_sprites_block.government_sprites[gov_sprite_index],0);
       if (choice == 1) {
         civ_plural = (iptr)(civ_name_plural(civ));
         text_set_string_arg(0,(const char *)civ_plural);
@@ -5310,9 +5303,7 @@ static void civ_advance_announce(uptr civ,iptr advance,iptr civ2,Dialog &dialog2
   if (diplo_meeting.session_active == 0) {
     hd_dialog_advance(advance);     /* (port) HD: the advance's picture */
     dialog2.add_sprite(
-               (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                     (char)advances[advance].epoch * 0x3c +
-                     (char)advances[advance].category * 0xf0),0,0);
+               &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],0,0);
     hd_dialog_advance(-1);
     dialog2.set_image_zoom(8);
   }
@@ -5368,11 +5359,9 @@ static void civ_advance_sell_barracks(uptr civ,iptr advance,Dialog &dialog2)
       if (diplo_meeting.session_active == 0) {
         hd_dialog_advance(advance);     /* (port) HD: the advance's picture */
         dialog2.add_sprite(
-                   (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                         (char)advances[advance].epoch * 0x3c +
-                         (char)advances[advance].category * 0xf0),0,0);
+                   &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],0,0);
         hd_dialog_advance(-1);
-        dialog2.add_sprite((Sprite *)&caption_close_button_sprite_block.notify_sprites,0,0);
+        dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[2],0,0);
         dialog2.set_image_zoom(8);
       }
       dialog2.show_modal(0);
@@ -5411,11 +5400,9 @@ static void civ_advance_first_discovery(uptr civ,iptr advance,iptr civ2,Dialog &
         if (diplo_meeting.session_active == 0) {
           hd_dialog_advance(advance);   /* (port) HD: the advance's picture */
           dialog2.add_sprite(
-                     (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                           (char)advances[advance].epoch * 0x3c +
-                           (char)advances[advance].category * 0xf0),0,0);
+                     &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],0,0);
           hd_dialog_advance(-1);
-          dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
+          dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement2],0,0);
           dialog2.set_image_zoom(8);
         }
         if (2 < game.multiplayer) {
@@ -5698,9 +5685,7 @@ research_option_draw_advance(i32 dialog,DibSurface *surface,int advance,byte fla
   y_offset = (0x14 - height) / 2;
   draw_y = y - y_offset;
   hd_advance_begin(advance);    /* (port) HD: the advance's picture */
-  ((Sprite *)
-             (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-             (char)advances[advance].category * 0xf0 + (char)advances[advance].epoch * 0x3c))->draw(
+  government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch].draw(
              (RECT *)draw_ctx,surface,draw_x,draw_y);
   hd_advance_end();
   return 0;
@@ -5729,7 +5714,7 @@ research_option_draw_unit(i32 dialog,DibSurface *surface,int unit_type,byte flag
   y_offset = (sprite_height2 - height) / 2;
   draw_y -= y_offset;
   gfx_set_zoom_scale(zoom2);
-  ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)draw_ctx,surface,draw_x,
+  pollution_sprite_block.unit_sprites[unit_type].draw((RECT *)draw_ctx,surface,draw_x,
              draw_y);
   gfx_reset_zoom_scale();
   return 0;
@@ -5752,7 +5737,7 @@ research_option_draw_improvement(i32 dialog,DibSurface *surface,int improvement,
   }
   y_offset = (0x14 - height) / 2;
   draw_y = y - y_offset;
-  ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c))->draw((RECT *)draw_ctx,surface,draw_x,
+  caption_close_button_sprite_block.improvement_icon_sprites[improvement].draw((RECT *)draw_ctx,surface,draw_x,
              draw_y);
   return 0;
 }
@@ -6092,8 +6077,7 @@ int __cdecl civ_choose_research_dialog(int civ,int forced)
         info_dialog.load_text((const char *)&str_advice,(const char *)&textbuf.buf,8);
         hd_dialog_advance(advance2);    /* (port) HD: the advance's picture */
         info_dialog.add_sprite(
-                   (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                         (char)advances[advance2].epoch * 0x3c + (char)advances[advance2].category * 0xf0)
+                   &government_sprites_block.advance_category_icon_sprites[(char)advances[advance2].category][(char)advances[advance2].epoch]
                    ,(ui_metrics.large_screen == 0) - 1 & 8,0);
         hd_dialog_advance(-1);
         if (hint_kind != 0) {
@@ -6238,9 +6222,7 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
       dialog2.load_game_text((const char *)&str_civadvance);
       hd_dialog_advance(advance);   /* (port) HD: the advance's picture */
       dialog2.add_sprite(
-                 (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                       (char)advances[advance].category * 0xf0 +
-                       (char)advances[advance].epoch * 0x3c),0,0);
+                 &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],0,0);
       hd_dialog_advance(-1);
       dialog2.set_image_zoom(8);
       dialog2.show_modal(0);
@@ -6252,26 +6234,26 @@ int __cdecl civ_research_complete(uptr civ,int civ2)
         civ_golden_age_popup(civ);
       }
       if (unit_types[UNIT_ENGINEERS].prerequisite == advance) {
-        popup_game_with_sprite(str_newxform,(Sprite *)&pollution_sprite_block.research_popup_sprite,8);
+        popup_game_with_sprite(str_newxform,&pollution_sprite_block.unit_sprites[1],8);
       }
       if (advance == ADV_CONSTRUCTION) {
         popup_game_with_sprite(str_newfortress,(Sprite *)&popup_info_icon_sprite,0);
       }
       if (improvements[IMP_AIRPORT].preq == advance) {
-        popup_game_with_sprite(str_newairlift,(Sprite *)&caption_close_button_sprite_block.research_popup_sprite3,8);
+        popup_game_with_sprite(str_newairlift,&caption_close_button_sprite_block.improvement_icon_sprites[32],8);
       }
       if (advance == ADV_RAILROAD) {
-        popup_game_with_sprite(str_newrailroad,(Sprite *)&road_sprites_block.railroad_sprites,8);
+        popup_game_with_sprite(str_newrailroad,&road_sprites_block.railroad_sprites[0],8);
       }
       if (improvements[IMP_SUPERMARKET].preq == advance) {
         dialog2.load_game_text((const char *)&str_newfarmland);
-        dialog2.add_sprite((Sprite *)&caption_close_button_sprite_block.research_dialog_sprite,0,0);
+        dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[24],0,0);
         dialog2.add_sprite(&land_improvement_sprites_block.farmland_sprite,0,0);
         dialog2.show_modal(0);
       }
       if (unit_types[UNIT_PARATROOPERS].prerequisite == advance) {
         text_set_number_arg_u8(0,cosmic.paradrop_range);
-        popup_game_with_sprite(str_newparadrop,(Sprite *)&pollution_sprite_block.research_popup_sprite2,8);
+        popup_game_with_sprite(str_newparadrop,&pollution_sprite_block.unit_sprites[13],8);
       }
       if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) && (game.turn != 0)) {
         civ_choose_research(civ);
@@ -6971,13 +6953,13 @@ void __cdecl civ_change_government(int civ,uptr new_gov)
          ) {
         if (((civs[civ].flags & CIVF_REVOLUTION) == 0) || (autoplay.active != 0)) {
           if (autoplay.active == 0) {
-            popup_game_with_sprite(str_overthrown_2,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + old_government * 0x3c)),
+            popup_game_with_sprite(str_overthrown_2,&government_sprites_block.government_sprites[old_government],
                                (ui_metrics.large_screen == 0) - 1 & 8);
             civs[civ].flags = civs[civ].flags | CIVF_REVOLUTION;
           }
         }
         else {
-          popup_game_with_sprite(str_changed_2,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + new_gov * 0x3c)),
+          popup_game_with_sprite(str_changed_2,&government_sprites_block.government_sprites[new_gov],
                              (ui_metrics.large_screen == 0) - 1 & 8);
           civs[civ].flags = civs[civ].flags & ~CIVF_REVOLUTION;
         }

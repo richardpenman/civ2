@@ -225,32 +225,36 @@ static int next_choice;
 static int popup_text_flags(const char *, const char *, int) { return next_choice; }
 static void popup_text(const char *, const char *) {}
 static void terrain_editor_redraw() {}
-static i8 *edited;
-static void sprite_editor_run(Sprite *sprites, const char *, int, SpriteSheetSaveFn) { edited = (i8 *)sprites; }
+static Sprite *edited;
+static void sprite_editor_run(Sprite *sprites, const char *, int, SpriteSheetSaveFn) { edited = sprites; }
 static void sprite_sheet_save_terrain1() {}
 static void sprite_sheet_save_terrain2() {}
 static struct {
-    i8 river_sprites[16 * 0x3c];
+    Sprite river_sprites[16];
 } icon_misc_sprites_block;
 static struct {
-    i8 river_mouth_sprites[240];
+    Sprite river_mouth_sprites[4];
 } tile_pick_mask_sprite_block;
 static struct {
-    i8 coast_quarter_sprites[60];
-    i8 coast_quarter_east_sprites[60];
-    i8 coast_quarter_south_sprites[60];
-    i8 coast_quarter_west_sprites[1740];
-    i8 next_sprite[60];  // the one after them (the original's 0x6442b8)
+    Sprite coast_quarter_sprites[8][4];
+    Sprite next_sprite;  // the one after them (the original's 0x6442b8)
 } tutorial_icon_sprite_block;
 static struct {
-    i8 land_improvement_sprites[184];
+    Sprite land_improvement_sprites[3];
+    u8 land_improvement_sprites_rest[4];
 } land_improvement_sprites_block;
 static struct {
     i8 pollution_sprite[60];
 } pollution_sprite_block;
 static i8 grassland_shield_sprite[60], hut_sprite[60];
 static struct {
-    i8 road_sprites[0x21c * 2];
+    union {
+        struct {
+            Sprite road_sprites[9];
+            Sprite railroad_sprites[9];
+        };
+        Sprite roads_and_railroads[2][9];
+    };
 } road_sprites_block;
 
 // The Civilopedia's wonder index and unit facts.
@@ -421,17 +425,17 @@ static void terrain_icons() {
     next_choice = 19;
     edited = nullptr;
     terrain_editor_on_edit_river();
-    assert(edited == tile_pick_mask_sprite_block.river_mouth_sprites + 3 * 0x3c);
+    assert(edited == &tile_pick_mask_sprite_block.river_mouth_sprites[3]);
     next_choice = 20; // BF-072: a 21st row of a scenario's @RIVER
     edited = nullptr;
     terrain_editor_on_edit_river();
     assert(edited == nullptr);
     next_choice = 31;
     terrain_editor_on_edit_coast();
-    assert(edited == tutorial_icon_sprite_block.coast_quarter_sprites + 3 * 0x3c + 7 * 0xf0);
+    assert(edited == &tutorial_icon_sprite_block.coast_quarter_sprites[7][3]);
     next_choice = 32; // the original's: the sprite after the coast
     terrain_editor_on_edit_coast();
-    assert(edited == tutorial_icon_sprite_block.next_sprite);
+    assert(edited == &tutorial_icon_sprite_block.next_sprite);
     for (int choice : {33, 100, -2}) { // BF-118
         next_choice = choice;
         edited = nullptr;
@@ -440,7 +444,7 @@ static void terrain_icons() {
     }
     next_choice = 23;
     terrain_editor_on_edit_misc();
-    assert(edited == road_sprites_block.road_sprites + 8 * 0x3c + 0x21c);
+    assert(edited == &road_sprites_block.railroad_sprites[8]);
     next_choice = 24; // BF-116
     edited = nullptr;
     terrain_editor_on_edit_misc();

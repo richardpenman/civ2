@@ -359,10 +359,7 @@ void __cdecl parley_draw_advance_list(int pane)
         shadow_color2 = dlg_style.sel_text_shadow_color;
       }
       advance = (int)window->list_items[pane][window->list_first_row[pane] + row];
-      icon_sprite = (Sprite *)
-                 (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                 (char)advances[advance].category * 0xf0 +
-                 (char)advances[advance].epoch * 0x3c);
+      icon_sprite = &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch];
       tmp = icon_sprite->get_width();
       text_x_offset = panel_layout.margin_x * 3 + tmp * 2;
       row_rect.left += text_x_offset;
@@ -775,7 +772,7 @@ void __cdecl parley_draw_unit_list(int pane)
           stale = 1;  /* not found: the list is rebuilt and drawn again */
           break;
         }
-        unit_sprite = (Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c);
+        unit_sprite = &pollution_sprite_block.unit_sprites[(uint)units[unit].type];
         if (this2->large_layout == 0) {
           tmp = unit_sprite->get_width();
           icon_width = (tmp * 2) / 3;

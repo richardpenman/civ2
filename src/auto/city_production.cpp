@@ -2296,8 +2296,8 @@ int __cdecl city_choose_production(int city,i32 *out_best_unit,i32 *out_best_bui
 static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr improvement,int acquired)
 {
   iptr str;
-  i8 *built_sprite;
-  i8 *notify_sprite;
+  Sprite *built_sprite;
+  Sprite *notify_sprite;
   int announce;
   uptr city3;
   iptr sound;
@@ -2373,12 +2373,12 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
     }
     if ((game.message_options & MSGOFF_IMPROVEMENT_BUILT) == 0) {
       if (wonder < 0) {
-        notify_sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
+        notify_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[improvement];
       }
       else {
-        notify_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
+        notify_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder];
       }
-      city_notify_dialog_ex(str_built_4,city,1,(Sprite *)notify_sprite);
+      city_notify_dialog_ex(str_built_4,city,1,notify_sprite);
     }
   }
   else if (announce != 0) {
@@ -2389,12 +2389,12 @@ static void city_process_production_announce(uptr city,uptr civ,iptr wonder,iptr
     Dialog built_dialog(0x4000);
     built_dialog.load_game_text((const char *)&str_built2);
     if (wonder < 0) {
-      built_sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
+      built_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[improvement];
     }
     else {
-      built_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
+      built_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder];
     }
-    built_dialog.add_sprite((Sprite *)built_sprite,0,0)
+    built_dialog.add_sprite(built_sprite,0,0)
     ;
     built_dialog.set_image_zoom(8);
     built_dialog.show_modal(0);
@@ -2445,7 +2445,7 @@ static void city_process_production_complete_improvement(uptr city,uptr civ,int 
               ((int)cities[city].owner == (civ2 & 0xff))))) {
             if (human_civ[0] == civ2) {
               snd_play_effect(SND_LARGEXPL,1,0,0);
-              city_notify_dialog(str_manhattan,city,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
+              city_notify_dialog(str_manhattan,city,&caption_close_button_sprite_block.improvement_icon_sprites[62]);
             }
             else if (2 < game.multiplayer) {
               net_send_text_args(0x46,net.net_slots[net.net_civ_slots[civ2]].id,1,0,
@@ -2475,7 +2475,7 @@ static void city_process_production_complete_improvement(uptr city,uptr civ,int 
       if (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) &&
          ((result = civ_spaceship_launched(civ), result == 0 && (part < 0)))) {
         text_set_label_arg(1,improvements[improvement].name);
-        city_notify_dialog(str_badspace_2,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
+        city_notify_dialog(str_badspace_2,city,&caption_close_button_sprite_block.improvement_icon_sprites[improvement]);
       }
     }
     if (improvement == IMP_PALACE) {
@@ -2708,7 +2708,7 @@ static int city_process_production_unit(uptr city,uptr civ)
         if ((1 << ((byte)civ & 0x1f) & (uint)game.human_players) != 0) {
           text_set_label_arg(1,unit_types[unit_type].name);
           text_set_label_arg(2,unit_types[unit_type2].name);
-          city_notify_dialog(str_upgraded,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type2 * 0x3c)));
+          city_notify_dialog(str_upgraded,city,&pollution_sprite_block.unit_sprites[unit_type2]);
         }
         unit_type = unit_type2;
         str = unit_type;
@@ -2831,7 +2831,7 @@ static int city_process_production_unit(uptr city,uptr civ)
               city3 = 0xbc;
             }
             text_set_label_arg(3,label_table.string_ids[city3]);
-            city_notify_dialog(str_built_3,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)));
+            city_notify_dialog(str_built_3,city,&pollution_sprite_block.unit_sprites[unit_type]);
           }
         }
       }
@@ -2873,7 +2873,7 @@ static void city_process_production_almost_wonder(uptr city,uptr civ)
       }
       Dialog wonder_dialog(0x4000);
       wonder_dialog.load_game_text((const char *)&str_almostwonder);
-      wonder_dialog.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
+      wonder_dialog.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement2],0,0);
       wonder_dialog.set_image_zoom(8);
       wonder_dialog.show_modal(0);
     }
@@ -3005,7 +3005,7 @@ void __cdecl city_process_production(uptr city)
 {
   iptr unit_owner;
   int result;
-  i8 *done_sprite;
+  Sprite *done_sprite;
   uptr civ;
   iptr improvement2;
   uptr city2;
@@ -3054,12 +3054,12 @@ void __cdecl city_process_production(uptr city)
          ((wonder < 0 && (result = city_has_improvement(city,improvement), result != 0)))) &&
         (text_set_label_arg(1,improvements[improvement].name), (game.message_options & MSGOFF_INVALID_BUILD) == 0)))) {
       if (wonder < 0) {
-        done_sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
+        done_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[improvement];
       }
       else {
-        done_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + wonder * 0x3c;
+        done_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + wonder];
       }
-      city_notify_dialog(str_badbuild,city,(Sprite *)done_sprite);
+      city_notify_dialog(str_badbuild,city,done_sprite);
     }
     if (((improvement < 0x23) || (0x25 < improvement)) ||
        (((1 << ((byte)civ & 0x1f) & (uint)game.human_players) == 0 ||
@@ -3132,7 +3132,7 @@ void __cdecl city_process_production(uptr city)
     }
     else {
       text_set_label_arg(1,improvements[improvement].name);
-      city_notify_dialog(str_badspace,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
+      city_notify_dialog(str_badspace,city,&caption_close_button_sprite_block.improvement_icon_sprites[improvement]);
     }
   }
   else {

@@ -1038,37 +1038,37 @@ static void net_popup_load_args(int *entry)
 static int net_popup_show_dialog(int *entry,Dialog &dlg)
 {
   iptr text;
-  i8 *icon_sprite;
+  Sprite *icon_sprite;
   int i;
 
   switch(entry[1]) {
   case 0x12:
     dlg.load_game_text((const char *)&str_startwonder_2);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(entry[5]);
     dlg.show_modal(0);
     break;
   case 0x13:
     dlg.load_game_text((const char *)&str_switchwonder_2);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(entry[5]);
     dlg.show_modal(0);
     break;
   case 0x14:
     dlg.load_game_text((const char *)&str_abandonwonder_2);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(entry[5]);
     dlg.show_modal(0);
     break;
   case 0x19:
     dlg.load_game_text((const char *)&str_capturewonder);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
   case 0x1a:
     dlg.load_game_text((const char *)&str_lostwonder);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
@@ -1093,30 +1093,30 @@ static int net_popup_show_dialog(int *entry,Dialog &dlg)
   case 0x47:
     dlg.load_game_text((const char *)&str_built2_2);
     if (entry[4] < 0) {
-      icon_sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[5] * 0x3c;
+      icon_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[entry[5]];
     }
     else {
-      icon_sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + entry[4] * 0x3c;
+      icon_sprite = &caption_close_button_sprite_block.improvement_icon_sprites[entry[4] + 39];
     }
-    dlg.add_sprite((Sprite *)icon_sprite,0,0);
+    dlg.add_sprite(icon_sprite,0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
   case 0x4a:
     dlg.load_game_text((const char *)&str_almostwonder_2);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
   case 0x4b:
     dlg.load_game_text((const char *)&str_stillwonder1);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
   case 0x4c:
     dlg.load_game_text((const char *)&str_stillwonder2);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
@@ -1124,11 +1124,9 @@ static int net_popup_show_dialog(int *entry,Dialog &dlg)
     dlg.load_game_text((const char *)&str_endwonder_4);
     hd_dialog_advance(entry[4]);    /* (port) HD: the advance's picture */
     dlg.add_sprite(
-               (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                     (char)advances[entry[4]].category * 0xf0 +
-                     (char)advances[entry[4]].epoch * 0x3c),0,0);
+               &government_sprites_block.advance_category_icon_sprites[(char)advances[entry[4]].category][(char)advances[entry[4]].epoch],0,0);
     hd_dialog_advance(-1);
-    dlg.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[5] * 0x3c)),0,0);
+    dlg.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[entry[5]],0,0);
     dlg.set_image_zoom(8);
     dlg.show_modal(0);
     break;
@@ -1173,13 +1171,13 @@ static int net_popup_show_spy(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_blewitup_2,entry[4]);
     break;
   case 0x26:
-    popup_game_with_sprite(str_bond007_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
+    popup_game_with_sprite(str_bond007_2,&pollution_sprite_block.unit_sprites[entry[4]],entry[5]);
     break;
   case 0x27:
-    popup_game_with_sprite(str_bond_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
+    popup_game_with_sprite(str_bond_2,&pollution_sprite_block.unit_sprites[entry[4]],entry[5]);
     break;
   case 0x28:
-    popup_game_with_sprite(str_bondglory_2,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + entry[4] * 0x3c)),entry[5]);
+    popup_game_with_sprite(str_bondglory_2,&pollution_sprite_block.unit_sprites[entry[4]],entry[5]);
     break;
   case 0x37:
     dlg_game_txt_with_unit_flags((const char *)&str_ransom,entry[4],0);
@@ -1214,7 +1212,7 @@ static int net_popup_show_spy(int *entry,Dialog &dlg)
     else {
       snd_play_effect(SND_MEDEXPL,1,0,0);
     }
-    popup_game_with_sprite(str_sabotageone_2,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + entry[4] * 0x3c)),8);
+    popup_game_with_sprite(str_sabotageone_2,&caption_close_button_sprite_block.improvement_icon_sprites[entry[4]],8);
     break;
   case 0x5a:
     choice = civ_has_advance(entry[4],ADV_GUNPOWDER);
@@ -1371,7 +1369,7 @@ static int net_popup_show_event(int *entry,Dialog &dlg)
     break;
   case 0xe:
     music_play_track(2,1);
-    popup_game_with_sprite(str_destroyed_2,((Sprite *)(((i8 *)&road_sprites_block.civ_portrait_sprites) + entry[4] * 0x3c)),0);
+    popup_game_with_sprite(str_destroyed_2,&road_sprites_block.civ_portrait_sprites[entry[4]],0);
     break;
   case 0xf:
     snd_play_effect((-(uint)(entry[5] == 0) & 0x14) + 0x16,1,0,0);
@@ -1418,7 +1416,7 @@ static int net_popup_show_event(int *entry,Dialog &dlg)
     dlg_game_txt_with_unit((const char *)&str_promoted,entry[4]);
     break;
   case 0x21:
-    popup_game_with_sprite(str_incorruptible_2,(Sprite *)&government_sprites_block.government_sprite_democracy,0);
+    popup_game_with_sprite(str_incorruptible_2,&government_sprites_block.government_sprites[6],0);
     break;
   case 0x29:
     popup_game_with_improvement((const char *)&str_useweapons,IMP_MANHATTAN,8);
@@ -1427,10 +1425,10 @@ static int net_popup_show_event(int *entry,Dialog &dlg)
     popup_game_with_improvement((const char *)&str_sdi,IMP_SDI_DEFENSE,8);
     break;
   case 0x2b:
-    popup_game_with_sprite(str_changed,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c)),entry[5]);
+    popup_game_with_sprite(str_changed,&government_sprites_block.government_sprites[entry[4]],entry[5]);
     break;
   case 0x2c:
-    popup_game_with_sprite(str_overthrown,((Sprite *)(((i8 *)&government_sprites_block.government_sprites) + entry[4] * 0x3c)),entry[5]);
+    popup_game_with_sprite(str_overthrown,&government_sprites_block.government_sprites[entry[4]],entry[5]);
     break;
   case 0x2f:
     dlg_game_txt_with_unit((const char *)&str_missileattack,entry[4]);
@@ -1476,7 +1474,7 @@ static int net_popup_show_event(int *entry,Dialog &dlg)
     break;
   case 0x46:
     snd_play_effect(SND_LARGEXPL,1,0,0);
-    city_notify_dialog_ex(str_manhattan_2,entry[4],1,(Sprite *)&caption_close_button_sprite_block.city_notify_sprite);
+    city_notify_dialog_ex(str_manhattan_2,entry[4],1,&caption_close_button_sprite_block.improvement_icon_sprites[62]);
     break;
   case 0x48:
     popup_game((const char *)&str_movecapital_2);

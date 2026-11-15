@@ -517,7 +517,7 @@ int __cdecl setup_start_scenario(void)
       unit = (iptr)game.active_unit;
       if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
          ((int)units[unit].owner == (int)scenario.objective_civ)) {
-        dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
+        dlg.add_sprite(&pollution_sprite_block.unit_sprites[(uint)units[unit].type],0
                    ,0);
       }
       choice = dlg.show_modal(0);
@@ -1232,7 +1232,7 @@ i32 __cdecl setup_mp_load_scenario(i32 mp_mode)
       unit = (int)game.active_unit;
       if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
          ((int)units[unit].owner == (int)scenario.objective_civ)) {
-        dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
+        dlg.add_sprite(&pollution_sprite_block.unit_sprites[(uint)units[unit].type],0
                    ,0);
       }
       unit = dlg.show_modal(0);
@@ -2253,7 +2253,7 @@ static TribeStep setup_tribe_city_style(Dialog *dlg,char *input_text,int *choice
     dialog_prepend_title_label(dlg,player_slot + 0x25e);
     for (style2 = 0; style2 < 4; style2++) {
       label = (iptr)label_string(label_table.string_ids[0xf6 + style2]);
-      dlg->add_sprite((Sprite *)(style2 * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 360))),style2,(const char *)label);
+      dlg->add_sprite(&gfx_sheet_surface_block.city_sprites[style2][3][1],style2,(const char *)label);
     }
     dlg->set_default_choice((int)leaders[civs[game.player_civ].tribe].city_style);
     if (in_game == 0) {
@@ -2646,7 +2646,7 @@ i32 __cdecl scenario_start_dialog(int game_mode)
         unit = (int)game.active_unit;
         if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
            ((int)units[unit].owner == (int)scenario.objective_civ)) {
-          dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0
+          dlg.add_sprite(&pollution_sprite_block.unit_sprites[(uint)units[unit].type],0
                      ,0);
         }
         unit = dlg.show_modal(0);

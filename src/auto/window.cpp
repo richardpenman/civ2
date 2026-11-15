@@ -392,8 +392,7 @@ void __cdecl menu_revolution(void)
         text = civ_get_adjective(human_civ[0]);
         text_set_string_arg(0,(const char *)text);
         text_set_label_arg(1,government_names[civs[civ].government]);
-        choice = popup_game_with_sprite(str_revolution,(Sprite *)(((i8 *)&government_sprites_block.government_sprites) +
-                                                  (uint)civs[civ].government * 0x3c),
+        choice = popup_game_with_sprite(str_revolution,&government_sprites_block.government_sprites[(uint)civs[civ].government],
                                    (ui_metrics.large_screen == 0) - 1 & 8);
         if (choice == 0) {
           snd_play_effect(SND_REVOLT,1,0,0);
@@ -1839,9 +1838,7 @@ popup_text_with_advance(const char *filename,const char *section,i32 dlg_flags,i
 {
   hd_dialog_advance(advance);   /* (port) HD: the advance's picture */
   popup_text_with_sprite(filename,section,dlg_flags,
-                     (Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                           (char)advances[advance].category * 0xf0 +
-                           (char)advances[advance].epoch * 0x3c),sprite_flags);
+                     &government_sprites_block.advance_category_icon_sprites[(char)advances[advance].category][(char)advances[advance].epoch],sprite_flags);
   hd_dialog_advance(-1);
   return;
 }
@@ -1852,15 +1849,15 @@ popup_text_with_improvement(const char *filename,const char *section,i32 dlg_fla
 
 {
   i32 result;
-  i8 *sprite;
+  Sprite *sprite;
   
   if (improvement < IMP_FIRST_WONDER) {
-    sprite = ((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c;
+    sprite = &caption_close_button_sprite_block.improvement_icon_sprites[improvement];
   }
   else {
-    sprite = ((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (improvement * 4 - 0x9c) * 0xf;
+    sprite = &caption_close_button_sprite_block.improvement_icon_sprites[improvement];
   }
-  result = popup_text_with_sprite(filename,section,dlg_flags,(Sprite *)sprite,sprite_flags);
+  result = popup_text_with_sprite(filename,section,dlg_flags,sprite,sprite_flags);
   return result;
 }
 
@@ -1871,7 +1868,7 @@ popup_text_with_unit_sprite(const char *filename,const char *section,i32 dlg_fla
 {
   i32 result;
   
-  result = popup_text_with_sprite(filename,section,dlg_flags,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c)),sprite_flags)
+  result = popup_text_with_sprite(filename,section,dlg_flags,&pollution_sprite_block.unit_sprites[unit_type],sprite_flags)
   ;
   return result;
 }

@@ -357,13 +357,13 @@ void __cdecl sprite_sheet_save_units(void)
   y2 = 1;
   x2 = 1;
   for (unit_type = 0; unit_type < 0x3f; unit_type++) {
-    key_color = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->get_key_color();
+    key_color = pollution_sprite_block.unit_sprites[unit_type].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->width();
+    height = pollution_sprite_block.unit_sprites[unit_type].height();
+    width = pollution_sprite_block.unit_sprites[unit_type].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_backdrop,&sprite_editor.sprite_sheet_surface,x2,y2);
-    ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + unit_type * 0x3c))->draw((RECT *)clip_unit,&sprite_editor.sprite_sheet_surface,x2
+    pollution_sprite_block.unit_sprites[unit_type].draw((RECT *)clip_unit,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
     sprite_sheet_draw_shield_marks(unit_type,x2,y2);
     col++;
@@ -444,23 +444,23 @@ void __cdecl sprite_sheet_save_cities(void)
   for (style2 = 0; style2 < 6; style2++) {
     for (size_idx = 0; size_idx < 4; size_idx++) {
       cell_x = size_idx * 0x41;
-      key_color = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + size_idx * 0x78 + style2 * 0x1e0))->get_key_color();
+      key_color = gfx_sheet_surface_block.city_sprites[style2][size_idx][0].get_key_color();
       fill_color = (uint)key_color;
-      height = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + size_idx * 0x78 + style2 * 0x1e0))->height();
-      width = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + size_idx * 0x78 + style2 * 0x1e0))->width();
+      height = gfx_sheet_surface_block.city_sprites[style2][size_idx][0].height();
+      width = gfx_sheet_surface_block.city_sprites[style2][size_idx][0].width();
       gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,cell_x + x2,y2,width,height,fill_color);
       ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_city_bg,&sprite_editor.sprite_sheet_surface,cell_x + x2,
                  y2);
-      ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + size_idx * 0x78 + style2 * 0x1e0))->draw(
+      gfx_sheet_surface_block.city_sprites[style2][size_idx][0].draw(
                  (RECT *)clip_city,&sprite_editor.sprite_sheet_surface,cell_x + x2,y2);
-      key_color = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_walled_sprites) + size_idx * 0x78 + style2 * 0x1e0))->get_key_color();
+      key_color = gfx_sheet_surface_block.city_sprites[style2][size_idx][1].get_key_color();
       fill_color = (uint)key_color;
-      height = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_walled_sprites) + size_idx * 0x78 + style2 * 0x1e0))->height();
-      width = ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_walled_sprites) + size_idx * 0x78 + style2 * 0x1e0))->width();
+      height = gfx_sheet_surface_block.city_sprites[style2][size_idx][1].height();
+      width = gfx_sheet_surface_block.city_sprites[style2][size_idx][1].width();
       gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,cell_x + walled_x,y2,width,height,fill_color);
       ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_walled_bg,&sprite_editor.sprite_sheet_surface,cell_x + walled_x,
                  y2);
-      ((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_walled_sprites) + size_idx * 0x78 + style2 * 0x1e0))->draw(
+      gfx_sheet_surface_block.city_sprites[style2][size_idx][1].draw(
                  (RECT *)clip_walled,&sprite_editor.sprite_sheet_surface,cell_x + walled_x,y2);
     }
     y2 += 0x31;
@@ -469,50 +469,50 @@ void __cdecl sprite_sheet_save_cities(void)
   flag_y = 0x1a9;
   flag_dark_y = 0x1c0;
   for (civ = 0; civ < 8; civ++) {
-    key_color = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + civ * 0x78))->get_key_color();
+    key_color = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][0].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + civ * 0x78))->height();
-    width = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + civ * 0x78))->width();
+    height = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][0].height();
+    width = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][0].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,flag_y,width,height,fill_color);
-    ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + civ * 0x78))->draw((RECT *)clip_flag,&sprite_editor.sprite_sheet_surface,
+    editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][0].draw((RECT *)clip_flag,&sprite_editor.sprite_sheet_surface,
                x2,flag_y);
-    key_color = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + civ * 0x78))->get_key_color();
+    key_color = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][1].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + civ * 0x78))->height();
-    width = ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + civ * 0x78))->width();
+    height = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][1].height();
+    width = editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][1].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,flag_dark_y,width,height,fill_color);
-    ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + civ * 0x78))->draw((RECT *)clip_flag_dark,&sprite_editor.sprite_sheet_surface,
+    editor_tile_backdrop_sprite_block.civ_flag_sprites[civ][1].draw((RECT *)clip_flag_dark,&sprite_editor.sprite_sheet_surface,
                x2,flag_dark_y);
     x2 += 0xf;
   }
-  key_color = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->get_key_color();
+  key_color = fortify_overlay_sprites_block.fortify_overlay_sprites[0].get_key_color();
   fill_color = (uint)key_color;
-  height = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->height();
-  width = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->width();
+  height = fortify_overlay_sprites_block.fortify_overlay_sprites[0].height();
+  width = fortify_overlay_sprites_block.fortify_overlay_sprites[0].width();
   gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,0x8f,0x1a7,width,height,fill_color);
   ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_fortify_bg,&sprite_editor.sprite_sheet_surface,0x8f,0x1a7);
-  ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->draw((RECT *)clip_fortify,&sprite_editor.sprite_sheet_surface,0x8f,0x1a7);
-  key_color = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->get_key_color();
+  fortify_overlay_sprites_block.fortify_overlay_sprites[0].draw((RECT *)clip_fortify,&sprite_editor.sprite_sheet_surface,0x8f,0x1a7);
+  key_color = fortify_overlay_sprites_block.fortress_sprite.get_key_color();
   fill_color = (uint)key_color;
-  height = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->height();
-  width = ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->width();
+  height = fortify_overlay_sprites_block.fortress_sprite.height();
+  width = fortify_overlay_sprites_block.fortress_sprite.width();
   gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,0xd0,0x1a7,width,height,fill_color);
   ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_fortress_bg,&sprite_editor.sprite_sheet_surface,0xd0,0x1a7);
-  ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->draw((RECT *)clip_fortress,&sprite_editor.sprite_sheet_surface,0xd0,0x1a7);
-  key_color = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_sprites))->get_key_color();
+  fortify_overlay_sprites_block.fortress_sprite.draw((RECT *)clip_fortress,&sprite_editor.sprite_sheet_surface,0xd0,0x1a7);
+  key_color = airbase_sprites_block.airbase_sprites[0].get_key_color();
   fill_color = (uint)key_color;
-  height = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_sprites))->height();
-  width = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_sprites))->width();
+  height = airbase_sprites_block.airbase_sprites[0].height();
+  width = airbase_sprites_block.airbase_sprites[0].width();
   gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,0x111,0x1a7,width,height,fill_color);
   ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_airbase_bg,&sprite_editor.sprite_sheet_surface,0x111,0x1a7);
-  ((Sprite *)((i8 *)&airbase_sprites_block.airbase_sprites))->draw((RECT *)clip_airbase,&sprite_editor.sprite_sheet_surface,0x111,0x1a7);
-  key_color = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_occupied_sprite))->get_key_color();
+  airbase_sprites_block.airbase_sprites[0].draw((RECT *)clip_airbase,&sprite_editor.sprite_sheet_surface,0x111,0x1a7);
+  key_color = airbase_sprites_block.airbase_occupied_sprite.get_key_color();
   fill_color = (uint)key_color;
-  height = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_occupied_sprite))->height();
-  width = ((Sprite *)((i8 *)&airbase_sprites_block.airbase_occupied_sprite))->width();
+  height = airbase_sprites_block.airbase_occupied_sprite.height();
+  width = airbase_sprites_block.airbase_occupied_sprite.width();
   gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,0x152,0x1a7,width,height,fill_color);
   ((Sprite *)((i8 *)&editor_unit_backdrop_sprite))->draw((RECT *)clip_airbase_occ_bg,&sprite_editor.sprite_sheet_surface,0x152,0x1a7);
-  ((Sprite *)((i8 *)&airbase_sprites_block.airbase_occupied_sprite))->draw((RECT *)clip_airbase_occ,&sprite_editor.sprite_sheet_surface,0x152,0x1a7);
+  airbase_sprites_block.airbase_occupied_sprite.draw((RECT *)clip_airbase_occ,&sprite_editor.sprite_sheet_surface,0x152,0x1a7);
   __chdir(((i8 *)&net_map_lock_slots_block.scenario_dir_path));
   result = file_exists((const char *)&str_cities_bmp_3);
   if ((result == 0) || (result = crt_remove(str_cities_bmp_4), result == 0)) {
@@ -582,45 +582,45 @@ void __cdecl sprite_sheet_save_terrain1(void)
   res2_x = 0xc4;
   y2 = 1;
   for (terrain2 = 0; terrain2 < TERRAIN_COUNT; terrain2++) {
-    key_color = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->get_key_color();
+    key_color = terrain_base_sprites_block.terrain_base_sprites[terrain2].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->width();
+    height = terrain_base_sprites_block.terrain_base_sprites[terrain2].height();
+    width = terrain_base_sprites_block.terrain_base_sprites[terrain2].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)base_bg_rect,&sprite_editor.sprite_sheet_surface,x2,y2);
-    ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + terrain2 * 0x3c))->draw((RECT *)base_rect,&sprite_editor.sprite_sheet_surface,x2
+    terrain_base_sprites_block.terrain_base_sprites[terrain2].draw((RECT *)base_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
-    key_color = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78))->get_key_color();
+    key_color = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][0].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78))->height();
-    width = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78))->width();
+    height = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][0].height();
+    width = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][0].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,res_x,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)res_bg_rect,&sprite_editor.sprite_sheet_surface,res_x,y2);
-    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + terrain2 * 0x78))->draw((RECT *)res_rect,&sprite_editor.sprite_sheet_surface,res_x
+    city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][0].draw((RECT *)res_rect,&sprite_editor.sprite_sheet_surface,res_x
                ,y2);
-    key_color = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + terrain2 * 0x78))->get_key_color();
+    key_color = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][1].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + terrain2 * 0x78))->height();
-    width = ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + terrain2 * 0x78))->width();
+    height = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][1].height();
+    width = city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][1].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,res2_x,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)res2_bg_rect,&sprite_editor.sprite_sheet_surface,res2_x,y2);
-    ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + terrain2 * 0x78))->draw((RECT *)res2_rect,&sprite_editor.sprite_sheet_surface,res2_x
+    city_down_arrow_sprite_block.terrain_resource_sprites[terrain2][1].draw((RECT *)res2_rect,&sprite_editor.sprite_sheet_surface,res2_x
                ,y2);
     y2 += 0x21;
   }
   x2 = 0x1c8;
   y2 = 100;
   for (i = 0; i < 3; i++) {
-    key_color = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->get_key_color();
+    key_color = land_improvement_sprites_block.land_improvement_sprites[i].get_key_color();
     fill_color = (uint)key_color;
     /* BF-013 (Peter Johnson's ledger): the original took the height of
        sprite terrain2 (11 after the loop above), 660 bytes into a block of
        184: the improvement's own */
-    height = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->width();
+    height = land_improvement_sprites_block.land_improvement_sprites[i].height();
+    width = land_improvement_sprites_block.land_improvement_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)impr_bg_rect,&sprite_editor.sprite_sheet_surface,x2,y2);
-    ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + i * 0x3c))->draw((RECT *)impr_rect,&sprite_editor.sprite_sheet_surface,x2
+    land_improvement_sprites_block.land_improvement_sprites[i].draw((RECT *)impr_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
     y2 += 0x21;
   }
@@ -650,21 +650,21 @@ void __cdecl sprite_sheet_save_terrain1(void)
   y2 = 0x16c;
   x2 = 1;
   for (i = 0; i < 9; i++) {
-    key_color = ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + i * 0x3c))->get_key_color();
+    key_color = road_sprites_block.road_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + i * 0x3c))->width();
+    height = road_sprites_block.road_sprites[i].height();
+    width = road_sprites_block.road_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)road_bg_rect,&sprite_editor.sprite_sheet_surface,x2,y2);
-    ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + i * 0x3c))->draw((RECT *)road_rect,&sprite_editor.sprite_sheet_surface,x2
+    road_sprites_block.road_sprites[i].draw((RECT *)road_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
-    key_color = ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + i * 0x3c))->get_key_color();
+    key_color = road_sprites_block.railroad_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + i * 0x3c))->width();
+    height = road_sprites_block.railroad_sprites[i].height();
+    width = road_sprites_block.railroad_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2 + 0x21,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)rail_bg_rect,&sprite_editor.sprite_sheet_surface,x2,y2 + 0x21);
-    ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + i * 0x3c))->draw((RECT *)rail_rect,&sprite_editor.sprite_sheet_surface,x2
+    road_sprites_block.railroad_sprites[i].draw((RECT *)rail_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2 + 0x21);
     x2 += 0x41;
   }
@@ -733,89 +733,89 @@ void __cdecl sprite_sheet_save_terrain2(void)
   for (i = 0; (int)i < 0x10; i++) {
     cell_x = (i & 7) * 0x41;
     cell_y = ((int)i >> 3) * 0x21;
-    key_color = ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + i * 0x3c))->get_key_color();
+    key_color = icon_misc_sprites_block.river_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + i * 0x3c))->width();
+    height = icon_misc_sprites_block.river_sprites[i].height();
+    width = icon_misc_sprites_block.river_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x + cell_x,base_y + cell_y,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)river_bg_rect,&sprite_editor.sprite_sheet_surface,base_x + cell_x,
                base_y + cell_y);
-    ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + i * 0x3c))->draw((RECT *)river_rect,&sprite_editor.sprite_sheet_surface,
+    icon_misc_sprites_block.river_sprites[i].draw((RECT *)river_rect,&sprite_editor.sprite_sheet_surface,
                base_x + cell_x,base_y + cell_y);
-    key_color = ((Sprite *)(((i8 *)&forest_sprites) + i * 0x3c))->get_key_color();
+    key_color = forest_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&forest_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&forest_sprites) + i * 0x3c))->width();
+    height = forest_sprites[i].height();
+    width = forest_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x + cell_x,base_y + cell_y + 0x42,width,height,fill_color
                       );
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)forest_bg_rect,&sprite_editor.sprite_sheet_surface,base_x + cell_x,
                base_y + cell_y + 0x42);
-    ((Sprite *)(((i8 *)&forest_sprites) + i * 0x3c))->draw((RECT *)forest_rect,&sprite_editor.sprite_sheet_surface,
+    forest_sprites[i].draw((RECT *)forest_rect,&sprite_editor.sprite_sheet_surface,
                base_x + cell_x,base_y + cell_y + 0x42);
-    key_color = ((Sprite *)(((i8 *)&mountain_sprites) + i * 0x3c))->get_key_color();
+    key_color = mountain_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&mountain_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&mountain_sprites) + i * 0x3c))->width();
+    height = mountain_sprites[i].height();
+    width = mountain_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x + cell_x,base_y + cell_y + 0x84,width,height,fill_color
                       );
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)mountain_bg_rect,&sprite_editor.sprite_sheet_surface,base_x + cell_x,
                base_y + cell_y + 0x84);
-    ((Sprite *)(((i8 *)&mountain_sprites) + i * 0x3c))->draw((RECT *)mountain_rect,&sprite_editor.sprite_sheet_surface,
+    mountain_sprites[i].draw((RECT *)mountain_rect,&sprite_editor.sprite_sheet_surface,
                base_x + cell_x,base_y + cell_y + 0x84);
-    key_color = ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + i * 0x3c))->get_key_color();
+    key_color = hill_sprites_block.hill_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + i * 0x3c))->width();
+    height = hill_sprites_block.hill_sprites[i].height();
+    width = hill_sprites_block.hill_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x + cell_x,base_y + cell_y + 0xc6,width,height,fill_color
                       );
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)hill_bg_rect,&sprite_editor.sprite_sheet_surface,base_x + cell_x,
                base_y + cell_y + 0xc6);
-    ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + i * 0x3c))->draw((RECT *)hill_rect,&sprite_editor.sprite_sheet_surface,
+    hill_sprites_block.hill_sprites[i].draw((RECT *)hill_rect,&sprite_editor.sprite_sheet_surface,
                base_x + cell_x,base_y + cell_y + 0xc6);
   }
   base_x = 1;
   base_y = 0x14b;
   for (i = 0; (int)i < 4; i++) {
-    key_color = ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + i * 0x3c))->get_key_color();
+    key_color = tile_pick_mask_sprite_block.river_mouth_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + i * 0x3c))->width();
+    height = tile_pick_mask_sprite_block.river_mouth_sprites[i].height();
+    width = tile_pick_mask_sprite_block.river_mouth_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x,base_y,width,height,fill_color);
     ((Sprite *)((i8 *)&editor_tile_backdrop_sprite_block.editor_tile_backdrop_sprite))->draw((RECT *)mouth_bg_rect,&sprite_editor.sprite_sheet_surface,base_x,base_y);
-    ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + i * 0x3c))->draw((RECT *)mouth_rect,&sprite_editor.sprite_sheet_surface,base_x
+    tile_pick_mask_sprite_block.river_mouth_sprites[i].draw((RECT *)mouth_rect,&sprite_editor.sprite_sheet_surface,base_x
                ,base_y);
     base_x += 0x41;
   }
   base_x = 1;
   base_y = 0x1ad;
   for (coast_idx = 0; coast_idx < 8; coast_idx++) {
-    key_color = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + coast_idx * 0xf0))->get_key_color();
+    key_color = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][0].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + coast_idx * 0xf0))->height();
-    width = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + coast_idx * 0xf0))->width();
+    height = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][0].height();
+    width = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][0].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x,base_y,width,height,fill_color);
-    ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + coast_idx * 0xf0))->draw((RECT *)coast_n_rect,&sprite_editor.sprite_sheet_surface,
+    tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][0].draw((RECT *)coast_n_rect,&sprite_editor.sprite_sheet_surface,
                base_x,base_y);
-    key_color = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + coast_idx * 0xf0))->get_key_color();
+    key_color = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][1].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + coast_idx * 0xf0))->height();
-    width = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + coast_idx * 0xf0))->width();
+    height = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][1].height();
+    width = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][1].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x + 0x21,base_y + 0x22,width,height,fill_color);
-    ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + coast_idx * 0xf0))->draw((RECT *)coast_e_rect,&sprite_editor.sprite_sheet_surface,
+    tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][1].draw((RECT *)coast_e_rect,&sprite_editor.sprite_sheet_surface,
                base_x + 0x21,base_y + 0x22);
-    key_color = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + coast_idx * 0xf0))->get_key_color();
+    key_color = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][2].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + coast_idx * 0xf0))->height();
-    width = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + coast_idx * 0xf0))->width();
+    height = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][2].height();
+    width = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][2].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x,base_y + 0x11,width,height,fill_color);
-    ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + coast_idx * 0xf0))->draw((RECT *)coast_s_rect,&sprite_editor.sprite_sheet_surface,
+    tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][2].draw((RECT *)coast_s_rect,&sprite_editor.sprite_sheet_surface,
                base_x,base_y + 0x11);
-    key_color = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + coast_idx * 0xf0))->get_key_color();
+    key_color = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][3].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + coast_idx * 0xf0))->height();
-    width = ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + coast_idx * 0xf0))->width();
+    height = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][3].height();
+    width = tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][3].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,base_x,base_y + 0x22,width,height,fill_color);
-    ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + coast_idx * 0xf0))->draw((RECT *)coast_w_rect,&sprite_editor.sprite_sheet_surface,
+    tutorial_icon_sprite_block.coast_quarter_sprites[coast_idx][3].draw((RECT *)coast_w_rect,&sprite_editor.sprite_sheet_surface,
                base_x,base_y + 0x22);
     base_x += 0x42;
   }
@@ -868,12 +868,12 @@ void __cdecl sprite_sheet_save_tech_icons(void)
   for (row = 0; row < 4; row++) {
     x2 = 0x157;
     for (category2 = 0; category2 < 5; category2++) {
-      key_color = ((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) + category2 * 0xf0 + row * 0x3c))->get_key_color();
+      key_color = government_sprites_block.advance_category_icon_sprites[category2][row].get_key_color();
       fill_color = (uint)key_color;
-      height = ((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) + category2 * 0xf0 + row * 0x3c))->height();
-      width = ((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) + category2 * 0xf0 + row * 0x3c))->width();
+      height = government_sprites_block.advance_category_icon_sprites[category2][row].height();
+      width = government_sprites_block.advance_category_icon_sprites[category2][row].width();
       gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
-      ((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) + category2 * 0xf0 + row * 0x3c))->draw(
+      government_sprites_block.advance_category_icon_sprites[category2][row].draw(
                  (RECT *)icon_rect,&sprite_editor.sprite_sheet_surface,x2,y2);
       x2 += 0x25;
     }
@@ -931,12 +931,12 @@ void __cdecl sprite_sheet_save_building_icons(void)
   y2 = 1;
   column = 0;
   for (i = 1; i < 0x27; i++) {
-    key_color = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + i * 0x3c))->get_key_color();
+    key_color = caption_close_button_sprite_block.improvement_icon_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + i * 0x3c))->width();
+    height = caption_close_button_sprite_block.improvement_icon_sprites[i].height();
+    width = caption_close_button_sprite_block.improvement_icon_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
-    ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + i * 0x3c))->draw((RECT *)improvement_rect,&sprite_editor.sprite_sheet_surface,x2
+    caption_close_button_sprite_block.improvement_icon_sprites[i].draw((RECT *)improvement_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
     x2 += 0x25;
     column++;
@@ -950,12 +950,12 @@ void __cdecl sprite_sheet_save_building_icons(void)
   y2 = 0x6a;
   column = 0;
   for (i = 0; i < 0x1c; i++) {
-    key_color = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + i * 0x3c))->get_key_color();
+    key_color = caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + i * 0x3c))->width();
+    height = caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + i].height();
+    width = caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
-    ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + i * 0x3c))->draw((RECT *)wonder_rect,&sprite_editor.sprite_sheet_surface,x2
+    caption_close_button_sprite_block.improvement_icon_sprites[IMP_FIRST_WONDER + i].draw((RECT *)wonder_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
     x2 += 0x25;
     column++;
@@ -974,12 +974,12 @@ void __cdecl sprite_sheet_save_building_icons(void)
   x2 = 1;
   y2 = 0x164;
   for (i = 0; i < 8; i++) {
-    key_color = ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + i * 0x3c))->get_key_color();
+    key_color = government_sprites_block.explosion_sprites[i].get_key_color();
     fill_color = (uint)key_color;
-    height = ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + i * 0x3c))->height();
-    width = ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + i * 0x3c))->width();
+    height = government_sprites_block.explosion_sprites[i].height();
+    width = government_sprites_block.explosion_sprites[i].width();
     gfx_fill_rect_xywh(&sprite_editor.sprite_sheet_surface,x2,y2,width,height,fill_color);
-    ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + i * 0x3c))->draw((RECT *)explosion_rect,&sprite_editor.sprite_sheet_surface,x2
+    government_sprites_block.explosion_sprites[i].draw((RECT *)explosion_rect,&sprite_editor.sprite_sheet_surface,x2
                ,y2);
     x2 += 0x21;
   }
@@ -1975,7 +1975,7 @@ void __cdecl sprite_editor_redraw(void)
       else {
         gfx_fill_rect_xywh(&sprite_editor.window,col * 0x24 + x2,row * 0x26 + y2,0x20,0x20,
                            0x29);
-        ((Sprite *)(((i8 *)&caption_zoom_out_button_sprite_block.sprite_editor_tool_sprites) + (row * 3 + col) * 0x3c))->draw(
+        caption_zoom_out_button_sprite_block.sprite_editor_tool_sprites[row * 3 + col].draw(
                    (RECT *)tool_rect,&sprite_editor.window,col * 0x24 + x2,row * 0x26 + y2);
       }
       gfx_draw_frame_rect(&sprite_editor.window,col * 0x24 + x2,row * 0x26 + y2,0x20,0x20,10
@@ -2314,14 +2314,9 @@ void __cdecl sprite_picker_import_all_clicked(void)
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         sign = (int)cell >> 0x1f;
-        ((Sprite *)
-                   (((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                   (((cell ^ sign) - sign & 3 ^ sign) - sign) * 0x3c +
-                   ((int)(cell + (sign & 3)) >> 2) * 0xf0))->free();
+        government_sprites_block.advance_category_icon_sprites[((int)(cell + (sign & 3)) >> 2)][((cell ^ sign) - sign & 3 ^ sign) - sign].free();
         sign = (int)cell >> 0x1f;
-        sprite_editor_grab_from_sheet((Sprite *)(((i8 *)&government_sprites_block.advance_category_icon_sprites) +
-                           ((int)(cell + (sign & 3)) >> 2) * 0xf0 +
-                           (((cell ^ sign) - sign & 3 ^ sign) - sign) * 0x3c),x2,
+        sprite_editor_grab_from_sheet(&government_sprites_block.advance_category_icon_sprites[((int)(cell + (sign & 3)) >> 2)][((cell ^ sign) - sign & 3 ^ sign) - sign],x2,
                      y2,width2,height2);
       }
       break;
@@ -2334,9 +2329,8 @@ void __cdecl sprite_picker_import_all_clicked(void)
         era_row = (int)(half_cell + (sign & 3)) >> 2;
         size_col = ((half_cell ^ sign) - sign & 3 ^ sign) - sign;
         sheet_half = (int)cell / 0x18;
-        ((Sprite *)
-                   (((i8 *)&gfx_sheet_surface_block.city_sprites) + size_col * 0x78 + era_row * 0x1e0 + sheet_half * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&gfx_sheet_surface_block.city_sprites) + era_row * 0x1e0 + sheet_half * 0x3c + size_col * 0x78)),
+        gfx_sheet_surface_block.city_sprites[era_row][size_col][sheet_half].free();
+        sprite_editor_grab_from_sheet(&gfx_sheet_surface_block.city_sprites[era_row][size_col][sheet_half],
                      x2,y2,width2,height2);
       }
       break;
@@ -2346,19 +2340,19 @@ void __cdecl sprite_picker_import_all_clicked(void)
         ;
         switch(cell) {
         case 0:
-          ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortify_overlay_sprites))->free();
-          sprite_editor_grab_from_sheet(&fortify_overlay_sprites_block.fortify_overlay_sprites,x2,y2,width2,height2);
+          fortify_overlay_sprites_block.fortify_overlay_sprites[0].free();
+          sprite_editor_grab_from_sheet(&fortify_overlay_sprites_block.fortify_overlay_sprites[0],x2,y2,width2,height2);
           break;
         case 1:
-          ((Sprite *)((i8 *)&fortify_overlay_sprites_block.fortress_sprite))->free();
+          fortify_overlay_sprites_block.fortress_sprite.free();
           sprite_editor_grab_from_sheet(&fortify_overlay_sprites_block.fortress_sprite,x2,y2,width2,height2);
           break;
         case 2:
-          ((Sprite *)((i8 *)&airbase_sprites_block.airbase_sprites))->free();
-          sprite_editor_grab_from_sheet(&airbase_sprites_block.airbase_sprites,x2,y2,width2,height2);
+          airbase_sprites_block.airbase_sprites[0].free();
+          sprite_editor_grab_from_sheet(&airbase_sprites_block.airbase_sprites[0],x2,y2,width2,height2);
           break;
         case 3:
-          ((Sprite *)((i8 *)&airbase_sprites_block.airbase_occupied_sprite))->free();
+          airbase_sprites_block.airbase_occupied_sprite.free();
           sprite_editor_grab_from_sheet(&airbase_sprites_block.airbase_occupied_sprite,x2,y2,width2,height2);
         }
       }
@@ -2367,12 +2361,12 @@ void __cdecl sprite_picker_import_all_clicked(void)
       for (cell = 0; (int)cell < 8; cell++) {
         sprite_editor_cell_rect(cell * 2,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + cell * 0x78))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_sprites) + cell * 0x78)),x2,y2,width2,height2);
+        editor_tile_backdrop_sprite_block.civ_flag_sprites[cell][0].free();
+        sprite_editor_grab_from_sheet(&editor_tile_backdrop_sprite_block.civ_flag_sprites[cell][0],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell * 2 + 1,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + cell * 0x78))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&editor_tile_backdrop_sprite_block.civ_flag_dark_sprites) + cell * 0x78)),x2,y2,width2,height2);
+        editor_tile_backdrop_sprite_block.civ_flag_sprites[cell][1].free();
+        sprite_editor_grab_from_sheet(&editor_tile_backdrop_sprite_block.civ_flag_sprites[cell][1],x2,y2,width2,height2);
       }
       break;
     case 4:
@@ -2380,13 +2374,13 @@ void __cdecl sprite_picker_import_all_clicked(void)
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
         if ((int)cell < 0x26) {
-          ((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + (cell * 4 + 4) * 0xf))->free();
-          sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + (cell * 4 + 4) * 0xf)),x2,y2,width2,
+          caption_close_button_sprite_block.improvement_icon_sprites[cell + 1].free();
+          sprite_editor_grab_from_sheet(&caption_close_button_sprite_block.improvement_icon_sprites[cell + 1],x2,y2,width2,
                        height2);
         }
         else {
-          ((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (cell * 4 - 0x98) * 0xf))->free();
-          sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&caption_close_button_sprite_block.wonder_icon_sprites) + (cell * 4 - 0x98) * 0xf)),x2,y2,
+          caption_close_button_sprite_block.improvement_icon_sprites[cell + 1].free();
+          sprite_editor_grab_from_sheet(&caption_close_button_sprite_block.improvement_icon_sprites[cell + 1],x2,y2,
                        width2,height2);
         }
       }
@@ -2397,78 +2391,78 @@ void __cdecl sprite_picker_import_all_clicked(void)
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
-        ((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&government_sprites_block.explosion_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        government_sprites_block.explosion_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&government_sprites_block.explosion_sprites[cell],x2,y2,width2,height2);
       }
       break;
     case 7:
       for (cell = 0; (int)cell < 0xb; cell++) {
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
-        ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        terrain_base_sprites_block.terrain_base_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&terrain_base_sprites_block.terrain_base_sprites[cell],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0x16,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + cell * 0x78))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource_sprites) + cell * 0x78)),x2,y2,width2,height2);
+        city_down_arrow_sprite_block.terrain_resource_sprites[cell][0].free();
+        sprite_editor_grab_from_sheet(&city_down_arrow_sprite_block.terrain_resource_sprites[cell][0],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0x21,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + cell * 0x78))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&city_down_arrow_sprite_block.terrain_resource2_sprites) + cell * 0x78)),x2,y2,width2,height2);
+        city_down_arrow_sprite_block.terrain_resource_sprites[cell][1].free();
+        sprite_editor_grab_from_sheet(&city_down_arrow_sprite_block.terrain_resource_sprites[cell][1],x2,y2,width2,height2);
       }
       break;
     case 8:
       for (cell = 0; (int)cell < 0x10; cell++) {
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
-        ((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&icon_misc_sprites_block.river_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        icon_misc_sprites_block.river_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&icon_misc_sprites_block.river_sprites[cell],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0x10,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&forest_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&forest_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        forest_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&forest_sprites[cell],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0x20,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&mountain_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&mountain_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        mountain_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&mountain_sprites[cell],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0x30,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&hill_sprites_block.hill_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        hill_sprites_block.hill_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&hill_sprites_block.hill_sprites[cell],x2,y2,width2,height2);
       }
       for (cell = 0; (int)cell < 4; cell++) {
         sprite_editor_cell_rect(cell + 0x40,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&tile_pick_mask_sprite_block.river_mouth_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        tile_pick_mask_sprite_block.river_mouth_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&tile_pick_mask_sprite_block.river_mouth_sprites[cell],x2,y2,width2,height2);
       }
       break;
     case 9:
       for (cell = 0; (int)cell < 8; cell++) {
         sprite_editor_cell_rect(cell << 2,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + cell * 0xf0))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_sprites) + cell * 0xf0)),x2,y2,width2,height2);
+        tutorial_icon_sprite_block.coast_quarter_sprites[cell][0].free();
+        sprite_editor_grab_from_sheet(&tutorial_icon_sprite_block.coast_quarter_sprites[cell][0],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell * 4 + 1,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + cell * 0xf0))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_east_sprites) + cell * 0xf0)),x2,y2,width2,height2);
+        tutorial_icon_sprite_block.coast_quarter_sprites[cell][1].free();
+        sprite_editor_grab_from_sheet(&tutorial_icon_sprite_block.coast_quarter_sprites[cell][1],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell * 4 + 2,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + cell * 0xf0))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_south_sprites) + cell * 0xf0)),x2,y2,width2,height2);
+        tutorial_icon_sprite_block.coast_quarter_sprites[cell][2].free();
+        sprite_editor_grab_from_sheet(&tutorial_icon_sprite_block.coast_quarter_sprites[cell][2],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell * 4 + 3,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + cell * 0xf0))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&tutorial_icon_sprite_block.coast_quarter_west_sprites) + cell * 0xf0)),x2,y2,width2,height2);
+        tutorial_icon_sprite_block.coast_quarter_sprites[cell][3].free();
+        sprite_editor_grab_from_sheet(&tutorial_icon_sprite_block.coast_quarter_sprites[cell][3],x2,y2,width2,height2);
       }
       break;
     case 10:
       for (cell = 0; (int)cell < 3; cell++) {
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
-        ((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&land_improvement_sprites_block.land_improvement_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        land_improvement_sprites_block.land_improvement_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&land_improvement_sprites_block.land_improvement_sprites[cell],x2,y2,width2,height2);
       }
       sprite_editor_cell_rect(3,&x2,&y2,&width2,&height2);
       ((Sprite *)((i8 *)&pollution_sprite_block.pollution_sprite))->free();
@@ -2482,20 +2476,20 @@ void __cdecl sprite_picker_import_all_clicked(void)
       for (cell = 0; (int)cell < 9; cell++) {
         sprite_editor_cell_rect(cell + 6,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&road_sprites_block.road_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        road_sprites_block.road_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&road_sprites_block.road_sprites[cell],x2,y2,width2,height2);
         sprite_editor_cell_rect(cell + 0xf,&x2,&y2,&width2,
                            &height2);
-        ((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&road_sprites_block.railroad_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        road_sprites_block.railroad_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&road_sprites_block.railroad_sprites[cell],x2,y2,width2,height2);
       }
       break;
     case 0xb:
       for (cell = 0; (int)cell < sprite_editor.sprite_sheet_cell_count; cell++) {
         sprite_editor_cell_rect(cell,&x2,&y2,&width2,&height2)
         ;
-        ((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + cell * 0x3c))->free();
-        sprite_editor_grab_from_sheet(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + cell * 0x3c)),x2,y2,width2,height2);
+        pollution_sprite_block.unit_sprites[cell].free();
+        sprite_editor_grab_from_sheet(&pollution_sprite_block.unit_sprites[cell],x2,y2,width2,height2);
       }
     }
     ((Sprite *)((i8 *)&sprite_editor.orig_sprite))->free();

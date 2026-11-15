@@ -961,8 +961,7 @@ void EditorWindow::tribe_editor_paint()
   }
   box_x = client_x + 0x20;
   box_y = client_y + 0x20;
-  sprite = (Sprite *)
-             (editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[0] * 0x1e0 + (iptr)(((u8 *)&gfx_sheet_surface_block.city_walled_sprites + 300)));
+  sprite = &gfx_sheet_surface_block.city_sprites[editor_text_dlg_wnd_block.editor_item_recs[editor_active.wnd->item].values[0]][3][0];
   key_color = sprite->get_key_color();
   gfx_fill_rect_xywh(this,box_x,box_y,0x40,0x40,(uint)key_color);
   sprite->draw_keyed((RECT *)draw_ctx,this,0,box_x,box_y + 8);
@@ -1092,7 +1091,7 @@ void EditorWindow::tribe_editor_main()
       tribe_editor_create_combo(tribe_editor_ctrl_kinds_block.tribe_editor_ctrl_rows[i].slot);
     }
   }
-  pos = ((Sprite *)(((i8 *)&terrain_base_sprites_block.terrain_base_sprites) + item_uptr * 0x3c))->width();
+  pos = terrain_base_sprites_block.terrain_base_sprites[item_uptr].width();
   button_width_u = pos + 0x2d;
   pos = ((GameFont *)(*(i8 * *)(dlg_style.default_text_font_rest + 8)))->line_spacing();
   button_height_u = pos + 8;

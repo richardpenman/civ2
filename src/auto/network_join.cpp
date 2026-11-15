@@ -373,7 +373,7 @@ static NetJoinScenario net_join_load_scenario(void)
       unit = (iptr)game.active_unit;
       if ((((-1 < unit) && (unit < game.num_units)) && (units[unit].id != 0)) &&
          ((int)units[unit].owner == (int)scenario.objective_civ)) {
-        scen_dlg.add_sprite(((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit].type * 0x3c)),0,0);
+        scen_dlg.add_sprite(&pollution_sprite_block.unit_sprites[(uint)units[unit].type],0,0);
       }
       if (scen_dlg.show_modal(0) < 0) {
         snd_play_effect(SND_MENUOK,0,0,0);

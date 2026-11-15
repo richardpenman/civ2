@@ -1548,7 +1548,7 @@ void __cdecl city_set_production(int city,int production)
             text_set_label_arg(2,improvements[improvement2].name);
             text_set_label_arg(3,improvements[improvement].name);
             dialog2.load_game_text((const char *)&str_switchwonder);
-            dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
+            dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],0,0);
             dialog2.set_image_zoom(8);
             if (2 < game.multiplayer) {
               net_send_text_args(0x13,0xff,4,0,improvement,8);
@@ -1561,7 +1561,7 @@ void __cdecl city_set_production(int city,int production)
                       (((i8 *)&advisor_window_block.wonder_notice_flags))[civ * 0x1c + wonder] | 1, autoplay.active == 0)) {
           text_set_label_arg(2,improvements[improvement].name);
           dialog2.load_game_text((const char *)&str_startwonder);
-          dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
+          dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],0,0);
           dialog2.set_image_zoom(8);
           if (2 < game.multiplayer) {
             net_send_text_args(0x12,0xff,3,0,improvement,8);
@@ -1610,7 +1610,7 @@ void __cdecl city_set_production(int city,int production)
         text_set_string_arg(1,civ_name);
         text_set_label_arg(2,improvements[improvement].name);
         dialog2.load_game_text((const char *)&str_abandonwonder);
-        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)),0,0);
+        dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],0,0);
         dialog2.set_image_zoom(8);
         if (2 < game.multiplayer) {
           net_send_text_args(0x14,0xff,3,0,improvement,8);
@@ -1773,7 +1773,7 @@ void __cdecl city_sprites_global_init(void)
 void __cdecl city_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&gfx_sheet_surface_block.city_sprites),0x3c,0x30,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&gfx_sheet_surface_block.city_sprites[0][0][0],0x3c,0x30,sprite_init,sprite_destroy);
   return;
 }
 
@@ -1789,7 +1789,7 @@ void __cdecl city_sprites_reg_atexit(void)
 void __cdecl city_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&gfx_sheet_surface_block.city_sprites),0x3c,0x30,sprite_destroy);
+  crt_vector_dtor_iterator(&gfx_sheet_surface_block.city_sprites[0][0][0],0x3c,0x30,sprite_destroy);
   return;
 }
 
@@ -1806,7 +1806,7 @@ void __cdecl citizen_sprites_global_init(void)
 void __cdecl citizen_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&road_sprites_block.citizen_sprites),0x3c,0x2c,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&road_sprites_block.citizen_sprites[0][0],0x3c,0x2c,sprite_init,sprite_destroy);
   return;
 }
 
@@ -1822,7 +1822,7 @@ void __cdecl citizen_sprites_reg_atexit(void)
 void __cdecl citizen_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&road_sprites_block.citizen_sprites),0x3c,0x2c,sprite_destroy);
+  crt_vector_dtor_iterator(&road_sprites_block.citizen_sprites[0][0],0x3c,0x2c,sprite_destroy);
   return;
 }
 
@@ -1839,7 +1839,7 @@ void __cdecl tax_rate_icon_sprites_global_init(void)
 void __cdecl tax_rate_icon_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&tax_rate_icon_sprites_block.tax_rate_icon_sprites),0x3c,3,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&tax_rate_icon_sprites_block.tax_rate_icon_sprites[0],0x3c,3,sprite_init,sprite_destroy);
   return;
 }
 
@@ -1855,7 +1855,7 @@ void __cdecl tax_rate_icon_sprites_reg_atexit(void)
 void __cdecl tax_rate_icon_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&tax_rate_icon_sprites_block.tax_rate_icon_sprites),0x3c,3,sprite_destroy);
+  crt_vector_dtor_iterator(&tax_rate_icon_sprites_block.tax_rate_icon_sprites[0],0x3c,3,sprite_destroy);
   return;
 }
 
@@ -1872,7 +1872,7 @@ void __cdecl lux_tax_sci_icon_sprites_global_init(void)
 void __cdecl lux_tax_sci_icon_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&tax_rate_icon_sprites_block.lux_tax_sci_icon_sprites),0x3c,3,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&tax_rate_icon_sprites_block.lux_tax_sci_icon_sprites[0],0x3c,3,sprite_init,sprite_destroy);
   return;
 }
 
@@ -1888,7 +1888,7 @@ void __cdecl lux_tax_sci_icon_sprites_reg_atexit(void)
 void __cdecl lux_tax_sci_icon_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&tax_rate_icon_sprites_block.lux_tax_sci_icon_sprites),0x3c,3,sprite_destroy);
+  crt_vector_dtor_iterator(&tax_rate_icon_sprites_block.lux_tax_sci_icon_sprites[0],0x3c,3,sprite_destroy);
   return;
 }
 
@@ -1946,7 +1946,7 @@ void __cdecl improvement_icon_sprites_global_init(void)
 void __cdecl improvement_icon_sprites_static_init(void)
 
 {
-  crt_vector_ctor_iterator(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites),0x3c,0x43,sprite_init,sprite_destroy);
+  crt_vector_ctor_iterator(&caption_close_button_sprite_block.improvement_icon_sprites[0],0x3c,0x43,sprite_init,sprite_destroy);
   return;
 }
 
@@ -1962,7 +1962,7 @@ void __cdecl improvement_icon_sprites_reg_atexit(void)
 void __cdecl improvement_icon_sprites_static_dtor(void)
 
 {
-  crt_vector_dtor_iterator(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites),0x3c,0x43,sprite_destroy);
+  crt_vector_dtor_iterator(&caption_close_button_sprite_block.improvement_icon_sprites[0],0x3c,0x43,sprite_destroy);
   return;
 }
 
@@ -4059,12 +4059,12 @@ i32 __cdecl city_process_food(uptr city)
         if (((((1 << (civ2 & 0x1f) & (uint)game.human_players) == 0) ||
              (((*((char *)&game.game_options + 1)) & (OPT_TUTORIAL >> 8)) == 0)) || ((game.shown_event_flags & HINT_AQUEDUCT) != 0)) || (improvement != IMP_AQUEDUCT)) {
           if (((int)cities[city].building != -improvement) && ((game.message_options & MSGOFF_GROWTH_HALTED) == 0)) {
-            city_notify_dialog(str_furthergrowth,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
+            city_notify_dialog(str_furthergrowth,city,&caption_close_button_sprite_block.improvement_icon_sprites[improvement]);
           }
         }
         else {
           text_set_number_arg_u8(0,cosmic.aqueduct_size);
-          city_notify_dialog(str_aqueduct,city,(((Sprite *)((u8 *)&caption_close_button_sprite_block.notify_sprites + 420))));
+          city_notify_dialog(str_aqueduct,city,(((Sprite *)((u8 *)&caption_close_button_sprite_block.improvement_icon_sprites[2] + 420))));
           game.shown_event_flags = game.shown_event_flags | HINT_AQUEDUCT;
         }
       }
@@ -4156,7 +4156,7 @@ void __cdecl city_disband_unsupported_units(uptr city)
           if (-1 < max_dist) {
             if ((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0) {
               text_set_label_arg(1,unit_types[units[unit2].type].name);
-              city_notify_dialog(str_support,city,((Sprite *)(((i8 *)&pollution_sprite_block.unit_sprites) + (uint)units[unit2].type * 0x3c)));
+              city_notify_dialog(str_support,city,&pollution_sprite_block.unit_sprites[(uint)units[unit2].type]);
             }
             unit_destroy_redraw(unit2,1);
             if (city_turn.window_shown != 0) {
@@ -4227,7 +4227,7 @@ void __cdecl city_process_disorder(int city)
         if ((((1 << (civ2 & 0x1f) & (uint)game.human_players) != 0) &&
             (civs[civ].government == GOV_DEMOCRACY)) &&
            (((game.game_flags & GAME_SCENARIO) == 0 || ((scenario.flags[0] & 0x10) == 0)))) {
-          city_notify_dialog(str_revolt,city,(Sprite *)&government_sprites_block.government_sprite_democracy);
+          city_notify_dialog(str_revolt,city,&government_sprites_block.government_sprites[6]);
           civs[civ].flags = civs[civ].flags & ~CIVF_REVOLUTION;
           civ_change_government(civ,0);
           civs[civ].flags = civs[civ].flags | CIVF_REVOLUTION;
@@ -4352,7 +4352,7 @@ void __cdecl city_pay_improvement_upkeep(int city)
           if (autoplay.active == 0) {
             text_set_label_arg(1,improvements[improvement].name);
             text_set_number_arg(0,(uint)improvements[improvement].cost * city_calc.shield_rows);
-            city_notify_dialog(str_inhock,city,((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement * 0x3c)));
+            city_notify_dialog(str_inhock,city,&caption_close_button_sprite_block.improvement_icon_sprites[improvement]);
           }
           civs[civ].gold += (uint)improvements[improvement].cost * city_calc.shield_rows;
         }
@@ -4875,7 +4875,7 @@ static void city_capture_aftermath_abandon_wonder(uptr city,Dialog &dialog2,iptr
       }
     }
   }
-  dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement3 * 0x3c)),0,0);
+  dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement3],0,0);
   dialog2.set_image_zoom(8);
   dialog2.show_modal(0);
 }
@@ -4906,13 +4906,13 @@ static void city_capture_aftermath_wonder_notices(uptr city,iptr civ,Dialog &dia
       }
       if ((human_civ[0] == civ) && (autoplay.active == 0)) {
         dialog2.load_game_text((const char *)&str_capturewonder_2);
-        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
+        dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement2],0,0);
         dialog2.set_image_zoom(8);
         dialog2.show_modal(0);
       }
       else if ((human_civ[0] == civ2) && (autoplay.active == 0)) {
         dialog2.load_game_text((const char *)&str_lostwonder_2);
-        dialog2.add_sprite(((Sprite *)(((i8 *)&caption_close_button_sprite_block.improvement_icon_sprites) + improvement2 * 0x3c)),0,0);
+        dialog2.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement2],0,0);
         dialog2.set_image_zoom(8);
         dialog2.show_modal(0);
       }
