@@ -193,14 +193,18 @@ The rest is in the platform layer (`src/platform/hd.c`):
   own).  All of such a picture's pixels are shown over the pack's landscape, also those the
   same colour as the landscape the game has underneath, which were not seen as drawn and let
   the landscape show through the trees in specks (`hd_sprite_pixels_shown` after each lot's
-  draw in `CityViewWindow::draw_buildings`, as for the city's disorder marker).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
+  draw in `CityViewWindow::draw_buildings`, as for the city's disorder marker; the pixels put on
+  the plane in one call, `hd_bits_redrawn_mask`: one call per pixel, each looking the surface up
+  among the bitmaps, took 5 seconds to open the view).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
   tracks in every era, so only those of the eras before the paved roads (340, 341, 345, 346,
   350, 351) are the pack's; the modern ones and those with Superhighways are the original's,
   enlarged.  Its improvements and wonders are one picture each in every era, the original's as
   the pack's.  A picture with transparent parts (the new game's pictures) is drawn, where the
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
-  picture is loaded into it.
+  picture is loaded into it; a whole picture of the pack painted there (a landscape, a room) is
+  scaled once and kept with the other pictures drawn, not again each time it is loaded (the city
+  view's landscape, 3840x1440 at density 3, took over 2 seconds each time the view was opened).
 * **Videos** (the heralds, the High Council, the wonders', the opening): wherever the planes are
   on (HD graphics or sharp text), each frame is enlarged on the plane smoothly, not as its
   8-bit pixels repeated: the decoder's own colours (before the game's palette and its dithering)

@@ -471,6 +471,24 @@ void hd_bits_redrawn(void *bits, int x, int y, int w, int h)
         redraw_rect(bmp_of_bits(bits), x, y, x + w, y + h);
 }
 
+void hd_bits_redrawn_mask(void *bits, int x, int y, int w, int h, const unsigned char *mask)
+{
+    Bitmap *b;
+    int l = x, t = y, r = x + w, bot = y + h, n, i, j;
+    if (!hd_on || !(b = bmp_of_bits(bits)) || !valid(b) || !clip_rect(b, &l, &t, &r, &bot))
+        return;
+    n = pixel_bytes(b);
+    for (j = t; j < bot; j++) {
+        const unsigned char *row = bmp_row(b, j), *m = mask + (size_t)(j - y) * w;
+        unsigned char *prev = b->hd_prev + (size_t)j * b->w * n;
+        for (i = l; i < r; i++)
+            if (m[i - x]) {
+                memcpy(prev + i * n, row + i * n, (size_t)n);
+                block(b, i, j, logical(b, row, i));
+            }
+    }
+}
+
 /* The game's pixels in the rectangle are shown as the plane has them. */
 static void commit_pixels(Bitmap *b, int l, int t, int r, int bot, int art)
 {
@@ -1004,7 +1022,8 @@ void hd_resource_loaded(void *bits, int id)
 {
     Bitmap *b;
     Entry *a;
-    uint32_t *px;
+    const uint32_t *px;
+    uint32_t *own = NULL;
     int pid, d = hd_density, y, whole = -1;
     size_t i, n;
     if (!hd_on || !(b = bmp_of_bits(bits)))
@@ -1018,15 +1037,23 @@ void hd_resource_loaded(void *bits, int id)
             whole = WHOLE[i].inset;
     /* (the surface's rows are whole dwords: up to 3 pixels wider) */
     if (whole < 0 || !(pid = find(b->hd_sheet)) || (int)entries[pid - 1].h != b->h || (int)entries[pid - 1].w > b->w ||
-        b->w - (int)entries[pid - 1].w > 3 || b->bpp != 8 || !(a = decode(pid)) || !plane(b) ||
-        !(px = whole ? scaled_inside(a, whole, (int)a->w * d, b->h * d) : make_scaled(a, (int)a->w * d, b->h * d, 0)))
+        b->w - (int)entries[pid - 1].w > 3 || b->bpp != 8 || !plane(b))
+        return;
+    a = entries + pid - 1;
+    /* (scaled once and kept, as the pictures drawn are: the city view
+       loads its landscape each time it is opened, 3840 x 1440 at density 3) */
+    if (whole)
+        px = decode(pid) ? own = scaled_inside(a, whole, (int)a->w * d, b->h * d) : NULL;
+    else
+        px = picture(pid, (int)a->w * d, b->h * d, 0);
+    if (!px)
         return;
     n = (size_t)a->w * d;
     for (y = 0; y < b->h * d; y++)
         memcpy(b->hd + (size_t)y * b->w * d, px + y * n, n * 4);
     for (i = 0; i < n * b->h * d && !b->hd_alpha; i++)
         b->hd_alpha = px[i] >> 24 != 255;
-    free(px);
+    free(own);
     commit_rect(b, 0, 0, b->w, b->h);
 }
 

@@ -103,6 +103,9 @@ void hd_picture_done(void *bits);
 /* The game drew this rectangle anew (DibSurface::fill_rect): it shows as
    the game's pixels even where they did not change. */
 void hd_bits_redrawn(void *bits, int x, int y, int w, int h);
+/* ... only its pixels where mask (w x h, row by row) is not 0, in one call
+   (the surface found once, not for each pixel). */
+void hd_bits_redrawn_mask(void *bits, int x, int y, int w, int h, const unsigned char *mask);
 
 /* The platform's side (src/platform). */
 struct Bitmap;

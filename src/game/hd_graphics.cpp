@@ -313,11 +313,12 @@ void hd_shield_end(DibSurface *surface, const RECT *recoloured)
 void hd_sprite_pixels_shown(Sprite *sprite, DibSurface *s, int x, int y, const RECT *drawn)
 {
     enum { MARK = 0xfe };
-    int w = drawn->right - drawn->left, h = drawn->bottom - drawn->top, px, py;
+    int w = drawn->right - drawn->left, h = drawn->bottom - drawn->top, px, py, any = 0;
     RECT r;
     u8 *keep;
-    if (!hd_on || w <= 0 || h <= 0 || w > 1024 || h > 1024 || !(keep = (u8 *)malloc((size_t)w * h)))
+    if (!hd_on || w <= 0 || h <= 0 || w > 1024 || h > 1024 || !(keep = (u8 *)malloc((size_t)w * h * 2)))
         return;
+    u8 *shown = keep + (size_t)w * h;   /* the sprite's pixels, put on the plane in one call */
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++)
             keep[py * w + px] = (u8)(s->in_clip(drawn->left + px, drawn->top + py) ?
@@ -326,11 +327,15 @@ void hd_sprite_pixels_shown(Sprite *sprite, DibSurface *s, int x, int y, const R
     for (py = 0; py < h; py++)
         for (px = 0; px < w; px++) {
             int c = keep[py * w + px], X = drawn->left + px, Y = drawn->top + py;
+            shown[py * w + px] = 0;
             if (!s->in_clip(X, Y) || (int)s->get_pixel(X, Y) != MARK)
                 continue;
             s->set_pixel(X, Y, c);
-            hd_bits_redrawn((void *)s->bits, X, Y, 1, 1);
+            shown[py * w + px] = 1;
+            any = 1;
         }
+    if (any)
+        hd_bits_redrawn_mask((void *)s->bits, drawn->left, drawn->top, w, h, shown);
     free(keep);
 }
 
