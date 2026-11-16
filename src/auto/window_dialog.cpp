@@ -3527,6 +3527,13 @@ void __cdecl dialog_list_on_lbuttondown(i32 x,i32 y)
       redraw = 1;
       option = dialog_state.active->option_at(hit_index);
       dialog_state.active->select_option(option,redraw);
+      /* X2: a click on a unit in the Activate Unit list wakes it, as in the
+         game's own (9 units) dialog (unit_stack_select_dialog) */
+      if (extra_ui(X_UNIT_LIST) && (option != 0) &&
+          (dialog_state.active->on_draw_option == (DialogOptionDrawFn)extras_unit_list_draw)) {
+        unit_dlg_wake_unit_cb(option->id);
+        dialog_state.active->draw_option(option,1);  /* drawn asleep by select_option */
+      }
     }
   }
   return;

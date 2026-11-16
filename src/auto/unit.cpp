@@ -5068,7 +5068,9 @@ i32 __cdecl unit_stack_select_dialog(int unit,const char *title,int allow_cancel
       unit_stack_select_text(unit);
       dialog2.add_option((const char *)&textbuf.buf,unit,0);
     }
-    dialog2.set_listbox(9,0x14c,0);
+    /* the list as wide as the dialog, as set_width left it (scaled 3/2 in
+       a window wider than 1000 pixels): set_listbox takes it as given */
+    dialog2.set_listbox(9,dialog2.content_width,0);
     return dialog2.show_modal(0);
   }
   sprite.create_solid(0x42,0x30,0);
