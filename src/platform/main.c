@@ -91,11 +91,11 @@ void plat_present(void)
    box on this host. */
 static int confirm_quit(void)
 {
-    static const char *const labels[2] = {"Quit", "Cancel"};
+    const char *labels[2];
     static const int ids[2] = {1, 0};
-    return host_message_box(1, "Civilization II",
-                            "Quit Civilization II?\n\nThe game in progress ends here; whatever was not saved is lost.",
-                            2, labels, ids, 1, 1);
+    labels[0] = extras_text("quit.quit");
+    labels[1] = extras_text("box.cancel");
+    return host_message_box(1, "Civilization II", extras_text("quit.text"), 2, labels, ids, 1, 1);
 }
 
 /* Now, whatever the frame rate: before waiting for input (menus). */
@@ -179,6 +179,9 @@ int msg_pump_events(int wait)
             /* fall through */
         case HOST_EV_KEYUP:
             input_key(e.vk, e.type == HOST_EV_KEYDOWN);
+            break;
+        case HOST_EV_CHAR:
+            input_char((unsigned)e.vk);
             break;
         case HOST_EV_MOTION:
             input_mouse_move(e.x, e.y);

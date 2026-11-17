@@ -708,9 +708,16 @@ message by message and clock event by clock event.
   walks the path finder as map_road_connection does (road planning: every land
   step costs 1, ties to the square nearer the goal), its state saved and put
   back, so the game's next search is unchanged; it uses the real map, so on
-  unexplored land it shows the way the game would take there.  The additions'
-  texts are keyed `openciv2.<key>` (src/game/extras.cpp texts[], exported with
-  the rest by CIV2_EXPORT_TEXT, src/include/lang.h).  Not done: resizable
+  unexplored land it shows the way the game would take there.  All of OpenCiv2's
+  own texts (the additions, OpenCiv2 Options, the platform's file dialog and
+  message boxes, the set-up, the HD art's download, the browser's page) are
+  keyed `openciv2.<key>` (src/host/texts.h, read by the game's extras_text,
+  the host's host_text and the page's i18n.js; exported alone by
+  CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1: data/native/lang/en.txt), chosen
+  in OpenCiv2 Options > Language (src/include/lang.h); a translation in
+  another code page (Esperanto: ISO-8859-3) has its letters drawn from glyphs
+  captured for it (data/native/fonts_iso-8859-3*.bin) and typed through the
+  host's text input (docs/TRANSLATING.md).  Not done: resizable
   advisors and their larger caption area (CIV2UIA 26, 27): each advisor opens at
   600x400 and draws its list, buttons and background for that size from
   constants in its own drawing and opening functions (list bottom at client_y +

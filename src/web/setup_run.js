@@ -39,13 +39,17 @@ export function cachedReader(size, readAt) {
 // opts: {module: WebAssembly.Module, files: [{name ("a/b.cue": under /src),
 // size, readAt(pos, n) -> Uint8Array}], source (a .cue's or the CD's folder's
 // name among them), onFile(path, data), onProgress(what, detail) -> true to
-// stop, onMessage(text, kind: 0 info, 1 warning, 2 error), log(fd, line)}
+// stop, onMessage(text, kind: 0 info, 1 warning, 2 error), log(fd, line), lang (a
+// translation file's bytes, or none)}
 // -> 0: set up; else not (said through onMessage)
 export function runSetup(opts) {
     const fs = new MemFS();
     for (const f of opts.files)
         fs.putSource(SRC + '/' + f.name, f.size, cachedReader(f.size, f.readAt), f.mtime || Date.now());
     fs.mkdirs(GAME);
+    // (the page's language: its translation file, for the set-up's texts)
+    if (opts.lang)
+        fs.put('/lang.txt', opts.lang);
     const handed = (path) => path.startsWith(GAME + '/') && !/\.part$/i.test(path) &&
         !path.slice(GAME.length + 1).startsWith('OpenCiv2-cabinet/');
     fs.onchange = (path, removed, partial) => {
@@ -61,7 +65,7 @@ export function runSetup(opts) {
             };
     };
     let memory = null;
-    const dec = new TextDecoder('windows-1252');
+    const dec = new TextDecoder();     // (the set-up's texts: UTF-8, host_lang.c)
     const cstr = (p) => {
         const m = new Uint8Array(memory.buffer);
         let e = p;

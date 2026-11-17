@@ -42,6 +42,8 @@ struct FontFace {
 static FontFace *faces[NFACES][MAXH + 1][2][2];
 static unsigned char *font_data, *aa_data;
 extern char plat_data_dir[];
+static void overlay_bitmaps(void);
+static void overlay_aa(void);
 
 /* The font files: captured under Wine with the Liberation 2 fonts, which
    have the widths of Times New Roman, Arial and Courier New, so text is laid
@@ -97,6 +99,7 @@ static void load_aa(void)
         else
             free(g);
     }
+    overlay_aa();
 }
 
 static const unsigned char *aa_coverage(AaGlyph *g)
@@ -187,6 +190,144 @@ static void load_fonts(void)
         if (ff->face < NFACES && ff->height >= MINH && ff->height <= MAXH)
             faces[ff->face][ff->height][ff->bold][ff->italic] = ff;
     }
+    overlay_bitmaps();
+}
+
+/* ---- a code page's glyphs (src/host/codepages.h) ----
+ *
+ * A translation in another code page than Windows-1252 (its file's
+ * "@@codepage": iso-8859-3) has the bytes where that code page differs
+ * drawn with their glyphs: data/native/fonts_<code page>.bin and
+ * fonts_<code page>_aa.bin (tools/probe/fontdump.c, fontdump_aa.c with the
+ * code page), captured as the others, for the same fonts, those bytes
+ * only.  Laid over the 256 glyphs of each font as they are loaded.
+ *
+ * Delta files (little endian): "C2FONTD1" (1-bit) or "C2FONTDA"
+ * (antialiased), u32 nfonts, u32 nchars, the nchars bytes, then per font
+ * its 8-byte header (face, height, u16 weight, italic, 1 if drawn without
+ * antialiasing (DA), 0, 0) and per byte its glyph as in fonts_win.bin
+ * (D1) or fonts_win_aa.bin (DA). */
+static char codepage[32];
+static unsigned char *cp_data, *cp_aa_data;
+static long cp_size, cp_aa_size;
+
+static unsigned char *read_file(const char *name, long *size)
+{
+    char path[1100];
+    unsigned char *d;
+    FILE *f = open_fonts(path, sizeof path, name);
+    long n;
+    if (!f)
+        return NULL;
+    fseek(f, 0, SEEK_END);
+    n = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    d = malloc((size_t)n);
+    if (!d || fread(d, 1, (size_t)n, f) != (size_t)n) {
+        free(d);
+        d = NULL;
+    }
+    fclose(f);
+    *size = n;
+    return d;
+}
+
+static FontFace *face_of_header(const unsigned char *p)
+{
+    int face = p[0], height = p[1], bold = (p[2] | p[3] << 8) >= 600, it = p[4] != 0;
+    return face < NFACES && height >= MINH && height <= MAXH ? faces[face][height][bold][it] : NULL;
+}
+
+static void overlay_bitmaps(void)
+{
+    unsigned char *p, *end, *chars;
+    unsigned count, nchars, i, k;
+    if (!cp_data || !font_data || cp_size < 16 || memcmp(cp_data, "C2FONTD1", 8))
+        return;
+    memcpy(&count, cp_data + 8, 4);
+    memcpy(&nchars, cp_data + 12, 4);
+    chars = cp_data + 16;
+    p = chars + nchars;
+    end = cp_data + cp_size;
+    for (i = 0; i < count && p + 8 <= end; i++) {
+        FontFace *ff = face_of_header(p);
+        p += 8;
+        for (k = 0; k < nchars && p + 8 <= end; k++) {
+            Glyph g;
+            memcpy(&g.adv, p, 2);
+            memcpy(&g.dadv, p + 2, 2);
+            g.x = (signed char)p[4];
+            g.y = (signed char)p[5];
+            g.w = p[6];
+            g.h = p[7];
+            g.bits = p + 8;
+            p += 8 + (size_t)((g.w + 7) / 8) * g.h;
+            if (ff)
+                ff->g[chars[k]] = g;
+        }
+    }
+}
+
+static void overlay_aa(void)
+{
+    unsigned char *p, *end, *chars;
+    unsigned count, nchars, i, k;
+    if (!cp_aa_data || !aa_data || cp_aa_size < 16 || memcmp(cp_aa_data, "C2FONTDA", 8))
+        return;
+    memcpy(&count, cp_aa_data + 8, 4);
+    memcpy(&nchars, cp_aa_data + 12, 4);
+    chars = cp_aa_data + 16;
+    p = chars + nchars;
+    end = cp_aa_data + cp_aa_size;
+    for (i = 0; i < count && p + 8 <= end; i++) {
+        FontFace *ff = face_of_header(p);
+        p += 8;
+        for (k = 0; k < nchars && p + 8 <= end; k++) {
+            AaGlyph g;
+            g.adv = (short)(p[0] | p[1] << 8);
+            g.x = (signed char)p[2];
+            g.y = (signed char)p[3];
+            g.w = p[4];
+            g.h = p[5];
+            g.n = (unsigned short)(p[6] | p[7] << 8);
+            g.rle = p + 8;
+            g.cov = NULL;
+            p += 8 + g.n;
+            if (ff && ff->aa) {
+                free(ff->aa[chars[k]].cov);
+                ff->aa[chars[k]] = g;
+            }
+        }
+    }
+}
+
+void plat_text_codepage(const char *name)
+{
+    char file[64];
+    size_t i;
+    if (!name || !*name || !strcasecmp(name, "windows-1252") || !strcasecmp(name, "cp1252"))
+        return;
+    for (i = 0; name[i]; i++)
+        if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') ||
+              (name[i] >= '0' && name[i] <= '9') || name[i] == '-'))
+            return;
+    snprintf(codepage, sizeof codepage, "%s", name);
+    for (i = 0; codepage[i]; i++)
+        if (codepage[i] >= 'A' && codepage[i] <= 'Z')
+            codepage[i] = (char)(codepage[i] + 32);
+    snprintf(file, sizeof file, "fonts_%s.bin", codepage);
+    cp_data = read_file(file, &cp_size);
+    snprintf(file, sizeof file, "fonts_%s_aa.bin", codepage);
+    cp_aa_data = read_file(file, &cp_aa_size);
+    if (!cp_data)
+        plat_log("text: no glyphs for code page %s (%s)\n", codepage, file);
+    overlay_bitmaps();
+    overlay_aa();
+}
+
+const char *plat_text_codepage_name(void)
+{
+    return codepage[0] ? codepage : "windows-1252";
 }
 
 /* Wine's substitutes: Times New Roman -> Liberation Serif, Arial ->

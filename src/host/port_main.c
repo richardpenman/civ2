@@ -12,6 +12,8 @@
 #include "wasm-rt-exceptions.h"     /* wasm_rt_set_unwind_target (wasm_rt_impl_try) */
 #include "host.h"
 #include "setup.h"
+#include "host_lang.h"
+#include <string.h>
 
 wasm_rt_memory_t *port_memory;
 
@@ -237,11 +239,25 @@ int main(int argc, char **argv)
     wasm_rt_trap_t trap;
     char cwd[4096], game[4096], *args[2];
     host_save_args(argc, argv);     /* (for host_restart) */
+    /* the system's language, for Auto (the game's and the set-up's
+       texts: src/include/lang.h, host_lang.h) */
+    if (!getenv("CIV2_SYSTEM_LANG")) {
+        char code[64], kv[96];
+        if (host_system_language(code, sizeof code)) {
+            snprintf(kv, sizeof kv, "CIV2_SYSTEM_LANG=%s", code);
+#ifdef _WIN32
+            _putenv(kv);
+#else
+            putenv(strdup(kv));
+#endif
+        }
+    }
     /* The game: GameData, set up from the user's copy first if need be,
        or the folder named (setup.h); the module's working directory
        starts at "/", so it is named (main.c's argument). */
     if (!setup_choose_game(argc, argv, cwd, sizeof cwd))
         return 0;
+    host_lang_init(cwd);            /* (the game's CIV.INI known now) */
     module_path(cwd, game, sizeof game);
     args[0] = argv[0];
     args[1] = game;

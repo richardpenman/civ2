@@ -38,20 +38,20 @@ int WINAPI MessageBoxA(HWND owner, LPCSTR text, LPCSTR caption, UINT type)
     plat_log("MessageBox: %s: %s\n", caption ? caption : "", text ? text : "");
     switch (type & MB_TYPEMASK) {
     case MB_OKCANCEL:
-        labels[n] = "OK"; ids[n++] = IDOK;
-        labels[n] = "Cancel"; ids[n++] = IDCANCEL;
+        labels[n] = extras_text("box.ok"); ids[n++] = IDOK;
+        labels[n] = extras_text("box.cancel"); ids[n++] = IDCANCEL;
         break;
     case MB_YESNO:
-        labels[n] = "Yes"; ids[n++] = IDYES;
-        labels[n] = "No"; ids[n++] = IDNO;
+        labels[n] = extras_text("box.yes"); ids[n++] = IDYES;
+        labels[n] = extras_text("box.no"); ids[n++] = IDNO;
         break;
     case MB_YESNOCANCEL:
-        labels[n] = "Yes"; ids[n++] = IDYES;
-        labels[n] = "No"; ids[n++] = IDNO;
-        labels[n] = "Cancel"; ids[n++] = IDCANCEL;
+        labels[n] = extras_text("box.yes"); ids[n++] = IDYES;
+        labels[n] = extras_text("box.no"); ids[n++] = IDNO;
+        labels[n] = extras_text("box.cancel"); ids[n++] = IDCANCEL;
         break;
     default:
-        labels[n] = "OK"; ids[n++] = IDOK;
+        labels[n] = extras_text("box.ok"); ids[n++] = IDOK;
     }
     escape = n - 1;
     if (plat_replay)

@@ -396,10 +396,15 @@ static void progress(int phase, long done, long total)
     SDL_UnlockMutex(lock);
 }
 
+/* The message: "@key" or "@key|argument" (the key of src/host/texts.h,
+   which the game shows translated: src/game/options.cpp hd_message). */
 static int fail(const char *fmt, const char *arg)
 {
     SDL_LockMutex(lock);
-    snprintf(job.msg, sizeof job.msg, fmt, arg ? arg : "");
+    if (arg)
+        snprintf(job.msg, sizeof job.msg, fmt, arg);
+    else
+        snprintf(job.msg, sizeof job.msg, "%s", fmt);
     SDL_UnlockMutex(lock);
     return HOST_HD_FAILED;
 }
@@ -442,8 +447,7 @@ static int download(const char *url, const char *path, long size)
     si.cb = sizeof si;
     snprintf(cmd, sizeof cmd, "curl.exe -fsSL --retry 3 -o \"%s\" \"%s\"", path, url);
     if (!CreateProcessA(NULL, cmd, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
-        return fail("Windows' curl.exe, which downloads the art, was not found (it comes with Windows 10 and "
-                    "later).%s", NULL) * 0;
+        return fail("@hd.err.no_curl_windows", NULL) * 0;
     while (WaitForSingleObject(pi.hProcess, 200) == WAIT_TIMEOUT) {
         progress(HOST_HD_DOWNLOADING, file_size(path), size);
         if (cancel_wanted)
@@ -457,7 +461,7 @@ static int download(const char *url, const char *path, long size)
     if (code != 0) {
         char n[32];
         snprintf(n, sizeof n, "%lu", (unsigned long)code);
-        return fail("The download failed (curl's error %s). Is the computer connected to the internet?", n) * 0;
+        return fail("@hd.err.download|curl's error %s", n) * 0;
     }
     return 1;
 #else
@@ -487,10 +491,10 @@ static int download(const char *url, const char *path, long size)
         {
             char n[64];
             snprintf(n, sizeof n, "%s's error %d", tools[t][0], WIFEXITED(status) ? WEXITSTATUS(status) : -1);
-            return fail("The download failed (%s). Is the computer connected to the internet?", n) * 0;
+            return fail("@hd.err.download|%s", n) * 0;
         }
     }
-    return fail("Neither curl nor wget, which download the art, was found: please install curl.%s", NULL) * 0;
+    return fail("@hd.err.no_tool", NULL) * 0;
 #endif
 }
 
@@ -685,13 +689,13 @@ static int install(const char *zip, const char *dest)
     int n, i, ok = 1;
     const char *v;
     if (!f)
-        return fail("Could not read %s.", zip);
+        return fail("@hd.err.read|%s", zip);
     n = zip_entries(f, entries, 64);
     if (n < 0 || !(pkg = zip_find(entries, n, "package.json")) ||
         !zip_extract(f, pkg, NULL, manifest, sizeof manifest, hex, &done, 1) ||
         !strstr(manifest, "\"openciv2-assets\"") || !strstr(manifest, "\"schema\": 1")) {
         fclose(f);
-        return fail("%s is not an openciv2-assets pack.", zip);
+        return fail("@hd.err.not_pack|%s", zip);
     }
     if ((v = strstr(manifest, "\"version\"")) && (v = strchr(v + 9, '"')))
         sscanf(v + 1, "%63[^\"]", version);
@@ -707,7 +711,7 @@ static int install(const char *zip, const char *dest)
             !zip_extract(f, e, staged[i], NULL, 0, hex, &done, total) || strcmp(hex, want) ||
             file_size(staged[i]) != (long)size) {
             if (!cancel_wanted)
-                fail("%s in the pack does not match its package.json.", files[i][0]);
+                fail("@hd.err.mismatch|%s", files[i][0]);
             ok = 0;
         }
     }
@@ -715,7 +719,7 @@ static int install(const char *zip, const char *dest)
     for (i = 0; i < 4; i++) {
         snprintf(path, sizeof path, "%s" SEP "%s", dest, files[i][1]);
         if (ok && !replace_file(staged[i], path))
-            ok = 0, fail("Could not write %s.", path);
+            ok = 0, fail("@hd.err.write|%s", path);
         remove(staged[i]);
     }
     if (!ok)
@@ -735,9 +739,9 @@ static int fetch(void *unused)
     int r;
     (void)unused;
     if (!*HD_PACK_URL)
-        r = fail("This build does not know which art to download.%s", NULL);
+        r = fail("@hd.err.no_url", NULL);
     else if (!host_user_dir(dest, (int)sizeof dest - 4))
-        r = fail("There is no folder to install the art in.%s", NULL);
+        r = fail("@hd.err.no_folder", NULL);
     else {
         strcat(dest, SEP "hd");
         cache_dir(cache, sizeof cache);
@@ -751,9 +755,9 @@ static int fetch(void *unused)
             if (!sha_file(part, hex))
                 ;
             else if (strcmp(hex, HD_PACK_SHA256))
-                fail("The download is not the pinned art (its SHA-256 differs): nothing was installed.%s", NULL);
+                fail("@hd.err.not_pinned", NULL);
             else if (!replace_file(part, zip))
-                fail("Could not write %s.", zip);
+                fail("@hd.err.write|%s", zip);
             else
                 r = HOST_HD_DONE;
             remove(part);
@@ -790,7 +794,7 @@ int host_hd_fetch(int op, int32_t *info, char *msg, int size)
         thread = SDL_CreateThread(fetch, "hd-fetch", NULL);
         if (!thread) {
             job.state = state = HOST_HD_FAILED;
-            snprintf(job.msg, sizeof job.msg, "Could not start the download.");
+            snprintf(job.msg, sizeof job.msg, "@hd.err.start");
         }
     } else if (op == HOST_HD_CANCEL && state == HOST_HD_RUNNING) {
         cancel_wanted = 1;

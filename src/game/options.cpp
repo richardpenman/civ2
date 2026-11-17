@@ -17,10 +17,15 @@
  *   Rule changes, Limits (EXTRAS.md "Rule changes");
  *   Interface additions, Colours and messages (the colour correction, the
  *                        messages shown on the map).
+ *   Language             of OpenCiv2's own texts (src/include/lang.h,
+ *                        docs/TRANSLATING.md): Auto, English, the data
+ *                        directory's translations.
+ *
+ * Its texts are keyed (src/host/texts.h: extras_text).
  *
  * OK writes what changed to CIV.INI's [OpenCiv2] section.  The rule changes
  * and the interface additions take effect at once (extras_load: they are
- * read again); the mode, the graphics and full screen when the game starts
+ * read again); the mode, the graphics, full screen and the language when the game starts
  * again, which it then offers to do (plat_restart: the program started
  * again natively, the page loaded again in the browser).
  *
@@ -31,6 +36,7 @@
  * (options_test_setting, which extras_setting reads first).
  */
 #include "game.h"
+#include "lang.h"
 
 EXTERN_C int plat_replay;
 
@@ -40,50 +46,35 @@ enum { R_GOTO, R_MASS_MOVE, R_HANDOVER, R_ROTATION, R_SENTRY, NRULES };
 enum { L_RETIRE, L_WARN, L_POP, L_GOLD, L_MAP, NLIMITS };
 enum { C_GAMMA, C_BRIGHT, C_CONTRAST, C_SUPPRESS, NCOLOR };
 
-/* The rule changes (src/game/extras.cpp: rule_keys), with a line on each. */
-static const struct { const char *key, *label, *note; } rules[NRULES] = {
-    {"GotoNoZocStop", "Go To past foreign units",
-     "A unit on Go To keeps going next to foreign units (zones of control still stop it)."},
-    {"MassMove", "Shift+right click moves the type",
-     "The active unit goes there with its square's idle units of the same type."},
-    {"WorkerHandover", "Workers hand over their work",
-     "A settler joining another's terrain work takes it over; the first is freed."},
-    {"UnitRotation", "Units of a stack in turn",
-     "The other units of a square come next, then those nearest the last one."},
-    {"StackSentry", "U sentries the stack",
-     "With no land unit on sentry, U puts the stack's idle land units on sentry."},
+/* The choices by their CIV.INI keys; their labels are the texts
+   "rule.<key>", "limit.<key>" ... (src/host/texts.h). */
+
+/* The rule changes (src/game/extras.cpp: rule_keys). */
+static const struct { const char *key; } rules[NRULES] = {
+    {"GotoNoZocStop"}, {"MassMove"}, {"WorkerHandover"}, {"UnitRotation"}, {"StackSentry"},
 };
 
 /* The limits: the original's value (shown while off) and the range. */
-static const struct { const char *key, *label; int original, lo, hi; } limits[NLIMITS] = {
-    {"RetirementYear", "Retirement year", 2020, 1, 9999},
-    {"RetirementWarningYear", "Its warning", 2000, 0, 9998},
-    {"PopulationLimit", "Population (10,000s)", 32000, 32000, 3275800},
-    {"GoldLimit", "Gold", 30000, 30000, 1000000},
-    {"MapTilesLimit", "Custom map squares", 10000, 10000, 32767},
+static const struct { const char *key; int original, lo, hi; } limits[NLIMITS] = {
+    {"RetirementYear", 2020, 1, 9999},
+    {"RetirementWarningYear", 2000, 0, 9998},
+    {"PopulationLimit", 32000, 32000, 3275800},
+    {"GoldLimit", 30000, 30000, 1000000},
+    {"MapTilesLimit", 10000, 10000, 32767},
 };
 
 /* The interface additions (src/game/extras.cpp: extra_keys), in its order. */
-static const struct { const char *key, *label; } extras[] = {
-    {"MouseWheel", "Mouse wheel and button"}, {"UnitListScroll", "Unit list past 9 units"},
-    {"UnitListKeys", "Keys in that unit list"}, {"WorkCounter", "Settlers' work counter"},
-    {"GameTurn", "Turn in the status panel"}, {"ResearchNumbers", "Research figures"},
-    {"ZeroUpkeep", "Free buildings listed"}, {"SupportScroll", "Supported units: scroll"},
-    {"SupportSort", "Supported units sorted"}, {"AttitudeColors", "Attitude Advisor colours"},
-    {"CityAttitude", "City window attitude"}, {"RadioHotkeys", "Hotkeys for options"},
-    {"Quickinfo", "Quick information with Ctrl"}, {"ProductionCancel", "Cancel in Change Production"},
-    {"ProductionCost", "Costs in Change Production"}, {"CityStatus", "City Status: sort, change"},
-    {"MassSpecialists", "Shift on specialists"}, {"SuppressPopups", "Messages on the map"},
-    {"ColorCorrection", "Colour correction"}, {"ForeignGold", "Gold in Foreign Minister"},
-    {"ArrangeWindowsSL", "Arrange Windows S and L"}, {"PathLines", "Path lines with Shift"},
-    {"SentryHalftone", "Sentries in grey shades"}, {"DefaultZoom1", "New games at zoom 1:1"},
-    {"HotkeyUnderlines", "Underline options' hotkeys"},
+static const struct { const char *key; } extras[] = {
+    {"MouseWheel"}, {"UnitListScroll"}, {"UnitListKeys"}, {"WorkCounter"}, {"GameTurn"},
+    {"ResearchNumbers"}, {"ZeroUpkeep"}, {"SupportScroll"}, {"SupportSort"}, {"AttitudeColors"},
+    {"CityAttitude"}, {"RadioHotkeys"}, {"Quickinfo"}, {"ProductionCancel"}, {"ProductionCost"},
+    {"CityStatus"}, {"MassSpecialists"}, {"SuppressPopups"}, {"ColorCorrection"}, {"ForeignGold"},
+    {"ArrangeWindowsSL"}, {"PathLines"}, {"SentryHalftone"}, {"DefaultZoom1"}, {"HotkeyUnderlines"},
 };
 #define NEXTRAS ((int)(sizeof extras / sizeof extras[0]))
 
-static const struct { const char *key, *label; int def; } colours[NCOLOR] = {
-    {"Gamma", "Gamma (%)", 100}, {"Brightness", "Brightness", 0}, {"Contrast", "Contrast", 0},
-    {"SuppressList", "Messages on the map", 0},
+static const struct { const char *key; int def; } colours[NCOLOR] = {
+    {"Gamma", 100}, {"Brightness", 0}, {"Contrast", 0}, {"SuppressList", 0},
 };
 
 typedef struct {
@@ -91,6 +82,7 @@ typedef struct {
     int sharp, sharp_set;           /* sharp text and interface; SharpText= set (else: not in Classic) */
     int rule[NRULES], extra[NEXTRAS];
     char limit[NLIMITS][16], colour[NCOLOR][256];
+    char language[16];              /* Language=: a code, "" (or Auto) the system's */
 } Choices;
 
 /* The choices made in a test run (a replay): the game reads them instead of
@@ -162,6 +154,9 @@ static void read_choices(Choices *c)
     c->sharp_set = v[0] != 0;
     c->sharp = c->sharp_set ? atoi(v) != 0 : !c->classic;
     c->fullscreen = get_int("FullScreen", 0) != 0;
+    get("Language", c->language, sizeof c->language);
+    if (!__strcmpi(c->language, "Auto"))
+        c->language[0] = 0;
     for (i = 0; i < NRULES; i++)
         c->rule[i] = get_int(rules[i].key, 0) != 0;
     for (i = 0; i < NEXTRAS; i++)
@@ -195,6 +190,8 @@ static void write_choices(const Choices *c, const Choices *old)
         put_int("SharpText", c->sharp);
     if (c->fullscreen != old->fullscreen)
         put_int("FullScreen", c->fullscreen);
+    if (strcmp(c->language, old->language))
+        put("Language", c->language[0] ? c->language : "Auto");
     for (i = 0; i < NRULES; i++)
         if (c->rule[i] != old->rule[i])
             put_int(rules[i].key, c->rule[i]);
@@ -265,12 +262,38 @@ static void overrides(int which, char *out, int n)
     out[0] = 0;
     for (k = 0; k < count; k++) {
         len = strlen(out);
-        snprintf(out + len, (size_t)n - len, "%s%s", k ? (k == count - 1 ? " and " : ", ") : "", what[k]);
+        snprintf(out + len, (size_t)n - len, "%s%s", k ? (k == count - 1 ? extras_text("options.list_and") : ", ") : "",
+                 what[k]);
     }
-    len = strlen(out);
-    if (count)
-        snprintf(out + len, (size_t)n - len, " set: for this run %s over these choices.",
-                 count > 1 ? "they win" : "it wins");
+    if (count) {
+        char list[100];
+        snprintf(list, sizeof list, "%s", out);
+        snprintf(out, (size_t)n, extras_text(count > 1 ? "options.override_many" : "options.override_one"), list);
+    }
+}
+
+/* An option's label: the text of prefix + key ("rule.MassMove"). */
+static const char *label(const char *prefix, const char *key)
+{
+    char k[64];
+    snprintf(k, sizeof k, "%s%s", prefix, key);
+    return extras_text(k);
+}
+
+/* The host's message on the HD art (src/host/host_options.c): "@key" or
+   "@key|argument", the text of key ("hd.err.read": "Could not read %s.")
+   with the argument; else as it is. */
+static void hd_message(const char *msg, char *out, int n)
+{
+    char key[64];
+    const char *bar;
+    if (msg[0] != '@') {
+        snprintf(out, (size_t)n, "%s", msg);
+        return;
+    }
+    bar = strchr(msg, '|');
+    snprintf(key, sizeof key, "%.*s", (int)(bar ? bar - msg - 1 : (int)strlen(msg) - 1), msg + 1);
+    snprintf(out, (size_t)n, extras_text(key), bar ? bar + 1 : "");
 }
 
 /* A dialog as the game's: its title, its width, Cancel too. */
@@ -306,16 +329,15 @@ static int page_mode(Choices *c)
     char note[200];
     int choice;
     Dialog d(0x4000);
-    dialog_begin(d, "Mode", 440);
-    paragraph(d, "Standard: the original's bugs fixed, with OpenCiv2's interface additions; rule changes as "
-                 "chosen.", 1);
-    paragraph(d, "Classic: the original game as it was: its bugs, its look, none of OpenCiv2's additions.", 0);
-    paragraph(d, "From the next start of the game.", 0);
+    dialog_begin(d, extras_text("mode.title"), 440);
+    paragraph(d, extras_text("mode.standard_note"), 1);
+    paragraph(d, extras_text("mode.classic_note"), 0);
+    paragraph(d, extras_text("options.next_start"), 0);
     overrides(1, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
-    d.add_option("Standard", 0, 0);
-    d.add_option("Classic", 1, 0);
+    d.add_option(extras_text("mode.standard"), 0, 0);
+    d.add_option(extras_text("mode.classic"), 1, 0);
     d.set_default_choice(c->classic);
     choice = d.show_modal(0);
     if (choice < 0 || choice == c->classic)
@@ -334,13 +356,13 @@ static struct {
 
 static void fetch_text(void)
 {
-    static const char *const doing[3] = {"Downloading the art", "Checking it", "Installing it"};
+    static const char *const doing[3] = {"hd.downloading", "hd.checking", "hd.installing"};
     int phase = fetch.info[0] < 0 || fetch.info[0] > 2 ? 0 : fetch.info[0];
     int done = fetch.info[1], total = fetch.info[2] > 0 ? fetch.info[2] : 1;
     if (done > total)
         done = total;
-    snprintf(fetch.text, sizeof fetch.text, "%s: %d of %d MB", doing[phase], (int)(done * 1024LL / 1000000),
-             (int)(total * 1024LL / 1000000));
+    snprintf(fetch.text, sizeof fetch.text, extras_text("hd.progress"), extras_text(doing[phase]),
+             (int)(done * 1024LL / 1000000), (int)(total * 1024LL / 1000000));
 }
 
 /* (polled while the progress dialog is shown: 1 ends it) */
@@ -372,10 +394,10 @@ static int fetch_art(void)
         Dialog d(0x4000);
         d.init(0, 0, 0, 0x2000000);
         d.set_width(400);
-        d.set_title("HD Graphics");
+        d.set_title(extras_text("hd.title"));
         fetch_text();
         d.add_line(fetch.text, -1, -1, 80, 0);
-        d.add_button("Stop");
+        d.add_button(extras_text("hd.stop"));
         d.on_modal_poll = fetch_poll;
         d.show_modal(0);
         if (fetch.state == PLAT_HD_RUNNING) {
@@ -387,9 +409,10 @@ static int fetch_art(void)
     if (fetch.state == PLAT_HD_DONE)
         return 1;
     {
-        char s[600];
-        snprintf(s, sizeof s, "%s HD graphics stay off.", fetch.msg[0] ? fetch.msg : "The download failed.");
-        message("HD Graphics", s);
+        char s[700], why[600];
+        hd_message(fetch.msg, why, sizeof why);
+        snprintf(s, sizeof s, extras_text("hd.stay_off"), why[0] ? why : extras_text("hd.failed"));
+        message(extras_text("hd.title"), s);
     }
     return 0;
 }
@@ -403,35 +426,32 @@ static int page_graphics(Choices *c)
     Choices was = *c;
     Dialog d(0x4000);
     state = plat_hd_art(PLAT_HD_POLL, info, art, sizeof art);
+    (void)art;
     mb = (int)((info[2] > 0 ? info[2] : 228595) * 1024LL / 1000000);
-    dialog_begin(d, "Graphics and Screen", 480);
-    paragraph(d, "Sharp text and interface: text, menus and controls at the screen's full resolution (the "
-                 "pictures enlarged).", 1);
+    dialog_begin(d, extras_text("graphics.title"), 480);
+    paragraph(d, extras_text("graphics.sharp_note"), 1);
     if (state == PLAT_HD_DONE)
-        paragraph(d, "HD graphics: new art for the map, at the screen's full resolution. The art is installed.", 0);
+        paragraph(d, extras_text("graphics.hd_installed"), 0);
     else if (state == PLAT_HD_LATER) {
-        snprintf(note, sizeof note, "HD graphics: new art for the map, at the screen's full resolution. The art "
-                 "(%d MB) is downloaded from this site when the game starts again.", mb);
+        snprintf(note, sizeof note, extras_text("graphics.hd_later"), mb);
         paragraph(d, note, 0);
     } else if (state == PLAT_HD_FAILED && browser) {
-        paragraph(d, "HD graphics: new art for the map, at the screen's full resolution. This site was built "
-                     "without the art.", 0);
+        paragraph(d, extras_text("graphics.hd_no_site"), 0);
     } else {
-        snprintf(note, sizeof note, "HD graphics: new art for the map, at the screen's full resolution. They "
-                 "need the art: %d MB, downloaded once from openciv2-assets on GitHub when chosen.", mb);
+        snprintf(note, sizeof note, extras_text("graphics.hd_download"), mb);
         paragraph(d, note, 0);
     }
     if (!browser)
-        paragraph(d, "Full screen: instead of a window filling the screen.", 0);
-    paragraph(d, "From the next start of the game.", 0);
+        paragraph(d, extras_text("graphics.fullscreen_note"), 0);
+    paragraph(d, extras_text("options.next_start"), 0);
     overrides(2, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
     hd_offered = !c->classic && !(state == PLAT_HD_FAILED && browser);
-    d.add_checkbox_option("Sharp text and interface", 0, c->sharp);
-    d.add_checkbox_option("HD graphics", 1, c->hd && hd_offered);
+    d.add_checkbox_option(extras_text("graphics.sharp"), 0, c->sharp);
+    d.add_checkbox_option(extras_text("graphics.hd"), 1, c->hd && hd_offered);
     if (!browser)
-        d.add_checkbox_option("Full screen", 2, c->fullscreen);
+        d.add_checkbox_option(extras_text("graphics.fullscreen"), 2, c->fullscreen);
     if (!hd_offered)
         d.set_option_disabled(1, 1);
     result = d.show_modal(0);
@@ -459,11 +479,10 @@ static void page_rules(Choices *c)
 {
     int i;
     Dialog d(0x4000);
-    dialog_begin(d, "Rule Changes", 480);
-    paragraph(d, "Changes to the original's rules, for the human players' units; the original's rules in "
-                 "network games.", 1);
+    dialog_begin(d, extras_text("rules.title"), 480);
+    paragraph(d, extras_text("rules.intro"), 1);
     for (i = 0; i < NRULES; i++)
-        d.add_checkbox_option(rules[i].label, i, c->rule[i]);
+        d.add_checkbox_option(label("rule.", rules[i].key), i, c->rule[i]);
     if (d.show_modal(0) != 0)
         return;
     for (i = 0; i < NRULES; i++)
@@ -488,10 +507,10 @@ static void page_limits(Choices *c)
     char values[NLIMITS][256];
     int sizes[NLIMITS], i;
     Dialog d(0x4000);
-    dialog_begin(d, "Limits", 400);
-    paragraph(d, "At the original's values: as the original.", 1);
+    dialog_begin(d, extras_text("limits.title"), 400);
+    paragraph(d, extras_text("limits.intro"), 1);
     for (i = 0; i < NLIMITS; i++) {
-        d.add_edit_field(limits[i].label, c->limit[i], 8);
+        d.add_edit_field(label("limit.", limits[i].key), c->limit[i], 8);
         sizes[i] = 16;
     }
     if (!fields(d, values, sizes, NLIMITS))
@@ -505,11 +524,11 @@ static void page_interface(Choices *c)
 {
     int i;
     Dialog d(0x4000);
-    dialog_begin(d, "Interface Additions", 600);
-    paragraph(d, "OpenCiv2's additions to the interface (after FoxAhead's CIV2UIA): what you see and do.", 1);
+    dialog_begin(d, extras_text("interface.title"), 600);
+    paragraph(d, extras_text("interface.intro"), 1);
     d.set_columns(2);
     for (i = 0; i < NEXTRAS; i++)
-        d.add_checkbox_option(extras[i].label, i, c->extra[i]);
+        d.add_checkbox_option(label("extra.", extras[i].key), i, c->extra[i]);
     if (d.show_modal(0) != 0)
         return;
     for (i = 0; i < NEXTRAS; i++)
@@ -522,17 +541,46 @@ static void page_colours(Choices *c)
     char values[NCOLOR][256];
     int sizes[NCOLOR], i;
     Dialog d(0x4000);
-    dialog_begin(d, "Colours and Messages", 440);
-    paragraph(d, "Gamma: a percentage, 100 means no change; brightness and contrast: -100 to 100. Messages on "
-                 "the map: GAME.TXT sections, e.g. HIDDENTERRAIN,CITYSIZE.", 1);
+    dialog_begin(d, extras_text("colours.title"), 440);
+    paragraph(d, extras_text("colours.intro"), 1);
     for (i = 0; i < NCOLOR; i++) {
-        d.add_edit_field(colours[i].label, c->colour[i], i == C_SUPPRESS ? 255 : 7);
+        d.add_edit_field(label("colour.", colours[i].key), c->colour[i], i == C_SUPPRESS ? 255 : 7);
         sizes[i] = i == C_SUPPRESS ? 256 : 16;
     }
     if (!fields(d, values, sizes, NCOLOR))
         return;
     for (i = 0; i < NCOLOR; i++)
         snprintf(c->colour[i], 256, "%s", values[i]);
+}
+
+/* Language: Auto (the system's), English, the languages there are files
+   of (data directory's lang/: lang_languages).  1 if changed. */
+static int page_language(Choices *c)
+{
+    static LangChoice langs[32];
+    const char *env = getenv("CIV2_LANG");
+    int n = lang_languages(langs, 32), i, choice, current = 0;
+    Dialog d(0x4000);
+    dialog_begin(d, extras_text("language.title"), 440);
+    paragraph(d, extras_text("language.intro"), 1);
+    paragraph(d, extras_text("options.next_start"), 0);
+    if (env && *env && !plat_replay)
+        paragraph(d, extras_text("language.override"), 0);
+    d.add_option(extras_text("language.auto"), 0, 0);
+    d.add_option("English", 1, 0);
+    if (!__strcmpi(c->language, "en"))
+        current = 1;
+    for (i = 0; i < n; i++) {
+        d.add_option(langs[i].name, i + 2, 0);
+        if (!__strcmpi(c->language, langs[i].code))
+            current = i + 2;
+    }
+    d.set_default_choice(current);
+    choice = d.show_modal(0);
+    if (choice < 0 || choice == current)
+        return 0;
+    snprintf(c->language, sizeof c->language, "%s", choice == 0 ? "" : choice == 1 ? "en" : langs[choice - 2].code);
+    return 1;
 }
 
 /* Whether a choice that needs a restart differs from what the game started
@@ -542,28 +590,26 @@ static void offer_restart(const Choices *c)
 {
     int how, choice;
     if (c->classic == at_start.classic && c->hd == at_start.hd && c->sharp == at_start.sharp &&
-        c->fullscreen == at_start.fullscreen)
+        c->fullscreen == at_start.fullscreen && !strcmp(c->language, at_start.language))
         return;
     how = plat_restart(0);
     if (!how) {
-        message("Restart", "These choices take effect the next time the game starts.");
+        message(extras_text("restart.title"), extras_text("restart.next_time"));
         return;
     }
     {
         Dialog d(0x4000);
-        dialog_begin(d, "Restart", 400);
-        paragraph(d, how == 2 ? "These choices take effect when the game starts again: restart it now (the page "
-                                "is loaded again)?"
-                              : "These choices take effect when the game starts again: restart it now?", 1);
-        d.add_option("Restart now", 0, 0);
-        d.add_option("Later", 1, 0);
+        dialog_begin(d, extras_text("restart.title"), 400);
+        paragraph(d, extras_text(how == 2 ? "restart.ask_page" : "restart.ask"), 1);
+        d.add_option(extras_text("restart.now"), 0, 0);
+        d.add_option(extras_text("restart.later"), 1, 0);
         choice = d.show_modal(0);
     }
     if (choice == 0 && !plat_restart(1) && !plat_replay)
-        message("Restart", "The game could not be started again: these choices take effect the next time it starts.");
+        message(extras_text("restart.title"), extras_text("restart.failed"));
 }
 
-enum { P_MODE, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS };
+enum { P_MODE, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS, P_LANGUAGE };
 
 void options_dialog(void)
 {
@@ -578,20 +624,21 @@ void options_dialog(void)
         was = now;
         {
             Dialog d(0x4000);
-            dialog_begin(d, "OpenCiv2 Options", 360);
-            d.add_line("Kept in CIV.INI, under [OpenCiv2].", -1, -1, -1, 0);
-            d.add_option("Mode", P_MODE, 0);
-            d.add_option("Graphics and screen", P_GRAPHICS, 0);
-            d.add_option("Rule changes", P_RULES, 0);
-            d.add_option("Limits", P_LIMITS, 0);
-            d.add_option("Interface additions", P_INTERFACE, 0);
-            d.add_option("Colours and messages", P_COLOURS, 0);
+            dialog_begin(d, extras_text("options.title"), 360);
+            d.add_line(extras_text("options.kept"), -1, -1, -1, 0);
+            d.add_option(extras_text("options.mode"), P_MODE, 0);
+            d.add_option(extras_text("options.graphics"), P_GRAPHICS, 0);
+            d.add_option(extras_text("options.rules"), P_RULES, 0);
+            d.add_option(extras_text("options.limits"), P_LIMITS, 0);
+            d.add_option(extras_text("options.interface"), P_INTERFACE, 0);
+            d.add_option(extras_text("options.colours"), P_COLOURS, 0);
+            d.add_option(extras_text("options.language"), P_LANGUAGE, 0);
             if (now.classic) {
                 /* (the original game: none of these) */
                 int i;
                 for (i = P_RULES; i <= P_COLOURS; i++)
                     d.set_option_disabled(i, 1);
-                if (choice >= P_RULES)
+                if (choice >= P_RULES && choice <= P_COLOURS)
                     choice = P_MODE;
             }
             d.set_default_choice(choice);
@@ -624,8 +671,14 @@ void options_dialog(void)
         case P_COLOURS:
             page_colours(&now);
             break;
+        case P_LANGUAGE:
+            if (page_language(&now)) {
+                write_choices(&now, &was);
+                offer_restart(&now);
+            }
+            break;
         }
-        if (choice >= P_RULES) {
+        if (choice >= P_RULES && choice <= P_COLOURS) {
             /* at once: the additions and the rules read again */
             write_choices(&now, &was);
             extras_load();

@@ -8,9 +8,11 @@ import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
 import {findDisc} from './setup_run.js';
 import {packFrom, keepPack, loadPack, download, siteArt} from './hdpack.js';
-import {hdWanted} from './options.js';
+import {hdWanted, iniGet} from './options.js';
+import {t, languages, pageLanguage, useLanguage, chosen, choose, langFile, parseLang, match} from './i18n.js';
 
 const GAME = '/civ2', DATA = '/data';
+let pageLang = 'en';        // the page's language (i18n.js), the game's Auto
 const $ = (id) => document.getElementById(id);
 // (on the set-up page, and over the screen until the game's first frame)
 const status = (s) => {
@@ -42,9 +44,7 @@ function findGame(files) {
         if (names.has('civ2art.dll') && names.has('rules.txt') && (root === null || dir.length < root.length))
             root = dir;
     if (root === null) {
-        return 'These files are neither an installed Civilization II Multiplayer Gold Edition (its folder has ' +
-               'Civ2Art.dll and RULES.TXT in it), nor its CD (DATA1.CAB and CIV2), nor a disc image of the CD ' +
-               '(a .cue with its .bin).';
+        return t('web.not_game');
     }
     const pre = root ? root + '/' : '';
     return {files: files.filter((f) => f.name.startsWith(pre) && !/\.log$/i.test(f.name))
@@ -68,7 +68,7 @@ async function importFiles(store, files) {
         size += data.length;
         n++;
         if (size > 16 << 20) {
-            status(`Copying the game: ${n} of ${found.files.length} files`);
+            status(t('web.copying', n, found.files.length));
             await store.putMany(batch);
             batch = [];
             size = 0;
@@ -76,7 +76,7 @@ async function importFiles(store, files) {
     }
     await store.putMany(batch);
     await store.setMeta('game', {names: found.files.map((f) => f.name), at: Date.now()});
-    status(`The game's ${n} files are kept in this browser.`);
+    status(t('web.kept', n));
     return true;
 }
 
@@ -109,11 +109,11 @@ function setupFromDisc(store, files, disc) {
                     resolve(true);
                 } else {
                     await store.clear();
-                    status(ok ? 'The set-up did not make the game (no Civ2Art.dll, RULES.TXT).' : text);
+                    status(ok ? t('web.setup_no_game') : text);
                     resolve(false);
                 }
             }, (e) => {
-                status('Could not keep the files: ' + e.message);
+                status(t('web.keep_failed', e.message));
                 resolve(false);
             });
         };
@@ -131,20 +131,19 @@ function setupFromDisc(store, files, disc) {
                 messages.push(m.message[0]);
                 console.warn('set-up:', m.message[0]);
             } else if (m.done !== undefined) {
-                end(m.done === 0, m.done === 0 ? `The game is set up from the ${disc.kind === 'cd' ? 'CD' : 'disc image'}: ` +
-                    `${names.size} files kept in this browser` + (disc.kind === 'cd' ? ' (without the music: the ' +
-                    'browser cannot read the CD\'s music tracks; a disc image of the CD has them).' : '.')
-                    : 'The set-up failed: ' + (messages.join(' ') || 'code ' + m.done));
+                end(m.done === 0, m.done === 0 ? t(disc.kind === 'cd' ? 'web.set_up_cd' : 'web.set_up_image', names.size)
+                    : t('web.setup_failed', messages.join(' ') || 'code ' + m.done));
             } else if (m.error) {
-                end(false, 'The set-up failed: ' + m.error);
+                end(false, t('web.setup_failed', m.error));
             }
         };
-        worker.onerror = (e) => end(false, 'The set-up failed: ' + (e.message || 'its worker stopped'));
+        worker.onerror = (e) => end(false, t('web.setup_failed', e.message || 'its worker stopped'));
         stop.hidden = false;
-        stop.onclick = () => end(false, 'The set-up was stopped; choose the files again to start it again.');
-        status(`Setting the game up from its ${disc.kind === 'cd' ? 'CD' : 'disc image'} ...`);
-        worker.postMessage({files: files.map((f) => ({name: f.name, file: f.file || new Blob([f.data])})),
-                            source: disc.source});
+        stop.onclick = () => end(false, t('web.setup_stopped'));
+        status(t(disc.kind === 'cd' ? 'web.setting_up_cd' : 'web.setting_up_image'));
+        langFile(pageLang).then((lang) =>
+            worker.postMessage({files: files.map((f) => ({name: f.name, file: f.file || new Blob([f.data])})),
+                                source: disc.source, lang}));
     });
 }
 
@@ -172,9 +171,9 @@ function showChosen(files) {
     const p = $('chosen');
     const top = new Set(files.map((f) => f.name.split('/')[0]));
     if (files.some((f) => f.name.includes('/')))
-        p.textContent = `Folder: ${[...top].join(', ')} (${files.length} files)`;
+        p.textContent = t('web.chosen_folder', [...top].join(', '), files.length);
     else if (files.some((f) => /\.cue$/i.test(f.name)))
-        p.textContent = 'Disc image: ' + files.map((f) => f.name).join(' + ');
+        p.textContent = t('web.chosen_image', files.map((f) => f.name).join(' + '));
     else if (files.length === 1)
         p.textContent = files[0].name + (files[0].file ? ` (${Math.round(files[0].file.size / 1e6)} MB)` : '');
     else
@@ -183,7 +182,7 @@ function showChosen(files) {
 }
 
 async function zipFiles(file) {
-    status('Reading ' + file.name + ' ...');
+    status(t('web.reading', file.name));
     return (await unzip(await file.arrayBuffer())).map((f) => ({name: f.name, data: f.data}));
 }
 
@@ -247,14 +246,13 @@ function relayUnreachable(relay) {
     try {
         host = new URL(relay).hostname || relay;
     } catch (e) { /* not an address */ }
-    $('relay-text').textContent = `Network games go through a relay, and none answered at ${relay}: run ` +
-        `tools/webrelay.py on ${host}, or give its address here (or open the page with ?relay=ws://HOST:PORT).`;
+    $('relay-text').textContent = t('web.relay_none', relay, host);
     const input = $('relay-address');
     input.value = relay;
     $('relay-use').onclick = () => {
         const v = input.value.trim();
         if (v && !/^wss?:\/\/./.test(v)) {
-            $('relay-text').textContent = 'The relay\'s address starts with ws:// (or wss://).';
+            $('relay-text').textContent = t('web.relay_bad');
             return;
         }
         try {
@@ -285,7 +283,7 @@ async function exportClicked(store) {
             await window.civ2Flush();
         const {data, names} = await exportSaves(store);
         if (!names.length) {
-            savesStatus('There are no saved games to export yet.');
+            savesStatus(t('web.no_saves'));
             return;
         }
         const a = document.createElement('a');
@@ -296,10 +294,10 @@ async function exportClicked(store) {
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-        savesStatus(`Exported ${names.length} file${names.length > 1 ? 's' : ''}: ${names.join(', ')}.`);
+        savesStatus(names.length > 1 ? t('web.exported', names.length, names.join(', ')) : t('web.exported_one', names[0]));
     } catch (e) {
         console.error(e);
-        savesStatus('Could not export the saved games: ' + e.message);
+        savesStatus(t('web.export_failed', e.message));
     }
 }
 
@@ -309,11 +307,11 @@ async function importChosen(store, list) {
         for (const f of list)
             files.push({name: f.name, data: new Uint8Array(await f.arrayBuffer())});
         const names = await importSaves(store, files, running, GAME);
-        savesStatus(names.length ? `Imported ${names.length} file${names.length > 1 ? 's' : ''}: ${names.join(', ')}.`
-                                 : 'Nothing to import there: saved games are .SAV files (or a .zip of them).');
+        savesStatus(names.length > 1 ? t('web.imported', names.length, names.join(', '))
+            : names.length ? t('web.imported_one', names[0]) : t('web.nothing_to_import'));
     } catch (e) {
         console.error(e);
-        savesStatus('Could not import: ' + e.message);
+        savesStatus(t('web.import_failed', e.message));
     }
 }
 
@@ -363,21 +361,21 @@ async function artInfo(store) {
 // -> 1, or 0 (why said, HD graphics off this time)
 async function getArt(store, site) {
     const progress = (doing) => (done, total) =>
-        status(`${doing}: ${MB(done)} of ${MB(total || site.size)} MB`);
+        status(t('web.hd_progress', doing, MB(done), MB(total || site.size)));
     try {
         const p = await pin();
-        const b = await download(site.size, {progress: progress('Downloading the HD graphics\' art')});
-        const pack = await packFrom(b, p, {progress: (phase, d, t) => progress('Checking it')(d, t)});
+        const b = await download(site.size, {progress: progress(t('web.hd_downloading'))});
+        const pack = await packFrom(b, p, {progress: (phase, d, tt) => progress(t('web.hd_checking'))(d, tt)});
         if (navigator.storage && navigator.storage.estimate) {
             const {usage, quota} = await navigator.storage.estimate();
             if (quota && quota - usage < pack.length)
-                throw new Error(`The browser's storage has no room for it (${MB(quota - usage)} MB free).`);
+                throw new Error(t('web.hd_no_room', MB(quota - usage)));
         }
-        await keepPack(store, pack, p, {progress: progress('Keeping it in this browser')});
+        await keepPack(store, pack, p, {progress: progress(t('web.hd_keeping'))});
         return 1;
     } catch (e) {
         console.error(e);
-        status('HD graphics: ' + e.message + ' They stay off this time.');
+        status(t('web.hd_off', e.message));
         if (!await artInfo(store).catch(() => null))
             await store.hdClear().catch(() => {});
         return 0;
@@ -418,7 +416,7 @@ async function play(store) {
     $('setup').hidden = true;
     $('game').hidden = false;
     $('loading').hidden = false;
-    status('Loading the game files ...');
+    status(t('web.loading_files'));
     const t0 = performance.now();
     const site = fromSite();
     const siteHdP = siteArt(), keptP = artInfo(store).catch(() => null);
@@ -445,6 +443,21 @@ async function play(store) {
     fs.mkdirs(GAME);
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
+    // the translations (the game's Language choice lists them; Auto is the
+    // page's language), and the glyphs of the game's language's code page
+    const gameLang = await gameLanguage(ini);
+    for (const [code, bytes] of gameLang.files)
+        fs.put(DATA + '/lang/' + code + '.txt', bytes);
+    if (gameLang.codepage !== 'windows-1252') {
+        try {
+            const [d, a] = await Promise.all([fetchGz(`data/fonts_${gameLang.codepage}.bin.gz`),
+                                              fetchGz(`data/fonts_${gameLang.codepage}_aa.bin.gz`)]);
+            fs.put(DATA + `/fonts_${gameLang.codepage}.bin`, d);
+            fs.put(DATA + `/fonts_${gameLang.codepage}_aa.bin`, a);
+        } catch (e) {
+            console.warn('no glyphs for', gameLang.codepage, e);
+        }
+    }
     // HD graphics (?hd=N as --hd=N, else CIV.INI's choice): the art the
     // game draws, where hd.c looks for it (CIV2_DATA/hd)
     if (query.has('hd'))
@@ -454,12 +467,12 @@ async function play(store) {
         args.push('--sharp=' + (query.get('sharp') || '1'));
     window.civ2Hd = null;
     if (hd) {
-        const t = performance.now();
-        status('Loading the HD graphics\' art ...');
+        const since = performance.now();
+        status(t('web.loading_hd'));
         const pack = await packP;
         if (pack)
             fs.put(DATA + '/hd/atlas-hd.pack', pack);
-        window.civ2Hd = {packBytes: pack ? pack.length : 0, loadMs: Math.round(performance.now() - t)};
+        window.civ2Hd = {packBytes: pack ? pack.length : 0, loadMs: Math.round(performance.now() - since)};
         if (!pack)
             console.warn('HD graphics: the art is not in this browser');
     }
@@ -499,11 +512,11 @@ async function play(store) {
     running = fs;
     window.civ2Flush = () => (timer ? (clearTimeout(timer), flush()) : Promise.resolve());
     window.addEventListener('pagehide', () => window.civ2Flush());
-    status(`Starting (files loaded in ${Math.round(performance.now() - t0)} ms) ...`);
+    status(t('web.starting', Math.round(performance.now() - t0)));
     const canvas = $('screen');
     canvas.focus();
     // (the platform's log: ?log, in the console)
-    const env = {CIV2_DATA: DATA};
+    const env = {CIV2_DATA: DATA, CIV2_SYSTEM_LANG: pageLang};
     if (!new URLSearchParams(location.search).has('log'))
         env.CIV2_HOOK_LOG = '/dev/null';
     // (tests, src/web/test/smoke.mjs: files and settings of a replay)
@@ -516,7 +529,7 @@ async function play(store) {
                               onFrame: () => {
                                   timing.frame = Math.round(performance.now());
                                   $('loading').hidden = true;
-                              }, canvas, args, env, messageBox,
+                              }, canvas, args, env, messageBox, codepage: gameLang.codepage,
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               // (the game's OpenCiv2 Options: where the art is, and their restart:
@@ -529,15 +542,51 @@ async function play(store) {
                                       u.searchParams.delete(k);
                                   location.replace(u.href);
                               }});
-        status('The game has ended' + (code ? ' (' + code + ')' : '') + '.');
+        status(code ? t('web.ended_code', code) : t('web.ended'));
     } catch (e) {
         console.error(e);
-        status('The game stopped: ' + e.message);
+        status(t('web.stopped', e.message));
     }
     await window.civ2Flush();
     running = null;
     $('game').hidden = true;
     showSetup(store, true);
+}
+
+// The game's language (as src/game/lang.cpp chooses it: CIV.INI's
+// Language=, else, Auto, the page's) and the site's translation files
+// -> {files: [[code, bytes]], codepage: the game's language's}
+async function gameLanguage(ini) {
+    const list = await languages();
+    const files = (await Promise.all(list.map(async (l) => [l.code, await langFile(l.code)])))
+        .filter(([, b]) => b);
+    const set = (iniGet(ini, 'OpenCiv2', 'Language') || '').trim();
+    const code = set && !/^auto$/i.test(set) ? (/^en\b/i.test(set) ? 'en' : match(set, list)) : pageLang;
+    const own = files.find(([c]) => c === code);
+    return {files, codepage: own ? parseLang(own[1]).codepage : 'windows-1252'};
+}
+
+// The page's Language choice: Auto (the browser's), English, the site's
+async function languageChoice() {
+    const list = await languages();
+    const sel = $('language');
+    $('language-row').hidden = !list.length;
+    sel.textContent = '';
+    const add = (value, label) => {
+        const o = document.createElement('option');
+        o.value = value;
+        o.textContent = label;
+        sel.append(o);
+    };
+    add('', t('web.language_auto'));
+    add('en', 'English');
+    for (const l of list)
+        add(l.code, l.name);
+    sel.value = chosen();
+    sel.onchange = () => {
+        choose(sel.value);
+        location.reload();
+    };
 }
 
 async function showSetup(store, ended = false) {
@@ -547,7 +596,7 @@ async function showSetup(store, ended = false) {
     $('have').hidden = !have;
     $('play').onclick = () => play(store);
     $('forget').onclick = async () => {
-        if (confirm('Remove the game files, saved games included, from this browser (and the HD graphics\' art)?')) {
+        if (confirm(t('web.forget_confirm'))) {
             await store.clear();
             await store.hdClear();
             showSetup(store);
@@ -559,8 +608,11 @@ async function showSetup(store, ended = false) {
 }
 
 async function main() {
+    pageLang = await pageLanguage();
+    await useLanguage(pageLang);
+    await languageChoice();
     if (!window.WebAssembly || !window.indexedDB || !window.DecompressionStream) {
-        status('This browser lacks what the game needs (WebAssembly, IndexedDB, DecompressionStream).');
+        status(t('web.no_browser'));
         return;
     }
     // (a later visit: what the game needs from the site, at once)
@@ -568,7 +620,7 @@ async function main() {
     if (!setup)
         fromSite();
     const store = await mark('store', openStore(() =>
-        status('Waiting for another OpenCiv2 tab (from before an update) to close: close it, or reload it.')));
+        status(t('web.other_tab'))));
     savesControls(store);
     // (the relay's dialog keeps the keys from the game)
     const rd = $('relay-dialog');
@@ -582,7 +634,7 @@ async function main() {
                 await showSetup(store, true);
         } catch (e) {
             console.error(e);
-            status('Could not copy the files: ' + e.message);
+            status(t('web.copy_failed', e.message));
         }
     };
     // the one button: a folder (the installed game or the CD) or files (a
@@ -628,7 +680,7 @@ async function main() {
         try {
             chosen(zip ? await zipFiles(zip) : files.map((f) => ({name: f.name, file: f})));
         } catch (e) {
-            status('Could not read ' + (zip ? zip.name : 'the files') + ': ' + e.message);
+            status(t('web.read_failed', zip ? zip.name : t('web.the_files'), e.message));
         }
     };
     const drop = $('drop');

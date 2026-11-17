@@ -87,9 +87,10 @@ UNIT_SCRIPTS ?= long50 turns newgame conquest civilwar spies units talks citywor
                 menuview-arrange reports screens setup spriteedit cityunits editrename pediascroll premade \
                 rarecalls rome spritepick uimisc
 
-test:                         ## the unit tests: the recorded cases in tests/unit (build/civ2-unittest), then the source probes (tests/*_test.cpp)
+test:                         ## the unit tests: the recorded cases in tests/unit (build/civ2-unittest), then the source probes (tests/*_test.cpp), then the translations (tests/lang_test.py)
 	$(DK) sh -c "python3 tools/build_native.py --target linux32test >/dev/null && cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz"
 	$(DK) sh -c "for t in tests/*_test.cpp; do CXX='g++ -m32' python3 tests/source_probe.py \$$t >/dev/null 2>&1 && echo \$$t passed || { echo \$$t FAILED; exit 1; }; done"
+	$(DK) python3 tests/lang_test.py
 
 # The additions' regression tests (harness/extras_suite.py): our own output,
 # checked by eye and recorded (extras-bless), replayed and compared.  Needs

@@ -1,0 +1,51 @@
+# A translation (docs/TRANSLATING.md): Esperanto (data/native/lang/eo.txt,
+# in ISO-8859-3: its letters drawn with data/native/fonts_iso-8859-3*.bin).
+# The main menu's OpenCiv2 Options, the Options dialog and its Language
+# page, the file dialog (the real one), a city renamed with Esperanto's
+# letters typed (input_char: as the host's text input gives them), the
+# city window with that name.
+# test: CIV2_LANG=eo CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# (sharp: the same with sharp text and interface at density 2: the letters
+# drawn from the antialiased glyphs, the -hd shots)
+# test sharp: CIV2_TEST_SHARP=2 CIV2_LANG=eo CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+wait 8000
+shot xl-a-mainmenu
+key Down Down Down Down Down Down Down Down
+key Return
+wait 2000
+shot xl-b-options
+key Down Down Down Down Down Down          # Lingvo (Language)
+key Return
+wait 1000
+shot xl-c-language
+key Escape
+wait 1000
+key Escape
+wait 2000
+key Up Up Up Up             # "Load a Game"
+key Return
+wait 3000
+shot xl-d-filedlg
+type ĉĝĥĵŝŭ
+wait 500
+shot xl-e-filedlg-typed
+key BackSpace BackSpace BackSpace BackSpace BackSpace BackSpace
+type Ca_Auto.SAV
+key Return
+wait 30000
+key Return
+wait 8000
+call menu_command 4e2803 0 528
+wait 3000
+key Return
+wait 12000
+click 235 265
+wait 12000
+call city_button_rename 50b74e 0
+wait 3000
+type Ĉeĝo Ĥaŭ Ĵoŝ
+wait 500
+shot xl-f-rename
+key Return
+wait 3000
+shot xl-g-city

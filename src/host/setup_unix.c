@@ -29,6 +29,7 @@
 #endif
 #include "SDL.h"
 #include "setup.h"
+#include "host_lang.h"
 #include "setup_os.h"
 #include "box_text.h"
 
@@ -295,23 +296,31 @@ static int ask_with(const char *command, char *out, size_t size)
 
 int os_ask_folder(char *out, size_t size)
 {
-    static const char prompt[] = "Where is Civilization II Multiplayer Gold Edition? Choose the folder it is "
-                                 "installed in, its CD, or a disc image of the CD (its .cue file, or the folder it "
-                                 "is in).";
+    const char *prompt = host_text("setup.where");
 #ifdef __APPLE__
     return setup_mac_ask_folder(prompt, out, size);
 #else
-    if (ask_with("zenity --file-selection --directory --title='Where is Civilization II Multiplayer Gold Edition? "
-                 "(the folder it is installed in, its CD, or the folder of a disc image of the CD)' 2>/dev/null",
-                 out, size) ||
-        ask_with("kdialog --getexistingdirectory ~ --title 'Where is Civilization II Multiplayer Gold Edition? "
-                 "(the folder it is installed in, its CD, or the folder of a disc image of the CD)' 2>/dev/null",
-                 out, size))
+    char command[1024], title[512];
+    const char *t = host_text("setup.where_short");
+    size_t k = 0;
+    /* (the title in the shell's single quotes: ' as '\'') */
+    for (; *t && k + 5 < sizeof title; t++) {
+        if (*t == '\'') {
+            memcpy(title + k, "'\\''", 4);
+            k += 4;
+        } else
+            title[k++] = *t;
+    }
+    title[k] = 0;
+    snprintf(command, sizeof command, "zenity --file-selection --directory --title='%s' 2>/dev/null", title);
+    if (ask_with(command, out, size))
+        return 1;
+    snprintf(command, sizeof command, "kdialog --getexistingdirectory ~ --title '%s' 2>/dev/null", title);
+    if (ask_with(command, out, size))
         return 1;
     if (system("command -v zenity >/dev/null 2>&1 || command -v kdialog >/dev/null 2>&1")) {
-        char text[512];
-        snprintf(text, sizeof text, "%s\n\nStart OpenCiv2 with that folder (or the .cue file): OpenCiv2 --setup "
-                 "FOLDER", prompt);
+        char text[2048];
+        snprintf(text, sizeof text, "%s\n\n%s", prompt, host_text("setup.where_command"));
         os_message(text, OS_INFO);
     }
     return 0;
@@ -320,13 +329,15 @@ int os_ask_folder(char *out, size_t size)
 
 int os_confirm(const char *text)
 {
-    static const SDL_MessageBoxButtonData buttons[] = {
-        {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Set up"},
-        {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Quit"},
+    SDL_MessageBoxButtonData buttons[] = {
+        {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, NULL},
+        {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, NULL},
     };
     SDL_MessageBoxData box;
     char wrapped[4 * SETUP_PATH];
     int id;
+    buttons[0].text = host_text("setup.set_up");
+    buttons[1].text = host_text("setup.quit");
     memset(&box, 0, sizeof box);
     box.flags = SDL_MESSAGEBOX_INFORMATION;
     box.title = TITLE;

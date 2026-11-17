@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #include <stdio.h>
+#include "host_lang.h"
 
 int setup_mac_ask_folder(const char *prompt, char *out, size_t size)
 {
@@ -19,7 +20,7 @@ int setup_mac_ask_folder(const char *prompt, char *out, size_t size)
         panel.canChooseDirectories = YES;
         panel.allowsMultipleSelection = NO;
         panel.message = [NSString stringWithUTF8String:prompt];
-        panel.prompt = @"Choose";
+        panel.prompt = [NSString stringWithUTF8String:host_text("setup.choose")];
         panel.directoryURL = [NSURL fileURLWithPath:@"/Volumes"];
         if ([panel runModal] != NSModalResponseOK || !panel.URL.fileSystemRepresentation)
             return 0;

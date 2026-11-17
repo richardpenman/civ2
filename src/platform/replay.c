@@ -310,7 +310,18 @@ void replay_run_script(void)
             const char *p;
             ensure_focus();
             for (p = arg; p && *p; p++) {
-                int r = vk_scan((unsigned char)*p);
+                int r;
+                if ((unsigned char)*p >= 0xc0) {
+                    /* a character beyond ASCII (UTF-8): typed as the host's
+                       text input gives it (input_char) */
+                    unsigned c = (unsigned char)*p, n = c >= 0xf0 ? 3 : c >= 0xe0 ? 2 : 1;
+                    c &= 0x3f >> n;
+                    while (n-- && (p[1] & 0xc0) == 0x80)
+                        c = c << 6 | (*++p & 0x3f);
+                    input_char(c);
+                    continue;
+                }
+                r = vk_scan((unsigned char)*p);
                 if (r < 0)
                     continue;
                 if (r & 0x100)

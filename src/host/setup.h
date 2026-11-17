@@ -10,6 +10,10 @@
 /* Windows: the program's own files, as resources (src/host/setup.rc): deflated. */
 #define SETUP_RES_FONTS_WIN 3       /* with Windows' widths (src/platform/text.c) */
 #define SETUP_RES_FONTS_WIN_AA 4
+/* the others (a code page's glyphs, the translations: data/native's
+   fonts_<code page>.bin, lang/<code>.txt), listed in SETUP_RES_FILES: lines "ID PATH"
+   (tools/build_port.py) */
+#define SETUP_RES_FILES 99
 
 /* Where the game is, before it starts (port_main.c): with no arguments
    GameData (Windows: beside the program; macOS, Linux: in the user's data

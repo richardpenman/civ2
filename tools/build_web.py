@@ -17,6 +17,11 @@ a disc image (src/web/setup/setup_web.c with src/host/setup.c,
 setup_disc.c, unshield, zlib, libogg and libvorbis, as the native build has
 them: wasi-sdk's clang; the page runs it in a Web Worker).
 
+The translations (data/native/lang/*.txt but the template en.txt) into
+lang/, listed in lang/index.json (code, name), the glyphs of their code
+pages (data/native/fonts_<code page>*.bin, gzipped) into data/, and
+texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
+
 The HD graphics' pin (data/hd-pack.json) is copied as hd-pack.json; with
 HD=1 in the environment (make web HD=1) the installed art
 (data/native/hd/atlas-hd.pack, make hd) is copied to hd/atlas-hd.pack too,
@@ -45,8 +50,66 @@ BINARYEN = os.environ.get('BINARYEN') or os.path.join(ROOT, 'tools', 'toolchain'
 ASYNC_IMPORTS = ['host.host_wait_event', 'host.host_poll_event', 'host.host_delay_ms', 'host.host_message_box',
                  'host.host_restart']
 PAGE = ['index.html', 'main.js', 'host.js', 'wasi.js', 'store.js', 'zip.js', 'saves.js', 'setup_run.js',
-        'setup_worker.js', 'net.js', 'hdpack.js', 'options.js']
+        'setup_worker.js', 'net.js', 'hdpack.js', 'options.js', 'i18n.js']
 FONTS = ['fonts_win.bin', 'fonts_win_aa.bin']
+LANG = os.path.join(ROOT, 'data', 'native', 'lang')
+
+
+def english_texts():
+    """OpenCiv2's own texts' English (src/host/texts.h): {key: text}."""
+    import re
+    text = open(os.path.join(ROOT, 'src', 'host', 'texts.h'), encoding='ascii').read()
+    out = {}
+    for key, value in re.findall(r'^T\("([^"]+)", ((?:"(?:\\.|[^"\\])*"\s*)+)\)', text, re.M):
+        parts = re.findall(r'"((?:\\.|[^"\\])*)"', value)
+        out[key] = ''.join(parts).encode('ascii').decode('unicode_escape')
+    return out
+
+
+def lang_file(path):
+    """A translation file: (its code page, {key: text}), as src/web/i18n.js reads it."""
+    data = open(path, 'rb').read()
+    cp = 'windows-1252'
+    lines = data.decode('latin-1').splitlines()
+    for i, line in enumerate(lines):
+        if line == '@@codepage' and i + 1 < len(lines):
+            cp = lines[i + 1].strip().lower()
+    texts, key, body = {}, None, []
+    for line in data.decode(cp).splitlines():
+        if line.startswith('@@'):
+            if key is not None:
+                texts[key] = '\n'.join(body)
+            key, body = line[2:], []
+        elif key is not None:
+            body.append(line[1:] if line.startswith('\\') else line)
+    if key is not None:
+        texts[key] = '\n'.join(body)
+    return cp, texts
+
+
+def write_languages():
+    """texts.js (the page's English), lang/ (the translations, lang/index.json
+    listing them: code, name) and the glyphs of their code pages."""
+    with open(os.path.join(OUT, 'texts.js'), 'w', encoding='utf-8') as f:
+        f.write('// OpenCiv2\'s own texts, English (src/host/texts.h; tools/build_web.py)\n')
+        f.write('export const EN = %s;\n' % json.dumps(english_texts(), indent=0, ensure_ascii=False))
+    out = os.path.join(OUT, 'lang')
+    if os.path.isdir(out):
+        shutil.rmtree(out)
+    os.makedirs(out)
+    index, pages = [], set()
+    for path in sorted(glob.glob(os.path.join(LANG, '*.txt'))):
+        code = os.path.basename(path)[:-4]
+        if code == 'en':
+            continue
+        cp, texts = lang_file(path)
+        shutil.copy(path, os.path.join(out, code + '.txt'))
+        index.append({'code': code, 'name': texts.get('openciv2.language.name', code)})
+        if cp not in ('windows-1252', 'cp1252'):
+            pages.add(cp)
+    with open(os.path.join(out, 'index.json'), 'w', encoding='utf-8') as f:
+        json.dump(index, f, ensure_ascii=False)
+    return ['fonts_%s.bin' % cp for cp in sorted(pages)] + ['fonts_%s_aa.bin' % cp for cp in sorted(pages)]
 
 
 def run(cmd):
@@ -67,7 +130,7 @@ def build_setup():
         run(['sh', os.path.join(ROOT, 'tools', 'fetch-toolchain.sh')])
     host = os.path.join(ROOT, 'src', 'host')
     sources = [os.path.join(SRC, 'setup', 'setup_web.c'), os.path.join(host, 'setup.c'),
-               os.path.join(host, 'setup_disc.c')] + \
+               os.path.join(host, 'setup_disc.c'), os.path.join(host, 'host_lang.c')] + \
         sorted(glob.glob(os.path.join(paths.UNSHIELD, 'lib', '*.c'))) + \
         [os.path.join(paths.UNSHIELD, 'lib', 'md5', 'md5c.c')] + \
         [os.path.join(paths.ZLIB, f + '.c') for f in ('adler32', 'crc32', 'inffast', 'inflate', 'inftrees',
@@ -122,7 +185,7 @@ def main():
                 shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
-    for f in FONTS:
+    for f in FONTS + write_languages():
         s, d = os.path.join(ROOT, 'data', 'native', f), os.path.join(OUT, 'data', f + '.gz')
         if newer(s, d):
             print('compressing %s' % os.path.relpath(s, ROOT), flush=True)

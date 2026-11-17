@@ -236,6 +236,11 @@ void msg_post(HWND h, UINT msg, WPARAM wp, LPARAM lp);
 int msg_pump_events(int wait_ms);      /* host events -> input messages (waiting up to WAIT_MS for one) */
 void xd_poll(void);                    /* network play's events and callbacks (xdaemon.c) */
 void input_key(int vk, int down);
+/* A character typed (Unicode, from the host's text input: a keyboard
+   layout's letters beyond ASCII): WM_CHAR with its byte in the code page
+   of the text (text.c: plat_text_codepage), or nothing if it has none. */
+void input_char(unsigned code);
+const char *plat_text_codepage_name(void);
 void input_mouse_move(int x, int y);
 void input_mouse_button(int button, int down);
 void input_mouse_wheel(int notches);       /* WM_MOUSEWHEEL to the focus window */

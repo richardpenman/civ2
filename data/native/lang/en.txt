@@ -1,0 +1,494 @@
+; OpenCiv2 text (English), keyed: "@@key" and its text on the lines after it
+; (a line of text that starts with "@@" or "\" has a "\" put before it).
+; OpenCiv2's own texts only: the template of a translation (docs/TRANSLATING.md).
+; Encoding: Windows-1252, as the game's fonts; placeholders (%s, %d) stay, in order.
+@@openciv2.language.name
+English
+@@openciv2.turn
+Turn
+@@openciv2.cities
+cities
+@@openciv2.size
+Size
+@@openciv2.name
+Name
+@@openciv2.production
+Production
+@@openciv2.menu.arrange_s
+Arrange Windows S
+@@openciv2.menu.arrange_l
+Arrange Windows L
+@@openciv2.mainmenu.options
+OpenCiv2 Options
+@@openciv2.options.title
+OpenCiv2 Options
+@@openciv2.options.kept
+Kept in CIV.INI, under [OpenCiv2].
+@@openciv2.options.mode
+Mode
+@@openciv2.options.graphics
+Graphics and screen
+@@openciv2.options.rules
+Rule changes
+@@openciv2.options.limits
+Limits
+@@openciv2.options.interface
+Interface additions
+@@openciv2.options.colours
+Colours and messages
+@@openciv2.options.language
+Language
+@@openciv2.options.next_start
+From the next start of the game.
+@@openciv2.options.override_one
+%s set: for this run it wins over these choices.
+@@openciv2.options.override_many
+%s set: for this run they win over these choices.
+@@openciv2.options.list_and
+ and 
+@@openciv2.mode.title
+Mode
+@@openciv2.mode.standard_note
+Standard: the original's bugs fixed, with OpenCiv2's interface additions; rule changes as chosen.
+@@openciv2.mode.classic_note
+Classic: the original game as it was: its bugs, its look, none of OpenCiv2's additions.
+@@openciv2.mode.standard
+Standard
+@@openciv2.mode.classic
+Classic
+@@openciv2.graphics.title
+Graphics and Screen
+@@openciv2.graphics.sharp_note
+Sharp text and interface: text, menus and controls at the screen's full resolution (the pictures enlarged).
+@@openciv2.graphics.hd_installed
+HD graphics: new art for the map, at the screen's full resolution. The art is installed.
+@@openciv2.graphics.hd_later
+HD graphics: new art for the map, at the screen's full resolution. The art (%d MB) is downloaded from this site when the game starts again.
+@@openciv2.graphics.hd_no_site
+HD graphics: new art for the map, at the screen's full resolution. This site was built without the art.
+@@openciv2.graphics.hd_download
+HD graphics: new art for the map, at the screen's full resolution. They need the art: %d MB, downloaded once from openciv2-assets on GitHub when chosen.
+@@openciv2.graphics.fullscreen_note
+Full screen: instead of a window filling the screen.
+@@openciv2.graphics.sharp
+Sharp text and interface
+@@openciv2.graphics.hd
+HD graphics
+@@openciv2.graphics.fullscreen
+Full screen
+@@openciv2.rules.title
+Rule Changes
+@@openciv2.rules.intro
+Changes to the original's rules, for the human players' units; the original's rules in network games.
+@@openciv2.rule.GotoNoZocStop
+Go To past foreign units
+@@openciv2.rule.MassMove
+Shift+right click moves the type
+@@openciv2.rule.WorkerHandover
+Workers hand over their work
+@@openciv2.rule.UnitRotation
+Units of a stack in turn
+@@openciv2.rule.StackSentry
+U sentries the stack
+@@openciv2.limits.title
+Limits
+@@openciv2.limits.intro
+At the original's values: as the original.
+@@openciv2.limit.RetirementYear
+Retirement year
+@@openciv2.limit.RetirementWarningYear
+Its warning
+@@openciv2.limit.PopulationLimit
+Population (10,000s)
+@@openciv2.limit.GoldLimit
+Gold
+@@openciv2.limit.MapTilesLimit
+Custom map squares
+@@openciv2.interface.title
+Interface Additions
+@@openciv2.interface.intro
+OpenCiv2's additions to the interface (after FoxAhead's CIV2UIA): what you see and do.
+@@openciv2.extra.MouseWheel
+Mouse wheel and button
+@@openciv2.extra.UnitListScroll
+Unit list past 9 units
+@@openciv2.extra.UnitListKeys
+Keys in that unit list
+@@openciv2.extra.WorkCounter
+Settlers' work counter
+@@openciv2.extra.GameTurn
+Turn in the status panel
+@@openciv2.extra.ResearchNumbers
+Research figures
+@@openciv2.extra.ZeroUpkeep
+Free buildings listed
+@@openciv2.extra.SupportScroll
+Supported units: scroll
+@@openciv2.extra.SupportSort
+Supported units sorted
+@@openciv2.extra.AttitudeColors
+Attitude Advisor colours
+@@openciv2.extra.CityAttitude
+City window attitude
+@@openciv2.extra.RadioHotkeys
+Hotkeys for options
+@@openciv2.extra.Quickinfo
+Quick information with Ctrl
+@@openciv2.extra.ProductionCancel
+Cancel in Change Production
+@@openciv2.extra.ProductionCost
+Costs in Change Production
+@@openciv2.extra.CityStatus
+City Status: sort, change
+@@openciv2.extra.MassSpecialists
+Shift on specialists
+@@openciv2.extra.SuppressPopups
+Messages on the map
+@@openciv2.extra.ColorCorrection
+Colour correction
+@@openciv2.extra.ForeignGold
+Gold in Foreign Minister
+@@openciv2.extra.ArrangeWindowsSL
+Arrange Windows S and L
+@@openciv2.extra.PathLines
+Path lines with Shift
+@@openciv2.extra.SentryHalftone
+Sentries in grey shades
+@@openciv2.extra.DefaultZoom1
+New games at zoom 1:1
+@@openciv2.extra.HotkeyUnderlines
+Underline options' hotkeys
+@@openciv2.colours.title
+Colours and Messages
+@@openciv2.colours.intro
+Gamma: a percentage, 100 means no change; brightness and contrast: -100 to 100. Messages on the map: GAME.TXT sections, e.g. HIDDENTERRAIN,CITYSIZE.
+@@openciv2.colour.Gamma
+Gamma (%)
+@@openciv2.colour.Brightness
+Brightness
+@@openciv2.colour.Contrast
+Contrast
+@@openciv2.colour.SuppressList
+Messages on the map
+@@openciv2.language.title
+Language
+@@openciv2.language.intro
+The language of OpenCiv2's own texts, and of the game's where the translation has them (the game's texts otherwise come from its installed files).
+@@openciv2.language.auto
+Automatic (the system's language)
+@@openciv2.language.override
+CIV2_LANG set: for this run it wins over this choice.
+@@openciv2.restart.title
+Restart
+@@openciv2.restart.next_time
+These choices take effect the next time the game starts.
+@@openciv2.restart.ask
+These choices take effect when the game starts again: restart it now?
+@@openciv2.restart.ask_page
+These choices take effect when the game starts again: restart it now (the page is loaded again)?
+@@openciv2.restart.now
+Restart now
+@@openciv2.restart.later
+Later
+@@openciv2.restart.failed
+The game could not be started again: these choices take effect the next time it starts.
+@@openciv2.hd.title
+HD Graphics
+@@openciv2.hd.downloading
+Downloading the art
+@@openciv2.hd.checking
+Checking it
+@@openciv2.hd.installing
+Installing it
+@@openciv2.hd.progress
+%s: %d of %d MB
+@@openciv2.hd.stop
+Stop
+@@openciv2.hd.failed
+The download failed.
+@@openciv2.hd.stay_off
+%s HD graphics stay off.
+@@openciv2.hd.err.no_curl_windows
+Windows' curl.exe, which downloads the art, was not found (it comes with Windows 10 and later).
+@@openciv2.hd.err.download
+The download failed (%s). Is the computer connected to the internet?
+@@openciv2.hd.err.no_tool
+Neither curl nor wget, which download the art, was found: please install curl.
+@@openciv2.hd.err.read
+Could not read %s.
+@@openciv2.hd.err.not_pack
+%s is not an openciv2-assets pack.
+@@openciv2.hd.err.mismatch
+%s in the pack does not match its package.json.
+@@openciv2.hd.err.write
+Could not write %s.
+@@openciv2.hd.err.not_pinned
+The download is not the pinned art (its SHA-256 differs): nothing was installed.
+@@openciv2.hd.err.no_url
+This build does not know which art to download.
+@@openciv2.hd.err.no_folder
+There is no folder to install the art in.
+@@openciv2.hd.err.start
+Could not start the download.
+@@openciv2.hd.err.test_run
+Nothing is downloaded in a test run.
+@@openciv2.hd.err.no_site_art
+This site was built without the HD art.
+@@openciv2.file.open
+Open
+@@openciv2.file.save_as
+Save As
+@@openciv2.file.save
+Save
+@@openciv2.file.cancel
+Cancel
+@@openciv2.file.name
+File name:
+@@openciv2.file.sort_name
+Sort: Name
+@@openciv2.file.sort_date
+Sort: Date
+@@openciv2.file.modified
+Modified: %s
+@@openciv2.file.folder
+Folder: %s
+@@openciv2.file.not_found
+%s
+File not found.
+@@openciv2.file.replace
+%s already exists.
+Do you want to replace it?
+@@openciv2.box.ok
+OK
+@@openciv2.box.cancel
+Cancel
+@@openciv2.box.yes
+Yes
+@@openciv2.box.no
+No
+@@openciv2.quit.text
+Quit Civilization II?
+
+The game in progress ends here; whatever was not saved is lost.
+@@openciv2.quit.quit
+Quit
+@@openciv2.menu.full_screen
+Full Screen
+@@openciv2.setup.title
+OpenCiv2: setting up the game
+@@openciv2.setup.copy_failed
+Could not copy %s to %s.
+@@openciv2.setup.read_failed
+Could not read %s.
+@@openciv2.setup.unpack_failed
+Could not unpack %s.
+@@openciv2.setup.write_failed
+Could not write %s.
+@@openciv2.setup.unpacking
+Unpacking
+@@openciv2.setup.copying_file
+Copying
+@@openciv2.setup.unpacking_cd
+Unpacking the game from its CD
+@@openciv2.setup.unpacking_image
+Unpacking the game from its disc image
+@@openciv2.setup.copying
+Copying the game
+@@openciv2.setup.copying_image
+Copying from the disc image
+@@openciv2.setup.copy_image_failed
+Could not copy %s from the disc image.
+@@openciv2.setup.encoding
+Encoding the music (track %d of %d)
+@@openciv2.setup.music_failed_only
+The music could not be read from the CD's drive.
+@@openciv2.setup.music_failed
+The game is set up, but without its music: it could not be read from the CD's drive.
+@@openciv2.setup.no_folder
+There is no folder %s.
+@@openciv2.setup.not_game
+%s has neither an installed Civilization II Multiplayer Gold Edition nor its CD, nor a disc image of the CD.
+@@openciv2.setup.not_found
+Civilization II Multiplayer Gold Edition was found neither where it is usually installed, nor in a CD drive, nor as a disc image of its CD (a .cue file with its .bin) in the usual folders. Please show where it is: the folder it is installed in, its CD, or the disc image (or the folder it is in).
+@@openciv2.setup.music_image
+the disc image %s
+@@openciv2.setup.music_cd
+the CD in %s
+@@openciv2.setup.confirm_music
+OpenCiv2 adds the music to the game in
+%s
+from %s (encoding it as Ogg Vorbis).
+
+This takes a few minutes; then the game starts.
+@@openciv2.setup.confirm_copy
+OpenCiv2 sets up the game from %s, copying it into
+%s
+
+This takes a minute or two; then the game starts.
+@@openciv2.setup.confirm_unpack
+OpenCiv2 sets up the game from %s, unpacking it into
+%s
+
+This takes a minute or two; then the game starts.
+@@openciv2.setup.confirm_copy_music
+OpenCiv2 sets up the game from %s, copying it into
+%s
+
+The music from %s (encoded as Ogg Vorbis).
+
+This takes a few minutes; then the game starts.
+@@openciv2.setup.confirm_unpack_music
+OpenCiv2 sets up the game from %s, unpacking it into
+%s
+
+The music from %s (encoded as Ogg Vorbis).
+
+This takes a few minutes; then the game starts.
+@@openciv2.setup.stopped
+The set-up was stopped; it starts again the next time.
+@@openciv2.setup.where
+Where is Civilization II Multiplayer Gold Edition? Choose the folder it is installed in, its CD, or a disc image of the CD (its .cue file, or the folder it is in).
+@@openciv2.setup.where_short
+Where is Civilization II Multiplayer Gold Edition? (the folder it is installed in, its CD, or the folder of a disc image of the CD)
+@@openciv2.setup.where_command
+Start OpenCiv2 with that folder (or the .cue file): OpenCiv2 --setup FOLDER
+@@openciv2.setup.set_up
+Set up
+@@openciv2.setup.quit
+Quit
+@@openciv2.setup.choose
+Choose
+@@openciv2.web.loading
+Loading ...
+@@openciv2.web.intro
+Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Standard or Classic, HD graphics, the rule changes and the interface additions) is chosen in the game: OpenCiv2 Options, in its main menu.
+@@openciv2.web.choose
+Choose your game...
+@@openciv2.web.choose_folder
+A folder
+@@openciv2.web.choose_folder_note
+the installed game, or the CD
+@@openciv2.web.choose_files
+A file
+@@openciv2.web.choose_files_note
+a .zip of the folder, or a disc image (.cue and .bin)
+@@openciv2.web.drop
+or drop it here
+@@openciv2.web.stop
+Stop
+@@openciv2.web.have
+The game files are in this browser.
+@@openciv2.web.forget
+Remove them
+@@openciv2.web.play
+Play
+@@openciv2.web.export
+Export saves
+@@openciv2.web.export_title
+Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip
+@@openciv2.web.import
+Import saves
+@@openciv2.web.saves
+Saves
+@@openciv2.web.saves_title
+Export or import saved games
+@@openciv2.web.saves_heading
+Saved games
+@@openciv2.web.saves_note
+Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and <code>HALLFAME.DAT</code> as a .zip; or saved games (.SAV, or such a .zip) put into the game.
+@@openciv2.web.close
+Close
+@@openciv2.web.relay_title
+Network games
+@@openciv2.web.relay_label
+The relay:
+@@openciv2.web.relay_use
+Use it
+@@openciv2.web.relay_none
+Network games go through a relay, and none answered at %s: run tools/webrelay.py on %s, or give its address here (or open the page with ?relay=ws://HOST:PORT).
+@@openciv2.web.relay_bad
+The relay's address starts with ws:// (or wss://).
+@@openciv2.web.language
+Language:
+@@openciv2.web.language_auto
+Automatic (the browser's language)
+@@openciv2.web.not_game
+These files are neither an installed Civilization II Multiplayer Gold Edition (its folder has Civ2Art.dll and RULES.TXT in it), nor its CD (DATA1.CAB and CIV2), nor a disc image of the CD (a .cue with its .bin).
+@@openciv2.web.copying
+Copying the game: %s of %s files
+@@openciv2.web.kept
+The game's %s files are kept in this browser.
+@@openciv2.web.setup_no_game
+The set-up did not make the game (no Civ2Art.dll, RULES.TXT).
+@@openciv2.web.keep_failed
+Could not keep the files: %s
+@@openciv2.web.set_up_cd
+The game is set up from the CD: %s files kept in this browser (without the music: the browser cannot read the CD's music tracks; a disc image of the CD has them).
+@@openciv2.web.set_up_image
+The game is set up from the disc image: %s files kept in this browser.
+@@openciv2.web.setup_failed
+The set-up failed: %s
+@@openciv2.web.setup_stopped
+The set-up was stopped; choose the files again to start it again.
+@@openciv2.web.setting_up_cd
+Setting the game up from its CD ...
+@@openciv2.web.setting_up_image
+Setting the game up from its disc image ...
+@@openciv2.web.chosen_folder
+Folder: %s (%s files)
+@@openciv2.web.chosen_image
+Disc image: %s
+@@openciv2.web.reading
+Reading %s ...
+@@openciv2.web.no_saves
+There are no saved games to export yet.
+@@openciv2.web.exported_one
+Exported 1 file: %s.
+@@openciv2.web.exported
+Exported %s files: %s.
+@@openciv2.web.export_failed
+Could not export the saved games: %s
+@@openciv2.web.imported_one
+Imported 1 file: %s.
+@@openciv2.web.imported
+Imported %s files: %s.
+@@openciv2.web.nothing_to_import
+Nothing to import there: saved games are .SAV files (or a .zip of them).
+@@openciv2.web.import_failed
+Could not import: %s
+@@openciv2.web.hd_progress
+%s: %s of %s MB
+@@openciv2.web.hd_downloading
+Downloading the HD graphics' art
+@@openciv2.web.hd_checking
+Checking it
+@@openciv2.web.hd_keeping
+Keeping it in this browser
+@@openciv2.web.hd_no_room
+The browser's storage has no room for it (%s MB free).
+@@openciv2.web.hd_off
+HD graphics: %s They stay off this time.
+@@openciv2.web.loading_files
+Loading the game files ...
+@@openciv2.web.loading_hd
+Loading the HD graphics' art ...
+@@openciv2.web.starting
+Starting (files loaded in %s ms) ...
+@@openciv2.web.ended
+The game has ended.
+@@openciv2.web.ended_code
+The game has ended (%s).
+@@openciv2.web.stopped
+The game stopped: %s
+@@openciv2.web.forget_confirm
+Remove the game files, saved games included, from this browser (and the HD graphics' art)?
+@@openciv2.web.copy_failed
+Could not copy the files: %s
+@@openciv2.web.read_failed
+Could not read %s: %s
+@@openciv2.web.the_files
+the files
+@@openciv2.web.no_browser
+This browser lacks what the game needs (WebAssembly, IndexedDB, DecompressionStream).
+@@openciv2.web.other_tab
+Waiting for another OpenCiv2 tab (from before an update) to close: close it, or reload it.

@@ -58,6 +58,8 @@
   #choose-menu span { display: block; color: var(--dim); font-size: 0.85rem; }
   #have { margin: 1rem 0 0; padding-top: 0.8rem; border-top: 2px groove #eee; }
   #have p { margin: 0 0 0.4rem; }
+  #language-row { margin: 1rem 0 0; }
+  #language { font: inherit; font-size: 0.92rem; }
   #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
              font: 1.2rem var(--serif); color: #f4f0e6; text-shadow: 1px 1px 0 #000; pointer-events: none; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
@@ -88,56 +90,57 @@
 </style>
 </head>
 <body>
-<p id="loading" role="status">Loading ...</p>
+<p id="loading" role="status" data-t="web.loading">Loading ...</p>
 <div id="setup" hidden>
  <section class="panel" aria-labelledby="title-main">
   <h1 class="title" id="title-main">OpenCiv2</h1>
   <div class="body">
-  <p>Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
+  <p data-t="web.intro">Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with
      <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with
      <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD.
      How to play (Standard or Classic, HD graphics, the rule changes and the interface additions)
      is chosen in the game: OpenCiv2 Options, in its main menu.</p>
   <div id="drop">
     <div id="choose-wrap">
-      <button id="choose" aria-haspopup="menu" aria-expanded="false">Choose your game&hellip;</button>
+      <button id="choose" aria-haspopup="menu" aria-expanded="false" data-t="web.choose">Choose your game&hellip;</button>
       <div id="choose-menu" role="menu" hidden>
-        <button id="choose-folder" role="menuitem">A folder<span>the installed game, or the CD</span></button>
-        <button id="choose-files" role="menuitem">A file<span>a .zip of the folder, or a disc image (.cue and .bin)</span></button>
+        <button id="choose-folder" role="menuitem" data-t-node="web.choose_folder">A folder<span data-t="web.choose_folder_note">the installed game, or the CD</span></button>
+        <button id="choose-files" role="menuitem" data-t-node="web.choose_files">A file<span data-t="web.choose_files_note">a .zip of the folder, or a disc image (.cue and .bin)</span></button>
       </div>
     </div>
-    <p class="dim">or drop it here</p>
+    <p class="dim" data-t="web.drop">or drop it here</p>
     <p id="chosen" hidden></p>
     <input id="folder" type="file" webkitdirectory multiple>
     <input id="files" type="file" multiple accept=".zip,.cue,.bin,application/zip">
   </div>
   <p id="status"></p>
-  <button id="stop" hidden>Stop</button>
+  <button id="stop" hidden data-t="web.stop">Stop</button>
   <div id="have" hidden>
-    <p>The game files are in this browser. <button id="forget" class="plain">Remove them</button></p>
-    <button id="play">Play</button>
-    <button class="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip">Export saves</button>
-    <label class="button" for="import-saves">Import saves</label>
+    <p data-t-node="web.have">The game files are in this browser. <button id="forget" class="plain" data-t="web.forget">Remove them</button></p>
+    <button id="play" data-t="web.play">Play</button>
+    <button class="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip" data-t="web.export" data-t-title="web.export_title">Export saves</button>
+    <label class="button" for="import-saves" data-t="web.import">Import saves</label>
   </div>
+  <p class="dim" id="language-row"><label><span data-t="web.language">Language:</span> <select id="language"></select></label></p>
   </div>
  </section>
 </div>
 <div id="game" hidden><canvas id="screen" tabindex="0"></canvas>
-  <button id="saves-open" title="Export or import saved games">Saves</button></div>
+  <button id="saves-open" title="Export or import saved games" data-t="web.saves" data-t-title="web.saves_title">Saves</button></div>
 <input id="import-saves" type="file" multiple accept=".sav,.zip,.scn,.mp,.ini,.dat">
 <dialog id="saves-dialog">
-  <h2>Saved games</h2>
-  <p class="dim">Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and
+  <h2 data-t="web.saves_heading">Saved games</h2>
+  <p class="dim" data-t="web.saves_note">Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and
      <code>HALLFAME.DAT</code> as a .zip; or saved games (.SAV, or such a .zip) put into the game.</p>
-  <button class="export-saves">Export saves</button>
-  <label class="button" for="import-saves">Import saves</label>
-  <button id="saves-close" class="plain">Close</button>
+  <button class="export-saves" data-t="web.export">Export saves</button>
+  <label class="button" for="import-saves" data-t="web.import">Import saves</label>
+  <button id="saves-close" class="plain" data-t="web.close">Close</button>
   <p id="saves-status" class="dim"></p>
 </dialog>
-<dialog id="relay-dialog"><div class="dialog-title">Network games</div>
+<dialog id="relay-dialog"><div class="dialog-title" data-t="web.relay_title">Network games</div>
   <div class="dialog-text" id="relay-text"></div>
-  <div class="dialog-text"><label>The relay: <input id="relay-address" type="text" size="30" spellcheck="false"></label></div>
-  <div class="dialog-buttons"><button id="relay-use">Use it</button><button id="relay-close">Close</button></div></dialog>
+  <div class="dialog-text"><label data-t-node="web.relay_label">The relay: <input id="relay-address" type="text" size="30" spellcheck="false"></label></div>
+  <div class="dialog-buttons"><button id="relay-use" data-t="web.relay_use">Use it</button><button id="relay-close" data-t="web.close">Close</button></div></dialog>
 <dialog id="dialog"><div id="dialog-title"></div><div id="dialog-text"></div><div id="dialog-buttons"></div></dialog>
 <script type="module" src="main.js"></script>
 </body>

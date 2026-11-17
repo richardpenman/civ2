@@ -14,6 +14,7 @@
 #include <string.h>
 #include <vorbis/vorbisenc.h>
 #include "setup.h"
+#include "host_lang.h"
 #include "setup_os.h"
 
 #ifdef _WIN32
@@ -322,7 +323,7 @@ static int iso_extract(struct disc *d, const struct iso_entry *e, const char *ds
     if (!ok) {
         char text[SETUP_PATH + 64];
         remove(dst);
-        snprintf(text, sizeof text, "Could not copy %s from the disc image.", e->name);
+        snprintf(text, sizeof text, host_text("setup.copy_image_failed"), e->name);
         os_message(text, OS_ERROR);
     }
     return ok;
@@ -387,7 +388,7 @@ static int cabinet_file(void *ctx, const struct iso_entry *e)
         !(same_name(e->name + n - 4, ".CAB") || same_name(e->name + n - 4, ".HDR")))
         return 1;
     snprintf(dst, sizeof dst, "%s" SEP_S "%s", c->dir, e->name);
-    if (os_progress_show("Copying from the disc image", dst))
+    if (os_progress_show(host_text("setup.copying_image"), dst))
         return c->ok = 0;
     return c->ok = iso_extract(c->d, e, dst);
 }
@@ -399,7 +400,7 @@ int image_extract_cabinet(const char *cue, const char *dir, char *cab, size_t si
     struct cabinet c;
     if (!d || !iso_root(d, &root)) {
         char text[SETUP_PATH + 64];
-        snprintf(text, sizeof text, "Could not read %s.", cue);
+        snprintf(text, sizeof text, host_text("setup.read_failed"), cue);
         os_message(text, OS_ERROR);
         if (d)
             disc_close(d);
@@ -428,7 +429,7 @@ static int video_file(void *ctx, const struct iso_entry *e)
     if (e->is_dir)
         return 1;
     snprintf(dst, sizeof dst, "%s" SEP_S "%s", v->dir, e->name);
-    if (os_progress_show("Copying from the disc image", dst))
+    if (os_progress_show(host_text("setup.copying_image"), dst))
         return v->ok = 0;
     return v->ok = iso_extract(v->d, e, dst);
 }
@@ -619,12 +620,12 @@ static int encode_music(const struct audio *a, const char *game_dir)
         snprintf(music, sizeof music, "%s" SEP_S "Music", game_dir);
     os_make_dirs(music);
     for (i = 0; ok == ENC_DONE && i < a->n; i++) {
-        snprintf(what, sizeof what, "Encoding the music (track %d of %d)", i + 1, a->n);
+        snprintf(what, sizeof what, host_text("setup.encoding"), i + 1, a->n);
         snprintf(dst, sizeof dst, "%s" SEP_S "Track%02d.ogg", music, a->t[i].number);
         ok = encode_track(a->read, a->t[i].ctx, a->t[i].number, a->t[i].start, a->t[i].end, dst, what, a->from);
         if (ok == ENC_UNWRITTEN) {
             char text[SETUP_PATH + 64];
-            snprintf(text, sizeof text, "Could not write %s.", dst);
+            snprintf(text, sizeof text, host_text("setup.write_failed"), dst);
             os_message(text, OS_ERROR);
         }
     }
@@ -726,7 +727,7 @@ int image_encode_music(const char *cue, const char *game_dir)
     ok = encode_music(&a, game_dir);
     if (ok == ENC_UNREAD) {
         char text[SETUP_PATH + 64];
-        snprintf(text, sizeof text, "Could not read %s.", cue);
+        snprintf(text, sizeof text, host_text("setup.read_failed"), cue);
         os_message(text, OS_ERROR);
     }
     disc_close(d);

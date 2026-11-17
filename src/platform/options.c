@@ -27,7 +27,7 @@ int plat_hd_art(int op, int *info, char *msg, int n)
             info[2] = 228595;
         }
         if (op == HOST_HD_START && msg && n > 0)
-            snprintf(msg, (size_t)n, "Nothing is downloaded in a test run.");
+            snprintf(msg, (size_t)n, "@hd.err.test_run");
         return op == HOST_HD_START ? HOST_HD_FAILED : HOST_HD_IDLE;
     }
     if (op == HOST_HD_POLL && hd_pack_path(path, sizeof path)) {

@@ -30,6 +30,10 @@ drawn as the original's), sharp text and interface on high-resolution screens (o
 HD graphics, full screen, the rule changes and the interface additions, kept in `CIV.INI`
 ([EXTRAS.md](docs/EXTRAS.md#openciv2-options)).
 
+OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English and
+Esperanto (a first draft) come with it, chosen in OpenCiv2 Options > Language; the game's own
+texts come in the language of your Civilization II ([TRANSLATING.md](docs/TRANSLATING.md)).
+
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 Optionally, the map can be drawn with new high-resolution art

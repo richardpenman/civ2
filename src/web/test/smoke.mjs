@@ -3,7 +3,8 @@
 // dependency), given the player's game files as a .zip through the page's
 // own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its OpenCiv2 Options), a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
-// (from the set-up page, and while playing), the saved game loaded.  Screenshots in run/web-smoke (the game's
+// (from the set-up page, and while playing), the saved game loaded; first the set-up page in
+// Esperanto (?lang=eo).  Screenshots in run/web-smoke (the game's
 // images: never committed).
 //
 //   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME] [GAME_DIR]
@@ -174,6 +175,23 @@ async function main() {
         await send('Runtime.enable');
         await send('Page.enable');
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
+        if (!REPLAY) {
+            // the page in Esperanto (?lang=eo: src/web/i18n.js, data/native/lang/eo.txt in
+            // ISO-8859-3): its texts, its Language choice, the letters as Unicode
+            await send('Page.navigate', {url: url + '?setup&lang=eo'});
+            await waitFor('window.civ2Setup', 10000, 'the page in Esperanto');
+            const eo = await evaluate(`({choose: document.getElementById('choose').textContent,
+                intro: document.querySelector('[data-t="web.intro"]').innerHTML,
+                folder: document.getElementById('choose-folder').textContent,
+                language: [...document.getElementById('language').options].map((o) => o.textContent),
+                lang: document.documentElement.lang})`);
+            log('page in Esperanto: ' + JSON.stringify(eo).slice(0, 300));
+            if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/<em>via propra<\/em>/.test(eo.intro) ||
+                !/^Dosierujo/.test(eo.folder) || !eo.language.includes('Esperanto') ||
+                !/Aŭtomata/.test(eo.language[0]))
+                throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
+            await shot('00-setup-eo');
+        }
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page');
         if (!REPLAY) {

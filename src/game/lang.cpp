@@ -7,6 +7,7 @@
  * only.  A translation (lang/<code>.txt) replaces texts by key.
  */
 #include <ctype.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -95,19 +96,132 @@ static void set_english(const char *key, const char *text)
     english[k] = text ? text : "";
 }
 
+EXTERN_C int plat_replay;
+
+/* A language's file: lang/<code>.txt in the game's folder (the player's
+   own, beside the game), else in the data directory (OpenCiv2's).  1 if
+   found (its path in path). */
+static int language_file(const char *code, char *path, size_t n)
+{
+    FILE *f;
+    if (!*code || strchr(code, '/') || strchr(code, '\\') || strstr(code, ".."))
+        return 0;
+    snprintf(path, n, "lang/%s.txt", code);
+    if ((f = fopen(path, "r")) == 0) {
+        snprintf(path, n, "%s/lang/%s.txt", plat_data_dir, code);
+        f = fopen(path, "r");
+    }
+    if (f)
+        fclose(f);
+    return f != 0;
+}
+
+/* A language code as the system or the player gives it ("de_DE.UTF-8",
+   "pt-BR", "eo"): its file's path, the code itself first, then its
+   language alone ("pt").  0: none (English: the built-in text). */
+static int language_path(const char *code, char *path, size_t n)
+{
+    char c[32];
+    size_t i;
+    snprintf(c, sizeof c, "%s", code);
+    c[strcspn(c, ".@")] = 0;
+    for (i = 0; c[i]; i++)
+        if (c[i] == '_')
+            c[i] = '-';
+    if (!c[0] || (tolower((unsigned char)c[0]) == 'e' && tolower((unsigned char)c[1]) == 'n' && (!c[2] || c[2] == '-')) || !__strcmpi(c, "auto") || !strcmp(c, "C") ||
+        !strcmp(c, "POSIX"))
+        return 0;
+    if (language_file(c, path, n))
+        return 1;
+    c[strcspn(c, "-")] = 0;
+    return language_file(c, path, n);
+}
+
+/* The language chosen: CIV2_LANG, else (not in a test run) the OpenCiv2
+   Options' (CIV.INI [OpenCiv2] Language=), else, where that is Auto or
+   unset, the system's (CIV2_SYSTEM_LANG: the host's, the browser page's). */
+static void chosen_language(char *code, int n)
+{
+    const char *e = getenv("CIV2_LANG");
+    code[0] = 0;
+    if (e && *e) {
+        snprintf(code, (size_t)n, "%s", e);
+        return;
+    }
+    if (plat_replay || plat_unit_test)
+        return;
+    plat_profile_string("CIV.INI", "OpenCiv2", "Language", code, n);
+    if (!code[0] || !__strcmpi(code, "Auto")) {
+        e = getenv("CIV2_SYSTEM_LANG");
+        snprintf(code, (size_t)n, "%s", e ? e : "");
+    }
+}
+
+/* The file's "openciv2.language.name" (the language's own name), into name. */
+static int language_name(const char *path, char *name, int n)
+{
+    char line[256];
+    FILE *f = fopen(path, "r");
+    int next = 0, found = 0;
+    if (!f)
+        return 0;
+    while (fgets(line, sizeof line, f)) {
+        line[strcspn(line, "\r\n")] = 0;
+        if (next) {
+            snprintf(name, (size_t)n, "%s", line);
+            found = 1;
+            break;
+        }
+        next = !strcmp(line, "@@openciv2.language.name");
+    }
+    fclose(f);
+    return found;
+}
+
+int lang_languages(LangChoice *out, int max)
+{
+    char dir[1100], path[1200];
+    int n = 0, i;
+    DIR *d;
+    struct dirent *e;
+    snprintf(dir, sizeof dir, "%s/lang", plat_data_dir);
+    if (!(d = opendir(dir)))
+        return 0;
+    while ((e = readdir(d)) != 0 && n < max) {
+        size_t len = strlen(e->d_name);
+        if (len < 5 || len - 4 >= sizeof out[n].code || strcmp(e->d_name + len - 4, ".txt") || !strcmp(e->d_name, "en.txt"))
+            continue;
+        snprintf(out[n].code, sizeof out[n].code, "%.*s", (int)(len - 4), e->d_name);
+        snprintf(path, sizeof path, "%s/%s", dir, e->d_name);
+        if (!language_name(path, out[n].name, sizeof out[n].name))
+            snprintf(out[n].name, sizeof out[n].name, "%s", out[n].code);
+        n++;
+    }
+    closedir(d);
+    /* (in order of their codes) */
+    for (i = 1; i < n; i++) {
+        int k;
+        for (k = i; k > 0 && strcmp(out[k - 1].code, out[k].code) > 0; k--) {
+            LangChoice t = out[k];
+            out[k] = out[k - 1];
+            out[k - 1] = t;
+        }
+    }
+    return n;
+}
+
 static void load_translation(void)
 {
-    const char *code = getenv("CIV2_LANG");
-    char path[1200];
+    char code[64], path[1200];
     char line[1024];
     std::string key, text;
     int lines = 0;
     FILE *f;
 
     translation_loaded = 1;
-    if (!code || !*code || !strcmp(code, "en"))
+    chosen_language(code, sizeof code);
+    if (!language_path(code, path, sizeof path))
         return;
-    snprintf(path, sizeof path, "%s/lang/%s.txt", plat_data_dir, code);
     f = fopen(path, "r");
     if (!f)
         return;
@@ -128,6 +242,9 @@ static void load_translation(void)
     if (!key.empty())
         translated[key] = text;
     fclose(f);
+    /* its code page (Windows-1252 unless it says): its glyphs, its input */
+    if (translated.count("codepage"))
+        plat_text_codepage(translated["codepage"].c_str());
 }
 
 /* A line that starts a section: "@NAME", NAME in capitals, digits and '_'
@@ -357,15 +474,30 @@ const char *lang_description(const char *group, const char *entry)
     return it != translated.end() ? it->second.c_str() : 0;
 }
 
+/* (the export of OpenCiv2's own texts: their keys, in the table's order) */
+static std::vector<std::string> own_keys;
+static void add_own(const char *key, const char *text)
+{
+    set_english(key, text);
+    own_keys.push_back(key);
+}
+
 static void export_english(void)
 {
     static int sections_added;
     const char *path = getenv("CIV2_EXPORT_TEXT");
     FILE *f;
     size_t i, start, end;
+    const char *own_env = getenv("CIV2_EXPORT_OWN");
+    int own = own_env && *own_env && *own_env != '0';
     if (!path || !*path)
         return;
-    if (!sections_added) {
+    if (own) {
+        /* OpenCiv2's own texts only (the template of a translation of
+           them: data/native/lang/en.txt), none of the game's */
+        own_keys.clear();
+        extras_texts_each(add_own);
+    } else if (!sections_added) {
         sections_added = 1;
         for (i = 0; i < sizeof section_files / sizeof section_files[0]; i++)
             add_file_sections(section_files[i]);
@@ -377,9 +509,13 @@ static void export_english(void)
         return;
     fprintf(f, "; OpenCiv2 text (English), keyed: \"@@key\" and its text on the lines after it\n"
                "; (a line of text that starts with \"@@\" or \"\\\" has a \"\\\" put before it).\n");
-    for (i = 0; i < english_order.size(); i++) {
-        const std::string &text = english[english_order[i]];
-        fprintf(f, "@@%s\n", english_order[i].c_str());
+    if (own)
+        fprintf(f, "; OpenCiv2's own texts only: the template of a translation (docs/TRANSLATING.md).\n"
+                   "; Encoding: Windows-1252, as the game's fonts; placeholders (%%s, %%d) stay, in order.\n");
+    for (i = 0; i < (own ? own_keys.size() : english_order.size()); i++) {
+        const std::string &k = own ? own_keys[i] : english_order[i];
+        const std::string &text = english[k];
+        fprintf(f, "@@%s\n", k.c_str());
         for (start = 0;; start = end + 1) {
             end = text.find('\n', start);
             if (end == std::string::npos)
@@ -435,6 +571,9 @@ void lang_load_menus(void)
     int menu, row, n, has_profile;
     i32 pos = 0;
     i8 *line;
+
+    if (!translation_loaded)
+        load_translation();     /* (its code page before any text is drawn) */
 
     for (menu = 1; menu <= 9; menu++) {
         if (text_open_section(menu == 1 ? str_menu : 0, sections[menu - 1]) != 0)

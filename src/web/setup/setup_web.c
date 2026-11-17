@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include "setup.h"
 #include "setup_os.h"
+#include "host_lang.h"
 
 #define IMPORT(name) __attribute__((import_module("setup"), import_name(name)))
 
@@ -226,6 +227,9 @@ int main(int argc, char **argv)
         return 2;
     }
     game_dir = argv[2];
+    /* the page's language: its translation, if it put one there (host_lang.h) */
+    if (os_file_exists("/lang.txt"))
+        host_lang_load("/lang.txt");
     args[0] = argv[0];
     args[1] = "--setup";
     args[2] = argv[1];

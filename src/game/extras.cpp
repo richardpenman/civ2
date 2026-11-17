@@ -193,12 +193,9 @@ int extras_map_tiles_limit(void) { return extra_rule(X_MAP_TILES) ? map_tiles : 
 /* The additions' texts by key: a translation (lang/<code>.txt, src/include/
    lang.h) gives them as "openciv2.<key>". */
 static const struct { const char *key, *english; } texts[] = {
-    {"turn", "Turn"},                               /* X5: the status panel */
-    {"cities", "cities"},                           /* X31: the City Status advisor */
-    {"size", "Size"}, {"name", "Name"}, {"production", "Production"},
-    {"menu.arrange_s", "Arrange Windows S"},        /* X38 (default: the game's Arrange Windows, S) */
-    {"menu.arrange_l", "Arrange Windows L"},
-    {"mainmenu.options", "OpenCiv2 Options"},       /* the main menu's last choice (options.cpp) */
+#define T(key, english) {key, english},
+#include "../host/texts.h"
+#undef T
 };
 
 static int text_entry(const char *key)

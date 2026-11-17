@@ -19,6 +19,7 @@
 #include <libunshield.h>
 #include "setup.h"
 #include "setup_os.h"
+#include "host_lang.h"
 
 #define DONE_FILE "OpenCiv2-setup.txt"      /* in GameData: written when the set-up is complete */
 #define CABINET_DIR "OpenCiv2-cabinet"      /* in GameData: the cabinet out of a disc image, while unpacked */
@@ -88,11 +89,11 @@ static int copy_entry(void *ctx, const char *name, int is_dir)
     snprintf(to, sizeof to, "%s" SEP_S "%s", c->dst, name);
     if (is_dir)
         return (copy_dest && os_same_path(from, copy_dest)) || copy_tree(from, to);
-    if (os_progress_show("Copying", from))
+    if (os_progress_show(host_text("setup.copying_file"), from))
         return 0;
     if (!os_copy_file(from, to)) {
         char text[2 * SETUP_PATH + 64];
-        snprintf(text, sizeof text, "Could not copy %s to %s.", from, to);
+        snprintf(text, sizeof text, host_text("setup.copy_failed"), from, to);
         os_message(text, OS_ERROR);
         return 0;
     }
@@ -117,7 +118,7 @@ static int unpack_cab(const char *cab, const char *dst)
     u = unshield_open(cab);
     if (!u) {
         char text[SETUP_PATH + 64];
-        snprintf(text, sizeof text, "Could not read %s.", cab);
+        snprintf(text, sizeof text, host_text("setup.read_failed"), cab);
         os_message(text, OS_ERROR);
         return 0;
     }
@@ -138,11 +139,11 @@ static int unpack_cab(const char *cab, const char *dst)
                     *c = SEP;
             os_make_dirs(folder);
             snprintf(path, sizeof path, "%s" SEP_S "%s", folder, name);
-            if (os_progress_show("Unpacking", path)) {
+            if (os_progress_show(host_text("setup.unpacking"), path)) {
                 ok = 0;
             } else if (!unshield_file_save(u, i, path)) {
                 char text[SETUP_PATH + 64];
-                snprintf(text, sizeof text, "Could not unpack %s.", name);
+                snprintf(text, sizeof text, host_text("setup.unpack_failed"), name);
                 os_message(text, OS_ERROR);
                 ok = 0;
             }
@@ -217,14 +218,14 @@ static int set_up(const char *game_dir, const char *source, const char *cd, cons
     if (music_only) {
     } else if (setup_game_cd(source)) {
         char cab[SETUP_PATH];
-        os_progress_show("Unpacking the game from its CD", source);
+        os_progress_show(host_text("setup.unpacking_cd"), source);
         os_entry(source, "DATA1.CAB", cab, sizeof cab);
         ok = unpack_cab(cab, game_dir);
     } else if (setup_game_image(source)) {
-        os_progress_show("Unpacking the game from its disc image", source);
+        os_progress_show(host_text("setup.unpacking_image"), source);
         ok = unpack_image(source, game_dir);
     } else {
-        os_progress_show("Copying the game", source);
+        os_progress_show(host_text("setup.copying"), source);
         ok = copy_tree(source, game_dir);
     }
     if (ok && *cd)
@@ -261,9 +262,7 @@ static int set_up(const char *game_dir, const char *source, const char *cd, cons
         fclose(f);
     }
     if (unread)
-        os_message(music_only ? "The music could not be read from the CD's drive." :
-                   "The game is set up, but without its music: it could not be read from the CD's drive.",
-                   OS_WARNING);
+        os_message(host_text(music_only ? "setup.music_failed_only" : "setup.music_failed"), OS_WARNING);
     return 1;
 }
 
@@ -312,6 +311,11 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
         } else
             argv[n++] = argv[i];
     argc = n;
+#ifdef _WIN32
+    /* (the translations beside the program first: the set-up's texts) */
+    if (os_program_files())
+        host_lang_init(NULL);
+#endif
 
 #ifdef __APPLE__
     /* (started from the Finder by an older macOS: its process serial number) */
@@ -323,7 +327,7 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
         /* a folder: the game, played where it is */
         if (!os_dir_exists(argv[1])) {
             char text[SETUP_PATH + 64];
-            snprintf(text, sizeof text, "There is no folder %s.", argv[1]);
+            snprintf(text, sizeof text, host_text("setup.no_folder"), argv[1]);
             os_message(text, OS_ERROR);
             return 0;
         }
@@ -340,6 +344,9 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
            game's folder: the game where it is run */
         return os_program_files();
     os_game_data(game_data, sizeof game_data);
+#ifndef __wasi__
+    host_lang_init(game_data);      /* (its CIV.INI's Language=, set up before) */
+#endif
     snprintf(done, sizeof done, "%s" SEP_S "%s", game_data, DONE_FILE);
     snprintf(game, size, "%s", game_data);
     if (os_file_exists(done) && !again)
@@ -364,14 +371,10 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
         if (setup_game_folder(source) || setup_game_cd(source) || setup_game_image(source))
             break;
         if (source[0]) {
-            snprintf(text, sizeof text, "%s has neither an installed Civilization II Multiplayer Gold Edition nor "
-                     "its CD, nor a disc image of the CD.", source);
+            snprintf(text, sizeof text, host_text("setup.not_game"), source);
             os_message(text, OS_WARNING);
         } else {
-            os_message("Civilization II Multiplayer Gold Edition was found neither where it is usually installed, "
-                       "nor in a CD drive, nor as a disc image of its CD (a .cue file with its .bin) in the usual "
-                       "folders. Please show where it is: the folder it is installed in, its CD, or the disc image "
-                       "(or the folder it is in).", OS_INFO);
+            os_message(host_text("setup.not_found"), OS_INFO);
         }
         if (!os_ask_folder(source, sizeof source))
             return 0;
@@ -384,20 +387,21 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
     if (!*image && *cd)
         cd_music = cd_has_music(cd);
     if (*image)
-        snprintf(music, sizeof music, "the disc image %s", image);
+        snprintf(music, sizeof music, host_text("setup.music_image"), image);
     else if (cd_music > 0)
-        snprintf(music, sizeof music, "the CD in %s", cd);
+        snprintf(music, sizeof music, host_text("setup.music_cd"), cd);
     /* (set up already, but without music: only that) */
     music_only = ((*image && !strcmp(image, source)) || (cd_music > 0 && !strcmp(cd, source))) &&
                  os_file_exists(done) && !has_music(game_data);
     if (music_only)
-        snprintf(text, sizeof text, "OpenCiv2 adds the music to the game in\n%s\nfrom %s (encoding it as Ogg "
-                 "Vorbis).\n\nThis takes a few minutes; then the game starts.", game_data, music);
+        snprintf(text, sizeof text, host_text("setup.confirm_music"), game_data, music);
+    else if (*music)
+        snprintf(text, sizeof text,
+                 host_text(setup_game_folder(source) ? "setup.confirm_copy_music" : "setup.confirm_unpack_music"),
+                 source, game_data, music);
     else
-        snprintf(text, sizeof text, "OpenCiv2 sets up the game from %s, %s it into\n%s%s%s%s\n\nThis takes %s; then "
-                 "the game starts.", source, setup_game_folder(source) ? "copying" : "unpacking", game_data,
-                 *music ? "\n\nThe music from " : "", music, *music ? " (encoded as Ogg Vorbis)." : "",
-                 *music ? "a few minutes" : "a minute or two");
+        snprintf(text, sizeof text, host_text(setup_game_folder(source) ? "setup.confirm_copy" : "setup.confirm_unpack"),
+                 source, game_data);
     if (!os_confirm(text))
         return 0;
     copy_dest = game_data;
@@ -406,6 +410,6 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
     cancelled = !ok && os_progress_stopped();
     os_progress_close();
     if (cancelled)
-        os_message("The set-up was stopped; it starts again the next time.", OS_INFO);
+        os_message(host_text("setup.stopped"), OS_INFO);
     return ok;
 }

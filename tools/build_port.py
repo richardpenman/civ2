@@ -105,8 +105,9 @@ def on_windows():
 
 def windows_resources(cc, obj):
     """src/host/setup.rc compiled: the program's own files the set-up puts
-    beside it (src/host/setup_win.c), the fonts (data/native), each 8 bytes
-    of size and the file deflated."""
+    beside it (src/host/setup_win.c), the fonts (data/native), the code
+    pages' glyphs (fonts_*.bin) and the translations (lang/*.txt), each 8
+    bytes of size and the file deflated."""
     import zlib
     res = os.path.join(obj, 'res')
     os.makedirs(res, exist_ok=True)
@@ -117,6 +118,26 @@ def windows_resources(cc, obj):
             print('compressing %s' % os.path.relpath(src, ROOT), flush=True)
             data = open(src, 'rb').read()
             open(out, 'wb').write(len(data).to_bytes(8, 'little') + zlib.compress(data, 9))
+    # the other files (a code page's glyphs, the translations), numbered
+    # from 100, listed in resource 99 (setup.h SETUP_RES_FILES)
+    native = os.path.join(ROOT, 'data', 'native')
+    others = sorted(f for f in glob.glob(os.path.join(native, 'fonts_*.bin')) if not
+                    os.path.basename(f).startswith('fonts_win')) + sorted(glob.glob(os.path.join(native, 'lang', '*.txt')))
+    index, lines = [], []
+    for i, src in enumerate(others):
+        rel = os.path.relpath(src, native).replace(os.sep, '/')
+        name = rel.replace('/', '_') + '.z'
+        out = os.path.join(res, name)
+        if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
+            data = open(src, 'rb').read()
+            open(out, 'wb').write(len(data).to_bytes(8, 'little') + zlib.compress(data, 9))
+        index.append('%d %s\n' % (100 + i, rel))
+        lines.append('%d RCDATA "%s"\n' % (100 + i, name))
+    listing = os.path.join(res, 'files.txt')
+    lines.append('%d RCDATA "files.txt"\n' % 99)
+    for path, text in ((listing, ''.join(index)), (os.path.join(res, 'files.rc'), ''.join(lines))):
+        if not os.path.exists(path) or open(path).read() != text:
+            open(path, 'w').write(text)
     rc = os.path.join(ROOT, 'src', 'host', 'setup.rc')
     o = os.path.join(obj, 'setup.res.o')
     windres = os.environ.get('WINDRES')
@@ -172,7 +193,8 @@ def exe(cross_windows=False):
     # disc image's music: their sources, from tools/fetch-toolchain.sh;
     # stb_vorbis to play the music)
     host = [os.path.join(ROOT, 'src', 'host', f) for f in
-            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'host_options.c', 'setup.c', 'setup_disc.c') +
+            ('port_main.c', 'wasi.c', 'host_sdl.c', 'host_net.c', 'host_options.c', 'host_lang.c', 'setup.c',
+             'setup_disc.c') +
             (('host_menu_win.c', 'setup_win.c') if windows else ('setup_unix.c',)) +
             (('host_menu_mac.m', 'setup_mac.m') if mac else ())]
     third = [os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c')] + \

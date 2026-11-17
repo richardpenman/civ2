@@ -17,9 +17,31 @@
 #include <zlib.h>
 #include "setup.h"
 #include "setup_os.h"
+#include "host_lang.h"
 
 #define MGE_KEY "SOFTWARE\\MicroProse Software\\Civilization II Multiplayer Gold Edition"
 #define TITLE "OpenCiv2"
+
+/* The host's texts (host_lang.h: UTF-8; paths from the ANSI calls where
+   they are not UTF-8) for Windows: as UTF-16, or in the ANSI code page. */
+static const WCHAR *wide(const char *s, WCHAR *out, int n)
+{
+    if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s, -1, out, n) &&
+        !MultiByteToWideChar(CP_ACP, 0, s, -1, out, n))
+        out[0] = 0;
+    out[n - 1] = 0;
+    return out;
+}
+
+static const char *ansi(const char *s, char *out, int n)
+{
+    WCHAR w[2048];
+    wide(s, w, 2048);
+    if (!WideCharToMultiByte(CP_ACP, 0, w, -1, out, n, NULL, NULL))
+        out[0] = 0;
+    out[n - 1] = 0;
+    return out;
+}
 
 int os_dir_exists(const char *p)
 {
@@ -114,7 +136,8 @@ void os_game_data(char *out, size_t size)
 
 void os_message(const char *text, int kind)
 {
-    MessageBoxA(NULL, text, TITLE, MB_OK | (kind == OS_ERROR ? MB_ICONERROR : kind == OS_WARNING ? MB_ICONWARNING :
+    static WCHAR w[4096];
+    MessageBoxW(NULL, wide(text, w, 4096), L"OpenCiv2", MB_OK | (kind == OS_ERROR ? MB_ICONERROR : kind == OS_WARNING ? MB_ICONWARNING :
                                             MB_ICONINFORMATION));
 }
 
@@ -231,11 +254,10 @@ int os_ask_folder(char *out, size_t size)
 {
     BROWSEINFOA bi;
     LPITEMIDLIST id;
-    char path[MAX_PATH];
+    char path[MAX_PATH], title[1024];
     int ok = 0;
     memset(&bi, 0, sizeof bi);
-    bi.lpszTitle = "Where is Civilization II Multiplayer Gold Edition? Choose the folder it is "
-                   "installed in, its CD, or a disc image of the CD (its .cue file, or the folder it is in).";
+    bi.lpszTitle = ansi(host_text("setup.where"), title, sizeof title);
     bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_BROWSEINCLUDEFILES;     /* (a path: SHGetPathFromIDList) */
     CoInitialize(NULL);
     id = SHBrowseForFolderA(&bi);
@@ -271,6 +293,7 @@ void os_progress_open(void)
 {
     WNDCLASSA wc;
     RECT r;
+    char title[256];
     memset(&wc, 0, sizeof wc);
     wc.lpfnWndProc = progress_proc;
     wc.hInstance = GetModuleHandleA(NULL);
@@ -279,7 +302,7 @@ void os_progress_open(void)
     wc.lpszClassName = "OpenCiv2Setup";
     RegisterClassA(&wc);
     SystemParametersInfoA(SPI_GETWORKAREA, 0, &r, 0);
-    progress = CreateWindowA(wc.lpszClassName, TITLE ": setting up the game", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
+    progress = CreateWindowA(wc.lpszClassName, ansi(host_text("setup.title"), title, sizeof title), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
                              (r.left + r.right) / 2 - 260, (r.top + r.bottom) / 2 - 60, 520, 120, NULL, NULL,
                              wc.hInstance, NULL);
     progress_text = CreateWindowA("STATIC", "", WS_CHILD | WS_VISIBLE | SS_LEFT | SS_PATHELLIPSIS, 16, 16, 480, 50,
@@ -290,11 +313,12 @@ void os_progress_open(void)
 
 int os_progress_show(const char *what, const char *detail)
 {
-    char text[MAX_PATH + 128];
+    char text[MAX_PATH + 512];
+    WCHAR w[MAX_PATH + 512];
     MSG m;
     snprintf(text, sizeof text, "%s\n%s", what, detail ? detail : "");
     if (progress_text)
-        SetWindowTextA(progress_text, text);
+        SetWindowTextW(progress_text, wide(text, w, sizeof w / sizeof w[0]));
     while (PeekMessageA(&m, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&m);
         DispatchMessageA(&m);
@@ -345,7 +369,68 @@ static int unpack_resource(int id, const char *path)
     return 1;
 }
 
-/* The fonts in data beside the program, where missing. */
+/* Resource id's size (its first 8 bytes); -1 if none. */
+static long long resource_size(int id)
+{
+    HRSRC r = FindResourceA(NULL, MAKEINTRESOURCEA(id), (LPCSTR)RT_RCDATA);
+    HGLOBAL g = r ? LoadResource(NULL, r) : NULL;
+    const unsigned char *d = g ? LockResource(g) : NULL;
+    long long n = 0;
+    int i;
+    if (!d || SizeofResource(NULL, r) < 8)
+        return -1;
+    for (i = 7; i >= 0; i--)
+        n = n << 8 | d[i];
+    return n;
+}
+
+static long long file_size_of(const char *path)
+{
+    WIN32_FILE_ATTRIBUTE_DATA a;
+    if (!GetFileAttributesExA(path, GetFileExInfoStandard, &a))
+        return -1;
+    return (long long)a.nFileSizeHigh << 32 | a.nFileSizeLow;
+}
+
+/* The other files (setup.h SETUP_RES_FILES: a code page's glyphs, the
+   translations) in data, where missing or of another size (an update's). */
+static int other_files(const char *data)
+{
+    HRSRC r = FindResourceA(NULL, MAKEINTRESOURCEA(SETUP_RES_FILES), (LPCSTR)RT_RCDATA);
+    HGLOBAL g = r ? LoadResource(NULL, r) : NULL;
+    const char *list = g ? LockResource(g) : NULL;
+    DWORD n = r ? SizeofResource(NULL, r) : 0, i = 0;
+    while (list && i < n) {
+        char line[MAX_PATH], path[MAX_PATH], *name, *c;
+        int k = 0, id;
+        while (i < n && list[i] != '\n' && k < MAX_PATH - 1)
+            line[k++] = list[i++];
+        line[k] = 0;
+        i++;
+        id = atoi(line);
+        if (!id || !(name = strchr(line, ' ')))
+            continue;
+        snprintf(path, sizeof path, "%s\\%s", data, name + 1);
+        for (c = path; *c; c++)
+            if (*c == '/')
+                *c = '\\';
+        if (file_size_of(path) == resource_size(id))
+            continue;
+        c = strrchr(path, '\\');
+        *c = 0;
+        os_make_dirs(path);
+        *c = '\\';
+        if (!unpack_resource(id, path)) {
+            char text[MAX_PATH + 512];
+            snprintf(text, sizeof text, host_text("setup.write_failed"), path);
+            os_message(text, OS_ERROR);
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* The fonts in data beside the program, where missing; the other files. */
 int os_program_files(void)
 {
     static const struct { int id; const char *name; } files[] = {
@@ -359,15 +444,15 @@ int os_program_files(void)
         if (os_file_exists(path))
             continue;
         os_make_dirs(data);
-        os_progress_show("Unpacking", path);
+        os_progress_show(host_text("setup.unpacking"), path);
         if (!unpack_resource(files[i].id, path)) {
-            char text[MAX_PATH + 64];
-            snprintf(text, sizeof text, "Could not write %s.", path);
+            char text[MAX_PATH + 512];
+            snprintf(text, sizeof text, host_text("setup.write_failed"), path);
             os_message(text, OS_ERROR);
             return 0;
         }
     }
-    return 1;
+    return other_files(data);
 }
 
 int os_progress_stopped(void)

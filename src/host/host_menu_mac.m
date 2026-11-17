@@ -8,6 +8,7 @@
 #include <SDL_syswm.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "host_lang.h"
 #include "host.h"
 #include "host_menu.h"
 
@@ -116,7 +117,9 @@ void host_mac_full_screen(SDL_Window *window)
 
 static NSString *string_of(const char *s)
 {
-    NSString *r = [NSString stringWithCString:s encoding:NSWindowsCP1252StringEncoding];
+    /* (the game's text, in its code page: Windows-1252 or the translation's) */
+    char utf8[1024];
+    NSString *r = [NSString stringWithUTF8String:host_lang_utf8(s, utf8, sizeof utf8)];
     return r ? r : @"";
 }
 
@@ -164,7 +167,7 @@ void host_menu_apply(SDL_Window *window, const HostMenuItem *items, int n)
         NSMutableParagraphStyle *para = [[NSMutableParagraphStyle alloc] init];
         CGFloat tab = 0;
         NSMenu *view = nil;
-        int i;
+        int i, popups = 0;
         menu_window = window;
         make_target();
         /* The application menu (About, Hide, Quit ...) stays first. */
@@ -203,8 +206,8 @@ void host_menu_apply(SDL_Window *window, const HostMenuItem *items, int n)
                 sub.autoenablesItems = NO;
                 mi.submenu = sub;
                 stack[it->level + 1] = sub;
-                if (it->level == 0 && [title isEqualToString:@"View"])
-                    view = sub;
+                if (it->level == 0 && ++popups == 3)
+                    view = sub;         /* (Game, Kingdom, View: in any language) */
             } else {
                 mi.target = target;
                 mi.action = @selector(pick:);
@@ -220,10 +223,10 @@ void host_menu_apply(SDL_Window *window, const HostMenuItem *items, int n)
         }
         if (view) {
             /* (the shortcut shown, not a key equivalent: host_sdl.c takes ctrl-cmd-F) */
-            NSMenuItem *fs = [[NSMenuItem alloc] initWithTitle:@"Full Screen" action:@selector(fullScreen:)
-                                                 keyEquivalent:@""];
+            NSString *full = [NSString stringWithUTF8String:host_text("menu.full_screen")];
+            NSMenuItem *fs = [[NSMenuItem alloc] initWithTitle:full action:@selector(fullScreen:) keyEquivalent:@""];
             fs.attributedTitle = [[NSAttributedString alloc]
-                initWithString:@"Full Screen\t\u2303\u2318F"
+                initWithString:[full stringByAppendingString:@"\t\u2303\u2318F"]
                     attributes:@{NSFontAttributeName: font, NSParagraphStyleAttributeName: para}];
             fs.target = target;
             fs.state = (cocoa_window().styleMask & NSWindowStyleMaskFullScreen) ? NSControlStateValueOn

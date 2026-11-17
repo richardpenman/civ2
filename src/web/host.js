@@ -11,7 +11,7 @@ import {makeWasi, ExitStatus} from './wasi.js';
 import {makeNet} from './net.js';
 
 const EV = {NONE: 0, QUIT: 1, KEYDOWN: 2, KEYUP: 3, MOTION: 4, BUTTONDOWN: 5, BUTTONUP: 6, EXPOSED: 7, COMMAND: 8,
-            WHEEL: 9, RESIZE: 10};
+            WHEEL: 9, RESIZE: 10, CHAR: 11};
 const ASYNC_SIZE = 1 << 20;        // the unwound stack's room
 const YIELD_MS = 25;               // the longest the game keeps the page busy without a look at its input
 
@@ -101,7 +101,11 @@ export function argbToRgba(src, dst, n) {
 export async function runGame(opts) {
     const {canvas, fs} = opts;
     const ctx = canvas.getContext('2d', {alpha: false});
-    const latin = new TextDecoder('windows-1252');
+    // (the game's text: Windows-1252, or its translation's code page)
+    let latin = new TextDecoder('windows-1252');
+    try {
+        latin = new TextDecoder(opts.codepage || 'windows-1252');
+    } catch (e) { /* (a code page the browser has not) */ }
     let exports, memory, asyncData = 0;
     const dv = () => new DataView(memory.buffer);
     const cstr = (p) => {
@@ -207,6 +211,15 @@ export async function runGame(opts) {
     const key = (e, down) => {
         if (e.metaKey || dialogOpen)
             return;         // the system's (Command) shortcuts; the message box's own keys
+        // a letter beyond ASCII (the keyboard layout's: ĉ, é ...): the
+        // character, not its key (the game maps it into its code page)
+        if (e.key && e.key.length === 1 && e.key.charCodeAt(0) >= 0x80 &&
+            ((!e.ctrlKey && !e.altKey) || (e.getModifierState && e.getModifierState('AltGraph')))) {
+            e.preventDefault();
+            if (down)
+                push(EV.CHAR, e.key.charCodeAt(0));
+            return;
+        }
         const vk = vkOf(e);
         if (!vk)
             return;
@@ -383,7 +396,7 @@ export async function runGame(opts) {
                 dv().setInt32(info + 8, Math.round((art.kept || art.siteSize || 0) / 1024), true);
             }
             if (msg && size > 0) {
-                const text = new TextEncoder().encode(state < 0 ? 'This site was built without the HD art.' : '');
+                const text = new TextEncoder().encode(state < 0 ? '@hd.err.no_site_art' : '');
                 const n = Math.min(text.length, size - 1);
                 new Uint8Array(memory.buffer).set(text.subarray(0, n), msg);
                 new Uint8Array(memory.buffer)[msg + n] = 0;

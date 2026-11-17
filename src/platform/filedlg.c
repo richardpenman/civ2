@@ -133,7 +133,11 @@ static void show_date(int i)
         time_t t = fd.times[i];
         struct tm *tm = localtime(&t);
         if (tm)
-            strftime(text, sizeof text, "Modified: %Y-%m-%d %H:%M", tm);
+            {
+            char when[32];
+            strftime(when, sizeof when, "%Y-%m-%d %H:%M", tm);
+            snprintf(text, sizeof text, extras_text("file.modified"), when);
+        }
     }
     set_text(fd.date, text);
 }
@@ -170,7 +174,7 @@ static void refill(void)
         free(items[i].text);
     }
     show_date(-1);
-    snprintf(label, sizeof label, "Folder: %s", fd.dir);
+    snprintf(label, sizeof label, extras_text("file.folder"), fd.dir);
     SetWindowTextA(fd.dirlabel, label);
 }
 
@@ -223,14 +227,14 @@ static void accept(void)
     }
     if (!fd.save && k < 0 && (ofn->Flags & OFN_FILEMUSTEXIST)) {
         char msg[MAX_PATH + 64];
-        snprintf(msg, sizeof msg, "%s\nFile not found.", path);
-        MessageBoxA(fd.dlg, msg, "Open", MB_OK | MB_ICONWARNING);
+        snprintf(msg, sizeof msg, extras_text("file.not_found"), path);
+        MessageBoxA(fd.dlg, msg, extras_text("file.open"), MB_OK | MB_ICONWARNING);
         return;
     }
     if (fd.save && k == 0 && (ofn->Flags & OFN_OVERWRITEPROMPT)) {
         char msg[MAX_PATH + 64];
-        snprintf(msg, sizeof msg, "%s already exists.\nDo you want to replace it?", path);
-        if (MessageBoxA(fd.dlg, msg, "Save As", MB_YESNO | MB_ICONWARNING) != IDYES)
+        snprintf(msg, sizeof msg, extras_text("file.replace"), path);
+        if (MessageBoxA(fd.dlg, msg, extras_text("file.save_as"), MB_YESNO | MB_ICONWARNING) != IDYES)
             return;
     }
     snprintf(ofn->lpstrFile, ofn->nMaxFile, "%s", path);
@@ -267,7 +271,7 @@ static LRESULT CALLBACK dlg_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
             return 0;
         case ID_SORT:
             fd.by_date = !fd.by_date;
-            set_text(fd.sort, fd.by_date ? "Sort: Date" : "Sort: Name");
+            set_text(fd.sort, extras_text(fd.by_date ? "file.sort_date" : "file.sort_name"));
             setting_set("FileSort", fd.by_date ? "Date" : "Name");
             refill();
             return 0;
@@ -309,7 +313,7 @@ static HWND control(const char *cls, const char *text, DWORD style, int x, int y
 WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
 {
     static int registered;
-    const char *title = ofn->lpstrTitle ? ofn->lpstrTitle : save ? "Save As" : "Open";
+    const char *title = ofn->lpstrTitle ? ofn->lpstrTitle : extras_text(save ? "file.save_as" : "file.open");
     HWND owner = ofn->hwndOwner;
     int w = 440, h = 396, owner_enabled = owner && IsWindowEnabled(owner);
     MSG msg;
@@ -356,12 +360,12 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
                              (screen_w - w) / 2, (screen_h - h) / 2, w, h, owner, NULL, NULL, NULL);
     fd.dirlabel = control("STATIC", "", SS_LEFT, 10, 8, 410, 18, ID_DIR);
     fd.list = control("LISTBOX", "", WS_BORDER | WS_VSCROLL | LBS_NOTIFY, 10, 30, 410, 220, ID_LIST);
-    control("STATIC", "File name:", SS_LEFT, 10, 264, 70, 20, -1);
+    control("STATIC", extras_text("file.name"), SS_LEFT, 10, 264, 70, 20, -1);
     fd.name = control("EDIT", "", WS_BORDER | ES_AUTOHSCROLL, 85, 260, 335, 24, ID_NAME);
     fd.date = control("STATIC", "", SS_LEFT, 85, 292, 335, 18, ID_DATE);
-    fd.sort = control("BUTTON", fd.by_date ? "Sort: Date" : "Sort: Name", BS_PUSHBUTTON, 10, 322, 100, 28, ID_SORT);
-    control("BUTTON", save ? "Save" : "Open", BS_DEFPUSHBUTTON, 240, 322, 85, 28, IDOK);
-    control("BUTTON", "Cancel", BS_PUSHBUTTON, 335, 322, 85, 28, IDCANCEL);
+    fd.sort = control("BUTTON", extras_text(fd.by_date ? "file.sort_date" : "file.sort_name"), BS_PUSHBUTTON, 10, 322, 100, 28, ID_SORT);
+    control("BUTTON", extras_text(save ? "file.save" : "file.open"), BS_DEFPUSHBUTTON, 240, 322, 85, 28, IDOK);
+    control("BUTTON", extras_text("file.cancel"), BS_PUSHBUTTON, 335, 322, 85, 28, IDCANCEL);
     if (ofn->lpstrFile && ofn->lpstrFile[0] && !strchr(ofn->lpstrFile, '*')) {
         const char *base = strrchr(ofn->lpstrFile, '\\');
         SetWindowTextA(fd.name, base ? base + 1 : ofn->lpstrFile);

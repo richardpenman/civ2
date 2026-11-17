@@ -2,6 +2,7 @@
  * The host interface (host.h) over SDL2.
  */
 #include "host.h"
+#include "host_lang.h"
 #include "host_menu.h"
 #include "box_text.h"
 #include <SDL.h>
@@ -440,6 +441,24 @@ static int convert(const SDL_Event *s, HostEvent *e)
             return 0;
         e->type = s->type == SDL_KEYDOWN ? HOST_EV_KEYDOWN : HOST_EV_KEYUP;
         return 1;
+    case SDL_TEXTINPUT: {
+        /* a character beyond ASCII (a letter of the keyboard layout's that
+           the US keys the game reads have not: its key gave no vk): the
+           first one of the text */
+        const unsigned char *p = (const unsigned char *)s->text.text;
+        for (; *p; p++) {
+            unsigned c = *p, n = c >= 0xf0 ? 3 : c >= 0xe0 ? 2 : c >= 0xc0 ? 1 : 0;
+            if (!n)
+                continue;
+            c &= 0x3f >> n;
+            while (n-- && (p[1] & 0xc0) == 0x80)
+                c = c << 6 | (*++p & 0x3f);
+            e->type = HOST_EV_CHAR;
+            e->vk = (int32_t)c;
+            return 1;
+        }
+        return 0;
+    }
     case SDL_MOUSEMOTION:
         e->type = HOST_EV_MOTION;
         e->x = s->motion.x;
@@ -826,6 +845,26 @@ int host_music_playing(void)
     return playing;
 }
 
+/* ---- the system's language ---- */
+
+/* The user's preferred language ("de-DE", "eo"), as the system says (none:
+   0); for Auto in the OpenCiv2 Options (CIV2_SYSTEM_LANG). */
+int host_system_language(char *out, int size)
+{
+#if SDL_VERSION_ATLEAST(2, 0, 14)
+    SDL_Locale *l = SDL_GetPreferredLocales();
+    int ok = l && l[0].language;
+    if (ok)
+        snprintf(out, (size_t)size, "%s%s%s", l[0].language, l[0].country ? "-" : "", l[0].country ? l[0].country : "");
+    SDL_free(l);
+    return ok;
+#else
+    (void)out;
+    (void)size;
+    return 0;
+#endif
+}
+
 /* ---- message boxes ---- */
 
 int host_message_box(int icon, const char *title, const char *text, int nbuttons, const char *const *labels,
@@ -833,16 +872,19 @@ int host_message_box(int icon, const char *title, const char *text, int nbuttons
 {
     SDL_MessageBoxButtonData buttons[8];
     SDL_MessageBoxData data;
-    char wrapped[4096];
+    char wrapped[4096], utf8[4096], title8[512], labels8[8][128];
     int i, hit = -1;
     if (nbuttons > 8)
         nbuttons = 8;
+    /* (the game's text, in its code page, as SDL's UTF-8) */
     for (i = 0; i < nbuttons; i++) {
         buttons[i].flags = (i == enter ? SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT : 0) |
                            (i == escape ? SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT : 0);
         buttons[i].buttonid = ids[i];
-        buttons[i].text = labels[i];
+        buttons[i].text = host_lang_utf8(labels[i], labels8[i], sizeof labels8[i]);
     }
+    title = host_lang_utf8(title, title8, sizeof title8);
+    text = host_lang_utf8(text, utf8, sizeof utf8);
     memset(&data, 0, sizeof data);
     data.flags = icon == 2 ? SDL_MESSAGEBOX_ERROR : icon == 1 ? SDL_MESSAGEBOX_WARNING : SDL_MESSAGEBOX_INFORMATION;
     data.window = window;

@@ -8,7 +8,7 @@
 import {runSetup} from './setup_run.js';
 
 self.onmessage = async (e) => {
-    const {files, source} = e.data;
+    const {files, source, lang} = e.data;
     try {
         const module = await WebAssembly.compileStreaming(fetch('setup.wasm')).catch(
             async () => WebAssembly.compile(await (await fetch('setup.wasm')).arrayBuffer()));
@@ -17,6 +17,7 @@ self.onmessage = async (e) => {
         const code = runSetup({
             module,
             source,
+            lang,
             files: files.map((f) => ({name: f.name, size: f.file.size, mtime: f.file.lastModified,
                                       readAt: (pos, n) => new Uint8Array(reader.readAsArrayBuffer(f.file.slice(pos, pos + n)))})),
             onFile: (path, data) => self.postMessage({file: path, data}, [data.buffer]),

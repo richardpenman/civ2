@@ -1,0 +1,497 @@
+; OpenCiv2: Esperanto translation of OpenCiv2's own texts (docs/TRANSLATING.md).
+; Machine-drafted, needs review by a native speaker.
+; Encoding: ISO-8859-3 (Latin-3), as "@@codepage" says: the game draws its letters
+; with data/native/fonts_iso-8859-3*.bin. Where those glyphs are missing, write the
+; x-system instead (cx gx hx jx sx ux for the accented letters) in Windows-1252.
+@@codepage
+iso-8859-3
+@@openciv2.language.name
+Esperanto
+@@openciv2.turn
+Vico
+@@openciv2.cities
+urboj
+@@openciv2.size
+Grando
+@@openciv2.name
+Nomo
+@@openciv2.production
+Produktado
+@@openciv2.menu.arrange_s
+Aranøi fenestrojn S
+@@openciv2.menu.arrange_l
+Aranøi fenestrojn L
+@@openciv2.mainmenu.options
+Agordoj de OpenCiv2
+@@openciv2.options.title
+Agordoj de OpenCiv2
+@@openciv2.options.kept
+Konservitaj en CIV.INI, sub [OpenCiv2].
+@@openciv2.options.mode
+Reøimo
+@@openciv2.options.graphics
+Grafiko kaj ekrano
+@@openciv2.options.rules
+Regulþanøoj
+@@openciv2.options.limits
+Limoj
+@@openciv2.options.interface
+Interfacaj aldonoj
+@@openciv2.options.colours
+Koloroj kaj mesaøoj
+@@openciv2.options.language
+Lingvo
+@@openciv2.options.next_start
+Ekde la venonta lanæo de la ludo.
+@@openciv2.options.override_one
+%s estas difinita: por æi tiu lanæo øi superas æi tiujn elektojn.
+@@openciv2.options.override_many
+%s estas difinitaj: por æi tiu lanæo ili superas æi tiujn elektojn.
+@@openciv2.options.list_and
+ kaj 
+@@openciv2.mode.title
+Reøimo
+@@openciv2.mode.standard_note
+Norma: la eraroj de la originalo korektitaj, kun la interfacaj aldonoj de OpenCiv2; regulþanøoj laý elekto.
+@@openciv2.mode.classic_note
+Klasika: la originala ludo kiel øi estis: øiaj eraroj, øia aspekto, neniu el la aldonoj de OpenCiv2.
+@@openciv2.mode.standard
+Norma
+@@openciv2.mode.classic
+Klasika
+@@openciv2.graphics.title
+Grafiko kaj ekrano
+@@openciv2.graphics.sharp_note
+Akra teksto kaj interfaco: teksto, menuoj kaj regiloj je la plena distingivo de la ekrano (la bildoj pligrandigitaj).
+@@openciv2.graphics.hd_installed
+HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. La arto estas instalita.
+@@openciv2.graphics.hd_later
+HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. La arto (%d MB) elþutiøas de æi tiu retejo, kiam la ludo denove lanæiøas.
+@@openciv2.graphics.hd_no_site
+HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Æi tiu retejo estis konstruita sen la arto.
+@@openciv2.graphics.hd_download
+HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Øi bezonas la arton: %d MB, elþutitaj unufoje de openciv2-assets æe GitHub, kiam elektita.
+@@openciv2.graphics.fullscreen_note
+Plena ekrano: anstataý fenestro, kiu plenigas la ekranon.
+@@openciv2.graphics.sharp
+Akra teksto kaj interfaco
+@@openciv2.graphics.hd
+HD-grafiko
+@@openciv2.graphics.fullscreen
+Plena ekrano
+@@openciv2.rules.title
+Regulþanøoj
+@@openciv2.rules.intro
+Þanøoj al la reguloj de la originalo, por la unuoj de homaj ludantoj; la originalaj reguloj en retaj ludoj.
+@@openciv2.rule.GotoNoZocStop
+Iri-al preter fremdaj unuoj
+@@openciv2.rule.MassMove
+Þovklavo+dekstra klako movas la tipon
+@@openciv2.rule.WorkerHandover
+Laboristoj transdonas sian laboron
+@@openciv2.rule.UnitRotation
+Unuoj de stako laývice
+@@openciv2.rule.StackSentry
+U gardostarigas la stakon
+@@openciv2.limits.title
+Limoj
+@@openciv2.limits.intro
+Je la valoroj de la originalo: kiel la originalo.
+@@openciv2.limit.RetirementYear
+Jaro de emeritiøo
+@@openciv2.limit.RetirementWarningYear
+Øia averto
+@@openciv2.limit.PopulationLimit
+Loøantaro (po 10 000)
+@@openciv2.limit.GoldLimit
+Oro
+@@openciv2.limit.MapTilesLimit
+Kvadratoj de propra mapo
+@@openciv2.interface.title
+Interfacaj aldonoj
+@@openciv2.interface.intro
+La aldonoj de OpenCiv2 al la interfaco (laý CIV2UIA de FoxAhead): kion vi vidas kaj faras.
+@@openciv2.extra.MouseWheel
+Musrado kaj butono
+@@openciv2.extra.UnitListScroll
+Unuolisto preter 9 unuoj
+@@openciv2.extra.UnitListKeys
+Klavoj en tiu unuolisto
+@@openciv2.extra.WorkCounter
+Laborkalkulilo de setlantoj
+@@openciv2.extra.GameTurn
+Vico en la statopanelo
+@@openciv2.extra.ResearchNumbers
+Esplorciferoj
+@@openciv2.extra.ZeroUpkeep
+Senpagaj konstrua¼oj listigitaj
+@@openciv2.extra.SupportScroll
+Subtenataj unuoj: rulumi
+@@openciv2.extra.SupportSort
+Subtenataj unuoj ordigitaj
+@@openciv2.extra.AttitudeColors
+Koloroj de la sintena konsilisto
+@@openciv2.extra.CityAttitude
+Sinteno en la urba fenestro
+@@openciv2.extra.RadioHotkeys
+Rapidklavoj por elektoj
+@@openciv2.extra.Quickinfo
+Rapida informo per Ctrl
+@@openciv2.extra.ProductionCancel
+Nuligi en Þanøi produktadon
+@@openciv2.extra.ProductionCost
+Kostoj en Þanøi produktadon
+@@openciv2.extra.CityStatus
+Urba stato: ordigi, þanøi
+@@openciv2.extra.MassSpecialists
+Þovklavo sur specialistoj
+@@openciv2.extra.SuppressPopups
+Mesaøoj sur la mapo
+@@openciv2.extra.ColorCorrection
+Kolorkorekto
+@@openciv2.extra.ForeignGold
+Oro æe la ekstera ministro
+@@openciv2.extra.ArrangeWindowsSL
+Aranøi fenestrojn S kaj L
+@@openciv2.extra.PathLines
+Vojlinioj per Þovklavo
+@@openciv2.extra.SentryHalftone
+Gardostarantoj grize
+@@openciv2.extra.DefaultZoom1
+Novaj ludoj je zomo 1:1
+@@openciv2.extra.HotkeyUnderlines
+Substreki rapidklavojn de elektoj
+@@openciv2.colours.title
+Koloroj kaj mesaøoj
+@@openciv2.colours.intro
+Gamao: procento, 100 signifas neniun þanøon; heleco kaj kontrasto: -100 øis 100. Mesaøoj sur la mapo: sekcioj de GAME.TXT, ekz. HIDDENTERRAIN,CITYSIZE.
+@@openciv2.colour.Gamma
+Gamao (%)
+@@openciv2.colour.Brightness
+Heleco
+@@openciv2.colour.Contrast
+Kontrasto
+@@openciv2.colour.SuppressList
+Mesaøoj sur la mapo
+@@openciv2.language.title
+Lingvo
+@@openciv2.language.intro
+La lingvo de la propraj tekstoj de OpenCiv2, kaj de tiuj de la ludo, kie la traduko havas ilin (alie la tekstoj de la ludo venas el øiaj instalitaj dosieroj).
+@@openciv2.language.auto
+Aýtomata (la lingvo de la sistemo)
+@@openciv2.language.override
+CIV2_LANG estas difinita: por æi tiu lanæo øi superas æi tiun elekton.
+@@openciv2.restart.title
+Relanæo
+@@openciv2.restart.next_time
+Æi tiuj elektoj efikas ekde la venonta lanæo de la ludo.
+@@openciv2.restart.ask
+Æi tiuj elektoj efikas, kiam la ludo denove lanæiøas: æu relanæi øin nun?
+@@openciv2.restart.ask_page
+Æi tiuj elektoj efikas, kiam la ludo denove lanæiøas: æu relanæi øin nun (la paøo reþargiøas)?
+@@openciv2.restart.now
+Relanæi nun
+@@openciv2.restart.later
+Poste
+@@openciv2.restart.failed
+La ludo ne povis esti relanæita: æi tiuj elektoj efikas ekde øia venonta lanæo.
+@@openciv2.hd.title
+HD-grafiko
+@@openciv2.hd.downloading
+Elþutante la arton
+@@openciv2.hd.checking
+Kontrolante øin
+@@openciv2.hd.installing
+Instalante øin
+@@openciv2.hd.progress
+%s: %d el %d MB
+@@openciv2.hd.stop
+Haltigi
+@@openciv2.hd.failed
+La elþuto malsukcesis.
+@@openciv2.hd.stay_off
+%s HD-grafiko restas malþaltita.
+@@openciv2.hd.err.no_curl_windows
+curl.exe de Windows, kiu elþutas la arton, ne troviøis (øi venas kun Windows 10 kaj postaj).
+@@openciv2.hd.err.download
+La elþuto malsukcesis (%s). Æu la komputilo estas konektita al la interreto?
+@@openciv2.hd.err.no_tool
+Nek curl nek wget, kiuj elþutas la arton, troviøis: bonvolu instali curl.
+@@openciv2.hd.err.read
+Ne eblis legi %s.
+@@openciv2.hd.err.not_pack
+%s ne estas pako de openciv2-assets.
+@@openciv2.hd.err.mismatch
+%s en la pako ne kongruas kun øia package.json.
+@@openciv2.hd.err.write
+Ne eblis skribi %s.
+@@openciv2.hd.err.not_pinned
+La elþuta¼o ne estas la fiksita arto (øia SHA-256 malsamas): nenio estis instalita.
+@@openciv2.hd.err.no_url
+Æi tiu versio ne scias, kiun arton elþuti.
+@@openciv2.hd.err.no_folder
+Ne estas dosierujo por instali la arton.
+@@openciv2.hd.err.start
+Ne eblis komenci la elþuton.
+@@openciv2.hd.err.test_run
+Nenio elþutiøas en testa lanæo.
+@@openciv2.hd.err.no_site_art
+Æi tiu retejo estis konstruita sen la HD-arto.
+@@openciv2.file.open
+Malfermi
+@@openciv2.file.save_as
+Konservi kiel
+@@openciv2.file.save
+Konservi
+@@openciv2.file.cancel
+Nuligi
+@@openciv2.file.name
+Nomo:
+@@openciv2.file.sort_name
+Ordo: nomo
+@@openciv2.file.sort_date
+Ordo: dato
+@@openciv2.file.modified
+Þanøita: %s
+@@openciv2.file.folder
+Dosierujo: %s
+@@openciv2.file.not_found
+%s
+Dosiero ne trovita.
+@@openciv2.file.replace
+%s jam ekzistas.
+Æu vi volas anstataýigi øin?
+@@openciv2.box.ok
+Bone
+@@openciv2.box.cancel
+Nuligi
+@@openciv2.box.yes
+Jes
+@@openciv2.box.no
+Ne
+@@openciv2.quit.text
+Æu forlasi Civilization II?
+
+La nuna ludo finiøas æi tie; æio ne konservita perdiøas.
+@@openciv2.quit.quit
+Forlasi
+@@openciv2.menu.full_screen
+Plena ekrano
+@@openciv2.setup.title
+OpenCiv2: instalante la ludon
+@@openciv2.setup.copy_failed
+Ne eblis kopii %s al %s.
+@@openciv2.setup.read_failed
+Ne eblis legi %s.
+@@openciv2.setup.unpack_failed
+Ne eblis malpaki %s.
+@@openciv2.setup.write_failed
+Ne eblis skribi %s.
+@@openciv2.setup.unpacking
+Malpakante
+@@openciv2.setup.copying_file
+Kopiante
+@@openciv2.setup.unpacking_cd
+Malpakante la ludon el øia KD
+@@openciv2.setup.unpacking_image
+Malpakante la ludon el øia diskobildo
+@@openciv2.setup.copying
+Kopiante la ludon
+@@openciv2.setup.copying_image
+Kopiante el la diskobildo
+@@openciv2.setup.copy_image_failed
+Ne eblis kopii %s el la diskobildo.
+@@openciv2.setup.encoding
+Kodigante la muzikon (trako %d el %d)
+@@openciv2.setup.music_failed_only
+La muziko ne legeblis el la KD-legilo.
+@@openciv2.setup.music_failed
+La ludo estas instalita, sed sen sia muziko: øi ne legeblis el la KD-legilo.
+@@openciv2.setup.no_folder
+Ne ekzistas dosierujo %s.
+@@openciv2.setup.not_game
+%s havas nek instalitan Civilization II Multiplayer Gold Edition, nek øian KD, nek diskobildon de la KD.
+@@openciv2.setup.not_found
+Civilization II Multiplayer Gold Edition troviøis nek kie øi kutime estas instalita, nek en KD-legilo, nek kiel diskobildo de øia KD (dosiero .cue kun sia .bin) en la kutimaj dosierujoj. Bonvolu montri, kie øi estas: la dosierujo, en kiu øi estas instalita, øia KD aý la diskobildo (aý øia dosierujo).
+@@openciv2.setup.music_image
+la diskobildo %s
+@@openciv2.setup.music_cd
+la KD en %s
+@@openciv2.setup.confirm_music
+OpenCiv2 aldonas la muzikon al la ludo en
+%s
+el %s (kodigante øin kiel Ogg Vorbis).
+
+Tio daýras kelkajn minutojn; poste la ludo komenciøas.
+@@openciv2.setup.confirm_copy
+OpenCiv2 instalas la ludon el %s, kopiante øin en
+%s
+
+Tio daýras unu aý du minutojn; poste la ludo komenciøas.
+@@openciv2.setup.confirm_unpack
+OpenCiv2 instalas la ludon el %s, malpakante øin en
+%s
+
+Tio daýras unu aý du minutojn; poste la ludo komenciøas.
+@@openciv2.setup.confirm_copy_music
+OpenCiv2 instalas la ludon el %s, kopiante øin en
+%s
+
+La muziko el %s (kodigita kiel Ogg Vorbis).
+
+Tio daýras kelkajn minutojn; poste la ludo komenciøas.
+@@openciv2.setup.confirm_unpack_music
+OpenCiv2 instalas la ludon el %s, malpakante øin en
+%s
+
+La muziko el %s (kodigita kiel Ogg Vorbis).
+
+Tio daýras kelkajn minutojn; poste la ludo komenciøas.
+@@openciv2.setup.stopped
+La instalado estis haltigita; øi rekomenciøos la venontan fojon.
+@@openciv2.setup.where
+Kie estas Civilization II Multiplayer Gold Edition? Elektu la dosierujon, en kiu øi estas instalita, øian KD aý diskobildon de la KD (øian dosieron .cue aý øian dosierujon).
+@@openciv2.setup.where_short
+Kie estas Civilization II Multiplayer Gold Edition? (la dosierujo, en kiu øi estas instalita, øia KD aý la dosierujo de diskobildo de la KD)
+@@openciv2.setup.where_command
+Lanæu OpenCiv2 kun tiu dosierujo (aý la dosiero .cue): OpenCiv2 --setup DOSIERUJO
+@@openciv2.setup.set_up
+Instali
+@@openciv2.setup.quit
+Forlasi
+@@openciv2.setup.choose
+Elekti
+@@openciv2.web.loading
+Þargante ...
+@@openciv2.web.intro
+Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (Norma aý Klasika, HD-grafiko, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj de OpenCiv2, en øia æefa menuo.
+@@openciv2.web.choose
+Elektu vian ludon...
+@@openciv2.web.choose_folder
+Dosierujo
+@@openciv2.web.choose_folder_note
+la instalita ludo aý la KD
+@@openciv2.web.choose_files
+Dosiero
+@@openciv2.web.choose_files_note
+.zip de la dosierujo aý diskobildo (.cue kaj .bin)
+@@openciv2.web.drop
+aý demetu øin æi tien
+@@openciv2.web.stop
+Haltigi
+@@openciv2.web.have
+La dosieroj de la ludo estas en æi tiu retumilo.
+@@openciv2.web.forget
+Forigi ilin
+@@openciv2.web.play
+Ludi
+@@openciv2.web.export
+Eksporti konserva¼ojn
+@@openciv2.web.export_title
+Viaj konservitaj ludoj, la scenaroj, kiujn vi faris, CIV.INI, CIV2.DAT kaj HALLFAME.DAT, kiel .zip
+@@openciv2.web.import
+Importi konserva¼ojn
+@@openciv2.web.saves
+Konserva¼oj
+@@openciv2.web.saves_title
+Eksporti aý importi konservitajn ludojn
+@@openciv2.web.saves_heading
+Konservitaj ludoj
+@@openciv2.web.saves_note
+Viaj konservitaj ludoj, scenaroj, kiujn vi faris, <code>CIV.INI</code>, <code>CIV2.DAT</code> kaj <code>HALLFAME.DAT</code> kiel .zip; aý konservitaj ludoj (.SAV, aý tia .zip) metitaj en la ludon.
+@@openciv2.web.close
+Fermi
+@@openciv2.web.relay_title
+Retaj ludoj
+@@openciv2.web.relay_label
+La relajso:
+@@openciv2.web.relay_use
+Uzi øin
+@@openciv2.web.relay_none
+Retaj ludoj iras tra relajso, kaj neniu respondis æe %s: lanæu tools/webrelay.py æe %s, aý donu øian adreson æi tie (aý malfermu la paøon kun ?relay=ws://GASTIGANTO:PORDO).
+@@openciv2.web.relay_bad
+La adreso de la relajso komenciøas per ws:// (aý wss://).
+@@openciv2.web.language
+Lingvo:
+@@openciv2.web.language_auto
+Aýtomata (la lingvo de la retumilo)
+@@openciv2.web.not_game
+Æi tiuj dosieroj estas nek instalita Civilization II Multiplayer Gold Edition (øia dosierujo enhavas Civ2Art.dll kaj RULES.TXT), nek øia KD (DATA1.CAB kaj CIV2), nek diskobildo de la KD (.cue kun sia .bin).
+@@openciv2.web.copying
+Kopiante la ludon: %s el %s dosieroj
+@@openciv2.web.kept
+La %s dosieroj de la ludo estas konservitaj en æi tiu retumilo.
+@@openciv2.web.setup_no_game
+La instalado ne faris la ludon (mankas Civ2Art.dll, RULES.TXT).
+@@openciv2.web.keep_failed
+Ne eblis konservi la dosierojn: %s
+@@openciv2.web.set_up_cd
+La ludo estas instalita el la KD: %s dosieroj konservitaj en æi tiu retumilo (sen la muziko: la retumilo ne povas legi la muzikajn trakojn de la KD; diskobildo de la KD havas ilin).
+@@openciv2.web.set_up_image
+La ludo estas instalita el la diskobildo: %s dosieroj konservitaj en æi tiu retumilo.
+@@openciv2.web.setup_failed
+La instalado malsukcesis: %s
+@@openciv2.web.setup_stopped
+La instalado estis haltigita; elektu la dosierojn denove por rekomenci øin.
+@@openciv2.web.setting_up_cd
+Instalante la ludon el øia KD ...
+@@openciv2.web.setting_up_image
+Instalante la ludon el øia diskobildo ...
+@@openciv2.web.chosen_folder
+Dosierujo: %s (%s dosieroj)
+@@openciv2.web.chosen_image
+Diskobildo: %s
+@@openciv2.web.reading
+Legante %s ...
+@@openciv2.web.no_saves
+Ankoraý ne estas konservitaj ludoj por eksporti.
+@@openciv2.web.exported_one
+Eksportita 1 dosiero: %s.
+@@openciv2.web.exported
+Eksportitaj %s dosieroj: %s.
+@@openciv2.web.export_failed
+Ne eblis eksporti la konservitajn ludojn: %s
+@@openciv2.web.imported_one
+Importita 1 dosiero: %s.
+@@openciv2.web.imported
+Importitaj %s dosieroj: %s.
+@@openciv2.web.nothing_to_import
+Nenio importebla tie: konservitaj ludoj estas dosieroj .SAV (aý .zip de ili).
+@@openciv2.web.import_failed
+Ne eblis importi: %s
+@@openciv2.web.hd_progress
+%s: %s el %s MB
+@@openciv2.web.hd_downloading
+Elþutante la arton de la HD-grafiko
+@@openciv2.web.hd_checking
+Kontrolante øin
+@@openciv2.web.hd_keeping
+Konservante øin en æi tiu retumilo
+@@openciv2.web.hd_no_room
+La memoro de la retumilo ne havas lokon por øi (%s MB liberaj).
+@@openciv2.web.hd_off
+HD-grafiko: %s Øi restas malþaltita æi-foje.
+@@openciv2.web.loading_files
+Þargante la dosierojn de la ludo ...
+@@openciv2.web.loading_hd
+Þargante la arton de la HD-grafiko ...
+@@openciv2.web.starting
+Lanæante (dosieroj þargitaj en %s ms) ...
+@@openciv2.web.ended
+La ludo finiøis.
+@@openciv2.web.ended_code
+La ludo finiøis (%s).
+@@openciv2.web.stopped
+La ludo haltis: %s
+@@openciv2.web.forget_confirm
+Æu forigi la dosierojn de la ludo, inkluzive de konservitaj ludoj, el æi tiu retumilo (kaj la arton de la HD-grafiko)?
+@@openciv2.web.copy_failed
+Ne eblis kopii la dosierojn: %s
+@@openciv2.web.read_failed
+Ne eblis legi %s: %s
+@@openciv2.web.the_files
+la dosierojn
+@@openciv2.web.no_browser
+Al æi tiu retumilo mankas tio, kion la ludo bezonas (WebAssembly, IndexedDB, DecompressionStream).
+@@openciv2.web.other_tab
+Atendante, ke alia langeto de OpenCiv2 (de antaý øisdatigo) fermiøu: fermu aý reþargu øin.

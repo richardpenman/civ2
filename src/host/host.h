@@ -23,8 +23,10 @@ enum {
     HOST_EV_BUTTONDOWN, HOST_EV_BUTTONUP, HOST_EV_EXPOSED,
     HOST_EV_COMMAND,        /* a native menu's item chosen: vk is its id */
     HOST_EV_WHEEL,          /* the mouse wheel turned: button notches, positive away from the user */
-    HOST_EV_RESIZE          /* a maximized or native window's size changed (as to full screen and
+    HOST_EV_RESIZE,         /* a maximized or native window's size changed (as to full screen and
                                back): x, y its size in pixels; the desktop follows (host_resize_desktop) */
+    HOST_EV_CHAR            /* a character beyond ASCII typed (the keyboard layout's): vk is its
+                               Unicode code point (its key sends no key events) */
 };
 typedef struct HostEvent {
     int32_t type;

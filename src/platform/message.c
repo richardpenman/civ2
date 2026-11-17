@@ -8,6 +8,7 @@
  * With CIV2_SCRIPT set the clock is virtual (see replay.c).
  */
 #include "plat.h"
+#include "../host/codepages.h"
 #ifndef __wasm__
 #include <dlfcn.h>
 #include <execinfo.h>
@@ -148,7 +149,7 @@ static int take(MSG *out, HWND h, UINT lo, UINT hi, UINT remove)
             continue;
         if (!resolve(m, &r) || !matches(&r, h, lo, hi))
             continue;
-        if (m->hwnd == KBD_PENDING && kbd_hook_call(remove, m)) {
+        if (m->hwnd == KBD_PENDING && m->message != WM_CHAR && kbd_hook_call(remove, m)) {
             /* the hook swallowed it (Wine: whether or not removing) */
             queue_remove(i);
             i--;
@@ -1246,6 +1247,16 @@ void input_key(int vk, int down)
         msg = down ? WM_KEYDOWN : WM_KEYUP;
     (void)target;
     msg_post(KBD_PENDING, msg, (WPARAM)vk, lp);
+}
+
+void input_char(unsigned code)
+{
+    const unsigned short *table = codepage_table(plat_text_codepage_name());
+    unsigned char b = table && code >= 0x80 ? codepage_from_unicode(table, code) : 0;
+    if (!b)
+        return;
+    /* (as keyboard input: after the keys typed before it, to the focus) */
+    msg_post(KBD_PENDING, WM_CHAR, (WPARAM)b, 1);
 }
 
 /* Characters for TranslateMessage: a US keyboard layout. */

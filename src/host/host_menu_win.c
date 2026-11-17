@@ -6,6 +6,7 @@
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include "host.h"
+#include "host_lang.h"
 #include "host_menu.h"
 
 static HWND hwnd_of(SDL_Window *window)
@@ -37,10 +38,21 @@ static LRESULT CALLBACK menu_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProcA(sdl_proc, hwnd, msg, wp, lp);
 }
 
+/* The game's text (in its code page: Windows-1252 or the translation's) as UTF-16. */
+static const WCHAR *wide(const char *text, WCHAR *out, int n)
+{
+    char utf8[1024];
+    if (!MultiByteToWideChar(CP_UTF8, 0, host_lang_utf8(text, utf8, sizeof utf8), -1, out, n))
+        out[0] = 0;
+    out[n - 1] = 0;
+    return out;
+}
+
 void host_menu_apply(SDL_Window *window, const HostMenuItem *items, int n)
 {
     HWND hwnd = hwnd_of(window);
     HMENU bar, old, stack[4];
+    WCHAR w[512];
     int i;
     if (!hwnd)
         return;
@@ -59,10 +71,10 @@ void host_menu_apply(SDL_Window *window, const HostMenuItem *items, int n)
             AppendMenuA(parent, MF_SEPARATOR, 0, NULL);
         } else if (it->flags & HOST_MENU_POPUP) {
             HMENU sub = CreatePopupMenu();
-            AppendMenuA(parent, MF_POPUP | flags, (UINT_PTR)sub, it->text);
+            AppendMenuW(parent, MF_POPUP | flags, (UINT_PTR)sub, wide(it->text, w, 512));
             stack[it->level + 1] = sub;
         } else {
-            AppendMenuA(parent, MF_STRING | flags, (UINT_PTR)it->id, it->text);
+            AppendMenuW(parent, MF_STRING | flags, (UINT_PTR)it->id, wide(it->text, w, 512));
         }
     }
     old = GetMenu(hwnd);

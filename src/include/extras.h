@@ -82,6 +82,10 @@ EXTRAS_C unsigned char plat_color_lut[256];     /* colours through this table */
 
 EXTRAS_C HWND plat_window_at_cursor(POINT *pt);  /* src/platform/message.c */
 EXTRAS_C int plat_profile_string(const char *file, const char *section, const char *key, char *out, int n);
+/* src/platform/text.c: the translation's code page ("iso-8859-3": its file's
+   @@codepage), its glyphs drawn for the bytes where it differs from
+   Windows-1252, typed characters mapped into it; none: Windows-1252 */
+EXTRAS_C void plat_text_codepage(const char *name);
 
 /* src/game/extras.cpp */
 EXTRAS_C void extras_load(void);                /* the settings: at start, and as the OpenCiv2 Options change them */

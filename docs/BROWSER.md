@@ -49,6 +49,18 @@ replace the game files or remove them.
 
 Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 
+## Language
+
+The set-up page has a *Language* choice: *Automatic* (the browser's language, where the site has
+a translation of it), *English*, or a translation (Esperanto comes with it; the site has those of
+`data/native/lang`, listed in `lang/index.json` by `make web`).  The choice is kept in this
+browser; `?lang=CODE` chooses one for a visit.  The page's texts are OpenCiv2's own, keyed as
+the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
+translation files, in their code page: Esperanto's letters as Unicode); the set-up from a CD or
+disc image shows its progress in it too.  The game gets the page's language as its *Automatic*
+one (`CIV2_SYSTEM_LANG`); OpenCiv2 Options > Language in the game wins over it, as natively
+([TRANSLATING.md](TRANSLATING.md)).
+
 ## How to play: OpenCiv2 Options
 
 How to play is chosen in the game, as natively: *OpenCiv2 Options*, the main menu's last choice
