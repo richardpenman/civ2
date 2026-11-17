@@ -25,7 +25,7 @@ jobs:
   game:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Toolchain (wasi-sdk, wabt)
         run: sh tools/fetch-toolchain.sh
       - name: The game as C
@@ -33,7 +33,7 @@ jobs:
         run: |
           set -o pipefail
           python3 tools/build_port.py module c 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: game-c
           path: build/wasm/c
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-24.04
     container: debian:12
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: 32-bit toolchain, SDL2 and zlib
         run: |
           dpkg --add-architecture i386
@@ -63,8 +63,8 @@ jobs:
     needs: game
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: game-c
           path: build/wasm/c
@@ -113,7 +113,7 @@ jobs:
           TXT
           sed -i 's/^          //' pkg/OpenCiv2/README.txt
           (cd pkg && zip -qr ../OpenCiv2-windows.zip OpenCiv2)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: OpenCiv2-windows.zip
@@ -124,8 +124,8 @@ jobs:
     # (the oldest supported runner: the program runs on systems at least as new)
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: game-c
           path: build/wasm/c
@@ -187,7 +187,7 @@ jobs:
           TXT
           sed -i 's/^          //' pkg/OpenCiv2/README.txt
           tar czf OpenCiv2-linux-x86_64.tar.gz -C pkg OpenCiv2
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: linux
           path: OpenCiv2-linux-x86_64.tar.gz
@@ -199,8 +199,8 @@ jobs:
     env:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: game-c
           path: build/wasm/c
@@ -281,7 +281,7 @@ jobs:
           TXT
           sed -i '' 's/^          //' pkg/README.txt
           ditto -c -k --keepParent pkg OpenCiv2-macos.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: macos
           path: OpenCiv2-macos.zip
@@ -291,8 +291,8 @@ jobs:
     needs: [windows, linux, macos]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           path: out
           merge-multiple: true
