@@ -66,6 +66,7 @@ make native-suite    # replay every scenario on a native build and compare (EXE=
 make test            # the unit tests: recorded cases of the game's functions, in seconds (no game files needed),
                      # then the source probes (tests/*_test.cpp: memory-error fixes, g++ -m32)
 make test-extras     # the additions' tests: harness/extras replayed and compared with our recorded output
+make test-media      # opt-in: the CD's videos and music (harness/media), where the game folder has them
 make unit-record     # record those cases again from the replays (needs the game and run/ref-*)
 ```
 
@@ -138,6 +139,33 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
 * The tests need the game's files, like the replays, so they do not run in the release workflow
   (which has no game files and must not get them); run them locally before pushing changes to the
   additions.
+
+## Media tests
+
+`make test-media` (opt-in: never part of the suites above) replays the scripts in
+`harness/media` on a copy of the game that has the CD's videos and music (`KINGS`, `Video`,
+`Music` in the game folder; the other runners strip them, `CIV2_KEEP_MEDIA=1` keeps them) and
+compares them, like the additions' tests, with our own output, checked by eye and blessed
+(`make media-bless NAMES=...`, the expected results in `harness/media/expected`, each run in
+`run/media-NAME`; `harness/extras_suite.py --media`).  Where the game folder lacks those folders
+it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the pack in
+`data/native/hd`) are skipped without the pack.  Besides the screenshots and the `rand()` trace,
+`calls.log` must match (`NAME.calls`): the sounds played, the videos looked for, and the music.
+
+* The music: in these runs the CD drive is on (`CIV2_TEST_MUSIC=1`, `src/platform/sound.c`), its
+  tracks played silently on the virtual clock, each as long as its `Music\TrackNN.wav` says, so
+  which track the game plays and when it ends is the same in every run; `calls.log` has a line
+  for each `music play N`, `stop` and `end` with the time (`t=` ms of the script).  The game picks
+  its tracks with `rand()`, so a game with music has a `rand()` trace of its own.
+* `m-opening`: the opening video to its end, then the main menu.  `m-council`: the High Council
+  (only with the videos: `CouncilWindow::init` gives up without them), the military advisor
+  speaking, then under Anarchy.  `m-herald`: an animated herald (`KINGS`) in the diplomacy room,
+  a few frames.  `m-wonder`: the Oracle's movie to its end and the map after it closes, the
+  Pyramids' closed with Escape.  `m-music`: the tracks played at random and at each one's end,
+  Pick Music, the Game Options' Music unticked (stop) and ticked again.  The opening, council and
+  herald also with HD graphics (`-hd`): their game pixels, `rand()` traces and `calls.log` are
+  those of HD off.
+* The scripts first skip the opening video (Escape) but `m-opening`.
 
 `tools/native-run.sh` stops a run that hangs after `TIMEOUT` seconds (default 600; the suites:
 900): the game ignores SIGTERM, so it is killed `TIMEOUT_KILL` seconds (default 10) later.

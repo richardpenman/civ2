@@ -1,0 +1,16 @@
+video civ2\video\opening.avi
+sound 107 0 1
+sound 106 0 0
+sound -107 0 0
+sound -108 0 0
+sound 106 0 0
+music play 7 t=10244
+sound 106 0 0
+sound -107 0 0
+sound -108 0 0
+music stop 7 t=29335
+music play 5 t=29335
+music stop 5 t=34220
+video civ2\kings\hrldJAP.avi
+sound 89 1 0
+sound 119 1 0

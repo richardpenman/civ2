@@ -1,0 +1,41 @@
+# Media test (make test-media): the music (Music\TrackNN.wav), silent, on
+# the virtual clock (CIV2_TEST_MUSIC=1, src/platform/sound.c): calls.log
+# says which track the game plays when ("music play/stop/end N t=MS").  The
+# opening video skipped (Escape), the autosave loaded: the game plays a
+# track at random, another when it ends; the Game menu's Pick Music
+# (menu_select_music) plays the one chosen; the Game Options' Music
+# unticked stops it, ticked again plays one at random.
+# test:
+wait 3000
+key Escape
+wait 5000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+shot u1-map
+wait 150000
+call menu_select_music 4e25ef
+wait 2000
+shot u2-pick
+key Down Down
+key Return
+wait 3000
+key Ctrl+o
+wait 2000
+click 292 294              # Music
+wait 500
+shot u3-options
+key Return
+wait 3000
+key Ctrl+o
+wait 2000
+click 292 294              # Music
+wait 500
+key Return
+wait 3000
+shot u4-map
+quit

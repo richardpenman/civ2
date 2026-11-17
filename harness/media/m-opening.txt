@@ -1,0 +1,14 @@
+# Media test (harness/extras_suite.py --media, make test-media): the
+# opening video (Video\OPENING.AVI, 92 s) as the game starts, played to its
+# end, then the main menu.
+# test:
+# test hd: CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+wait 3000
+shot o1
+wait 27000
+shot o2
+wait 40000
+shot o3
+wait 35000
+shot o4-menu
+quit

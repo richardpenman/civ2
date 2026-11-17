@@ -1,0 +1,28 @@
+# Media test (make test-media): a wonder's movie (Video\WONDERnn.AVI, the
+# Oracle's, 42 s) played to its end, and the map after its window closes;
+# then the next one (the Pyramids') closed early with Escape.
+# test:
+wait 3000
+key Escape
+wait 5000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call wonder_show_movie 4bb8e0 5
+wait 3000
+shot w1
+wait 20000
+shot w2
+wait 30000
+shot w3-after
+call wonder_show_movie 4bb8e0 0
+wait 5000
+shot w4
+key Escape
+wait 3000
+shot w5-after
+quit

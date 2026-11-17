@@ -930,8 +930,11 @@ message by message and clock event by clock event.
   runs in neither.  The High Council cannot be reached here: CouncilWindow::init
   gives up when `civ2\video\councilN.avi` (or anarchyN.avi) is not found, so
   council_show never opens the window (its video path is in calls.log); the
-  original does the same.  Never executed: multiplayer (parley, net, lobby),
-  sound mixing and video playing, the council's window, atexit destructors.
+  original does the same.  Never executed in these replays: multiplayer (parley, net, lobby),
+  sound mixing and video playing, the council's window, atexit destructors.  The videos,
+  the council's window and the music's choice of tracks are run, with the CD's files,
+  by the opt-in media tests (`make test-media`, docs/DEVELOPMENT.md), compared with our
+  own blessed output.
   Known difference: a single-line edit whose selected text ends in a glyph that
   overhangs its cell ("Advanced Flight" in the Rename dialog) shows, under the
   caret just after it, one pixel of the glyph on the original (11 vs 0 after

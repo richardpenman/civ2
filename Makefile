@@ -11,7 +11,7 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 
 PORT ?= 8000
 
-.PHONY: all build run windows web serve web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless unit-record clean
+.PHONY: all build run windows web serve web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless test-media media-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -99,6 +99,15 @@ test-extras: native          ## replay harness/extras on build/civ2-linux32 and 
 
 extras-bless: native         ## record harness/extras/expected again (check run/extras-*/*.png by eye first)
 	$(DK) python3 harness/extras_suite.py --bless $(NAMES)
+
+# The media tests (harness/media, opt-in, not part of the suites above): the
+# opening, council, heralds, wonder movies and music, with the CD's KINGS,
+# Video and Music in the game folder (skipped without them).
+test-media: native           ## replay harness/media (the CD's videos and music) and compare with harness/media/expected
+	$(DK) python3 harness/extras_suite.py --media $(NAMES)
+
+media-bless: native          ## record harness/media/expected again (check run/media-*/*.png by eye first)
+	$(DK) python3 harness/extras_suite.py --media --bless $(NAMES)
 
 unit-record:                  ## record the unit tests' cases again from the replays (needs the game and run/ref-*)
 	$(DK) python3 tools/build_native.py --target linux32rec

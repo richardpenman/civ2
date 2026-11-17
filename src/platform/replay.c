@@ -48,6 +48,14 @@ void replay_log_video(const char *path)
         fprintf(call_log, "video %s\n", path);
 }
 
+/* The music (CIV2_TEST_MUSIC: the CD drive on the virtual clock, sound.c):
+   a track played, stopped or ended. */
+void replay_log_music(const char *what, int track)
+{
+    if (call_log)
+        fprintf(call_log, "music %s %d t=%lu\n", what, track, (unsigned long)(vclock_us / 1000));
+}
+
 /* ---- rand trace ---- */
 
 unsigned plat_srand(unsigned seed)

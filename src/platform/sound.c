@@ -10,12 +10,14 @@
 #include "plat_files.h"
 
 static int audio_ok;
+static int cd_virtual;          /* CIV2_TEST_MUSIC in a replay: the drive plays on the virtual clock */
 static void cd_poll(void);
 
 void sound_init(void)
 {
     /* CIV2_TEST_AUDIO: audio in a replay too (tests of the music; with
        SDL_AUDIODRIVER=dummy where there is no sound card) */
+    cd_virtual = plat_replay && getenv("CIV2_TEST_MUSIC") && !getenv("CIV2_TEST_AUDIO");
     if ((plat_replay && !getenv("CIV2_TEST_AUDIO")) || getenv("CIV2_NOSOUND"))
         return;
     audio_ok = host_audio_init();
@@ -117,8 +119,11 @@ void sound_poll(void)
 {
     HWAVEOUT open[MAX_WAVE];
     int i, n;
-    if (!audio_ok)
+    if (!audio_ok) {
+        if (cd_virtual)
+            cd_poll();
         return;
+    }
     cd_poll();
     n = nwave_open;
     memcpy(open, wave_open, sizeof open[0] * (size_t)n);       /* (a callback may close one) */
@@ -473,7 +478,12 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * decoded as it plays (stb_vorbis), else Music\TrackNN.wav
  * (tools/extract_disc.py writes them from a disc image); without those
  * files there is no drive, as before.  Replays have no drive either (as the
- * reference environment).  Other MCI devices (avivideo) are not available. */
+ * reference environment), but with CIV2_TEST_MUSIC=1 (the media tests,
+ * harness/media): a drive whose tracks play silently on the virtual clock,
+ * each as long as its file says (a .wav's data over its byte rate), so that
+ * which track the game plays when, and when it ends, is the same in every
+ * run; each play, stop and end is logged in calls.log ("music ...").
+ * Other MCI devices (avivideo) are not available. */
 
 #define CD_ID 0x4344            /* the drive's device id */
 
@@ -482,7 +492,34 @@ static struct {
     int open, current;
     int playing;                /* a track was started (the host plays it: host_music_play) */
     HWND notify;                /* MCI_NOTIFY on the play: told when it ends */
+    DWORD end_ms;               /* cd_virtual: when the track ends (plat_now) */
 } cd;
+
+/* cd_virtual: the length of a track's file in ms (a .wav's data over its
+   byte rate; an .ogg's is not read: a minute). */
+static DWORD cd_track_ms(FILE *f, const char *ext)
+{
+    unsigned char h[12], c[8], fmt[16];
+    unsigned long rate = 0, size;
+    if (strcmp(ext, "wav") != 0 || fread(h, 1, 12, f) != 12 || memcmp(h, "RIFF", 4) || memcmp(h + 8, "WAVE", 4))
+        return 60000;
+    while (fread(c, 1, 8, f) == 8) {
+        size = c[4] | c[5] << 8 | (unsigned long)c[6] << 16 | (unsigned long)c[7] << 24;
+        if (!memcmp(c, "fmt ", 4) && size >= 16 && fread(fmt, 1, 16, f) == 16) {
+            rate = fmt[8] | fmt[9] << 8 | (unsigned long)fmt[10] << 16 | (unsigned long)fmt[11] << 24;
+            size -= 16;
+        } else if (!memcmp(c, "data", 4))
+            return rate ? (DWORD)((unsigned long long)size * 1000 / rate) : 60000;
+        if (fseek(f, (long)(size + (size & 1)), SEEK_CUR) != 0)
+            break;
+    }
+    return 60000;
+}
+
+static int cd_sounding(void)
+{
+    return cd.playing && (cd_virtual ? (long)(plat_now() - cd.end_ms) < 0 : host_music_playing());
+}
 
 static FILE *cd_track_file(int n, const char *ext)
 {
@@ -495,7 +532,7 @@ static FILE *cd_track_file(int n, const char *ext)
 static int cd_count_tracks(void)
 {
     int n, last = 0;
-    if ((plat_replay && !getenv("CIV2_TEST_AUDIO")) || !audio_ok)
+    if (!cd_virtual && ((plat_replay && !getenv("CIV2_TEST_AUDIO")) || !audio_ok))
         return 0;
     for (n = 2; n < 100; n++) {
         FILE *f = cd_track_file(n, "ogg");
@@ -517,10 +554,14 @@ static void cd_notify(UINT code)
 
 static void cd_stop(UINT code)
 {
-    if (cd.playing)
+    if (cd.playing) {
         plat_log("cdaudio: track %d stopped\n", cd.current);
+        if (cd_virtual)
+            replay_log_music("stop", cd.current);
+    }
     cd.playing = 0;
-    host_music_stop();
+    if (!cd_virtual)
+        host_music_stop();
     cd_notify(code);
 }
 
@@ -537,6 +578,17 @@ static long cd_play(int n, const char **ext)
         f = cd_track_file(n, *ext = "wav");
     if (!f)
         return 0;
+    if (cd_virtual) {
+        DWORD ms = cd_track_ms(f, *ext);
+        fseek(f, 0, SEEK_END);
+        len = ftell(f);
+        fclose(f);
+        cd.playing = 1;
+        cd.current = n;
+        cd.end_ms = plat_now() + ms;
+        replay_log_music("play", n);
+        return len;
+    }
     if (fseek(f, 0, SEEK_END) == 0 && (len = ftell(f)) > 0 && fseek(f, 0, SEEK_SET) == 0 &&
         (data = malloc((size_t)len)) && fread(data, 1, (size_t)len, f) == (size_t)len)
         ok = host_music_play(data, (uint32_t)len);
@@ -553,8 +605,10 @@ static long cd_play(int n, const char **ext)
  * (MCI_NOTIFY_SUCCESSFUL). */
 static void cd_poll(void)
 {
-    if (cd.playing && !host_music_playing()) {
+    if (cd.playing && !cd_sounding()) {
         plat_log("cdaudio: track %d ended\n", cd.current);
+        if (cd_virtual)
+            replay_log_music("end", cd.current);
         cd.playing = 0;
         cd_notify(MCI_NOTIFY_SUCCESSFUL);
     }
@@ -576,7 +630,7 @@ static MCIERROR cd_command(UINT msg, DWORD_PTR flags, DWORD_PTR param)
         switch (p->dwItem) {
         case MCI_STATUS_NUMBER_OF_TRACKS: p->dwReturn = (DWORD_PTR)cd.tracks; return 0;
         case MCI_STATUS_CURRENT_TRACK: p->dwReturn = (DWORD_PTR)(cd.current ? cd.current : 1); return 0;
-        case MCI_STATUS_MODE: p->dwReturn = cd.playing && host_music_playing() ? MCI_MODE_PLAY : MCI_MODE_STOP; return 0;
+        case MCI_STATUS_MODE: p->dwReturn = cd_sounding() ? MCI_MODE_PLAY : MCI_MODE_STOP; return 0;
         case MCI_STATUS_READY: p->dwReturn = TRUE; return 0;
         case MCI_STATUS_MEDIA_PRESENT: p->dwReturn = TRUE; return 0;
         }

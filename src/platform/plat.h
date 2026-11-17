@@ -42,6 +42,7 @@ int obj_is_stock(Handle h);
 
 DWORD plat_ticks(void);                 /* timeGetTime / GetTickCount */
 DWORD plat_now(void);                   /* the platform's own clock reads */
+void replay_log_music(const char *what, int track);   /* calls.log: CIV2_TEST_MUSIC's drive (sound.c) */
 void plat_gdi_flushed(void);             /* GdiFlush: see the idle detection (message.c) */
 void plat_idle(void);                   /* nothing to do: let time pass (replay) or poll events */
 void plat_suspicious(const char *fmt, ...);  /* impossible request: logged, fatal with CIV2_STRICT */
