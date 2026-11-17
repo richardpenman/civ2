@@ -61,6 +61,14 @@ Without the art the game says so in its log and plays with the original graphics
 interface still, where they are on: below).  HD graphics are never on with `CIV2_CLASSIC=1`, in
 replays (but with `CIV2_TEST_HD=N`, density N) or in the unit tests.  `CIV2_HD_PACK=FILE` names another pack.
 
+With HD graphics on (the art in use, not sharp text alone), the game goes straight to its main
+menu: the opening video (`Video\OPENING.AVI`, 92 seconds, where the game folder has the CD's
+`Video`) is not played, the start-up being the original's without the CD's `Video` (the menu
+starts the theme music; `intro_play_opening_video`, src/auto/game.cpp).  The one `rand()` call
+opening the video makes (the player's palette, `avi_open_file`) is still made, so the game's
+random numbers are those of a start with the video.  With HD graphics off the video plays as
+ever (a click, or Escape, Space or Enter, ends it).
+
 In the browser version: *HD graphics* on its `?setup` page, the art downloaded or chosen there and
 kept in the browser, or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
@@ -364,6 +372,10 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `rand()` traces are those of the same runs without it, their `-hd` frames looked at by eye and
   blessed.  `src/web/test/hd.mjs` checks that the first screen's text is sharp, with HD graphics
   and with sharp text alone (`?hd=0`), and `?hd=0&sharp=0` the original's.
+* The opening video: `CIV2_KEEP_MEDIA=1 make test-media` (`harness/media/m-opening.txt`): with
+  HD off the video to its end, then the menu; its HD run (`m-opening-hd`) the menu from the
+  first shot, its screens those of a start without the CD's `Video`, its `rand()` trace (773
+  calls) and its sounds those of the run with the video.
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed), `harness/hd/hd-cityview.txt`
   (the city view), and any replay script with `CIV2_TEST_HD=2`, looking at its `-hd` shots:
   `newgame.txt` (the new game's backdrop and pictures), `harness/hd/hd-pictures.txt` (the eight

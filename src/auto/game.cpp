@@ -1,6 +1,7 @@
 /* The game, the game: start-up, turns, saving, scenarios, events, cheats: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "../platform/hd.h"
 
 /* 0041325d auto */
 void __cdecl eot_blink_timer_tick(void)
@@ -979,6 +980,13 @@ void __cdecl intro_play_opening_video(void)
     str_clear((char *)path);
     str_append((char *)path,(const char *)&str_civ2_video_opening_avi);
     found = file_resolve_path((const char *)path);
+    /* (port) HD graphics: no opening video, straight to the main menu (as
+       without the CD's Video folder: the menu starts the theme); the one
+       rand() call opening it makes (avi_open_file's player palette) kept */
+    if (found != 0 && hd_art) {
+      player.palette.new_version();
+      found = 0;
+    }
     if (found != 0) {
       ((WndBase *)&host_wnd)->create_with_cmd_proc((const char *)&str_empty_82,0x800,0,0,screen_rect2.right,screen_rect2.bottom + 5,(GamePalette *)&game_palette_block.game_palette);
       ((WndBase *)&host_wnd)->set_bg_color(0);
