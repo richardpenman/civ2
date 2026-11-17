@@ -36,6 +36,7 @@ void hd_map_redraw_probe(void);
    zoom and redrawn (harness/hd/hd-disorder.txt). */
 void hd_test_city_disorder(int x, int y, int zoom);
 void hd_test_city_picture(int picture, int city);
+void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 

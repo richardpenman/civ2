@@ -517,3 +517,15 @@ void hd_test_city_picture(int picture, int city)
     text_set_string_arg_b(1, (const char *)&cities[city].name);
     popup_city_picture_zoom(sections[(picture - 70) / 2], city, (uint)picture, 1, cities[city].owner);
 }
+
+/* A test (harness/hd/hd-spaceship.txt): the player's spaceship with these
+   parts built (structurals, the two kinds of components, the three kinds
+   of modules), in its window. */
+void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3)
+{
+    const int n[6] = {s, c1, c2, m1, m2, m3};
+    int i;
+    for (i = 0; i < 6; i++)
+        civs[human_civ[0]].spaceship_parts[i] = (i16)n[i];
+    spaceship_wnd_run(human_civ[0]);
+}

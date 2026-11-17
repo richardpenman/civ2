@@ -384,7 +384,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
-  logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window).  With `CIV2_TEST_HD=2`, for
+  logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window), `harness/hd/hd-spaceship.txt` (a ship with parts).  With `CIV2_TEST_HD=2`, for
   `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
   original's recording; the `-hd` screenshots are looked at by eye.  On the replays'
@@ -432,10 +432,22 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
   the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
-  (`ss.dll` 400 to 491, one placeholder); the city view's
+  (below); the city view's
   larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
   their crops; `house/` and `lot/` are the same 19th-century houses); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
   editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).
+* The spaceship's parts are the original's, enlarged, over the pack's window (`ss.dll` 498,
+  499).  The game draws the ship from its sheets of parts (`render_ship`: the structure, 400 to
+  440, a picture of the whole frame at each count of structurals, and the components' and
+  modules' sheets 441/442, 455/456, 470/471, 480/481, 489/490, 491, each a row of cells, built
+  and not built, of the shapes seen at the ship's own angle: wedges, panels, discs, cut to fit
+  their neighbours) into one picture.  The pack has none of those cells: its pictures under
+  those keys are placeholders (400 to 440 one picture, each sheet a single truss at the
+  sheet's size), and its `ship/` modules (a command module, fuel tank, solar panel ... 96x80,
+  isometric) are made for PR #11's own spaceship screen, a grid of its own (`hd_spaceship`), and
+  map to no cell of the original's; laid in the original's cells they would be a collage
+  without the ship's shape.  `harness/hd/hd-spaceship.txt` (a ship with 20 structurals and
+  some components and modules, `hd_test_spaceship`).
 * The new game's pictures are vignettes over black (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where
   the game puts its harbour.
