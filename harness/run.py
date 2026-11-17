@@ -85,6 +85,19 @@ def seed_wine_ini():
         os.remove(WIN_INI)
 
 
+
+def wine_crashed(log):
+    """Wine's crash report: a line "Unhandled exception..." or "wine: Unhandled
+    page fault ..."; not its debug channels' lines (WINEDEBUG), such as
+    "fixme:hid:... Unhandled type", which only mention the word."""
+    for line in log.splitlines():
+        line = line.strip()
+        if line.startswith(b'wine: '):
+            line = line[6:]
+        if line.startswith(b'Unhandled '):
+            return True
+    return False
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--build', default='orig', choices=['orig'])
@@ -135,7 +148,7 @@ def main():
                 if time.time() - t0 > a.timeout:
                     print('replay timed out')
                     break
-                if b'Unhandled' in open(f'{a.out}/wine.log', 'rb').read():
+                if wine_crashed(open(f'{a.out}/wine.log', 'rb').read()):
                     print('game crashed')
                     time.sleep(1)
                     break
