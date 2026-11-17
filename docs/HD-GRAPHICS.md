@@ -441,8 +441,20 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   the game puts its harbour.
 * The city size box is the original's, enlarged; in places the larger unit art covers the
   shield (the game draws the unit after its shield).
-* Palette changes of an 8-bit surface (a fade) reach only the pixels shown enlarged, not the
-  art nor sharp text; the screen's grey fade does not grey the frame.
+* Fades: none to do.  The game fades only through the display's palette
+  (`GamePalette::fade_step`, from `screen_fade_out`/`screen_fade_in`: the screen to grey and
+  back around the council and the wonders' movies), and only when the display is palettized
+  (`display_palette.palettized`, from `GetDeviceCaps(RASTERCAPS) & RC_PALETTE`); the platform
+  is a true-colour display (as Wine's, where the reference recordings were made), so those
+  fades never run, in the original under Wine nor here.  Every colour table change of a
+  surface seen in the reports, the end of the game and the council (a log of each
+  `SetDIBColorTable`: the table's brightness before and after) sets a whole palette at once,
+  from black (a new surface) or for another picture; none steps towards or from black.  The
+  throne room's, the spaceship's arrival, the destroyed civilizations' and the end of the game's
+  "dissolves" are `gfx_dissolve_blit`: the new picture copied to the window square by square in
+  a random order, which the planes follow as any copy (the throne room's pack art appears
+  square by square).  Should a fade ever run (a palettized display), the art and sharp text
+  would keep their colours (above, *Palettes*).
 * Speed: the frame is composed on the CPU each time it is shown (at density 3 on a 4K screen,
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are its own pixels enlarged (straight lines, so
