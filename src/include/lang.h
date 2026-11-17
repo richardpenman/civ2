@@ -24,7 +24,10 @@
  * section ("game.MAINMENU": GAME.TXT's @MAINMENU): the section's lines, as
  * they are in the file (its @title=, @width=, @options lines too: a
  * translation keeps the lines that are not text, and the order of option
- * lines, which decides what each does).  A translated section is read in
+ * lines, which decides what each does).  ADVICE.TXT's blocks, which the
+ * game finds by the name of what to build ("@@Temple", after a line "@"),
+ * are keyed by their first name as in the file ("advice.@@Temple"); a
+ * block's other names are its first lines, which a translation keeps.  A translated section is read in
  * place of the file's lines by text_read_line, whatever reads it.
  *
  * OpenCiv2's own texts (its interface additions, docs/EXTRAS.md, its
@@ -78,6 +81,12 @@ void lang_load_rules(void);
    ("@ADVANCE_INDEX", "CONCEPT_DESCRIPTIONS", ...): its translation (key
    "describe.ADVANCE.Advanced Flight": the paragraphs' lines), or 0. */
 const char *lang_description(const char *group, const char *entry);
+
+/* The English of a translated name: name as the game shows it (a label of
+   the rules', key "rules.unit.3" ...); if it is the translation of key, the
+   English name (as the game's text files name it: ADVICE.TXT's @@Temple,
+   CITY.TXT's @ROMANS), else name itself (English, a scenario's, a player's). */
+const char *lang_english_name(const char *key, const char *name);
 
 /* text_open_section found filename's section (filename 0: in the file
    open), in_scenario if in the scenario's copy of the file (which keeps its

@@ -8179,136 +8179,113 @@ ke ni iam povu lerni:
 
 
 
-@
-\@@Temple
+@@advice.@@Temple
 La popolo estas malfeliæa.
 Ni konstruu jenon: %STRING0.
 
-@
-\@@Colosseum
+@@advice.@@Colosseum
 La popolo iøas maltrankvila.
 Ni trankviligu øin per la
 konstrua¼o %STRING0.
 
-@
-\@@Cathedral
+@@advice.@@Cathedral
 La popolo estas malkontenta.
 Eble la konstrua¼o %STRING0
 distros øin.
 
-@
-\@@Barracks
+@@advice.@@Barracks
 Niaj armeoj ne povas esti efikaj
 sen taýga trejnado!
 Ni konstruu jenon: %STRING0,
 por produkti veteranajn terajn unuojn
 kaj rapide ripari difektitajn unuojn.
 
-@
-\@@Port Facility
+@@advice.@@Port Facility
 Ni konstruu jenon: %STRING0,
 por produkti veteranajn marajn unuojn
 kaj rapide ripari difektitajn þipojn.
 
-@
-\@@Airport
+@@advice.@@Airport
 Ni konstruu jenon: %STRING0,
 por produkti veteranajn aerajn unuojn
 kaj rapide ripari difektitajn aviadilojn.
 
-@
-\@@Granary
+@@advice.@@Granary
 Ni konstruu jenon: %STRING0,
 por kuraøigi la kreskadon de la urbo.
 
-@
-\@@Supermarket
+@@advice.@@Supermarket
 Kial ni lasas la nutra¼on
 putri sur la kampoj? Ni
 konstruu jenon: %STRING0, por disdoni
 øin øuste!
 
-@
-\@@Harbor
+@@advice.@@Harbor
 La popolo malsatas. Ni
 konstruu jenon: %STRING0, por rikolti
 la riæa¼ojn de la oceano.
 
-@
-\@@MarketPlace
+@@advice.@@MarketPlace
 Nia popolo estas malriæa. Ni konstruu
 jenon: %STRING0, por allogi komercistojn
 kaj negocistojn.
 
-@
-\@@Bank
+@@advice.@@Bank
 Nia ekonomio stagnas. Ni konstruu
 jenon: %STRING0, por stimuli øin.
 
-@
-\@@Stock Exchange
+@@advice.@@Stock Exchange
 Ni konstruu jenon: %STRING0, kaj ni riæiøu
 kune!
 
-@
-\@@Superhighways
+@@advice.@@Superhighways
 Nia malmoderna transportsistemo
 bremsas la ekonomion. Ni devas tuj
 konstrui jenon: %STRING0!
 
-@
-\@@Library
+@@advice.@@Library
 Saøo, ne potenco, estas nia plej granda trezoro.
 Ni konstruu jenon: %STRING0, por ke ni
 ne malþparu øin.
 
-@
-\@@University
+@@advice.@@University
 Longtempe, edukado estas la þlosilo
 al grandeco. Ni tuj konstruu jenon: %STRING0.
 
-@
-\@@Research Lab
+@@advice.@@Research Lab
 Ni konstruu jenon: %STRING0,
 por pliigi nian scion.
 
-@
-\@@Courthouse
+@@advice.@@Courthouse
 Ni ne toleru senleøecon kaj
 etan korupton! Mi proponas, ke ni konstruu
 jenon: %STRING0, por trudi niajn valorojn.
 
-@
-\@@City Walls
+@@advice.@@City Walls
 Æi tiu urbo estas preskaý sendefenda!
 Ni tuj konstruu jenon: %STRING0!
 
-@
-\@@Coastal Fortress
+@@advice.@@Coastal Fortress
 \@@SAM Missile Battery
 Ni konstruu jenon: %STRING0,
 por protekti nian urbon.
 
-@
-\@@Aqueduct
+@@advice.@@Aqueduct
 La popolo soifas!
 Ni konstruu jenon: %STRING0,
 por ke nia urbo povu kreski.
 
-@
-\@@Sewer System
+@@advice.@@Sewer System
 La stratoj estas kovritaj de malpura¼o!
 Ni konstruu jenon: %STRING0,
 por ke nia urbo povu kreski.
 
-@
-\@@Mass Transit
+@@advice.@@Mass Transit
 \@@Recycling Cntr.
 Ni devas konstrui jenon: %STRING0,
 antaý ol ni sufokiøos en nia propra rubo!
 
-@
-\@@Factory
+@@advice.@@Factory
 \@@Manufacturing Plant
 \@@Power Plant
 \@@Hydro Plant
@@ -8317,152 +8294,126 @@ antaý ol ni sufokiøos en nia propra rubo!
 Ni postrestas en produktiveco!
 Ni rapide konstruu jenon: %STRING0.
 
-@
-\@@Offshore Platform
+@@advice.@@Offshore Platform
 Ni devas ekspluati la riæa¼ojn de la maroj!
 Ni konstruu jenon: %STRING0.
 
-@
-\@@SDI Defense
+@@advice.@@SDI Defense
 Ni konstruu jenon: %STRING0, por æiu okazo.
 
-@
-\@@SS Structural
+@@advice.@@SS Structural
 \@@SS Component
 \@@SS Module
 Ni konstruu jenon: %STRING0,
 por koloniigi aliajn mondojn.
 
-@
-\@@Settlers
+@@advice.@@Settlers
 Ni konstruu unuojn %STRING0,
 por koloniigi æi tiun kontinenton.
 
-@
-\@@Engineers
+@@advice.@@Engineers
 Ni bezonas unuojn %STRING0, por disvolvi
 æi tiun kontinenton.
 
-@
-\@@Warriors
+@@advice.@@Warriors
 \@@Pikemen
 Niaj urboj estas atakeblaj.
 Ni konstruu unuojn %STRING0 kaj defendu
 ilin.
 
-@
-\@@Musketeers
+@@advice.@@Musketeers
 \@@Riflemen
 Ni bezonas pli da unuoj %STRING0,
 por defendi nian nacion.
 
-@
-\@@Fanatics
+@@advice.@@Fanatics
 Ni devas varbi unuojn %STRING0,
 por defendi niajn kredojn!
 
-@
-\@@Phalanx
+@@advice.@@Phalanx
 \@@Mech. Inf.
 Ni konstruu unuon %STRING0,
 por defendi niajn urbojn.
 
-@
-\@@Legion
+@@advice.@@Legion
 Ni konstruu potencajn unuojn %STRING0
 kaj regu la konatan mondon!
 
-@
-\@@Archers
+@@advice.@@Archers
 Ni trejnu niajn virojn per
 pafarko kaj sagoj, æar Pafarkistoj
 estas fortaj kaj en atako
 kaj en defendo!
 
-@
-\@@Alpine Troops
+@@advice.@@Alpine Troops
 Ni konstruu unuojn %STRING0,
 por defendi niajn urbojn kaj ataki
 niajn malamikojn.
 
-@
-\@@Chariot
+@@advice.@@Chariot
 Ni ekofensivu! Mi
 proponas, ke ni konstruu unuon %STRING0.
 
-@
-\@@Catapult
+@@advice.@@Catapult
 Per unuo %STRING0 ni povus trarompi
 la fortikajn punktojn de la malamiko.
 
-@
-\@@Helicopter
+@@advice.@@Helicopter
 Ni konstruu moviøeman
 atakforton el unuoj %STRING0.
 
-@
-\@@Cannon
+@@advice.@@Cannon
 \@@Howitzer
 Ni konstruu unuon %STRING0
 kaj dispecigu niajn malamikojn!
 
-@
-\@@Bomber
+@@advice.@@Bomber
 \@@Stlth Bmbr.
 Ni konstruu unuon %STRING0 kaj
 bombu niajn malamikojn reen en la Þtonepokon!
 
-@
-\@@Elephant
+@@advice.@@Elephant
 Ni konstruu unuon %STRING0,
 por piedpremi niajn malamikojn!
 
-@
-\@@Crusaders
+@@advice.@@Crusaders
 Ni konstruu unuojn %STRING0, por
 batali sanktan militon!
 
-@
-\@@Fighter
+@@advice.@@Fighter
 \@@Stlth Ftr.
 Ni bezonas unuon %STRING0, por
 defendi nian æielon!
 
-@
-\@@Knights
+@@advice.@@Knights
 \@@Dragoons
 \@@Cavalry
 Ni konstruu unuojn %STRING0,
 por puni niajn malamikojn.
 
-@
-\@@Marines
+@@advice.@@Marines
 \@@Paratroopers
 Ni konstruu unuojn %STRING0,
 por surprizi niajn malamikojn.
 
-@
-\@@Armor
+@@advice.@@Armor
 \@@Artillery
 \@@Partisans
 Ni konstruu unuojn %STRING0 kaj
 instruu lecionon al niaj malamikoj!
 
-@
-\@@Trireme
+@@advice.@@Trireme
 \@@Caravel
 \@@Galleon
 \@@Explorer
 Ni konstruu unuojn %STRING0,
 por esplori la mondon.
 
-@
-\@@Horsemen
+@@advice.@@Horsemen
 Ni konstruu unuojn %STRING0,
 por esplori la mondon.
 
-@
-\@@Frigate
+@@advice.@@Frigate
 \@@Ironclad
 \@@Destroyer
 \@@Cruiser
@@ -8472,44 +8423,36 @@ por esplori la mondon.
 Ni konstruu unuojn %STRING0,
 por regi la marojn.
 
-@
-\@@Carrier
+@@advice.@@Carrier
 \@@Transport
 \@@Cruise Msl.
 \@@Default
 Ni konstruu jenon: %STRING0.
 
-@
-\@@Nuclear Msl.
+@@advice.@@Nuclear Msl.
 Eble venis la tempo por bela %STRING0
 
-@
-\@@Diplomat
+@@advice.@@Diplomat
 Ni konstruu unuon %STRING0,
 por kontakti aliajn
 civilizojn kaj þteli iliajn
 sekretojn.
 
-@
-\@@Spy
+@@advice.@@Spy
 Ni konstruu unuon %STRING0,
 por fari fiajn ruzojn kontraý niaj
 malamikoj.
 
-@
-\@@Caravan
+@@advice.@@Caravan
 \@@Freight
 Ni konstruu unuon %STRING0,
 por starigi komercvojojn
 kun aliaj civilizoj.
 
-@
-\@@Wonder
+@@advice.@@Wonder
 Ni entreprenu grandan projekton
 por la gloro de nia civilizo:
 %STRING0!
-
-@
 
 @@help.ADVANCES
 @width=600

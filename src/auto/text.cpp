@@ -1077,7 +1077,14 @@ int __cdecl text_open_section(const char *filename,const char *section)
 {
   i8 saved_dir[260];
   int result;
-  
+  char section_name[80];
+
+  /* (port) the section's name as asked for: one built in textbuf (GREETINGS
+     and a number, ...) is overwritten by the lines read while looking for
+     it, and its translation (lang.h) is looked up by it */
+  if (section != 0) {
+    snprintf(section_name,sizeof section_name,"%s",section);
+  }
   result = text_open_file_section(filename,section);
   if (result != 0) {
     crt_strcpy(saved_dir,((i8 *)&net_map_lock_slots_block.scenario_dir_path));
@@ -1086,7 +1093,7 @@ int __cdecl text_open_section(const char *filename,const char *section)
     crt_strcpy(((i8 *)&net_map_lock_slots_block.scenario_dir_path),saved_dir);
   }
   if (result == 0) {
-    lang_section_opened(filename,section,text_file_in_scenario);
+    lang_section_opened(filename,section != 0 ? section_name : 0,text_file_in_scenario);
   }
   return result;
 }

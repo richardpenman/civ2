@@ -12,6 +12,9 @@
  *                                            on this build (after recording)
  *   civ2-unittest --rules GAME               the built-in rules against GAME's
  *                                            RULES.TXT (src/game/rules.cpp)
+ *   civ2-unittest --text GAME OUT            the export of GAME's texts, keyed
+ *                                            (src/game/lang.cpp: make test,
+ *                                            tests/text_keys_test.py)
  * The program's own start-up (src/platform/main.c, CIV2_UNITTEST) runs the
  * game's initializers first: the first case's input is a delta from what
  * they leave, as when it was recorded.
@@ -556,6 +559,11 @@ int unit_run_main(int argc, char **argv)
         /* the built-in rules against the game's RULES.TXT (src/game/rules.cpp) */
         int rules_check(const char *dir);
         return rules_check(argv[2]);
+    }
+    if (argc == 4 && !strcmp(argv[1], "--text")) {
+        /* the export of the game's texts, keyed (src/game/lang.cpp) */
+        int lang_export_check(const char *dir, const char *path);
+        return lang_export_check(argv[2], argv[3]);
     }
     if (!ut_load_symbols()) {
         fprintf(stderr, "civ2-unittest: no symbol table\n");

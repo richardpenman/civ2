@@ -111,12 +111,19 @@ the game's English. What to keep as it is:
   starting `^` (`^^` centred) is drawn as it is, so it must fit the dialog's width.
 - `%STRING0`, `%NUMBER0` ... (the game fills them in by number) and `%s`, `%d` (in order);
   `{`, `}`, `|` and the text after it (a menu's shortcut), a menu's `&` (its letter).
+- `advice.@@<name>`: ADVICE.TXT's advice to build a unit or improvement (the city window's
+  advisors), found by its English name as in the file (`advice.@@Temple`), whatever the
+  name is in the translation; a block that serves several (`@@Coastal Fortress` and
+  `@@SAM Missile Battery`) is keyed by the first, its other `@@` names (written `\@@...`)
+  are its first lines and stay as they are.
 - `menu.*`, `label.<n>` are MENU.TXT's and LABELS.TXT's lines; `rules.*` the names of
   RULES.TXT (the advances, units, improvements ..., one per key: the rules' numbers stay in the
   game's RULES.TXT); `describe.<GROUP>.<entry>` the Civilopedia's descriptions, a paragraph a
   line; `council0.*` ... the High Council's lines (`t3, 262,357, ` and the like before the
   words stay: they choose the advisor and the video's frames).
 - The scenarios' own files are not translated (a scenario's texts are its own).
+- `tests/text_keys_test.py` (`make test`) checks that the export keys every section and block
+  of the game's text files (OpenCiv2's own English of them, and your copy's).
 - `tests/lang_test.py` checks a shipped translation's game keys are of those files, once each;
   that each text keeps the English's lines and codes is checked against your copy of the game
   (an export) by whoever translates it.

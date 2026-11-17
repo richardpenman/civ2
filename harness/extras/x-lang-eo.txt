@@ -5,7 +5,9 @@
 # letters typed (input_char: as the host's text input gives them), the
 # city window with that name; then the game's own texts in Esperanto (the
 # translation has them too): the Orders menu, the science advisor, the
-# Civilopedia's page of an advance and of a unit, the tax rates.
+# Civilopedia's page of an advance and of a unit, the tax rates, the
+# advisors' advice to build (ADVICE.TXT's blocks, found by the English
+# names) and an emissary's greeting (a section named at run time).
 # test: CIV2_LANG=eo CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 # (sharp: the same with sharp text and interface at density 2: the letters
 # drawn from the antialiased glyphs, the -hd shots)
@@ -80,3 +82,19 @@ wait 2000
 call menu_command 4e2803 0 513      # 0x201 Tax Rate
 wait 3000
 shot xl-l-taxrate
+key Escape
+wait 2000
+click 235 265               # the city again
+wait 12000
+call city_button_change 50a473 0    # Change: the advisors' advice (Instant Advice)
+wait 1500
+shot xl-m-advice
+key Escape
+wait 2000
+key Escape
+wait 3000
+call diplo_greet_emissary 458ab1 1 7    # an emissary's greeting (GREETINGS and a number)
+wait 3000
+shot xl-n-emissary
+key Return
+wait 2000

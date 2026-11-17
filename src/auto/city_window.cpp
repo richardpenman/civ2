@@ -1,6 +1,7 @@
 /* The game, cities: the city window (its panels, buttons and menus): functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "lang.h"
 
 /* 00500e00 auto */
 /* Library Function - Multiple Matches With Different Base Names
@@ -4010,6 +4011,15 @@ city_change_draw_option_icon(i32 dialog,DibSurface *surface,int option,byte flag
   return 0;
 }
 
+/* (port) The name ADVICE.TXT's advice for a unit or improvement is found by
+   (its @@ line): its name, in English if it is a translation's (lang.h). */
+static const char *advice_name(const char *key_format,int index,i32 name)
+{
+  char key[40];
+  snprintf(key,sizeof key,key_format,index);
+  return lang_english_name(key,label_string(name));
+}
+
 /* Part of city_button_change (0050a473): with the advisors option, the
    build the advisors suggest, in two dialogs beside the list. */
 static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_dialog)
@@ -4033,7 +4043,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       unit_dialog.load_text((const char *)&str_advice_2,(const char *)&str_military,8);
       str_clear((char *)caption);
       str_append((char *)caption,(const char *)&str_empty_145);
-      str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
+      str_append_max((char *)caption,advice_name("rules.unit.%d",unit_type,unit_types[unit_type].name),sizeof caption);
       unit_dialog.add_sprite(&pollution_sprite_block.unit_sprites[unit_type],0,0);
       city = unit_dialog.load_text((const char *)&str_advice_3,(const char *)caption,0x8000)
       ;
@@ -4051,7 +4061,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
         improvement = -improvement;
         text_set_label_arg(0,improvements[city].name);
         if (improvement < IMP_FIRST_WONDER) {
-          str_append_max((char *)caption,label_string(improvements[improvement].name),sizeof caption);
+          str_append_max((char *)caption,advice_name("rules.improvement.%d",improvement,improvements[improvement].name),sizeof caption);
           improvement_dialog.add_sprite(&caption_close_button_sprite_block.improvement_icon_sprites[improvement],
                      (ui_metrics.large_screen == 0) - 1 & 8,0);
         }
@@ -4065,7 +4075,7 @@ static void city_button_change_advice(Dialog &unit_dialog,Dialog &improvement_di
       else {
         unit_type = improvement;
         text_set_label_arg(0,unit_types[improvement].name);
-        str_append_max((char *)caption,label_string(unit_types[unit_type].name),sizeof caption);
+        str_append_max((char *)caption,advice_name("rules.unit.%d",unit_type,unit_types[unit_type].name),sizeof caption);
         improvement_dialog.add_sprite(&pollution_sprite_block.unit_sprites[unit_type],0,0
                   );
       }

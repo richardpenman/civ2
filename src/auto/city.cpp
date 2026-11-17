@@ -1,6 +1,7 @@
 /* The game, cities: growth, production, happiness, the city window and city view: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "lang.h"
 
 /* 004100cf auto */
 void __cdecl city_info_popup(int city)
@@ -930,7 +931,13 @@ void __cdecl city_assign_default_name(int city)
   else {
     name_label = (int)leaders[civs[civ].tribe].plural;
   }
-  str_append_max((char *)section_name,label_string(name_label),sizeof section_name);
+  /* (port) its section is the tribe's name in English, a translation's
+     name's too (lang.h) */
+  {
+    char key[40];
+    snprintf(key,sizeof key,"rules.leader.%d.plural",(int)civs[civ].tribe);
+    str_append_max((char *)section_name,lang_english_name(key,label_string(name_label)),sizeof section_name);
+  }
   do {
     attempt++;
     if (2 < attempt) break;

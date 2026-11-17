@@ -281,15 +281,46 @@ static const char *const section_files[] = {
     "MAPMENU", "DEBUG", "CREDITS", "SCREDITS", "FCREDITS", "MPCREDITS",
 };
 
+/* A line "@" alone (ADVICE.TXT's blocks end with one). */
+static int bare_at(const char *line)
+{
+    const char *p = line + strspn(line, " \t");
+    if (*p++ != '@')
+        return 0;
+    return p[strspn(p, " \t\r\n")] == 0;
+}
+
+/* A line "@@name" (trimmed): a block's name (ADVICE.TXT: "@@Temple", the
+   advice for a Temple, which the game finds by the improvement's name). */
+static int block_name(const char *line, std::string *name)
+{
+    const char *p = line + strspn(line, " \t");
+    std::string n;
+    if (p[0] != '@' || p[1] != '@')
+        return 0;
+    n = p + 2;
+    n.erase(n.find_last_not_of(" \t\r\n") + 1);
+    if (n.empty())
+        return 0;
+    if (name)
+        *name = n;
+    return 1;
+}
+
 /* file's sections, as English texts: each one's lines (as the game's reader
    reads them, without the newline) up to the next section.  A name used
    twice: the first, the one the game finds.  @STOP and @END end lists (city
-   names), they are no sections.  only: that section alone (0: all). */
+   names), they are no sections.  only: that section alone (0: all).
+   Blocks: after a line "@" alone, lines "@@name" start a block that the
+   game finds by any of its names (ADVICE.TXT's advice by improvement or
+   unit), up to the next "@" alone: keyed by its first name as in the file
+   ("advice.@@Coastal Fortress"), its other names its first lines
+   ("@@SAM Missile Battery", which a translation keeps). */
 static void add_file_sections(const char *file, const char *only)
 {
     char line[0x100];
     std::string prefix(file), name, text;
-    int in_section = 0, lines = 0;
+    int in_section = 0, in_block = 0, lines = 0, pending_at = 0;
     size_t i;
 
     if (text_open_section(file, 0) != 0)
@@ -299,19 +330,42 @@ static void add_file_sections(const char *file, const char *only)
     prefix += '.';
     for (;;) {
         char *got = _fgets(line, 0xff, text_file_handle);
+        int header, block = 0;
         if (got)
             line[strcspn(line, "\r\n")] = 0;
-        if (!got || section_header(line, 0)) {
-            if (in_section && !english.count(prefix + name))
+        header = got && section_header(line, 0);
+        if (got && !header && (pending_at || (!in_section && !in_block)) && block_name(line, 0))
+            block = 1;
+        if (pending_at && !block) {     /* (the "@" was the section's) */
+            if (lines++)
+                text += '\n';
+            text += "@";
+        }
+        pending_at = 0;
+        if (!got || header || block || (in_block && bare_at(line))) {
+            if ((in_section || in_block) && !english.count(prefix + name))
                 set_english((prefix + name).c_str(), text.c_str());
             if (!got)
                 break;
-            section_header(line, &name);
-            in_section = name != "STOP" && name != "END" && (!only || name == only);
+            in_section = in_block = 0;
             text.clear();
             lines = 0;
+            if (header) {
+                section_header(line, &name);
+                in_section = name != "STOP" && name != "END" && (!only || name == only);
+            } else if (block) {
+                block_name(line, &name);
+                name = "@@" + name;
+                in_block = !only;
+            }
             continue;
         }
+        if (in_section && bare_at(line)) {
+            pending_at = 1;     /* a block's start, if a "@@" line follows */
+            continue;
+        }
+        if (!in_section && !in_block)
+            continue;
         if (lines++)
             text += '\n';
         text += line;
@@ -739,14 +793,60 @@ static size_t section_next;
 static FILE *section_file;
 static std::string section_last_file;
 
+/* The translation's blocks ("advice.@@Coastal Fortress", add_file_sections)
+   by each of their names, in capitals ("advice.@@SAM MISSILE BATTERY"), as
+   the game finds them: the block's key. */
+static std::unordered_map<std::string, std::string> block_keys;
+static int block_keys_made;
+
+static void make_block_keys(void)
+{
+    std::unordered_map<std::string, std::string>::const_iterator it;
+    size_t at, i, start, end;
+    block_keys_made = 1;
+    for (it = translated.begin(); it != translated.end(); ++it) {
+        std::string upper;
+        if ((at = it->first.find(".@@")) == std::string::npos)
+            continue;
+        upper = it->first;
+        for (i = at; i < upper.size(); i++)
+            upper[i] = (char)toupper((unsigned char)upper[i]);
+        block_keys[upper] = it->first;
+        /* its other names: its first lines */
+        for (start = 0; start < it->second.size(); start = end + 1) {
+            std::string name;
+            end = it->second.find('\n', start);
+            if (end == std::string::npos)
+                end = it->second.size();
+            if (!block_name(it->second.substr(start, end - start).c_str(), &name))
+                break;
+            for (i = 0; i < name.size(); i++)
+                name[i] = (char)toupper((unsigned char)name[i]);
+            block_keys[it->first.substr(0, at) + ".@@" + name] = it->first;
+        }
+    }
+}
+
+const char *lang_english_name(const char *key, const char *name)
+{
+    std::unordered_map<std::string, std::string>::const_iterator t, e;
+    if (!translation_loaded)
+        load_translation();
+    if (translated.empty() || (t = translated.find(key)) == translated.end() || (e = english.find(key)) == english.end() ||
+        strcmp(t->second.c_str(), name) != 0)
+        return name;
+    return e->second.c_str();
+}
+
 void lang_section_opened(const char *filename, const char *section, int in_scenario)
 {
     std::unordered_map<std::string, std::string>::const_iterator it;
     std::string key;
     const char *base;
     char line[0x100];
-    i32 pos;
+    i32 pos, at_pos;
     size_t i, start, end;
+    int block, names = 1;
 
     lang_section_closed();
     if (filename) {
@@ -762,9 +862,21 @@ void lang_section_opened(const char *filename, const char *section, int in_scena
         load_translation();
     if (translated.empty() || in_scenario || !section)
         return;
+    /* "@Temple": the block "@@Temple" (add_file_sections) */
+    block = section[0] == '@';
     key = section_last_file + '.';
+    if (block)
+        key += '@';
     for (i = 0; section[i]; i++)
         key += (char)toupper((unsigned char)section[i]);
+    if (block) {
+        std::unordered_map<std::string, std::string>::const_iterator b;
+        if (!block_keys_made)
+            make_block_keys();
+        if ((b = block_keys.find(key)) == block_keys.end())
+            return;
+        key = b->second;
+    }
     it = translated.find(key);
     if (it == translated.end())
         return;
@@ -772,12 +884,15 @@ void lang_section_opened(const char *filename, const char *section, int in_scena
         end = it->second.find('\n', start);
         if (end == std::string::npos)
             end = it->second.size();
-        section_lines.push_back(it->second.substr(start, end - start));
+        /* (a block's other names, its first lines: passed over) */
+        if (!(block && names && (names = block_name(it->second.substr(start, end - start).c_str(), 0)) != 0))
+            section_lines.push_back(it->second.substr(start, end - start));
         if (end == it->second.size())
             break;
     }
     /* the file's own lines of the section passed over: what comes after
-       the translation is the file's next section */
+       the translation is the file's next section (a block's: its "@" line,
+       which ends it; a section's: a "@" line that blocks follow) */
     for (;;) {
         pos = _ftell(text_file_handle);
         if (!_fgets(line, 0xff, text_file_handle))
@@ -785,6 +900,19 @@ void lang_section_opened(const char *filename, const char *section, int in_scena
         if (section_header(line, 0)) {
             _fseek(text_file_handle, pos, 0);
             break;
+        }
+        if (bare_at(line)) {
+            if (block) {
+                _fseek(text_file_handle, pos, 0);
+                break;
+            }
+            at_pos = pos;
+            pos = _ftell(text_file_handle);
+            if (_fgets(line, 0xff, text_file_handle) && block_name(line, 0)) {
+                _fseek(text_file_handle, at_pos, 0);
+                break;
+            }
+            _fseek(text_file_handle, pos, 0);
         }
     }
     section_next = 0;
@@ -808,4 +936,29 @@ void lang_section_closed(void)
     section_file = 0;
     section_lines.clear();
     section_next = 0;
+}
+
+/* (make test: civ2-unittest --text DIR PATH, tests/text_keys_test.py) The
+   export (CIV2_EXPORT_TEXT) of the game in dir, written to path: its text
+   files' keys, from its files or, without them, OpenCiv2's own English.
+   0, or 1 if it was not written. */
+EXTERN_C int lang_export_check(const char *dir, const char *path)
+{
+    FILE *f;
+    if (__chdir((char *)dir) != 0)
+        return 1;
+    __getcwd(((i8 *)&game_dirs.home), 0x104);
+    crt_strcpy(((i8 *)&net_map_lock_slots_block.scenario_dir_path), ((i8 *)&game_dirs.home));
+    crt_strcpy(((i8 *)&main_frame_wnd_block.rules_txt_path), str_rules);
+    setenv("CIV2_EXPORT_TEXT", path, 1);
+    unsetenv("CIV2_EXPORT_OWN");
+    unsetenv("CIV2_LANG");
+    remove(path);
+    strpool_init(0x8000);
+    lang_load_menus();      /* (the export, the menus') */
+    labels_load();          /* (and again with the labels) */
+    if (!(f = fopen(path, "r")))
+        return 1;
+    fclose(f);
+    return 0;
 }
