@@ -213,7 +213,8 @@ int lang_languages(LangChoice *out, int max)
 static void load_translation(void)
 {
     char code[64], path[1200];
-    char line[1024];
+    static char line[0x1000];   /* (a description's paragraph is one line: the
+                                   game reads 0xfff bytes of a description) */
     std::string key, text;
     int lines = 0;
     FILE *f;
@@ -280,8 +281,8 @@ static const char *const section_files[] = {
 /* file's sections, as English texts: each one's lines (as the game's reader
    reads them, without the newline) up to the next section.  A name used
    twice: the first, the one the game finds.  @STOP and @END end lists (city
-   names), they are no sections. */
-static void add_file_sections(const char *file)
+   names), they are no sections.  only: that section alone (0: all). */
+static void add_file_sections(const char *file, const char *only)
 {
     char line[0x100];
     std::string prefix(file), name, text;
@@ -303,7 +304,7 @@ static void add_file_sections(const char *file)
             if (!got)
                 break;
             section_header(line, &name);
-            in_section = name != "STOP" && name != "END";
+            in_section = name != "STOP" && name != "END" && (!only || name == only);
             text.clear();
             lines = 0;
             continue;
@@ -500,7 +501,8 @@ static void export_english(void)
     } else if (!sections_added) {
         sections_added = 1;
         for (i = 0; i < sizeof section_files / sizeof section_files[0]; i++)
-            add_file_sections(section_files[i]);
+            add_file_sections(section_files[i], 0);
+        add_file_sections("LABELS", "POPUPS");  /* the dialogs' OK, Help, Cancel */
         add_descriptions();
         lang_load_rules();
         extras_texts_each(set_english);     /* OpenCiv2's additions: openciv2.<key> */

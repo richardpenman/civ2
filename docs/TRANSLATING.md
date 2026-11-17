@@ -4,15 +4,16 @@ OpenCiv2 has two kinds of text:
 
 - **The game's own texts** (`GAME.TXT`, `RULES.TXT`, `LABELS.TXT`, `DESCRIBE.TXT`, `CITY.TXT`,
   `MENU.TXT`, the advisors', the scenarios' ...) come from your copy of Civilization II, as the
-  original reads them. They are copyrighted: OpenCiv2 ships no translation of them, and none may
-  be added to this repository. A localized Civilization II (German, French, Spanish ...) gives
-  them in its language as it is. A player may also make a translation of them for their own use
-  (below).
+  original reads them. A localized Civilization II (German, French, Spanish ...) gives them in
+  its language as it is. A translation may carry them too (keyed: below): the Esperanto one
+  that comes with OpenCiv2 translates the whole game. The English of the game's texts is not
+  in this repository (it is in your copy of the game): only translations of them.
 - **OpenCiv2's own texts**: what it adds — OpenCiv2 Options, the interface additions' few words,
   the file dialog, its message boxes, the set-up's messages and progress, the HD graphics'
   download, the browser version's page. These are translated here. English is built in;
   `data/native/lang/` has the translations that come with OpenCiv2: Esperanto (`eo.txt`, a first
-  draft: machine-drafted, needs review by a native speaker).
+  draft: machine-drafted, needs review by a native speaker), which translates the game's texts
+  too.
 
 ## Choosing a language
 
@@ -72,8 +73,29 @@ CIV2_EXPORT_TEXT=en.txt CIV2_EXPORT_OWN=1 ./OpenCiv2
 
 Without `CIV2_EXPORT_OWN=1`, `CIV2_EXPORT_TEXT` writes every text, the game's too
 (`game.<SECTION>`, `menu.*`, `label.<n>`, `rules.*`, `describe.*`, `src/include/lang.h`):
-the start of a translation of the game itself, **for your own use only** — such files, and
-exports of the game's texts, are not to be shared or added here.
+the start of a translation of the game itself. That export is the English of your copy of the
+game: keep it to yourself (it is not added here); a translation made from it may be.
+
+### The game's texts
+
+Their keys say which file and which part of it they replace; a key the translation lacks keeps
+the game's English. What to keep as it is:
+
+- Every text has the same lines as the English: a popup's blank line ends its text and starts
+  its options; `@width=`, `@options`, `@listbox`, `@columns=` ... and `;` comments stay as they
+  are, but the text of `@title=` and `@button=`. Plain lines are joined and wrapped; a line
+  starting `^` (`^^` centred) is drawn as it is, so it must fit the dialog's width.
+- `%STRING0`, `%NUMBER0` ... (the game fills them in by number) and `%s`, `%d` (in order);
+  `{`, `}`, `|` and the text after it (a menu's shortcut), a menu's `&` (its letter).
+- `menu.*`, `label.<n>` are MENU.TXT's and LABELS.TXT's lines; `rules.*` the names of
+  RULES.TXT (the advances, units, improvements ..., one per key: the rules' numbers stay in the
+  game's RULES.TXT); `describe.<GROUP>.<entry>` the Civilopedia's descriptions, a paragraph a
+  line; `council0.*` ... the High Council's lines (`t3, 262,357, ` and the like before the
+  words stay: they choose the advisor and the video's frames).
+- The scenarios' own files are not translated (a scenario's texts are its own).
+- `tests/lang_test.py` checks a shipped translation's game keys are of those files, once each;
+  that each text keeps the English's lines and codes is checked against your copy of the game
+  (an export) by whoever translates it.
 
 ## Encoding and code pages
 
@@ -129,11 +151,13 @@ another code page is written in it too.
   template's placeholders in order, and its code page's glyph files.
 - `CIV2_LANG=<code>` runs the game in it; `harness/extras/x-lang-eo.txt` (`make test-extras`)
   shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
-  letters typed, in Esperanto (and with sharp text).
+  letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
+  city window, an advisor, the Civilopedia.
 - The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto.
 
 ## Adding a translation to OpenCiv2
 
 A translation of OpenCiv2's own texts is welcome: `data/native/lang/<code>.txt`, its header
 saying who wrote it, or *machine-drafted, needs review by a native speaker* until a speaker has
-reviewed it. Keep it to OpenCiv2's keys (`openciv2.*`, `codepage`): nothing of the game's.
+reviewed it. It may translate the game's texts too (as above): only the translation, never
+the game's English.

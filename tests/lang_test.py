@@ -4,8 +4,11 @@
 - data/native/lang/en.txt, the template, is src/host/texts.h's table as the
   game's export writes it (CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1);
 - each translation (data/native/lang/*.txt) has every key of the template
-  and no other (but "codepage"), each text the template's placeholders
-  (%s, %d) in their order, and is readable in its code page;
+  (OpenCiv2's own, "openciv2.*") and no other of them, each text the
+  template's placeholders (%s, %d) in their order, and is readable in its
+  code page; its keys of the game's texts (game.*, label.*, rules.* ...: the
+  English is the player's copy of the game, not here) are of the files
+  src/game/lang.cpp keys, and no key is there twice;
 - a code page's glyphs (data/native/fonts_<code page>.bin, _aa.bin) cover
   every font (face, height, weight, slant) of fonts_win.bin and
   fonts_win_aa.bin, each byte where the code page differs from
@@ -24,6 +27,11 @@ from build_web import english_texts, lang_file  # noqa: E402
 LANG = os.path.join(ROOT, 'data', 'native', 'lang')
 NATIVE = os.path.join(ROOT, 'data', 'native')
 failures = []
+# the prefixes of the game's texts' keys (src/game/lang.cpp: section_files,
+# menu.*, label.*, rules.*, describe.*)
+GAME_KEYS = {'game', 'city', 'advice', 'help', 'tutorial', 'council0', 'council1', 'council2', 'herald', 'pedia',
+             'mapmenu', 'debug', 'credits', 'scredits', 'fcredits', 'mpcredits', 'labels', 'menu', 'label', 'rules',
+             'describe'}
 
 
 def fail(msg):
@@ -119,7 +127,14 @@ def main():
         for k in sorted(keys - set(en)):
             fail('%s: %s is not in the template' % (name, k))
         for k in sorted(other):
-            fail('%s: %s is one of the game\'s texts (not shipped: docs/TRANSLATING.md)' % (name, k))
+            if k.split('.')[0] not in GAME_KEYS or '.' not in k:
+                fail('%s: %s is no key of OpenCiv2\'s or of the game\'s texts' % (name, k))
+        seen = set()
+        for line in open(path, 'rb').read().decode('latin-1').splitlines():
+            if line.startswith('@@'):
+                if line in seen:
+                    fail('%s: %s twice' % (name, line[2:]))
+                seen.add(line)
         for k in sorted(keys & set(en)):
             if placeholders(texts['openciv2.' + k]) != placeholders(en[k]):
                 fail('%s: %s has placeholders %s, the template %s' % (name, k, placeholders(texts['openciv2.' + k]),

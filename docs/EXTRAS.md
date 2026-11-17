@@ -105,8 +105,8 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   page's), *English*, or one of the translations in the data directory's `lang/` (Esperanto
   comes with it); `Language=<code>` (`Language=Auto` or none: automatic).  It takes effect when
   the game starts again (*Restart now*); `CIV2_LANG=<code>` wins over it.  A translation may
-  carry the game's own texts too (a player's own file); otherwise they are those of the
-  installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
+  carry the game's own texts too (Esperanto's does: the whole game); otherwise they are those
+  of the installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
 
 The interface additions, the rule changes and the limits take effect at once (from the game
 started or loaded next).  The mode, the graphics, full screen and the language take effect when the game

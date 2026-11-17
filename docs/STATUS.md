@@ -717,7 +717,9 @@ message by message and clock event by clock event.
   in OpenCiv2 Options > Language (src/include/lang.h); a translation in
   another code page (Esperanto: ISO-8859-3) has its letters drawn from glyphs
   captured for it (data/native/fonts_iso-8859-3*.bin) and typed through the
-  host's text input (docs/TRANSLATING.md).  Not done: resizable
+  host's text input (docs/TRANSLATING.md); a translation may key the game's
+  texts too (the Esperanto one has them all: GAME.TXT's popups, the menus,
+  labels, rules' names, the Civilopedia, the council ...).  Not done: resizable
   advisors and their larger caption area (CIV2UIA 26, 27): each advisor opens at
   600x400 and draws its list, buttons and background for that size from
   constants in its own drawing and opening functions (list bottom at client_y +

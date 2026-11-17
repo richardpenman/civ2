@@ -3,7 +3,9 @@
 # The main menu's OpenCiv2 Options, the Options dialog and its Language
 # page, the file dialog (the real one), a city renamed with Esperanto's
 # letters typed (input_char: as the host's text input gives them), the
-# city window with that name.
+# city window with that name; then the game's own texts in Esperanto (the
+# translation has them too): the Orders menu, the science advisor, the
+# Civilopedia's page of an advance and of a unit, the tax rates.
 # test: CIV2_LANG=eo CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 # (sharp: the same with sharp text and interface at density 2: the letters
 # drawn from the antialiased glyphs, the -hd shots)
@@ -49,3 +51,32 @@ shot xl-f-rename
 key Return
 wait 3000
 shot xl-g-city
+key Escape
+wait 3000
+click 130 28                # the Orders menu
+wait 1500
+shot xl-h-orders
+key Escape
+wait 1000
+call menu_command 4e2803 0 1286     # 0x506 Science Advisor
+wait 3000
+shot xl-i-science
+key Escape
+wait 2000
+call menu_command 4e2803 0 2305     # Civilopedia: advances
+wait 3000
+click 113 405               # Info: the first entry's page
+wait 3000
+shot xl-j-pedia-advance
+key Escape
+wait 2000
+call menu_command 4e2803 0 2311     # Civilopedia: units
+wait 3000
+click 163 405               # Info
+wait 3000
+shot xl-k-pedia-unit
+key Escape
+wait 2000
+call menu_command 4e2803 0 513      # 0x201 Tax Rate
+wait 3000
+shot xl-l-taxrate
