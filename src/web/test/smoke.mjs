@@ -152,6 +152,21 @@ async function main() {
     // the menu's backdrop fills the screen; the first run's question is on black
     const menuShown = () => evaluate('(() => { const c = document.getElementById("screen");' +
         ' const d = c.getContext("2d").getImageData(c.width - 4, c.height >> 1, 1, 1).data; return d[0] + d[1] + d[2] > 0; })()');
+    // a game copy with the CD's videos (Video/OPENING.AVI, 92 s) plays the
+    // opening before the menu, at each start: a key skips it (the menu's keys
+    // would otherwise go to the video, and Escape then leave the menu)
+    const skipOpening = async () => {
+        for (let i = 0; i < 5 && !await menuShown(); i++) {
+            log('the opening video skipped');
+            await key('Space', 32, ' ');
+            await settle(3000, 15000);
+        }
+        if (!await menuShown())
+            throw new Error('no main menu');
+    };
+    const pictured = '(() => { const c = document.getElementById("screen"); if (!c || !c.width) return false;' +
+        ' const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;' +
+        ' for (let i = 0; i < d.length; i += 4097) if (d[i] || d[i + 1] || d[i + 2]) return true; return false; })()';
     const savedGames = () => evaluate('new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {' +
         ' const q = r.result.transaction("files").objectStore("files").getAllKeys();' +
         ' q.onsuccess = () => resolve(q.result.filter((k) => /\\.sav$/i.test(k))); }; })');
@@ -215,18 +230,16 @@ async function main() {
         await send('Page.navigate', {url});
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
         log('started: ' + await evaluate('window.civ2Status'));
-        await waitFor('(() => { const c = document.getElementById("screen"); if (!c || !c.width) return false;' +
-                      ' const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;' +
-                      ' for (let i = 0; i < d.length; i += 4097) if (d[i] || d[i + 1] || d[i + 2]) return true; return false; })()',
-                      60000, 'the first picture');
+        await waitFor(pictured, 60000, 'the first picture');
         log(`first picture ${Math.round(performance.now() - t1)} ms after loading the page`);
         // the first screens: a question on the first run (the heralds), then the menu
         log(`settled after ${await settle(3000, 60000)} ms`);
         await shot('00-start');
         if (!await menuShown()) {
             await key('Enter', 13);
-            await settle(3000, 30000);
+            await settle(3000, 15000);
         }
+        await skipOpening();
         await shot('01-menu');
         // its last choice, OpenCiv2 Options (its hotkey): the game's dialog, closed again
         await key('KeyO', 79, 'o');
@@ -319,7 +332,9 @@ async function main() {
         await removeSave(added[0]);
         await send('Page.navigate', {url});
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the second start');
-        await settle(3000, 60000);
+        await waitFor(pictured, 60000, 'the second start\'s first picture');
+        await settle(3000, 15000);
+        await skipOpening();
         await shot('17-again');
         if (await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`))
             throw new Error('the saved game is still there');
