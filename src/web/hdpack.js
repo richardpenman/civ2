@@ -19,6 +19,8 @@ export const CHUNK = 4 << 20;
 export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/', 'advance/', 'shield',
     'resource/pv.dll/gifs/100',
     'resource/mk.dll/gifs/20', 'resource/tiles.dll/gifs/90',
+    'resource/tiles.dll/gifs/70', 'resource/tiles.dll/gifs/72', 'resource/tiles.dll/gifs/73',
+    'resource/tiles.dll/gifs/74', 'resource/tiles.dll/gifs/76',
     'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',
     'resource/cv.dll/gifs/345', 'resource/cv.dll/gifs/346', 'resource/cv.dll/gifs/350',
     'resource/cv.dll/gifs/351',

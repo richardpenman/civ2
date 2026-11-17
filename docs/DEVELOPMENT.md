@@ -163,7 +163,7 @@ it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the 
   a few frames.  `m-wonder`: the Oracle's movie to its end and the map after it closes, the
   Pyramids' closed with Escape.  `m-music`: the tracks played at random and at each one's end,
   Pick Music, the Game Options' Music unticked (stop) and ticked again.  The opening, council and
-  herald also with HD graphics (`-hd`): their game pixels, `rand()` traces and `calls.log` are
+  herald and the wonder's movie also with HD graphics (`-hd`): their game pixels, `rand()` traces and `calls.log` are
   those of HD off.
 * The scripts first skip the opening video (Escape) but `m-opening`.
 

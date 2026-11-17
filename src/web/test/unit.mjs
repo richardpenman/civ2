@@ -222,6 +222,9 @@ assert.ok(!drawn('crop/resource/cv.dll/gifs/310/1,1,158,114') && !drawn('crop/re
 assert.ok(drawn('resource/cv.dll/gifs/351') && !drawn('resource/cv.dll/gifs/352'));
 // the advances' pictures; not the advisors' parchments nor tiles.dll 86's thin glyphs
 assert.ok(drawn('advance/12') && !drawn('resource/tiles.dll/gifs/52') && !drawn('crop/resource/tiles.dll/gifs/86/398,134,64,64'));
+// the announcements' wide pictures, not the tall ones (hd.c's WHOLE)
+assert.ok(drawn('resource/tiles.dll/gifs/72') && drawn('resource/tiles.dll/gifs/76') && !drawn('resource/tiles.dll/gifs/71') &&
+          !drawn('resource/tiles.dll/gifs/75') && !drawn('resource/tiles.dll/gifs/77'));
 assert.ok(!drawn('crop/file/icons/166,223,30,30') && drawn('crop/file/icons/166,356,32,32'));
 // the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
 for (const chunk of [64, 100, 1 << 20]) {

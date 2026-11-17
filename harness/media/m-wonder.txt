@@ -2,6 +2,7 @@
 # Oracle's, 42 s) played to its end, and the map after its window closes;
 # then the next one (the Pyramids') closed early with Escape.
 # test:
+# test hd: CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
 wait 3000
 key Escape
 wait 5000

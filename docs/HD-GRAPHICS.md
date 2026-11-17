@@ -153,7 +153,21 @@ The rest is in the platform layer (`src/platform/hd.c`):
   photographs a framed parchment), so only those that work as the same picture are painted on
   the surface's plane when it is loaded (`WHOLE` in hd.c, each looked at in its window): the
   diplomacy rooms, the new game's backdrop and pictures, the city view's landscapes, the
-  spaceship's window.  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
+  spaceship's window, five of the announcements' pictures.  The announcements' pictures
+  (`tiles.dll` 70 to 77, by two: a city captured, in civil disorder, celebrating, founded; + 1
+  once the civilization has Industrialization; the popup draws the whole picture as a sprite
+  beside its text, `popup_city_picture_zoom`) are the pack's where it has a picture of the same
+  subject that fits: its are vignettes on a transparent ground (the popup's marble shows around
+  them), at the original's size; the wide ones (70, 72, 73, 74, 76: a city's gate, a crowd in the
+  market, a crowd in caps before a parliament, a festival in a court, builders at a new
+  wall) fill their frame as the original's photographs and engravings do, but in the tall
+  frames (71, 75, 77: the modern capture, celebration and founding) the pack's pictures are wide
+  ones shrunk into the middle, a third of the frame, so those are the original's, enlarged
+  (`harness/hd/hd-pictures.txt`, `hd_test_city_picture`).  `wonder.dll`'s pictures (20000 +
+  the wonder) are, in the original, all the same grey marble from which the wonder's movie
+  window takes its 64 x 32 border tile; the pack's are each wonder's own painted picture, 74 x 74,
+  which as a border tile would be absurd, so the window keeps the original's
+  (`harness/media/m-wonder.txt`, HD run: the Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
   graph, the Hall of Fame ...; 65 and 66: the tax rates) are the original's, enlarged: the pack's
   are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
   original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
@@ -352,7 +366,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   and with sharp text alone (`?hd=0`), and `?hd=0&sharp=0` the original's.
 * HD on: `harness/hd/hd-map.txt` (a saved game's map, zoomed), `harness/hd/hd-cityview.txt`
   (the city view), and any replay script with `CIV2_TEST_HD=2`, looking at its `-hd` shots:
-  `newgame.txt` (the new game's backdrop and pictures), `talks.txt` (the diplomacy room, the
+  `newgame.txt` (the new game's backdrop and pictures), `harness/hd/hd-pictures.txt` (the eight
+  announcements' pictures, each in its popup), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
   ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
@@ -380,7 +395,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,251 pictures, 100 MB of PNGs, about 80 MB with each
+For a stripped pack, the keys hd.c draws (1,256 pictures, 100 MB of PNGs, about 80 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
@@ -393,7 +408,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * `shield`: the units' shields;
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
-* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
+* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
 
 ## Not yet done
@@ -413,9 +428,8 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
-  the announcements' pictures (`tiles.dll` 70 to 77,
-  vignettes) and the wonders' (`wonder.dll`), whose windows the replays do not reach and
-  which were not looked at; the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
+  the announcements' tall pictures (`tiles.dll` 71, 75, 77: wide vignettes in a tall frame)
+  and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
   the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
   (`ss.dll` 400 to 491, one placeholder); the city view's

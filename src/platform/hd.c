@@ -958,6 +958,16 @@ static const struct {
     /* (not the advisors' backgrounds, tiles.dll 50 to 59, 65 and 66: the
        pack's are a pale parchment, and the game's text on them, coloured
        for the original's dark photographs, could not be read: docs/HD-GRAPHICS.md) */
+    /* the announcements' pictures (tiles.dll 70 to 77: a city captured, in
+       disorder, celebrating, founded; + 1 the modern one): the pack's are
+       vignettes on a transparent ground, at the original's size; the wide
+       ones fill their frame as the original's photographs do, but the tall
+       ones (71, 75, 77) are wide pictures shrunk into the middle of a tall
+       frame, small, so those are the original's, enlarged
+       (harness/hd/hd-pictures.txt) */
+    {"tiles.dll", 70, 70, 0},
+    {"tiles.dll", 72, 74, 0},
+    {"tiles.dll", 76, 76, 0},
     {"tiles.dll", 90, 90, 0},   /* the new game's backdrop */
     {"intro.dll", 901, 913, 0}, /* the new game's pictures */
     /* the city view's landscapes (340 + 5 x the site + civ_city_art_era):

@@ -35,6 +35,7 @@ void hd_map_redraw_probe(void);
 /* A test: the city at (x, y) in civil disorder, the map centred on it at
    zoom and redrawn (harness/hd/hd-disorder.txt). */
 void hd_test_city_disorder(int x, int y, int zoom);
+void hd_test_city_picture(int picture, int city);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 

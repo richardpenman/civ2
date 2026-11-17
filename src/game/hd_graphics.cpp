@@ -504,3 +504,16 @@ void hd_test_city_disorder(int x, int y, int zoom)
     m->center_on(x, y);
     replay_hold--;
 }
+
+/* A test (harness/hd/hd-pictures.txt): the announcement with tiles.dll's
+   picture (70 to 77: a city captured, in disorder, celebrating, founded;
+   each with a modern one, + 1) for the city, as the game shows it. */
+void hd_test_city_picture(int picture, int city)
+{
+    static const char *const sections[] = {str_citycapture_2, str_disorder, str_weloveking, str_founded};
+    if (picture < 70 || picture > 77 || city < 0 || city >= (int)game.num_cities)
+        return;
+    text_set_string_arg_b(0, (const char *)&cities[city].name);
+    text_set_string_arg_b(1, (const char *)&cities[city].name);
+    popup_city_picture_zoom(sections[(picture - 70) / 2], city, (uint)picture, 1, cities[city].owner);
+}

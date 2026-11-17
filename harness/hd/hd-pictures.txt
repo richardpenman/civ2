@@ -1,0 +1,55 @@
+# HD graphics (docs/HD-GRAPHICS.md): the announcements' pictures
+# (tiles.dll 70 to 77: a city captured, in civil disorder, celebrating "We
+# Love the King Day", founded; ancient, then modern), each in its popup as
+# the game shows it (hd_test_city_picture: popup_city_picture_zoom for
+# Rome).  Shots p70 to p77.
+# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+call hd_test_city_picture 0 70 0
+wait 3000
+shot p70
+key Return
+wait 3000
+call hd_test_city_picture 0 71 0
+wait 3000
+shot p71
+key Return
+wait 3000
+call hd_test_city_picture 0 72 0
+wait 3000
+shot p72
+key Return
+wait 3000
+call hd_test_city_picture 0 73 0
+wait 3000
+shot p73
+key Return
+wait 3000
+call hd_test_city_picture 0 74 0
+wait 3000
+shot p74
+key Return
+wait 3000
+call hd_test_city_picture 0 75 0
+wait 3000
+shot p75
+key Return
+wait 3000
+call hd_test_city_picture 0 76 0
+wait 3000
+shot p76
+key Return
+wait 3000
+call hd_test_city_picture 0 77 0
+wait 3000
+shot p77
+key Return
+wait 3000
+quit
