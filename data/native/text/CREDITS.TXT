@@ -1,0 +1,69 @@
+; OpenCiv2: the credits (CREDITS.TXT), written for OpenCiv2
+@CREDITS
+
+
+
+
+
+
+
+
+
+
+^OPENCIV2
+
+
+^A RECONSTRUCTION OF
+^CIVILIZATION II
+^MULTIPLAYER GOLD EDITION
+as portable C++ for Linux,
+macOS, Windows and the browser
+
+
+^RECONSTRUCTION AND PORT
+Richard Penman
+
+
+^CONTRIBUTORS
+raleighsmvp
+
+
+^HD GRAPHICS ART
+openciv2-assets
+
+
+^INTERFACE ADDITIONS
+after FoxAhead's
+Civ2 UI Additions (CIV2UIA)
+
+
+^OPENCIV2'S ENGLISH TEXTS
+written for OpenCiv2:
+the game's own texts come from
+your copy of Civilization II
+
+
+^TRANSLATIONS
+Esperanto: a first draft,
+awaiting a native speaker's review
+
+
+^BUILT WITH
+SDL2, wasi-sdk, wasm2c,
+zlib, libvorbis, unshield
+
+
+^THE ORIGINAL GAME
+Sid Meier's Civilization II
+MicroProse, 1996-1998
+
+
+^THANKS
+to everyone who reports bugs,
+tests builds and plays
+
+
+^github.com/richardpenman/civ2
+
+
+@END

@@ -33,7 +33,8 @@ HD graphics, full screen, the rule changes and the interface additions, kept in 
 OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English and
 Esperanto (a first draft) come with it, chosen in OpenCiv2 Options > Language. The game's own
 texts come in the language of your Civilization II, or in that of a translation that has them:
-the Esperanto one translates the whole game ([TRANSLATING.md](docs/TRANSLATING.md)).
+the Esperanto one translates the whole game ([TRANSLATING.md](docs/TRANSLATING.md)). Where your
+copy lacks one of the game's text files, OpenCiv2 uses its own English of it, written for it.
 
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 

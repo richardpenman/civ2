@@ -1,0 +1,358 @@
+OpenCiv2: the High Council, ancient times
+
+@M1
+0,98, Military: More soldiers! Now!
+f5,938,1041, Foreign: Embassies, not spears, majesty!
+#, end
+t3, 262,357, Trade: Soldiers? Pah! Marketplaces fill the coffers, noble leader. Build those.
+t5, 262,357, Trade: Spears don't haul goods, excellency. Send out Caravans instead!
+s3, 3353,3386, Science: Nonsense!
+s4, 3353,3386, Science: Barbarous idea!
+a3, 4070,4098, Attitude: Oh, I think not.
+end
+
+@M2
+100,193, Military: Sharper weapons, excellency! Research!
+t2, 262,357, Trade: Weapons? Let Currency be studied first, majesty; coin outlasts bronze.
+#, end
+t4, 262,357, Trade: Better to study Trade, excellency. Merchants win more than swords.
+#, end
+a1, 4171,4202, Attitude: Majesty, I am worried...
+#, end
+s, 195,260, Science: As ever, the choice is yours alone, majesty.
+end
+
+@M3
+359,467, Military: Learn the sea, majesty! We need ships!
+t2, 262,357, Trade: The sea can wait. Currency, noble leader, is the wiser study.
+#, end
+t4, 262,357, Trade: Leave the waves alone and study Trade, excellency.
+#, end
+f3, 3958,3977, Foreign: Heed not that pig, majesty. War lore is our least need.
+a1, 4171,4202, Attitude: Majesty, this troubles me...
+a3, 4283,4305, Attitude: Ha! First make jugglers of those useless scholars, majesty.
+end
+
+@M4
+469,562, Military: Barracks, everywhere!
+f5, 3845,3883, Foreign: A waste!
+t3, 3560,3598, Trade: Never! 
+t5, 3560,3598, Trade: Too costly!
+t1, 3453,3517, Trade: But the upkeep, excellency, the upkeep...
+#, end
+s3, 3353,3386, Science: Pointless!
+s4, 3353,3386, Science: Ridiculous!
+a3, 4070,4098, Attitude: No, no, no!
+end
+
+@M5
+564,684, Military: Raise City Walls, majesty! Our capital above all must be walled!
+s3, 3353,3386, Science: Utter folly!
+s4, 3353,3386, Science: Stone? Bah!
+f5, 3845,3883, Foreign: I object!
+t3, 3560,3598, Trade: Too dear!
+t5, 3560,3598, Trade: Absurd!
+t, 3453,3517, Trade:  And the upkeep, excellency? The upkeep...
+#, end
+a3, 4070,4098, Attitude: Not walls again!
+end
+
+@M6
+686,809, Military: All is well here!
+f7, 3815,3843, Foreign: Splendid!
+t7, 3519,3558, Trade: Good news!
+t1, 3560,3598, Trade: I doubt it.
+s6, 3421,3451, Science: A moment, excellency, I beg!
+s1, 3421,3451, Science: Excellency, if I may...
+a1, 4136,4169, Attitude: A word, majesty!  
+end
+
+@M7
+811,936, Military: Time to bash some heads in!
+f4, 3958,3977, Foreign: Hush, you pig! First we mend our good name.
+s6, 3314,3351, Science: War? Splendid! And let us carry off their scrolls of learning!
+#, f, 3885,3917, Foreign: Ignore them, majesty!
+f, 3845,3883, Foreign: Madness!
+t, 3560,3598, Trade: Bad for trade!
+end
+
+
+@S1
+1043,1140, Science: Raise the science rate, majesty! Now!
+f3, 3815,3843, Foreign: Agreed.
+#, a, 4100,4134, Attitude: Heed them not, majesty!
+a1,1285,1374, Attitude: Very well, but leave the luxuries alone!
+#, end
+a2, 1285,1374, Attitude: So be it, if the luxury rate stays put.
+#, end
+a3, 1285,1374, Attitude: Fine, but do not touch the luxuries!
+#, end
+t2, 3519,3558, Trade: Quite right.
+t4, 3519,3558, Trade: Indeed.
+end
+
+@S2
+1142,1283, Science: Excellency, more for science would serve us well.
+f3, 3815,3843, Foreign: Just so.
+#, a, 4100,4134, Attitude: Heed them not, my lord!
+a1,1285,1374, Attitude: Very well, but leave the luxuries alone!
+#, end
+a2, 1285,1374, Attitude: So be it, if the luxury rate stays put.
+#, end
+a3, 1285,1374, Attitude: Fine, but do not touch the luxuries!
+#, end
+t2, 3519,3558, Trade: Wise words.
+t4, 3519,3558, Trade: Hear, hear!
+t, 3560,3598, Trade: Not my coin!
+end
+
+@S3
+1376,1581, Science: Build Libraries and halls of learning!
+t3, 3560,3598, Trade: Too costly!
+t4, 3519,3558, Trade: Very well.
+#, f5, 3885,3917, Foreign: Hear them not, majesty!
+t5, 3560,3598, Trade: Bah, scrolls!
+t1, 3453,3517, Trade:  Mind the upkeep, excellency, the cost...
+#, end
+m2, 3102,3130, Military: Fair enough.
+m3, 3102,3130, Military: If we must.
+f3, 3815,3843, Foreign: Agreed!
+f5,3845,3883, Foreign: I disagree!
+a3, 4070,4098, Attitude: Books? Boring!
+end
+
+@S4
+1583,1694, Science: Send Caravans to trade!
+t,3519,3558, Trade: Yes! Yes!
+m1, 3132,3159, Military: Merchants? Bah!
+m4, 2982,3035, Military: Barracks, majesty! That's the need!
+m5, 3037,3100, Military: City Walls first, then your Caravans!
+m2, 3102,3130, Military: Very well.
+#, f5, 3885,3917, Foreign: Mind them not, majesty!
+m3, 3102,3130, Military: So be it.
+#, f5, 3885,3917, Foreign: Pay them no mind, sire!
+f5, 3845,3883, Foreign: Wrongheaded!
+end
+
+@S5
+1696,1764, Science: Research thrives!
+a ,4246,4281, *
+m2, 3286,3312, Military: Then turn your clever minds to weapons, bookworm!
+m3, 3286,3312, Military: Then learn us some seafaring, scroll-sniffer, and be useful!
+t2, 3679,3705, Trade: Thriving, is it? Then go study Currency, sage.
+t4, 3679,3705, Trade: If you're so clever, study Trade next, sage.
+end
+
+@S6
+1766,1908, Science: Seize their learning, majesty, or steal it!
+m1,3286,3312, *
+m2,3102,3130, Military: Ha! Yes!
+m3,3102,3130, Military: Gladly!
+m4,3286,3312, *
+m5,3286,3312, *
+m6,3102,3130, Military: To arms!
+m7,3102,3130, Military: I like it!
+end
+
+@S7
+1910,2011, Science: Wisest of all!
+a1, 4171,4202, Attitude: Majesty, I am uneasy...
+a6, 4246,4281, *
+t1, 3679,3705, *
+t6, 3519,3558, Trade: Splendid!
+t7, 3519,3558, Trade: Bravo!
+f7, 3815,3843, Foreign: Well done!
+end
+
+
+@T1
+2013,2157, Trade: The treasury is bare! Raise taxes or make tax collectors, majesty!
+a1, 2232,2298, Attitude: Yes, noble leader, but leave the luxury rate alone!
+#, end
+a2, 2232,2298, Attitude: Noble leader, tax as you will, but spare luxuries.
+#, end
+a3, 2232,2298, Attitude: As you wish, noble leader, so long as luxuries stay.
+#, end
+s1, 2159,2230, Science: Science gets too little already, majesty!
+s2, 2159,2230, Science: Our science rate is already far too low!
+end
+
+@T2
+2300,2442, Trade: Study Currency, majesty!
+m2, 3286,3312, Military: Coins? Pah!
+m3, 3132,3159, Military: Money? Bah!
+end
+
+@T3
+2444,2548, Trade: Build Marketplaces, now!
+f5,3845,3883, Foreign: Not now!
+m1,3286,3312, Military: Pah! What we need is soldiers!
+m4, 2982,3035, Military: No! We need Barracks, majesty!
+m5, 3037,3100, Military: City Walls first, merchant! Walls!
+s3, 3353,3386, Science: Shortsighted!
+s4, 3353,3386, Science: I object!
+a3, 4070,4098, Attitude: Not again!
+end
+
+@T4
+2550,2649, Trade: Study Trade, majesty!
+f3,3919,3956, Foreign: May I speak, sire?
+f, 3815,3843, Foreign: Agreed.
+#, m2, 3161,3198, Military: Ignore them, majesty!
+m3, 3132,3159, Military: Merchants! Bah!
+end
+
+@T5
+2651,2760, Trade: Build Caravans, lord!
+f5,3845,3883, Foreign: A poor idea!
+m1,3132,3159, Military: Mules? Bah!
+m4, 2982,3035, Military: Forget mules. Build Barracks!
+m5, 3037,3100, Military: City Walls, majesty, not caravans!
+s3, 3353,3386, Science: Nonsense!
+a3, 4070,4098, Attitude: I'm not sure...
+end
+
+@T6
+2762,2848, Trade: The coffers are healthy, yet a bit more tax wouldn't hurt.
+a1,4204,4244, Attitude: Taxes? The people want luxuries, majesty, or your government will fall!
+a2,4070,4098, Attitude: No more taxes!
+a3,4070,4098, Attitude: Never!
+s1,2159,2230, Science: Science gets too little already, majesty!
+s2,2159,2230, Science: Our science rate is already far too low!
+end
+
+@T7
+2850,2980, Trade: Gold, excellency! Gold, gold, and more gold!
+m1,3286,3312, Military: So rich? Then buy me soldiers!
+#, end
+m4,3286,3312, Military: Rich, are we? Then buy some Barracks!
+#, end
+m5,3286,3312, Military: Then buy City Walls, you old miser!
+#, end
+f5, 3979,4006, Foreign: Then buy us some Embassies, you greedy old goat!
+#, end
+a3,4204,4244, Attitude: Spend it on Temples, you money-grubber!
+end
+
+
+@F1
+4307,4413, Foreign: Seek new lands!
+r5, s, 3314,3351, Science: Yes, explore!
+r5, m, 3102,3130, Military: Agreed!
+r5, a, 4033,4068, Attitude: Why not?
+end
+
+@F2
+4415,4551, Foreign: An alliance, majesty! Let us find a friend among the nations.
+m6, 3242,3284, *
+m7, 3242,3284, *
+s, 3314,3351, Science: Wise counsel.
+end
+
+@F3
+4553,4718, Foreign: Learn Writing, majesty, for envoys!
+s, 3314,3351, Science: Hear, hear!
+#, t2, 3600,3636, Trade: Ignore them, majesty!
+t4, 3560,3598, Trade: Waste of ink!
+m2, 3286,3312, Military: Writing? Better weapons are what counts!
+m3, 3286,3312, Military: Scribbling? Better ships matter more!
+end
+
+@F4
+4720,4846, Foreign: Our good name lies in tatters, majesty. Let us mend it with rivals.
+m,4848,4928, Military: Mend it? Crush them all instead!
+end
+
+@F5
+4930,5057, Foreign: Send Embassies to all nations!
+m1, 3132,3159, Military: Pointless!
+m4, 2982,3035, Military: Embassies? Build Barracks instead!
+m5, 3037,3100, Military: City Walls first, you silver-tongue!
+t3, 3560,3598, Trade: Too costly!
+t5, 3560,3598, Trade: Not my gold!
+t1, 3453,3517, Trade:  And who pays the upkeep, excellency...?
+#, end
+s3, 3353,3386, Science: Folly!
+s4, 3353,3386, Science: I object!
+a3, 4070,4098, Attitude: Spare us!
+end
+
+@F6
+5059,5194, Foreign: Let us trade knowledge with our rivals, majesty. All would gain!
+m2, 3102,3130, Military: Agreed.
+#, s7, 3388,3419, Science: Their knowledge? Barbarian scribbles! Nothing we would want!
+m3, 3102,3130, Military: Fine.
+#, s7, 3388,3419, Science: Foreign wisdom? Worthless, majesty. Our scholars know better.
+m, 3242,3284, *
+s7, 3353,3386, Science: Their learning is fit only to wrap fish in, excellency!
+#, end
+# (corrected on the next line)
+s5, 3314,3351, Science: Very well.
+end
+
+@F7
+5196,5301, Foreign: All the nations love us, majesty! Our envoys are feasted.
+s7, 3314,3351, Science: Excellent!
+a6, 4246,4281, *
+m, 3286,3312, *
+end
+
+
+@A1
+5303,5391, Attitude: Riots loom! Temples and entertainers, majesty, or we fall!
+r5, t, 3519,3558, Trade: Quite so.
+r5, s, 3314,3351, Science: Agreed.
+r5, m, 3102,3130, Military: Aye, aye.
+r5, f, 3815,3843, Foreign: Very true.
+end
+
+@A2
+5393,5476, Attitude: Raise the luxury rate, majesty! Now!
+t1, 5556,5632, Trade: No! Raise taxes, majesty, not luxuries!
+#, end
+t6, 5556,5632, Trade: Luxuries? Taxes are what we need, majesty!
+#, end
+t, 3707,3756, Trade: My tax rate is perfectly fair, thank you!
+s1, 5478,5554, Science: Science gets too little already, majesty!
+#, end
+s2, 5478,5554, Science: The science rate is already low enough, sire!
+#, end
+f3, 3845,3883, Foreign: Absurd!
+m2, 3132,3159, Military: Coddling!
+m3, 3132,3159, Military: Soft nonsense!
+end
+
+@A3
+5634,5722, Attitude: The people seethe, majesty! More Temples and entertainers, or else!
+t1, 3679,3705, Trade:Pah! What we need is higher taxes!
+t6, 3679,3705, Trade: Unrest? Just raise the taxes, majesty!
+s1, 3421,3451, Science: A moment, excellency, I beg!
+s2, 3421,3451, Science: Excellency, if I may...
+m1, 3286,3312, Military: Bah! More soldiers will keep order!
+m4, 2982,3035, Military: Barracks will fix them, majesty!
+m5, 3037,3100, Military: City Walls! That's what we need!
+end
+
+@A4
+5724,5819, Attitude: Perhaps a little more luxury, majesty?
+t1, 3560,3598, Trade: Never!
+t6, 3560,3598, Trade: Too costly!
+t, 3560,3598, Trade: Nonsense!
+s1, 3353,3386, Science: I object!
+s2, 3353,3386, Science: Folly!
+s, 3353,3386, Science: Certainly not!
+end
+
+@A5
+5821,5867, Attitude: The people are content, noble one.
+f7, 3815,3843, Foreign: Splendid.
+end
+
+@A6
+5869,5947, Attitude: Everyone's happy!
+t1, 3679,3705, Trade: Too happy!
+t7, 3519,3558, Trade: Good.
+s7, 3314,3351, Science: Excellent!
+s1, 3353,3386, Science: Hmph, maybe.
+f7, 3815,3843, Foreign: Wonderful!
+end

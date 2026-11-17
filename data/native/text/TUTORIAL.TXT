@@ -1,0 +1,387 @@
+; OpenCiv2: the tutorial (TUTORIAL.TXT).
+; Written for OpenCiv2, used where the game has no TUTORIAL.TXT of its own.
+
+@FIRSTMOVE
+@width=400
+@y=5
+@title=Civ Tutorial
+Your first task is to choose
+a good spot and build your
+capital. Good places are beside
+rivers, on grassland, on the
+coast, or near special resources.
+
+@BUILDCITY
+@width=320
+@y=5
+@title=Civ Tutorial
+This square is a fine place
+for a city. To found it here,
+press 'b', or pick 'Build New
+City' in the ORDERS menu.
+
+@FIRSTPRODUCT
+@width=420
+@y=5
+@title=Civ Tutorial: Your First City
+Each of your cities can produce new
+Settlers, units for your army, or
+improvements for the city itself, all of
+which help your civilization grow. A city
+works on one item at a time, but you can
+switch to something else whenever you like.
+To choose what to build, press the 'CHANGE'
+button on the city screen, which opens next.
+
+@FIRSTCIV
+@width=420
+@title=Civ Tutorial: Civilization Advances
+Your cities are centres of trade
+and learning. Your scholars and
+scientists turn this knowledge
+into new advances: new skills and
+abilities for your civilization.
+
+@FIRSTUNIT1
+@width=420
+@y=5
+@title=Civ Tutorial: First Military Unit
+Your first military unit is
+ready! Move it with the arrow
+keys, and give it special orders
+from the ORDERS menu. Military
+units are used to explore, to
+expand, to attack and to defend.
+
+@FIRSTUNIT2
+@width=500
+@title=Civ Tutorial: Units
+Fortify units inside your cities to guard
+them against barbarians and enemies. Phalanx
+and Pikemen are the best defenders, but
+Warriors, Archers and Legion help too.
+^
+Settlers found new cities, and also
+build roads, mines and irrigation
+around them. Try to keep at least
+one Settlers unit busy at all times.
+^
+Fast units such as Horsemen are
+good for scouting unknown lands.
+^
+For attacking, use Archers, Chariot,
+Elephant and Catapult units.
+
+@ONECITY
+@width=420
+@y=5
+@title=Civ Tutorial: New Cities
+%STRING0 is growing nicely, so this
+is a good moment to found a second
+city. Open %STRING0 and set it to build
+Settlers. They can travel to another
+good spot and found a new city there.
+
+@CITYSTUFF
+@width=420
+@x=180
+@title=Civ Tutorial: City Resources
+What your citizens produce depends on
+the terrain around the city. The city
+screen shows each square being worked,
+with symbols for the food (wheat),
+shields and trade (arrows) it yields.
+^
+Click on those squares to move your workers around.
+Different squares yield different amounts of each
+resource, and Settlers can improve most of them
+with roads, irrigation or mines. Try out different
+arrangements until you find the one you like best.
+^
+You can also take citizens off the map entirely
+and make them Entertainers. They provide
+luxuries, but no food or anything else.
+
+@MINING
+@width=320
+@y=5
+@title=Civ Tutorial: Mining
+This land could yield more. Mine
+the hills (press 'm') to raise
+the shield production of %STRING0.
+
+@IRRIGATE
+@width=320
+@y=5
+@title=Civ Tutorial: Irrigation
+This is a good place to irrigate
+(press 'i'). The extra food it brings
+will help %STRING0 grow faster.
+
+@ROAD
+@width=440
+@y=5
+@title=Civ Tutorial: Roads
+This is a good spot for a road
+(press 'r'). Units move faster
+along roads, and %STRING0
+will earn more trade. As your
+empire grows, try to link
+all of your cities by road.
+
+@HELP1
+@width=500
+@title=Civ Tutorial: Basic Strategy #1
+Keep at least one strong defender
+in every city, and preferably two.
+^
+Strike a balance between
+improving the cities you
+have and founding new ones.
+^
+Do not expand faster than you can
+defend. Barbarians and enemies
+can appear without warning.
+
+@HELP2
+@width=500
+@title=Civ Tutorial: Basic Strategy #2
+Stay at peace with neighbours stronger than you.
+Cut off weaker neighbours and conquer them.
+^
+Triremes and other ships can
+explore the oceans and carry
+your units to other continents.
+^
+Caravans set up trade routes
+that boost your economy. Trade
+brings in both gold and knowledge.
+^
+As your civilization grows,
+send Diplomats to find out
+what your rivals are planning.
+
+@DISORDER
+@width=480
+@title=Civ Tutorial: Civil Disorder
+@button=More
+Civil Disorder breaks out
+when a city's unhappy citizens
+outnumber its happy ones. While
+it lasts, the city neither
+grows nor produces anything.
+^
+To restore order, you can:
+^* Spend a bigger share of trade on Luxuries.
+^* Station military units in the city.
+^* Build a Temple, Cathedral or Colosseum.
+^* Turn some citizens into entertainers.
+^* Change your government to Fundamentalism.
+^
+Press 'Details' for more
+help, or if you are stuck.
+
+@DISORDER2
+@width=600
+@title=Civ Tutorial: Civil Disorder, More
+1) Luxuries: Choose 'Tax Rate' from the KINGDOM
+menu and raise the share of trade spent on
+luxuries. A rate of 20% often works well,
+especially under Monarchy or the Republic. Every
+2 luxuries in a city make one citizen happy.
+^
+2) Martial Law: Under Despotism,
+Monarchy or Communism, military units
+stationed in a city help keep order.
+Each unit, up to a maximum of 3 per
+city, makes one unhappy citizen content.
+^
+3) Temples, Colosseums and Cathedrals:
+Each of these makes at least one unhappy
+citizen content. Remember that a city in
+disorder produces nothing, so you may have
+to 'Buy' the building outright, or use
+entertainers for a while until it is finished.
+
+@DISORDER3
+@width=600
+@title=Civ Tutorial: Civil Disorder, More
+4) Entertainers: On the city screen, click
+a square being worked in the city's area to
+take its worker off the land. The citizen
+becomes an entertainer, who makes no food,
+shields or trade, but gives 2 luxuries.
+^
+5) Fundamentalism: Once you know the advance
+of Fundamentalism, you can adopt it as your
+government. Under Fundamentalism nobody is ever
+unhappy, although your science will suffer.
+
+@SCHISM
+@width=320
+@title=Civ Tutorial: Civil War
+The %STRING0 rule a vast and mighty
+empire, but rebels within their
+lands are on the brink of civil war.
+If you capture their capital, they
+may split into two separate nations.
+
+@SHIPS
+@width=480
+@y=5
+@title=Civ Tutorial: Ships
+Your first ship is ready! Ships
+can explore the oceans and carry
+your units to other continents.
+^
+Be careful: a Trireme is in danger of sinking
+unless it ends each turn next to land.
+^
+To load a unit, put it to sleep (press 's') while
+the ship is in port, then sail the ship away.
+If the ship is already offshore, simply move the
+unit onto it from a neighbouring land square.
+^
+To unload your units, press
+'u' or simply click the ship.
+
+@RAILROADS
+@width=480
+@title=Civ Tutorial: Railroads
+You have learned Railroad, a great
+step forward! To build a railroad, move
+Settlers or Engineers onto a square
+that already has a road and press 'r'.
+^
+Units can travel great distances along railroads.
+Railroads also increase the shields produced
+by squares that already yield 2 or more.
+
+@FARMLAND
+@width=480
+@title=Civ Tutorial: Farmland
+You have learned Refrigeration, which
+lets your people preserve food far better
+than before. To create farmland, move
+Settlers or Engineers onto a square that is
+already irrigated and press 'i'. Farmland
+gives a nearby city extra food, but only
+if that city has built a Supermarket.
+
+@AIRUNIT
+@width=480
+@y=5
+@title=Civ Tutorial: Air Units
+Your first air unit is ready! Aircraft
+can bomb enemy units and cities,
+defend your territory against enemy
+bombers, and scout out distant lands.
+^
+Watch the fuel: an air unit must return to an
+airbase or a friendly city before it runs out.
+
+@REPUBLIC
+@width=480
+@title=Civ Tutorial: Republic
+A new form of government, the REPUBLIC, is
+now available to you. Changing your government
+can bring great benefits, but it can also
+bring serious problems, so plan carefully
+before you make the switch. The 'Governments'
+entries in the Civilopedia explain every
+type in detail. When you are ready to change,
+choose Revolution from the Kingdom menu.
+
+@DEMOCRATS
+@width=600
+@title=Civ Tutorial: Republic & Democracy
+You now rule as a %STRING0. This is a big change
+from the governments that came before, and it
+brings new challenges as well as new rewards.
+^
+Free citizens produce much more trade,
+but they are also harder to keep happy.
+The best remedy is to spend some of
+that trade on luxuries: open 'Tax Rate'
+in the Kingdom menu and raise Luxuries
+to 20%%. The extra trade from your free
+citizens makes this easy to afford.
+^
+Military units outside your cities now make
+citizens unhappy, so you may need to bring some
+of your units home, or even disband a few of
+them. It can be painful, but the gains in science
+and gold are usually well worth the trouble.
+
+@TRADE
+@width=420
+@title=Civ Tutorial: Trade
+You have learned Trade! Your cities can now build
+CARAVAN units to carry goods to distant lands.
+Caravans quickly boost both your gold and your
+science, especially those sent from large cities.
+
+@CARAVAN
+@width=440
+@y=5
+@title=Civ Tutorial: Caravans
+Your first CARAVAN is ready! Send it off to some
+faraway city and open a trade route there. Routes
+to small, nearby cities of your own earn less
+than routes to large, faraway cities of a rival.
+It also pays to find a city that wants the goods
+you carry; clicking on a rival's city shows what
+it demands. Caravans can help build Wonders, too.
+
+@WRITING
+@width=420
+@title=Civ Tutorial: Writing
+You have learned Writing! Your cities can
+now build DIPLOMAT units and reach out to
+other civilizations. A Diplomat can set up
+an embassy, keep an eye on your allies,
+and even steal advances from your rivals.
+
+@SEAFARING
+@width=420
+@title=Civ Tutorial: Seafaring
+You have learned Seafaring! You can now
+build EXPLORER units to discover new lands.
+Explorers move 3 squares a turn whatever
+the terrain, so they cover ground very
+quickly. You may want to build TRIREME
+ships to carry them, and your other units,
+across the sea to faraway continents.
+
+
+@EXPAND0
+@width=520
+@title=Civ Tutorial: Growth (#1)
+A civilization grows by gaining land:
+it can found new cities, or seize them
+from its rivals. I suggest we set one
+of our cities to build a SETTLERS unit.
+
+@EXPAND1
+@width=520
+@title=Civ Tutorial: Growth (#2)
+To grow, we need sites for new
+cities. I suggest we send these
+SETTLERS off to found one.
+
+@DAMAGE
+@width=520
+@title=Civ Tutorial: Damaged Units
+This unit has been damaged, as shown by
+the coloured bar on top of its shield.
+Green means it is mostly healthy; yellow,
+and then red, mean more serious damage.
+^
+If the unit skips a whole turn (press the SPACE bar),
+it recovers some of its strength. Units heal faster
+in cities and fortresses. Barracks restore a ground
+unit to full health in one turn, and a Port Facility
+or Airport does the same for ships and air units.
+
+
+@END

@@ -1,0 +1,131 @@
+; OpenCiv2: the menu bar (MENU.TXT).
+; Written for OpenCiv2, used where the game has no MENU.TXT of its own.
+
+@GAME
+&Game
+Game &Options|Ctrl+O
+Graphic O&ptions|Ctrl+P
+&City Report Options|Ctrl+E
+M&ultiplayer Options|Ctrl+Y
+&Game Profile
+Choose &Music
+&Save Game|Ctrl+S
+&Load Game|Ctrl+L
+&Join Game|Ctrl+J
+Set Pass&word|Ctrl+W
+Change &Timer|Ctrl+T
+&Retire|Ctrl+R
+&Quit|Ctrl+Q
+
+@KINGDOM
+&Kingdom
+&Tax Rate|Shift+T
+See T&hrone Room|Shift+H
+Find &City|Shift+C
+&REVOLUTION|Shift+R
+
+@VIEW
+&View
+&Move Pieces|v
+&View Pieces|v
+Zoom &In|z
+Zoom &Out|x
+Max Zoom In|Ctrl+Z
+Normal Zoom|Shift+Z
+Half Zoom Out|Shift+X
+Max Zoom Out|Ctrl+X
+Show Map Grid|Ctrl+G
+Arrange Windows
+Show Hidden Terrain|t
+&Center View|c
+
+
+@ORDERS
+&Orders
+&Build New City|b
+Build &Road|r
+Build &Irrigation|i
+Build &Mines|m
+Transform to ...|o
+Build &Airbase|e
+Build &Fortress|f
+Automate Settler|k
+Clean Up &Pollution|p
+&Pillage|Shift+P
+&Unload|u
+&Go To|g
+&Paradrop|p
+Air&lift|l
+Set &Home City|h
+&Fortify|f
+&Sleep|s
+&Disband|Shift+D
+&Activate Unit|a
+&Wait|w
+S&kip Turn|SPACE
+End Player Tur&n|Ctrl+N
+
+@ADVISORS
+&Advisors
+Talk with &Kings|Ctrl+C
+Ask the &High Council
+&City Status|F1
+&Defense Minister|F2
+&Foreign Minister|F3
+&Attitude Advisor|F4
+&Trade Advisor|F5
+&Science Advisor|F6
+Cas&ualty Timeline|Ctrl-D
+
+@WORLD
+&World
+&Wonders of the World|F7
+&Top 5 Cities|F8
+&Civilization Score|F9
+&Demographics|F11
+&Spaceships|F12
+
+@CHEAT
+&Cheat
+Toggle Cheat Mode|Ctrl+K
+Create &Unit|Shift+F1
+Reveal &Map|Shift+F2
+Set &Human Player|Shift+F3
+Set Game Year|Shift+F4
+&Kill Civilization|Shift+F5
+Te&chnology Advance|Shift+F6
+&Edit Technologies|Ctrl+Shift+F6
+Force &Government|Shift+F7
+Change &Terrain At Cursor|Shift+F8
+Destro&y Units At Cursor|Ctrl+Shift+D
+Change Money|Shift+F9
+Edit Unit|Ctrl+Shift+U
+Edit City|Ctrl+Shift+C
+Edit King|Ctrl+Shift+K
+Scenario Settings|Ctrl+Shift+P
+Save As Scenario|Ctrl+Shift+S
+
+@EDITOR
+&Editor
+Toggle &Scenario Flag|Ctrl+F
+&Advances Editor|Ctrl+Shift+1
+&Cities Editor|Ctrl+Shift+2
+E&ffects Editor|Ctrl+Shift+3
+&Improvements Editor|Ctrl+Shift+4
+&Terrain Editor|Ctrl+Shift+5
+T&ribe Editor|Ctrl+Shift+6
+&Units Editor|Ctrl+Shift+7
+&Events Editor|Ctrl+Shift+8
+
+@PEDIA
+&Civilopedia
+Civilization &Advances
+City &Improvements
+&Wonders of the World
+Military &Units
+&Governments
+&Terrain Types
+Game &Concepts
+&About OpenCiv2
+
+

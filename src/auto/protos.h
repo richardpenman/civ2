@@ -2455,6 +2455,7 @@ uint crt_toupper(uint c); /* 005f2700, C runtime: src/native/crt.cpp */
 int _isalpha(int c); /* 005f2840, C runtime: src/native/crt.cpp */
 int _isdigit(int c); /* 005f2930, C runtime: src/native/crt.cpp */
 FILE *__fsopen(const char *path, const char *mode, int share); /* 005f2d00, C runtime: src/native/crt.cpp */
+FILE *crt_fopen_host(const char *host, const char *mode); /* (port) src/native/crt.cpp */
 FILE *_fopen(const char *path, const char *mode); /* 005f2e10, C runtime: src/native/crt.cpp */
 int _fclose(FILE *f); /* 005f2e40, C runtime: src/native/crt.cpp */
 char *_strncpy(char *dst, const char *src, size_t n); /* 005f2f30, C runtime: src/native/crt.cpp */

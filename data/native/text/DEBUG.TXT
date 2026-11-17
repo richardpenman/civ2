@@ -1,0 +1,686 @@
+; OpenCiv2: cheat and debug dialogs (DEBUG.TXT).
+; Written for OpenCiv2, used where the game has no DEBUG.TXT of its own.
+
+@MOTD
+@width=480
+@title=OpenCiv2
+...
+
+@TOOMANYCITIES
+Too many cities!
+
+@ENDOFTURN
+Turn ended = %NUMBER0
+
+@DANGER
+@title=Warning: Bad Data!
+^Fact: %STRING0
+^Data: %NUMBER0 / %NUMBER1 / %NUMBER2
+
+@DANGERHEX
+@title=Warning: Bad Data!
+^Fact: %STRING0
+^Hex: %HEX0 / %HEX1 / %HEX2
+
+@GAVETECH
+Every advance granted.
+
+@TOOKTECH
+Every advance removed.
+
+@GAVEALL
+All improvements given.
+
+@TOOKALL
+All improvements taken.
+
+@FREEBIE
+Poof! Building finished.
+
+@MEMORY
+^System resources = %NUMBER0.
+
+@REVEALMAP
+@title=Choose Map View
+
+@SETHUMAN
+@title=Choose Human Player
+
+@KILLCIV
+@title=Remove Which Civilization
+
+@PICKPLAYER
+@title=Choose A Player
+
+@MONEY
+@title=Change %STRING0 Treasury
+@width=300
+%STRING0 treasury now {%NUMBER0$}.
+
+New amount:
+
+@TERRAIN
+@title=Choose Terrain Features
+@width=420
+@checkbox
+@button=Terrain
+@options
+Irrigation
+Mining (Irr & Mine = Farm)
+Road
+Railroad
+Fortress
+Airbase
+Pollution
+
+@TERRAIN1
+@title=Choose Terrain Type
+@width=300
+
+@GAMEYEAR
+@title=Set # Of Turns Played
+@width=300
+# Turns Played: %NUMBER0.
+
+New # Turns:
+
+@CREATEUNIT
+@title=Choose Unit To Create
+@width=480
+@listbox
+@button=Foreign
+@button=Veteran
+@button=Obs.
+@button=Adv.
+
+@MOVEDEBUG
+@title=Move Debug
+@x=0
+@y=0
+@width=200
+@options
+Close
+Zoom out
+Zoom in
+Center on start
+Center on end
+
+
+@GOODYX
+@title=X Value
+@width=300
+@options
+X:
+
+@GOODYY
+@title=Y Value
+@width=300
+@options
+Y:
+
+@GOODYMAP
+@title=Map Value
+@width=300
+@options
+Map:
+
+@GOODYDIV
+@title=Div Value
+@width=300
+@options
+Div:
+
+@NETLIST
+@title=Network Players
+@width=320
+
+@TURNCOUNT
+@title=Turn Value
+@width=300
+(-1 means every turn)
+
+Turn:
+
+
+@TURNINTERVAL
+@title=Interval Value
+@width=300
+
+Interval:
+
+
+@RANDOMDENOM
+@title=Random Turn Denominator
+@width=300
+Type a number, 1 to 1000
+
+Denominator:
+
+
+@CITYNAME
+@title=City Name
+@width=300
+Type the city's name
+
+City:
+
+
+@HOMECITYNAME
+@title=Home City Name
+@width=300
+Type the home city
+
+City:
+
+
+@TALKERTYPE
+@title=Negotiator Type
+@width=300
+
+Human
+Computer
+Human or Computer
+
+
+@CDTRACK
+@title=CD Track Number
+@width=300
+Enter a track number from %NUMBER0 to %NUMBER1.
+
+Track number:
+
+
+@WAVFILE
+@title=File Name
+@width=300
+Type the Wav file's name
+
+Filename:
+
+
+@AMOUNT
+@title=Money Amount
+@width=300
+Type an amount
+
+Amount:
+
+
+@NUMUNITS
+@title=Number to Move
+(-1 means all)
+@width=200
+
+Number:
+
+
+@VETERAN
+@title=Veteran Status
+@width=200
+Is the unit a veteran?
+
+No
+Yes
+
+
+@TERRAINTYPE
+@title=Terrain Type
+@width=200
+
+Terrain type wanted:
+
+
+@MAPRECT
+@title=Map Rectangle
+@width=200
+
+Coordinates:
+
+
+@LOCATION
+@title=Destination
+@width=200
+
+Coordinates:
+
+
+@LOCATIONNUM
+@title=Destination %NUMBER0
+@width=200
+
+Coordinates:
+
+
+@PLAYSOUND
+@title=Copy a Sound
+@button=Play
+Press Play to hear it, OK to accept it, or Cancel to back out.
+WARNING: once you press OK, there is no going back!
+
+
+@TERRNAME
+@title=Rename Terrain
+@width=300
+Type the new terrain name
+
+Terrain:
+
+
+@TECHNAME
+@title=Rename Civilization Advance
+@width=300
+Type the new advance name
+
+Advance:
+
+
+@IMPRNAME
+@title=Rename City Improvement
+@width=300
+Type the new improvement name
+
+Improvement:
+
+
+@UNITNAME
+@title=Rename Unit
+@width=300
+Type the new unit name
+
+Unit:
+
+
+@CITYMISC
+@width=330
+@title=Choose Icon to Edit
+@columns=2
+@options
+Fortify
+Air Base
+Flag 1
+Flag 2
+Flag 3
+Flag 4
+Flag 5
+Flag 6
+Flag 7
+Flag 8
+Fortress
+Air Base in Use
+Flag 1a
+Flag 2a
+Flag 3a
+Flag 4a
+Flag 5a
+Flag 6a
+Flag 7a
+Flag 8a
+
+
+@IMPRMISC
+@width=330
+@title=Choose Icon to Edit
+@options
+Cursor
+Explosion 1
+Explosion 2
+Explosion 3
+Explosion 4
+Explosion 5
+Explosion 6
+Explosion 7
+Explosion 8
+
+
+@FOREST
+@width=330
+@title=Choose Forest to Edit
+@button=Help
+@columns=2
+@options
+Background
+Forest 1
+Forest 2
+Forest 3
+Forest 4
+Forest 5
+Forest 6
+Forest 7
+Forest 8
+Forest 9
+Forest 10
+Forest 11
+Forest 12
+Forest 13
+Forest 14
+Forest 15
+Forest 16
+
+
+@HILLS
+@width=330
+@title=Choose Hill to Edit
+@button=Help
+@columns=2
+@options
+Background
+Hill 1
+Hill 2
+Hill 3
+Hill 4
+Hill 5
+Hill 6
+Hill 7
+Hill 8
+Hill 9
+Hill 10
+Hill 11
+Hill 12
+Hill 13
+Hill 14
+Hill 15
+Hill 16
+
+
+@MOUNTAINS
+@width=330
+@title=Choose Mountain to Edit
+@button=Help
+@columns=2
+@options
+Background
+Mountain 1
+Mountain 2
+Mountain 3
+Mountain 4
+Mountain 5
+Mountain 6
+Mountain 7
+Mountain 8
+Mountain 9
+Mountain 10
+Mountain 11
+Mountain 12
+Mountain 13
+Mountain 14
+Mountain 15
+Mountain 16
+
+
+@RIVER
+@width=330
+@title=Choose River to Edit
+@button=Help
+@columns=2
+@options
+River 1
+River 2
+River 3
+River 4
+River 5
+River 6
+River 7
+River 8
+River 9
+River 10
+River 11
+River 12
+River 13
+River 14
+River 15
+River 16
+Mouth 1
+Mouth 2
+Mouth 3
+Mouth 4
+
+
+@COAST
+@width=400
+@title=Choose Coastline to Edit
+@button=Help
+@columns=4
+@options
+Coast 1
+Coast 2
+Coast 3
+Coast 4
+Coast 5
+Coast 6
+Coast 7
+Coast 8
+Coast 9
+Coast 10
+Coast 11
+Coast 12
+Coast 13
+Coast 14
+Coast 15
+Coast 16
+Coast 17
+Coast 18
+Coast 19
+Coast 20
+Coast 21
+Coast 22
+Coast 23
+Coast 24
+Coast 25
+Coast 26
+Coast 27
+Coast 28
+Coast 29
+Coast 30
+Coast 31
+Coast 32
+
+
+@TRIBENAME
+@title=Rename Tribe
+@width=300
+Type the new tribe name
+
+Tribe:
+
+
+@LEADERS
+@width=330
+@title=Choose Leader Gender to Rename
+@options
+Male
+Female
+
+
+@LEADERNAME
+@title=Rename Leader
+@width=300
+Type the new leader name
+
+Leader:
+
+
+@RENAMECITY
+@title=Choose City to Rename
+@listbox
+
+
+@CITYRENAME
+@title=Rename City
+@width=300
+Type the new city name
+
+City:
+
+
+@EDITCOSMIC
+Road movement multiplier
+Trireme sinking chance, 1 in x (less with Seafaring, Navigation)
+# food eaten per citizen per turn
+# rows in food box (rows x (city size + 1))
+# rows in shield box
+Settlers food upkeep, up to Monarchy
+Settlers food upkeep, Communism and later
+City size where first citizen is unhappy (Chieftain)
+Riot factor by number of cities (higher = weaker effect)
+Maximum city size without Aqueduct
+Maximum city size without Sewer System
+Tech paradigm (higher = slower research)
+Base Engineer turns to transform terrain (x2)
+Free units per city under Monarchy
+Free units per city under Communism
+Free units per city under Fundamentalism
+Communism: palace distance for every city
+Fundamentalism science loss (%)
+Shield penalty for changing production type (%)
+Maximum paradrop range
+Mass/thrust paradigm (higher = slower flight)
+Max Fundamentalism science rate (in tens, 5 = 50%)
+
+
+@CPEDIT
+@title=New Value
+@width=300
+Enter a new value (%NUMBER0 to %NUMBER1).
+
+Value:
+
+
+@RENAMECOMMO
+@title=Choose Commodity to Rename
+@listbox
+
+
+@COMMONAME
+@title=Rename Commodity
+@width=300
+Type the new commodity name
+
+Commodity:
+
+
+@RENAMEGOVT
+@title=Choose Government to Rename
+@listbox
+
+
+@GOVTNAME
+@title=Rename Government
+@width=300
+Type the new government name
+
+Government:
+
+
+@RENAMETITLE
+@title=Choose Title to Rename
+@listbox
+
+
+@TITLENAME
+@title=Rename Government Title
+@width=300
+Type the new title
+
+Title:
+
+
+@NEWFOLDER
+@title=New Scenario Folder
+@width=300
+Type the new scenario folder's name
+
+Scenario:
+
+
+@DIREXISTS
+@title=Folder Already Exists
+Please choose a different name
+(%STRING0)
+
+
+@RUSURE
+@title=Warning
+@width=220
+^This action cannot be undone.
+^Press OK to go ahead.
+
+
+@TERRMISC
+@width=330
+@title=Choose Icon to Edit
+@button=Help
+@columns=2
+@options
+Irrigation
+Farmland
+Mining
+Road 1
+Road 2
+Road 3
+Road 4
+Road 5
+Road 6
+Road 7
+Road 8
+Road 9
+Pollution
+Resource
+Goody Hut
+Railroad 1
+Railroad 2
+Railroad 3
+Railroad 4
+Railroad 5
+Railroad 6
+Railroad 7
+Railroad 8
+Railroad 9
+
+
+@ODDTERRAIN
+@width=330
+The icons you want to import are in a terrain file with an
+odd number. Please choose one of those files,
+such as terrain1 or terrain3.
+
+
+@EVENTERRAIN
+@width=330
+The icons you want to import are in a terrain file with an
+even number. Please choose one of those files,
+such as terrain2 or terrain4.
+
+
+@OUTOFMEMORY
+@width=330
+There is no room left for more scenario events.
+Delete something to make space before adding more.
+
+
+@BADNAME
+@title=Invalid File Name
+That file name has a character not allowed.
+^Please choose a different name. (%STRING0)
+
+
+@NOCITY
+@title=City Name Not Found
+@width=200
+No city "%STRING0" found.
+^Use the name anyway?
+
+Yes
+No
+
+
+@NOTICE
+@title=Value Out of Range
+Some of the values entered in this editor were outside the allowed range,
+and have been corrected automatically.
+Please check them before you go on.
+
+
+
+
+
+@end

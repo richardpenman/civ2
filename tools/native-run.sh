@@ -12,6 +12,12 @@ rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g && cp
 # game that has them, KINGS, Video, Music, plays them, and its timing differs;
 # CIV2_KEEP_MEDIA=1 keeps them)
 [ -n "$CIV2_KEEP_MEDIA" ] || find /tmp/g -maxdepth 1 -type d \( -iname kings -o -iname video -o -iname music \) -exec rm -rf {} +
+# CIV2_NO_RULES=1: the game's RULES.TXT left out (the built-in rules, src/include/rules.h)
+[ -z "$CIV2_NO_RULES" ] || find /tmp/g -maxdepth 1 -iname rules.txt -exec rm -f {} +
+# CIV2_NO_TEXT=1: the game's text files left out (OpenCiv2's own English, data/native/text)
+[ -z "$CIV2_NO_TEXT" ] || for f in /work/data/native/text/*.TXT; do
+    find /tmp/g -maxdepth 1 -iname "$(basename "$f")" -exec rm -f {} +
+done
 [ -f /work/harness/CIV.INI ] && cp /work/harness/CIV.INI /tmp/g/
 mkdir -p "$out"
 cd /tmp/g

@@ -1,0 +1,355 @@
+OpenCiv2: the High Council, modern times
+
+@M1
+0,84, Military: More troops, now!
+f5,4656,4763, Foreign: Embassies, sir, not more tanks!
+#, end
+t3, 3193,3212, Trade: Troops? Come on. We need Marketplaces, sir, that's where the money is.
+t5, 3193,3212, Trade: Forget the troops, sir. Caravans pay the bills.
+s3, 3101,3124, Science: No way!
+s4, 3101,3124, Science: Get real!
+a3, 3554,3580, Attitude: Not a chance!
+end
+
+@M2
+86,199, Military: Better weapons, sir! Get the labs on it!
+f3, 3406,3431, Foreign: No way!
+t2, 3193,3212, Trade: Nope.
+t4, 3193,3212, Trade: Can't afford it!
+a1, 3646,3692, Attitude: King, we've got problems. Big ones.
+#, end
+end
+
+@M3
+201,270, Military: We need a real navy, sir! Ship tech!
+t2, 3193,3212, Trade: Pass.
+t4, 3193,3212, Trade: Not today!
+f3, 3498,3526, Foreign: Military tech? That's the last thing we need, sir.
+a1, 3646,3692, Attitude: Uh, King? We've got a problem here.
+a3, 3747,3769, Attitude: Sure, right after the eggheads take up juggling for the crowds.
+end
+
+@M4
+272,359, Military: Barracks! Everywhere!
+f5, 3406,3431, Foreign: Nah.
+t3, 3193,3212, Trade: Too pricey! 
+t5, 3193,3212, Trade: No dice!
+t1, 2844,2882, Trade: Upkeep, sir. Think upkeep.
+#, end
+s3, 3101,3124, Science: Waste of time!
+s4, 3101,3124, Science: Seriously?
+a3, 3554,3580, Attitude: Please, no.
+end
+
+@M5
+361,502, Military: City Walls, sir! Start with the capital, then wall up the rest!
+s3, 3101,3124, Science: Old school!
+s4, 3101,3124, Science: Nope.
+f5, 3406,3431, Foreign: Bad optics!
+t3, 3193,3212, Trade: Too pricey!
+t5, 3193,3212, Trade: Forget it!
+t, 2844,2882, Trade:  Who pays the upkeep, sir?
+#, end
+a3, 3554,3580, Attitude: Buzzkill!
+end
+
+@M6
+504,568, Military: Troops are looking good!
+f7, 3384,3404, Foreign: Nice.
+t7, 3349,3382, Trade: Great!
+t1, 3193,3212, Trade: Overspent!
+s6, 3150,3172, Science: Uh, sir? Got a sec?
+s1, 3150,3172, Science: Sir, quick word?
+a1, 3608,3644, Attitude: Hey sir, one thing?
+end
+
+@M7
+570,649, Military: Let's go kick some tail!
+f4, 4656,4763, Foreign: Why fight for it? I can sweet-talk them out of it for less.
+#, end
+f, 3406,3431, Foreign: Lousy idea!
+s6, 3080,3099, Science: War? Cool. And while you're at it, swipe their tech for me.
+t, 3193,3212, Trade: Bad for profits
+end
+
+
+@S1
+1012,1096, Science: Crank up the science rate, sir! Now!
+f3, 3384,3404, Foreign: Yep.
+#, a, 3582,3606, Attitude: Tune those guys out, sir!
+a1, 5360,5443, Attitude: Fine by me, as long as luxuries stay put.
+#, end
+a2, 5360,5443, Attitude: Okay, sure, just don't touch my luxury rate.
+#, end
+a3, 5360,5443, Attitude: Whatever, but hands off the luxury rate, okay?
+#, end
+t2, 3174,3191, Trade: Sure thing.
+t4, 3174,3191, Trade: Totally.
+t, 3314,3347, *
+end
+
+@S2
+1098,1252, Science: Sir, maybe bump the science rate up a little?
+f3, 3384,3404, Foreign: Sounds good.
+#, a, 3582,3606, Attitude: Don't listen to them, sir!
+a1, 5360,5443, Attitude: Fine by me, as long as luxuries stay put.
+#, end
+a2, 5360,5443, Attitude: Okay, sure, just don't touch my luxury rate.
+#, end
+a3, 5360,5443, Attitude: Whatever, but hands off the luxury rate, okay?
+#, end
+t2, 3174,3191, Trade: Why not?
+t4, 3174,3191, Trade: Fine by me.
+t1, 2705,2778, Trade: Not if it eats into my tax money. Not happening, sir.
+end
+
+@S3
+1254,1377, Science: Build Libraries, labs, the works!
+m1, 867,957, Military: Whoa, hold on! More troops first, then books.
+#, end
+m4, 867,957, Military: Hang on! Barracks first, sir.
+#, end
+m5, 867,957, Military: Wait a sec! City Walls first, then the books.
+#, end
+t3, 3193,3212, Trade: Too pricey!
+t4, 3174,3191, Trade: Fine.
+#, f5, 3433,3461, Foreign: Sir! Don't listen to them. Ever!
+t5, 3193,3212, Trade: No budget!
+t1, 2705,2778, Trade: Sir, construction costs money, and frankly we're broke.
+#, end
+m2, 2884,2913, Military: Okay.
+m3, 2884,2913, Military: Fine by me.
+f3, 4765,4804, Foreign: Sure.
+f5,3406,3431, Foreign: Overrated!
+a3, 3554,3580, Attitude: Yawn.
+end
+
+@S4
+1379,1571, Science: Get Caravans on the road!
+m1, 867,957, Military: Whoa, hold on! More troops first, sir.
+#, end
+m4, 867,957, Military: Hang on! Barracks first, sir.
+#, end
+m5, 867,957, Military: Wait a sec! City Walls first, sir.
+#, end
+f3, 4765,4804, Foreign: Smart.
+t, 3174,3191, Trade: Love it!
+m2, 2884,2913, Military: Roger.
+#, f5, 3433,3461, Foreign: Sir, just tune those guys out!
+m3, 2884,2913, Military: Copy that.
+#, f5, 3433,3461, Foreign: Don't listen to a word, sir!
+f5, 3406,3431, Foreign: Not convinced.
+end
+
+@S5
+1573,1643, Science: Labs are on fire, sir!
+a6 ,3694,3745, *
+m2, 3027,3078, Military: Great. Then how about some weapons research, Einstein?
+m3, 3027,3078, Military: Super. Now how about some naval research, genius?
+t2, 3193,3212, Trade: So what?
+t4, 3193,3212, Trade: Big deal.
+end
+
+@S6
+1645,1748, Science: Sir, a shrewd leader like you sees the value of judicious... acquisition. Steal!
+m1,3027,3078, *
+m2,2884,2913, Military: Love it!
+m3,2884,2913, Military: Count me in!
+m4,3027,3078, *
+m5,3027,3078, *
+m6,2884,2913, Military: Let's roll!
+m7,2884,2913, Military: Yes, sir!
+end
+
+@S7
+1750,1920, Science: We're No. 1!
+a1, 3646,3692, Attitude: King, we've got problems. Big ones.
+a6, 3694,3745, *
+t6, 3349,3382, Trade: Sweet!
+t7, 3349,3382, Trade: Nice work.
+f7, 3384,3404, Foreign: Kudos!
+end
+
+
+@T1
+2097,2200, Trade: We're broke, sir! Raise taxes or put some folks on tax collecting!
+a1, 5360,5443, Attitude: Sure, King, just leave the luxury rate be.
+#, end
+a2, 5445,5520, Attitude: Okay, King, but hands off my luxury rate.
+#, end
+a3, 5445,5520, Attitude: Fine, King. Just don't touch the luxuries.
+#, end
+s1, 1922,2001, Science: Science gets too little already, sir!
+s2, 1922,2001, Science: Our science rate is already way too low!
+end
+
+@T2
+2202,2303, Trade: Research Economics, sir!
+m2, 812,865, Military: Tune him out, sir. Better weapons are what we need.
+m3, 812,865, Military: Ignore the bean counter, sir. We need naval tech.
+end
+
+@T3
+2305,2360, Trade: Build Stock Exchanges, sir!
+f5,3406,3431, Foreign: Nope.
+m1,651,731, Military: Troops before that, sir!
+m4,651,731, Military: Barracks before that, sir!
+m5,651,731, Military: City Walls before that, sir!
+s3, 3101,3124, Science: Pass.
+s4, 3101,3124, Science: No way.
+a3, 3554,3580, Attitude: Meh.
+end
+
+@T4
+2362,2473, Trade: Research Trade, sir!
+f, 3384,3404, Foreign: Agreed.
+m2, 812,865, Military: Tune him out, sir. Better weapons are what we need.
+m3, 812,865, Military: Ignore the bean counter, sir. We need naval tech.
+end
+
+@T5
+2475,2570, Trade: Build Caravans, sir!
+f5,3406,3431, Foreign: Nah.
+m1,651,731, Military: Troops before that, sir!
+m4,651,731, Military: Barracks before that, sir!
+m5,651,731, Military: City Walls before that, sir!
+s3, 3101,3124, Science: Nope.
+a3, 3554,3580, Attitude: Meh.
+end
+
+@T6
+2572,2616, Trade: Money's fine, sir.
+a1,3646,3692, Attitude: Sir! The government's gonna collapse!
+a2,3554,3580, Attitude: Not now!
+a3,3554,3580, Attitude: No way!
+end
+
+@T7
+2618,2703, Trade: We're loaded, sir!
+m1,3027,3078, Military: Loaded? Then buy me troops!
+#, end
+m4,3027,3078, Military: Loaded? Then buy some Barracks!
+#, end
+m5,3027,3078, Military: Loaded? Then buy some City Walls!
+#, end
+f5, 3498,3526, Foreign: If we're so loaded, buy some Embassies already.
+#, end
+end
+
+
+@F1
+3771,3870, Foreign: Go explore, sir!
+r5, s, 3080,3099, Science: Totally.
+r5, m, 2884,2913, Military: Sure.
+r5, a, 3528,3552, Attitude: Why not?
+r5, t, 3174,3191, Trade: Sounds fun.
+end
+
+@F2
+3872,4002, Foreign: Sir, let's make some friends. An alliance would help us out.
+m, 733,810, Military: No way, sir. We don't play nice with the enemy.
+end
+
+@F3
+4004,4100, Foreign: Research Espionage, sir! Info rules!
+s, 3080,3099, Science: Smart move.
+#, t2, 3214,3238, Trade: Ignore the others, sir. Okay?
+t4, 3193,3212, Trade: Pass.
+m2, 959,1010, Military: Spies? Forget it. We need better weapons, like now.
+m3, 959,1010, Military: Nah, sir. Better weapons, and we need them today.
+end
+
+@F4
+4102,4273, Foreign: Sir, our rep is trashed. Let's patch things up with the neighbors.
+;
+m, 3004,3025, *
+end
+
+@F5
+4275,4381, Foreign: Open Embassies everywhere, sir!
+m1, 651,731, Military: Fix the army first, sir, then the cocktail parties.
+m4, 651,731, Military: Shore up the army first, then we talk Embassies.
+m5, 651,731, Military: City Walls first, sir. Then the fancy Embassies.
+t3, 3193,3212, Trade: Too pricey.
+t5, 3193,3212, Trade: Nope.
+t1, 2844,2882, Trade:  Upkeep, sir. Think of upkeep...
+#, end
+s3, 3101,3124, Science: Waste of time!
+s4, 3101,3124, Science: No way!
+a3, 3554,3580, Attitude: Meh.
+end
+
+@F6
+4383,4526, Foreign: Let's swap tech with the neighbors, sir. Everybody wins!
+m2, 2884,2913, Military: Sure.
+#, s7, 3126,3148, Science: Their tech? Please. We wouldn't take it if it were free.
+m3, 2884,2913, Military: Okay.
+#, s7, 3126,3148, Science: Swap with them? Their science is a total joke, sir.
+m6, 733,810, Military: No way, sir. We don't play nice with the enemy.
+m7, 733,810, Military: Deal with them? Not a chance, sir. They're the enemy.
+s7, 3101,3124, Science: Their research is junk, sir. Strictly junk.
+#, end
+# (corrected on the next line)
+s5, 3080,3099, Science: Fine.
+t, 3174,3191, Trade: Deal! 
+end
+
+@F7
+4528,4654, Foreign: Everybody loves us, sir! The summit went great!
+s7, 3080,3099, Science: Awesome.
+a6, 3694,3745, *
+end
+
+
+@A1
+4806,4875, Attitude: Riots coming, sir! Temples and entertainers, fast, or we fall!
+r5, t, 3174,3191, Trade: Yep.
+r5, s, 3080,3099, Science: Agreed.
+r5, m, 2884,2913, Military: Right.
+r5, f, 3384,3404, Foreign: Uh-huh.
+end
+
+@A2
+4877,4969, Attitude: Sir, raise the luxury rate! Like, right now!
+t1, 2780,2842, Trade: Luxuries? No. Raise taxes, sir!
+#, end
+t6, 2780,2842, Trade: Forget luxuries, sir. Hike the taxes!
+#, end
+s1, 3150,3172, Science: Sir? Quick word?
+#, end
+s2, 2003,2095, Science: Our science rate is already low enough, sir!
+#, end
+f3, 3406,3431, Foreign: No way!
+m2, 2915,2939, Military: Too soft!
+m3, 2915,2939, Military: Coddling!
+end
+
+@A3
+4971,5096, Attitude: People are seriously mad, sir. More Temples and entertainers, stat!
+t1, 3278,3312, Trade: Sir, we've got trouble here.
+s1, 2003,2095, Science: Don't you dare cut the science rate, sir!
+s2, 2003,2095, Science: Hands off the science rate, sir!
+m1, 3027,3078, Military: Please. More troops will sort it out.
+m4, 3027,3078, Military: Please. Barracks will fix that.
+m5, 3027,3078, Military: Please. City Walls will fix that.
+end
+
+@A4
+5098,5231, Attitude: Maybe bump up the luxuries a bit, sir?
+t1, 3193,3212, Trade: Nope.
+t6, 3193,3212, Trade: No way!
+t, 3193,3212, Trade: Forget it!
+s1, 3101,3124, Science: Nah.
+s2, 3101,3124, Science: Pass.
+s, 3101,3124, Science: Not happening.
+end
+
+@A5
+5233,5295, Attitude: People are totally chill, Majesty!
+t7, 3174,3191, Trade: Cool.
+end
+
+@A6
+5297,5358, Attitude: They love you, sir! Truly!
+t7, 3349,3382, Trade: Let's do lunch on it!
+end

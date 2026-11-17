@@ -393,7 +393,8 @@ static long long file_size_of(const char *path)
 }
 
 /* The other files (setup.h SETUP_RES_FILES: a code page's glyphs, the
-   translations) in data, where missing or of another size (an update's). */
+   translations, OpenCiv2's English texts) in data, where missing or of another
+   size (an update's). */
 static int other_files(const char *data)
 {
     HRSRC r = FindResourceA(NULL, MAKEINTRESOURCEA(SETUP_RES_FILES), (LPCSTR)RT_RCDATA);

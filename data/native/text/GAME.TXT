@@ -1,0 +1,5225 @@
+; OpenCiv2: the game's dialogs and messages (GAME.TXT).
+; Written for OpenCiv2, used where the game has no GAME.TXT of its own.
+
+;
+;
+;
+
+@MAINMENU
+@width=200
+@title=OpenCiv2
+@options
+Begin a New Game
+Play a Premade World
+Shape the World
+Play a Scenario
+Open a Game
+Multiplayer Game
+See Hall of Fame
+See Credits
+
+@HOTSEAT1
+@width=220
+@title=Hot Seat
+@options
+Begin a New Hot Seat Game
+Play a Premade World
+Shape the World
+Play a Scenario
+Load Saved Hot Seat Game
+
+@HOTSEAT2
+@width=220
+@title=Hot Seat
+@options
+Two Human Players
+Three Human Players
+Four Human Players
+
+@HOTSEATTURN
+@width=220
+@title=Time Moves On...
+%STRING0, take the reins of
+the %STRING1.
+
+
+@HOTSEATNOT
+@width=220
+@title=Time Moves On...
+This save is not a Hot Seat game.
+
+
+@GAMETIMER
+@width=220
+@title=Turn Time Limit per Player
+@options
+No Limit
+30 Seconds
+1 Minute
+2 Minutes
+3 Minutes
+5 Minutes
+Other...
+
+@CUSTOMGAMETIMER
+@width=320
+@title=Choose the Turn Time Limit
+^^The longest limit is 3600 seconds (1 hour).
+^^The shortest is 10 seconds.
+
+Seconds:
+
+
+@ADVANCEDMP
+@checkbox
+@width=440
+@title=Choose Multiplayer Features
+@options
+Open Game (players may join mid-game)
+Retiring Ends a Civilization
+Reveal Human Start Positions
+Everyone May Chat from Turn One
+Double the Yield of Every Terrain
+Double Ground Unit Movement
+
+@JOINGAME0
+@title=Join the Game
+@width=340
+^^No AI civilization is free to take over!
+
+
+@JOINGAME1
+@title=Join the Game
+@width=340
+^^This game already has %NUMBER0 humans!
+
+
+@JOINGAME2
+@title=Join the Game
+@width=200
+^^Pick your tribe:
+
+
+@JOINGAME3
+@title=Join the Game
+@width=340
+^^A human player has joined and now
+^^leads the %STRING0.
+
+
+@PASSWORD0
+@title=Wrong Password
+@width=340
+^^You are no rightful ruler of this land!
+^^Begone, pretender. Your trickery fails here.
+
+
+@PASSWORD1
+@width=340
+
+Password:
+
+
+@PASSWORD4
+@title=Caution!
+@width=340
+^^Do NOT forget this password!
+^^Without it, no saved game of this civilization
+^^can EVER be used.
+
+
+@PBEM1
+@width=220
+@title=Play by EMAIL
+@options
+Begin a New EMAIL Game
+Play a Premade World
+Shape the World
+Play a Scenario
+Take Your EMAIL Turn
+
+@EMAILNOT
+@width=220
+@title=Time Moves On...
+This save is not an EMAIL game.
+
+
+@EMAILADDRESS
+@width=340
+@title=Type In Your EMAIL Address
+@options
+EMAIL:
+
+@EMAILSAVED
+@width=440
+@title=EMAIL Game Saved
+^^The EMAIL game was saved as
+^^%STRING0
+
+
+@EMAILDONE1
+@width=320
+@title=Send the Game
+^^Next, send the save file by email to
+^^%STRING0
+^^at
+^^%STRING1
+
+
+@EMAILDONE2
+@width=320
+@title=Send the Game
+^^Please email the saved game file
+^^to the player who moves next:
+^^%STRING0
+
+
+@LAN1
+@width=220
+@title=%STRING0
+@options
+Begin a New Multiplayer Game
+Play a Premade World
+Shape the World
+Play a Scenario
+Load Saved Multiplayer Game
+Join a Network Game
+
+@LANNOT
+@width=220
+@title=%STRING0
+This save is not a multiplayer game.
+
+
+@IPADDRESS
+@width=340
+@title=Type In Your IP or IPX Address
+@options
+Address:
+
+@NETNAME
+@width=420
+@title=Type In Your Net Name
+^^Your Net Name is the name other players on the network will see.
+^^It can differ from your leader's name.
+
+Net Name:
+
+@GAMENAME
+@width=420
+@title=Type In a Name for the Game
+^^The Game Name is how this game appears to other network players.
+^^It can differ from your civilization's name.
+
+Game Name:
+
+@LANCONNECTFAIL
+@width=220
+@title=%STRING0
+^^The connection failed.
+^^See the log file for details.
+
+
+@WAITINGJOINLAN
+@title=%STRING0
+@width=260
+^^Waiting for permission to join
+^^%STRING1
+
+
+@REJECTEDLAN
+@title=%STRING0
+@width=260
+^^You were turned away by
+^^%STRING1.
+
+
+@TIMEOUTLAN
+@title=%STRING0
+@width=260
+^^%STRING1
+^^has left the network.
+
+
+@WAITINGFORCONNECT
+@title=%STRING0
+@width=190
+^^Waiting for players
+^^to connect.
+
+
+@NOONESHOWED
+@title=%STRING0
+@width=260
+^^Nobody connected to this machine.
+^^Timed out.
+
+
+@SOMESHOWED
+@title=%STRING0
+@width=310
+^^Not every player managed to connect.
+^^The game will go on without them.
+
+
+@SERVERCONNECTFAIL
+@title=%STRING0
+@width=310
+^^Could not connect to the host machine.
+
+
+@WAITINGFORSERVER
+@title=%STRING0
+@width=190
+^^Waiting for the host's computer
+^^to make the connection...
+
+
+@STOPDRAGGING
+@title=%STRING0
+@width=240
+^^Dragging or resizing the window for long
+^^disrupts the network game for everyone. 
+^^If you keep doing it, you will be
+^^disconnected.
+
+
+@OUTOFHERE
+@title=%STRING0
+@width=190
+^^You have been dropped from the game.
+
+
+@SERVERCONNECTTIME
+@title=%STRING0
+@width=310
+^^Could not connect to the host machine.
+^^Timed out.
+
+
+@WAITTOJOIN
+@title=%STRING0
+@width=250
+^^Waiting for our chance to join.
+^^>--------------------------------<
+
+
+@NOONELEFT
+@title=%STRING0
+@width=260
+^^Every other player has left the game!
+
+
+@WAITINGONJOIN
+@title=%STRING0
+@width=250
+^^Waiting for the others to join.
+
+
+@WAITINGONFULLGAMESTATE
+@title=%STRING0
+@width=250
+^^Waiting for the complete game data.
+
+
+@OURTURNTOMOVE
+@title=%STRING0 %STRING1
+@width=250
+^^It is now our turn to move units.
+^^Make every moment count!
+
+
+@RETIREDIE
+@width=320
+@title=%STRING0 Envoy
+^^%STRING1 %STRING2 of the %STRING3 has stepped down.
+^^The %STRING0 empire crumbles to dust.
+
+
+@RETIREAI
+@width=320
+@title=%STRING0 Envoy
+^^%STRING1 %STRING2 of the %STRING3 has stepped down.
+^^The computer rules the %STRING0 empire.
+
+
+@NETWORKTYPE
+@width=220
+@title=Pick the Network Protocol
+@options
+TCP/IP
+IPX/SPX
+
+@IPVERIFY
+@title=Please Confirm Your IP Address
+@options
+IP Address:
+
+@IPOFGAME
+@width=340
+@title=Type In the Game's IP Address
+@options
+IP Address:
+
+@NOFOREIGNHUMAN
+@width=320
+@title=Foreign Minister
+^^We have not yet met any civilization
+^^that is led by a human player.
+
+
+@MULTIPLAYEROPTIONS
+@checkbox
+@width=480
+@title=Choose Multiplayer Options
+@options
+Empty the chat log when a new game begins.
+Empty the chat log every time we start up.
+Double the yield of every terrain type.
+Double the movement of ground units.
+
+@MULTIPLAYEROPTIONS2
+@checkbox
+@width=480
+@title=Choose Multiplayer Options
+@options
+Empty the chat log when a new game begins.
+Empty the chat log every time we start up.
+
+@PARLEYREQUEST
+@width=360
+@title=%string0 (%string3)
+"We humbly request an audience with %string1, glorious leader of the %string2."
+@options
+"Be gone"
+"Welcome"
+
+@PARLEYWAITING
+@width=360
+@title=Waiting for Their Answer...
+We asked:
+"We humbly request an audience with %string1, glorious leader of the %string2."
+
+@PARLEYGOAWAY
+@width=360
+@title=Their Answer...
+"We have no time for idle chatter. Request denied."
+
+@PARLEYOK
+@width=360
+@title=Their Answer...
+"We always have time for good friends like
+the %string0. Come, let us talk."
+
+@PARLEYBUSY
+@width=360
+@title=Their Answer...
+"Our leader is busy with delicate talks with another civilization.
+Please try again later; for now, we must decline."
+
+@PARLEYCANCEL
+@width=360
+@title=Their Answer...
+The %string0 have walked out of the talks!
+
+@PARLEYACCEPT
+@width=360
+@title=Their Answer...
+^^They have accepted our offer.
+^^Everything traded is now changing hands.
+
+@PARLEYACCEPT2
+@width=360
+@title=Our Answer...
+^^We have accepted their offer.
+^^Everything traded is now changing hands.
+
+@PARLEYNOTHANKS
+@width=360
+@title=Their Answer...
+^^The %string0 have refused our offer.
+^^They want us to offer more.
+
+@PARLEYCOUNTEROFFER
+@width=360
+@title=Their Answer...
+^^The %string0 have refused our offer.
+^^They are drafting a counteroffer.
+
+@JOINEDMAX
+@width=400
+@title=No Room
+^^This game already has the most human players it allows.
+^^Please join another game or try again later.
+
+@ALREADYCHOSEN
+@width=400
+@title=No Room
+^^Another player has already taken this civilization.
+^^Please choose another.
+
+@GAMECANCELED
+@width=400
+@title=Game Called Off
+^^The host has called off the setup of this game.
+^^Please choose another game.
+
+@WAITPRODUCTION
+@width=400
+@title=Awaiting Production
+^^Waiting for all the other players
+^^to finish their production.
+
+@WAITAIMOVES
+@width=400
+@title=Awaiting AI Moves
+^^Waiting for the computer-run
+^^civilizations to finish moving.
+
+@WAITHUMANMOVES
+@width=400
+@title=Awaiting Human Moves
+^^Waiting for the human-led
+^^civilizations to finish moving.
+
+@REPORTFOREIGNMULTI
+@width=580
+@title=Foreign Minister
+@listbox=7
+@button=View Intelligence
+@button=Send an Envoy
+@button=Set Attitude
+Sire, our might is %STRING0; our standing is %STRING1.
+
+@ATTITUDEMULTI
+@width=600
+@title=Our Attitude to the %STRING0
+
+@CHATSPYSTART
+@width=400
+@title=Intelligence Advisor
+^^We can now listen in on their messages!
+^^Our hidden agent will keep the tap
+^^running for as long as he can.
+
+@CHATNOTICE
+@width=360
+@title=Intelligence Advisor
+^^You have %NUMBER0 unread chat messages.
+^^Read them with "Advisors/Chat with Kings"
+^^or press CTRL-C.
+
+@ENEMIES2
+@width=320
+@title=Choose Number of Rivals
+@button=Random
+@options
+7 Civilizations
+6 Civilizations
+5 Civilizations
+4 Civilizations
+3 Civilizations
+2 Civilizations
+
+@DATAPATHFAIL
+@width=400
+@title=Scenario/Save Folder Missing
+^^To join this game or scenario, its folder must sit in the same place
+^^inside your Civilization folder as on the host.
+^^Your Civilization folder is:
+^^%STRING0
+^^The scenario or save folder is:
+^^...%STRING1
+^^(here "..." stands for your Civilization folder)
+^^Please install the scenario or data folder that is needed.
+
+@WRONGVERSION
+@width=400
+@title=Host and Client Versions Differ
+^^Host version:
+^^%STRING0
+^^Your version:
+^^%STRING1
+^^The two versions must match, but one side has a newer patch.
+^^Please update both computers to the newest patch,
+^^which you can find on the project's website.
+
+@HOSTCHANGECLIENT
+@width=320
+@title=The Host Has Changed
+^^Another player is now the host.
+^^The new host's net name is:
+^^%STRING0
+
+@HOSTCHANGESERVER
+@width=320
+@title=The Host Has Changed
+^^You are now the host.
+^^The other players in the game have been told.
+
+@NEWPLAYER
+@width=320
+@title=New Player
+^^Another human player has entered the game.
+^^Their net name is:
+^^%STRING0
+
+@NEWTURNTIMERCLIENT
+@width=320
+@title=New Turn Time Limit
+^^The host, %STRING0, suggests changing
+^^the turn time limit to:
+^^%STRING1
+^^Do you accept this change?
+
+@NEWTURNTIMERSERVER
+@width=320
+@title=New Turn Time Limit
+^^Your new time limit has been sent to the other
+^^human players for a vote.
+^^Waiting for their votes...
+
+@NEWTURNTIMERYES
+@width=320
+@title=New Turn Time Limit
+^^Every human player has agreed
+^^to the new turn time limit.
+^^It takes effect right away.
+
+@NEWTURNTIMERNO
+@width=320
+@title=New Turn Time Limit
+^^At least one human player has turned
+^^down the new turn time limit.
+^^The limit stays the same.
+
+@PMCHANGECLIENT
+@width=320
+@title=New Production/Movement Rules
+^^The host, %STRING0, suggests these
+^^production and movement settings:
+^^%STRING1
+^^Do you accept these settings?
+
+@PMCHANGESERVER
+@width=320
+@title=New Production/Movement Rules
+^^Your production and movement changes have been
+^^sent to the other human players for a vote.
+^^Waiting for their votes...
+
+@PMCHANGEYES
+@width=320
+@title=New Production/Movement Rules
+^^Every human player has agreed to the
+^^new production and movement settings.
+^^They take effect right away.
+
+@PMCHANGENO
+@width=320
+@title=New Production/Movement Rules
+^^At least one human player has turned down
+^^the new production and movement settings.
+^^Nothing will change.
+
+@NEWCREDITS
+@width=200
+@title=See Credits
+@options
+Civilization II
+OpenCiv2
+Fantastic Worlds
+Conflicts in Civilization
+
+@NEWCREDITSHORT
+@width=200
+@title=See Credits
+@options
+Civilization II
+OpenCiv2
+
+@NOMODEMS
+@width=320
+@title=No Modem Found
+^^Windows reports that no modem
+^^is installed on this computer.
+
+@PICKMUSICGOLD
+@width=480
+@title=Choose Music
+@options
+"Funeral March"
+"Ode to Joy"
+"The Crusades"
+"Alien Invasion"
+"Mongol Horde"
+"Apocalypse"
+"Primeval World"
+"New World"
+"Fantasy"
+"Mars"
+"World of Jules Verne"
+
+@NOINTEL
+@width=400
+@title=Intelligence Advisor
+^^We have no information about
+^^this civilization yet.
+
+@SERVERQUIT
+@title=%STRING0
+@width=200
+^^The game
+^^%STRING1
+^^was called off.
+
+@SIMULTUT
+@width=450
+@title=Civ Tutorial: Simultaneous Moves
+With simultaneous moves, the main map follows only your own units. To
+keep an eye on your enemies, right-click the overview map to open
+extra map windows; each one can be set to follow enemy movements as
+they happen.
+
+@SERVERQUITWAIT
+@width=450
+@title=Host Is Quitting
+^^Please wait while the players now moving finish their moves.
+^^This can take several minutes.
+
+@CLIENTQUITWAIT
+@width=450
+@title=Host Is Quitting
+^^The host role is moving to another computer.
+^^Please wait while the players now moving finish.
+^^This can take several minutes.
+
+@CLIENTHOTWAIT
+@width=450
+@title=Late Join
+^^Other players, human or computer, are moving now.
+^^Please wait until your first turn begins.
+^^This can take several minutes.
+
+@MULTITYPE2
+@width=200
+@title=Multiplayer Game
+@options
+Hot Seat
+Network Game
+Internet Game
+Dial-Up Networking (two players)
+
+@NOPICKMUSICNEW
+@width=360
+@title=Choose Music
+^^To choose music, put one of these CDs in your CD-ROM drive:
+^^the Civilization II CD, the Multiplayer Gold CD,
+^^or any Civilization II scenario CD.
+
+@LOSTSERVER
+@width=360
+@title=Connection Lost
+^^The connection to the host's computer has been lost.
+
+@LOSTCLIENT
+@width=360
+@title=Connection Lost
+^^The connection to this player has been lost:
+^^%STRING0
+
+@CANTDONOW
+@width=360
+@title=Not Available
+^^That cannot be done right now.
+
+@SCREWYSAVE
+@width=360
+@title=Damaged Save
+^^One unit in this save was damaged.
+^^We removed it, so you can play on. Please
+^^report this to the developers. Sorry!
+
+@HOTSEATAITURN
+@width=220
+@title=Time Moves On...
+^^An AI takes its turn...
+
+@WRONGXDAEMONVERSION
+@width=400
+@title=EXE / DLL Versions Differ
+^^Version the Civilization program expects:
+^^%STRING0
+^^Version of the XDaemon Dynamic Link Library:
+^^%STRING1
+^^These versions should match. Most likely one of them
+^^comes from a newer patch. Please install the newest patch,
+^^which you can find on the project's website.
+
+@CASUALTIES
+@width=220
+@title=%STRING0 %STRING1
+@button=Show Casualty Timeline
+^^Our turn to move has begun.
+^^The Defense Minister reports
+^^losses since our last move.
+^^We lost %NUMBER0 units.
+
+@CASUALTY
+@width=220
+@title=%STRING0 %STRING1
+@button=Show Casualty Timeline
+^^Our turn to move has begun.
+^^The Defense Minister reports
+^^a loss since our last move.
+
+@HOTHUMANSDEAD
+@width=250
+@title=Defense Minister
+^^Every human player has fallen.
+^^Game over.
+
+@CDROMNOTFOUND2
+@width=320
+@title=Please Note
+@button=Search Again
+The game CD could not be found.
+Please make sure it is in a working CD-ROM drive,
+then press the "Search Again" button below.
+
+@PASSWORDNOCHEAT2
+@width=350
+@title=Cheat Unavailable
+^^%NUMBER0 civilizations in this game have passwords.
+^^Remove all passwords before using cheat mode.
+
+@PASSWORDNOCHEAT1
+@width=350
+@title=Cheat Unavailable
+^^%NUMBER0 civilization in this game has a password.
+^^Remove that password before using cheat mode.
+
+@WAITONGAMEXMIT
+@width=350
+@title=New Player Getting Game Data
+^^The host is sending the game to a newly joined player.
+^^Please be patient; this can take several minutes.
+
+@GAMEPROFILE
+@width=100
+@title=OpenCiv2 Multiplayer Game Details
+^Game: %STRING0 (%STRING1)
+^Host: %STRING2
+^%STRING3
+^%STRING4
+^Map size: %STRING10 x %STRING11
+^%STRING5
+^Barbarians: %STRING6
+^Timer: %STRING7
+^Civilizations: %STRING8 (humans: %STRING9)
+
+@REVEALUNITORIGINS
+@width=320
+@title=Unit Information Query
+^^For this meeting, the %STRING0 ask to see
+^^which city each of our units comes from.
+^^Do you agree?
+
+@REVEALCITYINFO
+@width=320
+@title=City Information Query
+^^For this meeting, the %STRING0 ask
+^^to see the details of our cities.
+^^Do you agree?
+
+
+;
+;
+;
+
+@CUSTOMLAND
+@width=320
+@title=Customize: Land Mass
+@button=Random
+@default=1
+@options
+Small
+Normal
+Large
+
+@CUSTOMFORM
+@width=320
+@title=Customize: Land Form
+@button=Random
+@default=1
+@options
+Archipelago
+Varied
+Continents
+
+@CUSTOMCLIMATE
+@width=320
+@title=Customize: Climate
+@button=Random
+@options
+@default=1
+Arid
+Normal
+Wet
+
+@CUSTOMTEMP
+@width=320
+@title=Customize: Temperature
+@button=Random
+@options
+@default=1
+Cool
+Temperate
+Warm
+
+@CUSTOMAGE
+@width=320
+@title=Customize: Age
+@button=Random
+@options
+@default=1
+3 billion years
+4 billion years
+5 billion years
+
+
+@USESEED
+@width=320
+@title=Map Resources
+Shuffle the villages and special resources
+on this map at random?
+
+Yes
+No
+
+@USESTARTLOC
+@width=320
+@title=Start Positions
+Choose the players' starting places
+on this map at random?
+
+Yes
+No
+
+
+@SAVEERROR
+@width=200
+@title=Save Game
+The game could not be saved: %STRING0.
+
+@SAVEOK
+@width=300
+@title=Game saved.
+^^%STRING0 %STRING1 of the %STRING2
+^^%STRING3
+
+@LOADNOTSAVE
+@width=200
+@title=Load Game
+Can't load this file: it does not hold a saved game.
+
+@LOADOLDSAVE
+@width=200
+@title=Load Game
+Can't load: this save uses an outdated format.
+
+@LOADBADSAVE
+@width=200
+@title=Load Game
+The game could not be loaded: %STRING0.
+
+@LOADNEWSAVE
+@width=200
+@title=Load Game
+Can't load: this file was saved by a newer version of the game.
+
+@LOADOK
+@width=300
+@title=Difficulty Level: %STRING4
+^^%STRING0 %STRING1 of the %STRING2
+^^%STRING3
+
+
+@DIFFICULTY
+@width=320
+@title=Choose Difficulty Level
+@options
+Chieftain (easiest)
+Warlord
+Prince
+King
+Emperor
+Deity (hardest)
+
+@SIZEOFMAP
+@width=320
+@title=Choose Size of World
+@button=Custom
+@default=1
+@options
+Small  (40x50 squares, short game)
+Normal (50x80 squares)
+Large  (75x120 squares, long game)
+
+@CUSTOMSIZE
+@width=320
+@title=Choose a Custom World Size
+Width times height must come to between 1000 and 10,000 squares.
+Each side must be between 20 and 250 squares.
+
+Width (X):
+Height (Y):
+
+
+@ENEMIES
+@width=320
+@title=Choose Number of Rivals
+@button=Random
+@options
+7 Civilizations
+6 Civilizations
+5 Civilizations
+4 Civilizations
+3 Civilizations
+
+@BARBARITY
+@width=320
+@title=Choose How Active Barbarians Are
+@button=Random
+@default=2
+@options
+Villages Only
+Roaming Bands
+Unruly Tribes
+Savage Hordes
+
+@RULES
+@width=320
+@title=Choose Game Rules
+@options
+Standard Rules
+Custom Rules
+
+@GENDER
+@width=320
+@title=Choose Gender
+@options
+Male
+Female
+
+
+@TRIBE
+@width=600
+@title=Choose Your Tribe
+@button=Custom
+
+
+@CUSTOMTRIBE
+@width=440
+@title=Design Your Tribe
+@button=Titles
+@options
+Leader:
+Tribe:
+Adjective:
+
+@CUSTOMTRIBE2
+@width=440
+@title=Choose Your Official Titles
+
+@NAME
+@width=440
+@title=Type In Your Name
+@options
+Name:
+
+@CUSTOMCITY
+@width=320
+@title=Choose Your City Style
+
+
+
+@ADVANCED
+@checkbox
+@width=440
+@title=Choose Custom Features
+@options
+Simplified Combat
+Flat World
+Pick Computer Opponents
+Accelerated Startup
+Bloodlust (spaceships not allowed)
+Eliminated Players Stay Out
+
+@ACCELERATED
+@width=400
+@title=Choose Starting Year
+@options
+%NUMBER0 B.C. (Normal Start)
+%NUMBER1 B.C.
+%NUMBER2 B.C. (Accelerated Start)
+
+@OPPONENT
+@width=320
+@title=Choose Opponent #%NUMBER0
+@options
+Random
+
+@GAMEOPTIONS
+@checkbox
+@width=480
+@title=OpenCiv2 %STRING0
+@options
+Sound Effects
+Music
+Always pause at end of turn.
+Save every turn.
+Show enemy moves.
+Don't pause after enemy moves.
+Fast unit slide.
+Instant advice.
+Tutorial help.
+Move units by mouse (cursor arrows).
+ENTER key closes City Screen.
+
+@GRAPHICOPTIONS
+@checkbox
+@width=480
+@title=Choose Graphic Options
+@options
+Throne Room
+Diplomacy Screen
+Animated Heralds (needs 16 megabytes of RAM)
+Civilopedia for Advances
+High Council
+Wonder Movies
+
+
+@MESSAGEOPTIONS
+@checkbox
+@width=480
+@title=Choose City Report Options
+@options
+Warn when a city stops growing (Aqueduct/Sewer System).
+Report city improvements built.
+Report non-combat units built.
+Report invalid build orders.
+Report cities in disorder.
+Report cities back in order.
+Report "We Love The King Day".
+Warn when food runs short.
+Warn when pollution appears.
+Warn when switching production loses shields.
+"Zoom-to-City" is NOT the default.
+
+
+@INIT
+@width=440
+@y=-5
+@title=How It All Began . . .
+%STRING0, you are now ruler of the %STRING1. Long
+may you reign, and may your lands flourish! Your
+people, the %STRING1, already know Irrigation,
+Mining, %STRING2and Roads. The rest is up to you.
+
+
+@NOTONMAP
+@title=Illegal Move
+Units cannot move past the
+edge of the map.
+
+@ZOC
+@width=440
+@title=Civ Rules: Zones of Control
+A unit next to an enemy unit usually cannot move straight
+into another square that is also next to an enemy
+unit.
+^
+Exceptions: Diplomats and Caravans,
+and all ships and aircraft.
+^
+Still, any unit may always enter or
+leave a city, and may step onto a square
+where a friendly unit already stands.
+
+@FEATURE
+@title=Not There Yet.
+This feature is not built yet.
+
+@AMPHIB
+@title=Civ Rules: Amphibious Landings
+Land units must first come ashore before they can attack.
+Only Marines can attack straight from a ship.
+
+
+@NONCOMBAT
+@title=Civ Rules: Combat Units
+Settlers, Caravans, Diplomats and similar units have an
+attack strength of 0. They are non-combat units and
+cannot start an attack, though they can defend
+themselves.
+
+@FIGHTER
+@title=Civ Rules: Airpower
+Only Fighters can attack enemy aircraft.
+
+@FUEL
+@title=Civ Rules: Fuel
+Our aircraft ran out of fuel and was lost.
+Fighters and Missiles must end every turn
+in a city or on a Carrier. Bombers stay
+aloft longer, but must land at a city or on
+a Carrier before their second turn is over.
+
+@FATIGUE
+@title=Fatigue
+Sire, our troops are worn out! If they attack now,
+they will fight at only %NUMBER0/%NUMBER1 of their full
+strength.
+
+"Attack!"
+"Let them rest and recover."
+
+
+@LANDFALL
+@title=Disembark
+Sire, shall our troops leave the
+ships and go ashore?
+
+Stay aboard
+Go ashore
+
+@NOLANDFALL
+@title=Disembark
+Ships cannot sail onto land, and every land unit aboard
+has already used up its movement for
+this turn.
+
+@OCCUPY
+Only ground units can take
+an enemy city.
+
+@TRIREME
+@title=Civ Rules: Triremes
+Our ship has gone down with all hands! Ships of
+this kind may sink if they end a turn out of
+sight of land, so keep them next to the coast.
+
+@FAMINE0
+@title=City Advisor
+%STRING0 has used up its food.
+%STRING1 lost.
+
+@FAMINE1
+@title=City Advisor
+%STRING0 has used up its food.
+Famine looms.
+
+@FAMINE2
+@title=City Advisor
+%STRING0 has run out of stored food.
+Its trade route with %STRING1 is cancelled.
+
+@DESTROYED
+@title=Defense Minister
+%STRING0 civilization wiped out by %STRING1.
+
+@DECREASE
+@title=Domestic Advisor
+%STRING0 has lost population.
+
+@FOODSHORTAGE
+@title=Domestic Advisor
+%STRING0 is nearly out of food, Sire!
+
+@BUILT
+@title=Domestic Advisor
+%STRING0 %STRING3 %STRING1.
+
+@BUILT2
+@title=Foreign Advisor
+%STRING0 (%STRING2) %STRING3 %STRING1.
+
+@BUILT3
+@title=Domestic Advisor
+%STRING0 %STRING3 %STRING1.
+(This city picks its own production.)
+
+@MANHATTAN
+@title=Military Advisor
+Our sensors detect a NUCLEAR TEST
+by %STRING0!
+
+
+@MOVECAPITAL
+@title=Foreign Advisor
+%STRING1 capital now at %STRING0.
+
+
+@SUPPORT
+@title=Military Advisor
+%STRING0 cannot keep up %STRING1.
+Unit disbanded.
+
+
+@DISORDER
+@title=Domestic Advisor
+@width=280
+Civil Disorder in %STRING0! Mayor
+runs away!
+
+@REVOLT
+@title=Crisis at Home!
+Angry citizens of %STRING0 rise up:
+the government falls!
+
+@NEWGOVT
+@title=Newspaper
+%STRING0 named %STRING1 of the new
+%STRING2 %STRING3!
+
+@CHANGED
+@title=Foreign Advisor
+Our spies report that the %STRING0 government is now
+a %STRING1, and %STRING2 has taken the title %STRING3.
+
+@OVERTHROWN
+@title=Foreign Advisor
+Spies say: the %STRING0 government
+has fallen.
+
+@RESTORED
+@title=Domestic Advisor
+%STRING0 is calm again.
+
+@WELOVEKING
+@title=Domestic Advisor
+@width=280
+%STRING0 holds a 'We love the %STRING1' day!
+
+@WEDONTLOVEKING
+@title=Domestic Advisor
+%STRING0 has ended its 'We love the %STRING1' day.
+
+@FURTHERGROWTH
+@title=Domestic Advisor
+%STRING0 needs %STRING1 to keep growing.
+
+@POLLUTION
+@title=Science Advisor
+Pollution by %STRING0.
+
+@CHERNOBYL
+@title=Newspaper
+Nuclear Disaster in %STRING0!
+Fallout feared!
+
+@INHOCK
+@title=Domestic Advisor
+%STRING0 cannot pay upkeep for %STRING1.
+%STRING1 sold for %NUMBER0 gold.
+
+@ONLYSETTLERS
+@title=Civ Rules: Settlers
+Only Settlers and Engineers can
+carry out that order.
+
+@ENGINEERS
+@title=Civ Rules: Engineers
+Only Engineers can carry out
+that order.
+
+@CITYATSEA
+@title=Civ Rules: Cities
+A city in the middle of the ocean? Alas,
+cities can only be built on land.
+
+@ONLY10
+@title=Civ Rules: Cities
+Adding Settlers or Engineers to a city cannot make it
+grow beyond size %NUMBER0.
+
+@CANTIMPROVE
+@title=Civ Rules: Terrain
+That order can't be carried out here.
+
+@CANTDO
+@title=Civ Rules: Orders
+That order can't be carried out here.
+
+@BRIDGES
+@title=Civ Rules: Bridge Building
+Roads cannot be built on river squares until
+your civilization has learned Bridge
+Building.
+
+@RAILROADS
+@title=Civ Rules: Railroads
+This square already has a road. To turn it
+into a railroad, your civilization must
+first learn the Railroad
+advance.
+
+@ALREADYROAD
+@title=Civ Rules: Roads
+This square already has both a road and a railroad.
+There is nothing more to build here.
+
+@BRIDGEBUILDING
+@title=Civ Rules: Bridge Building
+Before you can build roads on river squares,
+your civilization must learn Bridge
+Building.
+
+@NOWATER
+@title=Civ Rules: Irrigation
+This square has no source of water. To be
+irrigated, land must be next to a river, the
+ocean, or a square that is already
+irrigated.
+
+@FARMLAND
+@title=Civ Rules: Farmland
+This square is already irrigated. To turn it
+into farmland, your civilization must first
+learn the advance of
+Refrigeration.
+
+@ALREADYIRRIGATION
+@title=Civ Rules: Irrigation
+This square is already irrigated. There is no
+more irrigating to do here.
+
+@ALREADYFARMLAND
+@title=Civ Rules: Farmland
+This square is already farmland. It cannot be
+irrigated any further.
+
+@ALREADYMINING
+@title=Civ Rules: Mining
+This square already has a mine. It cannot be
+mined any further.
+
+@ALREADYFORT
+@title=Civ Rules: Forts
+A fortress already stands here.
+
+@RADIO
+@title=Civ Rules: Airbases
+Airbases can only be built once
+your civilization has learned
+Radio.
+
+@ALREADYAIR
+@title=Civ Rules: Airbases
+An airbase already stands here.
+
+
+@CONSTRUCTION
+@title=Civ Rules: Forts
+Forts can only be built once your
+civilization has learned
+Construction.
+
+@NOPOLLUTION
+@title=Civ Rules: Pollution
+This square is free of pollution.
+
+
+@NAMECITY
+@title=What Shall This City Be Called?
+@options
+City Name:
+
+
+@RENAMECITY
+@title=What Shall This City Now Be Called?
+@options
+New City Name:
+
+
+@ADJACENTCITY
+@title=Civ Rules: Cities
+Cities can't be founded right
+next door.
+
+
+@DISBAND
+@title=Caution!
+Disband %STRING0 for good?
+
+No
+Yes
+
+
+@PRODUCTION
+@title=What should %STRING0 build?
+@width=440
+@listbox
+@button=Auto
+@button=Help
+
+@RESEARCH
+@title=Which discovery should our %STRING0 seek?
+@width=300
+@listbox
+@button=Help
+@button=Goal
+
+@HELPON
+@title=Help on what topic?
+@width=320
+@options
+
+@RESEARCHGOAL
+@title=Which advance is your long-term goal?
+@width=480
+@listbox=10
+@button=Help
+
+@RESEARCHTHESE
+@title=Science Advisor
+@width=400
+So our research should be
+
+@STEALTHESE
+@title=Science Advisor
+@width=400
+So we should steal
+
+@RESEARCHNONE
+@title=Science Advisor
+@width=400
+There is nothing we can research right now
+that leads toward %STRING0.
+
+@STEALNONE
+@title=Science Advisor
+@width=400
+There is nothing we can steal right now
+that leads toward %STRING0.
+
+@CIVADVANCE
+@title=Civilization Advance
+@width=320
+%STRING0 %STRING1 learn the secret of %STRING2.
+
+@SETHOMECITY
+@title=Civ Rules: Home Cities
+@width=320
+A unit's home city pays for its upkeep. To give a unit a
+new home city, move it into the city you want, then
+press the 'H' key or choose the 'Set Home City' order.
+The city it joins will support it from then
+on.
+
+@PICKGOVT
+@title=Choose a Government
+@width=240
+
+@ELVISERR
+@title=Civ Rules: Specialists
+Only cities of size 5 or larger can have
+taxmen or scientists.
+
+
+@CHILDCLICK
+@width=320
+@title=Supported Unit Details
+^%STRING0
+^Location: %STRING1
+
+Leave it be
+Center the map on it
+Center the map on it and close the city screen
+Send it back to its home city
+
+
+@UNITOPTIONS
+@width=320
+@title=Unit Details
+^%STRING0
+^Home City: %STRING2
+
+
+@COMPLETE0
+@title=Buy %STRING0
+^Cost to finish %STRING0: %NUMBER0 gold
+^Treasury: %NUMBER1 gold
+
+@COMPLETE1
+@title=Buy %STRING0
+^Cost to finish %STRING0: %NUMBER0 gold
+^Treasury: %NUMBER1 gold
+
+Buy it
+Cancel
+
+
+@COMPLETE2
+@title=Buy %STRING0
+^Cost to finish %STRING0: %NUMBER0 gold
+^Treasury: %NUMBER1 gold
+^CIVIL DISORDER
+
+@HOCKTHIS
+@title=Sell City Improvement
+Sell the %STRING0 for
+%NUMBER0 gold?
+
+Sell it
+Cancel
+
+@CANTHOCKTHIS
+@title=Civ2 Rules: Palace
+@width=320
+The Palace cannot be sold. To move your capital, build a new
+Palace in another city.
+
+@CHANGETAX
+@title=Choose New Tax Rate
+@width=260
+^Government Type: %STRING0
+^Highest Rate: %NUMBER0%%
+
+@CHANGELUX
+@title=Choose New Luxury Rate
+@width=260
+^Government Type: %STRING0
+^Highest Rate: %NUMBER0%%
+
+@FINDCITY
+@title=Now where could it be . . .
+@width=360
+@button=Go To City
+@listbox
+
+@REVOLUTION
+@width=240
+@title=Revolution
+Shall we rise up and overthrow
+the %STRING0 %STRING1?
+
+Yes
+No
+
+@STARTREV
+@width=240
+@title=Revolution!
+The %STRING0 rise in revolt!
+The people want a new regime.
+
+@WARENDS
+@width=320
+@title=Diplomats Report
+The fighting is over between
+the %STRING0 and the %STRING1.
+
+
+@SIGNPEACE
+@width=320
+@title=Diplomats Report
+%STRING0 and %STRING1 make peace.
+
+@ALLYMAKESPEACE
+@width=320
+@title=Foreign Minister
+Our allies the %STRING0 tell us they have
+made peace with the %STRING1.
+
+@ALLYMAKESWAR
+@width=320
+@title=Foreign Minister
+Our allies the %STRING0 tell us they
+are now at war with the %STRING1.
+
+@SIGNALLIED
+@width=320
+@title=Spies Report
+%STRING0 and %STRING1 have secretly
+joined forces against the %STRING2!
+
+@SIGNNATO
+@width=320
+@title=Diplomats Report
+%STRING0 and %STRING1 sign the "%STRING2 Pact"
+to hold back %STRING3 aggression.
+
+@JOINWAR
+@width=320
+@title=Diplomats Report
+The %STRING0 declare they will fight beside
+the %STRING1 against the %STRING2.
+
+@CANCELALLIED
+@width=320
+@title=Diplomats Report
+%STRING0 and %STRING1 end alliance.
+
+@CANCELPEACE
+@width=320
+@title=Diplomats Report
+%STRING0 and %STRING1 end their peace treaty.
+
+@ALLYUNDERATTACK
+@width=320
+@title=Foreign Minister
+Our allies the %STRING0 report that the
+%STRING1 have attacked them!
+
+@DEMANDHELP
+@width=320
+@title=%STRING0 Envoy
+"The treacherous %STRING1 have attacked us! By the terms of our
+alliance, you are bound to come to our aid, and we expect you
+to do so at once!"
+
+"We are too busy."
+"Gladly! The %STRING1 will pay for this outrage!"
+
+@HELPBONUS
+@width=320
+@title=%STRING0 Envoy
+"Perhaps %NUMBER0 gold would help you
+change your mind?"
+
+"Our answer is still no."
+"Then war on the %STRING1!"
+
+@DIDNTHELP
+@width=320
+@title=%STRING0 Envoy
+"Very well. But do not expect our help
+when you need it."
+
+
+@ALLYATTACKING
+@width=320
+@title=Foreign Minister
+Our allies the %STRING1 report that they
+are launching attacks on the %STRING0.
+
+@DECLAREWAR
+@width=320
+@title=Diplomats Report
+%STRING0 and %STRING1 go to war.
+
+
+@TOOMANYUNITS
+@width=320
+@title=Too Many Units!
+No new unit can be built: the world has reached its limit
+of units. Disband some of your units to make room for
+new ones.
+
+@SURPRISETRIBE
+@width=240
+@title=Village
+You find an advanced tribe.
+
+@SURPRISENOMADS
+@width=300
+@title=Village
+You come upon a band of wandering nomads.
+They agree to join your people!
+
+@SURPRISESCROLLS
+@width=240
+@title=Village
+You find scrolls of ancient learning.
+
+@SURPRISEMERCS
+@width=300
+@title=Village
+You meet a friendly band of skilled mercenaries. They join your cause!
+
+@SURPRISEBARB
+@width=300
+@title=Village
+You have stirred up barbarians!
+
+@SURPRISENOTHING
+@width=320
+@title=Village
+The village was abandoned long ago. Only overgrown
+ruins remain.
+
+@SURPRISEMETALS
+@width=300
+@title=Village
+You find a cache of precious metals worth %NUMBER0 gold!
+
+
+@SNEAK
+@width=300
+@title=Defense Minister
+Surprise attack by %STRING0 troops!
+
+@BREAKCEASE
+@width=300
+@title=Defense Minister
+The %STRING0 have broken the truce!
+
+@CANCELPEACE
+@width=300
+@title=Foreign Minister
+%STRING0 end their peace treaty with %STRING1.
+
+@RANSOM
+@width=300
+@title=Defense Minister
+Barbarian chief taken! %NUMBER0 gold paid in ransom.
+
+@PROMOTED
+@width=300
+@title=Defense Minister
+Our %STRING0 has fought bravely in battle
+and has been promoted to Veteran
+rank!
+
+@MULTIPLEWIN
+@width=300
+@title=Defense Minister
+%NUMBER0 units wiped out.
+
+@MULTIPLELOSE
+@width=300
+@title=Defense Minister
+We lost %NUMBER0 units.
+
+
+@CITYCAPTURE
+@width=300
+@title=Defense Minister
+%STRING1 %STRING3 %STRING0. %NUMBER0
+gold pieces seized.
+
+
+@CITYCAPTURE2
+@width=300
+@title=Spies Report
+%STRING1 %STRING3 the %STRING2 city of %STRING0.
+
+@CITYWINALLY
+@width=320
+@title=Foreign Minister
+News from our allies the %STRING1: they have %STRING4
+%STRING0, a %STRING2 city.
+
+@CITYLOSEALLY
+@width=320
+@title=Foreign Minister
+News from our allies the %STRING2: %STRING0
+has fallen to the %STRING1.
+
+@TAKECIV
+@width=320
+@title=Choose Civilization Advance
+@listbox
+@button=Goal
+
+@TOOKCIV
+@width=320
+@title=Civilization Advance Taken!
+%STRING0 seize %STRING1!
+
+@BADBUILD
+@width=320
+@title=Build Orders Outdated
+%STRING0 is building %STRING1, which
+already exists. It needs new orders.
+
+@BADSPACE
+@width=320
+@title=Surplus Spaceship Parts
+%STRING0 is building %STRING1,
+but our spaceship needs no more.
+
+
+@BARBARIANSLAND
+@width=320
+@title=Defense Minister
+Barbarian raiders have landed near %STRING0!
+The people are terrified.
+
+@BARBARIANS
+@width=320
+@title=Traveller's Report
+%STRING0 by %STRING1!
+
+@PRODCHANGE
+@width=320
+@title=Civ Rules: Switching Production
+@default=1
+Sire, there are three kinds of production: units, city improvements
+and Wonders. If we switch from one kind to another, we lose
+%NUMBER0%% of the shields we have built up so
+far.
+
+Keep building %STRING0
+Switch to %STRING1 (lose %NUMBER0%%)
+
+
+@@PRODCHANGE
+@@width=480
+@@title=Civ Rules: Change of Production
+@;
+@;
+@;
+@;
+@;
+@;
+@;
+@;
+@;
+@;
+@;
+@
+@;
+@;
+
+@BARRACKS
+@width=320
+@title=Defense Minister
+Now that we know %STRING0, all our existing Barracks are outdated.
+We have sold the old Barracks for %NUMBER0 gold.
+
+@EMISSARY
+@width=320
+@title=%STRING0 Envoy
+An envoy from %STRING1 %STRING2 of the %STRING3 asks to meet
+with you. Will you receive %STRING4?
+
+"Yes, we will grant an audience."
+"No, send %STRING4 away."
+
+@EMISSARYFORCE
+@width=320
+@title=%STRING0 Envoy
+The %STRING1 envoy insists on being heard all the same!
+
+@GREETINGS00
+@width=320
+@title=%STRING0 Envoy
+"Greetings from the most honoured %STRING1, %STRING2 of
+the %STRING3_._._."
+
+@GREETINGS01
+@width=320
+@title=%STRING0 Envoy
+"I bring word from %STRING1, who reigns as %STRING2
+of the %STRING3_._._."
+
+@GREETINGS02
+@width=320
+@title=%STRING0 Envoy
+"Hear the words of our wise ruler, %STRING2: %STRING1,
+lord of the %STRING3_._._."
+
+@GREETINGS03
+@width=320
+@title=%STRING0 Envoy
+"I speak for %STRING5, before whom all mortals tremble:
+%STRING2 %STRING1, ruler of the %STRING3_._._."
+
+
+@GREETINGS10
+@width=320
+@title=%STRING0 Envoy
+"Listen well, faithless chief of unbelievers! Hear the
+words of the most honoured %STRING1, %STRING2 of
+the %STRING3_._._."
+
+@GREETINGS11
+@width=320
+@title=%STRING0 Envoy
+"Traitor! Listen to %STRING1, who reigns as %STRING2
+of the %STRING3_._._."
+
+@GREETINGS12
+@width=320
+@title=%STRING0 Envoy
+"Treacherous %STRING6, prepare to hear the words of our
+wise ruler, %STRING2 %STRING1, lord of the
+%STRING3_._._."
+
+@GREETINGS13
+@width=320
+@title=%STRING0 Envoy
+"Beware, faithless %STRING6!
+I speak for %STRING5, before whom all mortals tremble:
+%STRING2 %STRING1, ruler of the %STRING3_._._."
+
+@NUCLEARWEAPONS
+^
+"And NUCLEAR WEAPONS stand behind our words!"
+
+
+@YOURNUKES1
+@width=320
+@title=%STRING0 Envoy
+"Your atomic tests fill us with dread. As one
+civilized people to another, we beg you: scrap these
+weapons now, before they bring ruin on every nation."
+
+@YOURNUKES2
+@width=320
+@title=%STRING0 Envoy
+"So, you too have nuclear weapons now. We accept them
+as a deterrent, but be warned: any attempt at nuclear
+blackmail will be met swiftly and without
+mercy."
+
+@NOEXCHANGEMAD
+@title=%STRING0 Envoy
+@width=320
+"Your primitive knowledge is of no use to us.
+Even your scholars are a joke."
+
+@NOEXCHANGEMEDIUM
+@title=%STRING0 Envoy
+@width=320
+"Our science is far beyond anything you could
+understand. Trading with you would be a waste of
+our valuable time."
+
+@NOEXCHANGEWONDER
+@title=%STRING0 Envoy
+@width=320
+"All our scholars are busy with our great work,
+%STRING1. We will talk of such things another
+time."
+
+@NOEXCHANGENOW
+@title=%STRING0 Envoy
+@width=320
+"We have no wish to trade advances
+at this time."
+
+@EXCHANGEGIFT
+@title=%STRING0 Envoy
+@width=320
+"Your backward people have nothing to offer us. Even so,
+we give you %STRING1 as a gift, to help you catch up
+with the rest of the world."
+
+@EXCHANGEGIFT2
+@title=%STRING0 Envoy
+@width=320
+"We are shocked at how far your society has fallen. We feel
+it is our duty to give you %STRING1 as a gift, so that
+you may one day catch up with the modern
+world."
+
+@SELLTECH
+@title=%STRING0 Envoy
+@width=320
+"Your knowledge is worthless to us. Still, we are willing
+to sell you %STRING1 for a mere %NUMBER0
+gold."
+
+No, thank you
+Pay %NUMBER0 gold
+
+@SELLTECH2
+@title=%STRING0 Envoy
+@width=320
+"Our treasury is empty and we cannot give anything away. But we
+will gladly sell you %STRING1 for only %NUMBER0 gold,
+a fair price in hard times."
+
+No, thank you
+Pay %NUMBER0 gold
+
+@SYMPATHY
+@title=%STRING0 Envoy
+@width=320
+"We are sorry for your troubles, but we are not in a
+position to help you at this time."
+
+@EXCHANGE0
+@title=%STRING0 Envoy
+@width=320
+"We are amazed that you still do not know %STRING1!
+We, in turn, would like to learn %STRING3.
+Shall we exchange what we know, to the good of
+both our peoples?"
+
+"We have no need of %STRING1."
+"Agreed, let us exchange."
+
+@EXCHANGE1
+@title=%STRING0 Envoy
+@width=320
+"We are fascinated by your %STRING2 idea,
+%STRING3. Would you share %STRING3
+with us, perhaps in exchange for
+%STRING1?"
+
+"We have no need of %STRING1."
+"Agreed, let us exchange."
+
+@EXCHANGEPETTY
+@title=%STRING0 Envoy
+@width=320
+"You offer us that trifle? How
+amusing. Return when you can
+offer something worth our time."
+
+@CANCELTREATY0
+@title=%STRING0 Envoy
+@width=320
+"You have allied yourselves with the
+wicked %STRING1, our neighbours. We
+%STRING2 you end that alliance at
+once!"
+
+"Never! The %STRING1 are our friends."
+"Agreed! The %STRING1 will be punished."
+
+@CANCELTREATY1
+@title=%STRING0 Envoy
+@width=320
+"You have made peace with the wicked
+%STRING1, our neighbours. We
+%STRING2 you tear up that treaty at
+once!"
+
+"Never! The %STRING1 are our friends."
+"Agreed! The %STRING1 will be punished."
+
+@CANCELTREATY2
+@title=%STRING0 Envoy
+@width=320
+"We are busy crushing our common
+enemy, the %STRING1. We %STRING2
+you take up arms against them
+now and help us finish the job!"
+
+"No. The %STRING1 have done us no harm."
+"Agreed! The useless %STRING1 will be punished!"
+
+
+@CANCELALLIANCE0
+@width=320
+@title=Defense Minister
+Our alliance with the %STRING1 has ended. Our units
+in %STRING2 territory have been sent back to our
+nearest cities, and %STRING2 units found on our
+soil have likewise been returned to their homeland.
+
+@CANCELALLIANCE1
+@width=320
+@title=Spies Report
+The %STRING1 and %STRING3 have ended their
+alliance.
+
+
+@TRIBUTE0
+@width=320
+@title=%STRING0 Envoy
+"You hardly deserve peace. Still, if you pay us
+%NUMBER0 gold in tribute, we will leave your
+feeble nation in
+peace."
+
+"Your threats are empty. Get out!"
+Pay %NUMBER0 gold in tribute
+
+
+@TRIBUTE1
+@width=320
+@title=%STRING0 Envoy
+"Your nation is hardly worth the trouble of
+conquering. Pay us %NUMBER0 gold in tribute, and
+perhaps we will leave you alone, for
+now."
+
+"Spare us your boasting. Get out!"
+Pay %NUMBER0 gold in tribute
+
+@TRIBUTE2
+@width=320
+@title=%STRING0 Envoy
+"We are tired of watching you spoil lands that rightfully belong
+to us. Pay us %NUMBER0 gold in reparations, and we will not drive
+you off this continent. Refuse, and you will regret
+it."
+
+"This is nothing but extortion, and we will not pay it."
+Pay %NUMBER0 gold in reparations
+
+@TRIBUTE3
+@width=320
+@title=%STRING0 Envoy
+"%STRING1, our mighty %STRING2, thinks of your land as little more
+than a small province of the %STRING3 empire. Still, for %NUMBER0
+gold, %STRING4 may allow you to keep your independence a while
+longer."
+
+"We will never kneel to tyranny or greed!"
+Pay %NUMBER0 gold
+
+
+@TRIBUTE8
+@width=320
+@title=%STRING0 Envoy
+"Your luxury disgusts us, and so does your plundering of the world's
+riches. We demand %NUMBER0 gold from your overflowing treasury, and
+we demand it now."
+
+"We will not waste a single coin on the likes of you."
+Pay %NUMBER0 gold
+
+@TRIBUTE9
+@width=320
+@title=%STRING0 Envoy
+"%STRING1, our mighty %STRING2, grows bored with this dull
+alliance. Perhaps %NUMBER0 gold would persuade %STRING4 to keep
+it going a little longer."
+
+"We are not %STRING1's private bankers!"
+Pay %NUMBER0 gold
+
+
+@TAKECIV0
+@width=320
+@title=%STRING0 Envoy
+"Your nation is a laughingstock. Hand over
+the secrets of %STRING1, and we may
+decide not to wipe you off the face
+of the earth."
+
+"Your threats are empty. Get out!"
+Hand over %STRING1
+
+
+@TAKECIV1
+@width=320
+@title=%STRING0 Envoy
+"You call this a civilization? We
+laugh at it. Give us the secrets of
+%STRING1, and perhaps we will not
+trample your little nation into the
+dust."
+
+"Your threats do not frighten us."
+Hand over %STRING1
+
+@TAKECIV2
+@width=320
+@title=%STRING0 Envoy
+"We know you have learned %STRING1. Hand it over at once,
+or suffer the consequences."
+
+"Oh no, we are shaking in our sandals!"
+Hand over %STRING1
+
+
+@TAKECIV8
+@width=320
+@title=%STRING0 Envoy
+"Your greatness inspires the whole world. Yet our people envy
+your comfortable life, and grow restless. Only the knowledge
+of %STRING1 would calm them. Surely you will share
+it?"
+
+"Your people are not yet ready for such knowledge."
+Hand over %STRING1
+
+@TAKECIV9
+@width=400
+@title=%STRING0 Envoy
+"%STRING3, our great %STRING2, is weary of this dull
+alliance. The knowledge of %STRING1, however, might
+persuade %STRING4 to keep it going a while
+longer."
+
+"We keep our knowledge to ourselves, thank you."
+Hand over %STRING1
+
+@OVERABARREL
+@width=320
+@title=%STRING0 Envoy
+"Your begging amuses us, but it is not quite enough. Add the
+secrets of %STRING1 as well, and we may be
+satisfied."
+
+"What? We had a bargain!"
+Hand over %STRING1
+
+@BEGONE0
+@width=320
+@title=%STRING0 Envoy
+"Then this tiresome alliance is at an end. Take your forces
+out of our lands at once!"
+
+@BEGONE1
+@width=320
+@title=%STRING0 Envoy
+"We have had enough of this tedious alliance. Leave our
+lands at once!"
+
+@NOVIOLATORS
+@width=320
+@title=%STRING0 Envoy
+"None of our troops are on your land."
+
+
+@PROVOKE0
+@width=320
+@title=%STRING0 Envoy
+"Our patience is at an end! We will not stand for your
+outrages any longer. Prepare for WAR!"
+
+@PROVOKE1
+@width=320
+@title=%STRING0 Envoy
+"We have had enough of your insolence! Our
+troops will teach you some manners. Prepare
+for WAR!"
+
+@PROVOKE2
+@width=320
+@title=%STRING0 Envoy
+"That was your last insult! Now you will
+feel the edge of our swords. Prepare for WAR!"
+
+@REJECT0
+@width=320
+@title=%STRING0 Envoy
+"You dare refuse our generous offer?
+Such arrogance must be punished!
+Prepare for WAR!"
+
+@RID0
+@width=320
+@title=%STRING0 Envoy
+"We have decided to wipe your worthless
+nation from the face of the earth.
+Prepare for WAR!"
+
+@ACCURSEDWALL
+@width=320
+@title=%STRING0 Envoy
+"Only that cursed Great Wall of yours keeps
+us from punishing you as you deserve!"
+
+@ACCURSEDUN
+@width=320
+@title=%STRING0 Envoy
+"Count yourself lucky that you control that cursed United
+Nations. Otherwise we would gladly give you the punishment
+you so richly deserve."
+
+@SENATEPEACE
+@width=320
+@title=Foreign Minister
+Behind our backs, the Senate has met the %STRING1 envoy
+and signed a permanent peace treaty!
+
+@SENATECEASE
+@width=320
+@title=Foreign Minister
+Behind our backs, the Senate has met the
+%STRING1 envoy and agreed to a cease-fire!
+
+@WALLOVERPEACE
+@width=320
+@title=Defense Minister
+Sire, our attack is hopeless! Their Great Wall
+cannot be breached, and we have had to sign a
+peace treaty.
+
+@WALLOVERCEASE
+@width=320
+@title=Foreign Minister
+Sire, our attack is hopeless! Their Great
+Wall cannot be breached, and we have had to
+sign a cease-fire.
+
+@UNOVERPEACE
+@width=320
+@title=Foreign Minister
+Under pressure from the whole world, we have
+had to accept a peace treaty arranged by the
+U.N. Peace is signed.
+
+@UNOVERCEASE
+@width=320
+@title=Foreign Minister
+Under pressure from the whole world, we have
+had to accept a cease-fire arranged by the
+U.N. A cease-fire is signed.
+
+
+@PROPOSEALLIANCE
+@width=320
+@title=%STRING0 Envoy
+"Our two nations could achieve great things together. Will you join
+us in a military alliance, so that we may stand side by side
+against our common enemies, and share in the
+victories to come?"
+
+"Gladly! Let us stand together."
+"We cannot commit to such an alliance at this time."
+
+
+@GRANTCEASE
+@width=320
+@title=%STRING0 Envoy
+"Your show of proper respect has not
+gone unnoticed. Perhaps the %STRING1
+will agree to a cease-fire after all."
+
+"We humbly accept, with our thanks."
+"Never! We will fight to the very end!"
+
+@WALLCEASE
+@width=320
+@title=%STRING0 Envoy
+"Nothing would please us more than to see you destroyed, but
+we find we must offer you a cease-fire."
+
+"We accept."
+"Cowards! We will fight to the very end!"
+
+@PROPOSECEASE
+@width=320
+@title=%STRING0 Envoy
+"The %STRING1 people are weary of this endless war.
+We propose a cease-fire."
+
+"We accept. Let this terrible war end."
+"Cowards! We will fight to the very end!"
+
+
+@PROPOSEPEACE
+@width=320
+@title=%STRING0 Envoy
+"We propose a lasting peace treaty, to seal the
+friendship between our peoples and settle the line
+between our lands forever. Do you agree to sign?"
+
+"We accept peace with the %STRING1."
+"Your terms are unacceptable."
+
+
+@NOPEACE
+@width=320
+@title=%STRING0 Envoy
+"As you wish. But our forces will stay on guard, and
+we will not tolerate any attack on our
+lands."
+
+
+
+@OVERRULECEASE
+@width=320
+@title=Foreign Minister
+The Senate has overruled you and signed a cease-fire.
+
+@OVERRULEPEACE
+@width=320
+@title=Foreign Minister
+The Senate has overruled you and signed
+a permanent peace.
+
+@ALLIANCE
+@width=320
+@title=%STRING0 Envoy
+"Let it be known that the %STRING1 and
+%STRING2 peoples are now joined in a
+lasting alliance of cooperation,
+friendship and common defense. Thus it
+is decreed, and thus it shall stand."
+
+@TREATY
+@width=320
+@title=%STRING0 Envoy
+"Let it be known that everlasting goodwill and
+friendship now unite the %STRING1 and
+%STRING2 peoples. As a sign of our good
+faith, our troops will leave your
+territory at
+once."
+
+@CEASEFIRE
+@width=320
+@title=%STRING0 Envoy
+"We promise that all fighting between
+the %STRING1 and %STRING2 civilizations
+will stop at once."
+
+@CEASEEXPIRE
+@width=320
+@title=Foreign Minister
+Our cease-fire with the %STRING1
+has run out.
+
+@APOLOGIZE
+@width=320
+@title=%STRING0 Envoy
+"Forgive us for entering your lands; it was an honest mistake.
+Our troops have withdrawn and will not trouble you
+again."
+
+@GIVECIV
+@width=320
+@title=%STRING0 Envoy
+"Agree to a truce, and the secrets
+of %STRING1 shall be yours."
+
+"We have no need of %STRING1."
+"Agreed, let us have a cease-fire."
+
+@GIVECASH
+@width=320
+@title=%STRING0 Envoy
+"To end this fighting, we will pay you
+%NUMBER0 gold, in honour of your plain
+greatness."
+
+Refuse the offer
+Agree to a cease-fire
+
+@GROVEL
+@width=320
+@title=%STRING0 Envoy
+"Please spare our small, peaceful nation! We
+will give you all our gold (%NUMBER0) and
+everything we know, if only you will grant
+us peace."
+
+Refuse the offer
+Agree to a cease-fire
+
+@CONTINUEWAR
+@width=320
+@title=%STRING0 Envoy
+"So be it. Our forces stand ready for WAR!
+Your arrogance will cost you dearly."
+
+
+@CASHFORPEACE
+@width=320
+@title=%STRING0 Envoy
+"Perhaps %NUMBER0 gold would make peace
+worth your while?"
+
+Refuse the offer
+Sign the peace treaty
+
+
+@ATTITUDEALLY
+@width=320
+@title=%STRING0 Envoy
+"Your manner toward us is most condescending.
+Even so, we will keep our alliance, for
+now."
+
+@ATTITUDEPEACE
+@width=320
+@title=%STRING0 Envoy
+"Your rudeness is hard to bear. Still,
+we will not unleash our mighty armies
+upon you."
+
+@ATTITUDE
+@width=320
+@title=%STRING0 Envoy
+"We have had enough of your rudeness.
+Consider this a warning."
+
+@WELCOMEALLY
+@width=320
+@title=%STRING0 Envoy
+"We most %STRING1 celebrate our lasting alliance with the
+%STRING2 nation and its wise and generous ruler,
+%STRING3 %STRING4."
+
+@WELCOMEPEACE
+@width=320
+@title=%STRING0 Envoy
+"We %STRING1 value our friendship with the
+%STRING2 nation and its wise and generous
+ruler, %STRING3 %STRING4."
+
+@WELCOME
+@width=320
+@title=%STRING0 Envoy
+"We %STRING1 value the calm understanding
+that exists between our two nations."
+
+@HOWDYALLY
+@width=320
+@title=%STRING0 Envoy
+"We are always glad to help our loyal allies,
+the %STRING2. How may we serve you?"
+
+@HOWDYPEACE
+@width=320
+@title=%STRING0 Envoy
+"We are always happy to talk with our
+friends, the %STRING2."
+
+@HOWDY
+@width=320
+@title=%STRING0 Envoy
+"We are happy to talk with our neighbors, the %STRING2."
+
+@DOODYALLY
+@width=320
+@title=%STRING0 Envoy
+"We are always glad to help our loyal allies, the %STRING2.
+But please keep it short; we have little time to
+spare."
+
+@DOODY
+@width=320
+@title=%STRING0 Envoy
+"We will hear you out, but do not waste our
+precious time."
+
+@NOTORIOUSBIG
+@width=320
+@title=%STRING0 Envoy
+"The whole world knows how shamefully you double-crossed the
+%STRING1. Do not dream of playing the same trick on us. Deal
+honestly and you will find us steadfast friends. Betray us,
+and you will meet our swords on the field of war."
+
+@NOTORIOUSSMALL
+@width=320
+@title=%STRING0 Envoy
+"We have heard how cruelly you treated the
+%STRING1. Try anything of the kind with us
+and you will meet fierce resistance."
+
+@NOTORIOUSHATE
+@width=320
+@title=%STRING0 Envoy
+"Ha! You stabbed those wretched %STRING1 in
+the back, and we laughed to see it. But do
+not try it with us. We are not so naive."
+
+@WORTHLESS
+@width=320
+@title=%STRING0 Envoy
+"Very well, we will sign. But knowing your record,
+we put no trust in this paper. You would be naive
+to think we will honour it any more than you do."
+
+@OUTAHEREALLY
+@width=320
+@title=%STRING0 Envoy
+"Our apologies. Urgent affairs of state
+keep us from meeting with you just now."
+
+@OUTAHERE
+@width=320
+@title=%STRING0 Envoy
+"Your endless talk has used up
+our time. Leave us at once."
+
+
+@ALLYPLEA
+@width=320
+@title=%STRING0 Envoy
+"Our war against the hated %STRING1
+goes badly, and we may soon collapse.
+We beg you, send troops at once!"
+
+@ALLYBRAG
+@width=320
+@title=%STRING0 Envoy
+"The hated %STRING1 are nearly beaten! Our
+final, decisive attack will begin soon."
+
+@DIPLOMACY
+@width=320
+@title=%STRING0 Envoy
+You answer: "We..."
+
+@DIPLOMACYMENU
+"We have nothing more to say. Farewell."
+"We propose a lasting military alliance."
+"We propose a lasting treaty of peace."
+"We ask our good allies for a present."
+"We demand payment for our restraint."
+"We require that your troops leave our land."
+"We are ending this useless alliance."
+"We have an offer to make..."
+"We wish to give you a present..."
+
+@TREATYMENU
+@width=320
+@title=%STRING0 Envoy
+Choose a treaty offer:
+
+@TREATYOPTIONS
+Never mind
+Offer a military alliance
+Offer a permanent peace treaty
+Threaten to end the alliance
+Threaten war
+Demand their troops pull back
+End the alliance
+End the peace treaty
+
+
+@FAVORMENU
+@width=320
+@title=%STRING0 Envoy
+What do you propose?
+
+Never mind
+Trade advances
+Ask them to declare war on a foe
+Swap world maps
+
+
+@GIFTMENU
+@width=320
+@title=%STRING0 Envoy
+Choose a present to give.
+
+Never mind
+Give an advance
+Give gold
+Give a military unit
+
+@ALLIANCENOBETRAY
+@width=320
+@title=%STRING0 Envoy
+"We are not stupid. We know full well
+what becomes of your 'friends'."
+
+@NOBETRAYWEAK
+@width=320
+@title=%STRING0 Envoy
+"Your might is beyond question, great
+leader. Yet those who sign treaties with you
+keep suffering such mysterious misfortunes.
+With respect, we must decline."
+
+
+@ALLIANCENOWINNING
+@width=320
+@title=%STRING0 Envoy
+"No. We will never become servants of the corrupt
+%STRING1 empire!"
+
+@ALLIANCENODISLIKE
+@width=320
+@title=%STRING0 Envoy
+"No. We want nothing to do with the
+contemptible %STRING1 civilization."
+
+@ALLIANCENOSMALL
+@width=320
+@title=%STRING0 Envoy
+"No. A feeble people like yours is of no use to us."
+
+@ALLIANCENOTHANKS
+@width=320
+@title=%STRING0 Envoy
+"The %STRING2 civilization can defend itself.
+Our armies are strong and our enemies few. We
+have no need of an alliance."
+
+@ALLIANCENOPATIENCE
+@width=320
+@title=%STRING0 Envoy
+"An interesting proposal, but we
+have no time to discuss it now."
+
+@PERHAPSTHROWIN0
+@width=320
+@title=%STRING0 Envoy
+"Of course, %NUMBER0 gold would go a
+long way toward sealing the deal..."
+
+No deal.
+Pay %NUMBER0 gold
+
+@PERHAPSTHROWIN1
+@width=320
+@title=%STRING0 Envoy
+"A fine idea! Add %NUMBER0 gold
+and it becomes a splendid one."
+
+No deal.
+Pay %NUMBER0 gold
+
+
+@PERHAPSSECRET0
+@width-320
+@title=%STRING0 Envoy
+"We might well agree... if you were
+to share the secrets of %STRING3..."
+
+No deal.
+Hand over %STRING3
+
+
+@PERHAPSSECRET1
+@width-320
+@title=%STRING0 Envoy
+"An excellent idea. By the way, we
+greatly admire %STRING1 skill in
+%STRING3. Would you teach it to us?"
+
+No deal.
+Hand over %STRING3
+
+
+@PERHAPSSOLIDARITY
+@width=320
+@title=%STRING0 Envoy
+"We accept, on one condition: prove your loyalty by
+going to war against our hated foes, the %STRING4."
+
+"You ask too much."
+"Gladly! We will smash the %STRING4 for you."
+
+@PERHAPSPROVEIT
+@width=320
+@title=%STRING0 Envoy
+"Splendid! Now prove your commitment by
+making war on our hated foes, the %STRING4."
+
+"You ask too much."
+"Agreed! The %STRING4 will be punished."
+
+@PERHAPSDIDNTPROVE
+@width=320
+@title=%STRING0 Envoy
+"Then leave us at once!"
+
+@PERHAPSTHANKSANYWAY
+@width=320
+@title=%STRING0 Envoy
+"So your friendship is shallow after
+all. Thank you for the present, but
+we will not sign this treaty."
+
+@PERHAPSBYE
+@width=320
+@title=%STRING0 Envoy
+"So your friendship turns out to be shallow after all.
+Leave us."
+
+@PEACENOBETRAY
+@width=320
+@title=%STRING0 Envoy
+"We are no fools. Turn our backs
+on you and we would feel a blade
+between our shoulders. Be gone!"
+
+@PEACENOWINNING
+@width=320
+@title=%STRING0 Envoy
+"No. We refuse to be pawns
+in your cunning schemes."
+
+@PEACENODISLIKE
+@width=320
+@title=%STRING0 Envoy
+"No. Your feeble civilization
+does not deserve peace with us."
+
+@PEACENOPATIENCE
+@width=320
+@title=%STRING0 Envoy
+"An interesting proposal, but for now we
+will accept no permanent commitment."
+
+@GIVEMORECIV
+@width=320
+@title=%STRING0 Envoy
+"As a token of our friendship, we will
+teach you the secrets of %STRING1."
+
+@GIVEMORE
+@width=320
+@title=%STRING0 Envoy
+"Please accept %NUMBER0 gold, in
+honour of your great love of peace."
+
+@GIVEMOREALLY
+@width=320
+@title=%STRING0 Envoy
+"Please accept %NUMBER0 gold, in
+honour of the long and faithful
+friendship between our two nations."
+
+@TAUNTALLY
+@width=320
+@title=%STRING0 Envoy
+"Your greed and whining disgust
+us. This alliance is over!"
+
+@FEEBLEALLY
+@width=320
+@title=%STRING0 Envoy
+"Careful, friend. Our patience is wearing thin."
+
+@FEEBLE
+@width=320
+@title=%STRING0 Envoy
+"Your weak threats mean nothing."
+
+@CANCELALLY
+@width=320
+@title=%STRING0 Envoy
+"So be it, the alliance is over. We
+will never forget this day of hatred."
+
+@CANCELOURPEACE
+@width=320
+@title=%STRING0 Envoy
+"So the treaty is cancelled. We will
+never forget this betrayal, not ever."
+
+@MUSTATTACK
+@width=320
+@title=%STRING0 Envoy
+"Go and attack the wicked . . ."
+
+Forget it.
+
+@NOCONTACT
+@width=320
+@title=%STRING0 Envoy
+"We have never met the %STRING1."
+
+@ATWAR
+@width=320
+@title=%STRING0 Envoy
+"Our armies already fight the contemptible %STRING1."
+
+@MERCENARY
+@width=320
+@title=%STRING0 Envoy
+"For a price, we will attack
+the wicked %STRING1 without mercy.
+Pay us %NUMBER0 gold to cover our costs."
+
+"Forget it."
+"Happy to pay!"
+
+@CYBERCOP
+@width=320
+@title=%STRING0 Envoy
+"We will wipe out the wicked
+%STRING1, if only you teach
+us %STRING2 and %STRING3."
+
+"Forget it."
+"We will happily teach you."
+
+@ETERNALALLIES
+@width=320
+@title=%STRING0 Envoy
+"What? Attack our eternal friends the
+%STRING1? Never! Unless, of course,
+you happened to have %NUMBER0 gold..."
+
+"Forget it."
+"What luck! The %NUMBER0 gold is right here."
+
+@HELLNOWEWONTGO
+@width=320
+@title=%STRING0 Envoy
+"Your offer is attractive, but we
+cannot pull troops from our garrisons.
+Considering your history, it would be
+foolish of us to weaken our defences."
+
+@UNFORTUNATE
+@width=320
+@title=%STRING0 Envoy
+"Alas, your treasury simply
+lacks the gold to back up
+such lavish promises."
+
+@MERCDECLARE
+@width=320
+@title=Foreign Minister
+%STRING1 declare war upon %STRING2.
+
+@MERCBETRAYALLY
+@width=320
+@title=Foreign Minister
+%STRING1 spies have uncovered our treachery!
+The %STRING2 have ended their alliance with us.
+
+@MERCBETRAY
+@width=320
+@title=Foreign Minister
+%STRING1 spies have uncovered our treachery!
+The %STRING2 are now at war with us.
+
+@MAPNO
+@width=320
+@title=%STRING0 Envoy
+"We have no interest in your worthless
+%STRING1 maps."
+
+@MAPYES
+@width=320
+@title=%STRING0 Envoy
+"Agreed. We will share what we
+know of the world's lands."
+
+@KNOWNO
+@width=320
+@title=%STRING0 Envoy
+"Ha! We have no use for your laughable
+%STRING1 'science'."
+
+@TECHGIFT
+@width=320
+@title=%STRING0 Envoy
+"Would you teach us %STRING1? We can
+offer only our goodwill in return."
+
+"Sorry, no."
+Hand over %STRING1
+
+@TECHGIFT2
+@width=320
+@title=%STRING0 Envoy
+"Would you teach us %STRING1? We can
+offer only our goodwill in return."
+
+"Sorry, no."
+Hand over %STRING1
+"No, but would %STRING2 interest you instead?"
+
+@MILITARYNO
+@width=320
+@title=%STRING0 Envoy
+"Our strong %STRING1 forces have no
+use for your second-rate weapons."
+
+@MILITARYNONE
+@width=320
+@title=Civ Rules: Military Gifts
+A unit can be given to another civilization
+only while it is inside one of your cities.
+
+@MILITARYSOURCE
+@width=320
+@listbox=12
+@title=Choose City Sending Gift
+
+@BREAKTHROUGH
+@width=320
+@title=Discovery!
+Your present has led %STRING1 scholars to a new discovery!
+
+@WASTING
+@width=320
+@title=%STRING0 Envoy
+"Then stop squandering our time!"
+
+@ACCEPT
+@width=320
+@title=%STRING0 Envoy
+"The old and proud %STRING1 civilization
+thanks you and gladly accepts your gift."
+
+@MONEYGIFT
+@width=320
+@title=%STRING0 Envoy
+"And what sort of present did you have in mind?"
+
+"Forget it."
+
+
+@PATIENCEALLY
+@width=320
+@title=%STRING0 Envoy
+"We have enjoyed our private talk, friend,
+but urgent affairs of state now call us
+away. Farewell, until we meet again."
+
+@PATIENCE
+@width=320
+@title=%STRING0 Envoy
+"We can spare you no more time today. Urgent
+affairs of state demand our attention."
+
+@NEARCITY
+@width=320
+@title=%STRING0 Envoy
+"Remove your troops from the area around %STRING1
+at once, or our mighty armies will drive them out!"
+
+@ADMIRECITY
+@width=320
+@title=%STRING0 Envoy
+"We see your soldiers casting hungry eyes on
+our splendid city of %STRING1. Withdraw them
+immediately, or you will live to regret it!"
+
+@PLEASECITY
+@width=320
+@title=%STRING0 Envoy
+"As a gesture of friendship between
+our peoples, would you kindly move
+your troops away from %STRING1?"
+
+@PLEASECITIES
+@width=320
+@title=%STRING0 Envoy
+"As a gesture of friendship between
+our peoples, would you kindly move
+your troops away from %STRING1 and
+from every other %STRING2 city?"
+
+
+@TERMS
+@width=320
+@title=Foreign Minister
+Sire, the peace treaty we have just signed with the %STRING2
+obliges us to withdraw every military unit from the area
+around %STRING1 and every other %STRING3 city at once. By
+'area', the treaty means within two squares of the city.
+
+
+@INTRUDERS
+@width=320
+@title=%STRING0 Envoy
+"Your troops have trespassed near %STRING1 and other
+cities of ours. Our treaty requires that you withdraw
+them at once, or there will be consequences!"
+
+@INTRUDER
+@width=320
+@title=%STRING0 Envoy
+"Your troops have trespassed near our city of
+%STRING1. Our treaty requires that you withdraw
+them at once, or there will be consequences!"
+
+
+@VIOLATOR
+@width=320
+@title=%STRING0 Envoy
+"Your troops are trespassing near our
+city of %STRING1. Our treaty requires
+that you withdraw them at once, or there
+will be consequences. Will you comply?"
+
+Pull troops back to the nearest city
+"No! Your useless treaty means nothing to us!"
+
+@VIOLATORS
+@width=320
+@title=%STRING0 Envoy
+"Your troops are trespassing near %STRING1
+and other cities of ours. Our treaty requires
+that you withdraw them at once, or there will
+be consequences. Will you comply?"
+
+"Our apologies. We will withdraw at once."
+"No! Your useless treaty means nothing to us!"
+
+@VIOLATE
+@width=320
+@title=%STRING0 Envoy
+"Very well. The %STRING1 will never forget this betrayal.
+Prepare for war!"
+
+@WITHDRAWN
+@width=320
+@title=Foreign Minister
+%NUMBER0 units in breach of the treaty have
+been moved back to our nearest cities.
+
+@WITHDRAWN1
+@width=320
+@title=Foreign Minister
+One unit in breach of the treaty has
+been moved back to our nearest city.
+
+
+@HELPME
+@width=320
+@title=%STRING0 Envoy
+"Our nation is menaced by the
+wicked %STRING1! Join us as allies
+and help us fight off this
+unprovoked attack. We will pay you
+%NUMBER0 gold to cover your costs."
+
+"Too bad for you."
+Agree, and declare war on the %STRING1
+
+@HELPME2
+@width=320
+@title=%STRING0 Envoy
+"Our nation is menaced by the wicked
+%STRING1! Join us as allies and help
+us fight off this unprovoked attack.
+We will pay you %NUMBER0 gold and
+teach you the secrets of %STRING2."
+
+"Too bad for you."
+Agree, and declare war on the %STRING1
+
+@HELPMEINSTEAD
+@width=320
+@title=%STRING0 Envoy
+"Your so-called friends, the wicked
+%STRING1, mean to conquer the whole
+world! Abandon them and join us
+instead, and together we will stop
+their aggression. We will pay you
+%NUMBER0 gold to cover your costs."
+
+"Too bad for you."
+Agree, and declare war on the %STRING1
+
+@HELPMEINSTEAD2
+@width=320
+@title=%STRING0 Envoy
+"Your so-called friends, the wicked
+%STRING1, mean to conquer the whole
+world! Abandon them and join us
+instead, and together we will stop
+their aggression. We will pay you
+%NUMBER0 gold and teach you %STRING2."
+
+"Too bad for you."
+Agree, and declare war on the %STRING1
+
+
+@CRUSADE
+@width=320
+@title=%STRING0 Envoy
+"Join our holy war and help us sweep
+the wicked %STRING1 from the earth!
+While the fighting lasts, we will
+gladly %STRING2 alliance with you."
+
+"Not interested."
+Agree, and declare war on the %STRING1
+
+@JIHAD
+@width=320
+@title=%STRING0 Envoy
+"You have allied yourselves with our
+detested foes, the %STRING1. Yet surely
+we have far more to offer you. Join us
+in destroying the %STRING1, and together
+our two nations will rule the world!"
+
+"Not interested."
+Agree, and declare war on the %STRING1
+
+@GAPE
+@width=320
+@title=%STRING0 Envoy
+"You may stand and gape in
+wonder while the %STRING1
+display the marvels of
+%STRING2. But no taking notes!
+Not a single scribble!"
+
+@ANNOYALLIED
+@width=320
+@title=Foreign Minister
+We are allied with the %STRING1. Our units
+may pass through their territory, but they
+may not move onto a square that holds one of
+their units or cities. Allies may not fight
+one another. If you wish to end the alliance,
+you must do so in diplomatic talks with them.
+
+@ANNOYPEACE
+@width=320
+@title=Foreign Minister
+We are bound by a peace treaty with the %STRING1.
+Breaking it will harm our reputation among the nations.
+
+Call it off
+Break the treaty
+
+
+@ANNOYVASSAL
+@width=320
+@title=Foreign Minister
+The %STRING1 paid us tribute
+only recently. Attacking them so
+soon will harm our reputation.
+
+Call it off
+Go ahead anyway
+
+
+@ANNOYCEASE
+@width=320
+@title=Foreign Minister
+A cease fire holds between us and the %STRING1.
+Breaking it will harm our reputation among the nations.
+
+Call it off
+Break the cease fire
+
+@ANNOY
+@width=320
+@title=Foreign Minister
+Shall we go to war with the %STRING1?
+
+Call it off
+Declare war
+
+@OVERRULE
+@width=320
+@title=Foreign Minister
+The Senate overrules you! Action called off.
+
+@TAXES
+@width=320
+@title=Domestic Advisor
+Warning: our treasury is running
+low! I suggest raising the tax
+rate or employing tax collectors.
+
+Carry On
+Adjust Tax Rate
+
+@SPYMENU
+@width=320
+@title=%STRING0 %STRING1 reaches %STRING2
+
+@SPYOPTIONS
+Establish Embassy
+Investigate City
+Steal Technology
+Sabotage City
+Poison Water Supply
+Plant Nuclear Device
+Incite a Revolt
+
+@SABOTAGEOPTIONS
+@width=320
+@title=Spy Choices
+@options
+Bribe Unit.
+Sabotage Unit.
+
+@BLEWITUP
+@width=320
+%STRING2 %STRING3 sabotaged %STRING0 %STRING1!
+
+@BOND007
+@width=320
+@title=Intelligence Advisor
+Our Spy has escaped, and is now a seasoned veteran!
+She has returned to %STRING1 for a well-earned rest.
+
+@BOND
+@width=320
+@title=Intelligence Advisor
+Our Spy has escaped safely!
+She has returned to %STRING1 for a well-earned rest.
+
+@BONDGLORY
+@width=320
+@title=Intelligence Advisor
+Our spy was caught after finishing her task!
+
+@NAILED
+@width=320
+@title=Intelligence Advisor
+Our spy was caught before finishing her task!
+
+@ENEMYEMBASSY
+@width=320
+@title=Foreign Minister
+%STRING0 set up an embassy.
+
+@ENEMYINVESTIGATE
+@width=320
+@title=Foreign Minister
+The %STRING0 have inspected %STRING1.
+
+@STEALSPECIFIC
+@width=320
+@title=Spy Orders
+Should our Spy try to steal
+a particular advance?
+
+No, any advance will do
+Yes
+
+@STEALHARD
+@width=320
+@title=Spy Orders
+Sire, the %STRING0 in %STRING1 are on their
+guard. Should our Spy still try to steal an
+advance? (She cannot choose a particular one.)
+
+Forget it
+Yes, make the attempt
+
+@STEAL
+@width=320
+@title=Intelligence Advisor
+%STRING0 steal %STRING1.
+
+@NOSTEAL
+@width=320
+@title=Intelligence Advisor
+No new advance found.
+
+@SABOTAGESPECIFIC
+@width=320
+@title=Spy Orders
+Shall we name a main target for our
+Spy, or let her choose for herself?
+
+Let her decide
+Name a main target
+
+@SABOTAGEHARD
+@width=320
+@title=Intelligence Advisor
+Sabotage against City Walls, or anywhere in
+an enemy capital, is a very risky business.
+
+Call it off
+Go ahead
+
+@SABOTAGENO
+@width=320
+@title=Intelligence Advisor
+Our Spy finds the enemy SDI site ringed
+by sentry posts, barbed wire and snarling
+guard dogs. Sabotage is impossible!
+
+
+@SABOTAGE
+@width=320
+@title=Choose Main Target
+@listbox
+
+@SABOTAGEONE
+@width=320
+@title=Intelligence Report
+%STRING0 wrecked!
+
+@SABOTAGETWO
+@width=320
+@title=Intelligence Report
+%STRING0 output sabotaged!
+
+
+@PRETEXTALLIED
+@width=320
+@title=Diplomatic Incident!
+By spying on us, the %STRING0 have
+handed us a legitimate excuse to
+end our alliance with them.
+
+No thanks
+End the alliance
+
+@PRETEXT
+@width=320
+@title=Diplomatic Incident
+By spying on us, the %STRING0 have
+handed us a legitimate excuse for war.
+
+No thanks
+Go to war with the %STRING0
+
+
+@INCIDENT
+@width=320
+@title=Intelligence Advisor
+If we are caught, this could spark an
+incident between nations. Shall we go ahead?
+
+Call it off
+Go ahead
+
+
+@MAJORINCIDENT
+@width=320
+@title=Intelligence Advisor
+If we are caught, this could spark a SERIOUS
+incident between nations. Shall we go ahead?
+
+Call it off
+Go ahead
+
+
+
+@INCIDENTALLIED
+@width=320
+@title=Newspaper
+DIPLOMATIC INCIDENT! %STRING1
+break off alliance with
+%STRING0 over spy scandal!
+
+@WIMPOUT
+@width=320
+@title=%STRING0 Envoy
+"Even between friends and allies,
+spying on industry is unacceptable.
+We will let this small matter pass,
+but it must never happen again."
+
+@INCIDENTWAR
+@width=320
+@title=Newspaper
+DIPLOMATIC INCIDENT!
+%STRING1 go to war with
+%STRING0 over spy scandal!
+
+@INCIDENTTERROR
+@width=320
+@title=Newspaper
+Diplomatic Incident! %STRING1 openly denounce
+%STRING0 terror.
+
+@SENATESCANDAL
+@width=320
+@title=Newspaper
+Senate Scandal! %STRING0
+government topples!
+
+@DISSIDENTS
+@width=320
+@title=Intelligence Advisor
+Rebels in %STRING0 will
+rise up for %NUMBER0 gold.
+
+@DISSIDENTOPTIONS
+Never mind
+Incite the revolt
+Incite the revolt (causes an incident)
+Take the city (double cost, no incident)
+
+@CIVILWAR
+@width=320
+@title=Civil War!
+%STRING0 rise up! %STRING1 plunged into civil war!
+%STRING2 agents are suspected.
+
+@USEWEAPONS
+@width=320
+@title=Defense Minister
+%STRING0 launch nuclear weapons!
+
+@SDI
+@width=320
+@title=Defense Minister
+The S.D.I. Defense at %STRING0 blocks a nuclear strike!
+
+@PLANTEDNUKE
+@width=320
+@title=(Newspaper)
+Unexplained Atomic Blast in %STRING0!
+
+@PLANTEDNUKE2
+@width=320
+@title=Atomic Terror!
+Atomic blast at %STRING0! %STRING1 agents
+were caught in the act just before the bomb
+went off. In a huge diplomatic incident,
+every nation declares war on the %STRING2!
+
+@WATERSUPPLY
+@width=320
+@title=Water Poisoned!
+%STRING0 water poisoned!  %STRING1
+agents blamed.
+
+@DESERT
+@width=320
+@title=Intelligence Advisor
+%STRING0 %STRING1 will defect for %NUMBER0 gold.
+
+@DESERT2
+@width=320
+@title=Intelligence Advisor
+The %STRING0 %STRING1 would switch sides for %NUMBER0 gold.
+
+Forget it
+Pay %NUMBER0 gold
+
+@DESERTED
+@width=320
+@title=Defense Minister
+%STRING2 bribed %STRING0 %STRING1!
+
+
+@ALREADYSOLD
+@width=320
+@title=Domestic Advisor
+Only one improvement per
+city may be sold each turn.
+
+@PARTISANS
+@width=320
+@title=Defense Minister
+Desperate %STRING0 Partisans take to the hills to fight on near
+%STRING1!
+
+
+@REPORTSCIENCE
+@width=540
+@title=Science Advisor Report
+@listbox=12
+@columns=3
+@button=Info
+@button=Goal
+^Studying: %STRING0 (%NUMBER0 of %NUMBER1)
+^A new advance every %NUMBER2 turns.
+^
+^^Civilization Advances Known:
+
+@SUPPLYSEARCH
+@width=480
+@title=Choose Cargo To Look Up
+@columns=2
+
+@SUPPLYSHOW
+@width=480
+@title=Cities Trading In %STRING0
+@listbox
+
+@SUPPLYNONE
+@width=480
+@title=Cities Trading In %STRING0
+No city we know of buys or
+sells %STRING0 right now.
+
+@REPORTTRADE
+@width=480
+@title=Trade Advisor Report
+@button=Supply And Demand
+@listbox
+
+@REPORTCITY
+@width=540
+@title=City Status Report
+@listbox
+
+
+@REPORTATTITUDE
+@width=540
+@title=Mood Survey
+@listbox
+
+
+@REPORTFOREIGN
+@width=580
+@title=Foreign Minister
+@listbox=7
+@button=See Intelligence
+@button=Send Envoy
+Sire, our might is %STRING0 and our standing is %STRING1.
+
+@NOFOREIGN
+@width=320
+@title=Foreign Minister
+We have not yet met any other civilization.
+
+
+@REPORTINTELL
+@width=580
+@listbox=4
+@columns=3
+@title=Intelligence Report: %STRING0
+@button=City List
+
+@INTELLCITY
+@width=320
+@listbox=12
+@title=City List: %STRING0
+
+
+
+@REPORTWONDER
+@width=540
+@title=Wonders of the World
+@listbox
+
+
+@WONDERS
+WONDERS OF THE ANCIENT ERA
+WONDERS OF THE RENAISSANCE
+WONDERS OF THE INDUSTRIAL ERA
+WONDERS OF THE MODERN ERA
+
+
+@AMBASSADORS
+@width=320
+@title=Foreign Minister
+%STRING1 agree to trade ambassadors.
+
+@ENDWONDER
+@width=320
+@title=Science Advisor
+%STRING0 ends the effect of %STRING1.
+
+
+@FEARWARMING
+@width=320
+@title=(Newspaper)
+Scientists warn of climbing temperatures.
+Global warming looms!
+
+@GLOBALWARMING
+@width=320
+@title=(Newspaper)
+World grows hotter! Icecaps melt.
+Harsh drought.
+
+
+@SCHISM
+@width=400
+@title=Defense Minister
+The loss of its capital
+throws the %STRING0 empire
+into civil war! It is now
+divided into a loyal faction
+(the %STRING0) and a rebel
+faction (the %STRING1).
+
+@FERTILE
+@width=420
+@title=Domestic Advisor
+The fruitful %STRING1 empire now
+numbers more than %STRING2 people!
+
+@CARAVANMENU
+@width=320
+@title=%STRING0 Caravan Choices
+
+@CARAVAN
+@width=420
+@title=Trade Route
+A %STRING0 caravan from %STRING1 reaches %STRING2.
+A trade route is set up, earning %NUMBER0 gold.
+
+@FOODCARAVAN
+@width=420
+@title=Trade Route
+A food caravan from %STRING1 reaches %STRING2!
+The people prepare a celebration feast.
+
+@CARAVANHOME
+@width=420
+@title=Civ Rules: Trade Units
+A trade unit's home city cannot be changed.
+
+@CARAVANOTHER
+@width=420
+@title=Trade Route
+A %STRING0 caravan (%STRING1) from %STRING2 reaches
+%STRING3. A %STRING1-%STRING4 trade route is set up.
+
+@CARAVANBUILT
+@width=420
+@title=Caravan
+@button=Supply And Demand
+%STRING0 has completed a %STRING1.
+Which goods should it carry?
+
+@CARACONFIRM
+@width=320
+@title=Caravan
+@button=Confirm and Zoom
+Send %STRING0 caravan?
+
+Confirm.
+Rethink.
+
+@CITYINFO
+@width=320
+@title=%STRING0 (%STRING1 city)
+Wants %STRING2, %STRING3, and %STRING4.
+
+@STARTWONDER
+@width=320
+@title=Travellers' Tales
+The %STRING1 have begun a great
+work: %STRING2!
+
+@SWITCHWONDER
+@width=320
+@title=Travellers' Tales
+The %STRING1 have abandoned %STRING2
+and are now building %STRING3.
+
+@ABANDONWONDER
+@width=320
+@title=Travellers' Tales
+The %STRING1 have given up their
+great work, %STRING2.
+
+@ALMOSTWONDER
+@width=320
+@title=Travellers' Tales
+The %STRING1 are close to completing
+their great work, %STRING2.
+
+@STILLWONDER1
+@width=320
+@title=Spy Report
+The %STRING1 are still working on their
+great work, %STRING2, in one other city.
+
+@STILLWONDER2
+@width=320
+@title=Spy Report
+The %STRING1 are still working on their great
+work, %STRING2, in %NUMBER0 other cities.
+
+@CAPTUREWONDER
+@width=320
+@title=Defense Minister
+Our forces have seized %STRING2%STRING1!
+
+@LOSTWONDER
+@width=320
+@title=Defense Minister
+We no longer hold %STRING2%STRING1!
+
+@ACTIVATEALLY
+@width=320
+@title=Foreign Minister
+The %STRING1 invoke the pact that binds them to
+the %STRING2. The %STRING2 go to war with the %STRING3!
+
+@ALLYHELPS
+@width=320
+@title=Foreign Minister
+The %STRING2 have pledged to
+help us, and are going to
+war against the %STRING3!
+
+
+@MILITARYAID1
+@width=320
+@title=Defense Minister
+The %STRING0 have handed
+%STRING1 over to the %STRING2
+to help them fight us!
+
+@MILITARYAID2
+@width=320
+@title=Defense Minister
+The %STRING0 have delivered %STRING1 to
+%STRING2 to aid our war against the %STRING3.
+
+
+@GOTO
+@width=480
+@title=Choose Destination for %STRING0
+@button=All Players
+@listbox
+
+@PARADROP
+@width=320
+@title=Paradrop!
+%STRING0 %STRING1 paradrop close to %STRING2!
+
+@PARADROPRULES1
+@width=320
+@title=Civ Rules: Paradrops
+This Paratroopers unit has already
+moved this turn. It can drop only at
+the start of its turn, before it moves.
+
+@PARADROPRULES2
+@width=320
+@title=Civ Rules: Paradrops
+This Paratroopers unit is neither in a city nor on
+an airbase. To make a drop, it must begin its turn
+in a friendly city or on a friendly airbase square.
+
+@PARADROPTARGET
+@width=320
+That square is ocean.
+Paratroopers must land on a land square that is empty or holds only
+friendly units, no more than %NUMBER0 squares away.
+
+@PARADROPTARGET1
+@width=320
+@title=Civ Rules: Paradrops
+That square is too far away.
+Paratroopers must land on a land square that is empty or holds only
+friendly units, no more than %NUMBER0 squares away.
+
+@PARADROPTARGET2
+@width=320
+@title=Civ Rules: Paradrops
+Paratroopers must land on a land square that is empty or holds only
+friendly units, no more than %NUMBER0 squares away.
+
+
+@INCORRUPTIBLE
+@width=320
+@title=Civ Rules: Democracy and Bribes
+The units of a Democracy
+cannot be bribed.
+
+@NOREVOLT
+@width=320
+@title=Civ Rules: Democracy
+A Democracy's cities can never
+be bought or incited to revolt.
+
+@UNFORCE
+@width=320
+@title=Foreign Minister
+The United Nations compel the %STRING1
+to make peace with the %STRING2.
+
+@WALLFORCE
+@width=320
+@title=Foreign Minister
+The Great Wall compels the %STRING1
+to make peace with the %STRING2.
+
+
+@MISSILEATTACK
+@width=320
+@title=Defense Minister
+Missile strike near %STRING0!
+
+@PEARLHARBOR
+@width=320
+@title=Defense Minister
+%STRING0 %STRING1 surprise %STRING2 ships in port!
+
+@AUTOMONARCHY
+@width=440
+@title=Civ Rules: Governments
+You have discovered MONARCHY, a better form of government than
+the one you have now. To change your government you must hold a
+Revolution: choose "Revolution" from the Kingdom menu. Expect a
+short spell of Anarchy while the new order takes hold.
+^
+More advanced governments usually
+raise your people's output while
+cutting corruption and waste. Shall
+we start a revolution right away?
+
+Not yet
+Start the revolution
+
+@AUTOREV
+@width=320
+@title=Civ Rules: Governments
+You have learned of a new form of government: %STRING0.
+Your nation is currently a %STRING1. Would you like to
+start a revolution to change your government?
+
+No, %STRING1 is doing well enough
+Start the revolution
+
+@BATTERY
+@width=320
+@title=Defense Minister
+%STRING1 in %STRING2 double defense strength!
+
+@BATTERY2
+@width=320
+@title=Defense Minister
+%STRING1 plus %STRING3 in %STRING2 quadruple defense!
+
+@SCRAMBLE
+@width=320
+@title=Defense Minister
+%STRING0 %STRING1s rush to defend %STRING2!
+
+@AMPHIBMOTIZE
+@width=320
+@title=Defense Minister
+%STRING1 %STRING2 storm ashore from the sea!
+
+@CITYMODAL1
+@width=400
+@title=City Window
+@button=Close City Window
+Close the City Window before play can continue.
+
+@CITYMODAL2
+@width=400
+@title=End of Turn Update
+@button=Proceed
+For the moment, only the City Screen can be used.
+Press a "Proceed" button to carry on.
+
+@UPGRADED
+@width=320
+@title=Domestic Advisor
+%STRING0 now builds %STRING2 in
+place of the outdated %STRING1.
+
+@UPGRADE
+@width=320
+@title=Domestic Advisor
+%STRING2 upgrades every %STRING0 to %STRING1.
+
+@ASTRONAUTS
+@width=320
+@title=Science Advisor
+Astronauts send home pictures of Earth!
+
+@LONGMOVE
+@width=320
+@title=Long Move
+Keep moving this unit?
+
+Yes
+No
+
+@GHOSTTOWN
+@width=320
+@title=Domestic Advisor
+%STRING0 is about to finish %STRING1,
+but it is only size 1. Go ahead anyway?
+
+Hold off on the Settlers
+Finish them (the city is disbanded)
+
+@EXPEL
+@width=320
+@title=Captured %STRING0 %STRING1
+@options
+Expel %STRING1.
+Attack %STRING1.
+Forget it.
+
+@NOEXPEL
+@width=320
+@title=Civ Rules: Diplomatic Immunity
+%STRING1 units can be expelled only from
+your own territory. Here, your territory
+means any square closer to your nearest
+city than to any of theirs.
+
+@UPYOURS
+@width=320
+@title=Foreign Minister
+The %STRING0 %STRING1 has been thrown out. The
+%STRING0 ambassador lodges a formal protest.
+
+@UPYOURSTOO
+@width=320
+@title=Foreign Minister
+%STRING0 %STRING1 expelled.  %STRING0 envoy
+says sorry.
+
+@UPMINE
+@width=320
+@title=Foreign Minister
+The %STRING2 have thrown out our %STRING1.
+Our ambassador made the usual protest, and
+the %STRING1 is back in %STRING3.
+
+@SPACERACE
+@width=320
+@title=Science Advisor
+%STRING0 build spaceship!
+
+@SPACESHIP
+@width=480
+@title=Spaceship Report
+@listbox
+^^%STRING0.S.S. %STRING1 (%STRING2)
+
+@LAUNCH
+@width=320
+@title=Science Advisor
+Launch the spaceship now?
+(%NUMBER0%% likelihood of success)
+
+Do not launch
+LAUNCH CONFIRMED
+
+@LAUNCHED
+@width=320
+@title=Science Advisor
+%STRING0 LAUNCH spaceship!
+Arrival expected %NUMBER0.
+
+@COMPONENT
+@width=320
+@title=Choose Spaceship Component
+@options
+Propulsion (%NUMBER0 built)
+Fuel       (%NUMBER1 built)
+
+@MODULE
+@width=320
+@title=Choose Spaceship Module
+@options
+Habitation   (%NUMBER0 built)
+Life Support (%NUMBER1 built)
+Solar Panel  (%NUMBER2 built)
+
+@NOFURTHER
+@width=320
+@title=Science Advisor
+No more %STRING0 needed.
+
+@SPACESHIPS
+@width=320
+@title=Show Which Spaceship
+@options
+
+@EAGLEHASLANDED
+@width=320
+@title=Science Advisor
+%STRING0 spaceship reaches Alpha Centauri!
+
+@SPACERETURNS
+@width=320
+@title=Science Advisor
+%STRING0 spaceship comes back to earth.
+
+@SPACEDESTROYED
+@width=320
+@title=Science Advisor
+%STRING0 spaceship lost.
+
+@HISTORY
+@width=480
+@title=OpenCiv2
+^^%STRING1 completes his great history:
+^^'The %STRING2 Civilizations of the World'
+
+@HISTORIANS
+11
+Herodotus
+Lord Macaulay
+Livy
+St. Augustine
+Pliny
+Tacitus
+Machiavelli
+Gibbon
+Toynbee
+Bede
+Thucydides
+
+@HISTORIES
+RICHEST
+MIGHTIEST
+MOST ADVANCED
+HAPPIEST
+LARGEST
+
+@HISTORYRANK
+Glorious
+Great
+Fine
+Middling
+Puny
+Pitiful
+Hopeless
+
+@ALLOWUN
+@width=320
+@title=Defense Minister
+The Senate allows the action to go ahead, as
+a United Nations 'peacekeeping' operation.
+
+@ALLOWAGGRESSOR
+@width=320
+@title=Defense Minister
+Because the %STRING0 attacked us
+before, the Senate permits this action.
+
+@ALLOWHAWKS
+@width=320
+@title=Defense Minister
+Hawk Party blocks Senate meddling.
+Action confirmed!
+
+@CONTINUEUN
+@width=320
+@title=Defense Minister
+The Senate votes to support further
+'peacekeeping' operations against the %STRING1.
+
+@CONTINUEHAWKS
+@width=320
+@title=Defense Minister
+The Senate votes to support further
+military operations against the %STRING1.
+
+@RANSOMCITY
+@width=320
+@title=Defense Minister
+The Barbarian chief of the %STRING0 sends
+word: "Pay us %NUMBER0 gold at once, or
+we will plunder %STRING1 without mercy!"
+
+"Go ahead, try it!"
+Pay %NUMBER0 gold
+
+@NOAIRPORT
+@width=320
+@title=Civ Rules: Airlifts
+Airlifts fly only from a city with
+an Airport to another city with one.
+
+@NOAIRPORT2
+@width=320
+@title=Civ Rules: Airlifts
+None of your other cities has an
+Airport. Airlifts work only between
+two cities that both have one.
+
+@AIRLIFTSELECT
+@width=440
+@listbox=12
+@title=Choose Target City For Airlift
+
+@AIRLIFT
+@width=320
+@title=Defense Minister
+Airlift from %STRING0 to %STRING1 complete!
+
+@SHOTDOWN
+@width=320
+@title=Defense Minister
+The %STRING0 shot down our airlift!
+
+@ALREADYAIRLIFT
+@width=320
+@title=Civ Rules: Airlifts
+%STRING0 has already used its
+airlift this turn. Each city
+can send or receive only one
+unit by air per turn.
+
+@WESHOT
+@width=320
+@title=Defense Minister
+Our Fighters have intercepted and destroyed
+an enemy airlift bound for %STRING0!
+
+@WESAW
+@width=320
+@title=Defense Minister
+Our radar has spotted an enemy airlift
+into %STRING0!
+
+@ENEMYFIGHTERS
+@width=320
+@title=Defense Minister
+Enemy fighter planes are based close to our cities.
+They might shoot down the transport flight.
+
+Call off the airlift
+Go ahead
+
+@LIFTSHIP
+@width=320
+@title=Civ Rules: Airlifts
+Ships can't be airlifted, of course.
+
+@LIFTPLANE
+@width=320
+@title=Civ Rules: Airlifts
+Aircraft cannot be airlifted. They must fly
+to their destination under their own power.
+
+@PILLAGEWHAT
+@width=320
+@title=Defense Minister
+What shall we wreck?
+
+@PILLAGEMENU
+Farmland
+Irrigation
+Mining
+Airbase
+Fortress
+Railroad
+Road
+
+@ALLIEDREPAIR
+@width=320
+@title=Defense Minister
+The %STRING1 helped us mend our %STRING2.
+
+@CANESCAPE
+@width=320
+@title=Defense Minister
+Sire, our capital is about to fall! Shall we
+spend %NUMBER0 gold to move the government
+to %STRING1 before it is too late?
+
+Alas, we cannot afford it
+Yes, spend %NUMBER0 gold
+
+@ESCAPE
+@width=320
+@title=Defense Minister
+%STRING2 government flees to %STRING1!
+
+@ESCAPE2
+@width=320
+@title=Defense Minister
+The %STRING2 government escapes to %STRING1!
+The move cost %NUMBER0 gold.
+
+
+@AQUEDUCT
+@width=520
+@title=Civ Tutorial: Aqueducts
+%STRING0 has grown so large that its local
+water supply is running short. A city
+cannot grow beyond size %NUMBER0 unless it
+builds an AQUEDUCT to bring in more water.
+
+@CURSES
+@width=320
+@title=Spy Report
+Spy mission thwarted by enemy %STRING1!
+
+@FOILEDAGAIN
+@width=320
+@title=Spy Report
+Our %STRING1 thwarted a %STRING2 spy mission!
+
+@UNSAVED
+@width=320
+@title=Warning!
+%STRING0 has unsaved changes.
+
+Call it off
+Carry on (discard the changes)
+
+@FLATEARTH
+@width=320
+@title=Choose World Shape
+What shape should the world be?
+
+A ROUND world
+A FLAT world
+
+@LANDWARNING
+@width=320
+@title=Warning.
+This map has more than %NUMBER0 separate
+landmasses. You can still play on it,
+but the computer players' 'intelligence'
+may suffer a little from time to time.
+
+@SEAWARNING
+@width=320
+@title=Warning!
+This map has more than %NUMBER0 separate
+seas and lakes. You can still play on it,
+but the computer players' 'intelligence'
+may suffer a little from time to time.
+
+@NOTENOUGHWARNING
+@width=320
+@title=Warning!
+This map has too little land. There may not be
+room to place every player's starting position.
+
+@CITIESINOCEAN
+@width=320
+@title=Warning!
+Some starting city positions were placed on
+ocean. They will be skipped, and the tribes
+concerned will start at random locations instead.
+
+
+@ANALYZEOK
+@width=320
+@title=Map Check OK!
+The map has been checked,
+and no problems were found.
+
+@FAILEDTOLOAD
+@width=320
+@title=Error
+Could not load map file.
+
+@MAPSAVED
+@width=320
+@title=Map Saved
+^^Map saved as
+^^%STRING0
+
+@ADDCITY
+@width=600
+@title=Choose Tribe To Start Here
+
+@RESEED
+@width=440
+@title=Enter Resource Seed (1 = random)
+@options
+Seed:
+
+@NOADJACENTCITIES
+@width=320
+@title=Warning!
+Cities may not be placed next to one
+another.
+
+@NOTALLCITIES
+@width=320
+@title=Warning!
+Some tribes have a set starting
+position and some do not. Tribes
+without one will be placed at random.
+
+@GOLDENAGE
+@width=320
+@title=Golden Age of Philosophy
+A Golden Age of Philosophy dawns in
+the %STRING0 city of %STRING1! Great
+%STRING0 thinkers devise systems of
+science, ethics and metaphysics that
+will endure for centuries.
+
+@LANDING
+@width=320
+@title=Enemy Sighted!
+%STRING0 come ashore near %STRING1!
+
+@NEWXFORM
+@width=320
+@title=New Order: Transform
+Your new Engineers can use the
+Transform order ("o") to change the
+terrain of a square dramatically.
+Engineers can also do every ordinary
+Settlers job (roads, irrigation,
+mines and so on) at twice the speed.
+
+@NEWFORTRESS
+@width=320
+@title=New Order: Fortress
+Settlers can now build fortresses with
+the Fortress order ("f"). Units defending
+in a fortress get double defense, and
+only one unit there dies when a battle is
+lost, not the whole stack.
+
+@NEWAIRLIFT
+@width=320
+@title=New Orders: Airlift and Airbase
+Ground units can now be airlifted ("l")
+from one of our cities with an Airport
+to another. Settlers and Engineers can
+also build airbases outside cities with
+the Airbase order ("e").
+
+@NEWRAILROAD
+@width=320
+@title=New Order: Railroad
+Settlers and Engineers can now lay railroads
+with the Railroad order ("r") on any square
+that already has a road. A railroad adds 50%%
+to the square's shield output, and moving
+along it costs no movement points at all.
+
+@NEWFARMLAND
+@width=320
+@title=New Order: Farmland
+Settlers and Engineers can now build
+farmland with the Farmland order ("i")
+on squares that are already irrigated.
+Farmland gives +50%% food, but only to
+a city that has a Supermarket.
+
+@NEWPARADROP
+@width=320
+@title=New Order: Paradrop
+Your new Paratroopers can use the Paradrop order ("p")
+to drop up to %NUMBER0 squares away from a friendly city
+(as long as they began this turn inside that city).
+
+@ADDTOTHRONE
+Which part shall we improve?
+
+@NOSPACESHIPS
+@width=320
+@title=Spaceships
+No one has entered the space race yet!
+
+@CODECNOTFOUND
+@width=320
+@title=Notice
+Some files needed for the animated diplomatic
+heralds are missing, so the "Animated Heralds"
+graphics option has been switched off. To use
+it again, reinstall the required video files.
+
+@NOFOODREPORT
+@width=320
+@title=Food Supplies
+The "Supply and Demand" report does not cover
+Food Supplies caravans. Such a caravan moves one
+food each turn between the two cities it links.
+
+@REALLYRETIRE
+@width=320
+@title=Confirmation
+Are you sure you want to retire?
+
+No
+Yes
+
+@REALLYQUIT
+@width=320
+@title=Confirmation
+Are you sure you want to quit?
+
+No
+Yes
+
+@REALLYCHEAT
+@width=320
+@title=Confirmation
+Turning on cheat mode will be noted in your score, permanently.
+Do you really want to turn it on?
+
+No
+Yes
+
+@PLANRETIRE
+@width=440
+@title=Retirement Planned!
+Festivities mark the new millennium!
+%STRING0 %STRING1 announces retirement in 20 years.
+
+@DORETIRE
+@width=440
+@title=Retirement Announced!
+%STRING1 dynasty retires after a glorious 6000 years!
+
+@SLAM
+Your civilization rules the whole planet!
+
+@KEEPPLAYING
+@width=320
+@title=Game Over!
+Your final score has been calculated. Would you like to keep
+playing? (Further play will not count toward your score.)
+
+No, I'm finished
+Yes, keep playing
+
+@INSERTHERE
+@width=320
+@title=Game Over!
+(End of game animation goes here.)
+
+
+@WONDERMOVIECHEAT
+@title=Wonder Movie Preview
+@width=320
+@options
+Which Wonder?
+
+@AUTOMODE
+@title=Who Will Manage Production in %STRING0
+@width=320
+@options
+Both
+Military Advisor
+Domestic Advisor
+
+@COUNCILCHEAT0
+@width = 600
+@title = Council Cheat
+@button = Military
+@button = Science
+@button = Trade
+@button = Foreign
+@button = Attitude
+@button = Anarchy
+Which rating do you want to change?
+
+@COUNCILCHEAT1
+@width = 320
+@title = Council Cheat
+@options
+Enter a new rating for this advisor.
+
+@COUNCILCHEAT2
+@width = 200
+@title = Council Cheat
+@options
+Which era? (0-2)
+
+
+@NOTENOUGHGRASS
+@width=320
+@title=Warning!
+This map lacks enough farmable land
+(Grassland and Plains). The game may not
+find good starting spots for every player.
+
+@THRONE
+Unprompted, your grateful people honour
+your long and wise rule. Builders and
+craftspeople of every trade arrive to add
+a splendid new part to your throne room!
+
+@MALEFAME
+%STRING0 the Good-for-Nothing
+%STRING0 the Feeble
+%STRING0 the Foolish
+%STRING0 the Timid
+%STRING0 the Puny
+%STRING0 the Gluttonous
+%STRING0 the Idle
+%STRING0 the Fainthearted
+%STRING0 the Mad
+%STRING0 the Cruel
+%STRING0 Grimbeard
+%STRING0 the Dreaded
+%STRING0 the Clever
+%STRING0 Ironhand
+%STRING0 the Conqueror
+%STRING0 the Fair
+%STRING0 the Strong
+%STRING0 the Just
+%STRING0 the Lionhearted
+%STRING0 the Mighty
+%STRING0 the Great
+%STRING0 Imperator
+%STRING0 the Wise
+%STRING0 the Magnificent
+
+@FEMALEFAME
+%STRING0 the Good-for-Nothing
+%STRING0 the Feeble
+%STRING0 the Foolish
+%STRING0 the Timid
+%STRING0 the Puny
+%STRING0 the Gluttonous
+%STRING0 the Idle
+%STRING0 the Fainthearted
+%STRING0 the Mad
+%STRING0 the Cruel
+%STRING0 the Dark
+%STRING0 the Dreaded
+%STRING0 the Clever
+%STRING0 Ironhand
+%STRING0 the Conqueror
+%STRING0 the Fair
+%STRING0 the Strong
+%STRING0 the Just
+%STRING0 the Lionhearted
+%STRING0 the Mighty
+%STRING0 the Great
+%STRING0 Imperatrix
+%STRING0 the Wise
+%STRING0 the Magnificent
+
+
+@UNITEDIT
+@width=440
+@title=Editing %STRING0 %STRING1
+@options
+No Changes
+Toggle Veteran Status
+Clear Movement Points
+Set Hit Points
+Set Home City
+Fortify/Unfortify
+Change Caravan Goods
+
+@UNITHITPOINTS
+@width=320
+@title=Set Unit Damage (0 - %NUMBER0)
+@options
+Damage:
+
+@EDITHOMECITY
+@width=320
+@title=Choose City
+@listbox
+@button=None
+
+
+@CITYEDIT
+@width=320
+@title=Editing %STRING0
+@options
+No Changes
+Change Size
+Remove All Wonders
+Clear Disorder && We Love King
+Copy Improvements of a City
+Set Shield Progress
+Toggle City Objective 1 pt. (%NUMBER0)
+Toggle City Major Objective 3 pts. (%NUMBER1)
+
+@SETCITYSIZE
+@width=320
+@title=Set Size Of %STRING0
+@options
+Size:
+
+@SETCITYSHIELDS
+@width=320
+@title=Set Shield Progress
+@options
+Shields:
+
+@EDITKING
+@width=440
+@title=Editing %STRING0
+@options
+No Changes
+Edit Treaties
+Set Last Contact
+Set Attitude
+Set Reputation
+Clear Patience
+Clear Every Last Contact
+Set Research Goal
+Set Research Progress
+Clear Research Goal
+Edit Name
+Copy Tech of Another King
+Toggle Female Flag (%NUMBER0)
+
+@EDITTREATIES
+@width=440
+@title=Editing treaties of %STRING0 and %STRING1.
+@checkbox
+@options
+Contact
+Cease Fire
+Peace
+Allied
+War
+Vendetta (%STRING0 against %STRING1)
+Embassy (%STRING0 watching %STRING1)
+
+@LASTCONTACT
+@width=440
+@title=Last Contact Turn # (%STRING0 with %STRING1)
+(This is turn # %NUMBER0)
+@options
+Contact:
+
+@EDITATTITUDE
+@width=440
+@title=Set Attitude (%STRING0 with %STRING1)
+(0 = Like, 100 = Dislike)
+@options
+Attitude:
+
+@EDITBETRAY
+@width=440
+@title=Set Reputation
+@options
+Reputation:
+
+@EDITPROGRESS
+@width=440
+@title=Set Research Progress (1 - %NUMBER0)
+@options
+Progress:
+
+@EDITRULES
+@width=440
+@title=Special Rules (0 = false, 1 = true)
+@options
+No Changes
+Ban changes of government? (%NUMBER0)
+Ban tech gained by conquest? (%NUMBER1)
+No pollution at all? (%NUMBER2)
+Special WWII-only AI (%NUMBER3)
+
+@EDITSCEN
+@width=440
+@title=Edit Scenario (%STRING1)
+@options
+No Changes
+Tech Paradigm (%NUMBER0/10)
+Years Per Turn (%NUMBER1)
+Starting Year (%NUMBER2)
+Maximum Turns (%NUMBER3)
+Remove all goody huts
+Restore all goody huts
+Show the whole map
+Hide the whole map
+Set Scenario Name
+Toggle Total War Flag (%NUMBER4)
+Edit Victory Conditions
+Edit Special Rules
+
+@EDITVICTORY
+@width=440
+@title=Edit Victory (Obj. Def. = %STRING1)
+@options
+No Changes
+Toggle Objective Victory Flag (%NUMBER0)
+Toggle Wonders Count as Objectives (%NUMBER1)
+Set Objectives Protagonist (%STRING0)
+Decisive Victory (>= %NUMBER2)
+Marginal Victory (>= %NUMBER3)
+Marginal Defeat (<= %NUMBER4)
+Decisive Defeat (<= %NUMBER5)
+
+@EDITVICTORYOBJ
+@title=Set # of objectives needed
+@options
+Objectives:
+
+@EDITPARADIGM
+@width=440
+@title=Scenario Tech Paradigm
+Enter the tech paradigm in tenths (10 is normal speed). The cost of each
+advance is multiplied by this fraction, so a larger number makes research
+go SLOWER.
+
+Paradigm:
+
+@EDITINCREMENT
+@width=440
+@title=Scenario Year Increment
+Enter the number of years per turn (0 uses the default; a negative number counts in months).
+@options
+Years per turn:
+
+@EDITSTARTYEAR
+@width=440
+@title=Scenario Start Year
+Enter the starting year: a negative number means B.C.,
+a positive one A.D., and 0 uses the normal calendar. If
+turns are counted in months, multiply the year by 12.
+@options
+Start year:
+
+@EDITMAXTURNS
+@width=440
+@title=Scenario Max Turns
+Set the game's final turn (0 = default)
+@options
+Max Turns:
+
+@EDITTECH
+@width=320
+@title=Choose Technology to Change
+@listbox
+@button=Give/Take All
+
+@SCENOK
+@width=480
+@title=Scenario
+^^Scenario saved:
+^^%STRING0
+
+@SCENARIOLOADED
+@width=480
+@title=Begin Scenario
+^^%STRING0
+^^Advances cost %NUMBER0/10 of the normal amount.
+^^From %STRING1 until %STRING2
+
+@SCENNAME
+@width=480
+@title=Set Scenario Name
+@options
+Scen:
+
+@EDITKINGNAME
+@width=440
+@title=Edit Names for %STRING0
+@options
+Leader:
+Tribe:
+Adjective:
+
+@COPYCITY
+@title=Choose city to copy
+@width=360
+@listbox
+
+@SCENARIOENDS
+@width=440
+@title=Scenario Rules
+This scenario finishes in five turns.
+
+@SCENARIOEND
+@width=440
+@title=Scenario Rules
+The scenario has ended.
+
+
+This game is over.
+La partie est finie.
+Das Spiel ist zu Ende.
+
+
+
+
+@HIDDENTERRAIN
+@width=250
+@title=Hidden Terrain
+@x=-4
+@y=-4
+Close this box when you are done.
+
+
+@FOUNDED
+@width=280
+@title=Found New City
+%STRING0 Founded: %STRING1
+
+@VFWNOTREGISTERED
+@title=Notice
+@width=440
+The game may have a problem with its video
+playback setup. Please check that video
+support is installed correctly on your
+system. If this message keeps appearing, you
+can switch off the video features in the
+game's options, and everything else will
+carry on working as normal without them.
+
+@BADEVENTSFILE
+@width=360
+@title=Events.txt
+An error was found in the
+file 'events.txt'. See the
+documentation for help in
+tracking down mistakes in it.
+
+@NOPICKMUSIC
+@width=360
+@title=Select Music
+Music can be chosen only when the game's music
+tracks are available. The music files do not seem to be installed on this
+computer.
+
+@PICKMUSIC
+@width=360
+@title=Select Music
+@options
+"Funeral March"
+"Ode to Joy"
+"Tenochtitlan Revealed"
+"Harvest of the Nile"
+"Aristotle's Pupil"
+"Augustus Rises"
+"Gautama Ponders"
+"Hammurabi's Code"
+"The Shining Path"
+
+@PICKMUSICSCENARIO
+@width=360
+@title=Select Music
+@options
+"Funeral March"
+"Ode to Joy"
+"Tenochtitlan Revealed"
+"Harvest of the Nile"
+"Aristotle's Pupil"
+"Augustus Rises"
+"Gautama Ponders"
+"Hammurabi's Code"
+"The Shining Path"
+"The Civil War"
+"The Crusades"
+"The Great War"
+"American Revolution"
+"Jihad"
+"Alien Invasion"
+"Mongol Horde"
+"Apocalypse"
+
+@PICKMUSICFANWORLDS
+@width=480
+@title=Select Music
+@columns=2
+@height=377
+@options
+"Funeral March"
+"Ode to Joy"
+"Tenochtitlan Revealed"
+"Harvest of the Nile"
+"Aristotle's Pupil"
+"Augustus Rises"
+"Gautama Ponders"
+"Hammurabi's Code"
+"The Shining Path"
+"The Civil War"
+"The Crusades"
+"The Great War"
+"American Revolution"
+"Jihad"
+"Alien Invasion"
+"Mongol Horde"
+"Apocalypse"
+"Primeval World"
+"New World"
+"Fantasy"
+"Mars"
+"World of Jules Verne"
+"X-Com"
+
+@CENTAURI
+In the year %STRING0,
+travellers set out from
+Earth on a great voyage
+to explore the depths of
+space. A ship carrying
+%STRING1 %STRING2
+settlers crossed the
+immense gulf between the
+stars. In %STRING3 they
+reached Alpha Centauri,
+and there these bold
+settlers began to build a
+new world. %STRING4, your
+nation has achieved what
+generations before it
+could only dream of. Your
+name will be remembered
+for ever in the history
+of CIVILIZATION.
+
+
+
+@@CENTAURI2
+In the year %STRING0,
+travellers set out from
+Earth on a great voyage
+to explore the depths of
+space. A ship carrying
+%STRING1 %STRING2
+settlers crossed the
+immense gulf between the
+stars. In %STRING3 they
+reached Alpha Centauri,
+and there these bold
+settlers began to build
+a new world. %STRING4,
+your own nation has a
+long and proud past.
+Perhaps one day your
+name, too, will be
+written in the history
+of CIVILIZATION.
+
+@@ARCHAEOLOGISTS
+Many centuries later,
+archaeologists uncover the
+ruins of your long-vanished
+civilization. Traces of busy
+towns, of %STRING0, of roads
+and of a central government
+astonish the researchers. At
+last they unearth a stone
+tablet bearing one cryptic
+sentence: "The %STRING1 will
+return!"
+
+
+@COUNCILTIME
+@width=320
+@y=5
+@title=The High Council: %STRING2
+The %STRING0 High Council has
+gathered in %STRING1. You may take
+this chance to hear your advisors'
+opinions on how the nation is faring.
+
+Meet the High Council
+Not now, too much to do
+
+
+@CENTAURI0
+In the year %STRING0,
+travellers set out from
+Earth on a great voyage
+to explore space.
+
+
+@CENTAURI1
+A ship carrying %STRING1
+%STRING2 settlers
+crossed the immense gulf
+between the stars.
+
+@CENTAURI2
+In %STRING3 they
+reached Alpha
+Centauri, and there
+these bold settlers
+began to build a
+new world. . .
+
+@CENTAURI3
+%STRING4, your nation has achieved what generations before it could only dream of.
+Your name will be remembered for ever in the history of CIVILIZATION!
+
+@CENTAURI_BEATEN0
+In the year %STRING0,
+travellers set out from
+Earth on a great voyage
+to explore space.
+
+@CENTAURI_BEATEN1
+A ship carrying %STRING1
+%STRING2 settlers
+crossed the immense gulf
+between the stars.
+
+@CENTAURI_BEATEN2
+In %STRING3 they
+reached Alpha
+Centauri, and
+there these bold
+settlers began to
+build a new world.
+
+@CENTAURI_BEATEN3
+%STRING4, your own nation
+has a long and proud
+past. Perhaps one day
+your name, too, will be
+written in the history of
+
+@CENTAURI_BEATEN4
+CIVILIZATION.
+
+@ARCHAEOLOGISTS0
+Many centuries later,
+archaeologists uncover the ruins of
+your long-vanished civilization.
+
+@ARCHAEOLOGISTS1
+Traces of busy towns, of
+%STRING0, of roads and of
+a central government
+astonish the researchers.
+
+@ARCHAEOLOGISTS2
+At last they unearth a
+stone tablet bearing just
+one cryptic sentence...
+
+@ARCHAEOLOGISTS3
+%STRING1 shall rise again!
+
+
+@LOWMEMORY
+@width=400
+Your computer is low on memory. Turning this
+on may make the game unstable. If you run into
+trouble, turning it back off should fix it.
+
+@HERALDWARNING
+@width=440
+@title=Diplomatic Heralds
+For smooth play, OpenCiv2 needs 16 MB of
+memory (RAM), and that much is also needed
+to display the 3D diplomatic heralds
+properly. If your computer has at least that
+much RAM, you can safely switch the feature
+on. (This notice is shown only once.)
+
+Heralds OFF: I have less than 16 MB of RAM
+Heralds ON: I have 16 MB of RAM or more
+
+
+@ADDTOWONDER
+@width=440
+@title=Wonder Project
+A caravan of workers reaches %STRING0, adding %NUMBER0
+shields to the Wonder. (%NUMBER1 shields still needed.)
+
+
+@ABILITIES
+@checkbox
+@width=330
+@title=Abilities Editor (%STRING0)
+@options
+Sees two squares away
+Ignores zones of control
+Can attack from ships
+Submarine pros/cons
+Can attack aircraft (fighter)
+Must stay near coast (trireme)
+Ignores city walls (howitzer)
+Carries air units (carrier)
+Can paradrop
+Alpine (every square as road)
+x2 defense against horse (pikemen)
+No upkeep in fundamentalism (fanatics)
+Lost after attacking (missiles)
+x2 defense against air (AEGIS)
+Can see submarines
+
+
+@TRIGGERS
+@width=330
+@title=New Trigger
+@button=Help
+@options
+Unit Killed
+City Taken
+Turn
+Turn Interval
+Negotiation
+Scenario Loaded
+Random Turn
+No Schism
+Received Technology
+
+
+@ACTIONS
+@width=330
+@title=New Action
+@button=Help
+@options
+Text
+Move Unit
+Create Unit
+Change Money
+Play Wavefile
+Make Aggression
+Just Once
+Play CD Track
+Don't Play Wonders
+Change Terrain
+Destroy a Civilization
+Give Technology
+
+
+@DELETEITEM
+@width=320
+@title=Delete Item
+Do you really want to delete this item?
+
+No, my mistake
+Yes, delete it
+
+
+@; (the end of the file)

@@ -1,0 +1,9302 @@
+# The structure of the game's text files, line by line, as the game reads them
+# (tests/text_test.py; no text): H section, D directive, T title/button, X text
+# line (codes, placeholders, menu & and |), B blank, E @@entry, N number, P a
+# description's paragraphs (placeholders), C a council line, @ an end mark.
+== GAME.TXT
+B
+B
+H MAINMENU
+D @width=200
+Tt -
+D @options
+X - 8 - -
+B
+H HOTSEAT1
+D @width=220
+Tt -
+D @options
+X - 5 - -
+B
+H HOTSEAT2
+D @width=220
+Tt -
+D @options
+X - 3 - -
+B
+H HOTSEATTURN
+D @width=220
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+B
+H HOTSEATNOT
+D @width=220
+Tt -
+X - 1 - -
+B
+B
+H GAMETIMER
+D @width=220
+Tt -
+D @options
+X - 7 - -
+B
+H CUSTOMGAMETIMER
+D @width=320
+Tt -
+X ^^ 2 - -
+B
+X - 1 - -
+B
+B
+H ADVANCEDMP
+D @checkbox
+D @width=440
+Tt -
+D @options
+X - 6 - -
+B
+H JOINGAME0
+Tt -
+D @width=340
+X ^^ 1 - -
+B
+B
+H JOINGAME1
+Tt -
+D @width=340
+X ^^ 1 %NUMBER0 -
+B
+B
+H JOINGAME2
+Tt -
+D @width=200
+X ^^ 1 - -
+B
+B
+H JOINGAME3
+Tt -
+D @width=340
+X ^^ 2 %STRING0 -
+B
+B
+H PASSWORD0
+Tt -
+D @width=340
+X ^^ 2 - -
+B
+B
+H PASSWORD1
+D @width=340
+B
+X - 1 - -
+B
+B
+H PASSWORD4
+Tt -
+D @width=340
+X ^^ 3 - -
+B
+B
+H PBEM1
+D @width=220
+Tt -
+D @options
+X - 5 - -
+B
+H EMAILNOT
+D @width=220
+Tt -
+X - 1 - -
+B
+B
+H EMAILADDRESS
+D @width=340
+Tt -
+D @options
+X - 1 - -
+B
+H EMAILSAVED
+D @width=440
+Tt -
+X ^^ 2 %STRING0 -
+B
+B
+H EMAILDONE1
+D @width=320
+Tt -
+X ^^ 4 %STRING0,%STRING1 -
+B
+B
+H EMAILDONE2
+D @width=320
+Tt -
+X ^^ 3 %STRING0 -
+B
+B
+H LAN1
+D @width=220
+Tt %STRING0
+D @options
+X - 6 - -
+B
+H LANNOT
+D @width=220
+Tt %STRING0
+X - 1 - -
+B
+B
+H IPADDRESS
+D @width=340
+Tt -
+D @options
+X - 1 - -
+B
+H NETNAME
+D @width=420
+Tt -
+X ^^ 2 - -
+B
+X - 1 - -
+B
+H GAMENAME
+D @width=420
+Tt -
+X ^^ 2 - -
+B
+X - 1 - -
+B
+H LANCONNECTFAIL
+D @width=220
+Tt %STRING0
+X ^^ 2 - -
+B
+B
+H WAITINGJOINLAN
+Tt %STRING0
+D @width=260
+X ^^ 2 %STRING1 -
+B
+B
+H REJECTEDLAN
+Tt %STRING0
+D @width=260
+X ^^ 2 %STRING1 -
+B
+B
+H TIMEOUTLAN
+Tt %STRING0
+D @width=260
+X ^^ 2 %STRING1 -
+B
+B
+H WAITINGFORCONNECT
+Tt %STRING0
+D @width=190
+X ^^ 2 - -
+B
+B
+H NOONESHOWED
+Tt %STRING0
+D @width=260
+X ^^ 2 - -
+B
+B
+H SOMESHOWED
+Tt %STRING0
+D @width=310
+X ^^ 2 - -
+B
+B
+H SERVERCONNECTFAIL
+Tt %STRING0
+D @width=310
+X ^^ 1 - -
+B
+B
+H WAITINGFORSERVER
+Tt %STRING0
+D @width=190
+X ^^ 2 - -
+B
+B
+H STOPDRAGGING
+Tt %STRING0
+D @width=240
+X ^^ 4 - -
+B
+B
+H OUTOFHERE
+Tt %STRING0
+D @width=190
+X ^^ 1 - -
+B
+B
+H SERVERCONNECTTIME
+Tt %STRING0
+D @width=310
+X ^^ 2 - -
+B
+B
+H WAITTOJOIN
+Tt %STRING0
+D @width=250
+X ^^ 2 - -
+B
+B
+H NOONELEFT
+Tt %STRING0
+D @width=260
+X ^^ 1 - -
+B
+B
+H WAITINGONJOIN
+Tt %STRING0
+D @width=250
+X ^^ 1 - -
+B
+B
+H WAITINGONFULLGAMESTATE
+Tt %STRING0
+D @width=250
+X ^^ 1 - -
+B
+B
+H OURTURNTOMOVE
+Tt %STRING0,%STRING1
+D @width=250
+X ^^ 2 - -
+B
+B
+H RETIREDIE
+D @width=320
+Tt %STRING0
+X ^^ 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+B
+H RETIREAI
+D @width=320
+Tt %STRING0
+X ^^ 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+B
+H NETWORKTYPE
+D @width=220
+Tt -
+D @options
+X - 2 - -
+B
+H IPVERIFY
+Tt -
+D @options
+X - 1 - -
+B
+H IPOFGAME
+D @width=340
+Tt -
+D @options
+X - 1 - -
+B
+H NOFOREIGNHUMAN
+D @width=320
+Tt -
+X ^^ 2 - -
+B
+B
+H MULTIPLAYEROPTIONS
+D @checkbox
+D @width=480
+Tt -
+D @options
+X - 4 - -
+B
+H MULTIPLAYEROPTIONS2
+D @checkbox
+D @width=480
+Tt -
+D @options
+X - 2 - -
+B
+H PARLEYREQUEST
+D @width=360
+Tt %string0,%string3
+X - 1 %string1,%string2 -
+D @options
+X - 2 - -
+B
+H PARLEYWAITING
+D @width=360
+Tt -
+X - 2 %string1,%string2 -
+B
+H PARLEYGOAWAY
+D @width=360
+Tt -
+X - 1 - -
+B
+H PARLEYOK
+D @width=360
+Tt -
+X - 2 %string0 -
+B
+H PARLEYBUSY
+D @width=360
+Tt -
+X - 2 - -
+B
+H PARLEYCANCEL
+D @width=360
+Tt -
+X - 1 %string0 -
+B
+H PARLEYACCEPT
+D @width=360
+Tt -
+X ^^ 2 - -
+B
+H PARLEYACCEPT2
+D @width=360
+Tt -
+X ^^ 2 - -
+B
+H PARLEYNOTHANKS
+D @width=360
+Tt -
+X ^^ 2 %string0 -
+B
+H PARLEYCOUNTEROFFER
+D @width=360
+Tt -
+X ^^ 2 %string0 -
+B
+H JOINEDMAX
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H ALREADYCHOSEN
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H GAMECANCELED
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H WAITPRODUCTION
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H WAITAIMOVES
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H WAITHUMANMOVES
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H REPORTFOREIGNMULTI
+D @width=580
+Tt -
+D @listbox=7
+Tb -
+Tb -
+Tb -
+X - 1 %STRING0,%STRING1 -
+B
+H ATTITUDEMULTI
+D @width=600
+Tt %STRING0
+B
+H CHATSPYSTART
+D @width=400
+Tt -
+X ^^ 3 - -
+B
+H CHATNOTICE
+D @width=360
+Tt -
+X ^^ 3 %NUMBER0 -
+B
+H ENEMIES2
+D @width=320
+Tt -
+Tb -
+D @options
+X - 6 - -
+B
+H DATAPATHFAIL
+D @width=400
+Tt -
+X ^^ 8 %STRING0,%STRING1 -
+B
+H WRONGVERSION
+D @width=400
+Tt -
+X ^^ 7 %STRING0,%STRING1 -
+B
+H HOSTCHANGECLIENT
+D @width=320
+Tt -
+X ^^ 3 %STRING0 -
+B
+H HOSTCHANGESERVER
+D @width=320
+Tt -
+X ^^ 2 - -
+B
+H NEWPLAYER
+D @width=320
+Tt -
+X ^^ 3 %STRING0 -
+B
+H NEWTURNTIMERCLIENT
+D @width=320
+Tt -
+X ^^ 4 %STRING0,%STRING1 -
+B
+H NEWTURNTIMERSERVER
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H NEWTURNTIMERYES
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H NEWTURNTIMERNO
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H PMCHANGECLIENT
+D @width=320
+Tt -
+X ^^ 4 %STRING0,%STRING1 -
+B
+H PMCHANGESERVER
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H PMCHANGEYES
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H PMCHANGENO
+D @width=320
+Tt -
+X ^^ 3 - -
+B
+H NEWCREDITS
+D @width=200
+Tt -
+D @options
+X - 4 - -
+B
+H NEWCREDITSHORT
+D @width=200
+Tt -
+D @options
+X - 2 - -
+B
+H NOMODEMS
+D @width=320
+Tt -
+X ^^ 2 - -
+B
+H PICKMUSICGOLD
+D @width=480
+Tt -
+D @options
+X - 11 - -
+B
+H NOINTEL
+D @width=400
+Tt -
+X ^^ 2 - -
+B
+H SERVERQUIT
+Tt %STRING0
+D @width=200
+X ^^ 3 %STRING1 -
+B
+H SIMULTUT
+D @width=450
+Tt -
+X - 4 - -
+B
+H SERVERQUITWAIT
+D @width=450
+Tt -
+X ^^ 2 - -
+B
+H CLIENTQUITWAIT
+D @width=450
+Tt -
+X ^^ 3 - -
+B
+H CLIENTHOTWAIT
+D @width=450
+Tt -
+X ^^ 3 - -
+B
+H MULTITYPE2
+D @width=200
+Tt -
+D @options
+X - 4 - -
+B
+H NOPICKMUSICNEW
+D @width=360
+Tt -
+X ^^ 3 - -
+B
+H LOSTSERVER
+D @width=360
+Tt -
+X ^^ 1 - -
+B
+H LOSTCLIENT
+D @width=360
+Tt -
+X ^^ 2 %STRING0 -
+B
+H CANTDONOW
+D @width=360
+Tt -
+X ^^ 1 - -
+B
+H SCREWYSAVE
+D @width=360
+Tt -
+X ^^ 3 - -
+B
+H HOTSEATAITURN
+D @width=220
+Tt -
+X ^^ 1 - -
+B
+H WRONGXDAEMONVERSION
+D @width=400
+Tt -
+X ^^ 7 %STRING0,%STRING1 -
+B
+H CASUALTIES
+D @width=220
+Tt %STRING0,%STRING1
+Tb -
+X ^^ 4 %NUMBER0 -
+B
+H CASUALTY
+D @width=220
+Tt %STRING0,%STRING1
+Tb -
+X ^^ 3 - -
+B
+H HOTHUMANSDEAD
+D @width=250
+Tt -
+X ^^ 2 - -
+B
+H CDROMNOTFOUND2
+D @width=320
+Tt -
+Tb -
+X - 3 - -
+B
+H PASSWORDNOCHEAT2
+D @width=350
+Tt -
+X ^^ 2 %NUMBER0 -
+B
+H PASSWORDNOCHEAT1
+D @width=350
+Tt -
+X ^^ 2 %NUMBER0 -
+B
+H WAITONGAMEXMIT
+D @width=350
+Tt -
+X ^^ 2 - -
+B
+H GAMEPROFILE
+D @width=100
+Tt -
+X ^ 9 %STRING0,%STRING1,%STRING10,%STRING11,%STRING2,%STRING3,%STRING4,%STRING5,%STRING6,%STRING7,%STRING8,%STRING9 -
+B
+H REVEALUNITORIGINS
+D @width=320
+Tt -
+X ^^ 3 %STRING0 -
+B
+H REVEALCITYINFO
+D @width=320
+Tt -
+X ^^ 3 %STRING0 -
+B
+B
+B
+H CUSTOMLAND
+D @width=320
+Tt -
+Tb -
+D @default=1
+D @options
+X - 3 - -
+B
+H CUSTOMFORM
+D @width=320
+Tt -
+Tb -
+D @default=1
+D @options
+X - 3 - -
+B
+H CUSTOMCLIMATE
+D @width=320
+Tt -
+Tb -
+D @options
+D @default=1
+X - 3 - -
+B
+H CUSTOMTEMP
+D @width=320
+Tt -
+Tb -
+D @options
+D @default=1
+X - 3 - -
+B
+H CUSTOMAGE
+D @width=320
+Tt -
+Tb -
+D @options
+D @default=1
+X - 3 - -
+B
+B
+H USESEED
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H USESTARTLOC
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+B
+H SAVEERROR
+D @width=200
+Tt -
+X - 1 %STRING0 -
+B
+H SAVEOK
+D @width=300
+Tt -
+X ^^ 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H LOADNOTSAVE
+D @width=200
+Tt -
+X - 1 - -
+B
+H LOADOLDSAVE
+D @width=200
+Tt -
+X - 1 - -
+B
+H LOADBADSAVE
+D @width=200
+Tt -
+X - 1 %STRING0 -
+B
+H LOADNEWSAVE
+D @width=200
+Tt -
+X - 1 - -
+B
+H LOADOK
+D @width=300
+Tt %STRING4
+X ^^ 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+B
+H DIFFICULTY
+D @width=320
+Tt -
+D @options
+X - 6 - -
+B
+H SIZEOFMAP
+D @width=320
+Tt -
+Tb -
+D @default=1
+D @options
+X - 3 - -
+B
+H CUSTOMSIZE
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+B
+H ENEMIES
+D @width=320
+Tt -
+Tb -
+D @options
+X - 5 - -
+B
+H BARBARITY
+D @width=320
+Tt -
+Tb -
+D @default=2
+D @options
+X - 4 - -
+B
+H RULES
+D @width=320
+Tt -
+D @options
+X - 2 - -
+B
+H GENDER
+D @width=320
+Tt -
+D @options
+X - 2 - -
+B
+B
+H TRIBE
+D @width=600
+Tt -
+Tb -
+B
+B
+H CUSTOMTRIBE
+D @width=440
+Tt -
+Tb -
+D @options
+X - 3 - -
+B
+H CUSTOMTRIBE2
+D @width=440
+Tt -
+B
+H NAME
+D @width=440
+Tt -
+D @options
+X - 1 - -
+B
+H CUSTOMCITY
+D @width=320
+Tt -
+B
+B
+B
+H ADVANCED
+D @checkbox
+D @width=440
+Tt -
+D @options
+X - 6 - -
+B
+H ACCELERATED
+D @width=400
+Tt -
+D @options
+X - 3 %NUMBER0,%NUMBER1,%NUMBER2 -
+B
+H OPPONENT
+D @width=320
+Tt %NUMBER0
+D @options
+X - 1 - -
+B
+H GAMEOPTIONS
+D @checkbox
+D @width=480
+Tt %STRING0
+D @options
+X - 11 - -
+B
+H GRAPHICOPTIONS
+D @checkbox
+D @width=480
+Tt -
+D @options
+X - 6 - -
+B
+B
+H MESSAGEOPTIONS
+D @checkbox
+D @width=480
+Tt -
+D @options
+X - 11 - -
+B
+B
+H INIT
+D @width=440
+D @y=-5
+Tt -
+X - 4 %STRING0,%STRING1,%STRING1,%STRING2 -
+B
+B
+H NOTONMAP
+Tt -
+X - 2 - -
+B
+H ZOC
+D @width=440
+Tt -
+X - 3 - -
+X ^ 1 - -
+X - 2 - -
+X ^ 1 - -
+X - 3 - -
+B
+H FEATURE
+Tt -
+X - 1 - -
+B
+H AMPHIB
+Tt -
+X - 2 - -
+B
+B
+H NONCOMBAT
+Tt -
+X - 4 - -
+B
+H FIGHTER
+Tt -
+X - 1 - -
+B
+H FUEL
+Tt -
+X - 5 - -
+B
+H FATIGUE
+Tt -
+X - 3 %NUMBER0,%NUMBER1 -
+B
+X - 2 - -
+B
+B
+H LANDFALL
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H NOLANDFALL
+Tt -
+X - 3 - -
+B
+H OCCUPY
+X - 2 - -
+B
+H TRIREME
+Tt -
+X - 3 - -
+B
+H FAMINE0
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H FAMINE1
+Tt -
+X - 2 %STRING0 -
+B
+H FAMINE2
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H DESTROYED
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H DECREASE
+Tt -
+X - 1 %STRING0 -
+B
+H FOODSHORTAGE
+Tt -
+X - 1 %STRING0 -
+B
+H BUILT
+Tt -
+X - 1 %STRING0,%STRING1,%STRING3 -
+B
+H BUILT2
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H BUILT3
+Tt -
+X - 2 %STRING0,%STRING1,%STRING3 -
+B
+H MANHATTAN
+Tt -
+X - 2 %STRING0 -
+B
+B
+H MOVECAPITAL
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+B
+H SUPPORT
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+B
+H DISORDER
+Tt -
+D @width=280
+X - 2 %STRING0 -
+B
+H REVOLT
+Tt -
+X - 2 %STRING0 -
+B
+H NEWGOVT
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H CHANGED
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H OVERTHROWN
+Tt -
+X - 2 %STRING0 -
+B
+H RESTORED
+Tt -
+X - 1 %STRING0 -
+B
+H WELOVEKING
+Tt -
+D @width=280
+X - 1 %STRING0,%STRING1 -
+B
+H WEDONTLOVEKING
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H FURTHERGROWTH
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H POLLUTION
+Tt -
+X - 1 %STRING0 -
+B
+H CHERNOBYL
+Tt -
+X - 2 %STRING0 -
+B
+H INHOCK
+Tt -
+X - 2 %NUMBER0,%STRING0,%STRING1,%STRING1 -
+B
+H ONLYSETTLERS
+Tt -
+X - 2 - -
+B
+H ENGINEERS
+Tt -
+X - 2 - -
+B
+H CITYATSEA
+Tt -
+X - 2 - -
+B
+H ONLY10
+Tt -
+X - 2 %NUMBER0 -
+B
+H CANTIMPROVE
+Tt -
+X - 1 - -
+B
+H CANTDO
+Tt -
+X - 1 - -
+B
+H BRIDGES
+Tt -
+X - 3 - -
+B
+H RAILROADS
+Tt -
+X - 4 - -
+B
+H ALREADYROAD
+Tt -
+X - 2 - -
+B
+H BRIDGEBUILDING
+Tt -
+X - 3 - -
+B
+H NOWATER
+Tt -
+X - 4 - -
+B
+H FARMLAND
+Tt -
+X - 4 - -
+B
+H ALREADYIRRIGATION
+Tt -
+X - 2 - -
+B
+H ALREADYFARMLAND
+Tt -
+X - 2 - -
+B
+H ALREADYMINING
+Tt -
+X - 2 - -
+B
+H ALREADYFORT
+Tt -
+X - 1 - -
+B
+H RADIO
+Tt -
+X - 3 - -
+B
+H ALREADYAIR
+Tt -
+X - 1 - -
+B
+B
+H CONSTRUCTION
+Tt -
+X - 3 - -
+B
+H NOPOLLUTION
+Tt -
+X - 1 - -
+B
+B
+H NAMECITY
+Tt -
+D @options
+X - 1 - -
+B
+B
+H RENAMECITY
+Tt -
+D @options
+X - 1 - -
+B
+B
+H ADJACENTCITY
+Tt -
+X - 2 - -
+B
+B
+H DISBAND
+Tt -
+X - 1 %STRING0 -
+B
+X - 2 - -
+B
+B
+H PRODUCTION
+Tt %STRING0
+D @width=440
+D @listbox
+Tb -
+Tb -
+B
+H RESEARCH
+Tt %STRING0
+D @width=300
+D @listbox
+Tb -
+Tb -
+B
+H HELPON
+Tt -
+D @width=320
+D @options
+B
+H RESEARCHGOAL
+Tt -
+D @width=480
+D @listbox=10
+Tb -
+B
+H RESEARCHTHESE
+Tt -
+D @width=400
+X - 1 - -
+B
+H STEALTHESE
+Tt -
+D @width=400
+X - 1 - -
+B
+H RESEARCHNONE
+Tt -
+D @width=400
+X - 2 %STRING0 -
+B
+H STEALNONE
+Tt -
+D @width=400
+X - 2 %STRING0 -
+B
+H CIVADVANCE
+Tt -
+D @width=320
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+H SETHOMECITY
+Tt -
+D @width=320
+X - 5 - -
+B
+H PICKGOVT
+Tt -
+D @width=240
+B
+H ELVISERR
+Tt -
+X - 2 - -
+B
+B
+H CHILDCLICK
+D @width=320
+Tt -
+X ^ 2 %STRING0,%STRING1 -
+B
+X - 4 - -
+B
+B
+H UNITOPTIONS
+D @width=320
+Tt -
+X ^ 2 %STRING0,%STRING2 -
+B
+B
+H COMPLETE0
+Tt %STRING0
+X ^ 2 %NUMBER0,%NUMBER1,%STRING0 -
+B
+H COMPLETE1
+Tt %STRING0
+X ^ 2 %NUMBER0,%NUMBER1,%STRING0 -
+B
+X - 2 - -
+B
+B
+H COMPLETE2
+Tt %STRING0
+X ^ 3 %NUMBER0,%NUMBER1,%STRING0 -
+B
+H HOCKTHIS
+Tt -
+X - 2 %NUMBER0,%STRING0 -
+B
+X - 2 - -
+B
+H CANTHOCKTHIS
+Tt -
+D @width=320
+X - 2 - -
+B
+H CHANGETAX
+Tt -
+D @width=260
+X ^ 2 %NUMBER0,%STRING0,%% -
+B
+H CHANGELUX
+Tt -
+D @width=260
+X ^ 2 %NUMBER0,%STRING0,%% -
+B
+H FINDCITY
+Tt -
+D @width=360
+Tb -
+D @listbox
+B
+H REVOLUTION
+D @width=240
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+X - 2 - -
+B
+H STARTREV
+D @width=240
+Tt -
+X - 2 %STRING0 -
+B
+H WARENDS
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+B
+H SIGNPEACE
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H ALLYMAKESPEACE
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H ALLYMAKESWAR
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H SIGNALLIED
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2 -
+B
+H SIGNNATO
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H JOINWAR
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2 -
+B
+H CANCELALLIED
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H CANCELPEACE
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H ALLYUNDERATTACK
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H DEMANDHELP
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H HELPBONUS
+D @width=320
+Tt %STRING0
+X - 2 %NUMBER0 -
+B
+X - 2 %STRING1 -
+B
+H DIDNTHELP
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+B
+H ALLYATTACKING
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H DECLAREWAR
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+B
+H TOOMANYUNITS
+D @width=320
+Tt -
+X - 3 - -
+B
+H SURPRISETRIBE
+D @width=240
+Tt -
+X - 1 - -
+B
+H SURPRISENOMADS
+D @width=300
+Tt -
+X - 2 - -
+B
+H SURPRISESCROLLS
+D @width=240
+Tt -
+X - 1 - -
+B
+H SURPRISEMERCS
+D @width=300
+Tt -
+X - 1 - -
+B
+H SURPRISEBARB
+D @width=300
+Tt -
+X - 1 - -
+B
+H SURPRISENOTHING
+D @width=320
+Tt -
+X - 2 - -
+B
+H SURPRISEMETALS
+D @width=300
+Tt -
+X - 1 %NUMBER0 -
+B
+B
+H SNEAK
+D @width=300
+Tt -
+X - 1 %STRING0 -
+B
+H BREAKCEASE
+D @width=300
+Tt -
+X - 1 %STRING0 -
+B
+H CANCELPEACE
+D @width=300
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H RANSOM
+D @width=300
+Tt -
+X - 1 %NUMBER0 -
+B
+H PROMOTED
+D @width=300
+Tt -
+X - 3 %STRING0 -
+B
+H MULTIPLEWIN
+D @width=300
+Tt -
+X - 1 %NUMBER0 -
+B
+H MULTIPLELOSE
+D @width=300
+Tt -
+X - 1 %NUMBER0 -
+B
+B
+H CITYCAPTURE
+D @width=300
+Tt -
+X - 2 %NUMBER0,%STRING0,%STRING1,%STRING3 -
+B
+B
+H CITYCAPTURE2
+D @width=300
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H CITYWINALLY
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2,%STRING4 -
+B
+H CITYLOSEALLY
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2 -
+B
+H TAKECIV
+D @width=320
+Tt -
+D @listbox
+Tb -
+B
+H TOOKCIV
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H BADBUILD
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H BADSPACE
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+B
+H BARBARIANSLAND
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+H BARBARIANS
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H PRODCHANGE
+D @width=320
+Tt -
+D @default=1
+X - 4 %NUMBER0,%% -
+B
+X - 2 %NUMBER0,%STRING0,%STRING1,%% -
+B
+B
+E PRODCHANGE
+E width=480
+E title=Civ Rules: Change of Production
+@
+@
+@
+@
+@
+@
+@
+@
+@
+@
+@
+D @
+@
+@
+B
+H BARRACKS
+D @width=320
+Tt -
+X - 2 %NUMBER0,%STRING0 -
+B
+H EMISSARY
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3,%STRING4 -
+B
+X - 2 %STRING4 -
+B
+H EMISSARYFORCE
+D @width=320
+Tt %STRING0
+X - 1 %STRING1 -
+B
+H GREETINGS00
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3 -
+B
+H GREETINGS01
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3 -
+B
+H GREETINGS02
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3 -
+B
+H GREETINGS03
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3,%STRING5 -
+B
+B
+H GREETINGS10
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3 -
+B
+H GREETINGS11
+D @width=320
+Tt %STRING0
+X - 2 %STRING1,%STRING2,%STRING3 -
+B
+H GREETINGS12
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3,%STRING6 -
+B
+H GREETINGS13
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3,%STRING5,%STRING6 -
+B
+H NUCLEARWEAPONS
+X ^ 1 - -
+X - 1 - -
+B
+B
+H YOURNUKES1
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H YOURNUKES2
+D @width=320
+Tt %STRING0
+X - 4 - -
+B
+H NOEXCHANGEMAD
+Tt %STRING0
+D @width=320
+X - 2 - -
+B
+H NOEXCHANGEMEDIUM
+Tt %STRING0
+D @width=320
+X - 3 - -
+B
+H NOEXCHANGEWONDER
+Tt %STRING0
+D @width=320
+X - 3 %STRING1 -
+B
+H NOEXCHANGENOW
+Tt %STRING0
+D @width=320
+X - 2 - -
+B
+H EXCHANGEGIFT
+Tt %STRING0
+D @width=320
+X - 3 %STRING1 -
+B
+H EXCHANGEGIFT2
+Tt %STRING0
+D @width=320
+X - 4 %STRING1 -
+B
+H SELLTECH
+Tt %STRING0
+D @width=320
+X - 3 %NUMBER0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H SELLTECH2
+Tt %STRING0
+D @width=320
+X - 3 %NUMBER0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H SYMPATHY
+Tt %STRING0
+D @width=320
+X - 2 - -
+B
+H EXCHANGE0
+Tt %STRING0
+D @width=320
+X - 4 %STRING1,%STRING3 -
+B
+X - 2 %STRING1 -
+B
+H EXCHANGE1
+Tt %STRING0
+D @width=320
+X - 4 %STRING1,%STRING2,%STRING3,%STRING3 -
+B
+X - 2 %STRING1 -
+B
+H EXCHANGEPETTY
+Tt %STRING0
+D @width=320
+X - 3 - -
+B
+H CANCELTREATY0
+Tt %STRING0
+D @width=320
+X - 4 %STRING1,%STRING2 -
+B
+X - 2 %STRING1,%STRING1 -
+B
+H CANCELTREATY1
+Tt %STRING0
+D @width=320
+X - 4 %STRING1,%STRING2 -
+B
+X - 2 %STRING1,%STRING1 -
+B
+H CANCELTREATY2
+Tt %STRING0
+D @width=320
+X - 4 %STRING1,%STRING2 -
+B
+X - 2 %STRING1,%STRING1 -
+B
+B
+H CANCELALLIANCE0
+D @width=320
+Tt -
+X - 4 %STRING1,%STRING2,%STRING2 -
+B
+H CANCELALLIANCE1
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING3 -
+B
+B
+H TRIBUTE0
+D @width=320
+Tt %STRING0
+X - 4 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+B
+H TRIBUTE1
+D @width=320
+Tt %STRING0
+X - 4 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+H TRIBUTE2
+D @width=320
+Tt %STRING0
+X - 4 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+H TRIBUTE3
+D @width=320
+Tt %STRING0
+X - 4 %NUMBER0,%STRING1,%STRING2,%STRING3,%STRING4 -
+B
+X - 2 %NUMBER0 -
+B
+B
+H TRIBUTE8
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+H TRIBUTE9
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0,%STRING1,%STRING2,%STRING4 -
+B
+X - 2 %NUMBER0,%STRING1 -
+B
+B
+H TAKECIV0
+D @width=320
+Tt %STRING0
+X - 4 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+B
+H TAKECIV1
+D @width=320
+Tt %STRING0
+X - 5 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H TAKECIV2
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+B
+H TAKECIV8
+D @width=320
+Tt %STRING0
+X - 4 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H TAKECIV9
+D @width=400
+Tt %STRING0
+X - 4 %STRING1,%STRING2,%STRING3,%STRING4 -
+B
+X - 2 %STRING1 -
+B
+H OVERABARREL
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H BEGONE0
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H BEGONE1
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H NOVIOLATORS
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+B
+H PROVOKE0
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H PROVOKE1
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H PROVOKE2
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H REJECT0
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H RID0
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H ACCURSEDWALL
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H ACCURSEDUN
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H SENATEPEACE
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H SENATECEASE
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H WALLOVERPEACE
+D @width=320
+Tt -
+X - 3 - -
+B
+H WALLOVERCEASE
+D @width=320
+Tt -
+X - 3 - -
+B
+H UNOVERPEACE
+D @width=320
+Tt -
+X - 3 - -
+B
+H UNOVERCEASE
+D @width=320
+Tt -
+X - 3 - -
+B
+B
+H PROPOSEALLIANCE
+D @width=320
+Tt %STRING0
+X - 4 - -
+B
+X - 2 - -
+B
+B
+H GRANTCEASE
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+X - 2 - -
+B
+H WALLCEASE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+X - 2 - -
+B
+H PROPOSECEASE
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+X - 2 - -
+B
+B
+H PROPOSEPEACE
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+X - 2 %STRING1 -
+B
+B
+H NOPEACE
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+B
+B
+H OVERRULECEASE
+D @width=320
+Tt -
+X - 1 - -
+B
+H OVERRULEPEACE
+D @width=320
+Tt -
+X - 2 - -
+B
+H ALLIANCE
+D @width=320
+Tt %STRING0
+X - 5 %STRING1,%STRING2 -
+B
+H TREATY
+D @width=320
+Tt %STRING0
+X - 6 %STRING1,%STRING2 -
+B
+H CEASEFIRE
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2 -
+B
+H CEASEEXPIRE
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H APOLOGIZE
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H GIVECIV
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H GIVECASH
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0 -
+B
+X - 2 - -
+B
+H GROVEL
+D @width=320
+Tt %STRING0
+X - 4 %NUMBER0 -
+B
+X - 2 - -
+B
+H CONTINUEWAR
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+B
+H CASHFORPEACE
+D @width=320
+Tt %STRING0
+X - 2 %NUMBER0 -
+B
+X - 2 - -
+B
+B
+H ATTITUDEALLY
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H ATTITUDEPEACE
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H ATTITUDE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H WELCOMEALLY
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3,%STRING4 -
+B
+H WELCOMEPEACE
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3,%STRING4 -
+B
+H WELCOME
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H HOWDYALLY
+D @width=320
+Tt %STRING0
+X - 2 %STRING2 -
+B
+H HOWDYPEACE
+D @width=320
+Tt %STRING0
+X - 2 %STRING2 -
+B
+H HOWDY
+D @width=320
+Tt %STRING0
+X - 1 %STRING2 -
+B
+H DOODYALLY
+D @width=320
+Tt %STRING0
+X - 3 %STRING2 -
+B
+H DOODY
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H NOTORIOUSBIG
+D @width=320
+Tt %STRING0
+X - 4 %STRING1 -
+B
+H NOTORIOUSSMALL
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H NOTORIOUSHATE
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H WORTHLESS
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H OUTAHEREALLY
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H OUTAHERE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+B
+H ALLYPLEA
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H ALLYBRAG
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H DIPLOMACY
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H DIPLOMACYMENU
+X - 9 - -
+B
+H TREATYMENU
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H TREATYOPTIONS
+X - 8 - -
+B
+B
+H FAVORMENU
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+X - 4 - -
+B
+B
+H GIFTMENU
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+X - 4 - -
+B
+H ALLIANCENOBETRAY
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H NOBETRAYWEAK
+D @width=320
+Tt %STRING0
+X - 4 - -
+B
+B
+H ALLIANCENOWINNING
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H ALLIANCENODISLIKE
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H ALLIANCENOSMALL
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H ALLIANCENOTHANKS
+D @width=320
+Tt %STRING0
+X - 3 %STRING2 -
+B
+H ALLIANCENOPATIENCE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H PERHAPSTHROWIN0
+D @width=320
+Tt %STRING0
+X - 2 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+H PERHAPSTHROWIN1
+D @width=320
+Tt %STRING0
+X - 2 %NUMBER0 -
+B
+X - 2 %NUMBER0 -
+B
+B
+H PERHAPSSECRET0
+D @width-320
+Tt %STRING0
+X - 2 %STRING3 -
+B
+X - 2 %STRING3 -
+B
+B
+H PERHAPSSECRET1
+D @width-320
+Tt %STRING0
+X - 3 %STRING1,%STRING3 -
+B
+X - 2 %STRING3 -
+B
+B
+H PERHAPSSOLIDARITY
+D @width=320
+Tt %STRING0
+X - 2 %STRING4 -
+B
+X - 2 %STRING4 -
+B
+H PERHAPSPROVEIT
+D @width=320
+Tt %STRING0
+X - 2 %STRING4 -
+B
+X - 2 %STRING4 -
+B
+H PERHAPSDIDNTPROVE
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H PERHAPSTHANKSANYWAY
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H PERHAPSBYE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H PEACENOBETRAY
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H PEACENOWINNING
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H PEACENODISLIKE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H PEACENOPATIENCE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H GIVEMORECIV
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H GIVEMORE
+D @width=320
+Tt %STRING0
+X - 2 %NUMBER0 -
+B
+H GIVEMOREALLY
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0 -
+B
+H TAUNTALLY
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H FEEBLEALLY
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H FEEBLE
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H CANCELALLY
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H CANCELOURPEACE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H MUSTATTACK
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+X - 1 - -
+B
+H NOCONTACT
+D @width=320
+Tt %STRING0
+X - 1 %STRING1 -
+B
+H ATWAR
+D @width=320
+Tt %STRING0
+X - 1 %STRING1 -
+B
+H MERCENARY
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0,%STRING1 -
+B
+X - 2 - -
+B
+H CYBERCOP
+D @width=320
+Tt %STRING0
+X - 3 %STRING1,%STRING2,%STRING3 -
+B
+X - 2 - -
+B
+H ETERNALALLIES
+D @width=320
+Tt %STRING0
+X - 3 %NUMBER0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H HELLNOWEWONTGO
+D @width=320
+Tt %STRING0
+X - 4 - -
+B
+H UNFORTUNATE
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H MERCDECLARE
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H MERCBETRAYALLY
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H MERCBETRAY
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H MAPNO
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H MAPYES
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H KNOWNO
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H TECHGIFT
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+X - 2 %STRING1 -
+B
+H TECHGIFT2
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+X - 3 %STRING1,%STRING2 -
+B
+H MILITARYNO
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H MILITARYNONE
+D @width=320
+Tt -
+X - 2 - -
+B
+H MILITARYSOURCE
+D @width=320
+D @listbox=12
+Tt -
+B
+H BREAKTHROUGH
+D @width=320
+Tt -
+X - 1 %STRING1 -
+B
+H WASTING
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+H ACCEPT
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H MONEYGIFT
+D @width=320
+Tt %STRING0
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H PATIENCEALLY
+D @width=320
+Tt %STRING0
+X - 3 - -
+B
+H PATIENCE
+D @width=320
+Tt %STRING0
+X - 2 - -
+B
+H NEARCITY
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H ADMIRECITY
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H PLEASECITY
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H PLEASECITIES
+D @width=320
+Tt %STRING0
+X - 4 %STRING1,%STRING2 -
+B
+B
+H TERMS
+D @width=320
+Tt -
+X - 4 %STRING1,%STRING2,%STRING3 -
+B
+B
+H INTRUDERS
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+H INTRUDER
+D @width=320
+Tt %STRING0
+X - 3 %STRING1 -
+B
+B
+H VIOLATOR
+D @width=320
+Tt %STRING0
+X - 4 %STRING1 -
+B
+X - 2 - -
+B
+H VIOLATORS
+D @width=320
+Tt %STRING0
+X - 4 %STRING1 -
+B
+X - 2 - -
+B
+H VIOLATE
+D @width=320
+Tt %STRING0
+X - 2 %STRING1 -
+B
+H WITHDRAWN
+D @width=320
+Tt -
+X - 2 %NUMBER0 -
+B
+H WITHDRAWN1
+D @width=320
+Tt -
+X - 2 - -
+B
+B
+H HELPME
+D @width=320
+Tt %STRING0
+X - 5 %NUMBER0,%STRING1 -
+B
+X - 2 %STRING1 -
+B
+H HELPME2
+D @width=320
+Tt %STRING0
+X - 5 %NUMBER0,%STRING1,%STRING2 -
+B
+X - 2 %STRING1 -
+B
+H HELPMEINSTEAD
+D @width=320
+Tt %STRING0
+X - 6 %NUMBER0,%STRING1 -
+B
+X - 2 %STRING1 -
+B
+H HELPMEINSTEAD2
+D @width=320
+Tt %STRING0
+X - 6 %NUMBER0,%STRING1,%STRING2 -
+B
+X - 2 %STRING1 -
+B
+B
+H CRUSADE
+D @width=320
+Tt %STRING0
+X - 4 %STRING1,%STRING2 -
+B
+X - 2 %STRING1 -
+B
+H JIHAD
+D @width=320
+Tt %STRING0
+X - 5 %STRING1,%STRING1 -
+B
+X - 2 %STRING1 -
+B
+H GAPE
+D @width=320
+Tt %STRING0
+X - 5 %STRING1,%STRING2 -
+B
+H ANNOYALLIED
+D @width=320
+Tt -
+X - 6 %STRING1 -
+B
+H ANNOYPEACE
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+X - 2 - -
+B
+B
+H ANNOYVASSAL
+D @width=320
+Tt -
+X - 3 %STRING1 -
+B
+X - 2 - -
+B
+B
+H ANNOYCEASE
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+X - 2 - -
+B
+H ANNOY
+D @width=320
+Tt -
+X - 1 %STRING1 -
+B
+X - 2 - -
+B
+H OVERRULE
+D @width=320
+Tt -
+X - 1 - -
+B
+H TAXES
+D @width=320
+Tt -
+X - 3 - -
+B
+X - 2 - -
+B
+H SPYMENU
+D @width=320
+Tt %STRING0,%STRING1,%STRING2
+B
+H SPYOPTIONS
+X - 7 - -
+B
+H SABOTAGEOPTIONS
+D @width=320
+Tt -
+D @options
+X - 2 - -
+B
+H BLEWITUP
+D @width=320
+X - 1 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+H BOND007
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H BOND
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H BONDGLORY
+D @width=320
+Tt -
+X - 1 - -
+B
+H NAILED
+D @width=320
+Tt -
+X - 1 - -
+B
+H ENEMYEMBASSY
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H ENEMYINVESTIGATE
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H STEALSPECIFIC
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H STEALHARD
+D @width=320
+Tt -
+X - 3 %STRING0,%STRING1 -
+B
+X - 2 - -
+B
+H STEAL
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H NOSTEAL
+D @width=320
+Tt -
+X - 1 - -
+B
+H SABOTAGESPECIFIC
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H SABOTAGEHARD
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H SABOTAGENO
+D @width=320
+Tt -
+X - 3 - -
+B
+B
+H SABOTAGE
+D @width=320
+Tt -
+D @listbox
+B
+H SABOTAGEONE
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SABOTAGETWO
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+B
+H PRETEXTALLIED
+D @width=320
+Tt -
+X - 3 %STRING0 -
+B
+X - 2 - -
+B
+H PRETEXT
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+X - 2 %STRING0 -
+B
+B
+H INCIDENT
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+B
+H MAJORINCIDENT
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+B
+B
+H INCIDENTALLIED
+D @width=320
+Tt -
+X - 3 %STRING0,%STRING1 -
+B
+H WIMPOUT
+D @width=320
+Tt %STRING0
+X - 4 - -
+B
+H INCIDENTWAR
+D @width=320
+Tt -
+X - 3 %STRING0,%STRING1 -
+B
+H INCIDENTTERROR
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H SENATESCANDAL
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+H DISSIDENTS
+D @width=320
+Tt -
+X - 2 %NUMBER0,%STRING0 -
+B
+H DISSIDENTOPTIONS
+X - 4 - -
+B
+H CIVILWAR
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2 -
+B
+H USEWEAPONS
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SDI
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H PLANTEDNUKE
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H PLANTEDNUKE2
+D @width=320
+Tt -
+X - 4 %STRING0,%STRING1,%STRING2 -
+B
+H WATERSUPPLY
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H DESERT
+D @width=320
+Tt -
+X - 1 %NUMBER0,%STRING0,%STRING1 -
+B
+H DESERT2
+D @width=320
+Tt -
+X - 1 %NUMBER0,%STRING0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H DESERTED
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+B
+H ALREADYSOLD
+D @width=320
+Tt -
+X - 2 - -
+B
+H PARTISANS
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+B
+H REPORTSCIENCE
+D @width=540
+Tt -
+D @listbox=12
+D @columns=3
+Tb -
+Tb -
+X ^ 3 %NUMBER0,%NUMBER1,%NUMBER2,%STRING0 -
+X ^^ 1 - -
+B
+H SUPPLYSEARCH
+D @width=480
+Tt -
+D @columns=2
+B
+H SUPPLYSHOW
+D @width=480
+Tt %STRING0
+D @listbox
+B
+H SUPPLYNONE
+D @width=480
+Tt %STRING0
+X - 2 %STRING0 -
+B
+H REPORTTRADE
+D @width=480
+Tt -
+Tb -
+D @listbox
+B
+H REPORTCITY
+D @width=540
+Tt -
+D @listbox
+B
+B
+H REPORTATTITUDE
+D @width=540
+Tt -
+D @listbox
+B
+B
+H REPORTFOREIGN
+D @width=580
+Tt -
+D @listbox=7
+Tb -
+Tb -
+X - 1 %STRING0,%STRING1 -
+B
+H NOFOREIGN
+D @width=320
+Tt -
+X - 1 - -
+B
+B
+H REPORTINTELL
+D @width=580
+D @listbox=4
+D @columns=3
+Tt %STRING0
+Tb -
+B
+H INTELLCITY
+D @width=320
+D @listbox=12
+Tt %STRING0
+B
+B
+B
+H REPORTWONDER
+D @width=540
+Tt -
+D @listbox
+B
+B
+H WONDERS
+X - 4 - -
+B
+B
+H AMBASSADORS
+D @width=320
+Tt -
+X - 1 %STRING1 -
+B
+H ENDWONDER
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+B
+H FEARWARMING
+D @width=320
+Tt -
+X - 2 - -
+B
+H GLOBALWARMING
+D @width=320
+Tt -
+X - 2 - -
+B
+B
+H SCHISM
+D @width=400
+Tt -
+X - 6 %STRING0,%STRING0,%STRING1 -
+B
+H FERTILE
+D @width=420
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H CARAVANMENU
+D @width=320
+Tt %STRING0
+B
+H CARAVAN
+D @width=420
+Tt -
+X - 2 %NUMBER0,%STRING0,%STRING1,%STRING2 -
+B
+H FOODCARAVAN
+D @width=420
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H CARAVANHOME
+D @width=420
+Tt -
+X - 1 - -
+B
+H CARAVANOTHER
+D @width=420
+Tt -
+X - 2 %STRING0,%STRING1,%STRING1,%STRING2,%STRING3,%STRING4 -
+B
+H CARAVANBUILT
+D @width=420
+Tt -
+Tb -
+X - 2 %STRING0,%STRING1 -
+B
+H CARACONFIRM
+D @width=320
+Tt -
+Tb -
+X - 1 %STRING0 -
+B
+X - 2 - -
+B
+H CITYINFO
+D @width=320
+Tt %STRING0,%STRING1
+X - 1 %STRING2,%STRING3,%STRING4 -
+B
+H STARTWONDER
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H SWITCHWONDER
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2,%STRING3 -
+B
+H ABANDONWONDER
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H ALMOSTWONDER
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H STILLWONDER1
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H STILLWONDER2
+D @width=320
+Tt -
+X - 2 %NUMBER0,%STRING1,%STRING2 -
+B
+H CAPTUREWONDER
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H LOSTWONDER
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H ACTIVATEALLY
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2,%STRING2,%STRING3 -
+B
+H ALLYHELPS
+D @width=320
+Tt -
+X - 3 %STRING2,%STRING3 -
+B
+B
+H MILITARYAID1
+D @width=320
+Tt -
+X - 3 %STRING0,%STRING1,%STRING2 -
+B
+H MILITARYAID2
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2,%STRING3 -
+B
+B
+H GOTO
+D @width=480
+Tt %STRING0
+Tb -
+D @listbox
+B
+H PARADROP
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+H PARADROPRULES1
+D @width=320
+Tt -
+X - 3 - -
+B
+H PARADROPRULES2
+D @width=320
+Tt -
+X - 3 - -
+B
+H PARADROPTARGET
+D @width=320
+X - 3 %NUMBER0 -
+B
+H PARADROPTARGET1
+D @width=320
+Tt -
+X - 3 %NUMBER0 -
+B
+H PARADROPTARGET2
+D @width=320
+Tt -
+X - 2 %NUMBER0 -
+B
+B
+H INCORRUPTIBLE
+D @width=320
+Tt -
+X - 2 - -
+B
+H NOREVOLT
+D @width=320
+Tt -
+X - 2 - -
+B
+H UNFORCE
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+H WALLFORCE
+D @width=320
+Tt -
+X - 2 %STRING1,%STRING2 -
+B
+B
+H MISSILEATTACK
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H PEARLHARBOR
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+H AUTOMONARCHY
+D @width=440
+Tt -
+X - 4 - -
+X ^ 1 - -
+X - 4 - -
+B
+X - 2 - -
+B
+H AUTOREV
+D @width=320
+Tt -
+X - 3 %STRING0,%STRING1 -
+B
+X - 2 %STRING1 -
+B
+H BATTERY
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H BATTERY2
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2,%STRING3 -
+B
+H SCRAMBLE
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+H AMPHIBMOTIZE
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H CITYMODAL1
+D @width=400
+Tt -
+Tb -
+X - 1 - -
+B
+H CITYMODAL2
+D @width=400
+Tt -
+Tb -
+X - 2 - -
+B
+H UPGRADED
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1,%STRING2 -
+B
+H UPGRADE
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1,%STRING2 -
+B
+H ASTRONAUTS
+D @width=320
+Tt -
+X - 1 - -
+B
+H LONGMOVE
+D @width=320
+Tt -
+X - 1 - -
+B
+X - 2 - -
+B
+H GHOSTTOWN
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+X - 2 - -
+B
+H EXPEL
+D @width=320
+Tt %STRING0,%STRING1
+D @options
+X - 3 %STRING1,%STRING1 -
+B
+H NOEXPEL
+D @width=320
+Tt -
+X - 4 %STRING1 -
+B
+H UPYOURS
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING0,%STRING1 -
+B
+H UPYOURSTOO
+D @width=320
+Tt -
+X - 2 %STRING0,%STRING0,%STRING1 -
+B
+H UPMINE
+D @width=320
+Tt -
+X - 3 %STRING1,%STRING1,%STRING2,%STRING3 -
+B
+H SPACERACE
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SPACESHIP
+D @width=480
+Tt -
+D @listbox
+X ^^ 1 %STRING0,%STRING1,%STRING2 -
+B
+H LAUNCH
+D @width=320
+Tt -
+X - 2 %NUMBER0,%% -
+B
+X - 2 - -
+B
+H LAUNCHED
+D @width=320
+Tt -
+X - 2 %NUMBER0,%STRING0 -
+B
+H COMPONENT
+D @width=320
+Tt -
+D @options
+X - 2 %NUMBER0,%NUMBER1 -
+B
+H MODULE
+D @width=320
+Tt -
+D @options
+X - 3 %NUMBER0,%NUMBER1,%NUMBER2 -
+B
+H NOFURTHER
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SPACESHIPS
+D @width=320
+Tt -
+D @options
+B
+H EAGLEHASLANDED
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SPACERETURNS
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H SPACEDESTROYED
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H HISTORY
+D @width=480
+Tt -
+X ^^ 2 %STRING1,%STRING2 -
+B
+H HISTORIANS
+X - 12 - -
+B
+H HISTORIES
+X - 5 - -
+B
+H HISTORYRANK
+X - 7 - -
+B
+H ALLOWUN
+D @width=320
+Tt -
+X - 2 - -
+B
+H ALLOWAGGRESSOR
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+H ALLOWHAWKS
+D @width=320
+Tt -
+X - 2 - -
+B
+H CONTINUEUN
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H CONTINUEHAWKS
+D @width=320
+Tt -
+X - 2 %STRING1 -
+B
+H RANSOMCITY
+D @width=320
+Tt -
+X - 3 %NUMBER0,%STRING0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H NOAIRPORT
+D @width=320
+Tt -
+X - 2 - -
+B
+H NOAIRPORT2
+D @width=320
+Tt -
+X - 3 - -
+B
+H AIRLIFTSELECT
+D @width=440
+D @listbox=12
+Tt -
+B
+H AIRLIFT
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H SHOTDOWN
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+H ALREADYAIRLIFT
+D @width=320
+Tt -
+X - 4 %STRING0 -
+B
+H WESHOT
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+H WESAW
+D @width=320
+Tt -
+X - 2 %STRING0 -
+B
+H ENEMYFIGHTERS
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H LIFTSHIP
+D @width=320
+Tt -
+X - 1 - -
+B
+H LIFTPLANE
+D @width=320
+Tt -
+X - 2 - -
+B
+H PILLAGEWHAT
+D @width=320
+Tt -
+X - 1 - -
+B
+H PILLAGEMENU
+X - 7 - -
+B
+H ALLIEDREPAIR
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H CANESCAPE
+D @width=320
+Tt -
+X - 3 %NUMBER0,%STRING1 -
+B
+X - 2 %NUMBER0 -
+B
+H ESCAPE
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H ESCAPE2
+D @width=320
+Tt -
+X - 2 %NUMBER0,%STRING1,%STRING2 -
+B
+B
+H AQUEDUCT
+D @width=520
+Tt -
+X - 4 %NUMBER0,%STRING0 -
+B
+H CURSES
+D @width=320
+Tt -
+X - 1 %STRING1 -
+B
+H FOILEDAGAIN
+D @width=320
+Tt -
+X - 1 %STRING1,%STRING2 -
+B
+H UNSAVED
+D @width=320
+Tt -
+X - 1 %STRING0 -
+B
+X - 2 - -
+B
+H FLATEARTH
+D @width=320
+Tt -
+X - 1 - -
+B
+X - 2 - -
+B
+H LANDWARNING
+D @width=320
+Tt -
+X - 4 %NUMBER0 -
+B
+H SEAWARNING
+D @width=320
+Tt -
+X - 4 %NUMBER0 -
+B
+H NOTENOUGHWARNING
+D @width=320
+Tt -
+X - 2 - -
+B
+H CITIESINOCEAN
+D @width=320
+Tt -
+X - 3 - -
+B
+B
+H ANALYZEOK
+D @width=320
+Tt -
+X - 2 - -
+B
+H FAILEDTOLOAD
+D @width=320
+Tt -
+X - 1 - -
+B
+H MAPSAVED
+D @width=320
+Tt -
+X ^^ 2 %STRING0 -
+B
+H ADDCITY
+D @width=600
+Tt -
+B
+H RESEED
+D @width=440
+Tt -
+D @options
+X - 1 - -
+B
+H NOADJACENTCITIES
+D @width=320
+Tt -
+X - 2 - -
+B
+H NOTALLCITIES
+D @width=320
+Tt -
+X - 3 - -
+B
+H GOLDENAGE
+D @width=320
+Tt -
+X - 5 %STRING0,%STRING0,%STRING1 -
+B
+H LANDING
+D @width=320
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H NEWXFORM
+D @width=320
+Tt -
+X - 6 - -
+B
+H NEWFORTRESS
+D @width=320
+Tt -
+X - 5 - -
+B
+H NEWAIRLIFT
+D @width=320
+Tt -
+X - 5 - -
+B
+H NEWRAILROAD
+D @width=320
+Tt -
+X - 5 %% -
+B
+H NEWFARMLAND
+D @width=320
+Tt -
+X - 5 %% -
+B
+H NEWPARADROP
+D @width=320
+Tt -
+X - 3 %NUMBER0 -
+B
+H ADDTOTHRONE
+X - 1 - -
+B
+H NOSPACESHIPS
+D @width=320
+Tt -
+X - 1 - -
+B
+H CODECNOTFOUND
+D @width=320
+Tt -
+X - 4 - -
+B
+H NOFOODREPORT
+D @width=320
+Tt -
+X - 3 - -
+B
+H REALLYRETIRE
+D @width=320
+Tt -
+X - 1 - -
+B
+X - 2 - -
+B
+H REALLYQUIT
+D @width=320
+Tt -
+X - 1 - -
+B
+X - 2 - -
+B
+H REALLYCHEAT
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H PLANRETIRE
+D @width=440
+Tt -
+X - 2 %STRING0,%STRING1 -
+B
+H DORETIRE
+D @width=440
+Tt -
+X - 1 %STRING1 -
+B
+H SLAM
+X - 1 - -
+B
+H KEEPPLAYING
+D @width=320
+Tt -
+X - 2 - -
+B
+X - 2 - -
+B
+H INSERTHERE
+D @width=320
+Tt -
+X - 1 - -
+B
+B
+H WONDERMOVIECHEAT
+Tt -
+D @width=320
+D @options
+X - 1 - -
+B
+H AUTOMODE
+Tt %STRING0
+D @width=320
+D @options
+X - 3 - -
+B
+H COUNCILCHEAT0
+D @width=600
+D @title=CouncilCheat
+D @button=Military
+D @button=Science
+D @button=Trade
+D @button=Foreign
+D @button=Attitude
+D @button=Anarchy
+X - 1 - -
+B
+H COUNCILCHEAT1
+D @width=320
+D @title=CouncilCheat
+D @options
+X - 1 - -
+B
+H COUNCILCHEAT2
+D @width=200
+D @title=CouncilCheat
+D @options
+X - 1 - -
+B
+B
+H NOTENOUGHGRASS
+D @width=320
+Tt -
+X - 3 - -
+B
+H THRONE
+X - 4 - -
+B
+H MALEFAME
+X - 24 %STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0 -
+B
+H FEMALEFAME
+X - 24 %STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0,%STRING0 -
+B
+B
+H UNITEDIT
+D @width=440
+Tt %STRING0,%STRING1
+D @options
+X - 7 - -
+B
+H UNITHITPOINTS
+D @width=320
+Tt %NUMBER0
+D @options
+X - 1 - -
+B
+H EDITHOMECITY
+D @width=320
+Tt -
+D @listbox
+Tb -
+B
+B
+H CITYEDIT
+D @width=320
+Tt %STRING0
+D @options
+X - 8 %NUMBER0,%NUMBER1 -
+B
+H SETCITYSIZE
+D @width=320
+Tt %STRING0
+D @options
+X - 1 - -
+B
+H SETCITYSHIELDS
+D @width=320
+Tt -
+D @options
+X - 1 - -
+B
+H EDITKING
+D @width=440
+Tt %STRING0
+D @options
+X - 13 %NUMBER0 -
+B
+H EDITTREATIES
+D @width=440
+Tt %STRING0,%STRING1
+D @checkbox
+D @options
+X - 7 %STRING0,%STRING0,%STRING1,%STRING1 -
+B
+H LASTCONTACT
+D @width=440
+Tt %STRING0,%STRING1
+X - 1 %NUMBER0 -
+D @options
+X - 1 - -
+B
+H EDITATTITUDE
+D @width=440
+Tt %STRING0,%STRING1
+X - 1 - -
+D @options
+X - 1 - -
+B
+H EDITBETRAY
+D @width=440
+Tt -
+D @options
+X - 1 - -
+B
+H EDITPROGRESS
+D @width=440
+Tt %NUMBER0
+D @options
+X - 1 - -
+B
+H EDITRULES
+D @width=440
+Tt -
+D @options
+X - 5 %NUMBER0,%NUMBER1,%NUMBER2,%NUMBER3 -
+B
+H EDITSCEN
+D @width=440
+Tt %STRING1
+D @options
+X - 13 %NUMBER0,%NUMBER1,%NUMBER2,%NUMBER3,%NUMBER4 -
+B
+H EDITVICTORY
+D @width=440
+Tt %STRING1
+D @options
+X - 8 %NUMBER0,%NUMBER1,%NUMBER2,%NUMBER3,%NUMBER4,%NUMBER5,%STRING0 -
+B
+H EDITVICTORYOBJ
+Tt -
+D @options
+X - 1 - -
+B
+H EDITPARADIGM
+D @width=440
+Tt -
+X - 3 - -
+B
+X - 1 - -
+B
+H EDITINCREMENT
+D @width=440
+Tt -
+X - 1 - -
+D @options
+X - 1 - -
+B
+H EDITSTARTYEAR
+D @width=440
+Tt -
+X - 3 - -
+D @options
+X - 1 - -
+B
+H EDITMAXTURNS
+D @width=440
+Tt -
+X - 1 - -
+D @options
+X - 1 - -
+B
+H EDITTECH
+D @width=320
+Tt -
+D @listbox
+Tb -
+B
+H SCENOK
+D @width=480
+Tt -
+X ^^ 2 %STRING0 -
+B
+H SCENARIOLOADED
+D @width=480
+Tt -
+X ^^ 3 %NUMBER0,%STRING0,%STRING1,%STRING2 -
+B
+H SCENNAME
+D @width=480
+Tt -
+D @options
+X - 1 - -
+B
+H EDITKINGNAME
+D @width=440
+Tt %STRING0
+D @options
+X - 3 - -
+B
+H COPYCITY
+Tt -
+D @width=360
+D @listbox
+B
+H SCENARIOENDS
+D @width=440
+Tt -
+X - 1 - -
+B
+H SCENARIOEND
+D @width=440
+Tt -
+X - 1 - -
+B
+B
+X - 3 - -
+B
+B
+B
+B
+H HIDDENTERRAIN
+D @width=250
+Tt -
+D @x=-4
+D @y=-4
+X - 1 - -
+B
+B
+H FOUNDED
+D @width=280
+Tt -
+X - 1 %STRING0,%STRING1 -
+B
+H VFWNOTREGISTERED
+Tt -
+D @width=440
+X - 7 - -
+B
+H BADEVENTSFILE
+D @width=360
+Tt -
+X - 4 - -
+B
+H NOPICKMUSIC
+D @width=360
+Tt -
+X - 3 - -
+B
+H PICKMUSIC
+D @width=360
+Tt -
+D @options
+X - 9 - -
+B
+H PICKMUSICSCENARIO
+D @width=360
+Tt -
+D @options
+X - 17 - -
+B
+H PICKMUSICFANWORLDS
+D @width=480
+Tt -
+D @columns=2
+D @height=377
+D @options
+X - 23 - -
+B
+H CENTAURI
+X - 19 %STRING0,%STRING1,%STRING2,%STRING3,%STRING4 -
+B
+B
+B
+E CENTAURI2
+X - 19 %STRING0,%STRING1,%STRING2,%STRING3,%STRING4 -
+B
+E ARCHAEOLOGISTS
+X - 11 %STRING0,%STRING1 -
+B
+B
+H COUNCILTIME
+D @width=320
+D @y=5
+Tt %STRING2
+X - 4 %STRING0,%STRING1 -
+B
+X - 2 - -
+B
+B
+H CENTAURI0
+X - 4 %STRING0 -
+B
+B
+H CENTAURI1
+X - 4 %STRING1,%STRING2 -
+B
+H CENTAURI2
+X - 6 %STRING3 -
+B
+H CENTAURI3
+X - 2 %STRING4 -
+B
+H CENTAURI_BEATEN0
+X - 4 %STRING0 -
+B
+H CENTAURI_BEATEN1
+X - 4 %STRING1,%STRING2 -
+B
+H CENTAURI_BEATEN2
+X - 6 %STRING3 -
+B
+H CENTAURI_BEATEN3
+X - 5 %STRING4 -
+B
+H CENTAURI_BEATEN4
+X - 1 - -
+B
+H ARCHAEOLOGISTS0
+X - 3 - -
+B
+H ARCHAEOLOGISTS1
+X - 4 %STRING0 -
+B
+H ARCHAEOLOGISTS2
+X - 3 - -
+B
+H ARCHAEOLOGISTS3
+X - 1 %STRING1 -
+B
+B
+H LOWMEMORY
+D @width=400
+X - 3 - -
+B
+H HERALDWARNING
+D @width=440
+Tt -
+X - 6 - -
+B
+X - 2 - -
+B
+B
+H ADDTOWONDER
+D @width=440
+Tt -
+X - 2 %NUMBER0,%NUMBER1,%STRING0 -
+B
+B
+H ABILITIES
+D @checkbox
+D @width=330
+Tt %STRING0
+D @options
+X - 15 - -
+B
+B
+H TRIGGERS
+D @width=330
+Tt -
+Tb -
+D @options
+X - 9 - -
+B
+B
+H ACTIONS
+D @width=330
+Tt -
+Tb -
+D @options
+X - 12 - -
+B
+B
+H DELETEITEM
+D @width=320
+Tt -
+X - 1 - -
+B
+X - 2 - -
+B
+B
+@
+== LABELS.TXT
+B
+H STRINGHEAP
+N 50000
+B
+H POPUPS
+X - - -
+X - - -
+X - - -
+X - - -
+B
+B
+H LABELS
+N 888
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - &|b
+X - - &|b
+X - - &|r
+X - - &|r
+X - - &|i
+X - %STRING0 |i
+X - - &|m
+X - %STRING0 |m
+X - - &|h
+X - - &|h
+X - %STRING0 &|o
+X - - &|i
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - %STRING4 -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X ^^ - -
+X ^^ - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - %s,%d,%d -
+X - - -
+X - %d,%d -
+X - %d,%d -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - %string0 -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - &|Ctrl+H
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+== MENU.TXT
+B
+H GAME
+X - - &
+X - - &|Ctrl+O
+X - - &|Ctrl+P
+X - - &|Ctrl+E
+X - - &|Ctrl+Y
+X - - &
+X - - &
+X - - &|Ctrl+S
+X - - &|Ctrl+L
+X - - &|Ctrl+J
+X - - &|Ctrl+W
+X - - &|Ctrl+T
+X - - &|Ctrl+R
+X - - &|Ctrl+Q
+B
+H KINGDOM
+X - - &
+X - - &|Shift+T
+X - - &|Shift+H
+X - - &|Shift+C
+X - - &|Shift+R
+B
+H VIEW
+X - - &
+X - - &|v
+X - - &|v
+X - - &|z
+X - - &|x
+X - - |Ctrl+Z
+X - - |Shift+Z
+X - - |Shift+X
+X - - |Ctrl+X
+X - - |Ctrl+G
+X - - -
+X - - |t
+X - - &|c
+B
+B
+H ORDERS
+X - - &
+X - - &|b
+X - - &|r
+X - - &|i
+X - - &|m
+X - - |o
+X - - &|e
+X - - &|f
+X - - |k
+X - - &|p
+X - - &|Shift+P
+X - - &|u
+X - - &|g
+X - - &|p
+X - - &|l
+X - - &|h
+X - - &|f
+X - - &|s
+X - - &|Shift+D
+X - - &|a
+X - - &|w
+X - - &|SPACE
+X - - &|Ctrl+N
+B
+H ADVISORS
+X - - &
+X - - &|Ctrl+C
+X - - &
+X - - &|F1
+X - - &|F2
+X - - &|F3
+X - - &|F4
+X - - &|F5
+X - - &|F6
+X - - &|Ctrl-D
+B
+H WORLD
+X - - &
+X - - &|F7
+X - - &|F8
+X - - &|F9
+X - - &|F11
+X - - &|F12
+B
+H CHEAT
+X - - &
+X - - |Ctrl+K
+X - - &|Shift+F1
+X - - &|Shift+F2
+X - - &|Shift+F3
+X - - |Shift+F4
+X - - &|Shift+F5
+X - - &|Shift+F6
+X - - &|Ctrl+Shift+F6
+X - - &|Shift+F7
+X - - &|Shift+F8
+X - - &|Ctrl+Shift+D
+X - - |Shift+F9
+X - - |Ctrl+Shift+U
+X - - |Ctrl+Shift+C
+X - - |Ctrl+Shift+K
+X - - |Ctrl+Shift+P
+X - - |Ctrl+Shift+S
+B
+H EDITOR
+X - - &
+X - - &|Ctrl+F
+X - - &|Ctrl+Shift+1
+X - - &|Ctrl+Shift+2
+X - - &|Ctrl+Shift+3
+X - - &|Ctrl+Shift+4
+X - - &|Ctrl+Shift+5
+X - - &|Ctrl+Shift+6
+X - - &|Ctrl+Shift+7
+X - - &|Ctrl+Shift+8
+B
+H PEDIA
+X - - &
+X - - &
+X - - &
+X - - &
+X - - &
+X - - &
+X - - &
+X - - &
+X - - &
+B
+B
+== CITY.TXT
+B
+H ROMANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H BABYLONIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H GERMANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H EGYPTIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H AMERICANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H GREEKS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H INDIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H RUSSIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H ZULUS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H FRENCH
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H AZTECS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H CHINESE
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H ENGLISH
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H MONGOLS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H CELTS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H JAPANESE
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H VIKINGS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H SPANISH
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H ARABS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H CARTHAGINIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H SIOUX
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H INCAS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H PERSIANS
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+H EXTRA
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+H STOP
+B
+B
+H BARBARIANS
+N 17
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+X - - -
+B
+B
+D @end
+== PEDIA.TXT
+B
+H PEDIAPICKCIV
+D @width=540
+D @columns=3
+D @listbox
+Tt -
+B
+H PEDIACIV
+D @width=480
+Tt -
+X ^^ 1 %STRING0 -
+X ^ 1 - -
+B
+B
+H PEDIACIVFACTS
+X ^ 13 - -
+B
+B
+H PEDIAPICKUNIT
+D @width=540
+D @columns=3
+D @listbox
+Tt -
+B
+H PEDIAUNIT
+D @width=480
+Tt -
+X ^^ 1 %STRING0 -
+X ^ 1 - -
+B
+H PEDIAUNITFACTS
+X ^ 15 - -
+B
+B
+H PEDIAPICKGOVT
+D @width=480
+D @listbox
+Tt -
+B
+B
+H PEDIAPICKIMPROVE
+D @width=540
+D @columns=3
+D @listbox
+Tt -
+B
+H PEDIAIMPROVE
+D @width=480
+Tt -
+X ^^ 1 %STRING0 -
+X ^ 1 - -
+B
+@
+H PEDIAIMPROVE1
+X - 2 - -
+B
+@
+H PEDIAIMPROVE2
+X - 2 - -
+B
+@
+H PEDIAIMPROVE3
+X - 2 - -
+B
+@
+H PEDIAIMPROVE4
+X - 1 - -
+B
+@
+H PEDIAIMPROVE5
+X - 1 - -
+B
+@
+H PEDIAIMPROVE6
+X - 1 - -
+B
+@
+H PEDIAIMPROVE7
+X - 3 - -
+B
+@
+H PEDIAIMPROVE8
+X - 1 - -
+B
+@
+H PEDIAIMPROVE9
+X - 1 - -
+B
+@
+H PEDIAIMPROVE10
+X - 2 - -
+B
+@
+H PEDIAIMPROVE11
+X - 1 - -
+B
+@
+H PEDIAIMPROVE12
+X - 2 - -
+B
+@
+H PEDIAIMPROVE13
+X - 1 - -
+B
+@
+H PEDIAIMPROVE14
+X - 2 - -
+B
+@
+H PEDIAIMPROVE15
+X - 1 - -
+B
+@
+H PEDIAIMPROVE16
+X - 2 - -
+B
+@
+H PEDIAIMPROVE17
+X - 2 - -
+B
+@
+H PEDIAIMPROVE18
+X - 1 - -
+B
+@
+H PEDIAIMPROVE19
+X - 1 - -
+B
+@
+H PEDIAIMPROVE20
+X - 3 - -
+B
+@
+H PEDIAIMPROVE21
+X - 4 - -
+B
+@
+H PEDIAIMPROVE22
+X - 3 - -
+B
+@
+H PEDIAIMPROVE23
+X - 1 - -
+B
+@
+H PEDIAIMPROVE24
+X - 3 - -
+B
+@
+H PEDIAIMPROVE25
+X - 2 - -
+B
+@
+H PEDIAIMPROVE26
+X - 3 - -
+B
+@
+H PEDIAIMPROVE27
+X - 2 - -
+B
+@
+H PEDIAIMPROVE28
+X - 2 - -
+B
+@
+H PEDIAIMPROVE29
+X - 2 - -
+B
+@
+H PEDIAIMPROVE30
+X - 2 - -
+B
+@
+H PEDIAIMPROVE31
+X - 2 - -
+B
+@
+H PEDIAIMPROVE32
+X - 3 - -
+B
+@
+H PEDIAIMPROVE33
+X - 1 - -
+B
+@
+H PEDIAIMPROVE34
+X - 3 - -
+B
+@
+H PEDIAIMPROVE35
+B
+@
+H PEDIAIMPROVE36
+B
+@
+H PEDIAIMPROVE37
+B
+@
+H PEDIAIMPROVE38
+X - 1 - -
+B
+@
+H PEDIAIMPROVE39
+X - 1 - -
+B
+@
+H PEDIAIMPROVE40
+X - 1 - -
+B
+@
+H PEDIAIMPROVE41
+X - 2 - -
+B
+@
+H PEDIAIMPROVE42
+X - 3 - -
+B
+@
+H PEDIAIMPROVE43
+X - 2 - -
+B
+@
+H PEDIAIMPROVE44
+X - 1 - -
+B
+@
+H PEDIAIMPROVE45
+X - 3 - -
+B
+@
+H PEDIAIMPROVE46
+X - 2 - -
+B
+@
+H PEDIAIMPROVE47
+X - 2 - -
+B
+@
+H PEDIAIMPROVE48
+X - 3 - -
+B
+@
+H PEDIAIMPROVE49
+X - 1 - -
+B
+@
+H PEDIAIMPROVE50
+X - 1 - -
+B
+@
+H PEDIAIMPROVE51
+X - 1 - -
+B
+@
+H PEDIAIMPROVE52
+X - 1 - -
+B
+@
+H PEDIAIMPROVE53
+X - 3 - -
+B
+@
+H PEDIAIMPROVE54
+X - 1 - -
+B
+@
+H PEDIAIMPROVE55
+X - 1 - -
+B
+@
+H PEDIAIMPROVE56
+X - 4 - -
+B
+@
+H PEDIAIMPROVE57
+X - 1 - -
+B
+@
+H PEDIAIMPROVE58
+X - 3 - -
+B
+@
+H PEDIAIMPROVE59
+X - 5 - -
+B
+@
+H PEDIAIMPROVE61
+X - 1 - -
+B
+@
+H PEDIAIMPROVE60
+X - 2 - -
+B
+@
+H PEDIAIMPROVE62
+X - 1 - -
+B
+@
+H PEDIAIMPROVE63
+X ^ 4 - -
+B
+@
+H PEDIAIMPROVE64
+X - 1 - -
+B
+@
+H PEDIAIMPROVE65
+X - 2 - -
+B
+@
+H PEDIAIMPROVE66
+X - 1 - -
+B
+H PEDIAGOVT
+D @width=600
+Tt -
+X - 5 - -
+X ^ 1 - -
+X - 4 - -
+X ^ 1 - -
+X - 6 - -
+X ^ 1 - -
+X - 3 - -
+B
+H PEDIAGOVT0
+D @width=600
+Tt -
+X - 5 - -
+X ^ 1 - -
+X - 4 - -
+B
+H PEDIAGOVT1
+D @width=600
+Tt -
+X ^ 1 - -
+X - 2 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 4 - -
+X ^ 2 - -
+X - 3 - -
+B
+B
+H PEDIAGOVT2
+D @width=600
+Tt -
+X ^ 1 - -
+X - 2 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 2 - -
+X ^ 2 - -
+X - 2 - -
+B
+B
+H PEDIAGOVT3
+D @width=600
+Tt -
+X ^ 1 - -
+X - 2 - -
+X ^ 2 - -
+X - 4 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 3 - -
+B
+H PEDIAGOVT4
+D @width=600
+Tt -
+X ^ 1 - -
+X - 4 - -
+X ^ 2 - -
+X - 1 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 8 - -
+X ^ 2 - -
+X - 2 - -
+B
+B
+H PEDIAGOVT5
+D @width=600
+Tt -
+X ^ 1 - -
+X - 2 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 4 - -
+X ^ 2 - -
+X - 6 - -
+B
+H PEDIAGOVT6
+D @width=600
+Tt -
+X ^ 1 - -
+X - 2 - -
+X ^ 2 - -
+X - 3 - -
+X ^ 2 - -
+X - 1 - -
+X ^ 2 - -
+X - 6 - -
+X ^ 2 - -
+X - 6 - -
+B
+@
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+B
+== DESCRIBE.TXT
+H ADVANCE_DESCRIPTIONS
+E ADVANCE_INDEX
+N 0,
+N 1,
+N 54,
+N 2,
+N 3,
+N 4,
+N 5,
+N 6,
+N 7,
+N 8,
+N 9,
+N 10,
+N 11,
+N 55,
+N 12,
+N 13,
+N 14,
+N 15,
+N 16,
+N 17,
+N 18,
+N 19,
+N 56,
+N 20,
+N 21,
+N 22,
+N 57,
+N 58,
+N 23,
+N 24,
+N 25,
+N 59,
+N 26,
+N 27,
+N 60,
+N 79,
+N 80,
+N 81,
+N 82,
+N 83,
+N 28,
+N 61,
+N 62,
+N 29,
+N 63,
+N 30,
+N 31,
+N 32,
+N 33,
+N 34,
+N 35,
+N 36,
+N 64,
+N 65,
+N 37,
+N 66,
+N 38,
+N 39,
+N 40,
+N 41,
+N 42,
+N 43,
+N 44,
+N -1,
+N 68,
+N 45,
+N 69,
+N 46,
+N 47,
+N 48,
+N 70,
+N 49,
+N 50,
+N 51,
+N 71,
+N 72,
+N 52,
+N 73,
+N 53,
+N 84,
+N 85,
+N 74,
+N 75,
+N 86,
+N 87,
+N 88,
+N 76,
+N 77,
+N 78,
+N 67,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -2,
+E Advanced Flight
+P -
+E Alphabet
+P -
+E Astronomy
+P -
+E Atomic Theory
+P -
+E Automobile
+P -
+E Banking
+P -
+E Bridge Building
+P -
+E Bronze Working
+P -
+E Ceremonial Burial
+P -
+E Chemistry
+P -
+E Chivalry
+P -
+E Code of Laws
+P -
+E Combustion
+P -
+E Communism
+P -
+E Computers
+P -
+E Conscription
+P -
+E Construction
+P -
+E Corporation
+P -
+E Currency
+P -
+E The Democracy
+P -
+E Electricity
+P -
+E Electronics
+P -
+E Engineering
+P -
+E Explosives
+P -
+E Feudalism
+P -
+E Flight
+P -
+E Fusion Power
+P -
+E Genetic Engineering
+P -
+E Labor Union
+P -
+E Literacy
+P -
+E Magnetism
+P -
+E Map Making
+P -
+E Masonry
+P -
+E Mass Production
+P -
+E Mathematics
+P -
+E Medicine
+P -
+E Metallurgy
+P -
+E The Monarchy
+P -
+E Mysticism
+P -
+E Navigation
+P -
+E Nuclear Fission
+P -
+E Nuclear Power
+P -
+E Philosophy
+P -
+E Physics
+P -
+E Plastics
+P -
+E Pottery
+P -
+E Railroad
+P -
+E Recycling
+P -
+E Refining
+P -
+E The Republic
+P -
+E Robotics
+P -
+E Rocketry
+P -
+E Space Flight
+P -
+E Steam Engine
+P -
+E Amphibious Warfare
+P -
+E Combined Arms
+P -
+E Economics
+P -
+E Environmentalism
+P -
+E Espionage
+P -
+E Fundamentalism
+P -
+E Guerrilla Warfare
+P -
+E The Laser
+P -
+E Leadership
+P -
+E Machine Tools
+P -
+E Miniaturization
+P -
+E Mobile Warfare
+P -
+E Monotheism
+P -
+E Future Technology
+P -
+E Polytheism
+P -
+E Radio
+P -
+E Refrigeration
+P -
+E Sanitation
+P -
+E Seafaring
+P -
+E Stealth
+P -
+E Tactics
+P -
+E Theology
+P -
+E Warrior Code
+P -
+E Wheel
+P -
+E Writing
+P -
+E Gunpowder
+P -
+E Horseback Riding
+P -
+E Industrialization
+P -
+E Invention
+P -
+E Iron Working
+P -
+E Steel
+P -
+E Superconductor
+P -
+E Theory of Gravity
+P -
+E Trade
+P -
+E The University
+P -
+H IMPROVEMENT_DESCRIPTIONS
+E IMPROVEMENT_INDEX
+N -1,
+N 15,
+N 2,
+N 8,
+N 22,
+N 12,
+N 10,
+N 6,
+N 4,
+N 0,
+N 1,
+N 3,
+N 23,
+N 13,
+N 5,
+N 7,
+N 11,
+N 18,
+N 17,
+N 16,
+N 9,
+N 14,
+N 34,
+N 32,
+N 35,
+N 36,
+N 30,
+N 31,
+N 26,
+N 33,
+N 37,
+N 27,
+N 24,
+N 28,
+N 29,
+N 21,
+N 19,
+N 20,
+N 25,
+N -2,
+E Aqueduct
+P -
+E Bank
+P -
+E Barracks
+P -
+E Cathedral
+P -
+E City Walls
+P -
+E Colosseum
+P -
+E Courthouse
+P -
+E Factory
+P -
+E Granary
+P -
+E Hydro Plant
+P -
+E Library
+P -
+E Manufacturing Plant
+P -
+E Marketplace
+P -
+E Mass Transit
+P -
+E Nuclear Power Plant
+P -
+E Palace
+P -
+E Power Plant
+P -
+E Recycling Center
+P -
+E SDI Defense
+P -
+E Spaceship Component
+P -
+E Spaceship Module
+P -
+E Spaceship Structural
+P -
+E Temple
+P -
+E University
+P -
+E Airport
+P -
+E Capitalization
+P -
+E Coastal Fortress
+P -
+E Offshore Platform
+P -
+E Police Stations
+P -
+E Port Facilities
+P -
+E Research Lab
+P -
+E SAM Missile Battery
+P -
+E Sewer System
+P -
+E Solar Power Plant
+P -
+E Stock Exchange
+P -
+E Supermarket
+P -
+E Superhighway
+P -
+E Harbor
+P -
+H WONDER_DESCRIPTIONS
+E WONDER_INDEX
+N 21,
+N 9,
+N 2,
+N 15,
+N 7,
+N 20,
+N 8,
+N 25,
+N 13,
+N 18,
+N 19,
+N 3,
+N 16,
+N 23,
+N 14,
+N 12,
+N 11,
+N 0,
+N 5,
+N 24,
+N 6,
+N 27,
+N 10,
+N 17,
+N 26,
+N 1,
+N 22,
+N 4,
+N -2,
+E Adam Smith's Trading Co.
+P -
+E Apollo Program
+P -
+E Colossus
+P -
+E Copernicus' Observatory
+P -
+E Cure for Cancer
+P -
+E Darwin's Voyage
+P -
+E Eiffel Tower
+P -
+E Great Library
+P -
+E Great Wall
+P -
+E Hanging Gardens
+P -
+E Hoover Dam
+P -
+E Isaac Newton's College
+P -
+E J.S. Bach's Cathedral
+P -
+E King Richard's Crusade
+P -
+E Leonardo's Workshop
+P -
+E Lighthouse
+P -
+E Magellan's Expedition
+P -
+E Manhattan Project
+P -
+E Marco Polo's Embassy
+P -
+E Michelangelo's Chapel
+P -
+E Oracle
+P -
+E Pyramids
+P -
+E SETI Program
+P -
+E Shakespeare's Theatre
+P -
+E Statue of Liberty
+P -
+E Sun Tzu's War Academy
+P -
+E United Nations
+P -
+E Women's Suffrage
+P -
+H UNIT_DESCRIPTIONS
+E UNIT_INDEX
+N 49,
+N 21,
+N 43,
+N 46,
+N 2,
+N 33,
+N 47,
+N 36,
+N 23,
+N 45,
+N 1,
+N 48,
+N 34,
+N 44,
+N 35,
+N 29,
+N 13,
+N 20,
+N 14,
+N 32,
+N 19,
+N 12,
+N 3,
+N 11,
+N 7,
+N 4,
+N 30,
+N 24,
+N 6,
+N 28,
+N 39,
+N 38,
+N 42,
+N 9,
+N 27,
+N 26,
+N 31,
+N 17,
+N 16,
+N 0,
+N 5,
+N 40,
+N 10,
+N 41,
+N 15,
+N 37,
+N 18,
+N 50,
+N 8,
+N 25,
+N 22,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -1,
+N -2,
+E AEGIS Cruiser
+P -
+E Alpine Troops
+P -
+E Archers
+P -
+E Armor
+P -
+E Artillery
+P -
+E Battleship
+P -
+E Bomber
+P -
+E Cannon
+P -
+E Caravan
+P -
+E Caravel
+P -
+E Carrier
+P -
+E Catapult
+P -
+E Cavalry
+P -
+E Chariot
+P -
+E Crusaders
+P -
+E Cruise Missile
+P -
+E Cruiser
+P -
+E Destroyer
+P -
+E Diplomat
+P -
+E Dragoons
+P -
+E Elephant
+P -
+E Engineers
+P -
+E Explorer
+P -
+E Fanatics
+P -
+E Fighter
+P -
+E Freight
+P -
+E Frigate
+P -
+E Galleon
+P -
+E Helicopter
+P -
+E Horsemen
+P -
+E Howitzer
+P -
+E Ironclad
+P -
+E Knights
+P -
+E Legion
+P -
+E Marines
+P -
+E Mechanized Infantry
+P -
+E Musketeers
+P -
+E Nuclear Missile
+P -
+E Stealth Bomber
+P -
+E Stealth Fighter
+P -
+E Submarine
+P -
+E Transport
+P -
+E Trireme
+P -
+E Warriors
+P -
+E Paratroopers
+P -
+E Partisans
+P -
+E Phalanx
+P -
+E Pikemen
+P -
+E Riflemen
+P -
+E Settlers
+P -
+E Spy
+P -
+H TERRAIN_AND_RESOURCE_DESCRIPTIONS
+E TERRAIN_INDEX
+N 0,
+N 8,
+N 3,
+N 1,
+N 4,
+N 6,
+N 11,
+N 2,
+N 10,
+N 5,
+N 7,
+N 24,
+N 12,
+N 3,
+N 18,
+N 13,
+N 21,
+N 18,
+N 23,
+N 26,
+N 20,
+N 14,
+N 25,
+N 30,
+N 3,
+N 27,
+N 31,
+N 22,
+N 16,
+N 25,
+N 28,
+N 15,
+N 29,
+N -2,
+E Desert
+P -
+E Forest
+P -
+E Glacier
+P -
+E Grassland
+P -
+E Hills
+P -
+E Jungle
+P -
+E Mountains
+P -
+E Ocean
+P -
+E Plains
+P -
+E River
+P -
+E Swamp
+P -
+E Tundra
+P -
+E Buffalo
+P -
+E Coal
+P -
+E Fish
+P -
+E Fruit
+P -
+E Furs
+P -
+E Game (Forest)
+P -
+E Pheasant
+P -
+E Musk Ox
+P -
+E Gems
+P -
+E Gold
+P -
+E Iron
+P -
+E Ivory
+P -
+E Oasis
+P -
+E Oil
+P -
+E Peat
+P -
+E Silk
+P -
+E Spice
+P -
+E Whales
+P -
+E Wheat
+P -
+E Wine
+P -
+H GOVERNMENT_DESCRIPTIONS
+E GOVERNMENT_INDEX
+N 0,
+N 1,
+N 5,
+N 2,
+N 4,
+N 6,
+N 3,
+N -2,
+E Anarchy
+P -
+E Despotism
+P -
+E Communism
+P -
+E Democracy
+P -
+E Fundamentalism
+P -
+E Monarchy
+P -
+E Republic
+P -
+H CONCEPT_DESCRIPTIONS
+E Disband
+P -
+E Fortify
+P -
+E Fortress
+P -
+E Irrigation
+P -
+E Luxuries
+P -
+E Mining
+P -
+E Pillage
+P -
+E Pollution
+P -
+E Railroads
+P -
+E Roads
+P -
+E Science
+P -
+E Sentry
+P -
+E Shields
+P -
+E Specialists
+P -
+E Taxes
+P -
+E Trade
+P -
+E Trade Routes
+P -
+E Veteran Units
+P -
+E Corruption and Waste
+P -
+E Unhappiness Due to Civ Size
+P -
+E Combat Damage
+P -
+E Transforming Terrain
+P -
+E Airbases
+P -
+E Airlift
+P -
+E City Squares
+P -
+?
+@
+== ADVICE.TXT
+B
+H MILITARY
+D @width=225
+Tt -
+D @x=5
+D @y=5
+B
+H DOMESTIC
+D @width=225
+Tt -
+D @x=-5
+D @y=5
+B
+H SCIENCE0
+D @width=250
+Tt -
+D @x=-5
+X - 1 %STRING0 -
+B
+H SCIENCE1
+D @width=250
+Tt -
+D @x=-5
+X - 2 %STRING0 -
+B
+H SCIENCE2
+D @width=250
+Tt -
+D @x=-5
+X - 2 %STRING0 -
+B
+B
+B
+D @
+E Temple
+X - 2 %STRING0 -
+B
+D @
+E Colosseum
+X - 3 %STRING0 -
+B
+D @
+E Cathedral
+X - 3 %STRING0 -
+B
+D @
+E Barracks
+X - 5 %STRING0 -
+B
+D @
+E Port Facility
+X - 3 %STRING0 -
+B
+D @
+E Airport
+X - 3 %STRING0 -
+B
+D @
+E Granary
+X - 2 %STRING0 -
+B
+D @
+E Supermarket
+X - 4 %STRING0 -
+B
+D @
+E Harbor
+X - 3 %STRING0 -
+B
+D @
+E MarketPlace
+X - 3 %STRING0 -
+B
+D @
+E Bank
+X - 2 %STRING0 -
+B
+D @
+E Stock Exchange
+X - 2 %STRING0 -
+B
+D @
+E Superhighways
+X - 3 %STRING0 -
+B
+D @
+E Library
+X - 3 %STRING0 -
+B
+D @
+E University
+X - 2 %STRING0 -
+B
+D @
+E Research Lab
+X - 2 %STRING0 -
+B
+D @
+E Courthouse
+X - 3 %STRING0 -
+B
+D @
+E City Walls
+X - 2 %STRING0 -
+B
+D @
+E Coastal Fortress
+E SAM Missile Battery
+X - 2 %STRING0 -
+B
+D @
+E Aqueduct
+X - 3 %STRING0 -
+B
+D @
+E Sewer System
+X - 3 %STRING0 -
+B
+D @
+E Mass Transit
+E Recycling Cntr.
+X - 2 %STRING0 -
+B
+D @
+E Factory
+E Manufacturing Plant
+E Power Plant
+E Hydro Plant
+E Nuclear Plant
+E Solar Plant
+X - 2 %STRING0 -
+B
+D @
+E Offshore Platform
+X - 2 %STRING0 -
+B
+D @
+E SDI Defense
+X - 1 %STRING0 -
+B
+D @
+E SS Structural
+E SS Component
+E SS Module
+X - 2 %STRING0 -
+B
+D @
+E Settlers
+X - 2 %STRING0 -
+B
+D @
+E Engineers
+X - 2 %STRING0 -
+B
+D @
+E Warriors
+E Pikemen
+X - 3 %STRING0 -
+B
+D @
+E Musketeers
+E Riflemen
+X - 2 %STRING0 -
+B
+D @
+E Fanatics
+X - 2 %STRING0 -
+B
+D @
+E Phalanx
+E Mech. Inf.
+X - 2 %STRING0 -
+B
+D @
+E Legion
+X - 2 %STRING0 -
+B
+D @
+E Archers
+X - 4 - -
+B
+D @
+E Alpine Troops
+X - 3 %STRING0 -
+B
+D @
+E Chariot
+X - 2 %STRING0 -
+B
+D @
+E Catapult
+X - 2 %STRING0 -
+B
+D @
+E Helicopter
+X - 2 %STRING0 -
+B
+D @
+E Cannon
+E Howitzer
+X - 2 %STRING0 -
+B
+D @
+E Bomber
+E Stlth Bmbr.
+X - 2 %STRING0 -
+B
+D @
+E Elephant
+X - 2 %STRING0 -
+B
+D @
+E Crusaders
+X - 2 %STRING0 -
+B
+D @
+E Fighter
+E Stlth Ftr.
+X - 2 %STRING0 -
+B
+D @
+E Knights
+E Dragoons
+E Cavalry
+X - 2 %STRING0 -
+B
+D @
+E Marines
+E Paratroopers
+X - 2 %STRING0 -
+B
+D @
+E Armor
+E Artillery
+E Partisans
+X - 2 %STRING0 -
+B
+D @
+E Trireme
+E Caravel
+E Galleon
+E Explorer
+X - 2 %STRING0 -
+B
+D @
+E Horsemen
+X - 2 %STRING0 -
+B
+D @
+E Frigate
+E Ironclad
+E Destroyer
+E Cruiser
+E Battleship
+E Submarine
+E AEGIS Cruiser
+X - 2 %STRING0 -
+B
+D @
+E Carrier
+E Transport
+E Cruise Msl.
+E Default
+X - 1 %STRING0 -
+B
+D @
+E Nuclear Msl.
+X - 1 %STRING0 -
+B
+D @
+E Diplomat
+X - 4 %STRING0 -
+B
+D @
+E Spy
+X - 3 %STRING0 -
+B
+D @
+E Caravan
+E Freight
+X - 3 %STRING0 -
+B
+D @
+E Wonder
+X - 3 %STRING0 -
+B
+D @
+B
+== HELP.TXT
+B
+B
+H ADVANCES
+D @width=600
+Tt -
+X ^ 18 - -
+B
+B
+H CITIES
+D @width=600
+Tt -
+X ^ 1 - -
+X - 3 - -
+B
+B
+H IMPROVEMENTS
+D @width=600
+Tt -
+X ^ 1 - -
+X ^^ 1 - -
+X ^ 3 - -
+X ^^ 1 - -
+X ^ 1 - -
+B
+B
+H TERRAIN
+D @width=600
+Tt -
+X ^ 15 %% -
+X - 3 - -
+B
+B
+H UNITS
+D @width=600
+Tt -
+X ^ 20 - -
+B
+B
+H TRIBES
+D @width=600
+Tt -
+X ^ 20 - -
+B
+B
+H EFFECTS
+D @width=600
+Tt -
+X ^ 19 - -
+B
+H HELPUNITKILLED
+D @width=600
+Tt -
+X ^ 9 - -
+B
+B
+H HELPNEGOTIATION
+D @width=600
+Tt -
+X ^ 16 - -
+B
+B
+H HELPCITYTAKEN
+D @width=600
+Tt -
+X ^ 14 - -
+B
+B
+H HELPTURN
+D @width=600
+Tt -
+X ^ 8 - -
+B
+B
+H HELPTURNINTERVAL
+D @width=600
+Tt -
+X ^ 6 - -
+B
+B
+H HELPRANDOMTURN
+D @width=600
+Tt -
+X ^ 9 - -
+B
+B
+H HELPSCENARIOLOADED
+D @width=600
+Tt -
+X ^ 6 - -
+B
+B
+H HELPNOSCHISM
+D @width=600
+Tt -
+X ^ 5 - -
+B
+B
+H HELPCREATEUNIT
+D @width=600
+Tt -
+X ^ 17 - -
+B
+B
+B
+H HELPCHANGEMONEY
+D @width=600
+Tt -
+X ^ 15 - -
+B
+B
+H HELPMAKEAGGRESSION
+D @width=600
+Tt -
+X ^ 4 - -
+B
+B
+H HELPJUSTONCE
+D @width=600
+Tt -
+X ^ 4 - -
+B
+B
+H HELPDONTPLAYWONDERS
+D @width=600
+Tt -
+X ^ 6 - -
+B
+B
+H HELPPLAYWAVEFILE
+D @width=600
+Tt -
+X ^ 8 - -
+X - 1 - -
+X ^ 1 - -
+B
+B
+H HELPPLAYCDTRACK
+D @width=600
+Tt -
+X ^ 22 - -
+B
+B
+H HELPMOVEUNIT
+D @width=600
+Tt -
+X ^ 15 - -
+X ^ 1 - ||
+X ^ 11 - -
+B
+B
+H HELPRECEIVEDTECHNOLOGY
+D @width=600
+Tt -
+X ^ 5 - -
+B
+B
+H HELPGIVETECHNOLOGY
+D @width=600
+Tt -
+X ^ 13 - -
+B
+B
+H HELPDESTROYACIVILIZATION
+D @width=600
+Tt -
+X ^ 14 - -
+B
+B
+H HELPCHANGETERRAIN
+D @width=600
+Tt -
+X ^ 10 - -
+X ^ 1 - ||
+X ^ 1 - -
+B
+B
+H HELPTEXT
+D @width=600
+Tt -
+X ^ 10 - -
+B
+B
+H EVENTS
+D @width=600
+Tt -
+X ^ 8 - -
+B
+B
+H HELPFOREST
+D @width=600
+Tt -
+X ^ 16 - -
+B
+B
+H HELPHILLS
+D @width=600
+Tt -
+X ^ 16 - -
+B
+B
+H HELPMOUNTAINS
+D @width=600
+Tt -
+X ^ 16 - -
+B
+B
+H HELPRIVER
+D @width=600
+Tt -
+X ^ 17 - -
+B
+B
+H HELPCOAST
+D @width=600
+Tt -
+X ^ 13 - -
+B
+H HELPTERRMISC
+D @width=600
+Tt -
+X ^ 5 - -
+B
+H WARNING
+D @width=600
+Tt -
+X ^^ 1 - -
+X ^ 15 - -
+B
+@
+== TUTORIAL.TXT
+B
+H FIRSTMOVE
+D @width=400
+D @y=5
+Tt -
+X - 5 - -
+B
+H BUILDCITY
+D @width=320
+D @y=5
+Tt -
+X - 4 - -
+B
+H FIRSTPRODUCT
+D @width=420
+D @y=5
+Tt -
+X - 8 - -
+B
+H FIRSTCIV
+D @width=420
+Tt -
+X - 5 - -
+B
+H FIRSTUNIT1
+D @width=420
+D @y=5
+Tt -
+X - 6 - -
+B
+H FIRSTUNIT2
+D @width=500
+Tt -
+X - 4 - -
+X ^ 1 - -
+X - 4 - -
+X ^ 1 - -
+X - 2 - -
+X ^ 1 - -
+X - 2 - -
+B
+H ONECITY
+D @width=420
+D @y=5
+Tt -
+X - 5 %STRING0,%STRING0 -
+B
+H CITYSTUFF
+D @width=420
+D @x=180
+Tt -
+X - 5 - -
+X ^ 1 - -
+X - 5 - -
+X ^ 1 - -
+X - 3 - -
+B
+H MINING
+D @width=320
+D @y=5
+Tt -
+X - 3 %STRING0 -
+B
+H IRRIGATE
+D @width=320
+D @y=5
+Tt -
+X - 3 %STRING0 -
+B
+H ROAD
+D @width=440
+D @y=5
+Tt -
+X - 6 %STRING0 -
+B
+H HELP1
+D @width=500
+Tt -
+X - 2 - -
+X ^ 1 - -
+X - 3 - -
+X ^ 1 - -
+X - 3 - -
+B
+H HELP2
+D @width=500
+Tt -
+X - 2 - -
+X ^ 1 - -
+X - 3 - -
+X ^ 1 - -
+X - 3 - -
+X ^ 1 - -
+X - 3 - -
+B
+H DISORDER
+D @width=480
+Tt -
+Tb -
+X - 5 - -
+X ^ 1 - -
+X - 1 - -
+X ^ 6 - -
+X - 2 - -
+B
+H DISORDER2
+D @width=600
+Tt -
+X - 5 - -
+X ^ 1 - -
+X - 5 - -
+X ^ 1 - -
+X - 6 - -
+B
+H DISORDER3
+D @width=600
+Tt -
+X - 5 - -
+X ^ 1 - -
+X - 4 - -
+B
+H SCHISM
+D @width=320
+Tt -
+X - 5 %STRING0 -
+B
+H SHIPS
+D @width=480
+D @y=5
+Tt -
+X - 3 - -
+X ^ 1 - -
+X - 2 - -
+X ^ 1 - -
+X - 4 - -
+X ^ 1 - -
+X - 2 - -
+B
+H RAILROADS
+D @width=480
+Tt -
+X - 4 - -
+X ^ 1 - -
+X - 3 - -
+B
+H FARMLAND
+D @width=480
+Tt -
+X - 7 - -
+B
+H AIRUNIT
+D @width=480
+D @y=5
+Tt -
+X - 4 - -
+X ^ 1 - -
+X - 2 - -
+B
+H REPUBLIC
+D @width=480
+Tt -
+X - 8 - -
+B
+H DEMOCRATS
+D @width=600
+Tt -
+X - 3 %STRING0 -
+X ^ 1 - -
+X - 7 %% -
+X ^ 1 - -
+X - 5 - -
+B
+H TRADE
+D @width=420
+Tt -
+X - 4 - -
+B
+H CARAVAN
+D @width=440
+D @y=5
+Tt -
+X - 7 - -
+B
+H WRITING
+D @width=420
+Tt -
+X - 5 - -
+B
+H SEAFARING
+D @width=420
+Tt -
+X - 7 - -
+B
+B
+H EXPAND0
+D @width=520
+Tt -
+X - 4 - -
+B
+H EXPAND1
+D @width=520
+Tt -
+X - 3 - -
+B
+H DAMAGE
+D @width=520
+Tt -
+X - 4 - -
+X ^ 1 - -
+X - 5 - -
+B
+B
+H END
+== COUNCIL0.TXT
+B
+H M1
+C 0,98, Military: -
+C f5,938,1041, Foreign: -
+C #, end
+C t3,262,357, Trade: -
+C t5,262,357, Trade: -
+C s3,3353,3386, Science: -
+C s4,3353,3386, Science: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H M2
+C 100,193, Military: -
+C t2,262,357, Trade: -
+C #, end
+C t4,262,357, Trade: -
+C #, end
+C a1,4171,4202, Attitude: -
+C #, end
+C s,195,260, Science: -
+C end
+B
+H M3
+C 359,467, Military: -
+C t2,262,357, Trade: -
+C #, end
+C t4,262,357, Trade: -
+C #, end
+C f3,3958,3977, Foreign: -
+C a1,4171,4202, Attitude: -
+C a3,4283,4305, Attitude: -
+C end
+B
+H M4
+C 469,562, Military: -
+C f5,3845,3883, Foreign: -
+C t3,3560,3598, Trade: -
+C t5,3560,3598, Trade: -
+C t1,3453,3517, Trade: -
+C #, end
+C s3,3353,3386, Science: -
+C s4,3353,3386, Science: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H M5
+C 564,684, Military: -
+C s3,3353,3386, Science: -
+C s4,3353,3386, Science: -
+C f5,3845,3883, Foreign: -
+C t3,3560,3598, Trade: -
+C t5,3560,3598, Trade: -
+C t,3453,3517, Trade: -
+C #, end
+C a3,4070,4098, Attitude: -
+C end
+B
+H M6
+C 686,809, Military: -
+C f7,3815,3843, Foreign: -
+C t7,3519,3558, Trade: -
+C t1,3560,3598, Trade: -
+C s6,3421,3451, Science: -
+C s1,3421,3451, Science: -
+C a1,4136,4169, Attitude: -
+C end
+B
+H M7
+C 811,936, Military: -
+C f4,3958,3977, Foreign: -
+C s6,3314,3351, Science: -
+C #,f,3885,3917, Foreign: -
+C f,3845,3883, Foreign: -
+C t,3560,3598, Trade: -
+C end
+B
+B
+H S1
+C 1043,1140, Science: -
+C f3,3815,3843, Foreign: -
+C #,a,4100,4134, Attitude: -
+C a1,1285,1374, Attitude: -
+C #, end
+C a2,1285,1374, Attitude: -
+C #, end
+C a3,1285,1374, Attitude: -
+C #, end
+C t2,3519,3558, Trade: -
+C t4,3519,3558, Trade: -
+C end
+B
+H S2
+C 1142,1283, Science: -
+C f3,3815,3843, Foreign: -
+C #,a,4100,4134, Attitude: -
+C a1,1285,1374, Attitude: -
+C #, end
+C a2,1285,1374, Attitude: -
+C #, end
+C a3,1285,1374, Attitude: -
+C #, end
+C t2,3519,3558, Trade: -
+C t4,3519,3558, Trade: -
+C t,3560,3598, Trade: -
+C end
+B
+H S3
+C 1376,1581, Science: -
+C t3,3560,3598, Trade: -
+C t4,3519,3558, Trade: -
+C #,f5,3885,3917, Foreign: -
+C t5,3560,3598, Trade: -
+C t1,3453,3517, Trade: -
+C #, end
+C m2,3102,3130, Military: -
+C m3,3102,3130, Military: -
+C f3,3815,3843, Foreign: -
+C f5,3845,3883, Foreign: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H S4
+C 1583,1694, Science: -
+C t,3519,3558, Trade: -
+C m1,3132,3159, Military: -
+C m4,2982,3035, Military: -
+C m5,3037,3100, Military: -
+C m2,3102,3130, Military: -
+C #,f5,3885,3917, Foreign: -
+C m3,3102,3130, Military: -
+C #,f5,3885,3917, Foreign: -
+C f5,3845,3883, Foreign: -
+C end
+B
+H S5
+C 1696,1764, Science: -
+C a,4246,4281, *
+C m2,3286,3312, Military: -
+C m3,3286,3312, Military: -
+C t2,3679,3705, Trade: -
+C t4,3679,3705, Trade: -
+C end
+B
+H S6
+C 1766,1908, Science: -
+C m1,3286,3312, *
+C m2,3102,3130, Military: -
+C m3,3102,3130, Military: -
+C m4,3286,3312, *
+C m5,3286,3312, *
+C m6,3102,3130, Military: -
+C m7,3102,3130, Military: -
+C end
+B
+H S7
+C 1910,2011, Science: -
+C a1,4171,4202, Attitude: -
+C a6,4246,4281, *
+C t1,3679,3705, *
+C t6,3519,3558, Trade: -
+C t7,3519,3558, Trade: -
+C f7,3815,3843, Foreign: -
+C end
+B
+B
+H T1
+C 2013,2157, Trade: -
+C a1,2232,2298, Attitude: -
+C #, end
+C a2,2232,2298, Attitude: -
+C #, end
+C a3,2232,2298, Attitude: -
+C #, end
+C s1,2159,2230, Science: -
+C s2,2159,2230, Science: -
+C end
+B
+H T2
+C 2300,2442, Trade: -
+C m2,3286,3312, Military: -
+C m3,3132,3159, Military: -
+C end
+B
+H T3
+C 2444,2548, Trade: -
+C f5,3845,3883, Foreign: -
+C m1,3286,3312, Military: -
+C m4,2982,3035, Military: -
+C m5,3037,3100, Military: -
+C s3,3353,3386, Science: -
+C s4,3353,3386, Science: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H T4
+C 2550,2649, Trade: -
+C f3,3919,3956, Foreign: -
+C f,3815,3843, Foreign: -
+C #,m2,3161,3198, Military: -
+C m3,3132,3159, Military: -
+C end
+B
+H T5
+C 2651,2760, Trade: -
+C f5,3845,3883, Foreign: -
+C m1,3132,3159, Military: -
+C m4,2982,3035, Military: -
+C m5,3037,3100, Military: -
+C s3,3353,3386, Science: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H T6
+C 2762,2848, Trade: -
+C a1,4204,4244, Attitude: -
+C a2,4070,4098, Attitude: -
+C a3,4070,4098, Attitude: -
+C s1,2159,2230, Science: -
+C s2,2159,2230, Science: -
+C end
+B
+H T7
+C 2850,2980, Trade: -
+C m1,3286,3312, Military: -
+C #, end
+C m4,3286,3312, Military: -
+C #, end
+C m5,3286,3312, Military: -
+C #, end
+C f5,3979,4006, Foreign: -
+C #, end
+C a3,4204,4244, Attitude: -
+C end
+B
+B
+H F1
+C 4307,4413, Foreign: -
+C r5,s,3314,3351, Science: -
+C r5,m,3102,3130, Military: -
+C r5,a,4033,4068, Attitude: -
+C end
+B
+H F2
+C 4415,4551, Foreign: -
+C m6,3242,3284, *
+C m7,3242,3284, *
+C s,3314,3351, Science: -
+C end
+B
+H F3
+C 4553,4718, Foreign: -
+C s,3314,3351, Science: -
+C #,t2,3600,3636, Trade: -
+C t4,3560,3598, Trade: -
+C m2,3286,3312, Military: -
+C m3,3286,3312, Military: -
+C end
+B
+H F4
+C 4720,4846, Foreign: -
+C m,4848,4928, Military: -
+C end
+B
+H F5
+C 4930,5057, Foreign: -
+C m1,3132,3159, Military: -
+C m4,2982,3035, Military: -
+C m5,3037,3100, Military: -
+C t3,3560,3598, Trade: -
+C t5,3560,3598, Trade: -
+C t1,3453,3517, Trade: -
+C #, end
+C s3,3353,3386, Science: -
+C s4,3353,3386, Science: -
+C a3,4070,4098, Attitude: -
+C end
+B
+H F6
+C 5059,5194, Foreign: -
+C m2,3102,3130, Military: -
+C #,s7,3388,3419, Science: -
+C m3,3102,3130, Military: -
+C #,s7,3388,3419, Science: -
+C m,3242,3284, *
+C s7,3353,3386, Science: -
+C #, end
+C #
+C s5,3314,3351, Science: -
+C end
+B
+H F7
+C 5196,5301, Foreign: -
+C s7,3314,3351, Science: -
+C a6,4246,4281, *
+C m,3286,3312, *
+C end
+B
+B
+H A1
+C 5303,5391, Attitude: -
+C r5,t,3519,3558, Trade: -
+C r5,s,3314,3351, Science: -
+C r5,m,3102,3130, Military: -
+C r5,f,3815,3843, Foreign: -
+C end
+B
+H A2
+C 5393,5476, Attitude: -
+C t1,5556,5632, Trade: -
+C #, end
+C t6,5556,5632, Trade: -
+C #, end
+C t,3707,3756, Trade: -
+C s1,5478,5554, Science: -
+C #, end
+C s2,5478,5554, Science: -
+C #, end
+C f3,3845,3883, Foreign: -
+C m2,3132,3159, Military: -
+C m3,3132,3159, Military: -
+C end
+B
+H A3
+C 5634,5722, Attitude: -
+C t1,3679,3705, Trade: -
+C t6,3679,3705, Trade: -
+C s1,3421,3451, Science: -
+C s2,3421,3451, Science: -
+C m1,3286,3312, Military: -
+C m4,2982,3035, Military: -
+C m5,3037,3100, Military: -
+C end
+B
+H A4
+C 5724,5819, Attitude: -
+C t1,3560,3598, Trade: -
+C t6,3560,3598, Trade: -
+C t,3560,3598, Trade: -
+C s1,3353,3386, Science: -
+C s2,3353,3386, Science: -
+C s,3353,3386, Science: -
+C end
+B
+H A5
+C 5821,5867, Attitude: -
+C f7,3815,3843, Foreign: -
+C end
+B
+H A6
+C 5869,5947, Attitude: -
+C t1,3679,3705, Trade: -
+C t7,3519,3558, Trade: -
+C s7,3314,3351, Science: -
+C s1,3353,3386, Science: -
+C f7,3815,3843, Foreign: -
+C end
+== COUNCIL1.TXT
+B
+H M1
+C 0,80, Military: -
+C f5,82,129, Foreign: -
+C #, end
+C s3,3146,3172, Science: -
+C s4,3146,3172, Science: -
+C a3,3852,3885, Attitude: -
+C t3,3493,3509, Trade: -
+C t5,3493,3509, Trade: -
+C end
+B
+H M2
+C 131,234, Military: -
+C f3,3682,3706, Foreign: -
+C t2,3334,3360, Trade: -
+C t4,3334,3360, Trade: -
+C a1,4091,4130, Attitude: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H M3
+C 236,316, Military: -
+C t2,3493,3509, Trade: -
+C t4,3493,3509, Trade: -
+C f3,3682,3706, Foreign: -
+C a1,4091,4130, Attitude: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H M4
+C 318,423, Military: -
+C t3,3601,3627, Trade: -
+C t5,3601,3627, Trade: -
+C t1,3429,3450, Trade: -
+C f5,3682,3706, Foreign: -
+C s3,3146,3172, Science: -
+C s4,3146,3172, Science: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H M5
+C 425,558, Military: -
+C t1,560,620, Trade: -
+C #, end
+C t3,560,620, Trade: -
+C #, end
+C t5,560,620, Trade: -
+C #, end
+C s3,3146,3172, Science: -
+C s4,3146,3172, Science: -
+C f5,3682,3706, Foreign: -
+C a3,3852,3885, Attitude: -
+C t,3564,3599, Trade: -
+C end
+B
+H M6
+C 622,744, Military: -
+C f7,3659,3680, Foreign: -
+C t7,3307,3332, Trade: -
+C s6,3203,3230, Science: -
+C s1,3203,3230, Science: -
+C a1,3921,3960, Attitude: -
+C end
+B
+H M7
+C 746,863, Military: -
+C f4,82,129, Foreign: -
+C #, end
+C s6,3122,3144, Science: -
+C f,865,938, Foreign: -
+C #, end
+C end
+B
+B
+H S1
+C 940,1089, Science: -
+C f3,3659,3680, Foreign: -
+C #,a,3887,3919, Attitude: -
+C a1,1272,1328, Attitude: -
+C #, end
+C a2,1272,1328, Attitude: -
+C #, end
+C a3,1272,1328, Attitude: -
+C #, end
+C t2,3307,3332, Trade: -
+C t4,3307,3332, Trade: -
+C end
+B
+H S2
+C 1091,1183, Science: -
+C f3,3659,3680, Foreign: -
+C #,a,3887,3919, Attitude: -
+C t2,3307,3332, Trade: -
+C t4,3307,3332, Trade: -
+C t,1185,1270, Trade: -
+C a1,1272,1328, Attitude: -
+C #, end
+C a2,1272,1328, Attitude: -
+C #, end
+C a3,1272,1328, Attitude: -
+C #, end
+C end
+B
+H S3
+C 1330,1460, Science: -
+C t3,3334,3360, Trade: -
+C t4,3307,3332, Trade: -
+C #,f5,3708,3734, Foreign: -
+C t5,3334,3360, Trade: -
+C t1,3564,3599, Trade: -
+C #, end
+C m2,2938,2964, Military: -
+C m3,2938,2964, Military: -
+C f3,3659,3680, Foreign: -
+C f5,3682,3706, Foreign: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H S4
+C 1462,1569, Science: -
+C t,3307,3332, Trade: -
+C m1,4612,4676, Military: -
+C #, end
+C m4,4612,4676, Military: -
+C #, end
+C m5,2848,2910, Military: -
+C m2,2912,2936, Military: -
+C #,f5,3708,3734, Foreign: -
+C m3,2912,2936, Military: -
+C #,f5,3708,3734, Foreign: -
+C f5,3682,3706, Foreign: -
+C end
+B
+H S5
+C 1571,1632, Science: -
+C a,4014,4042, *
+C m2,3111,3120, Military: -
+C m3,3111,3120, Military: -
+C t2,3493,3509, Trade: -
+C t4,3493,3509, Trade: -
+C end
+B
+H S6
+C 1634,1766, Science: -
+C m1,3111,3120, *
+C m2,2912,2936, Military: -
+C m3,2912,2936, Military: -
+C m6,2912,2936, Military: -
+C m7,2912,2936, Military: -
+C end
+B
+H S7
+C 1768,1839, Science: -
+C a1,4091,4130, Attitude: -
+C a6,4014,4042, *
+C t1,3493,3509, *
+C t6,3307,3332, Trade: -
+C t7,3307,3332, Trade: -
+C f7,3659,3680, Foreign: -
+C end
+B
+B
+H T1
+C 1841,1947, Trade: -
+C a1,2020,2062, Attitude: -
+C #, end
+C a2,2020,2062, Attitude: -
+C #, end
+C a3,2020,2062, Attitude: -
+C #, end
+C s1,1949,2018, Science: -
+C s2,1949,2018, Science: -
+C end
+B
+H T2
+C 2064,2204, Trade: -
+C m2,2767,2846, Military: -
+C m3,2767,2846, Military: -
+C end
+B
+H T3
+C 2206,2340, Trade: -
+C f5,3682,3706, Foreign: -
+C m1,4612,4676, Military: -
+C #, end
+C m4,2767,2846, Military: -
+C #, end
+C m5,2848,2910, Military: -
+C s3,3146,3172, Science: -
+C s4,3146,3172, Science: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H T4
+C 2342,2497, Trade: -
+C f,3659,3680, Foreign: -
+C #,m2,2991,3014, Military: -
+C m3,3111,3120, - -
+C end
+B
+H T5
+C 2499,2597, Trade: -
+C m1,4612,4676, Military: -
+C #, end
+C m4,2767,2846, Military: -
+C #, end
+C m5,2848,2910, Military: -
+C f5,3682,3706, Foreign: -
+C s3,3146,3172, Science: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H T6
+C 2599,2705, Trade: -
+C a1,3962,4012, Attitude: -
+C a2,3852,3885, Attitude: -
+C #, end
+C a3,3852,3885, Attitude: -
+C #, end
+C s1,1949,2018, Science: -
+C s2,1949,2018, Science: -
+C end
+B
+H T7
+C 2707,2765, Trade: -
+C m1,3111,3120, Military: -
+C #, end
+C m4,3111,3120, Military: -
+C #, end
+C m5,3111,3120, Military: -
+C #, end
+C f5,3795,3816, Foreign: -
+C #, end
+C a3,3962,4012, Attitude: -
+C end
+B
+B
+H F1
+C 4132,4253, Foreign: -
+C r5,s,3122,3144, Science: -
+C r5,m,2912,2936, Military: -
+C r5,a,3818,3850, Attitude: -
+C r5,t,3307,3332, Trade: -
+C end
+B
+H F2
+C 4255,4341, Foreign: -
+C m6,3052,3109, *
+C m7,3052,3109, *
+C t,3307,3332, Trade: -
+C s,3122,3144, Science: -
+C end
+B
+H F3
+C 4343,4440, Foreign: -
+C s,3122,3144, Science: -
+C #,t2,3362,3385, Trade: -
+C t4,3334,3360, Trade: -
+C m2,3111,3120, Military: -
+C m3,3111,3120, Military: -
+C end
+B
+H F4
+C 4442,4540, Foreign: -
+C m6,4542,4610, Military: -
+C m7,4542,4610, Military: -
+C end
+B
+H F5
+C 4745,4868, Foreign: -
+C t3,4678,4743, Trade: -
+C t5,4678,4743, Trade: -
+C t1,4678,4743, Trade: -
+C m1,3111,3120, Military: -
+C m4,3111,3120, Military: -
+C m5,2848,2910, Military: -
+C s3,3146,3172, Science: -
+C s4,3146,3172, Science: -
+C a3,3852,3885, Attitude: -
+C end
+B
+H F6
+C 4870,4980, Foreign: -
+C m2,2938,2964, Military: -
+C #,s7,3174,3201, Science: -
+C m3,2938,2964, Military: -
+C #,s7,3174,3201, Science: -
+C s7,3146,3172, Science: -
+C #, end
+C #
+C s5,3122,3144, Science: -
+C t,3307,3332, Trade: -
+C end
+B
+H F7
+C 4982,5072, Foreign: -
+C s7,3122,3144, Science: -
+C a6,4014,4042, *
+C end
+B
+B
+H A1
+C 5074,5186, Attitude: -
+C r5,t,3307,3332, Trade: -
+C r5,s,3122,3144, Science: -
+C r5,m,2912,2936, Military: -
+C r5,f,3659,3680, Foreign: -
+C end
+B
+H A2
+C 5188,5302, Attitude: -
+C t1,5304,5374, Trade: -
+C #, end
+C t6,5304,5374, Trade: -
+C #, end
+C t,3629,3657, Trade: -
+C s1,5647,5753, Science: -
+C #, end
+C s2,5647,5753, Science: -
+C #, end
+C f3,3682,3706, Foreign: -
+C m2,2966,2989, Military: -
+C m3,2966,2989, Military: -
+C end
+B
+H A3
+C 5376,5474, Attitude: -
+C t1,3493,3509, Trade: -
+C t6,3493,3509, Trade: -
+C s1,3203,3230, Science: -
+C s2,3203,3230, Science: -
+C m1,3111,3120, Military: -
+C m4,3111,3120, Military: -
+C m5,3111,3120, Military: -
+C end
+B
+H A4
+C 5476,5579, Attitude: -
+C t1,3493,3509, Trade: -
+C t,3334,3360, Trade: -
+C s1,5581,5645, Science: -
+C s2,5581,5645, Science: -
+C s,3146,3172, Science: -
+C end
+B
+H A5
+C 5755,5820, Attitude: -
+C f7,3659,3680, Foreign: -
+C end
+B
+H A6
+C 5822,5900, Attitude: -
+C t1,3493,3509, Trade: -
+C t7,3307,3332, Trade: -
+C s7,3122,3144, Science: -
+C f7,3659,3680, Foreign: -
+C end
+== COUNCIL2.TXT
+B
+H M1
+C 0,84, Military: -
+C f5,4656,4763, Foreign: -
+C #, end
+C t3,3193,3212, Trade: -
+C t5,3193,3212, Trade: -
+C s3,3101,3124, Science: -
+C s4,3101,3124, Science: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H M2
+C 86,199, Military: -
+C f3,3406,3431, Foreign: -
+C t2,3193,3212, Trade: -
+C t4,3193,3212, Trade: -
+C a1,3646,3692, Attitude: -
+C #, end
+C end
+B
+H M3
+C 201,270, Military: -
+C t2,3193,3212, Trade: -
+C t4,3193,3212, Trade: -
+C f3,3498,3526, Foreign: -
+C a1,3646,3692, Attitude: -
+C a3,3747,3769, Attitude: -
+C end
+B
+H M4
+C 272,359, Military: -
+C f5,3406,3431, Foreign: -
+C t3,3193,3212, Trade: -
+C t5,3193,3212, Trade: -
+C t1,2844,2882, Trade: -
+C #, end
+C s3,3101,3124, Science: -
+C s4,3101,3124, Science: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H M5
+C 361,502, Military: -
+C s3,3101,3124, Science: -
+C s4,3101,3124, Science: -
+C f5,3406,3431, Foreign: -
+C t3,3193,3212, Trade: -
+C t5,3193,3212, Trade: -
+C t,2844,2882, Trade: -
+C #, end
+C a3,3554,3580, Attitude: -
+C end
+B
+H M6
+C 504,568, Military: -
+C f7,3384,3404, Foreign: -
+C t7,3349,3382, Trade: -
+C t1,3193,3212, Trade: -
+C s6,3150,3172, Science: -
+C s1,3150,3172, Science: -
+C a1,3608,3644, Attitude: -
+C end
+B
+H M7
+C 570,649, Military: -
+C f4,4656,4763, Foreign: -
+C #, end
+C f,3406,3431, Foreign: -
+C s6,3080,3099, Science: -
+C t,3193,3212, Trade: -
+C end
+B
+B
+H S1
+C 1012,1096, Science: -
+C f3,3384,3404, Foreign: -
+C #,a,3582,3606, Attitude: -
+C a1,5360,5443, Attitude: -
+C #, end
+C a2,5360,5443, Attitude: -
+C #, end
+C a3,5360,5443, Attitude: -
+C #, end
+C t2,3174,3191, Trade: -
+C t4,3174,3191, Trade: -
+C t,3314,3347, *
+C end
+B
+H S2
+C 1098,1252, Science: -
+C f3,3384,3404, Foreign: -
+C #,a,3582,3606, Attitude: -
+C a1,5360,5443, Attitude: -
+C #, end
+C a2,5360,5443, Attitude: -
+C #, end
+C a3,5360,5443, Attitude: -
+C #, end
+C t2,3174,3191, Trade: -
+C t4,3174,3191, Trade: -
+C t1,2705,2778, Trade: -
+C end
+B
+H S3
+C 1254,1377, Science: -
+C m1,867,957, Military: -
+C #, end
+C m4,867,957, Military: -
+C #, end
+C m5,867,957, Military: -
+C #, end
+C t3,3193,3212, Trade: -
+C t4,3174,3191, Trade: -
+C #,f5,3433,3461, Foreign: -
+C t5,3193,3212, Trade: -
+C t1,2705,2778, Trade: -
+C #, end
+C m2,2884,2913, Military: -
+C m3,2884,2913, Military: -
+C f3,4765,4804, Foreign: -
+C f5,3406,3431, Foreign: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H S4
+C 1379,1571, Science: -
+C m1,867,957, Military: -
+C #, end
+C m4,867,957, Military: -
+C #, end
+C m5,867,957, Military: -
+C #, end
+C f3,4765,4804, Foreign: -
+C t,3174,3191, Trade: -
+C m2,2884,2913, Military: -
+C #,f5,3433,3461, Foreign: -
+C m3,2884,2913, Military: -
+C #,f5,3433,3461, Foreign: -
+C f5,3406,3431, Foreign: -
+C end
+B
+H S5
+C 1573,1643, Science: -
+C a6,3694,3745, *
+C m2,3027,3078, Military: -
+C m3,3027,3078, Military: -
+C t2,3193,3212, Trade: -
+C t4,3193,3212, Trade: -
+C end
+B
+H S6
+C 1645,1748, Science: -
+C m1,3027,3078, *
+C m2,2884,2913, Military: -
+C m3,2884,2913, Military: -
+C m4,3027,3078, *
+C m5,3027,3078, *
+C m6,2884,2913, Military: -
+C m7,2884,2913, Military: -
+C end
+B
+H S7
+C 1750,1920, Science: -
+C a1,3646,3692, Attitude: -
+C a6,3694,3745, *
+C t6,3349,3382, Trade: -
+C t7,3349,3382, Trade: -
+C f7,3384,3404, Foreign: -
+C end
+B
+B
+H T1
+C 2097,2200, Trade: -
+C a1,5360,5443, Attitude: -
+C #, end
+C a2,5445,5520, Attitude: -
+C #, end
+C a3,5445,5520, Attitude: -
+C #, end
+C s1,1922,2001, Science: -
+C s2,1922,2001, Science: -
+C end
+B
+H T2
+C 2202,2303, Trade: -
+C m2,812,865, Military: -
+C m3,812,865, Military: -
+C end
+B
+H T3
+C 2305,2360, Trade: -
+C f5,3406,3431, Foreign: -
+C m1,651,731, Military: -
+C m4,651,731, Military: -
+C m5,651,731, Military: -
+C s3,3101,3124, Science: -
+C s4,3101,3124, Science: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H T4
+C 2362,2473, Trade: -
+C f,3384,3404, Foreign: -
+C m2,812,865, Military: -
+C m3,812,865, Military: -
+C end
+B
+H T5
+C 2475,2570, Trade: -
+C f5,3406,3431, Foreign: -
+C m1,651,731, Military: -
+C m4,651,731, Military: -
+C m5,651,731, Military: -
+C s3,3101,3124, Science: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H T6
+C 2572,2616, Trade: -
+C a1,3646,3692, Attitude: -
+C a2,3554,3580, Attitude: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H T7
+C 2618,2703, Trade: -
+C m1,3027,3078, Military: -
+C #, end
+C m4,3027,3078, Military: -
+C #, end
+C m5,3027,3078, Military: -
+C #, end
+C f5,3498,3526, Foreign: -
+C #, end
+C end
+B
+B
+H F1
+C 3771,3870, Foreign: -
+C r5,s,3080,3099, Science: -
+C r5,m,2884,2913, Military: -
+C r5,a,3528,3552, Attitude: -
+C r5,t,3174,3191, Trade: -
+C end
+B
+H F2
+C 3872,4002, Foreign: -
+C m,733,810, Military: -
+C end
+B
+H F3
+C 4004,4100, Foreign: -
+C s,3080,3099, Science: -
+C #,t2,3214,3238, Trade: -
+C t4,3193,3212, Trade: -
+C m2,959,1010, Military: -
+C m3,959,1010, Military: -
+C end
+B
+H F4
+C 4102,4273, Foreign: -
+C m,3004,3025, *
+C end
+B
+H F5
+C 4275,4381, Foreign: -
+C m1,651,731, Military: -
+C m4,651,731, Military: -
+C m5,651,731, Military: -
+C t3,3193,3212, Trade: -
+C t5,3193,3212, Trade: -
+C t1,2844,2882, Trade: -
+C #, end
+C s3,3101,3124, Science: -
+C s4,3101,3124, Science: -
+C a3,3554,3580, Attitude: -
+C end
+B
+H F6
+C 4383,4526, Foreign: -
+C m2,2884,2913, Military: -
+C #,s7,3126,3148, Science: -
+C m3,2884,2913, Military: -
+C #,s7,3126,3148, Science: -
+C m6,733,810, Military: -
+C m7,733,810, Military: -
+C s7,3101,3124, Science: -
+C #, end
+C #
+C s5,3080,3099, Science: -
+C t,3174,3191, Trade: -
+C end
+B
+H F7
+C 4528,4654, Foreign: -
+C s7,3080,3099, Science: -
+C a6,3694,3745, *
+C end
+B
+B
+H A1
+C 4806,4875, Attitude: -
+C r5,t,3174,3191, Trade: -
+C r5,s,3080,3099, Science: -
+C r5,m,2884,2913, Military: -
+C r5,f,3384,3404, Foreign: -
+C end
+B
+H A2
+C 4877,4969, Attitude: -
+C t1,2780,2842, Trade: -
+C #, end
+C t6,2780,2842, Trade: -
+C #, end
+C s1,3150,3172, Science: -
+C #, end
+C s2,2003,2095, Science: -
+C #, end
+C f3,3406,3431, Foreign: -
+C m2,2915,2939, Military: -
+C m3,2915,2939, Military: -
+C end
+B
+H A3
+C 4971,5096, Attitude: -
+C t1,3278,3312, Trade: -
+C s1,2003,2095, Science: -
+C s2,2003,2095, Science: -
+C m1,3027,3078, Military: -
+C m4,3027,3078, Military: -
+C m5,3027,3078, Military: -
+C end
+B
+H A4
+C 5098,5231, Attitude: -
+C t1,3193,3212, Trade: -
+C t6,3193,3212, Trade: -
+C t,3193,3212, Trade: -
+C s1,3101,3124, Science: -
+C s2,3101,3124, Science: -
+C s,3101,3124, Science: -
+C end
+B
+H A5
+C 5233,5295, Attitude: -
+C t7,3174,3191, Trade: -
+C end
+B
+H A6
+C 5297,5358, Attitude: -
+C t7,3349,3382, Trade: -
+C end
+== HERALD.TXT
+H HERALDWARNING
+D @width=440
+Tt -
+X - 5 - -
+B
+X - 2 - -
+B
+== MAPMENU.TXT
+B
+H EDITOR
+X - - &
+X - - &|Ctrl+N
+X - - &|Ctrl+L
+X - - &|Ctrl+S
+X - - &|Ctrl+A
+X - - &|Ctrl+Q
+B
+H VIEW
+X - - &
+X - - &|z
+X - - &|x
+X - - |Ctrl+Z
+X - - |Shift+Z
+X - - |Shift+X
+X - - |Ctrl+X
+X - - -
+X - - &|c
+B
+H MAP
+X - - &
+X - - |r
+X - - |b
+X - - |h
+X - - |n
+X - - &|u
+B
+H BRUSH
+X - - &
+X - - &|F1
+X - - &|F2
+X - - &|F3
+X - - &|F4
+X - - &|F5
+B
+H TOOLS
+X - - &
+X - - &|p
+X - - &|a
+X - - &|s
+B
+B
+B
+B
+B
+== DEBUG.TXT
+B
+H MOTD
+D @width=480
+Tt -
+X - 1 - -
+B
+H TOOMANYCITIES
+X - 1 - -
+B
+H ENDOFTURN
+X - 1 %NUMBER0 -
+B
+H DANGER
+Tt -
+X ^ 2 %NUMBER0,%NUMBER1,%NUMBER2,%STRING0 -
+B
+H DANGERHEX
+Tt -
+X ^ 2 %HEX0,%HEX1,%HEX2,%STRING0 -
+B
+H GAVETECH
+X - 1 - -
+B
+H TOOKTECH
+X - 1 - -
+B
+H GAVEALL
+X - 1 - -
+B
+H TOOKALL
+X - 1 - -
+B
+H FREEBIE
+X - 1 - -
+B
+H MEMORY
+X ^ 1 %NUMBER0 -
+B
+H REVEALMAP
+Tt -
+B
+H SETHUMAN
+Tt -
+B
+H KILLCIV
+Tt -
+B
+H PICKPLAYER
+Tt -
+B
+H MONEY
+Tt %STRING0
+D @width=300
+X - 1 %NUMBER0,%STRING0 -
+B
+X - 1 - -
+B
+H TERRAIN
+Tt -
+D @width=420
+D @checkbox
+Tb -
+D @options
+X - 7 - -
+B
+H TERRAIN1
+Tt -
+D @width=300
+B
+H GAMEYEAR
+Tt -
+D @width=300
+X # 1 %NUMBER0 -
+B
+X - 1 - -
+B
+H CREATEUNIT
+Tt -
+D @width=480
+D @listbox
+Tb -
+Tb -
+Tb -
+Tb -
+B
+H MOVEDEBUG
+Tt -
+D @x=0
+D @y=0
+D @width=200
+D @options
+X - 5 - -
+B
+B
+H GOODYX
+Tt -
+D @width=300
+D @options
+X - 1 - -
+B
+H GOODYY
+Tt -
+D @width=300
+D @options
+X - 1 - -
+B
+H GOODYMAP
+Tt -
+D @width=300
+D @options
+X - 1 - -
+B
+H GOODYDIV
+Tt -
+D @width=300
+D @options
+X - 1 - -
+B
+H NETLIST
+Tt -
+D @width=320
+B
+H TURNCOUNT
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H TURNINTERVAL
+Tt -
+D @width=300
+B
+X - 1 - -
+B
+B
+H RANDOMDENOM
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H CITYNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H HOMECITYNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H TALKERTYPE
+Tt -
+D @width=300
+B
+X - 3 - -
+B
+B
+H CDTRACK
+Tt -
+D @width=300
+X - 1 %NUMBER0,%NUMBER1 -
+B
+X - 1 - -
+B
+B
+H WAVFILE
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H AMOUNT
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H NUMUNITS
+Tt -
+X - 1 - -
+D @width=200
+B
+X - 1 - -
+B
+B
+H VETERAN
+Tt -
+D @width=200
+X - 1 - -
+B
+X - 2 - -
+B
+B
+H TERRAINTYPE
+Tt -
+D @width=200
+B
+X - 1 - -
+B
+B
+H MAPRECT
+Tt -
+D @width=200
+B
+X - 1 - -
+B
+B
+H LOCATION
+Tt -
+D @width=200
+B
+X - 1 - -
+B
+B
+H LOCATIONNUM
+Tt %NUMBER0
+D @width=200
+B
+X - 1 - -
+B
+B
+H PLAYSOUND
+Tt -
+Tb -
+X - 2 - -
+B
+B
+H TERRNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H TECHNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H IMPRNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H UNITNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H CITYMISC
+D @width=330
+Tt -
+D @columns=2
+D @options
+X - 20 - -
+B
+B
+H IMPRMISC
+D @width=330
+Tt -
+D @options
+X - 9 - -
+B
+B
+H FOREST
+D @width=330
+Tt -
+Tb -
+D @columns=2
+D @options
+X - 17 - -
+B
+B
+H HILLS
+D @width=330
+Tt -
+Tb -
+D @columns=2
+D @options
+X - 17 - -
+B
+B
+H MOUNTAINS
+D @width=330
+Tt -
+Tb -
+D @columns=2
+D @options
+X - 17 - -
+B
+B
+H RIVER
+D @width=330
+Tt -
+Tb -
+D @columns=2
+D @options
+X - 20 - -
+B
+B
+H COAST
+D @width=400
+Tt -
+Tb -
+D @columns=4
+D @options
+X - 32 - -
+B
+B
+H TRIBENAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H LEADERS
+D @width=330
+Tt -
+D @options
+X - 2 - -
+B
+B
+H LEADERNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H RENAMECITY
+Tt -
+D @listbox
+B
+B
+H CITYRENAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H EDITCOSMIC
+X - 2 - -
+X # 3 - -
+X - 17 - -
+B
+B
+H CPEDIT
+Tt -
+D @width=300
+X - 1 %NUMBER0,%NUMBER1 -
+B
+X - 1 - -
+B
+B
+H RENAMECOMMO
+Tt -
+D @listbox
+B
+B
+H COMMONAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H RENAMEGOVT
+Tt -
+D @listbox
+B
+B
+H GOVTNAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H RENAMETITLE
+Tt -
+D @listbox
+B
+B
+H TITLENAME
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H NEWFOLDER
+Tt -
+D @width=300
+X - 1 - -
+B
+X - 1 - -
+B
+B
+H DIREXISTS
+Tt -
+X - 2 %STRING0 -
+B
+B
+H RUSURE
+Tt -
+D @width=220
+X ^ 2 - -
+B
+B
+H TERRMISC
+D @width=330
+Tt -
+Tb -
+D @columns=2
+D @options
+X - 24 - -
+B
+B
+H ODDTERRAIN
+D @width=330
+X - 3 - -
+B
+B
+H EVENTERRAIN
+D @width=330
+X - 3 - -
+B
+B
+H OUTOFMEMORY
+D @width=330
+X - 2 - -
+B
+B
+H BADNAME
+Tt -
+X - 1 - -
+X ^ 1 %STRING0 -
+B
+B
+H NOCITY
+Tt -
+D @width=200
+X - 1 %STRING0 -
+X ^ 1 - -
+B
+X - 2 - -
+B
+B
+H NOTICE
+Tt -
+X - 3 - -
+B
+B
+B
+B
+B
+D @end

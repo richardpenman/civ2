@@ -10,8 +10,9 @@
 /* Windows: the program's own files, as resources (src/host/setup.rc): deflated. */
 #define SETUP_RES_FONTS_WIN 3       /* with Windows' widths (src/platform/text.c) */
 #define SETUP_RES_FONTS_WIN_AA 4
-/* the others (a code page's glyphs, the translations: data/native's
-   fonts_<code page>.bin, lang/<code>.txt), listed in SETUP_RES_FILES: lines "ID PATH"
+/* the others (a code page's glyphs, the translations, OpenCiv2's English of
+   the game's texts: data/native's fonts_<code page>.bin, lang/<code>.txt,
+   text/<NAME>.TXT), listed in SETUP_RES_FILES: lines "ID PATH"
    (tools/build_port.py) */
 #define SETUP_RES_FILES 99
 

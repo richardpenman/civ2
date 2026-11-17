@@ -269,18 +269,18 @@ static int is_text(FILE *f)
     return 0;
 }
 
-FILE *__fsopen(const char *path, const char *mode, int share)
+/* A host path (not the game's Windows one) opened as _fopen opens a file:
+   in binary, a text mode's line ends and ^Z handled by the readers. */
+FILE *crt_fopen_host(const char *host, const char *mode)
 {
-    char host[1024], m[8];
+    char m[8];
     int text = !strchr(mode, 'b'), i, o = 0;
     FILE *f;
-    (void)share;
     for (i = 0; mode[i] && o < 6; i++)
         if (mode[i] != 't' && mode[i] != 'b')
             m[o++] = mode[i];
     m[o++] = 'b';
     m[o] = 0;
-    plat_host_path(path, host, sizeof host, mode[0] != 'r');
     f = fopen(host, m);
     if (f && text)
         for (i = 0; i < MAX_TEXT_FILES; i++)
@@ -289,6 +289,14 @@ FILE *__fsopen(const char *path, const char *mode, int share)
                 break;
             }
     return f;
+}
+
+FILE *__fsopen(const char *path, const char *mode, int share)
+{
+    char host[1024];
+    (void)share;
+    plat_host_path(path, host, sizeof host, mode[0] != 'r');
+    return crt_fopen_host(host, mode);
 }
 
 FILE *_fopen(const char *path, const char *mode)

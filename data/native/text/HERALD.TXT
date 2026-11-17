@@ -1,0 +1,12 @@
+@HERALDWARNING
+@width=440
+@title=Diplomatic Heralds
+The game runs with 8 MB of memory, but
+the 3D animated heralds need 16 MB. Only
+turn them on if your computer has at least
+16 MB of memory. This notice will only
+be shown once, so choose carefully below.
+
+Turn heralds off (my computer has less than 16 MB).
+Turn heralds on (my computer has 16 MB or more).
+

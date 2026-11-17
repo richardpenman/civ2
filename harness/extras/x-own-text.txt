@@ -1,0 +1,106 @@
+# OpenCiv2's own English of the game's texts (data/native/text: written for
+# OpenCiv2, read where the game has no text file of its own): the game run
+# with the install's text files and RULES.TXT removed (CIV2_NO_TEXT=1,
+# CIV2_NO_RULES=1), the CD's videos kept for the High Council.  The main
+# menu, the autosave loaded, a city, the science advisor, the High Council
+# and its military advisor speaking, the Civilopedia's pages of an advance,
+# a unit and a wonder, the game options, a tutorial tip, the advances editor's help.
+# test: CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_KEEP_MEDIA=1
+wait 3000
+key Escape
+wait 5000
+shot ot-a-mainmenu
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+shot ot-b-map
+call menu_command 4e2803 0 528
+wait 3000
+shot ot-c-findcity
+key Return
+wait 8000
+click 163 222               # (centres the map on Rome)
+wait 3000
+click 247 262               # Rome
+wait 8000
+shot ot-d-city
+key Escape
+wait 3000
+call menu_command 4e2803 0 1286     # 0x506 Science Advisor
+wait 3000
+shot ot-e-science
+key Escape
+wait 2000
+call council_show 516570 1 0
+wait 2000
+shot ot-f-council
+click 102 229              # Military: the advisor speaks
+wait 3000
+shot ot-g-military
+wait 6000
+click 299 364              # Cancel
+wait 3000
+call menu_command 4e2803 0 2305     # Civilopedia: advances
+wait 3000
+click 91 383               # Info: the first entry's page
+wait 3000
+shot ot-h-pedia-advances
+click 376 383               # Description
+wait 3000
+shot ot-h-pedia-advances-desc
+key Escape
+wait 1000
+key Escape
+wait 1000
+key Escape
+wait 2000
+call menu_command 4e2803 0 2311     # Civilopedia: units
+wait 3000
+click 91 383               # Info: the first entry's page
+wait 3000
+shot ot-i-pedia-units
+click 300 383               # Description
+wait 3000
+shot ot-i-pedia-units-desc
+key Escape
+wait 1000
+key Escape
+wait 1000
+key Escape
+wait 2000
+call menu_command 4e2803 0 2309     # Civilopedia: wonders
+wait 3000
+click 91 383               # Info: the first entry's page
+wait 3000
+shot ot-j-pedia-wonders
+click 300 383               # Description
+wait 3000
+shot ot-j-pedia-wonders-desc
+key Escape
+wait 1000
+key Escape
+wait 1000
+key Escape
+wait 2000
+call menu_command 4e2803 0 257     # 0x101 Game Options
+wait 3000
+shot ot-k-options
+click 292 448               # Tutorial help
+wait 500
+click 391 523               # OK
+wait 2000
+call civ_advance_gov_prompts 4bea84 1 88     # Writing learnt: the tutorial's tip
+wait 3000
+shot ot-l-tutorial
+key Return
+wait 2000
+call tech_editor_on_help 41612e
+wait 3000
+shot ot-m-help
+key Return
+wait 2000
+quit

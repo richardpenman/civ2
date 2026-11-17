@@ -10,6 +10,8 @@
  *                       (TEXTMASK: default tests/unit/textmask.tsv)
  *   civ2-unittest --bless OUT.gz RAW.gz      keep the cases that pass, twice,
  *                                            on this build (after recording)
+ *   civ2-unittest --rules GAME               the built-in rules against GAME's
+ *                                            RULES.TXT (src/game/rules.cpp)
  * The program's own start-up (src/platform/main.c, CIV2_UNITTEST) runs the
  * game's initializers first: the first case's input is a delta from what
  * they leave, as when it was recorded.
@@ -550,6 +552,11 @@ int unit_run_main(int argc, char **argv)
     int i, files = 0, fns_failed = 0;
     struct timespec t0, t1;
     clock_gettime(CLOCK_MONOTONIC, &t0);
+    if (argc == 3 && !strcmp(argv[1], "--rules")) {
+        /* the built-in rules against the game's RULES.TXT (src/game/rules.cpp) */
+        int rules_check(const char *dir);
+        return rules_check(argv[2]);
+    }
     if (!ut_load_symbols()) {
         fprintf(stderr, "civ2-unittest: no symbol table\n");
         return 2;

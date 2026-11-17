@@ -6,14 +6,36 @@ OpenCiv2 has two kinds of text:
   `MENU.TXT`, the advisors', the scenarios' ...) come from your copy of Civilization II, as the
   original reads them. A localized Civilization II (German, French, Spanish ...) gives them in
   its language as it is. A translation may carry them too (keyed: below): the Esperanto one
-  that comes with OpenCiv2 translates the whole game. The English of the game's texts is not
-  in this repository (it is in your copy of the game): only translations of them.
+  that comes with OpenCiv2 translates the whole game. Where your copy of the game has no
+  such file, OpenCiv2 uses its own English of it (below).
 - **OpenCiv2's own texts**: what it adds — OpenCiv2 Options, the interface additions' few words,
   the file dialog, its message boxes, the set-up's messages and progress, the HD graphics'
   download, the browser version's page. These are translated here. English is built in;
   `data/native/lang/` has the translations that come with OpenCiv2: Esperanto (`eo.txt`, a first
   draft: machine-drafted, needs review by a native speaker), which translates the game's texts
   too.
+
+## OpenCiv2's own English of the game's texts
+
+`data/native/text/` holds OpenCiv2's own English of the game's text files: `GAME.TXT`,
+`LABELS.TXT`, `MENU.TXT`, `CITY.TXT`, `PEDIA.TXT`, `DESCRIBE.TXT`, `ADVICE.TXT`, `HELP.TXT`,
+`TUTORIAL.TXT`, `COUNCIL0-2.TXT`, `HERALD.TXT`, `MAPMENU.TXT`, `DEBUG.TXT` and the credits
+(OpenCiv2's). They are in the game's format (sections, `@title=`, `@options` ..., Windows-1252)
+and are read only where neither a scenario's folder nor the game's folder has the file: your
+copy's own file always wins, and a translation's keys apply on top of either. (`RULES.TXT` is
+built in: `src/game/rules_default.cpp`.)
+
+They were written for OpenCiv2, not copied from the original: short functional strings (menu
+items, buttons, labels, names) directly, everything longer (the Civilopedia, the advisors and
+the High Council, help, the tutorial, the dialogs' messages) clean-room, by writers who saw
+only a description of each text's structure, purpose and facts. Their structure matches the
+original's line for line where the game reads it (`tests/text_test.py`, `make test`; the
+structure expected is `tests/text_skeleton.txt`); the Civilopedia's articles are shorter.
+
+A translator may start from them: `CIV2_EXPORT_TEXT=xx.txt` run without the game's text
+files (as `CIV2_NO_TEXT=1` does in the tests, below) writes them keyed, and a translation made
+from them may be added here. `CIV2_NO_TEXT=1` (`tools/native-run.sh`) runs a test's game copy
+without its text files.
 
 ## Choosing a language
 
@@ -74,7 +96,9 @@ CIV2_EXPORT_TEXT=en.txt CIV2_EXPORT_OWN=1 ./OpenCiv2
 Without `CIV2_EXPORT_OWN=1`, `CIV2_EXPORT_TEXT` writes every text, the game's too
 (`game.<SECTION>`, `menu.*`, `label.<n>`, `rules.*`, `describe.*`, `src/include/lang.h`):
 the start of a translation of the game itself. That export is the English of your copy of the
-game: keep it to yourself (it is not added here); a translation made from it may be.
+game: keep it to yourself (it is not added here); a translation made from it may be. Made
+from a folder without the game's text files, it is OpenCiv2's own English (above), which is
+free to share and a good base for a translation.
 
 ### The game's texts
 

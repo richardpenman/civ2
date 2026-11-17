@@ -1023,6 +1023,11 @@ int __cdecl text_open_file_section(const char *filename,const char *section)
         text_file_handle != (FILE *)0x0)) && (len = _strlen(name2), len != 0)) {
       section_offset = text_section_index_lookup((const char *)name2,(const char *)section_tag);
     }
+    /* (port) neither folder has the file: OpenCiv2's own English of it, if
+       it has one (lang.h) */
+    if (text_file_handle == (FILE *)0x0) {
+      text_file_handle = lang_builtin_text_file((const char *)name2);
+    }
     __chdir(saved_cwd);
     if (text_file_handle == (FILE *)0x0) {
       text_close_file();

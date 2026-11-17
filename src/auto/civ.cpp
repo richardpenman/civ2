@@ -885,10 +885,10 @@ i8 __cdecl rules_next_byte_clamped(i32 min_value,i32 max_value)
 void __cdecl rules_load_cosmic(void)
 
 {
-  if (rules_from_scenario() == 0) {
-    /* (port) the game's rules (rules.h) */
+  if (rules_source() == RULES_BUILTIN) {
+    /* (port) the game's built-in rules (rules.h) */
     text_close_file();
-    memcpy(&cosmic,rules_cosmic,RULES_COSMIC_SIZE);
+    memcpy(&cosmic,&rules_cosmic,RULES_COSMIC_SIZE);
     return;
   }
   text_open_section((const char *)&main_frame_wnd_block.rules_txt_path,(const char *)&str_cosmic);
@@ -936,8 +936,8 @@ void __cdecl rules_load_advances(int keep_names)
   int from_file;
   char key[32];
   
-  /* (port) the game's rules (rules.h), or the scenario's RULES.TXT */
-  from_file = rules_from_scenario();
+  /* (port) RULES.TXT, or the game's built-in rules (rules.h) */
+  from_file = rules_source() != RULES_BUILTIN;
   if (from_file != 0) {
     text_open_section((const char *)&main_frame_wnd_block.rules_txt_path,(const char *)&str_civilize_2);
   }
@@ -975,7 +975,8 @@ void __cdecl rules_load_advances(int keep_names)
     line_len = _strlen(textbuf.buf);
     if ((line_len == 0) || (textbuf.buf[0] == ';')) break;
     if (keep_names == 0) {
-      name_id = text_next_token_str_id(0x14);
+      snprintf(key,sizeof key,"rules.advance.%d",advance);
+      name_id = rules_read_name(key,0x14);
       advances[advance].name = name_id;
     }
     else {
@@ -1063,8 +1064,8 @@ void __cdecl rules_load_improvements(int keep_names)
   int from_file;
   char key[32];
   
-  /* (port) the game's rules (rules.h), or the scenario's RULES.TXT */
-  from_file = rules_from_scenario();
+  /* (port) RULES.TXT, or the game's built-in rules (rules.h) */
+  from_file = rules_source() != RULES_BUILTIN;
   if (from_file == 0) {
     text_close_file();
     for (improvement = 0; improvement < IMP_COUNT; improvement++) {
@@ -1089,7 +1090,8 @@ void __cdecl rules_load_improvements(int keep_names)
   for (improvement = 0; improvement < IMP_COUNT; improvement++) {
     text_read_line(1);
     if (keep_names == 0) {
-      name_id = text_next_token_str_id(0x19);
+      snprintf(key,sizeof key,"rules.improvement.%d",improvement);
+      name_id = rules_read_name(key,0x19);
       improvements[improvement].name = name_id;
     }
     else {
@@ -1143,8 +1145,8 @@ void __cdecl rules_load_units(int keep_names)
   for (unit_type = 0; unit_type < UNIT_TYPE_COUNT; unit_type++) {
     unit_types[unit_type].prerequisite = -2;
   }
-  /* (port) the game's rules (rules.h), or the scenario's RULES.TXT */
-  from_file = rules_from_scenario();
+  /* (port) RULES.TXT, or the game's built-in rules (rules.h) */
+  from_file = rules_source() != RULES_BUILTIN;
   if (from_file != 0) {
     text_open_section(0,(const char *)&str_units);
   }
@@ -1176,7 +1178,8 @@ void __cdecl rules_load_units(int keep_names)
     line_len = _strlen(textbuf.buf);
     if ((line_len == 0) || (textbuf.buf[0] == ';')) break;
     if (keep_names == 0) {
-      name_id = text_next_token_str_id(0xf);
+      snprintf(key,sizeof key,"rules.unit.%d",unit_type);
+      name_id = rules_read_name(key,0xf);
       unit_types[unit_type].name = name_id;
       prefs_main_menu_choice_block.unit_type_name_ptrs[unit_type] = minimap_window_block.strpool_last_string;
     }
@@ -1254,8 +1257,8 @@ void __cdecl rules_load_terrain(void)
   iptr slot;
   char key[32];
   
-  if (rules_from_scenario() == 0) {
-    /* (port) the game's rules (rules.h) */
+  if (rules_source() == RULES_BUILTIN) {
+    /* (port) the game's built-in rules (rules.h) */
     for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
       snprintf(key,sizeof key,"rules.terrain.%d",terrain2);
       terrain_types[terrain2].name = rules_name(key,0xf);
@@ -1279,7 +1282,8 @@ void __cdecl rules_load_terrain(void)
   text_open_section(0,(const char *)&str_terrain);
   for (terrain2 = 0; terrain2 < TERRAIN_RECORDS; terrain2++) {
     text_read_line(1);
-    name_id = text_next_token_str_id(0xf);
+    snprintf(key,sizeof key,"rules.terrain.%d",terrain2);
+    name_id = rules_read_name(key,0xf);
     terrain_types[terrain2].name = name_id;
     value = text_next_int();
     terrain_types[terrain2].move_cost = (u8)value;
@@ -1394,8 +1398,8 @@ static void rules_load_leader_from_table(iptr leader,int load_civ_data)
       }
     }
   }
-  for (i = 0; i < row->title_count; i++) {
-    title_govt = row->title_govts[i];
+  for (i = 0; i < 4 && 0 < row->titles[i].govt; i++) {
+    title_govt = row->titles[i].govt;
     old_male_title = leaders[leader].titles[title_govt][0];
     old_female_title = leaders[leader].titles[title_govt][1];
     snprintf(key,sizeof key,"rules.leader.%d.title.%d.male",leader,title_govt);
@@ -1434,8 +1438,8 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
   int title;
   char key[48];
   
-  /* (port) the game's rules (rules.h), or the scenario's RULES.TXT */
-  from_file = rules_from_scenario();
+  /* (port) RULES.TXT, or the game's built-in rules (rules.h) */
+  from_file = rules_source() != RULES_BUILTIN;
   if (from_file != 0) {
     text_open_section(0,(const char *)&str_governments);
   }
@@ -1450,11 +1454,14 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
       continue;
     }
     text_read_line(1);
-    name_id = text_next_token_str_id(0xf);
+    snprintf(key,sizeof key,"rules.government.%d",leader);
+    name_id = rules_read_name(key,0xf);
     government_names[leader] = name_id;
-    name_id = text_next_token_str_id(0xf);
+    snprintf(key,sizeof key,"rules.government.%d.male",leader);
+    name_id = rules_read_name(key,0xf);
     government_titles[leader].male = name_id;
-    name_id = text_next_token_str_id(0xf);
+    snprintf(key,sizeof key,"rules.government.%d.female",leader);
+    name_id = rules_read_name(key,0xf);
     government_titles[leader].female = name_id;
   }
   if (from_file == 0) {
@@ -1468,9 +1475,11 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
     text_read_line(1);
     old_value = leaders[leader].names[0];
     old_value2 = leaders[leader].names[1];
-    value = text_next_token_str_id(0x18);
+    snprintf(key,sizeof key,"rules.leader.%d.male",leader);
+    value = rules_read_name(key,0x18);
     leaders[leader].names[0] = (i16)value;
-    value = text_next_token_str_id(0x18);
+    snprintf(key,sizeof key,"rules.leader.%d.female",leader);
+    value = rules_read_name(key,0x18);
     leaders[leader].names[1] = (i16)value;
     if (load_civ_data == 0) {
       leaders[leader].names[0] = old_value;
@@ -1511,9 +1520,11 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
     }
     old_value = leaders[leader].plural;
     old_value2 = leaders[leader].adjective;
-    value = text_next_token_str_id(0x18);
+    snprintf(key,sizeof key,"rules.leader.%d.plural",leader);
+    value = rules_read_name(key,0x18);
     leaders[leader].plural = (i16)value;
-    value = text_next_token_str_id(0x18);
+    snprintf(key,sizeof key,"rules.leader.%d.adjective",leader);
+    value = rules_read_name(key,0x18);
     leaders[leader].adjective = (i16)value;
     if (load_civ_data == 0) {
       leaders[leader].plural = old_value;
@@ -1550,9 +1561,11 @@ void __cdecl rules_load_govts_leaders(int load_civ_data)
       if (0 < title_govt) {
         old_male_title = leaders[leader].titles[title_govt][0];
         old_female_title = leaders[leader].titles[title_govt][1];
-        value = text_next_token_pooled();
+        snprintf(key,sizeof key,"rules.leader.%d.title.%d.male",leader,title_govt);
+        value = rules_read_name_pooled(key);
         leaders[leader].titles[title_govt][0] = (short)value;
-        value = text_next_token_pooled();
+        snprintf(key,sizeof key,"rules.leader.%d.title.%d.female",leader,title_govt);
+        value = rules_read_name_pooled(key);
         leaders[leader].titles[title_govt][1] = (short)value;
         if (load_civ_data == 0) {
           leaders[leader].titles[title_govt][0] = old_male_title;
@@ -1570,6 +1583,7 @@ void __cdecl rules_parse_sections(i32 load_civ_data)
 {
   i32 string_id;
   iptr i;
+  int source;
   char key[32];
   
   rules_load_cosmic();
@@ -1578,8 +1592,9 @@ void __cdecl rules_parse_sections(i32 load_civ_data)
   rules_load_units(0);
   rules_load_terrain();
   rules_load_govts_leaders(load_civ_data);
-  if (rules_from_scenario() == 0) {
-    /* (port) the game's rules (rules.h) */
+  source = rules_source();
+  if (source == RULES_BUILTIN) {
+    /* (port) the game's built-in rules (rules.h) */
     for (i = 0; i < 0x10; i++) {
       snprintf(key,sizeof key,"rules.commodity.%d",i);
       commodity_names[i] = rules_name(key,10);
@@ -1604,25 +1619,30 @@ void __cdecl rules_parse_sections(i32 load_civ_data)
   text_open_section(0,(const char *)&str_caravan);
   for (i = 0; i < 0x10; i++) {
     text_read_line(1);
-    string_id = text_next_token_str_id(10);
+    snprintf(key,sizeof key,"rules.commodity.%d",i);
+    string_id = rules_read_name(key,10);
     commodity_names[i] = string_id;
   }
   text_open_section(0,(const char *)&str_orders);
   for (i = 1; i < 0xd; i++) {
     text_read_line(1);
-    string_id = text_next_token_pooled();
+    snprintf(key,sizeof key,"rules.order.%d",i);
+    string_id = rules_read_name_pooled(key);
     order_names[i].name = string_id;
     text_next_token();
-    order_names[i].key = text_parse.token_buf[0];
+    snprintf(key,sizeof key,"rules.order.%d.key",i);
+    order_names[i].key = source == RULES_SCENARIO_FILE ? text_parse.token_buf[0] : *lang_text(key);
   }
   text_open_section(0,(const char *)&str_difficulty);
   for (i = 0; i < 6; i++) {
-    string_id = text_read_line_pooled();
+    snprintf(key,sizeof key,"rules.difficulty.%d",i);
+    string_id = source == RULES_SCENARIO_FILE ? text_read_line_pooled() : (text_read_line(1), rules_name_pooled(key));
     difficulty_names[i] = string_id;
   }
   text_open_section(0,(const char *)&str_attitudes);
   for (i = 0; i < 9; i++) {
-    string_id = text_read_line_pooled();
+    snprintf(key,sizeof key,"rules.attitude.%d",i);
+    string_id = source == RULES_SCENARIO_FILE ? text_read_line_pooled() : (text_read_line(1), rules_name_pooled(key));
     attitude_names[i] = string_id;
   }
   text_close_file();
@@ -6462,6 +6482,10 @@ i32 __cdecl rules_write_sections(void)
   cmp_result = _strcmp(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&game_dirs.home));
   if ((cmp_result == 0) || (exists = file_exists((const char *)rules_name), exists == 0)) {
     __chdir(((i8 *)&game_dirs.home));
+    /* (port) no RULES.TXT: the built-in rules written out first (rules.h) */
+    if (file_exists((const char *)rules_name) == 0) {
+      rules_write_default((const char *)rules_name);
+    }
     in_file = file_open_path((const char *)rules_name,str_rt_4);
     rc = _strcmp(((i8 *)&net_map_lock_slots_block.scenario_dir_path),((i8 *)&game_dirs.home));
     if (rc == 0) {

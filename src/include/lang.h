@@ -93,6 +93,13 @@ int lang_section_line(char *buf);
 /* text_close_file: no section open. */
 void lang_section_closed(void);
 
+/* OpenCiv2's own English of one of the game's text files (GAME.TXT,
+   DESCRIBE.TXT, ...: data/text/<NAME>, in the game's format): name (a path:
+   its file name counts) opened for text_open_file_section where neither the
+   scenario's folder nor the game's has the file, 0 where OpenCiv2 has none.
+   The game's own file always wins (docs/TRANSLATING.md). */
+FILE *lang_builtin_text_file(const char *name);
+
 /* (port) The main menu bar: one row per menu title, item or separator, in
    order.  cmd: the command id (0 a separator, MENU_TITLE the menu's title);
    key: its text's key; room: the bytes its text has room for (the Orders

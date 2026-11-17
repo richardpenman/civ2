@@ -441,6 +441,17 @@ async function play(store) {
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
+    // OpenCiv2's English of the game's text files the player's game lacks
+    // (data/text: the game reads them where it has none of its own)
+    try {
+        const have = new Set(entries.map(([k]) => k.toUpperCase()));
+        const names = await fetch('data/text/index.json').then((r) => (r.ok ? r.json() : []));
+        const missing = names.filter((n) => !have.has(n));
+        const files = await Promise.all(missing.map((n) => fetchGz('data/text/' + n + '.gz')));
+        missing.forEach((n, i) => fs.put(DATA + '/text/' + n, files[i]));
+    } catch (e) {
+        console.warn('OpenCiv2 texts:', e);
+    }
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
     // the translations (the game's Language choice lists them; Auto is the

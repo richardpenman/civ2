@@ -1,0 +1,48 @@
+; OpenCiv2: the map editor's menus (MAPMENU.TXT).
+; Written for OpenCiv2, used where the game has no MAPMENU.TXT of its own.
+
+@EDITOR
+&Editor
+&New Map|Ctrl+N
+&Load Map|Ctrl+L
+&Save Map|Ctrl+S
+&Save Map As|Ctrl+A
+&Quit|Ctrl+Q
+
+@VIEW
+&View
+Zoom &In|z
+Zoom &Out|x
+Max Zoom In|Ctrl+Z
+Normal Zoom|Shift+Z
+Half Zoom Out|Shift+X
+Max Zoom Out|Ctrl+X
+Arrange Windows
+&Center View|c
+
+@MAP
+&Map
+Make Random Map|r
+Make Blank Map|b
+Set World Shape|h
+Analyze Map|n
+&Undo Last Change|u
+
+@BRUSH
+&Brush
+&1x1|F1
+&3x3|F2
+&5x5|F3
+C&ross|F4
+&City Radius|F5
+
+@TOOLS
+&Tools
+&Protect Coastline|p
+&Autoscroll While Painting|a
+Set Resource &Seed|s
+
+
+
+
+

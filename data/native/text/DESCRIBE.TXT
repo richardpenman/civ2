@@ -1,0 +1,1787 @@
+; OpenCiv2: the Civilopedia's articles (a paragraph a line; the indexes map the rules' entries to them) (DESCRIBE.TXT).
+; Written for OpenCiv2, used where the game has no DESCRIBE.TXT of its own.
+
+@ADVANCE_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@ADVANCE_INDEX
+0,			; Advanced Flight
+1,			; Alphabet
+54,			; Amphibious Warfare
+2,			; Astronomy
+3,			; Atomic Theory
+4,			; Automobile
+5,			; Banking
+6,			; Bridge Building
+7,			; Bronze Working
+8,			; Ceremonial Burial
+9,			; Chemistry
+10,			; Chivalry
+11,			; Code of Laws
+55,			; Combined Arms
+12,			; Combustion
+13,			; Communism
+14,			; Computers
+15,			; Conscription
+16,			; Construction
+17,			; The Corporation
+18,			; Currency
+19,			; Democracy
+56,			; Economics
+20,			; Electricity
+21,			; Electronics
+22,			; Engineering
+57,			; Environmentalism
+58,			; Espionage
+23,			; Explosives
+24,			; Feudalism
+25,			; Flight
+59,			; Fundamentalism
+26,			; Fusion Power
+27,			; Genetic Engineering
+60,			; Guerrilla Warfare
+79,			; Gunpowder
+80,			; Horseback Riding
+81,			; Industrialization
+82,			; Invention
+83,			; Iron Working
+28,			; Labor Union
+61,			; The Laser
+62,			; Leadership
+29,			; Literacy
+63,			; Machine Tools
+30,			; Magnetism
+31,			; Map Making
+32,			; Masonry
+33,			; Mass Production
+34,			; Mathematics
+35,			; Medicine
+36,			; Metallurgy
+64,			; Miniaturization
+65,			; Mobile Warfare
+37,			; Monarchy
+66,			; Monotheism
+38,			; Mysticism
+39,			; Navigation
+40,			; Nuclear Fission
+41,			; Nuclear Power
+42,			; Philosophy
+43,			; Physics
+44,			; Plastics
+-1,			; Plumbing
+68,			; Polytheism
+45,			; Pottery
+69,			; Radio
+46,			; Railroad
+47,			; Recycling
+48,			; Refining
+70,			; Refrigeration
+49,			; The Republic
+50,			; Robotics
+51,			; Rocketry
+71,			; Sanitation
+72,			; Seafaring
+52,			; Space Flight
+73,			; Stealth
+53,			; Steam Engine
+84,			; Steel
+85,			; Superconductor
+74,			; Tactics
+75,			; Theology
+86,			; Theory of Gravity
+87,			; Trade
+88,			; University
+76,			; Warrior Code
+77,			; The Wheel
+78,			; Writing
+67,			; Future Technology
+-1,			; User Def Tech A
+-1,			; User Def Tech B
+-1,			; User Def Tech C
+-1,			; Extra Advance 1
+-1,			; Extra Advance 2
+-1,			; Extra Advance 3
+-1,			; Extra Advance 4
+-1,			; Extra Advance 5
+-1,			; Extra Advance 6
+-1,			; Extra Advance 7
+-2,			; MUST BE HERE! TERMINATOR!
+
+@@Advanced Flight
+The Second World War drove aviation forward faster than any period before it. Armies and navies needed bombers that could reach targets hundreds of miles away and transport aircraft able to carry troops and cargo across oceans and continents.
+
+Germany led in several fields. Its V-2 rocket, first fired in combat in 1944, was the first true guided missile, carrying a warhead of about 2,000 pounds some 200 miles. Messerschmitt's Me 262, the earliest jet-powered fighter to see regular service, flew combat missions in the last months of the war. Both came too late to change its outcome, but the jet engines, swept wings and long-range designs of those years laid the groundwork for the aircraft we fly today.
+
+@@Alphabet
+The first writing systems, such as Mesopotamian cuneiform and Egyptian hieroglyphs, used hundreds of signs that stood for objects, ideas or syllables. Between about 1700 and 1500 BC, peoples of the eastern Mediterranean developed something simpler: the North Semitic alphabet, a small set of letters each standing for a single sound.
+
+By 1000 BC it had given rise to several descendants, among them the South Semitic, Canaanite (including Phoenician), Aramaic and Greek alphabets. After 500 BC the Romans adapted a form of the Greek letters for Latin, and the spread of Latin across the Roman Empire carried the Roman alphabet throughout western Europe, where English and most other languages still use it.
+
+With an alphabet, history, laws and ideas no longer had to be memorized and recited aloud; they could be written down and kept.
+
+@@Astronomy
+People watched the sky long before they could explain it. The regular motion of the sun, moon and stars gave early societies a way to keep time and to find their direction.
+
+The ancient Greeks steered their ships by the stars and used the constellations that rose with each season to decide when to sow and when to harvest. In the 3rd century BC, Aristarchus of Samos proposed that the Earth turns on its axis once a day and, like the other planets, travels around the sun. His contemporaries rejected the idea, and it lay largely forgotten until Nicolaus Copernicus revived it some eighteen centuries later. The careful records of these early observers became the foundation on which modern astronomy was built.
+
+@@Atomic Theory
+In the 5th century BC the Greek philosophers Leucippus and Democritus argued that all matter is made of tiny particles that cannot be cut any smaller. They called them atoms, from the Greek for "uncuttable," and believed them to be indestructible.
+
+For two thousand years the idea advanced little. In the 16th and 17th centuries, experimenters began breaking gases, liquids and solids down into their basic elements. Early in the 19th century the English chemist John Dalton proposed that each element consists of atoms of a particular weight, and that atoms join together in fixed proportions to form compounds. His work on how atoms bond into molecules earned him the title of father of modern atomic theory.
+
+@@Automobile
+The first self-propelled road vehicle was a steam-powered gun carriage built in France by Nicolas-Joseph Cugnot around 1770. Steam engines, however, were too heavy and bulky to make small vehicles practical.
+
+The internal combustion engine of the late 19th century changed that. It was compact and powerful, and it let vehicles travel much faster. The first practical motor cars appeared in Germany, France and the United States in the 1880s and 1890s. By the 1920s American makers such as Ford and General Motors were building them by the million.
+
+By 1980 some 300 million cars, along with roughly 85 million trucks and buses, were on the world's roads, and industrial nations had covered themselves in highways. The price has been heavy air pollution and an ever-growing demand for petroleum fuels.
+
+@@Banking
+Banking grew out of the trade of medieval Europe. In Italian cities such as Florence and Venice, merchant families like the Medici gathered surplus money from depositors and lent it at interest to traders and businesses. That capital paid for new ventures, and the investment it made possible drove economic growth.
+
+Banks in the modern sense appeared in Europe in the late 17th century, among them the Bank of England, founded in 1694. Today's banks, both public and private, keep their customers' deposits safe, lend to consumers and companies, and invest in bonds and other securities. The interest they earn brings them profit, while the credit they provide keeps the wider economy moving.
+
+@@Bridge Building
+The first bridges were simply logs laid across streams. Babylon is said to have had a brick arch bridge around 1800 BC, but for many centuries most bridges were built of timber.
+
+The Romans mastered the stone bridge. From the late 3rd century BC they built bridges of several stone arches carrying a level roadway, and many still stand. Medieval builders in the West could not match their skill for centuries.
+
+Metal entered bridge building in the 19th century, first as iron tie-rods strengthening timber trusses, then as iron and steel trusses that replaced wooden ones. Modern bridges come in many forms: concrete and steel arches, steel girders, and suspension bridges spanning great distances. Without them the spread of railways and highways across rivers and valleys would have been impossible.
+
+@@Bronze Working
+Bronze is made by melting tin together with copper. Some of the earliest evidence of bronze working comes from Ban Chiang in Thailand, perhaps as early as 4500 BC, and it appeared in the Middle East some centuries later. At first tin was scarce, so bronze was used mainly for ornaments.
+
+By about 2000 BC tin was being imported regularly, and bronze replaced copper for larger objects. The new metal was tougher than pure copper, cracked less easily and held a keener edge, so tools, weapons and armour made from it were cheaper to maintain and lasted longer. The period in which it dominated is known as the Bronze Age, which ended as iron working spread after about 1200 BC.
+
+@@Ceremonial Burial
+Early humans sought explanations for the forces of nature, for birth and for death. From these questions grew the first religious practices: offerings and rites, vigils, sacred symbols and objects, and prayer.
+
+One of the oldest of these customs was preparing the dead with care for a life believed to follow this one. Bodies were laid out with tools, food, ornaments or flowers, and later in elaborate tombs. Such burials are among the richest sources archaeologists have, revealing much about the beliefs, skills and daily lives of cultures that left no written record.
+
+@@Chemistry
+People practised chemistry long before they understood it. Ancient metalworkers fused copper and tin into bronze, and early cloth makers learned how to fix dyes so that colours would not wash out.
+
+In the Middle Ages, alchemists in the Islamic world and Europe searched for a way to turn base metals into gold. They never found it, but along the way they developed distillation, crystallization and other techniques, and recorded their work in manuscripts. By the late 13th century a substantial body of practical chemical knowledge existed.
+
+In the 17th century, careful experiment began to replace mystical speculation. Robert Boyle's insistence on testing ideas against evidence helped turn alchemy into the modern science of chemistry.
+
+@@Chivalry
+Chivalry was the code of conduct of Europe's knightly warrior aristocracy. It took shape in the 12th century and governed both a knight's behaviour in war and his private life.
+
+Its ideals blended Christian ethics with the values of the warrior: piety, honour, valour, courtesy, chastity and loyalty to one's lord. Japan developed a similar code, Bushido, for its samurai. Chivalry faded in the 15th century as warfare changed, but its notions of courtesy and fair conduct live on in modern ideas of how a gentleman should behave.
+
+@@Code of Laws
+Early tribes were held together by shared needs and beliefs. The chieftain served as counsellor and as the agent of the gods' will, and order was kept by custom, morality and fear of divine punishment rather than by written law.
+
+As societies grew larger and more varied, they needed formal rules. Some of the earliest written codes came from Babylon, where Hammurabi's laws date to about 1750 BC, and from ancient India and Palestine. Rome set down its Twelve Tables around 450 BC, and much later the emperor Justinian gathered Roman law into a great code. Roman law separated public law, which concerned the state, from private law, which settled disputes between citizens. As the first fully developed system of written law, it still shapes the legal systems of much of the world.
+
+@@Combustion
+The internal combustion engine was one of the great achievements of the Industrial Age. Instead of burning fuel outside the engine to raise steam, it burns fuel inside its own cylinders. In 1876 the German engineer Nikolaus Otto built the first practical four-stroke engine, and a decade of refinements made such engines steadily more powerful and efficient.
+
+Steam cars were weak and impractical by comparison. Compact, fuel-efficient petrol engines made the automobile industry possible, and in the 1890s Rudolf Diesel's engine, which ignites its fuel by compression alone, went on to power ships, locomotives and heavy trucks.
+
+@@Communism
+Communism is the theory that a society's resources and means of production should be owned in common. Everyone shares the work, goods are distributed according to need, and there are no social classes. Thinkers have toyed with such ideas since Plato, who imagined rulers who owned no private property.
+
+The modern doctrine was set out by Karl Marx and Friedrich Engels in The Communist Manifesto of 1848. They argued that capitalism rests on the exploitation of working people and would collapse when the workers rose up and created a classless society. That prediction did not come true. The states that later called themselves communist, beginning with the Soviet Union, never reached the ideal they promised, and most had abandoned it by the end of the 20th century.
+
+@@Computers
+A computer performs repetitive arithmetic and logical operations far faster than any person. The first goal of such machines was solving difficult equations. In the 19th century Charles Babbage designed his Analytical Engine, a mechanical computer that was never finished. In the early 20th century, analog and mechanical calculators helped submarines aim torpedoes and bombers aim their bombs.
+
+Electronics made the digital computer possible. ENIAC, completed in the United States in 1946, used some 18,000 vacuum tubes and could perform a few hundred multiplications per second. Since then computers have become steadily smaller, cheaper and faster. Today they are found in nearly every home, office and machine, and progress shows no sign of slowing.
+
+@@Conscription
+Compulsory military service is thousands of years old. Among the Greeks of the classical age, each city could call up every male citizen to serve in its militia, often from his late teens until about sixty, and such citizen levies fought most wars until professional soldiers became common.
+
+The modern draft began in revolutionary France, which called up its young men en masse in the 1790s. During the 19th century almost every European power adopted peacetime conscription, Britain being the notable exception, and the United States likewise relied on volunteers in peacetime. Both World Wars were fought largely by conscript armies.
+
+The US Selective Service Act of 1948 was meant to expire in 1950 but was extended when the Korean War began. The American draft ended in 1973, and the country has had an all-volunteer military since.
+
+@@Construction
+Early masonry served simple purposes such as fortification walls. Heavy stone blocks were hard to move and lift, which limited how complex a building could be. Yet growing cities wanted temples, palaces and public halls that would last, and that need drove builders to find new methods.
+
+The central problem was spanning the gap between two columns or walls. A flat stone beam can bridge only a short distance before it cracks. The arch, and the vault built from arches, solved this by turning the weight of the stones into compression. With them, and with mortar to bind the stones, builders raised larger and more ornate structures. Roman aqueducts, bridges and domes still standing today prove how well these methods worked.
+
+@@Corporation
+As businesses grow, they often need more capital than any single owner can supply, whether to expand or simply to meet running costs. One solution is to incorporate and sell shares of ownership to the public. This lets a company grow quickly while spreading the risk among many investors.
+
+In law a corporation is a person of its own: it can own property, make contracts, and sue or be sued. Its owners are liable only for the money they have invested. Corporate bodies existed in ancient Rome, but the modern joint-stock company dates from the 16th century, when English trading ventures such as the Muscovy Company sold shares to finance voyages.
+
+@@Currency
+As cities grew, people specialized. Some grew grain, others made pottery or bricks, and they exchanged their products by barter. Gold and silver were valued in trade, but every deal meant weighing the metal and checking that it was pure, which was slow and open to fraud.
+
+Around 600 BC the kingdom of Lydia, in what is now western Turkey, began stamping pieces of electrum, a natural alloy of gold and silver, with a mark guaranteeing their weight and purity. These were the first coins. Within about fifty years the major trading centres of the Greek world had adopted the idea. Money gave everyone a common measure of value, and merchants could now trade anywhere without hauling goods along to swap.
+
+@@The Democracy
+Democracy is government in which the citizens hold power, either directly or through representatives they elect. Its birthplace was Greece, above all the city of Athens, and Rome had democratic elements of its own. Athenian citizens met in a public assembly to debate and vote on laws and policy. Such direct democracy worked because the citizen body was small.
+
+From the 17th century onward, the unlimited authority of Europe's kings and queens was steadily whittled away, until by the late 19th century ordinary citizens held real influence in many European states. With far larger populations, these countries chose representatives to govern on the people's behalf. Strictly speaking, such a system is closer to a republic than to pure democracy. Representative democracy is widely regarded today as the system that best protects personal and economic freedom.
+
+@@Electricity
+Lightning, static sparks and magnetism have been observed since prehistoric times, but serious study of electricity began only in the 17th century. Experimenters built machines to generate static charges and devices to store and measure them, and in the 19th century Faraday and others linked electricity to magnetism.
+
+In 1892 the Dutch physicist Hendrik Antoon Lorentz put forward his electron theory, which explained electrical effects in terms of tiny positive and negative charges. It became a basis of modern electrical theory. Meanwhile Thomas Edison and other inventors were turning electricity into a practical source of light and power for homes and industry.
+
+@@Electronics
+Electronics is the science of controlling electricity and electromagnetism to carry signals and do useful work. The modern field began early in the 20th century with the vacuum tube, which could amplify the faint signals picked up by a radio receiver and so greatly extend its range.
+
+Tubes also made it possible to carry voice and music on radio waves, transforming communications. By the Second World War radio had become a mature technology. After the war came the first digital computers, and then the transistor and the integrated circuit, which replaced the bulky, power-hungry tubes and made electronics small and cheap.
+
+@@Engineering
+Engineering is the use of science and mathematics to design and build structures, machines and systems. Until the middle of the 18th century almost all engineers were military men who built roads, bridges and fortifications for armies.
+
+From the late 1700s, civil engineers began to take over non-military work such as canals, harbours and public buildings. Before the 20th century the other main branches were mining and mechanical engineering. Every new technology since has spawned a branch of its own, and today engineers specialize in electronics, computing, chemical processes, nuclear power and much more.
+
+@@Explosives
+An explosive is a substance that burns or decomposes extremely fast, releasing heat and a sudden rush of gas under great pressure. Gunpowder, known in Europe from the 13th century, was for centuries the only explosive available.
+
+The first modern explosive was nitroglycerin, discovered by Ascanio Sobrero in 1846. Alfred Nobel later tamed it as dynamite, and its chemical relatives are among the most widely used explosives today. Explosives differ in their brisance, or shattering power, and in how stable and safe they are to handle. Besides weapons, they propel rockets, break rock in mines and quarries, and bring down old buildings.
+
+@@Feudalism
+Feudalism took shape in western Europe after the Frankish empire of Charlemagne broke apart in the 9th century. It grew out of monarchy and rested on a chain of personal loyalties, each person owing service to the one above.
+
+At the top stood the king, who answered only to God and handed out great estates, known as fiefs, to his leading nobles. Those barons in turn granted land to knights in exchange for military service and protection, and knights might grant parcels to their own followers. At the bottom were the serfs, who owned no land and were bound to work the lord's fields, unfree in all but name.
+
+From the 13th century the system declined as kings came to rely on paid soldiers and standing armies rather than on vassals and knights.
+
+@@Flight
+People have dreamed of flying since ancient times. Scholars studied flying machines as early as the 13th century, and Leonardo da Vinci sketched designs for a helicopter-like screw and a parachute around 1500.
+
+In the 19th century inventors built gliders that could carry a person, but attempts at powered flight using steam or compressed air got little further. The lightweight internal combustion engine was the key. On 17 December 1903, at Kitty Hawk, North Carolina, Orville and Wilbur Wright made four controlled, sustained, powered flights. Progress then came swiftly: within a few decades aircraft were carrying airmail and passengers, and pilots were flying around the world.
+
+@@Fusion Power
+Nuclear fusion occurs when two light atomic nuclei merge into a heavier one, releasing a great deal of energy. It is the process that makes the sun and other stars shine. Fusion requires enormous temperatures and pressures, and the hot fuel must be held together long enough for the reaction to take place.
+
+Scientists achieved fusion in the laboratory in the 1930s by firing accelerated particles at deuterium, a heavy form of hydrogen, but the reaction gave out far less energy than it consumed. The hydrogen bomb releases fusion energy on a vast scale, but in an uncontrollable burst that is useless for power.
+
+Controlled fusion remains a goal of research. If it can be achieved, it promises electricity from fuel drawn from ordinary sea water, with no long-lived radioactive waste and none of the meltdown risks of fission reactors.
+
+@@Genetic Engineering
+Genetic engineering is the deliberate alteration of DNA, the molecule that carries inherited traits. Scientists can cut a segment of DNA from one organism and splice it into another, so that bacteria, for example, produce a human protein.
+
+The benefits are already real. Researchers isolated the gene for interferon, a natural defence protein, and bacteria now produce insulin and other medicines. In future, gene therapy may cure birth defects and hereditary diseases.
+
+The dangers are real too. A super-contagious organism could be created by accident, or deliberately as a biological weapon. For this reason governments and international bodies have set rules on how genetic research may be carried out.
+
+@@Labor Union
+Labour unions emerged in the 18th and 19th centuries as industry transformed working life. Factory hands faced long hours, dangerous conditions and fierce competition for jobs, and they depended completely on their employers.
+
+The first unions were formed by skilled tradesmen. Employers and governments opposed them, often treating them as illegal conspiracies, but one country after another gave trade unions legal standing as the 1800s went on. In the 20th century, unions also organized less skilled workers in mining, transport and the docks. By bargaining collectively, workers won better pay, shorter hours and safer conditions.
+
+@@Literacy
+Writing is valuable only when people can read it. For centuries after its invention, literacy was the preserve of priests and scribes, and most knowledge still passed from person to person by word of mouth.
+
+Gradually, education spread to ordinary citizens, helped greatly by the printing press. Societies in which most people could read and write advanced faster, both in technology and in wealth. The contrast remains stark today: in industrial nations such as the United States nearly everyone can read, while in some of the poorest countries a large majority of adults cannot. In the modern world, illiteracy holds a nation back far more than it did in ancient times.
+
+@@Magnetism
+Greek, Roman and Chinese thinkers all knew of magnetism. They noticed that lodestone, a natural iron ore, pulls on iron and can make a piece of iron it touches magnetic too.
+
+Today we know that magnetism arises from the motion of electrically charged particles such as electrons. Every magnet has two poles, north and south. Like poles push each other apart, while unlike poles pull together. A magnet that is free to turn lines itself up with the Earth's own magnetic field, pointing north and south.
+
+That property gave rise to the magnetic compass. It was in use in China by the 11th century and in Europe by the early 13th. With a compass, sailors no longer had to stay within sight of the coast or wait for clear skies to see the stars.
+
+@@Map Making
+A map is a drawing of an area showing its terrain, towns and landmarks. Some of the oldest known maps are Babylonian clay tablets, made in part to record land for taxation, and early Chinese maps of regions were drawn on silk.
+
+Between about 600 and 200 BC Greek scholars drew maps of the whole known world, and Eratosthenes and others laid an early grid of lines resembling latitude and longitude across it. Traders were the main users of maps, but sailors gained the most: they no longer had to rely on the stories of earlier travellers to find their way.
+
+@@Masonry
+Early tribal peoples built their homes of mud, clay and sun-dried brick. When people settled into towns and cities, they needed buildings that would last, and they turned to stone.
+
+The first stone walls were made of rough rocks piled on top of one another. Builders then learned to cut stones into squared blocks that could be stacked neatly. Much early masonry was dry stone, laid without mortar and held in place by its own weight. It was used mainly for simple structures such as defensive walls around a town.
+
+The skill could also achieve wonders. The Great Pyramids of Giza, raised in Egypt around 2500 BC from millions of cut limestone blocks, have endured for more than four thousand years.
+
+@@Mass Production
+Mass production grew out of the factory system. As machines took over more of the work, output rose and prices fell.
+
+In 1913 Henry Ford introduced the moving assembly line at his Highland Park plant in Michigan. Each car moved from station to station, and at each one a worker repeated the same task over and over. The time needed to build a Model T dropped from more than twelve hours to about ninety minutes. Combining the division of labour with machinery in this way transformed the manufacture of complex goods, and factories across the industrial world quickly adopted the method.
+
+@@Mathematics
+Mathematics began with counting and measuring for trade, taxes and land. By about 1800 BC Egyptian scribes could work with fractions, solve simple algebraic problems, calculate areas and volumes, and use a close approximation of pi. The Babylonians developed a powerful number system of their own.
+
+By the 5th century BC Greek thinkers had made great advances in geometry and algebra, and they began applying mathematics to astronomy and mechanics. It soon proved useful in war as well: engineers used it to design siege engines such as the catapult.
+
+@@Medicine
+For most of human history, illness was blamed on angry gods or evil spirits. Even so, healers learned a great deal by trial and error: they treated ailments with herbs, cleaned and dressed wounds, and set broken bones.
+
+The first Greek medical schools appeared around 500 BC. Hippocrates of Kos, often called the father of medicine, taught that diseases have natural causes and should be understood through observation and reason rather than through the supernatural. Physicians still take an oath bearing his name.
+
+From the 13th century, the dissection of human bodies in European universities began to expose errors in the old Greek teachings. In the 18th century doctors started applying the scientific method to medicine, testing treatments by careful experiment. Over the past two centuries vaccination, anaesthesia, antiseptic surgery and antibiotics have steadily improved both treatment and survival.
+
+@@Metallurgy
+Metallurgy is the science of metals: how to extract them from their ores and how their properties can be changed and improved. For thousands of years craftsmen simply adopted each harder metal as they discovered it.
+
+Serious study began in Europe around the 14th century, driven by competition in arms as states sought better cannon and armour. Metalworkers learned to produce stronger, lighter and cheaper metals and alloys, and to cast large guns reliably. The result was a lead in weapons technology that helped European powers dominate much of the world for centuries.
+
+@@The Monarchy
+Monarchy grew out of the absolute power of tribal chiefs. Early kings, such as the pharaohs of Egypt, claimed to rule by divine right or even to be gods themselves.
+
+In medieval Europe the crown often went to the ablest military leader, but in time it became hereditary, usually passing to the eldest son. Absolute monarchs restricted the freedoms of everyone except the nobility and the wealthy, and the discontent of the lower classes repeatedly erupted into revolt.
+
+England's Glorious Revolution of 1688 placed limits on the crown, and over the following century royal power across much of Europe was steadily curtailed. These changes opened the way to governments in which the people themselves took part.
+
+@@Mysticism
+Ancient peoples lived in awe of the forces of nature. Earthquakes, storms and eclipses seemed to be messages from the heavens, and certain individuals emerged who claimed the power to interpret these signs for the tribe.
+
+Among them were the oracles, priests and priestesses who said they could speak with the gods through meditation and trance. The most famous, the Pythia at Delphi in Greece, was consulted by kings and generals for centuries. Such figures formed the first link between people and the powers they believed ruled nature, and they paved the way for the organized religions, first polytheistic and later monotheistic, that followed.
+
+@@Navigation
+The earliest sailors found their way by piloting: fixing their position from landmarks along the coast. Because they had to keep the shore in sight, their voyages were short and cautious.
+
+In time, sailors learned to read the positions and movements of the stars. Steering by fixed points such as the Pole Star, they could hold a course across open water with no land in view, and they began to venture into unknown seas. Longer voyages demanded better ships, and shipbuilders responded with larger, steadier vessels able to survive the open ocean.
+
+@@Nuclear Fission
+Albert Einstein's theory of relativity showed that matter and energy are equivalent, and that even a tiny amount of matter holds an immense amount of energy. Converted completely, two pounds of matter would release energy equal to about 20 million tons of high explosive.
+
+In 1938 the German chemists Otto Hahn and Fritz Strassmann bombarded uranium with neutrons and found lighter elements among the products. Early in 1939 Lise Meitner and Otto Frisch explained what had happened: the heavy, unstable uranium nucleus had split in two, releasing energy and radiation that lingers long afterwards. They called the process fission.
+
+The United States launched a secret effort, the Manhattan Project, to build a weapon from it. In August 1945 atomic bombs destroyed Hiroshima and Nagasaki; each blast exceeded the power of 20,000 tons of TNT. They remain the only nuclear weapons ever used in war, and today's weapons are vastly more powerful.
+
+@@Nuclear Power
+Once scientists learned to sustain a chain reaction, fission could be controlled and used as a source of energy. By 1944 large reactors in the United States were producing plutonium for atomic bombs, but the heat they generated was simply wasted.
+
+After the war, nations turned to nuclear power for electricity. In a nuclear power station, the heat of the reactor boils water, and the steam drives turbines connected to generators. A small amount of fuel produces a great deal of power without the smoke of coal or oil.
+
+Nuclear power has serious drawbacks. Spent fuel remains dangerously radioactive for thousands of years, and no fully satisfactory means of disposing of it has been found. If cooling fails, the reactor core can melt down. In 1986 a reactor at Chernobyl in the Soviet Union exploded, killing at least 30 people outright, forcing more than 100,000 to leave their homes and exposing many thousands to heavy radiation. Public concern has since slowed the building of new plants while safer designs and solutions to the waste problem are sought.
+
+@@Philosophy
+The word philosophy is Greek, built from words meaning "love" and "wisdom." Among the Greeks, a literate upper class with time to spare turned its curiosity on the world around it and on the nature of thought, existence, logic, mathematics and reality itself.
+
+In antiquity, philosophy and science were one field. The inquiries of thinkers such as Thales, Pythagoras and Aristotle planted the seeds of physics, chemistry, medicine and the study of the stars. Greek philosophers, together with Eastern sages such as Confucius and the Buddha, also helped shape the early organized religions.
+
+@@Physics
+Physics is the science of matter and energy and how they interact. Ancient observers tracked the motion of the planets with great care but could not explain it. In the 3rd century BC Archimedes worked out the principles of the lever and described the water-raising screw that bears his name.
+
+In the 17th century, systematic experiments and new instruments such as the telescope revealed the basic laws of nature. Galileo, Johannes Kepler and Isaac Newton overturned many ancient Greek ideas, replacing them with laws supported by mathematical proof and observation.
+
+Physics is seldom applied directly to everyday life, but it is the foundation on which nearly all practical technology rests, from engines and electric power to radio and computers.
+
+@@Plastics
+Plastics grew in large part out of research in the oil and chemical industries. They are organic polymers, long chains of molecules that can be moulded into almost any shape and remain strong once set.
+
+Research intensified in the 1920s, and the late 1930s brought Plexiglas and nylon. The boom continued through the Second World War, when plastics replaced scarce materials, and in the decades after. Cheap and durable, plastics took the place of glass, rubber, silk and many other materials in countless products.
+
+Their durability is also their drawback. Most plastics do not break down naturally, and discarded plastic is difficult to dispose of. Recycling programmes have helped ease the problem.
+
+@@Pottery
+Pottery was vital to the first farming societies. Farmers needed strong, watertight containers to store their surplus grain, oil and water. Potters learned to shape clay, to fire it hard in a kiln, and later to throw vessels quickly on the potter's wheel.
+
+In the Near East, the earliest pottery dates to around 6500 BC and was purely practical. In cultures around the world, however, it soon became an art used for ritual and decoration. Among the finest examples are the painted vessels of pre-Columbian South America and the blue-and-white porcelain of Ming dynasty China, first made in the 14th century.
+
+@@Railroad
+Railways began in 16th-century England as wagonways: tracks of wooden planks along which horses pulled carts of coal from the mines. Builders added cross-ties, or sleepers, to hold the rails in place and covered the wood with iron strips. By the early 1800s, iron rails much like today's were in use.
+
+In 1829 George Stephenson's locomotive Rocket showed that steam could replace the horse, and early lines in Britain, and soon along America's eastern seaboard, carried ore and freight. Unlike canals, railways could be built across almost any terrain and ran in nearly any weather. Passenger services quickly proved that travel by rail could be cheap, safe and fast.
+
+Railways brought an enormous increase in the movement of goods, people, news and soldiers over long distances.
+
+@@Recycling
+Every increase in population brings more rubbish, and landfills alone cannot cope with it. Recycling turns things people have thrown away into raw material for new products.
+
+Scrap metal has been collected and melted down for centuries, but recycling on a large scale requires every household to take part, sorting paper, glass, metal and plastic from the rest of its waste. Pollution from industry and consumers, along with the depletion of natural resources, has made this effort essential. Recycling reduces the amount of waste that must be buried or burned, saves energy, and conserves forests, oil and other raw materials.
+
+@@Refining
+In the 19th century, demand for oil soared, above all for kerosene to fill the lamps of a growing population. Chemists studied how crude oil from the ground could be put to use.
+
+They found that heating crude oil and collecting the vapours at different temperatures separates it into kerosene, gasoline, heavier oils and other products. Commercial refineries soon followed, and after Edwin Drake struck oil in Pennsylvania in 1859, refining became a major industry. Today refined petroleum provides gasoline for cars, heating oil for homes, and fuel for oil-fired power stations.
+
+@@The Republic
+In a republic, citizens elect their head of state and the representatives who govern on their behalf. The form takes its name from the Roman res publica, "the public thing." After expelling its kings around 509 BC, Rome was governed by elected magistrates and a Senate. No office in a republic is inherited or claimed by divine right.
+
+A republic offers its citizens personal, economic and political freedoms much like those of a democracy. The difference is that in a pure democracy every voter takes part directly in decisions, while in a republic elected representatives make those decisions. Representatives may put their own interests ahead of the people's will, and corruption is a common problem. Nonetheless, most of the world's democracies today are republics in this sense.
+
+@@Robotics
+Machine-assisted manufacturing gave rise to the factory system and the Industrial Revolution. When digital computers appeared at the end of the 1940s, automation could be carried much further.
+
+A robot is a computer-controlled machine that performs repetitive or dangerous work. General Motors installed the first industrial robot, the Unimate, on an assembly line in 1961, and through the 1960s laboratories built experimental robots that could grasp and move objects; robots spread through car factories during the 1970s. Modern robots are versatile and can work in almost any environment. They weld and paint in factories, assist scientists in laboratories, and explore the surfaces of other planets.
+
+@@Rocketry
+A rocket is driven forward by hot gas rushing out of a combustion chamber. By the 13th century the Chinese were using rockets powered by a solid fuel similar to gunpowder. For centuries afterwards rockets served mainly as incendiaries, launched to set fire to houses, fortifications and the canvas of enemy vessels.
+
+In the early 1800s the British officer William Congreve developed explosive war rockets. In the 20th century the American physicist Robert Goddard studied how to make rockets faster and how to control them, and in 1926 he launched the first liquid-fuelled rocket. Germany's V-2 of the Second World War was the first true guided missile. After the war, long-range missiles became steadily more accurate. Rockets also have peaceful uses: they launch satellites and carry explorers into space.
+
+@@Space Flight
+Sputnik 1, the first artificial satellite, went into orbit on 4 October 1957, sent up by the Soviet Union. It circled the Earth for several weeks, sending back data on the upper atmosphere. The United States answered in January 1958 with Explorer 1, which discovered the radiation belts that circle the planet.
+
+Thus began the space race between the two superpowers. Within twelve years, short sub-orbital flights had given way to the Apollo landings on the Moon, the first in July 1969. Space flight brought practical benefits as well: weather and reconnaissance satellites, and communications satellites linking the whole globe.
+
+Budget cuts later slowed exploration. The United States developed the reusable space shuttle and planned a permanent orbiting station, Freedom, which in time became the International Space Station built with Russia, Europe, Japan and Canada.
+
+@@Steam Engine
+A steam engine burns coal or wood to boil water. The steam, under pressure, pushes a piston, and the piston's motion turns a wheel, which can drive machinery, a vehicle or an electric generator.
+
+The principles were understood by the late 17th century, and Thomas Newcomen built a working steam pump for mines in 1712. James Watt, a Scot, took out a patent in 1769 for a separate condenser that made the engine far more efficient, and his designs became the basis of the modern steam engine.
+
+Steam powered the first railway locomotives and the first motor vehicles, and it dominated transport until the internal combustion engine took over. Steam turbines remain in wide use today, generating most of the world's electricity in coal and nuclear power stations.
+
+@@Amphibious Warfare
+Amphibious warfare is a combined assault from sea and land to seize a beach or coastline. One early example came in 490 BC, when a Persian fleet landed an army at Marathon to invade Greece. Such operations are among the most difficult in war to coordinate: warships must bombard the defences while transports put troops and supplies ashore.
+
+At Gallipoli in 1915, during the First World War, Allied forces attempted the first great modern landing. Poorly planned and coordinated, it ended in costly failure, but it taught valuable lessons. Better communications and the greater range of naval guns made amphibious assaults decisive in the Second World War, from the Pacific islands to Normandy. Today armoured landing craft, hovercraft, aircraft and helicopters all support troops landing from the sea.
+
+@@Combined Arms
+Combined arms warfare merges air power with amphibious and mobile forces so that each supports the others. The Second World War saw the first large joint air, sea and land operations. On 6 June 1944, the Allied landings in Normandy relied on control of the air, heavy naval bombardment and the landing of more than 150,000 troops in a single day.
+
+Modern forces carry the idea much further. Ships and stealth aircraft launch cruise missiles and guided bombs; helicopters carry troops behind enemy lines and bring them out again; and fast armour such as the M1 Abrams tank can cross open country at speeds of about 45 miles per hour. Networked communications, sensors and targeting systems tie all these forces together with a precision that earlier generals could only dream of.
+
+@@Economics
+Supply and demand, trade, production and consumption are as old as civilization, but only as societies grew complex did people begin to study them formally.
+
+In 1776 the Scottish thinker Adam Smith published The Wealth of Nations, the first systematic, scientific treatment of the subject. He examined where income comes from, how wealth is distributed, and how the division of labour and free markets make nations prosperous. Economics has grown into a broad discipline that guides the economic policies of governments today.
+
+@@Environmentalism
+For most of history, people treated nature's resources as limitless. As populations expanded, they cleared forests, dug mines and drilled wells, and produced ever more waste.
+
+By the late 1960s, concern over polluted air and water and the loss of wildlife habitats had grown into a political movement. Rachel Carson's book Silent Spring, published in 1962, helped awaken it, and the first Earth Day was held in 1970. That same year the United States created the Environmental Protection Agency. The EPA regulates hazardous waste, sets standards for clean air and water, and promotes safer disposal of solid waste. The goal of environmentalism is to hand on a healthy, intact world to future generations.
+
+@@Espionage
+Around 500 BC the Chinese strategist Sun Tzu devoted a chapter of The Art of War to the use of spies, arguing that secret knowledge of the enemy is the key to victory. Every nation has punished spies harshly, yet every nation has prized the information they bring.
+
+In wartime, spies track the positions and weapons of enemy forces, and saboteurs work to slow or distract the enemy. In peacetime, agencies such as the American CIA watch over events abroad. Espionage is not limited to governments: rival companies also spy on one another to steal trade secrets.
+
+@@Fundamentalism
+A fundamentalist government bases its laws on an extreme and literal reading of religious doctrine. Its followers believe their scriptures are infallible and must be obeyed word for word, a position that can put them at odds even with devout believers of more traditional views.
+
+The term itself comes from a Christian movement in the United States in the early 20th century, which defended a literal reading of the Bible. In some states, notably in parts of the Middle East, fundamentalists have taken control of the whole government. Such regimes can raise fanatically loyal forces, making them a serious danger to nations that oppose them.
+
+@@Guerrilla Warfare
+Under oppressive or militarist regimes, bands of armed citizens often take up the fight themselves. Too few, too poor and too lightly armed to launch an open revolution, they wage a hidden campaign to wear down the authority of the state. The word guerrilla is Spanish for "little war," from the Spanish resistance to Napoleon.
+
+Guerrillas strike by surprise, raiding and ambushing, then vanish before the enemy can respond. A single raid rarely decides anything, but a long campaign by fighters who cannot be caught can bleed a powerful army dry. During the Second World War, partisans in Nazi-occupied Europe, from Yugoslavia to France, tied down large numbers of German troops.
+
+@@The Laser
+The word laser is an acronym of Light Amplification by Stimulated Emission of Radiation, which describes how it works. A laser excites the electrons in a material so that, when struck by photons, they release more photons of exactly the same kind. The result is an intense, coherent beam of light of a single colour.
+
+Albert Einstein described stimulated emission in theory in 1917. Theodore Maiman built the first working laser, using a ruby crystal, in 1960, and the first gas laser, using helium and neon, followed within months. Lasers now cut metal with precision, perform delicate surgery, and read the data stored on compact discs. Armed forces use them to guide weapons to their targets, and they have been proposed as a defence against missiles.
+
+@@Leadership
+In medieval Europe, armies were usually raised for a single war and disbanded when it ended. Even a gifted commander had little chance to build a lasting reputation, and his fame soon faded.
+
+Standing armies changed that. Generals who served for years could refine their methods and win renown through inventive tactics, as Gustavus Adolphus of Sweden, Frederick the Great of Prussia and Napoleon did. The methods of great commanders have been studied and adapted by each later generation of officers, and are still taught in military academies today.
+
+@@Machine Tools
+Shaping solid metal precisely is a key step in nearly every industry. Machine tools use mechanical, chemical and other methods to cut, bore and grind metal into accurate parts for other machines.
+
+One of the first was John Wilkinson's horizontal boring machine of 1775, which bored cylinders accurate enough for James Watt's steam engines. As machine tools and measuring gauges grew precise to fractions of a thousandth of an inch, parts could be made interchangeable, opening the way to mass production. In the 20th century, computer control let a single machine be reprogrammed quickly for new work, so highly complex goods could be mass-produced cheaply.
+
+@@Miniaturization
+The first radios and other electronic equipment depended on vacuum tubes, which were bulky, fragile and hungry for power. In 1947 researchers at Bell Laboratories invented the transistor, which could amplify signals just as a tube did while being far smaller and using a fraction of the power.
+
+In the late 1950s engineers learned to build several transistors and other components onto a single chip, creating the integrated circuit. Through the 1960s the number of components on a chip grew rapidly. In 1971 Intel introduced the microprocessor, putting the work of whole circuit boards onto one low-power chip smaller than a fingernail. Today a handheld device easily outperforms the room-sized mainframe computers of the 1970s and 1980s.
+
+@@Mobile Warfare
+Mobility has always been a weapon. In the 15th century, cannon mounted on wheeled carriages and drawn by horses could at last be moved with an army in the field.
+
+Tanks first went into action during the First World War. At Cambrai in November 1917, the British attacked with some 400 tanks, broke through the German lines and took about 8,000 prisoners and 100 guns. The battle showed that armour could restore movement to a battlefield frozen by trenches, and military doctrine began to change.
+
+In the Second World War, both sides sent massed armour across Europe and North Africa, and German armoured assaults overwhelmed nations unprepared for them. In the Persian Gulf War of 1991, the American M1 Abrams tank led the ground campaign that drove Iraqi forces out of Kuwait in a hundred hours.
+
+@@Monotheism
+Monotheism is the belief in a single God. Judaism is probably the oldest monotheistic faith still practised. The early Israelites worshipped their own God while acknowledging that other peoples had gods of their own.
+
+After the Babylonians destroyed Jerusalem in 586 BC and carried many of its people into exile, the God of Israel came to be seen as the one universal ruler of all peoples. The Jewish scriptures were later absorbed into Christianity and Islam, which are today the world's largest monotheistic faiths. For their believers, faith in one God shapes not only worship but the whole way of life.
+
+@@Future Technology
+Throughout history, human wants and needs have driven invention. Hunger led to farming, cold to the use of fire, and distance to the wheel, the ship and the aircraft.
+
+Today scientists and engineers announce new breakthroughs almost daily, and each one opens the way to others. There is every reason to expect that human knowledge will keep growing, bringing technologies that we can now barely imagine.
+
+@@Polytheism
+Polytheism is the belief in many gods who together govern the world. The religions of ancient Egypt, Greece and Rome and of the Norse peoples were polytheistic. Each force of nature typically had its own god: one for the sun, another for the moon, others for thunder, the sea or the forest.
+
+Many gods offered a way to explain the events of the natural world, from storms to harvests. Few of these ancient religions survive today; most vanished or gave way to monotheistic faiths, although Hinduism and others still honour many deities.
+
+@@Radio
+Before radio, messages travelled by post or along telegraph wires. In 1895 and 1896 the Italian inventor Guglielmo Marconi built a wireless telegraph and sent signals over a distance of about a mile. Early in 1901 he sent messages more than 200 miles, and in December of that year he received the letter S, tapped out in Morse code, across the Atlantic.
+
+Within a few years many ships carried wireless sets. The triode vacuum tube, developed in the decade that followed, made it practical to broadcast voice and music, and regular broadcasting began around 1920. Radio later gave rise to radar, short for radio detection and ranging, and to radio astronomy.
+
+@@Refrigeration
+Until the early 20th century, ice cut from frozen lakes or made in factories was the main way to keep food cool. After the First World War electric refrigerators began to appear, and they became common in homes over the following decades.
+
+Steady cold allowed meat, milk, fruit and other foods to be kept fresh or frozen for long periods. Farmers could produce more and store their surpluses, and food could be shipped long distances. Refrigeration helped make the modern supermarket possible, and the same technology cools buildings through air conditioning.
+
+@@Sanitation
+As populations grow and crowd into cities, their waste becomes a serious threat to health. Cholera and typhoid spread swiftly where sewage reached drinking water, as 19th-century London learned to its cost.
+
+Sanitation is the hygienic disposal of rubbish and sewage. Indoor plumbing carries wastewater away from homes and public buildings; treatment plants clean sewage before it is released into rivers; and refuse is collected and taken to landfills away from where people live. Healthier surroundings cut disease and death, allowing populations to grow still further.
+
+@@Seafaring
+As empires and trade grew, travel by sea became vital. Each generation of sailors passed on its knowledge of winds, currents and ships to the next, and voyages grew ever longer. Many of the great explorers began as traders seeking new markets.
+
+The Vikings of Scandinavia were among the earliest and boldest ocean voyagers. They settled Iceland and Greenland, and around AD 1000 Leif Ericson reached North America, nearly five centuries before Columbus. Their seafaring tradition lived on in the maritime nations of northern Europe.
+
+@@Stealth
+Surprise is one of the greatest advantages in war. Since the Second World War, however, radar has been able to detect aircraft long before they reach their targets, and designers have tried many ways to defeat it.
+
+Stealth technology combines several methods. Aircraft are coated with materials that absorb radar waves, and their surfaces are shaped with flat facets and angles that deflect radar energy away from the receiver instead of reflecting it back. Engines are buried within the airframe to reduce their heat signature, which infrared sensors could otherwise detect. A stealth aircraft can strike and return largely unseen.
+
+The American F-117A Nighthawk, often called the Stealth Fighter, proved the idea in the Persian Gulf War of 1991, attacking heavily defended targets in Baghdad without a single loss.
+
+@@Tactics
+Tactics is the art and science of deploying forces in battle to achieve immediate objectives. A good commander chooses the formations and manoeuvres that will exploit the enemy's weaknesses while protecting his own.
+
+Successful commanders' methods are studied and adapted by those who come after them. Proven tactics can often be repeated, but not always: an enemy who has studied the same lessons may be ready for them. In modern warfare the sheer variety of weapons, vehicles and aircraft makes coordinating them both crucial and difficult.
+
+@@Theology
+Theology is the scholarly study of God and of religious truth. Rather than simply accepting belief, theologians analyse scripture and doctrine with reason and careful argument, as Thomas Aquinas did in the 13th century.
+
+Seminaries were founded to train priests and clergy, and many of the earliest colleges in the West, including Harvard, began chiefly for this purpose. By replacing superstition with reasoned study, theology helped make religious thought more enlightened.
+
+@@Warrior Code
+Bushido, "the way of the warrior," was the code of the samurai of feudal Japan. It demanded loyalty to one's lord, bravery, self-discipline and courtesy, and a samurai's honour depended entirely on keeping it.
+
+In Europe, the code of chivalry played a similar role for the knights of the feudal age. Both codes faded with the societies that produced them; Japan abolished the samurai class in the 1870s. Yet traces of their discipline and sense of honour survive in the traditions of modern armed forces.
+
+@@Wheel
+The wheel was a turning point for civilization. The first wheels, solid discs of wood, appeared in Mesopotamia around 3500 BC. Their first use was probably the potter's wheel, which let potters shape vessels quickly and evenly.
+
+Soon wheels were fitted to carts, which replaced the sledges dragged along the ground. Around 2000 BC came the spoked wheel, lighter and more practical, which made the fast war chariot possible. Wheeled vehicles let people travel faster and work more efficiently, and the wheel, in the form of gears, pulleys and turbines, remains the basis of nearly all machinery.
+
+@@Writing
+Writing is among the most important advances in human history. The first written marks, made in Mesopotamia more than five thousand years ago, kept accounts and listed goods and livestock. Pictographs then began to record stories and events.
+
+In time, full scripts emerged that could express anything that could be spoken. Scribes replaced the oral historians who had memorized a people's past. Writing allowed knowledge to be passed reliably from person to person and culture to culture, and to be stored permanently for generations to come.
+
+@@Gunpowder
+Gunpowder is a mixture of saltpetre, sulphur and charcoal. It burns very rapidly and explodes when confined. The Chinese had discovered it by the 9th century and used it in fireworks and, later, in weapons.
+
+Knowledge of gunpowder reached Europe in the 13th century, and cannon were in use there by the 1320s. Handheld firearms such as the arquebus and the musket followed. By the late 1500s firearms had replaced the bow in most European armies. Gunpowder marked one of the great turning points in the history of war, bringing an end to the age of castles and armoured knights.
+
+@@Horseback Riding
+The horse was first tamed by peoples of the Eurasian steppes, who used it for travel and for war. Mounted warriors from these grasslands overran early cultures in southeastern Europe and the Middle East.
+
+Horses reached Babylonia around 2000 BC and spread through Europe and North Africa over the following centuries. They became essential nearly everywhere for farm work and transport. In war they carried cavalry, pulled chariots and later hauled supply wagons and heavy guns, and they remained central to armies until the 20th century.
+
+@@Industrialization
+Industrialization replaced hand labour with machines that multiplied what each worker could produce. Beginning in 18th-century Britain, factories combined the division of labour with powered machinery, cutting the cost of labour and the price of goods.
+
+Living standards changed, for better and for worse. Some industrial families amassed vast fortunes, and a new class of blue-collar workers arose in the growing cities. In newly industrial nations, these workers often endured low pay, long hours and terrible conditions.
+
+@@Invention
+An invention is a new device or process that achieves what once seemed impossible, often by putting a scientific discovery to work. Stone tools, and later metal ones, for hunting and digging were among humanity's very first inventions.
+
+Once writing allowed ideas to pass between cultures, inventions grew steadily more sophisticated. Their aim has always been to make life better or easier. Each invention also opens the way to new discoveries: the telescope revealed the moons of Jupiter, and the microscope the world of germs, and those discoveries in turn inspired further inventions.
+
+@@Iron Working
+People made ornaments from iron, much of it from meteorites, as early as 4000 BC, but practical use of the metal came much later. For centuries bronze remained the chief metal for tools and weapons.
+
+Iron is far more plentiful than copper or tin, but it is rarely found pure and must be smelted from its ore. Early smiths heated the ore in charcoal furnaces to produce a spongy mass of iron, which they hammered to drive out impurities; furnaces hot enough to melt iron fully came much later. The Hittites of Anatolia were among the first to master the craft, and the Iron Age began around 1200 to 1000 BC, reaching different regions at different times.
+
+Well-worked iron proved tougher and cheaper than bronze, and it could take and hold a sharp edge. Its importance has never faded: iron is the main ingredient of steel.
+
+@@Steel
+Until around the 14th century, ironworkers heated ore with charcoal and hammered the result to remove the slag, producing wrought iron. Sometimes extra carbon was absorbed by accident, and the result was steel, which is harder and tougher than wrought iron.
+
+Making steel deliberately and in quantity took centuries to master. In 1855 Henry Bessemer patented a process that blew air through molten iron to burn out excess carbon, allowing steel to be produced cheaply on a large scale. Steel has since been used to build bridges, skyscrapers, warships, aircraft and vehicles of every kind.
+
+@@Superconductor
+Every ordinary conductor resists the flow of electric current, losing part of the energy as heat. How much depends on the material and its temperature. In 1911 the Dutch physicist Heike Kamerlingh Onnes discovered that mercury cooled to near absolute zero loses all electrical resistance. Such materials are called superconductors.
+
+Superconductors could make possible extremely fast computers, power lines and generators that waste no energy at all, and magnets powerful enough to hold a fusion reaction in place. So far the extreme cold they require has limited their use. In 1986 researchers found ceramic materials that superconduct at much higher temperatures, raising hopes of materials that work at room temperature. If such materials can be mass-produced, they could revolutionize electronics and power.
+
+@@Theory of Gravity
+In 1687 Isaac Newton published his law of universal gravitation. According to it, any two bodies pull on each other, with a force that weakens with the square of the distance between them. The same law explained both why objects fall to Earth and why the planets orbit the sun.
+
+Einstein's general theory of relativity, published in 1915, reinterpreted gravity as the curvature of space and time by mass and energy. In his theory gravity acts on energy too, even bending light. Some physicists believe the force is carried by particles called gravitons, though none has yet been detected.
+
+@@Trade
+People have swapped goods with one another for as long as there have been people, and trade is found in every culture. Early peoples bartered their local surpluses for goods that were scarce at home, and standard forms of money later made trade much easier.
+
+Merchants linked distant lands in mutual economic dependence, carrying silk, spices and metals along routes such as the Silk Road. They also brought home stories, ideas and technologies. Marco Polo, who travelled to China in the late 13th century, became Europe's foremost authority on foreign lands through the account of his journeys.
+
+@@The University
+Centres of higher learning existed in the ancient world, such as the Academy that Plato founded in Athens around 387 BC. The modern university, however, took shape in Europe in the 12th century.
+
+Medieval universities were founded under royal and church patronage to train professionals. Many were famous for a single field: Bologna for law, Paris for theology, Salerno for medicine. Over time they broadened their teaching, and the modern university is divided into faculties or colleges, each with its own curriculum. From the start, universities have also been centres of research and the advancement of knowledge.
+
+@IMPROVEMENT_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@IMPROVEMENT_INDEX
+-1,			; Nothing
+15,			; Palace
+2,			; Barracks
+8,			; Granary
+22,			; Temple
+12,			; MarketPlace
+10,			; Library
+6,			; Courthouse
+4,			; City Walls
+0,			; Aqueduct
+1,			; Bank
+3,			; Cathedral
+23,			; University
+13,			; Mass Transit
+5,			; Colosseum
+7,			; Factory
+11,			; Manufacturing Plant
+18,			; SDI Defense
+17,			; Recycling Center
+16,			; Power Plant
+9,			; Hydro Plant
+14,			; Nuclear Plant
+34,			; Stock Exchange
+32,			; Sewer System
+35,			; Supermarket
+36,			; Superhighways
+30,			; Research Lab
+31,			; SAM Missile Battery
+26,			; Coastal Fortress
+33,			; Solar Plant
+37,			; Harbor
+27,			; Offshore Platform
+24,			; Airport
+28,			; Police Station
+29,			; Port Facility
+21,			; SS Structural
+19,			; SS Component
+20,			; SS Module
+25,			; (Capitalization)
+-2,			; MUST BE HERE! TERMINATOR!
+
+@@Aqueduct
+Early towns could grow only as large as their wells, springs and nearby rivers allowed. Engineers in Assyria, Greece and above all Rome solved the problem with aqueducts: channels of stone and concrete, often carried on tall arches, that brought water by gravity from hills and mountains many miles away.
+
+A steady supply of fresh running water let cities support far larger populations, and it caused fewer illnesses than stagnant ponds and shallow wells. Aqueducts also made settlement possible in deserts and other dry places. Modern Los Angeles still depends on them, drawing water from the Colorado River through aqueducts more than 200 miles long.
+
+@@Bank
+Banking is one of the foundations of an advanced society. By taking in the savings of many citizens and paying them interest, a bank gathers money that would otherwise sit idle in purses and strongboxes.
+
+That money is then lent to people and companies who need it to buy property, build workshops or start new industries. Investment in production creates jobs and spurs growth across a whole region, and the profits on the loans pay the depositors' interest. From the merchant banks of Renaissance Florence to today's global institutions, banks have kept capital moving to where it can do the most good.
+
+@@Barracks
+War has been a constant of human history, and even the most peaceful nation must be ready to defend itself. When two armies are evenly matched in numbers and weapons, the outcome is usually decided by training.
+
+Barracks house soldiers and give them a place to drill, practice with their weapons and learn discipline. Over the centuries this idea grew into military schools and academies around the world, such as Sandhurst, Saint-Cyr and West Point. Their graduates enter service with superior leadership, combat and technical skills, and they pass those skills on to the troops they command.
+
+@@Cathedral
+When Rome's western empire collapsed, the Christian Church remained one of the few institutions that held Europe together through the Dark Ages. As towns revived in the Middle Ages, the Church led the way, and major towns raised great cathedrals for worship and religious learning.
+
+Buildings such as Chartres, Notre-Dame de Paris and Cologne took generations to complete. A cathedral was more than a church: it was the hub of the town's social and cultural life, home to schools, music and festivals. It gave citizens a sense of civic pride, stability and shared tradition.
+
+@@City Walls
+Long before nations could field strong standing armies, each city had to defend itself. Walls of earth, timber and later stone kept out raiders and bandits and gave citizens a refuge when an enemy came.
+
+Walls took years to build and needed constant upkeep, but the investment paid off. From Jericho and Babylon to the medieval towns of Europe and China, a well-built and well-manned walled city was a fortress able to resist nearly any assault, often forcing an attacker into a long and costly siege.
+
+@@Colosseum
+The rulers of ancient Rome kept their people content with bread and circuses. Huge arenas such as the Flavian Amphitheatre, opened in 80 AD and later called the Colosseum, held tens of thousands of spectators who watched chariot races, wild animal hunts and gladiator fights.
+
+Such public spectacles gave ordinary people an escape from hard daily lives. The bloody games are long gone, but the idea returned in the 20th century with modern stadiums and civic arenas. Today concerts and professional sports draw huge crowds and serve the same purpose as mass entertainment.
+
+@@Courthouse
+As empires grew, governing distant provinces became ever harder. A ruler far away in the capital could not hear every dispute or watch over every tax collector.
+
+The answer was to send authority outward. Local magistrates and courts collected taxes and duties, heard the complaints of citizens, and made and enforced laws in the ruler's name. The Romans, the Chinese and many later states relied on such officials. A courthouse with fair and reliable judges meant less crime, fewer abuses by officials and a more settled and productive populace.
+
+@@Factory
+Cooperative production is an old idea. Workshops in ancient Greece and Rome brought many craftsmen together under one roof to make pottery, weapons and cloth.
+
+The key improvement was the division of labor, in which each worker performs a single step of the process. Manufacturing becomes faster and more efficient because every worker grows skilled at one task. In the Industrial Revolution, which began in Britain in the late 1700s, this idea combined with water and steam power to create the factory system, and mass-produced goods transformed the world.
+
+@@Granary
+Early humans were nomads who followed game and wild plants and moved on when the food ran out. Agriculture changed everything: once people could grow crops, they could settle down, and permanent towns and then cities appeared.
+
+Harvests come once or twice a year, but people must eat every day. A granary stores and protects surplus grain from rot, pests and thieves so that it lasts through the year and through bad seasons. With reliable stores, fewer farmers can feed everyone, freeing other citizens for crafts, trade, learning and government.
+
+@@Hydro Plant
+Hydroelectric power offers an alternative to burning coal and oil. Water held behind a dam flows down through large turbines and spins them, and the turbines drive generators that produce electricity. The first hydroelectric plants appeared in the 1880s, and great dams such as Hoover Dam followed.
+
+Compared with fossil fuel and nuclear plants, hydroelectric power is clean and safe: it burns nothing and leaves no waste. It is not without harm, however. Dams change the flow of rivers, flood large areas of land behind them and destroy the habitats of fish and other wildlife.
+
+@@Library
+For thousands of years, knowledge was passed on by memorization and oral tradition. The invention of writing changed that: laws, stories and discoveries could be recorded and kept long after their authors died.
+
+Collections of written works soon followed, first on clay tablets and later on papyrus and parchment. The great libraries of Alexandria and Pergamum in the Hellenistic world became centers of scholarship, drawing scholars from every land. Their librarians gathered books from far and wide, copied them and helped spread knowledge across the ancient world.
+
+@@Manufacturing Plant
+The manufacturing plant is the factory grown to its largest scale. These huge industrial complexes make durable goods such as cars, appliances and machinery, using assembly lines and specialized equipment.
+
+Henry Ford's moving assembly line, introduced in 1913, showed what such plants could do. They take the division of labor to its limit and gain economies of scale: the more units they produce, the cheaper each one becomes. Automation and robots have since raised output further while cutting costs.
+
+@@Marketplace
+Wherever people live close together, they trade. Nearby farmers bring food to sell, while artisans and craftsmen offer tools, pottery and cloth in return.
+
+The marketplace gave buyers and sellers a central meeting place, from the agora of Athens and the forum of Rome to the bazaars of the Middle East and the market squares of medieval Europe. It was also where news spread and neighbors met. The busier the market, the more goods changed hands, and the more prosperous the city around it became.
+
+@@Mass Transit
+In the early 20th century the automobile replaced horse-drawn carriages, and within a few decades cars filled the streets of every large city. They brought freedom of travel, but also congestion and became a major source of air pollution.
+
+Mass transit offers a way out. Buses, trams, underground railways such as the London Underground, opened in 1863, and modern light rail lines carry large numbers of people with far less fuel per passenger. A good public transit system means less traffic, cleaner air and a more livable city.
+
+@@Nuclear Power Plant
+In a nuclear power plant, the fission of uranium atoms releases heat, which boils water into steam to drive generators. The first plants began supplying electricity in the 1950s.
+
+Unlike coal and oil plants, nuclear plants produce no air pollution. They do produce radioactive waste that stays dangerous for thousands of years, and no fully safe means of disposal has yet been found. If a reactor's chain reaction is not controlled, it can melt down, as the accidents at Chernobyl in 1986 and Fukushima in 2011 showed. The future of nuclear energy remains uncertain.
+
+@@Palace
+Villages that swelled into cities soon needed more formal government. A ruler needed a place from which to govern, and the palace served as both the seat of administration and the ruler's home.
+
+Rich cities built grand palaces, from those of Knossos and Persepolis to the Forbidden City in Beijing and Versailles outside Paris. A palace housed officials, records and treasure as well as the royal family. Its splendor was a symbol of the ruler's authority and a source of civic pride for the people of the capital.
+
+@@Power Plant
+A power plant burns coal or other fossil fuels to boil water into steam, which spins turbines connected to generators. Thomas Edison's Pearl Street Station in New York began supplying electricity in 1882.
+
+Industry soon switched from steam engines in each factory to electric motors, since a single power plant could serve a wide area. As demand for electricity grew, more plants were built, and their smokestacks filled the air with pollution. Concern over smog, acid rain and dwindling fuel has fueled the search for alternative sources of energy.
+
+@@Recycling Center
+As populations grow, so does their garbage. Landfills fill up, and new dumps must be opened, often damaging the land, poisoning water and spoiling the surroundings.
+
+Recycling offers an answer. Trash is sorted into materials that can be used again, such as paper, glass, metals and plastics. These are cleaned and processed and then sent to manufacturers, who use them in place of new raw materials. Recycling cuts waste and the pollution that comes with mining, logging and making materials from scratch.
+
+@@SDI Defense
+Throughout history every new weapon has been followed by a new defense: armor against the sword, walls against the raider. Nuclear weapons seemed to break the pattern, since no defense could stop a missile once it had been launched.
+
+In 1983 United States President Ronald Reagan announced the Strategic Defense Initiative to change that. Its planners imagined laser satellites in orbit and ground-launched anti-ballistic missiles working together to intercept nuclear missiles in flight. Critics nicknamed it Star Wars, and much of it was never built, but research into missile defense continues to this day.
+
+@@Spaceship Component
+Components are the spaceship's source of thrust, the part that carries the colonists across the gulf between the stars.
+
+In the game, there are two kinds of component: propulsion components (the engines) and fuel components. Each engine needs one fuel component, and a propulsion component without its fuel component does nothing. A spaceship needs at least one of each kind to fly at all. The more engines it carries, the sooner the spaceship reaches its destination.
+
+@@Spaceship Module
+Modules are the core of the spaceship: the living quarters and the systems that keep the colonists alive on their long voyage.
+
+In the game, there are three kinds of module: habitation, solar panel and life support. A habitation module has room for 10,000 colonists, and one life support module keeps a single habitation module's people supplied with food, water and other essentials. Habitation and life support modules both draw power, and each solar panel module powers two other modules. A successful spaceship needs at least one module of each kind.
+
+@@Spaceship Structural
+A spaceship built in orbit needs a skeleton before it can have a body. Trusses and beams join every part into a single craft able to survive the stresses of launch and flight.
+
+In the game, structurals form the frame to which every other part of the spaceship attaches. Components and modules work only when they are connected to a structural. Any part that is not connected is shown with a red outline in the spaceship display, so you can see at a glance which structurals you still need.
+
+@@Temple
+Almost every ancient city had a temple to its patron deity, and often many more to other gods. Today we think of temples as places of worship, but the ancients believed that the god actually lived in the temple, inside the statue in its inner sanctuary.
+
+Priests tended the god with offerings of food, precious metals and spices, and the people believed that a contented god would protect the city. The temple's rituals and festivals had a calming effect on the citizens, so wise rulers made building one an early priority.
+
+@@University
+The first European universities grew up in the 11th and 12th centuries in cathedral cities such as Bologna, Paris and Oxford. At first their teaching centered on church matters: theology, canon law and the training of clergy.
+
+Over the centuries the curriculum widened to include classical languages, literature and art, and later the natural sciences. Modern universities offer study in nearly every field imaginable. They are also hubs of research, where advances in computing, medicine and physics are made, and where each new generation of scholars is trained.
+
+@@Airport
+From the 1950s onward, aircraft have been one of the main means of long-distance travel and transport. Airports grew from grass landing strips into large complexes that handle passengers and freight and provide fueling, maintenance and repair.
+
+Military air bases multiplied during the 1940s, as World War II made air power decisive. Air forces needed runways, hangars and supply depots close to the front and at home. The United States alone came to operate close to 400 military air bases, serving all branches of its armed services.
+
+@@Capitalization
+Every company sometimes needs cash, whether to cover its expenses, upgrade its equipment or expand into new markets. One way to raise it is to sell liquid assets.
+
+Liquid assets are holdings that can easily be turned into cash. They include surplus materials, finished goods waiting in the warehouse, and investments such as stocks and bonds. A nation can do the same on a larger scale, turning the output of its workshops into money for the treasury instead of new buildings or equipment.
+
+@@Coastal Fortress
+The walls and castles of the ancient and medieval world were built to stop land armies. A city's harbor, however, was exposed to attack from the sea, and once ships carried cannon, an enemy fleet could bombard a port from offshore.
+
+Coastal fortresses were the answer. Forts were built at the mouths of harbors and on barrier islands, such as Fort Sumter in Charleston harbor, with heavy guns that could reach far out to sea. They held enemy warships too far off to shell the town and weakened any attack that came within reach.
+
+@@Offshore Platform
+In 1859 Edwin Drake drilled the first commercial oil well at Titusville, Pennsylvania. Oil soon replaced wood and coal for many uses, and refining produced a host of valuable byproducts, from kerosene and gasoline to lubricants and plastics. The petroleum industry grew rapidly.
+
+After World War II, geologists found large oil reserves beneath the seabed. The first offshore rigs stood on pylons in shallow water close to shore. Later came floating rigs, anchored or held in place by thrusters, able to drill in water deeper than 3300 feet.
+
+@@Police Stations
+In imperial Rome, the Praetorian Guard protected the emperor but also acted as an early police force, keeping order in the city apart from the army's field duties. In medieval Europe, constables kept the peace on the estates of nobles.
+
+Modern policing began in 1829, when Sir Robert Peel founded the London Metropolitan Police, which became the model for forces worldwide. Police uphold the law and control unrest, and their visible presence on the streets reassures citizens that order is being kept.
+
+@@Port Facilities
+For thousands of years ships have carried both trade and war. Cities on rivers and coasts grew rich by receiving cargo and served as bases for naval fleets.
+
+Over time such cities developed full port facilities: shipyards to build vessels, warehouses to store goods, docks to load and unload them, and dry-docks where a ship could be lifted out of the water for repair. With these facilities on hand, even a badly damaged ship could be repaired far faster than at an open anchorage.
+
+@@Research Lab
+Libraries and universities were long the main centers of research. In the late 19th century a new kind of institution appeared: the corporate research laboratory. Thomas Edison's laboratory at Menlo Park and, later, Bell Labs set the pattern.
+
+Such labs usually focus on a single field tied to the business of their parent company. Their work has produced major advances in physics, biology, chemistry and medicine, from the transistor to new drugs. Private funding added to that of governments and universities has greatly sped up scientific progress.
+
+@@SAM Missile Battery
+Air warfare began in World War I with flimsy scouting planes and soon grew into dogfights and bombing raids. By 1945 fighters and bombers were commonplace, and they had shown that no city was safe from attack from the sky.
+
+In the 1950s, advances in rocketry made compact guided missiles possible. Surface-to-air missile batteries were set up to guard cities and military bases. They could reach much farther and hit far more reliably than the flak guns of the 1940s, and they could strike aircraft flying at heights the old guns could never reach.
+
+@@Sewer System
+Large cities produce enormous amounts of waste, and without a way to remove it, disease spreads quickly. A sewer system carries sewage away from homes through underground pipes, as the Romans did with their Cloaca Maxima and as London did with the great sewers of the 1860s.
+
+Modern systems also treat the sewage. Treatment plants filter the water and clean it chemically, removing solids and killing bacteria. Only then is the treated water released into rivers and the sea, protecting both public health and the environment.
+
+@@Solar Power Plant
+The sun is an immense source of energy: more sunlight falls on the earth in an hour than humanity uses in a year. There are two main ways to turn it into electricity. Photoelectric cells, or solar panels, produce electricity directly from light. Heliostats, large fields of mirrors, concentrate sunlight on a tower to boil water and drive turbines.
+
+Building solar plants is still expensive. But as fossil fuels dwindle and concern over pollution grows, solar power moves closer to the goal of clean and practically unlimited energy.
+
+@@Stock Exchange
+A corporation that needs capital can sell shares of itself to investors, who then own part of the business and its profits. The first places where such shares changed hands were informal gatherings of brokers and auctioneers.
+
+In the Paris Bourse, trading was open to all comers. Other exchanges set membership rules so that members who failed to honor their deals could be expelled. In America, the first stock exchange opened in Philadelphia in 1791, and New York brokers followed a year later with the Buttonwood Agreement, the beginning of the New York Stock Exchange.
+
+Today stock exchanges operate in commercial centers around the world. By channeling private investment into business, they fuel economic growth, profits and jobs.
+
+@@Supermarket
+The supermarket is a large self-service store that sells food and household goods under one roof. The first is generally said to be King Kullen, opened in 1930 in Queens, New York, by Michael Cullen.
+
+Refrigeration and better storage let supermarkets stock meat, milk and produce that would once have spoiled. By buying and selling in large volume, they offered lower prices than the corner grocer, and they thrived during the Great Depression when every penny counted. The idea soon spread around the world.
+
+@@Superhighway
+In 1919 a young army officer named Dwight D. Eisenhower joined a military convoy on a month-long trip across the United States. Poor roads made the journey slow and difficult, and the lesson stayed with him. Years later, as a general in World War II, he saw how Germany's autobahns let troops and equipment move quickly.
+
+As President, Eisenhower pushed for a national road network with military as well as civilian value. The Highway Trust Fund, created in 1956, paid for it. The Interstate network had grown past 42,000 miles by 1991. Its highways bypass city centers and have only limited interchanges, so drivers can travel long distances without stopping.
+
+@@Harbor
+Being on the coast is not enough to make a city a port. Ships need a harbor: a stretch of sheltered water where they are protected from waves and wind while they load, unload and wait out storms.
+
+A good harbor is essential for trade, fishing and shipping. Some cities have fine natural harbors, such as Sydney and Rio de Janeiro. Others improve what nature gave them with breakwaters and piers, or build artificial harbors from scratch. Channels are dredged so that large ships can reach the docks safely.
+
+@WONDER_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@WONDER_INDEX
+21,			; Pyramids
+9,			; Hanging Gardens
+2,			; Colossus
+15,			; Lighthouse
+7,			; Great Library
+20,			; Oracle
+8,			; Great Wall
+25,			; Sun Tzu's War Academy
+13,			; King Richard's Crusade
+18,			; Marco Polo's Embassy
+19,			; Michelangelo's Chapel
+3,			; Copernicus' Observatory
+16,			; Magellan's Expedition
+23,			; Shakespeare's Theatre
+14,			; Leonardo's Workshop
+12,			; J. S. Bach's Cathedral
+11,			; Isaac Newton's College
+0,			; Adam Smith's Trading Co.
+5,			; Darwin's Voyage
+24,			; Statue of Liberty
+6,			; Eiffel Tower
+27,			; Women's Suffrage
+10,			; Hoover Dam
+17,			; Manhattan Project
+26,			; United Nations
+1,			; Apollo Program
+22,			; SETI Program
+4,			; Cure for Cancer
+-2,			; MUST BE HERE! TERMINATOR!
+
+@@Adam Smith's Trading Co.
+The Scottish philosopher Adam Smith is regarded as the founder of modern economics. In The Wealth of Nations, published in 1776, he argued that prices are set by supply and demand, and that free trade and the self-interest of individuals, guided as if by an invisible hand, drive economic growth.
+
+Smith believed that government should be limited mostly to defense, keeping justice and order, and providing certain public works. His ideas became the basis of economic liberalism and still shape debate today.
+
+@@Apollo Program
+Following the Mercury and Gemini programs, which put Americans into orbit, the United States launched the Apollo program to land astronauts on the moon. Early missions tested spacecraft in orbit around the earth and the moon and practiced docking the command and lunar modules.
+
+On July 20, 1969, Apollo 11 landed, and Neil Armstrong became the first person to walk on the moon, calling it one small step for a man and one giant leap for mankind. There were six landings in all; Apollo 17, in December 1972, brought the program to a close. Apollo's technology was later reused in the Skylab space station and other spacecraft.
+
+@@Colossus
+Around 280 BC the people of Rhodes raised a huge bronze statue of the sun god Helios beside their harbor. Over 100 feet tall, the Colossus reached roughly two-thirds as high as New York's Statue of Liberty.
+
+Only 56 years after its completion, an earthquake toppled it. On the advice of an oracle, the Rhodians left it where it fell, and for more than 900 years visitors came to marvel at the broken giant. In 654 AD Muslim raiders took the island and sold the bronze for scrap.
+
+@@Copernicus' Observatory
+Some ancient Greeks, notably Aristarchus of Samos, proposed that the earth moves around the sun. The idea was overshadowed by the earth-centered model of Ptolemy, and in Europe it was forgotten during the Dark Ages.
+
+In the 1500s Nicolaus Copernicus revived it. From his observatory in a tower of the cathedral at Frombork in East Prussia, he worked out a sun-centered model of the solar system, published in 1543. His work laid the foundation of modern astronomy and helped renew the scientific method.
+
+@@Cure for Cancer
+Despite enormous spending on research, cancer remains one of the most lethal scourges of humanity. There are many kinds of cancer, and many of its triggers are known, including tobacco smoke, radiation, certain viruses and inherited genes.
+
+Treatments such as surgery, radiation and chemotherapy can control many cancers, and some can be cured if caught early, but there is still no true cure for the disease as a whole. A real cure would relieve untold suffering and save millions of lives.
+
+@@Darwin's Voyage
+In 1831 the young naturalist Charles Darwin set out on HMS Beagle on a voyage around the world that lasted five years. In South America and the Galapagos Islands he collected specimens and noticed how species varied from place to place.
+
+Applying the scientific method to nature, Darwin developed the theory of evolution by natural selection, published in 1859 as On the Origin of Species. The book met fierce religious and philosophical objections, but it launched a new wave of research in biology that continues today.
+
+@@Eiffel Tower
+The Eiffel Tower, perhaps the most famous landmark in the world, went up in Paris for the great world's fair of 1889, the Exposition Universelle. It rises 984 feet from the Champ de Mars beside the Seine.
+
+The engineer Alexandre Gustave Eiffel designed it, and it cost more than $1 million to build. It was meant to show what iron and steel could do in tall structures. On its completion it was the tallest structure in the world, a title it held until 1930. Once disliked by many Parisians, it is today the city's major tourist attraction.
+
+@@Great Library
+Alexandria's library, rivaled in the ancient world only by the one at Pergamum, was founded by Ptolemy I around 300 BC and enlarged by the rulers who followed him. It made the city the leading center of learning and culture in the Greek-speaking world after Alexander.
+
+Its keepers set out to collect a copy of every important scroll; ships entering the harbor were searched for books to be copied. The collection grew to more than 700,000 volumes. After some 700 years its last remnants were destroyed by religious zealots in 391 AD. Only fragments of its catalog survive.
+
+@@Great Wall
+The Great Wall of China runs westward from the shores of the Yellow Sea all the way to the deserts of Central Asia. Successive dynasties built and rebuilt it over some 1,800 years, from the walls of the warring states and the first emperor, Qin Shi Huang, to the stone and brick of the Ming.
+
+In its classic form it rises about 25 feet, with a thickness of some 12 feet, and its main line runs nearly 1,500 miles. Manning the whole length would have cost far too much, and it was never meant to be a sealed barrier. Its purpose was to slow raiders fleeing with their plunder, and so to deter invasion.
+
+@@Hanging Gardens
+The Hanging Gardens of Babylon were the pride of that great city, and ancient writers who described them counted them among the wonders of the world. Tradition says they were built by Nebuchadnezzar II around 600 BC, perhaps for a queen who missed the green hills of her homeland.
+
+They were an engineering marvel: stepped terraces of mud brick, planted with vines, shrubs and trees and watered by machinery lifting water from the Euphrates. From a distance they looked like a green hill rising in the heart of the flat city. No trace of them has ever been found.
+
+@@Hoover Dam
+For centuries, rivers have turned waterwheels to grind grain and drive machinery. In the late 19th century people learned to use them to make electricity as well.
+
+A dam stores a steady supply of water in a reservoir, and water released through it spins turbines that drive generators. Well designed, such a plant has a low impact on the environment. Hoover Dam on the Colorado River, not far from Las Vegas, was completed in 1936 and was one of the early great hydroelectric plants. It still supplies power to millions of people in the American Southwest.
+
+@@Isaac Newton's College
+Sir Isaac Newton, born in 1642, was one of the greatest mathematicians and physicists who ever lived. He formulated the law of universal gravitation and the laws of motion, showed that white light is made up of a spectrum of colors, developed calculus, and made major contributions to fluid dynamics and to explaining the tides.
+
+He also designed and built the first working telescope to use a mirror instead of lenses. Newton spent 32 years teaching at Cambridge University while carrying out his research, and his Principia, published in 1687, laid the foundations of classical physics.
+
+@@J.S. Bach's Cathedral
+Johann Sebastian Bach, born in 1685, came from a large family of German musicians and became the most prolific and best loved of them all. He is widely regarded as the greatest composer of the baroque era.
+
+Bach wrote a vast body of choral and orchestral works, much of it sacred music for the church, including the St. Matthew Passion and the Mass in B minor. From 1723 until his death in 1750 he served as organist and music director at St. Thomas' Church in Leipzig. Largely forgotten soon after he died, he gained worldwide fame once his music was revived in the 19th century.
+
+@@King Richard's Crusade
+In the years from 1095 to 1270, Christian Europe sent a series of Crusades to retake the Holy Land. After Saladin captured Jerusalem in 1187, the Third Crusade was led by Philip Augustus of France together with Richard I of England, the Lionheart.
+
+The crusaders regained Acre and other coastal cities on the Mediterranean and restored the Latin Kingdom, though Jerusalem itself remained out of reach. The Crusades extended the power of the papacy. At the same time Europe's population and productivity were rising, and western merchants and traders made great profits supplying the armies and opening trade with the East.
+
+@@Leonardo's Workshop
+Leonardo da Vinci, born in 1452, was the great Italian painter of the Renaissance, creator of The Last Supper and the Mona Lisa. He was also a keen observer of nature and a tireless inventor.
+
+His notebooks are filled with designs far ahead of their time: drawbridges, machines for building, parachutes and helicopters, as well as studies of anatomy, water and flight. Few of his inventions were built in his lifetime, but his drawings informed many of the devices that later engineers produced.
+
+@@Lighthouse
+The Pharos of Alexandria was a marble lighthouse built around 280 BC on the island of Pharos at the entrance to the city's harbor. At about 300 feet tall, it was one of the tallest structures of the ancient world.
+
+The Egyptian coast is low and featureless, and the tower guided ships safely into port. Scholars still debate whether its light came from a fire at the top or from mirrors reflecting the sun. Since ancient ships rarely sailed at night, it may have seen little use after dark. Earthquakes damaged it repeatedly, and by the 14th century it was gone.
+
+@@Magellan's Expedition
+In 1519 Ferdinand Magellan, a Portuguese navigator in the service of Spain, sailed from Spain with five ships, seeking a westward route to the Moluccas, the spice islands. He found a strait at the tip of South America and crossed the vast Pacific.
+
+Magellan was killed in a battle in the Philippines in 1521, but one ship, the Victoria, returned to Spain in 1522, completing the first voyage around the world. It proved beyond doubt that the earth is round and that the Americas are a New World, separate from Asia. Its success inspired later explorers and made such voyages safer.
+
+@@Manhattan Project
+The Manhattan Project was the secret and enormously expensive program that built the atomic bomb during World War II. In August 1945 the United States dropped atomic bombs on Hiroshima and Nagasaki, and Japan surrendered days later, ending the war.
+
+The American monopoly on the bomb was brief. With help from spies inside the project, the Soviet Union tested its own bomb in 1949. Since then, the fear of nuclear retaliation may be one reason that the great powers have gone decades without a major war among themselves.
+
+@@Marco Polo's Embassy
+Marco Polo (about 1254 to 1324) was a Venetian trader, traveler and writer. As a youth he set out with his father and uncle on a journey east, and he spent some 24 years traveling across Asia, the Middle East and Europe, much of it in the service of Kublai Khan in China.
+
+He was the first European to report on many of these lands. For medieval readers, his book of travels was the only trustworthy account of India, Tibet, Java, Japan and Siam.
+
+@@Michelangelo's Chapel
+The Sistine Chapel in the Vatican in Rome holds some of the greatest art of the Renaissance, an age that blended deep faith with a love of art. Between 1508 and 1512 Michelangelo spent four years painting its ceiling, much of the time working on scaffolding high above the floor.
+
+The ceiling shows scenes from Genesis, including the Creation of Adam, along with other stories from the Bible. Its figures are a moving portrayal of human suffering, struggle and spiritual victory, and visitors from all over the world still come to see them.
+
+@@Oracle
+The Greeks believed that oracles spoke for the gods. Seers read the future in dreams and trances, and in the innards of animals killed as offerings. Best known of all was Apollo's shrine at Delphi, high on a mountainside beneath Parnassus.
+
+Greeks and later Romans, rulers and commoners alike, consulted it on matters of state and on private affairs. For a payment, the priestess known as the Pythia would prophesy. Her answers were notoriously ambiguous: King Croesus was told that if he attacked Persia he would destroy a great empire, and the empire he destroyed was his own.
+
+@@Pyramids
+The pyramids at Giza, on a plateau near Cairo, were built during Egypt's fourth dynasty, around 2600 to 2500 BC. The pharaohs Khufu, Khafre and Menkaure raised them as their burial places and lasting memorials.
+
+The Great Pyramid of Khufu was the tallest structure in the world for nearly 4,000 years. Building the pyramids took generations of work by tens of thousands of laborers, quarrying, moving and setting millions of stone blocks. Of the seven wonders of the ancient world, they alone survive.
+
+@@SETI Program
+SETI, the Search for Extraterrestrial Intelligence, was a series of American projects, launched from the 1960s onward, to find proof that intelligent life exists elsewhere in the universe.
+
+Its scientists use radio telescopes and arrays of antennas to listen for signals that could only have been sent by another civilization. So far no proof has been found. The search has nonetheless brought benefits, as its new receivers and methods for processing signals have advanced both astronomy and telecommunications.
+
+@@Shakespeare's Theatre
+Many of William Shakespeare's plays had their first performances at the Globe Theatre in London in the early 1600s. Theater offered an escape from everyday life, whether through the laughter of comedy or the drama of tragedy.
+
+Other great houses followed in other countries, such as La Scala in Milan and the Comedie Francaise in Paris. The original Globe burned down in 1613 when a cannon fired during a play set the thatched roof alight. Shakespeare's plays are still staged today, both in a rebuilt Globe near the original site and in theaters all over the world.
+
+@@Statue of Liberty
+Few statues anywhere are as large as the Statue of Liberty, which stands over 300 feet tall including its pedestal. Its copper skin, hung on an iron frame, weighs more than 250 metric tons.
+
+The French sculptor Frederic Auguste Bartholdi designed it, showing Liberty holding a torch aloft with broken chains at her feet. It was a gift from France to mark the centennial of American independence and was dedicated in 1886. In 1924 it was declared a national monument, and Ellis Island was later added to it.
+
+For millions of immigrants arriving in New York harbor, the statue was their first sight of America, and it remains a worldwide symbol of freedom.
+
+@@Sun Tzu's War Academy
+The Art of War, written around the 6th century BC, is credited to the Chinese general Sun Tzu. Few books on military strategy are as ancient, and fewer still have been so widely read.
+
+Sun Tzu wrote about weapons, strategy, the ranks of an army and the discipline needed to hold it together. He stressed that the best victory is won without fighting, and he placed great value on spies and intelligence: know the enemy and know yourself, and you need not fear a hundred battles. His book formed the basis of military education for centuries and is still studied today.
+
+@@United Nations
+The United Nations was founded in 1945, after World War II, to maintain international peace and security. Its members also work together on the environment, economic development, health and culture through agencies such as UNESCO and the World Health Organization.
+
+Its record in peacekeeping has been mixed, with some missions succeeding and others failing to prevent bloodshed. Even so, the UN remains the one global forum where every nation, large or small, can speak and be heard.
+
+@@Women's Suffrage
+American women gained the vote in 1920, when the 19th Amendment to the Constitution was ratified. It was the result of decades of campaigning that had begun with the Seneca Falls Convention of 1848.
+
+During World War I women took on work in factories and offices that had been done by men, which helped speed the change. In Britain women gained the vote on the same terms as men in 1928. Women's suffrage then spread to most of the developed world over the following decades.
+
+@UNIT_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@UNIT_INDEX
+49,			; Settlers
+21,			; Engineers
+43,			; Warriors
+46,			; Phalanx
+2,			; Archers
+33,			; Legion
+47,			; Pikemen
+36,			; Musketeers
+23,			; Fanatics
+45,			; Partisans
+1,			; Alpine Troops
+48,			; Riflemen
+34,			; Marines
+44,			; Paratroopers
+35,			; Mech. Inf.
+29,			; Horsemen
+13,			; Chariot
+20,			; Elephant
+14,			; Crusaders
+32,			; Knights
+19,			; Dragoons
+12,			; Cavalry
+3,			; Armor
+11,			; Catapult
+7,			; Cannon
+4,			; Artillery
+30,			; Howitzer
+24,			; Fighter
+6,			; Bomber
+28,			; Helicopter
+39,			; Stlth Ftr.
+38,			; Stlth Bmbr.
+42,			; Trireme
+9,			; Caravel
+27,			; Galleon
+26,			; Frigate
+31,			; Ironclad
+17,			; Destroyer
+16,			; Cruiser
+0,			; AEGIS Cruiser
+5,			; Battleship
+40,			; Submarine
+10,			; Carrier
+41,			; Transport
+15,			; Cruise Msl.
+37,			; Nuclear Msl.
+18,			; Diplomat
+50,			; Spy
+8,			; Caravan
+25,			; Freight
+22,			; Explorer
+-1,			; Extra Land
+-1,			; Extra Ship
+-1,			; Extra Air
+-1,			; Test Unit 1
+-1,			; Test Unit 2
+-1,			; Test Unit 3
+-1,			; Test Unit 4
+-1,			; Test Unit 5
+-1,			; Test Unit 6
+-1,			; Test Unit 7
+-1,			; Test Unit 8
+-2,			; MUST BE HERE! TERMINATOR!
+
+@@AEGIS Cruiser
+Cruisers escort carrier groups and protect amphibious landings. Modern cruisers carry five-inch guns along with Harpoon anti-ship missiles and Tomahawk cruise missiles.
+
+Their greatest strength is AEGIS, an integrated system of radar, computers and missiles that tracks many targets at once and directs weapons against them. First deployed in the 1980s on the Ticonderoga class, AEGIS lets a cruiser counter submarines, surface ships, aircraft and incoming missiles, making it the shield of the fleet.
+
+@@Alpine Troops
+In snowy lands, skis have been a means of transport for thousands of years. European mountain nations, among them Norway, Switzerland, Italy and Austria, trained soldiers to fight on skis.
+
+Ski troops had a great advantage over enemies without skis, who struggled through deep snow. In the Winter War, which began in November 1939, small units of Finnish ski troops moved swiftly through forests, cutting Soviet supply lines and destroying isolated columns of a far larger army. Many modern armies maintain mountain troops trained to fight in rugged and snowy terrain.
+
+@@Archers
+The bow was invented in prehistoric times, allowing hunters to kill game at a distance. It soon became a weapon of war, and battle bows were used by Assyrian, Persian and Egyptian armies from very early times, perhaps as far back as 5000 BC.
+
+A small force of archers could defeat a much larger army that fought hand to hand. Archers were often used to weaken the enemy before cavalry and skirmishers moved in to attack. The bow remained important until firearms replaced it during the 1500s.
+
+@@Armor
+Machine guns and other automatic weapons brought an end to horse cavalry, and with it armies lost their means of scouting and their shock power in the attack.
+
+The tank was the answer: an armored vehicle with a heavy gun, moving on tracks. Tanks were first used by the British in World War I, at the Somme in 1916. In World War II they became the core of fast-moving offensives. Armor combines speed and firepower with solid defense against ground forces.
+
+@@Artillery
+Artillery comes in two main kinds, the mortar and the field gun. A mortar lobs its shells in a high arc, so they can drop on targets hidden behind hills or walls. Field guns fire on a flatter path and are used against hard targets.
+
+Together they can smash fortified positions and break up enemy formations. Modern artillery is built to move quickly, both to keep up with mobile battles and to avoid counter-fire from enemy guns once its own position has been revealed.
+
+@@Battleship
+The battleship was once the strongest warship afloat, with heavy armor and big guns that could strike targets many miles away. Battleships could sweep enemy fleets from the sea and shell coasts before an invasion.
+
+During World War II their importance waned as aircraft launched from carriers came to dominate naval warfare. The United States retired its last battleships after the Vietnam War. In the 1980s, however, four Iowa-class battleships were refitted with modern missiles and returned to service, firing their guns again in the Gulf War of 1991.
+
+@@Bomber
+In World War I, German zeppelins carried out bombing raids on Paris and London. The great airships proved too slow and too vulnerable, and they were replaced by airplanes. By 1918 purpose-built bombers were in service.
+
+Bombers strike military and economic targets deep inside enemy territory, beyond the reach of armies. Over time they took on specialized roles: attacking ships, cutting railways and destroying vehicles, precision bombing of single targets, and carpet bombing of whole areas.
+
+@@Cannon
+Gunpowder transformed siege warfare. The invention of the cannon in Europe is often attributed to a German monk, Berthold Schwarz, in the 14th century. Early cannon fired balls of stone and, later, of iron.
+
+High straight walls, built to stop men and ladders, could not stand up to cannon fire, and fortresses had to be redesigned with low, thick, angled walls. In 1453 Ottoman guns battered a way through the defenses of Constantinople, a city whose walls had held for a thousand years. Cannon also played a growing role on the battlefield.
+
+@@Caravan
+Trade has always been a source of wealth. Caravans of merchants, with their camels, horses and wagons, carried goods across deserts and mountains to exchange them in far-off lands, along routes such as the Silk Road.
+
+Traders brought home more than goods: they also brought news, ideas and knowledge from foreign lands. Marco Polo stayed in China for some 17 years, and his account of what he saw there opened European eyes to the riches of the East.
+
+@@Caravel
+Small but nimble, the caravel carried three or four masts, with a broad bow and a tall, slender stern. Developed in the 15th century, it was fast and handy and could sail close to the wind.
+
+Caravels could serve as warships and carry more than 100 metric tons of cargo. Spanish and Portuguese sailors used them for trade and for voyages of exploration along the coast of Africa and across the Atlantic. All three of Columbus's ships on his first voyage, the Santa Maria, the Nina and the Pinta, are often called caravels.
+
+@@Carrier
+Aircraft carriers came into widespread use in World War II. A carrier is a mobile airfield that carries fighters and bombers wherever the fleet goes, letting them strike targets on land and at sea far beyond their normal range.
+
+At the Battle of the Coral Sea in 1942, fleets fought for the first time without ever seeing each other, and the carrier ended the battleship's dominance of the sea. Modern carriers can also launch aircraft armed with nuclear weapons.
+
+@@Catapult
+Among the oldest kinds of artillery is the catapult. Its mechanical arm, powered by twisted rope, tension or a counterweight, could hurl heavy stones over long distances.
+
+Catapults were used to break down walls and to strike defenders behind them. They were clumsy and slow to move in open battle, but against cities and forts they were very effective, and the Greeks, Romans and later medieval armies all relied on them in sieges.
+
+@@Cavalry
+Mounted soldiers have been used for scouting and raiding since ancient times; horse warriors fought in the armies of ancient Egypt and its neighbors. Cavalry in its modern form developed from the late 1700s.
+
+Napoleon used his elite cavalry to screen his infantry, scout ahead of the army and charge broken enemy lines. Horsemen also saw wide service on both sides in America's Civil War and in many other 19th-century wars. But the arrival of repeating rifles and machine guns made horsemen ever more vulnerable.
+
+In South Africa's Boer War, fought from 1899 to 1902, cavalry had a large part to play for the last time in a major conflict. In the 20th century, armored vehicles and aircraft took over its role.
+
+@@Chariot
+No earlier vehicle had been built for battle: the chariot was the first. Drawn by horses, it carried archers and other troops quickly to and around the battlefield.
+
+The Assyrians developed chariot warfare to a high art. Their warriors fought from the chariot itself, shooting arrows and throwing spears, and an Assyrian chariot charge was a terrifying sight that could break an enemy line. Their enemies soon copied the tactic, and chariots spread across the ancient Near East, Egypt, India and China.
+
+@@Crusaders
+The Crusades, fought between 1095 and 1270 with the approval of the Pope, aimed to free the Holy Land from Muslim rule. The crusaders came from many lands and classes, and their motives were mixed: some sought land, wealth or adventure, while many were driven by religious zeal and the promise of salvation.
+
+Militarily the Crusades gained little that lasted. But they boosted the European economy, opened trade with the East and encouraged the spirit of exploration.
+
+@@Cruise Missile
+Modern cruise missiles, among them the American AGM-86 and Tomahawk, strike strategic targets hundreds of miles away. They fly low to stay under enemy radar and are highly accurate, guided by maps of the terrain and satellite navigation.
+
+They are also used tactically against ships. A missile costing about $1 million can sink a warship worth $80 million or more. Cruise missiles can be launched from ships, aircraft or ground launchers.
+
+@@Cruiser
+The cruiser is the modern successor of the sailing frigate. It was designed for raiding enemy shipping and for escort duty.
+
+A cruiser's guns are lighter than those of a battleship, so it is weaker at bombarding the shore, and its armor is thinner. It makes up for this with low cost and speed. Cruisers were used for scouting ahead of the fleet, escorting convoys and hunting enemy transports and merchant ships.
+
+@@Destroyer
+Destroyers are small, fast escort ships. In World War II they protected carrier groups and convoys against air and naval threats, and they hunted submarines with sonar, depth charges and torpedoes. They played a key part in every major naval operation.
+
+Modern destroyers still serve as escorts and submarine hunters. A typical ship carries five-inch guns, helicopters for hunting submarines, anti-ship missiles and the Phalanx close-in weapon system, a rapid-fire gun that shoots down incoming missiles.
+
+@@Diplomat
+Diplomats are servants of their homeland abroad. Their open work is negotiation, but their covert work, gathering information and sometimes worse, can be a powerful tool when used well.
+
+In the game, a Diplomat keeps contact with another civilization by establishing an embassy in one of its cities, after which it reports on that civilization. A Diplomat can also sabotage enemy production, steal a civilization advance, bribe enemy units to change sides and incite revolt in enemy cities. It has no combat strength, so it needs protection.
+
+@@Dragoons
+Dragoons were mounted troops armed with muskets who could fight on horseback or on foot. They were probably named after the dragon, "dragon" in French, from the fire-breathing firearms they carried.
+
+During the American Revolution, General John Burgoyne's army included German dragoons, often called Hessians. In 1777 a force of them was sent to seize supplies at Bennington. At the Battle of Bennington, they were beaten by New Hampshire militia under John Stark, a blow that helped lead to Burgoyne's surrender at Saratoga.
+
+@@Elephant
+The elephant is the largest land mammal, standing 10 to 13 feet tall. It is related to the extinct mammoths and mastodons.
+
+Elephants were trained for war in India and later in other lands. In 326 BC King Porus used war elephants against Alexander the Great at the Hydaspes River. In 218 BC Hannibal of Carthage famously led elephants across the Alps to invade Italy. War elephants were slow and could panic and trample their own side, but their size and noise frightened enemy soldiers and horses.
+
+@@Engineers
+As technology advanced, skills became more specialized. Early pioneers did a little of everything: they farmed, built roads and houses and did any other job that needed doing.
+
+Engineers are trained in one discipline, whether civil, mechanical, mining or another. Their expertise has made possible construction on a scale never seen before, from great canals and dams to tunnels through mountains, and has let people reshape the land itself.
+
+@@Explorer
+People have always wanted to learn about the world around them. Ancient expeditions set out in search of riches and resources, such as the voyages Egyptian Queen Hatshepsut sent to the land of Punt.
+
+In the age of discovery, ocean voyages by Christopher Columbus and Amerigo Vespucci reached the Americas, which were later named after Vespucci. Explorers mapped the coasts and interiors of distant lands, and their work opened the New World to commerce and settlement.
+
+@@Fanatics
+When religion or totalitarian rule drives nationalism to extremes, it can produce fanatics: fighters who believe utterly in their cause. History has many examples of such zealots defeating stronger forces.
+
+Fanatics have also sustained long-running insurgencies and campaigns of terrorism. Their willingness to die for their cause is the source of their strength in both attack and defense, since they keep fighting long after ordinary troops would surrender.
+
+@@Fighter
+The first warplanes of World War I were used for scouting enemy positions. Pilots soon began shooting at each other with pistols and rifles. In 1915 Anthony Fokker's synchronizer gear timed a machine gun's shots to pass between the blades of the spinning propeller.
+
+With it, fighter planes could shoot down enemy scouts and fighters. Fighters went on to intercept enemy bombers and to escort friendly ones. Winning air superiority with fighters protected bomber missions and ground forces alike.
+
+@@Freight
+Freight is the modern counterpart of the trade caravan. In ancient times goods moved by camel, pack animal and wagon, slowly and in small quantities.
+
+Today trucks and trains carry them, along with container ships and cargo aircraft. Modern supply routes move far more goods, much faster and farther, than any caravan could, linking farms, factories and markets around the world in days rather than months.
+
+@@Frigate
+The frigate was a fast sailing warship built for raiding enemy commerce. It had three masts and was lighter than a ship of the line, carrying up to 36 guns.
+
+A frigate was strong enough to win most fights with ships it met, yet quick enough to flee from those it could not beat. In wartime frigates also escorted convoys of merchant ships. They remained the dominant ships of their type until ironclads appeared in the mid-19th century.
+
+@@Galleon
+By the late 1400s, oared ships had disappeared from the oceans, replaced by sailing vessels. The galleon took shape over the 1400s and 1500s. It had three or four masts and high castles at the bow and stern.
+
+Galleons were mainly used to carry cargo, including the silver of Spain's treasure fleets, but they could also serve as light warships. They remained in European service into the 1700s.
+
+@@Helicopter
+In the 1500s Leonardo da Vinci sketched a flying machine lifted by a rotor, but it was more than four centuries before the idea worked. Igor Sikorsky flew the first practical helicopter in 1939.
+
+A helicopter rises and descends straight up and down, so it needs no runway. This makes it ideal for rescue work and police use. Armies use helicopters as cargo carriers, as troop transports and as attack gunships armed with rockets and missiles, able to strike quickly anywhere on the battlefield.
+
+@@Horsemen
+Speed has always mattered in war. The first horse soldiers were often mounted infantry, who rode to the battlefield and then dismounted to fight on foot. Riders also made excellent scouts, able to range far ahead of an army and bring back news of the enemy.
+
+Fighting from horseback was hard without a firm seat. Early stirrups, perhaps first developed in China around the 2nd century BC and perfected there in the following centuries, gave riders the stability for true mounted combat. These horsemen were the ancestors of the knights and dragoons, and of the cavalry that rode with Napoleon and in the wars that followed.
+
+@@Howitzer
+The howitzer is a hybrid of the mortar and the field gun. Like a mortar, it can fire at a high angle, dropping shells on targets hidden behind hills or walls. Like a field gun, it can also fire on a flatter path, with long range and good penetration.
+
+Modern howitzers are lighter than the guns of the past. Some ride on wheeled carriages pulled behind trucks; others are built into self-propelled tracked vehicles. They fire a range of specialized shells, some guided to their targets with great precision.
+
+@@Ironclad
+Ironclads were the ancestors of all modern armored warships. Instead of relying on wooden hulls, they were protected by plates of iron, which resisted the new explosive shells that could shatter a wooden ship.
+
+Ironclads first saw major combat in the American Civil War, where they soon dominated. On March 9, 1862, the Union's Monitor fought the Confederate ironclad Merrimack, renamed Virginia, at Hampton Roads in Virginia. After hours of battering each other at close range, neither ship was seriously damaged, and the Merrimack withdrew. From that day, the wooden warship was obsolete.
+
+@@Knights
+Knights were the armored mounted warriors of medieval Europe. Much as Japan's samurai did, they followed a code of conduct, chivalry, that bound them to loyalty, courage and the protection of the weak, at least in principle.
+
+In close combat, a knight in armor on a heavy warhorse had a great advantage over foot soldiers. Clever tactics could still defeat them, as English longbowmen showed at Crecy in 1346 and Agincourt in 1415. Gunpowder finally made the knight obsolete, since no armor could stop a bullet.
+
+@@Legion
+The Roman legion took shape in the wars of the early Republic and proved itself in the Punic Wars against Carthage. For some five centuries the legions held the Roman Empire together.
+
+A legion of the later Republic numbered about 6000 men, organized in 60 centuries. Legionaries were superb in the attack, but their defense was weaker, particularly against fast-moving cavalry. In 378 AD Gothic horsemen crushed the army of Emperor Valens at Adrianople, and Valens himself was killed. The defeat showed that the age of the legion was passing.
+
+@@Marines
+The United States Marine Corps is a separate service, but it falls under the Secretary of the Navy. Marines are trained for joint operations on land, at sea and in the air, and are often the first to land on a hostile shore.
+
+The Continental Marines were founded in 1775 during the American Revolution but disbanded after the war. In July 1798 Congress permanently re-created the Marine Corps. Known for their toughness, discipline and adaptability, the Marines have fought in nearly every major American war since the early 1800s, from Tripoli to Iwo Jima.
+
+@@Mechanized Infantry
+In World War II, tanks could break through enemy lines and race ahead, but they could not hold the ground they had taken, which was left unguarded behind them.
+
+Mechanized infantry was created to solve this problem. Infantry rode in armored personnel carriers and half-tracks, keeping pace with the tanks so they could follow up a breakthrough and secure the ground. Modern infantry fighting vehicles carry their own weapons and protect their troops from small arms and shell fragments.
+
+@@Musketeers
+Firearms marked a turning point in warfare. The first handguns appeared in the 14th century, and after centuries of improvement through the matchlock, flintlock muskets were common by the late 1600s.
+
+Musketeers were cheap to arm and quick to train compared with knights, and their weapons could kill an armored knight at a distance. For a time armies combined musketeers, cannon and knights. Musketeers firing from behind walls were very hard to dislodge. They remained the backbone of infantry until repeating rifles replaced the musket in the mid-1800s.
+
+@@Nuclear Missile
+The atomic bombs dropped on Hiroshima and Nagasaki in 1945 redefined military power. A single weapon could now destroy a whole army or a whole city.
+
+After the war, the United States and the Soviet Union entered an arms race, building thousands of nuclear warheads and the ballistic missiles to deliver them across continents in less than an hour. Neither side could hope to escape devastating retaliation, and this deterrence, the fear of the consequences, kept the weapons from being used. Missile defenses such as the Strategic Defense Initiative may one day offer protection against such an attack, but none has yet proved itself.
+
+@@Stealth Bomber
+Stealth technology was first applied to fighters, but the same ideas soon reached bombers. The B-1B, brought into service in 1986 to take over from the aging B-52, was not truly stealthy, yet its shape and materials gave it a radar signature only about 1% that of the B-52.
+
+Meanwhile, Northrop had been contracted to build a true stealth bomber. The result, the B-2 Spirit, was unveiled in 1988. Like the F-117A fighter, it relies on shape to defeat radar, but it takes the form of a flying wing, with no fuselage or tail.
+
+Its engines are buried inside the wing, and its intakes and exhausts are shielded to hide their heat from infrared sensors. Smooth curved surfaces and radar-absorbent materials scatter and soak up radar waves. The Air Force planned to put 132 B-2s into service in the 1990s, but the end of the Cold War and the plane's enormous cost cut the order to just 21.
+
+@@Stealth Fighter
+Radar came into widespread use in World War II, and since then aircraft designers have searched for ways to make planes harder to detect electronically. Early efforts used radar-absorbing coatings, which soaked up some of the radar energy.
+
+In the late 1970s, prototypes were built with angled flat surfaces that deflected radar waves away from the receiver. The Lockheed F-117A Nighthawk, the first operational stealth aircraft, made its first flight on June 18, 1981. Able to penetrate air defenses unseen, the black jets flew some of the most dangerous missions of the Gulf War in 1991, striking targets in Baghdad without a single loss.
+
+@@Submarine
+The submarine is a warship that travels underwater and attacks unseen. Its defense is weak, since a submarine caught on the surface or found by the enemy is easily damaged, but it is greatly feared for its ability to strike by surprise.
+
+In World War I, German U-boats waged campaigns against Allied shipping that nearly starved Britain. After the war, improved sonar made submarines easier to find, but in World War II every major navy used them. Modern attack submarines hunt ships and other submarines, while ballistic missile submarines carry nuclear missiles that can be launched from beneath the sea.
+
+@@Transport
+In peacetime, many ships serve as cargo or passenger vessels, but in war they can be pressed into service as troop ships. Transports carry large forces and their equipment overseas.
+
+Transports carry no offensive weapons and are easy prey for enemy warships, submarines and aircraft, so they need escorts. Protected by warships, they can deliver reinforcements or a whole invasion force quickly, as in the Allied landings in Normandy in 1944.
+
+@@Trireme
+The Greeks had developed the trireme by the 7th or 6th century BC, and it was the earliest vessel designed purely for fighting. It took its name from its three tiers of oars on each side, with some 170 rowers in all.
+
+Contrary to popular belief, the rowers were not galley slaves but paid professionals or free citizens. A bronze ram at the bow was the trireme's main weapon, driven into the side of an enemy ship. Its long, narrow hull was fast but unstable in rough seas, so triremes stayed close to the coast to avoid storms.
+
+@@Warriors
+The earliest armies were simply townsfolk armed with whatever they could find: clubs, axes, spears and improvised weapons. Such militia were cheap to raise, but they were badly outclassed by trained and well-equipped armies.
+
+Warriors serve as a temporary defense until better troops are ready, or as guards for isolated cities far from the frontier. They will not hold off a determined attack for long, but they are better than leaving a city with no defense at all.
+
+@@Paratroopers
+In the 1500s Leonardo da Vinci sketched a pyramid-shaped parachute. The first real parachute jumps were made in the late 1700s, notably by Andre-Jacques Garnerin in 1797, and parachutes became safety gear for balloonists.
+
+In the 1920s Claire Chennault, then an American officer, proposed dropping troops by parachute, and by World War II many armies had airborne forces. Paratroopers jump from transport planes at low altitude to land behind enemy lines. Today elite parachute forces are also used for covert infiltration.
+
+@@Partisans
+Partisans are armed groups loyal to a leader, a regime or a cause, fighting behind enemy lines. Unlike fanatics, partisans are usually trained guerrilla fighters rather than terrorists, attacking military targets instead of civilians.
+
+During World War II, resistance movements fought throughout Nazi-occupied Europe, in France, Yugoslavia, the Soviet Union and elsewhere. Their sabotage of railways, bridges and supply depots tied down large numbers of German troops far from the front. Their unwavering commitment to their homeland made them tough foes.
+
+@@Phalanx
+The phalanx was a Greek battle formation that the Macedonians, under Philip II and Alexander the Great, brought to perfection. Soldiers stood 8 to 32 ranks deep, each carrying a long spear, a sword and a big shield.
+
+The front five ranks leveled their spears toward the enemy, while the rear ranks held theirs raised to deflect arrows and other missiles. Charging as one dense mass, the phalanx could force any enemy back. But it was hard to maneuver, and professional armies such as the Roman legions learned to outflank it.
+
+@@Pikemen
+Medieval infantry needed protection against charging knights. The pike, a spear up to 18 feet long, gave foot soldiers a reach longer than a lance, so a rider would meet the points before he could strike.
+
+Massed blocks of pikemen, such as those of the Swiss, could stop a cavalry charge cold. Combined with archers and later with handgunners, they formed a formidable army. Pikemen remained effective until gunpowder ended the age of the knight.
+
+@@Riflemen
+In the 19th century rifling, spiral grooves cut inside the barrel, came into general use. The grooves spin the bullet, giving it far greater range and accuracy than a smoothbore musket. Repeating rifles, which fire several shots before reloading, soon followed.
+
+Rifles were first used on a large scale in the American Civil War, where they gave defenders a deadly advantage over advancing attackers and made massed frontal charges suicidal. Riflemen remained the masters of the battlefield until armored vehicles arrived.
+
+@@Settlers
+When a city grew overcrowded and could no longer find enough resources to feed and support its people, some of its citizens left to start again elsewhere. These settlers founded new towns, built homes and worked the land around them.
+
+In time the new cities grew and sent out settlers of their own. This is how ancient empires spread, from the Greek colonies around the Mediterranean to the cities of Rome, and how pioneers later settled the Americas.
+
+@@Spy
+Spies infiltrate the ranks of the enemy to learn his secrets. Most nations have laws against espionage, and in wartime spies are often put to death, yet the rewards of good intelligence have always been judged worth the risk.
+
+In the game, a Spy finds out how large and how strong an enemy's army is. It can persuade enemy units to defect, steal technology and sabotage the enemy. Spies also serve in counterintelligence, protecting their nation's secrets from enemy spies and subversion.
+
+@TERRAIN_AND_RESOURCE_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@TERRAIN_INDEX
+0,			; Desert
+8,			; Plains
+3,			; Grassland
+1,			; Forest
+4,			; Hills
+6,			; Mountains
+11,			; Tundra
+2,			; Glacier
+10,			; Swamp
+5,			; Jungle
+7,			; Ocean
+24,			; Oasis
+12,			; Buffalo
+3,			; Grassland
+18,			; Pheasant
+13,			; Coal
+21,			; Gold
+18,			; Game
+23,			; Ivory
+26,			; Peat
+20,			; Gems
+14,			; Fish
+25,			; Desert Oil
+30,			; Wheat
+3,			; Grassland
+27,			; Silk
+31,			; Wine
+22,			; Iron
+16,			; Furs
+25,			; Glacier Oil
+28,			; Spice
+15,			; Fruit
+29,			; Whales
+-2,			; MUST BE HERE! TERMINATOR!
+
+;
+@@Desert
+A desert is a region that receives less than ten inches of rain a year, and where evaporation is greater than rainfall. Days can be scorching and nights cold, since dry air holds little heat. Only tough plants and animals can survive there.
+
+Desert soil is often surprisingly fertile, because the scarce rain has not washed its nutrients away. With irrigation, deserts can be farmed productively, as along the Nile and in the American Southwest. But the scarce water can be used up, and overwatering can leave salt behind, damaging the land permanently.
+
+@@Forest
+A forest is land densely covered with trees and undergrowth. Its type depends on climate and vegetation: evergreen forests of the cold north, broadleaf woods of temperate lands and rain forests near the equator. Forests are found on almost every continent.
+
+For thousands of years forests have supplied timber for building, fuel and, later, paper. Overlogging has destroyed many forests and the habitats of the creatures that lived there. Many countries now limit logging and require companies to replant what they cut.
+
+@@Glacier
+Glaciers are vast bodies of ice and packed snow that form in high mountains and polar regions, wherever more snow falls each winter than melts each summer. Alpine glaciers flow down mountain valleys, and piedmont glaciers spread out where they reach flat land. The largest are ice caps and continental ice sheets, such as those covering Greenland and Antarctica.
+
+A glacier has soft snow on top and dense, compressed ice below. It creeps forward anywhere between a few feet and over 100 feet each day, grinding and reshaping the land beneath it. Glaciers are barren: almost no animals, no plants and no useful resources.
+
+@@Grassland
+Grasslands lie between forests and deserts, in both tropical and temperate zones. They once covered large parts of the Americas, Africa and Eurasia, as the prairies, savannas and steppes.
+
+Grasslands typically have a season of rain followed by a season of drought each year, which keeps trees from taking hold. Some grasslands were created by people clearing forest. They make fine pasture for grazing animals, and their deep, nutrient-rich topsoil is ideal for growing grain, which is why many have become the breadbaskets of the world.
+
+@@Hills
+Hills are the rolling foothills between the plains and the mountains. Their soil is often fertile, and they may be covered with grass or woods.
+
+Hills frequently hold deposits of coal, iron, lead, copper, gold and silver, and many have become centers of mining. Where minerals are scarce, hills are farmed instead. Their well-drained slopes are ideal for vineyards and coffee plantations, found in hill country around the world.
+
+@@Jungle
+Jungles grow where rainfall is heavy and the climate warm, producing dense growth of trees, vines and plants. They are home to an enormous variety of species, more than any other land environment.
+
+Despite this richness, jungles offer few minerals or reliable sources of food for people, although some fruits and ores can be found. The heat, damp and disease make them hostile to human settlement. Farmers clear jungle by slash-and-burn, cutting and burning the forest to make grassland. As a result, habitats are vanishing fast, and every day species become extinct before science has even discovered them.
+
+@@Mountains
+Mountains are high, rugged ranges of peaks and valleys. Most were formed by the collision of the plates of the earth's crust, which pushes up rock over millions of years, as with the Himalayas. Others were built by volcanoes or carved by erosion.
+
+Mountains make poor farmland, but they can hold rich deposits of ore, including gold. They form a natural barrier that has long protected the settlements behind them. Mountains also shape the weather, blocking winds and storms and often leaving a dry region on their far side.
+
+@@Ocean
+The seas cover nearly three-quarters of the earth's surface. They are home to life of every size, from tiny plankton to the great whales, and seafood is a major source of food for people around the world.
+
+Coastal and island peoples have long thrived on fishing and seaborne trade. But overfishing has emptied many once-rich waters, and pollution has damaged coasts and reefs. In the 19th and 20th centuries, whaling nearly wiped out several species of whale. Nations continue to develop regulations to control the dumping of waste at sea and the harvesting of its creatures.
+
+@@Plains
+Plains are wide, open stretches of land with few trees, covered with sagebrush and grasses. They are generally drier and less fertile than grassland.
+
+Plains often hold mineral deposits beneath their surface. They have long supported great herds of grazing animals, such as the buffalo of North America. With irrigation, plains can be farmed for grain and used to raise livestock on a large scale, as on the Great Plains of the United States.
+
+@@River
+Rivers begin at springs, in melting snow or where smaller streams, called tributaries, join together. They flow into larger rivers, lakes and the sea. Rivers run through every type of terrain.
+
+Their fertile valleys drew the first cities, along the Tigris and Euphrates, the Nile, the Indus and the Yellow River. Rivers made travel by boat and trade between towns easy. Canals and aqueducts carried their water to fields for irrigation. Rivers also deposit minerals, and their flow has powered mills, machines and, later, the generators that make electricity.
+
+@@Swamp
+Swamps are flooded wetlands, fed by rain and by overflowing lakes and rivers. They are unfit for most human settlement, but they are rich in wildlife and plants.
+
+Swamps provide some useful goods, such as spices and peat, which is used as fuel and fertilizer. For centuries people have drained swamps to turn them into grassland or plains for farming. More recently, as the value of wetlands has become better understood, conservation efforts have protected many swamps as wildlife refuges.
+
+@@Tundra
+Tundra is a vast, barren plain found in the far north and in parts of Antarctica. It is very cold for most of the year, and its summers are very short.
+
+Beneath the surface lies permafrost, ground that stays frozen all year, so trees cannot put down roots and farming is impossible. Tundra receives little precipitation, about as little as a desert, but the frozen ground keeps water from draining, creating bogs covered in moss and grasses. The tundra has rich animal life, which northern peoples have long hunted for food and trapped for furs.
+
+;
+
+@@Buffalo
+Buffalo are herd animals of the plains, hunted for sport, for food and for their hides. Some kinds, such as the water buffalo of Asia, have been domesticated for farm work. Buffalo species are found around the world.
+
+In North America, the bison once dominated the plains in herds of millions, and it was central to the life of many Native American tribes, who used it for food, clothing and shelter. During the westward expansion of the United States, hunters slaughtered the herds, and by the 1880s the bison was close to extinction.
+
+@@Coal
+Coal began as the plants of ancient swamps, which died and decayed over 300 million years in the past. Buried under layers of sand and mud, they were compressed over time into coal.
+
+Coal is mined around the world, and it was the leading fuel of industry until the 1970s. Concern for the environment has since reduced its use: burning coal produces acidic smoke, and the resulting acid rain harms forests, lakes and wildlife. Coal mining remains a profitable industry, however, and each of the biggest American mines yields upwards of 450,000 metric tons a year.
+
+@@Fish
+Winds, ocean currents and deep trenches combine to create some of the richest fishing grounds in the world. One such region lies along the Pacific shores of the Americas, south of Mexico.
+
+There, offshore winds push warm surface water away from the coast. Cold water rises from the depths to replace it, a process called upwelling. This deep water is rich in nutrients from decomposed organic matter, which feed plankton and, through them, great schools of fish. Fishing industries in such waters greatly boost the food supply.
+
+@@Fruit
+Tropical climates are well suited to fruit. Bananas, for example, first grew wild in the rainforests of Southeast Asia, long before people cultivated them.
+
+Wild fruit was one of the first food crops gathered by people. Over the centuries, traders and colonists carried fruit plants to lands with similar climates around the world, so that bananas now grow in Central America and Africa, and oranges, mangoes and pineapples are grown far from where they first appeared.
+
+@@Furs
+Furs have been valued trade goods for thousands of years. Trappers caught mink, rabbit, beaver and other animals for their pelts, which were made into warm clothing and fashionable hats.
+
+The colonization of the New World set off a boom in the fur trade, as French, English and Dutch traders bought pelts from Native Americans. From the late 1800s, fur farms began raising animals for their pelts. Since the 1970s animal rights campaigns have reduced demand, but the trade, though smaller, remains profitable today.
+
+@@Game (Forest)
+@@Pheasant
+Hunting has provided food since the earliest times, and since antiquity it has also been a sport. Forests rich in game, such as deer, elk and smaller animals, helped feed nearby towns.
+
+As people learned to raise livestock, hunting became mostly a sport, and in medieval Europe forests full of game were often reserved for the nobility. Even so, many people still hunt geese, ducks and deer for food.
+
+@@Musk Ox
+In the far north, settlements cannot grow crops, and their people have always relied on hunting and trapping to survive. Birds and small game supplement their diet.
+
+Large animals such as caribou, elk and musk ox provide most of the food in this barren land, along with hides for clothing and shelter. The musk ox, a shaggy relative of sheep and goats, has a thick coat that protects it from the bitter arctic cold.
+
+@@Gems
+Gemstones such as diamonds, rubies, sapphires and emeralds have been prized throughout history for their beauty and their value. Many of the world's diamonds are mined in Africa, in countries such as South Africa and Botswana.
+
+Gems also turn up at archaeological sites. In the rainforests stretching from Mexico to the Amazon, ruined cities long swallowed by jungle have given up gems and gold. Such finds draw treasure hunters, who flock to the area and boost local trade.
+
+@@Gold
+Gold has always been among the most prized of metals. It does not rust or tarnish, and it is used in jewelry and, because it conducts electricity well, in electronics. For centuries it formed the basis of money systems around the world.
+
+Gold is valuable largely because it is scarce. The richest deposits lie in veins in the mountains. A productive mine can make nearby towns rich, as the California gold rush showed in the 1800s, when boomtowns sprang up almost overnight.
+
+@@Iron
+Bronze, made from copper and tin, was the first metal in common use for tools and weapons. It was easy to work but too soft to hold a lasting edge.
+
+Iron is harder and more plentiful. The Hittites of Anatolia were working iron by the 14th century BC, and the skill spread over the following centuries until iron replaced bronze across Europe, beginning the Iron Age. Iron ore is mined in the mountains and smelted into raw iron, which can then be refined into steel.
+
+@@Ivory
+Ivory is the hard white material of animal tusks, valued for centuries for carving ornaments, statues, piano keys and jewelry. Most ivory has come from African elephants.
+
+Ivory also comes from the tusks of walruses and from the fossil tusks of mammoths found in the frozen regions of the north. The ivory trade was once large and profitable, but it drove elephants toward extinction. Since 1989 international agreements have banned imports of elephant ivory to protect the endangered animals.
+
+@@Oasis
+An oasis forms where underground water reaches the surface in the middle of a desert, rising through springs or lying close enough to be reached by wells. Pools of water support palms, grasses and animals in an otherwise barren land.
+
+The ground around an oasis is fertile, and crops such as dates can be grown there. Oases helped desert settlements survive and served as vital stops for caravans crossing the Sahara and Arabia. Because they are rare, oases have always been jealously defended.
+
+@@Oil
+Oil that seeped to the surface was known in ancient times. The peoples of Mesopotamia used bitumen to waterproof boats and buildings, and others burned oil as fuel for lamps.
+
+The Industrial Revolution created a lasting dependence on petroleum. Machines needed lubricants, and later engines needed fuel, which drove the search for new supplies. Drillers sank the earliest oil wells in the mid-1800s, in Pennsylvania and elsewhere. Today, with known reserves shrinking and demand still rising, oil becomes ever more valuable.
+
+@@Peat
+Peat is a brown organic material that builds up in bogs and swamps. It is made of plants that have only partly rotted, because the waterlogged ground slows their decay, and it is rich in carbon.
+
+In Ireland, Scotland and other lands with few trees, peat has long been cut, dried and burned as fuel. Today it is chiefly used as fertilizer and mulch in gardens and farms. It adds minerals to the soil and helps it hold water.
+
+@@Silk
+Silk has been known in China since at least the 27th century BC. It comes from the cocoons of the silkworm moth, a creature of China's woodlands that feeds on mulberry leaves. Each cocoon is unwound into a long, fine thread, which is woven into a smooth, shining cloth.
+
+For centuries the Chinese kept the secret, and Asia held a monopoly on silk until about 550 AD, when two monks smuggled silkworm eggs to the Roman Empire hidden in hollow canes. Synthetic fibers caused silk to decline in the 20th century, but it remains popular today.
+
+@@Spice
+Many plants evolved strong, pungent flavors to keep animals from eating them. Humans, however, came to prize those very flavors.
+
+Merchants were already carrying spices across the Middle East some 4,000 years ago, and they were used both to flavor food and to help preserve it. Most spices are now cultivated, but many still grow plentifully in the wild. Cloves and nutmeg, among the most valuable of all, come from tropical or marshy lands, notably the Moluccas, the spice islands of Indonesia.
+
+@@Whales
+Organized whaling for whale oil began around 875 AD, and by the 1500s it was the chief industry of the Basque coasts of Spain and France. It grew into a profitable trade worldwide, as whale oil lit lamps and greased machinery.
+
+Whaling fleets concentrated on the routes that whales followed during their migrations. The industry kept growing into the 20th century, when steam-powered ships and explosive harpoons made it far deadlier. Several species were nearly wiped out, and by 1969 bans protected many of them. In the late 1980s an international moratorium halted commercial whaling around the world.
+
+@@Wheat
+Wheat has been the staple grain of temperate civilizations since prehistoric times. People gathered and ate wild wheat long before they learned to grow it, and bread wheat was being cultivated in southern Turkestan by 6000 BC.
+
+Wheat became the main food crop of temperate lands. It grows best on broad, open plains, such as those of the central United States, Canada, Ukraine and Argentina, which today produce much of the world's supply.
+
+@@Wine
+Wine, made by fermenting grape juice, has been produced since about 6000 BC, when it was first made in the Caucasus and the Near East. From there it spread through Egypt and the Middle East and around the Mediterranean.
+
+Grapevines grow best in the hills and valleys of temperate lands. Over the centuries winemakers refined their craft, and whole regions built their economies on wine, among them the valleys of the Rhine in Germany and the Loire in France.
+
+@GOVERNMENT_DESCRIPTIONS
+;
+;
+;
+;
+;
+;
+;
+;
+;
+;
+@@GOVERNMENT_INDEX
+0,			; Anarchy
+1,			; Despotism
+5,			; Monarchy
+2,			; Communism
+4,			; Fundamentalism
+6,			; Republic
+3,			; Democracy
+-2,			; MUST BE HERE! TERMINATOR!
+
+@@Anarchy
+Anarchy is not really a form of government at all, but the absence of any stable government. It happens when your government collapses, or when you start a Revolution to change to another form of rule.
+
+Anarchy lasts a few turns, after which you may set up a new government. In the meantime it works much like Despotism, except that corruption is EXTREMELY high. No taxes are collected and no science research is done while it lasts, so the sooner it ends, the better.
+
+@@Despotism
+Under Despotism, a single ruler holds total power, backed by the army. The people have little personal freedom, and production is inefficient.
+
+In the game, each city supports as many units as its size for free; every unit beyond that costs 1 Shield a turn. Settlers consume 1 Food a turn. Martial law is in force: as many as 3 military units in a city can each make 1 unhappy citizen content. Corruption and waste are high, and corruption grows with distance from the capital. The Tax, Luxury and Science rates are capped at 60%. Any square that would normally yield 3 or more Food, Shields or Trade yields 1 less of that resource.
+
+Because of its corruption, Despotism is almost always a poor choice. Move to Monarchy as early as you can.
+
+@@Communism
+Under Communism, a single ruling party governs, and its chairman serves as head of state. In theory, everything is owned collectively and all citizens benefit equally from their labor; real-world communist regimes have fallen well short of this ideal.
+
+In the game, a city supports its first 3 units free, and each further unit costs 1 Shield a turn. Settlers consume 1 Food a turn. Under martial law, as many as 3 military units in a city can each make 2 unhappy citizens content. There is no corruption in cities, since the state-run economy leaves no room for organized crime. Every Spy you build is a Veteran. The Tax, Luxury and Science rates are capped at 80%.
+
+Communism suits large, spread-out empires that keep a big army. And those veteran Spies are ideal for relieving capitalist rivals of their advances.
+
+@@Democracy
+In a Democracy, the people elect a president as head of state, and a Senate of elected representatives reviews the government's decisions. Citizens enjoy the greatest personal freedom and take the largest part in running their country.
+
+In the game, every unit costs its home city 1 Shield a turn, and Settlers consume 2 Food a turn. Citizens are weary of war: each unit outside a friendly city (or outside a Fortress no more than 3 squares from a friendly city) makes 2 citizens unhappy in its home city. There is no corruption and no waste. You may set the Tax, Luxury and Science rates freely, with no cap. Every square already producing at least 1 Trade produces 1 more. Your units and cities cannot be bribed by any means. The Senate may impose peace in a conflict.
+
+Democracy brings huge income and research, but the unhappiness caused by military units makes it practical mainly for large, advanced civilizations. To ease unhappiness, raise the Luxury rate and build Improvements and Wonders that keep citizens content.
+
+@@Fundamentalism
+Fundamentalism builds the state around a rigid creed, usually a religious one. Rulers and people alike are wholly devoted to it, and many are ready to die for it.
+
+In the game, a city supports its first 10 units free, and each further unit costs 1 Shield a turn; Fanatics never need support. Settlers consume 2 Food a turn. Citizens are never unhappy, and corruption is very low. The Tax, Luxury and Science rates are capped at 80%. However, ALL SCIENCE OUTPUT IS CUT IN HALF. Improvements that would normally make unhappy citizens content instead collect tithes: each pays one gold for every citizen it would have calmed, and they cost no upkeep. Diplomats and Spies that commit acts of terrorism draw a lighter diplomatic penalty.
+
+Fundamentalism means no happiness troubles and a strong income, but your research will lag behind.
+
+@@Monarchy
+Under a Monarchy, power passes down within a royal family, usually to a king or queen, whose authority is less absolute than a despot's. A monarch needs the support of at least the nobility, and the economic freedom granted to nobles raises the kingdom's productivity.
+
+In the game, a city supports its first 3 units free, and each further unit costs 1 Shield a turn. Settlers consume 1 Food a turn. Under martial law, as many as 3 military units in a city can each make 1 unhappy citizen content. Corruption and waste are moderate, and corruption grows with distance from the capital. The Tax, Luxury and Science rates are capped at 70%.
+
+Monarchy is a very good choice for a young civilization.
+
+@@Republic
+A Republic is made up of self-governing city-states joined under a central authority. Each city keeps local autonomy, while the central government controls matters common to all, such as defense and foreign affairs. The ruler's decisions are reviewed by a Senate.
+
+In the game, every unit costs its home city 1 Shield a turn, and Settlers consume 2 Food a turn. Citizens dislike foreign adventures: every unit after the first that is outside a friendly city (or outside a Fortress no more than 3 squares from a friendly city) makes 1 citizen unhappy in its home city. Corruption and waste are low, though corruption grows with distance from the capital. The Tax, Luxury and Science rates are capped at 80%. The Senate may impose peace in a conflict.
+
+A Republic brings a big jump in Science and Luxury income, though you will likely have to devote some Trade to Luxuries to keep order. Keeping a large army abroad is hard and costly; some Improvements and Wonders ease the problem.
+
+@CONCEPT_DESCRIPTIONS
+;
+;
+;
+
+@@Disband
+Sometimes a unit is no longer worth keeping. It may be obsolete, it may be too costly to support, or it may be causing unhappiness in its home city.
+
+To remove such a unit, press Shift+D or choose Disband from the Orders menu. A disbanded unit is gone from the game for good. If you disband a unit inside a friendly city, however, half of its Shield cost is added to whatever the city is currently building, whether a unit, a Wonder or an Improvement.
+
+@@Fortify
+On campaign, Roman legions built a fortified camp every evening, with a ditch and a palisade, before they rested. Armies throughout history have dug in when they expected an attack, and entrenched defenders are much harder to defeat than troops caught in the open.
+
+In the game, ground units fortify with the F key or with Fortify in the Orders menu. A fortified unit's defense rises by 50%. It stays in place until you give it new orders.
+
+@@Fortress
+A fortress is a permanent strongpoint built in the field. Settlers and Engineers can build fortresses once Construction is known. They are useful for guarding the approaches to cities and blocking key passages such as mountain passes and narrow strips of land.
+
+Every unit inside a fortress has its defense doubled. Units stacked in a fortress are defeated one at a time, instead of all dying together when the defender loses. The fortress itself is not damaged by attacks. To build one, press the F key or choose Build Fortress from the Orders menu. Under a Republic, units in a fortress no more than 3 squares from their home city cause no unhappiness.
+
+@@Irrigation
+The first farmers worked the hills, where rain watered their crops. In time they moved down into the valleys of the Euphrates, Tigris and Nile, where great rivers crossed dry land. By drawing river water onto their fields through canals, they made farming possible there.
+
+In the game, irrigation raises the Food output of Grassland, Plains, Desert and Hills. A square may be irrigated only if it borders water (Ocean or River), or an irrigated square directly to its north, south, east or west, not diagonally. After Refrigeration, irrigating an already irrigated square again turns it into farmland. Settlers and Engineers irrigate with the I key or Build Irrigation in the Orders menu.
+
+@@Luxuries
+Luxuries are the comforts and entertainments that keep citizens in good spirits. In the City Display they appear as goblets in the Resource Box.
+
+Each pair of Luxuries improves one citizen's mood by one step, turning an unhappy citizen content or a content citizen happy. The amount of Luxuries is mainly set by the share of Trade you give to Luxuries, which you adjust with Change Tax Rate in the Kingdom menu. Entertainers and certain Wonders and City Improvements also add Luxuries.
+
+@@Mining
+Early peoples found pure gold, silver and copper lying on the surface or in stream beds. Once those surface finds were used up, people began to dig into the earth for ores, coal and stone, and mining goes on today on a vast scale.
+
+In the game, a mine adds 1 Shield on Desert and on Mountains, and 3 Shields on Hills. Settlers and Engineers dig mines with the M key or Build Mine in the Orders menu.
+
+@@Pillage
+A unit standing on an enemy's improved square can destroy the improvements there, such as irrigation, mines and roads. This lowers the square's output, and the enemy will have to rebuild.
+
+To pillage, press Shift+P or choose Pillage from the Orders menu. Each order removes one improvement, so give the order again for every improvement you mean to wreck. A fully developed square, for example one with farmland and a railroad, takes four pillage orders to strip completely.
+
+@@Pollution
+Pollution is chiefly caused by high Shield production in a city. Large populations also cause it once Automobile is discovered, and so do nuclear attacks and meltdowns of Nuclear Plants.
+
+When a city is at risk, the Information Box of its City Display shows skulls on yellow triangles. The more skulls, the higher the chance each turn that a square within the city radius becomes polluted. If pollution across the world becomes critical, global warming may occur.
+
+Settlers or Engineers can clean a polluted square with the P key or Clean Up Pollution in the Orders menu. You can reduce a city's pollution by building suitable City Improvements, or by producing fewer Shields.
+
+@@Railroads
+Railroads offered cheap, fast transport for people, goods, raw materials and troops. Lower freight costs fueled the growth of industry, the demands of the railways spurred research in engineering and metallurgy, and rail companies were among the first big corporations.
+
+In the game, Settlers and Engineers can build railroads once Railroad is discovered. A railroad must be laid over an existing road, with the R key or Build Railroad in the Orders menu. Moving along a railroad costs no movement points. A railroad also raises the square's Shield and Trade output by 50%, rounded down.
+
+@@Roads
+Roads link cities to one another. Ancient roads, such as those of Persia and Rome, carried commerce and let armies march quickly to the frontiers. Modern paved roads can be used in all weather and are far faster than dirt tracks.
+
+In the game, Settlers and Engineers build roads with the R key, or with Build Road from the Orders menu. Any terrain but Ocean can take a road, though River squares need Bridge Building first. Whatever the terrain, each step along a road uses up just 1/3 of a movement point. Roads also add Trade on Desert, Plains and Grassland.
+
+@@Science
+Science is the research that leads your civilization to new knowledge. It is shown as beakers on the City Display, in its Resource Chart.
+
+Each turn, the beakers of every city go toward your current research goal until a new Civilization Advance is discovered. The more beakers you produce, the faster your discoveries. Science is mainly set by the share of Trade you give it, using Change Tax Rate in the Kingdom menu. Scientists and certain Wonders and City Improvements also boost it.
+
+@@Sentry
+A sentried unit stands guard and waits. It is drawn as a gray silhouette and leaves the queue of units awaiting orders, so you are not asked about it every turn.
+
+To sentry a unit, press the S key or choose Sentry from the Orders menu. A sentried unit wakes when another unit comes within sight, or when you reactivate it by hand. Sentried units in a city automatically board a departing ship, up to its capacity. A damaged unit sentried in a city reactivates once it is fully repaired.
+
+@@Shields
+Shields are the raw materials a city produces. They are shown as shield icons, hence the name, and the City Display counts them in its Resource Chart.
+
+Shields pay for unit support: depending on the government and circumstances, a unit may cost its home city 1 Shield a turn. Surplus Shields go to building units, Wonders and City Improvements. A city's Shield output depends mostly on the terrain around it. Some Improvements and Wonders raise it, as do mines on suitable terrain.
+
+@@Specialists
+The citizen icons in the City Display's Population Roster show a city's workforce. Each new citizen is automatically set to work a square within the city radius. A citizen taken off the land becomes a specialist.
+
+There are three kinds of specialist, each boosting one part of Trade: Entertainers add Luxuries, Tax Men add Taxes and Scientists add Science. To create one, click a worked square on the City Map. Its output icons vanish, and the roster gains an Entertainer. Click an Entertainer once to make it a Tax Man, and click a Tax Man once to make it a Scientist. Tax Men and Scientists are available only in cities of size 5 or more.
+
+@@Taxes
+Taxes are the gold a city collects. They are shown as gold coins in the City Display's Resource Chart.
+
+Taxes mainly pay each turn's upkeep of your City Improvements, and whatever is left goes into the treasury. The amount is mainly set by the share of Trade you give to Taxes, using Change Tax Rate in the Kingdom menu. Tax Men and certain Wonders and City Improvements also boost Taxes.
+
+@@Trade
+Trade stands for commerce, but also for the exchange of ideas and for citizens' travel and leisure. The City Display's Resource Chart shows it as double arrows.
+
+A city's Trade is split into three parts: Taxes, Luxuries and Science. You set the split with Change Tax Rate in the Kingdom menu. Trade is increased by some City Improvements and Wonders, by terrain improvements such as roads, and by trade routes.
+
+@@Trade Routes
+A trade route is set up when a Freight or Caravan unit enters a city at least 10 squares away from its home city, where it was built. Founding the route earns a one-off cash reward.
+
+After that, both cities receive a Trade bonus every turn for as long as the route lasts. The greater the distance, the more valuable the route, and routes with a rival civilization's city usually pay more than those between your own cities. Each city can have at most 3 active routes. Under the Advanced Trade rules, the goods carried also matter: delivering a commodity that the destination city demands pays much more.
+
+@@Veteran Units
+Soldiers in the American Civil War called their first time under fire seeing the elephant. Troops who had seen it, and survived, were seasoned veterans, and they were more likely to survive the next battle as well.
+
+In the game, a unit that survives a combat has a 50% chance of becoming a Veteran. Cities with Barracks build Veteran units automatically, and so do all cities covered by the Wonder Sun Tzu's War Academy. Veterans get +50% to their attack and defense.
+
+@@Corruption and Waste
+Corruption is Trade lost to embezzlement, theft and crime. Waste is Shields lost to inefficiency. Both rise with a city's distance from your capital, and both depend on your type of government. Left unchecked, they can badly slow your growth.
+
+A Courthouse halves both corruption and waste in its city, which makes it a sound investment in distant cities. The best cure, however, is a more advanced government, since each step up the ladder of government shrinks the loss. Communism and Democracy remove the problem entirely.
+
+@@Unhappiness Due to Civ Size
+When your empire grows beyond a certain number of cities, citizens begin to doubt that you can rule them all. From then on, extra unhappy citizens appear in every city.
+
+How many cities you may found before this begins depends on your government and on the difficulty level. More advanced governments and easier difficulty levels allow more cities. Plan for it by building improvements that keep citizens content, or by changing your government.
+
+@@Combat Damage
+Units can now be damaged in combat, a new feature. A battle is fought in rounds, and each round the winner deals damage equal to its Firepower. A unit is destroyed once it has taken damage equal to its Hit Points x 10.
+
+A colored damage bar on top of the unit's shield icon shows its condition: green when it has lost 0-33% of its Hit Points, yellow for 34-66%, and red for 67% or more.
+
+A damaged unit loses the same percentage of its movement as it has lost of its Hit Points. Sea units, however, never drop below 2 movement, and air units keep their full movement however badly they are hurt.
+
+@@Transforming Terrain
+Beyond irrigation and mining, Engineers can change a square into a very different terrain type. To do so, use Transform in the Orders menu.
+
+This is useful when the land around a city yields too little food, shields or trade. Transformation takes time, but it can turn a poor site into a productive one. Each terrain's Civilopedia entry lists what it transforms into.
+
+@@Airbases
+Once Radio is discovered, Settlers and Engineers can build Airbases. An Airbase serves as a distant refueling point for Fighters, Stealth Fighters, Bombers and Stealth Bombers.
+
+Well-placed Airbases extend the reach of these aircraft beyond your friendly cities and Carriers, letting them strike far into enemy territory and return safely. To build one, press E, or pick Airbase in the Orders menu.
+
+@@Airlift
+Once Combined Arms is discovered, you can airlift a unit instantly from one of your cities to another. Both cities need an Airport.
+
+With the unit in a city that has an Airport, press L, or use the Airlift command in the Orders menu. A list of destination cities appears; pick one, and the unit arrives at once. The unit can act again on the next turn.
+
+@@City Squares
+A city produces resources not only from the squares around it but also from its own square. The city square yields what its terrain normally yields, and it is automatically improved as far as possible.
+
+It always has a road, which becomes a railroad once Railroad is discovered. It also receives irrigation or a mine for free, whichever suits its terrain. On terrain that normally gives no Shields, it gets 1 extra Shield. Together, these benefits maximize the city square's output, so the site you choose for a new city matters.
+
+;
+(missing)
+
+
+@; (the end of the descriptions)
+

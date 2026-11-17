@@ -1,0 +1,627 @@
+; OpenCiv2: help pages (HELP.TXT).
+; Written for OpenCiv2, used where the game has no HELP.TXT of its own.
+
+
+@ADVANCES
+@width=600
+@title=Advances Editor Help
+^AI VALUE sets how highly computer players rate
+^this advance when choosing what to research.
+^
+^MODIFIER is added to or subtracted from the AI Value.
+^Civilized tribes favor positive modifiers.
+^Militaristic tribes favor negative modifiers.
+^We advise keeping both values between -5 and 5.
+^
+^EPOCH and CATEGORY together choose the icon shown here.
+^Many advances, or even all of them,
+^may share the same icon. That is fine.
+^
+^To remove an advance from the game, set both of its
+^prerequisites to NO. NIL means no prerequisite is needed;
+^an advance with NIL for both is known from the start.
+^
+^Warning: FUTURE TECHNOLOGY must stay linked to the
+^tree. If any tribe cannot reach it, the game will crash.
+
+
+@CITIES
+@width=600
+@title=Cities Editor Help
+^Cities of size 1 to 3 use the Small icon.
+Capitals never use the Small icon.
+Cities of size 4 to 5 use Medium, 6
+to 7 Large, and 8 or more Extra-large.
+
+
+@IMPROVEMENTS
+@width=600
+@title=Improvements Editor Help
+^EDIT MISC
+^^Explosions
+^The 8 explosion images play quickly, in order from 1 to 8.
+^This happens in every battle.
+^
+^^Cursor
+^A right-click on the map brings up the tile cursor. 
+
+
+@TERRAIN
+@width=600
+@title=Terrain Editor Help
+^A terrain's DEFENSE VALUE raises the defense
+^of the units standing on it, as follows:
+^
+^    Defense = Unit Defense x 50%% x Terrain Defense
+^
+^Thus a Phalanx standing in Forest defends at 3:
+^    2 x 3 x 1/2 = 3
+^
+^No matter how high a terrain's MOVE COST, every unit can still
+^cover at least one square per turn.
+^
+^GOVERNMENT FOR AI is the lowest government at which
+^computer tribes will carry out that terrain order.
+^ 
+^To edit the ocean graphics at zoom levels that draw coastlines, 
+use Coasts 1 to 4 for that. At the closer 
+zoom levels, where no coastlines are drawn, 
+edit the ordinary ocean icon instead.
+
+
+@UNITS
+@width=600
+@title=Units Editor Help
+^BUILD COST is shown in tens of shields: the real
+^cost is the value shown x10. Never set it above 18.
+^
+^HOLDS ON SHIP is the most units this ship can carry.
+^
+^RANGE is how many turns an air unit can stay aloft.
+^It must end its final turn at a base, or it will crash.
+^
+^ATTACK FACTOR sets the odds of scoring a hit when attacking. 
+^An attack value of 99 makes a unit nuclear, with many side effects.
+^
+^DEFENSE FACTOR sets the odds of scoring a hit when defending.
+^
+^HIT POINTS is the damage (x10) the unit can take before it is destroyed.
+^
+^FIREPOWER is the damage dealt with each successful hit.
+^
+^A battle always ends with one side destroyed, so both units may
+^take many hits along the way. Combat stops as soon as either unit's
+^damage reaches its hit points, and that unit is the one destroyed.
+
+
+@TRIBES
+@width=600
+@title=Tribe Editor Help^
+^The CITY STYLE chosen here only affects tribes run by the computer. 
+^Human tribes use the style their player picked, or else
+^the standard ancient style of the Bronze and Stone Ages.
+^You can edit a tribe's NAME, its LEADER names and its
+^leader's attitudes. You cannot edit its COLOR. Each
+^color always belongs to 3 tribes, but only one of them
+^is active in a scenario at a time. Either of the other
+^two may take its place if the active tribe is wiped out.
+^Every tribe takes one of 3 ATTACK attitudes:
+^  Aggressive: quick to start a fight.
+^  Rational: prefers to negotiate.
+^  Neutral: somewhere in between.
+^Every tribe takes one of 3 EXPAND attitudes:
+^  Expansionist: sends Settlers far and wide and tries to seize cities.
+^  Perfectionist: wants a few rich cities rather than many average ones.
+^  Normal: somewhere in between.
+^Every tribe takes one of 3 CIVILIZE attitudes:
+^  Civilized: prefers peaceful advances.
+^  Militaristic: prefers military advances.
+^  Normal: somewhere in between.
+
+
+@EFFECTS
+@width=600
+@title=Universal Effects Editor Help
+^IMPORTANT: Changes to these values do not take effect
+^right away. First save the game or the scenario,
+^then load it again. Before you do, the figure in parentheses shows
+^the new value you set, and the other one shows the value in force.
+^
+^Most effects explain themselves, but a few need a word or two:
+^
+^CITY SIZE (default 7) is the size at which one citizen
+^becomes unhappy at Chieftain level. Each higher difficulty
+^level lowers it by 1, from 6 at Warlord down to 2 at
+^Deity. Changing it shifts the value for every level.
+^
+^RIOT FACTOR is how many cities you can own before 
+^your empire's sheer size starts to cause unhappiness.
+^
+^It is better to change the TECH PARADIGM from the Cheat menu than here.
+^
+^TRANSFORM TERRAIN is twice the number of turns
+^an Engineer needs to finish a transformation.
+
+@HELPUNITKILLED
+@width=600
+@title=Events Editor Help
+^UNITKILLED
+^
+^This event fires when all three conditions are true:
+^  1. A unit of the named type is killed in battle.
+^  2. The attacker belongs to the named tribe.
+^  3. The defender belongs to the named tribe.
+^
+^Either tribe name, or both, may be replaced with
+^'Anybody' so that the event applies to every tribe.
+
+
+@HELPNEGOTIATION
+@width=600
+@title=Events Editor Help
+^NEGOTIATION
+^
+^Stops the 'talker' tribe from talking with the 'listener' tribe.
+^You can limit it to human tribes or to computer tribes;
+^choosing 'humanorcomputer' sets no limit at all.
+^
+^To block talks in both directions, add a second
+^event with the talker and listener swapped.
+^
+^IMPORTANT: this trigger carries a hidden action of its 
+^own, which also blocks all talks between the two
+^tribes. That is handy in historical scenarios where
+^two governments never met. Be careful, though: tribes
+^try to negotiate very often, especially the computer
+^tribes, so if you attach a text popup to this event it
+^may appear so often that the game becomes unplayable.
+
+
+@HELPCITYTAKEN
+@width=600
+@title=Events Editor Help
+^CITYTAKEN
+^
+^This event fires when all three conditions are true:
+^  1. The named city changes hands.
+^  2. The attacker belongs to the named tribe.
+^  3. The defender belongs to the named tribe.
+^
+^Either tribe name, or both, may be replaced with
+^'Anybody' so that the event applies to every tribe.
+^
+^This is very useful for reacting to the fall of important cities.
+^For example, trigger on the loss of a capital and
+^use MOVEUNIT to send units within a map rectangle
+^around it back toward the capital to retake it.
+
+
+@HELPTURN
+@width=600
+@title=Events Editor Help
+^TURN
+^
+^This event fires at the start of the chosen turn.
+^Choose 'Every' to make it fire every turn. Keep in mind
+^that turn numbers and game years differ; the 'Set Game
+^Year' item in the Cheat menu shows the current turn
+^number. Useful for timed reinforcements in historical
+^scenarios, for replaying troop movements, and much more.
+
+
+@HELPTURNINTERVAL
+@width=600
+@title=Events Editor Help
+^TURNINTERVAL
+^
+^A repeating trigger. The number is the gap, in
+^turns, between firings: 'turn=4', for example,
+^fires every fourth turn. Handy for pushing units
+^toward particular objectives again and again.
+
+
+@HELPRANDOMTURN
+@width=600
+@title=Events Editor Help
+^RANDOMTURN
+^
+^This event fires at random. Each turn, the game divides a
+^random number by the denominator you entered, and the
+^event fires when the remainder is 0. In other words, the
+^odds are 1 in X on any given turn, with X being the
+^number you entered: a denominator of 30, for example,
+^gives a 1 in 30 chance per turn. Combine it with JUSTONCE
+^for a random event that happens only a single time.
+
+
+@HELPSCENARIOLOADED
+@width=600
+@title=Events Editor Help
+^SCENARIOLOADED
+^
+^This trigger exists only to run two special actions when
+^a scenario starts: 'PlayCDTrack' and 'DontPlayWonders'.
+^Using it for anything else gives unpredictable results. We
+^strongly advise putting 'DontPlayWonders' in every scenario.
+
+
+@HELPNOSCHISM
+@width=600
+@title=Events Editor Help
+^NO SCHISM
+^
+^Keeps a tribe whole when its capital falls, instead of letting
+^it break apart into two tribes. Choose a particular tribe as
+^the subject (the defender), or 'anybody' to cover all tribes.
+
+
+@HELPCREATEUNIT
+@width=600
+@title=Events Editor Help
+^CREATEUNIT
+^
+^Creates a new unit at no cost. The game first tries to place
+^it at the first location in the list; if that fails, it tries
+^each of the following locations in turn. You need several
+^locations because a spot may be occupied by an enemy unit,
+^or may simply be invalid, such as a land unit on ocean.
+^
+^Triggerattacker is the tribe that set off the event as
+^the attacker: the winner of the fight in a UNITKILLED
+^event, or the captor of the city in a CITYTAKEN event.
+^
+^Triggerdefender is its opposite number: the
+^tribe whose unit or city came under attack.
+^
+^Triggerreceiver means the tribe that acquired the advance in a
+^RECEIVEDTECHNOLOGY event. It can only be used with that trigger.
+
+
+
+@HELPCHANGEMONEY
+@width=600
+@title=Events Editor Help
+^CHANGEMONEY
+^
+^Gives gold to a tribe, or takes gold away when the amount
+^you enter is negative (starts with -). If the result would
+^fall below zero, the game sets the treasury to zero.
+^
+^Triggerattacker is the tribe that set off the event as
+^the attacker: the winner of the fight in a UNITKILLED
+^event, or the captor of the city in a CITYTAKEN event.
+^
+^Triggerdefender is its opposite number: the
+^tribe whose unit or city came under attack.
+^
+^Triggerreceiver means the tribe that acquired the advance in a
+^RECEIVEDTECHNOLOGY event. It can only be used with that trigger.
+
+
+@HELPMAKEAGGRESSION
+@width=600
+@title=Events Editor Help
+^MAKEAGGRESSION
+^
+^Ends any peace treaty between the two tribes;
+^then 'who' goes to war against 'whom'.
+
+
+@HELPJUSTONCE
+@width=600
+@title=Events Editor Help
+^JUSTONCE
+^
+^A flag: an event marked with it
+^runs only once, then never again.
+
+
+@HELPDONTPLAYWONDERS
+@width=600
+@title=Events Editor Help
+^DONTPLAYWONDERS
+^
+^Turns off the Wonder videos. Although the videos are
+^no longer included with the game, we still advise using
+^this action in every scenario, just to be safe. It can
+^only be used together with the SCENARIOLOADED trigger.
+
+
+@HELPPLAYWAVEFILE
+@width=600
+@title=Events Editor Help
+^PLAYWAVEFILE
+^
+^Plays a .wav sound of your choice. Type its exact file
+^name. The game looks for it first in the scenario's
+^own sound folder, then in the game's main sound folder.
+^No other folders are searched, to avoid clashes between files
+^with the same name. Imported sounds are best kept in the
+^scenario's sound folder. Every imported file must be 8-bit, 
+mono, with a 22050 Hz sample rate.
+^Tip: in Windows, double-click a .wav file to listen to it. 
+
+
+@HELPPLAYCDTRACK
+@width=600
+@title=Events Editor Help
+^PLAYCDTRACK
+^
+^Plays a music track from the CD. On every game
+^CD, track 1 holds data, so the music begins at
+^track 2. The number you enter must be 2 or higher.
+^
+^The base game's own music fills tracks 2 to 10:
+^  Funeral (2) 0:41               Ode To Joy (3) 0:51
+^  Tenochtitlan Revealed (4) 1:46  Harvest of the Nile (5) 2:11
+^  Aristotle's Pupil (6) 2:09     Augustus Rises (7) 2:52
+^  Gautama Ponders (8) 2:45       Hammurabi's Code (9) 1:54
+^  The Shining Path (10) 2:32
+^
+^Conflicts in Civilization supplied tracks 11 to 18:
+^  Civil War (11) 1:29  Crusades (12) 1:34  WWI (13) 1:50
+^  Independence (14) 2:38  Jihad (15) 2:12  Alien (16) 1:53
+^  Mongol (17) 2:39  Apocalypse (18) 3:24
+^
+^Fantastic Worlds added the final 6 tracks:
+^  Primeval World (19) 2:25  New World (20) 2:29
+^  Fantasy (21) 2:40  Mars (22) 2:25
+^  World of Jules Verne (23) 2:34  X-COM (24) 3:10
+
+
+@HELPMOVEUNIT
+@width=600
+@title=Events Editor Help
+^MOVEUNIT
+^Orders a number of units, up to the count you state, of a given type 
+^and belonging to a given tribe, inside a map rectangle, to head for a target 
+^location. Use ANYUNIT when the type of unit does not matter.
+^Only units that are not fortified,
+^asleep or on sentry duty, that have no
+^goto order already, are not building a
+^fortress and are not nuclear will obey.
+^Units of human-run tribes cannot be moved this way.
+^
+^IMPORTANT: the corners of a 'maprect' must be listed in a fixed order.
+^Corner 1 is the upper left, corner 2 the upper right, corner 3
+^the lower right and corner 4 the lower left, as in this sketch:
+^
+^                                     1----2
+^                                     |    |
+^                                     4----3
+^
+^Triggerattacker is the tribe that set off the event as
+^the attacker: the winner of the fight in a UNITKILLED
+^event, or the captor of the city in a CITYTAKEN event.
+^
+^Triggerdefender is its opposite number: the
+^tribe whose unit or city came under attack.
+^
+^Triggerreceiver means the tribe that acquired the advance in a
+^RECEIVEDTECHNOLOGY event. It can only be used with that trigger.
+
+
+@HELPRECEIVEDTECHNOLOGY
+@width=600
+@title=Events Editor Help
+^RECEIVEDTECHNOLOGY
+^
+^Fires on the turn after the given receiver acquires the
+^given advance, whichever way it was obtained. You can use
+^'Anybody' instead of a tribe name to cover every tribe.
+
+
+@HELPGIVETECHNOLOGY
+@width=600
+@title=Events Editor Help
+^GIVETECHNOLOGY
+^
+^Gives the chosen advance to the chosen receiver.
+^
+^Triggerattacker is the tribe that set off the event as
+^the attacker: the winner of the fight in a UNITKILLED
+^event, or the captor of the city in a CITYTAKEN event.
+^
+^Triggerdefender is its opposite number: the
+^tribe whose unit or city came under attack.
+^
+^Triggerreceiver means the tribe that acquired the advance in a
+^RECEIVEDTECHNOLOGY event. It can only be used with that trigger.
+
+
+@HELPDESTROYACIVILIZATION
+@width=600
+@title=Events Editor Help
+^DESTROYACIVILIZATION
+^
+^Does exactly what it says: removes every city and
+^every unit of the given tribe, wiping it off the map.
+^
+^Triggerattacker is the tribe that set off the event as
+^the attacker: the winner of the fight in a UNITKILLED
+^event, or the captor of the city in a CITYTAKEN event.
+^
+^Triggerdefender is its opposite number: the
+^tribe whose unit or city came under attack.
+^
+^Triggerreceiver means the tribe that acquired the advance in a
+^RECEIVEDTECHNOLOGY event. It can only be used with that trigger.
+
+
+@HELPCHANGETERRAIN
+@width=600
+@title=Events Editor Help
+^CHANGETERRAIN
+^
+^Changes every square inside the given
+^map rectangle to the given terrain type.
+^
+^IMPORTANT: the corners of a 'maprect' must be listed in a fixed order.
+^Corner 1 is the upper left, corner 2 the upper right, corner 3
+^the lower right and corner 4 the lower left, as in this sketch:
+^
+^                                     1----2
+^                                     |    |
+^                                     4----3
+
+
+@HELPTEXT
+@width=600
+@title=Events Editor Help
+^TEXT MESSAGE
+^
+^Type any message you like. It will be
+^shown to the player when the event fires.
+^
+^The length of a message is quite flexible, since
+^players use many different screen resolutions. Try it
+^out during a game to make sure it fits on your screen.
+^If it does not fit, raise your screen resolution,
+^or come back here and shorten the text.
+
+
+@EVENTS
+@width=600
+@title=Events Editor Help
+^GENERAL HELP
+^
+^Help is available for each item: select a trigger or an
+^action, then press the 'Help' button to read about it.
+^
+^As the manual explains, nonsensical values in the 
+^editor's fields can break the game in unexpected
+^ways. Please take this as a warning as well.
+
+
+@HELPFOREST
+@width=600
+@title=Forest Help
+^Forest, Hills and Mountains each have 16 different
+^images, so that ranges of them look continuous across
+^the map. Which image a tile uses depends only on
+^which of its neighbouring tiles have the same terrain.
+^The table below lists all 16 combinations, each direction set followed
+^by its image number. For example, image 2 is used only when the tile's
+^one Forest neighbour lies to the NE. Forest neighbours to the NW and SE
+^give image 11, and Forest on all four diagonal sides gives image 16. In
+^general, add 1 for NE, 2 for SE, 4 for SW and 8 for NW, then add 1 more.
+^
+^  None = 1         NE = 2           SE = 3           NE&SE = 4
+^  SW = 5           NE&SW = 6        SE&SW = 7        NE,SE,SW = 8
+^  NW = 9           NE&NW = 10       SE&NW = 11       NE,SE,NW = 12
+^ SW&NW = 13 NE,SW,NW = 14 SE,SW,NW = 15 NE,SE,SW,NW = 16
+^
+^The background image is the base layer drawn underneath Forest, Hills or Mountains.
+
+
+@HELPHILLS
+@width=600
+@title=Hills Help
+^Forest, Hills and Mountains each have 16 different
+^images, so that ranges of them look continuous across
+^the map. Which image a tile uses depends only on
+^which of its neighbouring tiles have the same terrain.
+^The table below lists all 16 combinations, each direction set followed
+^by its image number. For example, image 2 is used only when the tile's
+^one Hills neighbour lies to the NE. Hills neighbours to the NW and SE
+^give image 11, and Hills on all four diagonal sides gives image 16. In
+^general, add 1 for NE, 2 for SE, 4 for SW and 8 for NW, then add 1 more.
+^
+^  None = 1         NE = 2           SE = 3           NE&SE = 4
+^  SW = 5           NE&SW = 6        SE&SW = 7        NE,SE,SW = 8
+^  NW = 9           NE&NW = 10       SE&NW = 11       NE,SE,NW = 12
+^ SW&NW = 13 NE,SW,NW = 14 SE,SW,NW = 15 NE,SE,SW,NW = 16
+^
+^The background image is the base layer drawn underneath Forest, Hills or Mountains.
+
+
+@HELPMOUNTAINS
+@width=600
+@title=Mountains Help
+^Forest, Hills and Mountains each have 16 different
+^images, so that ranges of them look continuous across
+^the map. Which image a tile uses depends only on
+^which of its neighbouring tiles have the same terrain.
+^The table below lists all 16 combinations, each direction set followed by
+^its image number. For example, image 2 is used only when the tile's one
+^Mountains neighbour lies to the NE. Mountains neighbours to the NW and SE
+^give image 11, and Mountains on all four diagonal sides gives image 16. In
+^general, add 1 for NE, 2 for SE, 4 for SW and 8 for NW, then add 1 more.
+^
+^  None = 1         NE = 2           SE = 3           NE&SE = 4
+^  SW = 5           NE&SW = 6        SE&SW = 7        NE,SE,SW = 8
+^  NW = 9           NE&NW = 10       SE&NW = 11       NE,SE,NW = 12
+^ SW&NW = 13 NE,SW,NW = 14 SE,SW,NW = 15 NE,SE,SW,NW = 16
+^
+^The background image is the base layer drawn underneath Forest, Hills or Mountains.
+
+
+@HELPRIVER
+@width=600
+@title=River Help
+^River images come in 16 variants, so that waterways join up smoothly from 
+^one tile to the next. Which variant a tile uses depends only on which of 
+^its neighbouring tiles are also River; the terrain of the other neighbours 
+^makes no difference. The table below lists all 16 combinations, each 
+^direction set followed by its image number. For example, image 2 is used
+^only when the tile's one River neighbour lies to the NE. River neighbours
+^to the NW and SE give image 11, and River on all four diagonal sides gives
+^image 16. To work out the image for any tile, add 1 for a River neighbour
+^to the NE, 2 for SE, 4 for SW and 8 for NW, then add 1 more to the total.
+^
+^  None = 1         NE = 2           SE = 3           NE&SE = 4
+^  SW = 5           NE&SW = 6        SE&SW = 7        NE,SE,SW = 8
+^  NW = 9           NE&NW = 10       SE&NW = 11       NE,SE,NW = 12
+^ SW&NW = 13 NE,SW,NW = 14 SE,SW,NW = 15 NE,SE,SW,NW = 16
+^
+^There is one river mouth image for each direction, 4 in all:
+^  NE, SE, SW, NW (clockwise)
+
+
+@HELPCOAST
+@width=600
+@title=Coast Help
+^Many coast images are needed so that a landmass of any shape gets
+^a seamless shoreline. You are free to change their colours and
+^what they show, but every image must keep some kind of shoreline,
+^and the points where the shore meets the edges of the tile must
+^stay exactly where they are. That is what makes the coasts join
+^up without seams from one tile to the next. For a consistent look,
+^if you make a major change to the colours or the composition,
+^apply it to all of the coast images rather than just some of
+^them, or the odd ones out will stand out clearly on the map. 
+^
+^To change the ocean at zoom levels that show coastlines, 
+^edit Coast 1. To change it at the closer zoom levels, where 
+^coastlines are not drawn, edit the ocean icon instead.
+
+@HELPTERRMISC
+@width=600
+@title=Misc Help
+^RESOURCE edits the special marker, shaped like a
+^shield, that appears on Grassland squares rich in trade.
+^
+^Roads and Railroads each need an image for every one of the 8 directions in
+^which they can join the next track, plus one for a lone piece of track (#1).
+
+@WARNING
+@width=600
+@title=Editor Warning
+^^WARNING
+^The scenario editors themselves are simple enough to work with,
+^whereas building a complete scenario is hard and involved work. The
+^editors take care of a great deal of it, though not everything: you
+^will also need to know the options in the Cheat menu and how to use
+^the Map Editor. Both are explained in the original game manual.
+^
+^As the manual explains, nonsensical values in the 
+^editor's fields can break the game in unexpected
+^ways. Please take this as a warning as well.
+^
+^(A common source of confusion: if your changes do not seem to appear
+^in the game, save the scenario to disk and then load it again.
+^After that, your work should be visible.)
+^
+^Have fun!
+
+@; (the end of the file)

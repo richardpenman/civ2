@@ -58,6 +58,26 @@ BeginPaint clips to the update region (conquest-spy: the blinking unit under
 the spy dialog).  `harness/diff_suite.sh` plays a 30-turn autoplay and two
 random-click scripts on both builds: identical (3 392 `rand()` calls).
 
+The rules are built in (`src/game/rules_default.cpp`, made by `tools/gen_rules.py`: every
+value and name of RULES.TXT's 12 sections, the tech tree, units, improvements, terrain,
+governments, tribes ...), used when the game has no RULES.TXT; a scenario's own and the game
+folder's are read as before.  `civ2-unittest --rules` (`make test`) checks that the built-in
+rules, the game's RULES.TXT and the built-in rules written out as a RULES.TXT (what the rules
+editors save from without one) leave the same bytes in every table and the string pool, and a
+replay without RULES.TXT (`CIV2_NO_RULES=1`) matches the recording.
+
+OpenCiv2 has its own English of the game's text files (`data/native/text`: GAME, LABELS,
+MENU, CITY, PEDIA, DESCRIBE, ADVICE, HELP, TUTORIAL, COUNCIL0-2, HERALD, MAPMENU, DEBUG and its
+own credits), written for it (short functional strings directly, everything longer clean-room
+from specs of structure and facts: [TRANSLATING.md](TRANSLATING.md)), read where neither the
+scenario's nor the game's folder has the file (`lang_builtin_text_file`).  `tests/text_test.py`
+(`make test`) checks their structure line by line against the original's
+(`tests/text_skeleton.txt`); replays without the game's text files and RULES.TXT
+(`CIV2_NO_TEXT=1 CIV2_NO_RULES=1`): newgame, long50, editors, editors2, scenario, setup and
+rome have the recordings' `rand()` traces (their screens differ in wording only), and
+`harness/extras/x-own-text.txt` shows them.  Still from the game: its graphics, sounds,
+videos and music, scenarios.
+
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
 what the original's stack holds there, and the function sets those locals

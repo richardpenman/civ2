@@ -1,0 +1,369 @@
+; OpenCiv2: the advisors' remarks (ADVICE.TXT).
+; Written for OpenCiv2, used where the game has no ADVICE.TXT of its own.
+
+@MILITARY
+@width=225
+@title=Military Advisor
+@x=5
+@y=5
+
+@DOMESTIC
+@width=225
+@title=Domestic Advisor
+@x=-5
+@y=5
+
+@SCIENCE0
+@width=250
+@title=Science Advisor
+@x=-5
+I suggest we research %STRING0.
+
+@SCIENCE1
+@width=250
+@title=Science Advisor
+@x=-5
+I recommend we study %STRING0. It
+will let us build the following:
+
+@SCIENCE2
+@width=250
+@title=Science Advisor
+@x=-5
+I recommend we study %STRING0. It
+opens the way to these later advances:
+
+
+
+@
+@@Temple
+Our citizens are unhappy, sire.
+We should build a %STRING0.
+
+@
+@@Colosseum
+The people are getting restless.
+Perhaps we could calm them with a
+%STRING0.
+
+@
+@@Cathedral
+The citizens are
+discontented. Maybe a
+%STRING0 would keep them busy.
+
+@
+@@Barracks
+Our troops are raw recruits,
+of little use in a real fight.
+Build a %STRING0, and our
+ground units will come out as
+veterans and be repaired quickly.
+
+@
+@@Port Facility
+Build a %STRING0, so our
+ships are launched as
+veterans and repaired quickly.
+
+@
+@@Airport
+Build an %STRING0, so our
+aircraft roll out as veterans
+and are repaired quickly.
+
+@
+@@Granary
+A %STRING0 would help
+this city grow larger.
+
+@
+@@Supermarket
+Precious food is going
+to waste instead of being
+stored. A %STRING0 would
+let us manage it properly.
+
+@
+@@Harbor
+Our people are hungry.
+A %STRING0 would let us
+harvest food from the sea.
+
+@
+@@MarketPlace
+Our citizens are poor. A
+%STRING0 would draw merchants
+and wealth to the city.
+
+@
+@@Bank
+The economy is sluggish. A %STRING0
+would give it a healthy boost.
+
+@
+@@Stock Exchange
+Build a %STRING0, and
+we will all be rich!
+
+@
+@@Superhighways
+Outdated roads are strangling
+our commerce. We must
+build %STRING0 immediately!
+
+@
+@@Library
+Knowledge is mightier than the
+sword. Let us build a %STRING0
+to preserve what we have learned.
+
+@
+@@University
+Education pays off in the long run.
+Build a %STRING0 without delay.
+
+@
+@@Research Lab
+Let us build a %STRING0
+to expand our learning.
+
+@
+@@Courthouse
+Crime and graft must be stamped
+out! Build a %STRING0 to bring
+law and order to this city.
+
+@
+@@City Walls
+This city has almost no defenses, my liege!
+We must build %STRING0 immediately!
+
+@
+@@Coastal Fortress
+@@SAM Missile Battery
+Build a %STRING0
+to guard this city.
+
+@
+@@Aqueduct
+Our citizens need fresh
+water. Build an %STRING0 so
+the city can keep growing.
+
+@
+@@Sewer System
+The streets are filthy and
+overcrowded. Build a %STRING0
+so the city can keep growing.
+
+@
+@@Mass Transit
+@@Recycling Cntr.
+Build a %STRING0, or we will
+choke on our own pollution!
+
+@
+@@Factory
+@@Manufacturing Plant
+@@Power Plant
+@@Hydro Plant
+@@Nuclear Plant
+@@Solar Plant
+Our production lags behind our rivals' output.
+Build a %STRING0, and soon!
+
+@
+@@Offshore Platform
+The ocean floor holds great riches waiting for us.
+Build an %STRING0 to claim them.
+
+@
+@@SDI Defense
+Build an %STRING0, just to be safe.
+
+@
+@@SS Structural
+@@SS Component
+@@SS Module
+Build a %STRING0, and we
+can settle other worlds!
+
+@
+@@Settlers
+Build %STRING0 to settle
+the rest of this continent.
+
+@
+@@Engineers
+We need %STRING0 to improve
+the land of this continent.
+
+@
+@@Warriors
+@@Pikemen
+Our cities could come under
+attack at any moment. Build
+%STRING0 to defend them.
+
+@
+@@Musketeers
+@@Riflemen
+We need more %STRING0
+to protect the nation.
+
+@
+@@Fanatics
+Enlist %STRING0 to
+defend our holy faith!
+
+@
+@@Phalanx
+@@Mech. Inf.
+Build a %STRING0
+to defend the city.
+
+@
+@@Legion
+Build many %STRING0s, and
+the world will be ours!
+
+@
+@@Archers
+Train our troops as
+Archers. They are equally
+good at attacking and
+at defending our cities.
+
+@
+@@Alpine Troops
+Build %STRING0, good both
+for defending cities and
+for attacking enemies.
+
+@
+@@Chariot
+The time has come to
+attack! Build a %STRING0.
+
+@
+@@Catapult
+A %STRING0 could smash through
+the enemy's fortifications.
+
+@
+@@Helicopter
+Build a swift strike
+force of %STRING0s!
+
+@
+@@Cannon
+@@Howitzer
+Build a %STRING0 to blow
+our enemies to pieces!
+
+@
+@@Bomber
+@@Stlth Bmbr.
+Build a %STRING0, and we will bomb
+our enemies back into the Stone Age!
+
+@
+@@Elephant
+Build an %STRING0 to
+trample our foes underfoot!
+
+@
+@@Crusaders
+Build %STRING0 to wage
+holy war on the infidels!
+
+@
+@@Fighter
+@@Stlth Ftr.
+We need a %STRING0
+to guard our skies.
+
+@
+@@Knights
+@@Dragoons
+@@Cavalry
+Build %STRING0 to
+punish our enemies!
+
+@
+@@Marines
+@@Paratroopers
+Build %STRING0 to catch
+our enemies off guard.
+
+@
+@@Armor
+@@Artillery
+@@Partisans
+Build %STRING0 and show our
+enemies who rules the waves!
+
+@
+@@Trireme
+@@Caravel
+@@Galleon
+@@Explorer
+Build %STRING0s to
+explore the world.
+
+@
+@@Horsemen
+Build %STRING0 to
+explore the unknown.
+
+@
+@@Frigate
+@@Ironclad
+@@Destroyer
+@@Cruiser
+@@Battleship
+@@Submarine
+@@AEGIS Cruiser
+Build %STRING0s to
+rule the oceans!
+
+@
+@@Carrier
+@@Transport
+@@Cruise Msl.
+@@Default
+Just build a %STRING0.
+
+@
+@@Nuclear Msl.
+A %STRING0 might be nice about now
+
+@
+@@Diplomat
+Build a %STRING0 to
+meet other civilizations
+and quietly learn
+their secrets.
+
+@
+@@Spy
+Build a %STRING0 to carry
+out our shadier schemes
+against our enemies.
+
+@
+@@Caravan
+@@Freight
+Build a %STRING0 to
+open trade routes with
+other civilizations.
+
+@
+@@Wonder
+Let us begin a great project
+for the eternal glory of
+our civilization: %STRING0!
+
+@
+

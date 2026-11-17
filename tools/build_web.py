@@ -21,6 +21,9 @@ The translations (data/native/lang/*.txt but the template en.txt) into
 lang/, listed in lang/index.json (code, name), the glyphs of their code
 pages (data/native/fonts_<code page>*.bin, gzipped) into data/, and
 texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
+OpenCiv2's English of the game's text files (data/native/text/*.TXT, used
+where the game has none of its own) into data/text/, gzipped, listed in
+data/text/index.json: the page fetches those the player's game lacks.
 
 The HD graphics' pin (data/hd-pack.json) is copied as hd-pack.json; with
 HD=1 in the environment (make web HD=1) the installed art
@@ -112,6 +115,24 @@ def write_languages():
     return ['fonts_%s.bin' % cp for cp in sorted(pages)] + ['fonts_%s_aa.bin' % cp for cp in sorted(pages)]
 
 
+def write_texts():
+    """data/text/<NAME>.TXT.gz and data/text/index.json (their names)."""
+    src = os.path.join(ROOT, 'data', 'native', 'text')
+    out = os.path.join(OUT, 'data', 'text')
+    os.makedirs(out, exist_ok=True)
+    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(src, '*.TXT')))
+    for name in names:
+        s, d = os.path.join(src, name), os.path.join(out, name + '.gz')
+        if newer(s, d):
+            with open(s, 'rb') as i, gzip.open(d, 'wb', 9) as o:
+                shutil.copyfileobj(i, o)
+    for f in os.listdir(out):
+        if f != 'index.json' and f[:-3] not in names:
+            os.remove(os.path.join(out, f))
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump(names, f)
+
+
 def run(cmd):
     print(' '.join(cmd), flush=True)
     subprocess.run(cmd, check=True)
@@ -185,6 +206,7 @@ def main():
                 shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
+    write_texts()
     for f in FONTS + write_languages():
         s, d = os.path.join(ROOT, 'data', 'native', f), os.path.join(OUT, 'data', f + '.gz')
         if newer(s, d):

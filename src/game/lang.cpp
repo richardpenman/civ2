@@ -4,7 +4,9 @@
  * (text_open_section, text_read_line: same trimming, the scenario's files
  * first), so it is the text the original shows; what each line of those
  * files is for, and how it differs between their versions, is known here
- * only.  A translation (lang/<code>.txt) replaces texts by key.
+ * only.  Where the game has no such file, OpenCiv2's own English of it is
+ * read in its place (data/text: lang_builtin_text_file).  A translation
+ * (lang/<code>.txt) replaces texts by key.
  */
 #include <ctype.h>
 #include <dirent.h>
@@ -16,6 +18,7 @@
 #include <vector>
 #include "game.h"
 #include "lang.h"
+#include "rules.h"
 
 EXTERN_C char plat_data_dir[];
 
@@ -319,7 +322,8 @@ static void add_file_sections(const char *file, const char *only)
 /* RULES.TXT, its names: per section the lines the rules loaders read
    (rules_load_*, rules_parse_sections), their names the tokens they put in
    the string pool.  Read once, from the game's RULES.TXT (the rules of a
-   scenario with its own are read from it, names and all). */
+   scenario with its own are read from it, names and all); without one, the
+   built-in rules' (rules.h). */
 static void rules_section_names(const char *section, int count, const char *format, int stop_at_blank)
 {
     char key[64];
@@ -335,6 +339,73 @@ static void rules_section_names(const char *section, int count, const char *form
     }
 }
 
+/* The built-in rules' names (rules.h), under the same keys: the English
+   when there is no RULES.TXT. */
+static void rules_default_names(void)
+{
+    char key[64];
+    int i, t;
+    for (i = 0; i < rules_advance_count; i++) {
+        snprintf(key, sizeof key, "rules.advance.%d", i);
+        set_english(key, rules_advances[i].name);
+    }
+    for (i = 0; i < IMP_COUNT; i++) {
+        snprintf(key, sizeof key, "rules.improvement.%d", i);
+        set_english(key, rules_improvements[i].name);
+    }
+    for (i = 0; i < rules_unit_count; i++) {
+        snprintf(key, sizeof key, "rules.unit.%d", i);
+        set_english(key, rules_units[i].name);
+    }
+    for (i = 0; i < TERRAIN_RECORDS; i++) {
+        snprintf(key, sizeof key, "rules.terrain.%d", i);
+        set_english(key, rules_terrain[i].name);
+    }
+    for (i = 0; i < 7; i++) {
+        snprintf(key, sizeof key, "rules.government.%d", i);
+        set_english(key, rules_governments[i].name);
+        snprintf(key, sizeof key, "rules.government.%d.male", i);
+        set_english(key, rules_governments[i].male_title);
+        snprintf(key, sizeof key, "rules.government.%d.female", i);
+        set_english(key, rules_governments[i].female_title);
+    }
+    for (i = 0; i < 21; i++) {
+        const RulesLeader *l = &rules_leaders[i];
+        snprintf(key, sizeof key, "rules.leader.%d.male", i);
+        set_english(key, l->male_name);
+        snprintf(key, sizeof key, "rules.leader.%d.female", i);
+        set_english(key, l->female_name);
+        snprintf(key, sizeof key, "rules.leader.%d.plural", i);
+        set_english(key, l->plural);
+        snprintf(key, sizeof key, "rules.leader.%d.adjective", i);
+        set_english(key, l->adjective);
+        for (t = 0; t < 4 && l->titles[t].govt > 0; t++) {
+            snprintf(key, sizeof key, "rules.leader.%d.title.%d.male", i, l->titles[t].govt);
+            set_english(key, l->titles[t].male);
+            snprintf(key, sizeof key, "rules.leader.%d.title.%d.female", i, l->titles[t].govt);
+            set_english(key, l->titles[t].female);
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        snprintf(key, sizeof key, "rules.commodity.%d", i);
+        set_english(key, rules_commodities[i]);
+    }
+    for (i = 1; i < 13; i++) {
+        snprintf(key, sizeof key, "rules.order.%d", i);
+        set_english(key, rules_orders[i - 1].name);
+        snprintf(key, sizeof key, "rules.order.%d.key", i);
+        set_english(key, rules_orders[i - 1].key);
+    }
+    for (i = 0; i < 6; i++) {
+        snprintf(key, sizeof key, "rules.difficulty.%d", i);
+        set_english(key, rules_difficulties[i]);
+    }
+    for (i = 0; i < 9; i++) {
+        snprintf(key, sizeof key, "rules.attitude.%d", i);
+        set_english(key, rules_attitudes[i]);
+    }
+}
+
 void lang_load_rules(void)
 {
     static int loaded;
@@ -345,8 +416,10 @@ void lang_load_rules(void)
     if (loaded)
         return;
     loaded = 1;
-    if (text_open_section("RULES", 0) != 0)
+    if (rules_forced_source == RULES_BUILTIN || text_open_section("RULES", 0) != 0) {
+        rules_default_names();
         return;
+    }
     rules_section_names("CIVILIZE", 100, "rules.advance.%d", 1);
     rules_section_names("IMPROVE", 67, "rules.improvement.%d", 0);
     rules_section_names("UNITS", 62, "rules.unit.%d", 1);
@@ -462,6 +535,23 @@ static void add_descriptions(void)
         text += line;
     }
     text_close_file();
+}
+
+FILE *lang_builtin_text_file(const char *name)
+{
+    char path[1200], file[64];
+    const char *base = name;
+    size_t i;
+    for (i = 0; name[i]; i++)
+        if (name[i] == '\\' || name[i] == '/' || name[i] == ':')
+            base = name + i + 1;
+    if (!*base || strlen(base) >= sizeof file)
+        return 0;
+    for (i = 0; base[i]; i++)
+        file[i] = (char)toupper((unsigned char)base[i]);
+    file[i] = 0;
+    snprintf(path, sizeof path, "%s/text/%s", plat_data_dir, file);
+    return crt_fopen_host(path, "rt");
 }
 
 const char *lang_description(const char *group, const char *entry)
