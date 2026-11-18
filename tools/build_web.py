@@ -20,8 +20,9 @@ them: wasi-sdk's clang; the page runs it in a Web Worker).
 The translations (data/native/lang/*.txt but the template en.txt) into
 lang/, listed in lang/index.json (code, name), the font files of
 characters beyond Windows-1252 that UTF-8 ones need (data/native/fonts,
-gzipped, listed in data/fonts/index.json, their licence beside them) into
-data/fonts/, and
+gzipped, listed in data/fonts/index.json, their licence beside them; the
+serifs also as they are, the page's fonts where the system has none for
+Greek or Chinese) into data/fonts/, and
 texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
 OpenCiv2's English of the game's text files (data/native/text/*.TXT, used
 where the game has none of its own) into data/text/, gzipped, listed in
@@ -137,6 +138,11 @@ def write_languages():
     with open(os.path.join(fonts, 'index.json'), 'w') as f:
         json.dump(names, f)
     shutil.copy(os.path.join(ROOT, 'data', 'native', 'fonts', 'OFL.txt'), os.path.join(fonts, 'OFL.txt'))
+    # (the serifs as they are, for the page's own texts too: index.html's
+    # @font-face, fetched only where the system has no font for a character)
+    for n in names:
+        if 'Serif' in n:
+            shutil.copy(os.path.join(ROOT, 'data', 'native', 'fonts', n), os.path.join(fonts, n))
     return ['fonts/' + n for n in names]
 
 

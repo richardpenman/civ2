@@ -8,13 +8,19 @@
   /* the game's look, drawn here (none of the game's own files: the page comes before them):
      the main menu's brown desktop, its dialogs' grey marble in a bevelled frame, Times */
   :root { color-scheme: light; --desk: #8c7b62; --ink: #1a1a1a; --dim: #3a3a3a; --hi: #ffffff; --lo: #6b6b6b;
-          --dark: #2a2a2a; --face: #b9b9b9; --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", serif;
+          --dark: #2a2a2a; --face: #b9b9b9; --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", "OpenCiv2 Greek", "OpenCiv2 CJK", serif;
           /* (Chinese, traditional: the system's fonts that have its characters) */
           --cjk: "Noto Serif CJK TC", "Noto Serif TC", "Source Han Serif TC", "PMingLiU", "MingLiU", "Songti TC",
                  "AR PL UMing TW", "Noto Sans CJK TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC";
           /* marble: fine grain and soft veins (generated noise), over a light grey */
           --marble: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='v' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0117 0.0469' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.25'/%3E%3C/filter%3E%3Cfilter id='g' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -1.4 0.9'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23v)' opacity='0.11'/%3E%3Crect width='256' height='256' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E"); }
-  :root:lang(zh-Hant) { --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", var(--cjk), serif; }
+  :root:lang(zh-Hant) { --serif: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", var(--cjk), "OpenCiv2 Greek", "OpenCiv2 CJK", serif; }
+  /* (the translations' Greek and Chinese where the system has no font for them: the game's own
+     font files, fetched only then; tools/build_web.py, data/native/fonts) */
+  @font-face { font-family: "OpenCiv2 Greek"; src: url("data/fonts/NotoSerif-Regular.ttf") format("truetype");
+               unicode-range: U+0370-03FF, U+1F00-1FFF; }
+  @font-face { font-family: "OpenCiv2 CJK"; src: url("data/fonts/NotoSerifTC-Regular.otf") format("opentype");
+               unicode-range: U+2E80-9FFF, U+F900-FAFF, U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF; }
   html, body { margin: 0; min-height: 100%; background: var(--desk); color: var(--ink);
                font: 18px/1.45 var(--serif); }
   #setup { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }

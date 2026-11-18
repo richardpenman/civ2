@@ -119,6 +119,13 @@ export async function useLanguage(code) {
     if (current === 'en')
         return;             // (the page as written)
     document.documentElement.lang = current;
+    // (the page's fonts for the translation's Greek or Chinese, index.html's
+    // @font-face, where the system has none: loaded before its texts are put
+    // in, as text laid out while such a font loads may stay blank)
+    const sample = Object.keys(texts).filter((k) => k.startsWith('web.')).map((k) => texts[k]).join('');
+    if (/[^\u0000-\u024f]/.test(sample) && document.fonts)
+        await Promise.race([document.fonts.load('18px ' + getComputedStyle(document.body).fontFamily, sample).catch(() => {}),
+                            new Promise((r) => setTimeout(r, 5000))]);
     for (const el of document.querySelectorAll('[data-t]')) {
         const k = el.dataset.t;
         if (!(k in texts))

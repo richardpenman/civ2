@@ -70,7 +70,8 @@ and never publish it.**
   `HD=1`) and the animated heralds of `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).
 
-`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`HD=1 GAME=1`) and serves it
+`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`, without the HD graphics' art: a quicker first load; any
+`hd/` an earlier deploy left is removed with it) and serves it
 on this machine with Caddy in Docker (container `civ2-review`, restarted with the machine; down:
 `docker rm -f civ2-review`) at `/civ2/`, behind a user name and password (HTTP Basic Auth; the
 root and anything else is a plain 404, with `X-Robots-Tag: noindex` and a `robots.txt` that
@@ -94,7 +95,8 @@ translation of is English.  The browser's own language is not looked at.  The se
 page again in it, so that a reload or a bookmark keeps it.  The page's texts are OpenCiv2's own,
 keyed as the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
 translation files, in their code page: Esperanto's letters as Unicode, Greek and Chinese in the system's
-fonts that have its characters); the set-up from a CD or disc image shows its progress in it too.
+fonts that have its characters, else in the game's own Noto Serif files from the site, loaded
+before the texts are put in); the set-up from a CD or disc image shows its progress in it too.
 
 The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts (OpenCiv2
 Options > Language shows it), for that visit only: what this browser keeps of `CIV.INI` keeps the

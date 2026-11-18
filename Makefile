@@ -47,7 +47,7 @@ serve: web                    ## build/web served at http://localhost:$(PORT) (P
 	@echo "OpenCiv2: http://localhost:$(PORT)"
 	python3 -m http.server -d build/web $(PORT)
 
-deploy-review:                ## the browser version with the game and the HD art (HD=1 GAME=1: for private use only) served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
+deploy-review:                ## the browser version with the game, without the HD art (GAME=1: for private use only) served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
 	tools/deploy_review.sh
 
 web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke), then HD graphics (run/web-hd)

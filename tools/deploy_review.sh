@@ -1,7 +1,9 @@
 #!/bin/sh
-# make deploy-review: the browser version with the game and the HD art
-# (make web HD=1 GAME=1: it distributes the game's files, so for a private
-# site only: docs/BROWSER.md) served by Caddy in Docker (container
+# make deploy-review: the browser version with the game, without the HD
+# graphics' art (make web GAME=1: it distributes the game's files, so for a
+# private site only: docs/BROWSER.md; no HD=1, for a quicker first load: the
+# page then offers no HD graphics, and the site's copy loses any hd/ an
+# earlier deploy left) served by Caddy in Docker (container
 # civ2-review, restarted with the machine) at https://HOST/civ2/, behind a
 # user name and password (HTTP Basic Auth), the root and everything else a
 # plain 404.  HOST is this machine's address as an sslip.io name
@@ -51,8 +53,9 @@ if [ -n "$HTTP_ASKED" ]; then
 	mv "$CONFIG.new" "$CONFIG"
 fi
 
-make web HD=1 GAME=1
+HD= make web GAME=1
 rsync -a --delete build/web/ "$DIR/site/civ2/"
+rm -rf "$DIR/site/civ2/hd"     # (rsync --delete took it already: build/web has none)
 
 if [ -n "$REVIEW_HTTP" ]; then
 	ADDRESS=":80"
@@ -98,11 +101,10 @@ cat > "$DIR/Caddyfile" <<'EOF'
 			}
 		}
 		# (the big files that do not change: the game's videos and music,
-		# read when the game opens them, and the HD art, downloaded once;
-		# private: behind the password)
-		@media path /civ2/game/files/* /civ2/hd/atlas-hd.pack
+		# read when the game opens them; private: behind the password)
+		@media path /civ2/game/files/*
 		header @media Cache-Control "private, max-age=604800"
-		@other not path /civ2/game/files/* /civ2/hd/atlas-hd.pack
+		@other not path /civ2/game/files/*
 		header @other Cache-Control "private, no-cache"
 		@pack path *.pack
 		header @pack Content-Type application/octet-stream
