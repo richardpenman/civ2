@@ -194,7 +194,7 @@ async function main() {
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
             await shot('00-setup-eo');
             // in Chinese (traditional characters: ?lang=zh-TW finds zh-Hant.txt, in UTF-8;
-            // the page's fonts: the system's that have the characters)
+            // the page's fonts: the system's that have the characters, else the site's)
             await send('Page.navigate', {url: url + '?setup&lang=zh-TW'});
             await waitFor('window.civ2Setup', 10000, 'the page in Chinese');
             const zh = await evaluate(`({choose: document.getElementById('choose').textContent,
@@ -203,7 +203,7 @@ async function main() {
                 chosen: document.getElementById('language').value,
                 lang: document.documentElement.lang})`);
             log('page in Chinese: ' + JSON.stringify(zh).slice(0, 300));
-            if (zh.lang !== 'zh-Hant' || !/選擇你的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) ||
+            if (zh.lang !== 'zh-Hant' || !/選擇您的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) ||
                 !zh.language.includes('繁體中文') || zh.chosen !== 'zh-Hant')
                 throw new Error('the page is not in Chinese: ' + JSON.stringify(zh));
             await shot('00-setup-zh-Hant');

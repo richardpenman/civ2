@@ -1194,7 +1194,7 @@ Luft-Luft
 @@label.351
 Sicht 2
 @@label.352
-Ign. KZ
+Ign. Kontr.
 @@label.353
 Ign. Mauern
 @@label.354
@@ -12477,7 +12477,7 @@ Viele Dienstleistungen, die Banken heute erbringen, lassen sich bis ins mittelal
 Menschen bauen einfache Brücken, seit sie zum ersten Mal Baumstämme über einen Bach oder Fluss legten, den sie überqueren mussten. Zwar soll es in Babylon schon 1800 v. Chr. eine gemauerte Bogenbrücke gegeben haben, doch die meisten Brücken dieser Zeit bestanden wohl aus Holz. Die Römer entwickelten den Brückenbau so weit, dass die Baumeister des westlichen Mittelalters viele Jahre brauchten, um sie einzuholen. Römische Brücken bestanden oft aus mehreren Steinbögen, die eine ebene Fahrbahn trugen. Brücken dieser Art sind bereits aus dem Jahr 219 v. Chr. bekannt. Erst Mitte des 19. Jahrhunderts begann man, Metall in Brückenkonstruktionen einzusetzen, um sie stabiler und dauerhafter zu machen. Frühe Fachwerkbrücken bestanden aus hölzernen Fachwerkträgern, die mit eisernen Zugstangen verbunden waren. Um 1850 wich das Holzfachwerk dem Stahl. Moderne Brücken reichen von Bögen aus Beton und Stahl bis zu Stahlträger- und Hängebrücken. Die Entwicklung moderner Brücken aus haltbaren Materialien war für den Ausbau der Eisenbahn- und Straßennetze der Welt unerlässlich.
 
 @@describe.ADVANCE.Bronze Working
-Die ältesten Belege für die Verwendung von Bronze, einer Legierung aus Kupfer und Zinn, stammen aus Thailand um 4500 v. Chr. Einige hundert Jahre später wurde die Bronzetechnik auch im Nahen Osten entdeckt. Fundstücke aus dieser Zeit zeigen, dass Bronze zunächst nur zu Schmuckzwecken verwendet wurde. Der Grund dafür war, dass Zinn nur schwer zu beschaffen war. Erst um 2000 v. Chr., als Zinn regelmäßig aus benachbarten Regionen eingeführt wurde, ersetzte Bronze das Kupfer bei der Herstellung größerer Gegenstände. Bronze war härter und weniger spröde als Kupfer und ließ sich schärfer schleifen. Werkzeuge, Waffen und Rüstungen aus Bronze waren außerdem billiger herzustellen und haltbarer. Die Zeit, in der Bronze das bevorzugte Metall für solche Gegenstände war, wird als Bronzezeit bezeichnet. Die Bronzezeit dauerte an, bis sich um 1200 v. Chr. die Eisenverhüttung durchsetzte.
+Die ältesten Belege für die Verwendung von Bronze, einer Legierung aus Kupfer und Zinn, stammen aus Thailand um 4500 v. Chr. Einige hundert Jahre später wurde der Bronzeguss auch im Nahen Osten entdeckt. Fundstücke aus dieser Zeit zeigen, dass Bronze zunächst nur zu Schmuckzwecken verwendet wurde. Der Grund dafür war, dass Zinn nur schwer zu beschaffen war. Erst um 2000 v. Chr., als Zinn regelmäßig aus benachbarten Regionen eingeführt wurde, ersetzte Bronze das Kupfer bei der Herstellung größerer Gegenstände. Bronze war härter und weniger spröde als Kupfer und ließ sich schärfer schleifen. Werkzeuge, Waffen und Rüstungen aus Bronze waren außerdem billiger herzustellen und haltbarer. Die Zeit, in der Bronze das bevorzugte Metall für solche Gegenstände war, wird als Bronzezeit bezeichnet. Die Bronzezeit dauerte an, bis sich um 1200 v. Chr. die Eisentechnik durchsetzte.
 
 @@describe.ADVANCE.Ceremonial Burial
 Auf der Suche nach einer Erklärung für die Welt um sie herum entwickelten die frühesten Menschen die ersten religiösen Vorstellungen. Nach und nach umfassten die Riten der Verehrung auch Opfer, Zeremonien, Nachtwachen, Symbolik, heilige Gegenstände und Gebete. Ein bedeutender Schritt in der Entwicklung des Kults war die rituelle Bestattung, oft eine zeremonielle Vorbereitung des Leichnams auf das Leben nach dem Tod, das die jeweilige Kultur erwartete. Die Überreste ritueller Bestattungen liefern einige der ausführlichsten Erkenntnisse über vergangene Zivilisationen.
@@ -12705,7 +12705,7 @@ Industrialisierung bedeutet den Einsatz von Maschinen, um die Produktivität dras
 Die Schöpfung einer bisher unbekannten Vorrichtung, Methode oder eines Verfahrens, mit dem sich wiederum ein Ziel auf eine für unmöglich gehaltene Weise erreichen lässt, nennt man Erfindung. Erfindungsgeist ist im Kern die Fähigkeit, einen oder mehrere neu entdeckte Gedanken aufzugreifen und einen Weg zu finden, sie praktisch zu nutzen. Die frühesten Erfindungen der Menschheit reichen zurück bis zu den alten Werkzeugen aus Stein und Metall, die zum Jagen, Graben und für andere alltägliche Arbeiten dienten. Nachdem die Schrift den Austausch und das Studium der Ideen verschiedener Zivilisationen ermöglicht hatte, wurden die Erfindungen der Menschheit immer nützlicher und neuartiger. Die meisten Erfindungen zielen darauf ab, das menschliche Dasein auf irgendeine Weise zu verbessern oder zu vereinfachen. Oft ermöglichen Erfindungen selbst neue Entdeckungen, die dann wiederum zu besseren und neuartigeren Erfindungen anregen.
 
 @@describe.ADVANCE.Iron Working
-Einige Beispiele für Eisenschmuck reichen bis 4000 v. Chr. zurück, doch die Verwendung von Eisen für Werkzeuge, Waffen und andere praktische Zwecke wurde erst viel später üblich. Bis dahin war Bronze das am weitesten verbreitete Metall für solche Zwecke. Obwohl der Begriff "Eisenzeit" einen Zeitraum bezeichnet, der um 1000 v. Chr. beginnt, löste Eisen die Bronze an verschiedenen Orten zu verschiedenen Zeiten als bevorzugtes Metall ab. Eisen kommt häufiger vor als Kupfer und Zinn, die Bestandteile der Bronze, ist aber selten in reiner Form zu finden; meist ist es mit anderen Mineralien und Elementen vermischt. Um es nutzen zu können, muss das Eisen vom Erz getrennt werden. Sobald dieses Verfahren entwickelt war und es Schmiedeöfen gab, die heiß genug waren, um Eisen zu schmelzen, wurde die Eisenverhüttung alltäglich. Bearbeitetes Eisen war härter, weniger spröde und ließ sich viel schärfer schleifen als Bronze. Eisen ist im Lauf der Geschichte ein wichtiges Metall geblieben und einer der Hauptbestandteile bei der Herstellung von Stahl.
+Einige Beispiele für Eisenschmuck reichen bis 4000 v. Chr. zurück, doch die Verwendung von Eisen für Werkzeuge, Waffen und andere praktische Zwecke wurde erst viel später üblich. Bis dahin war Bronze das am weitesten verbreitete Metall für solche Zwecke. Obwohl der Begriff "Eisenzeit" einen Zeitraum bezeichnet, der um 1000 v. Chr. beginnt, löste Eisen die Bronze an verschiedenen Orten zu verschiedenen Zeiten als bevorzugtes Metall ab. Eisen kommt häufiger vor als Kupfer und Zinn, die Bestandteile der Bronze, ist aber selten in reiner Form zu finden; meist ist es mit anderen Mineralien und Elementen vermischt. Um es nutzen zu können, muss das Eisen vom Erz getrennt werden. Sobald dieses Verfahren entwickelt war und es Schmiedeöfen gab, die heiß genug waren, um Eisen zu schmelzen, wurde die Eisentechnik alltäglich. Bearbeitetes Eisen war härter, weniger spröde und ließ sich viel schärfer schleifen als Bronze. Eisen ist im Lauf der Geschichte ein wichtiges Metall geblieben und einer der Hauptbestandteile bei der Herstellung von Stahl.
 
 @@describe.ADVANCE.Steel
 Die bis etwa ins 14. Jahrhundert hergestellten Eisenlegierungen wurden gewonnen, indem man ein Gemisch aus Eisenerz und Holzkohle in einer Esse erhitzte und das glühende Metall dann schmiedete, um die Verunreinigungen, die "Schlacke", auszutreiben. Gelegentlich nahm das Eisengemisch mehr Kohlenstoff auf, sodass statt Schmiedeeisen Stahl entstand. Da sich Stahl als weniger spröde und korrosionsbeständiger als Eisen erwies, wurden Verfahren zu seiner Herstellung entwickelt. Dazu blies man ein Kohleerzeugnis namens Koks durch geschmolzenes Eisen. Die meisten modernen Stahlwerke nutzen den 1855 von Henry Bessemer entwickelten "Hochofen", um diese Aufgabe in großem Maßstab zu erledigen. Die Festigkeit und andere Eigenschaften des Stahls machen ihn zum bevorzugten Werkstoff für Kriegsschiffe, Flugzeuge und viele andere Fahrzeuge.
@@ -13408,9 +13408,9 @@ Bankwesen
 @@rules.advance.7
 Brückenbau
 @@rules.advance.8
-Bronzetechnik
+Bronzeguss
 @@rules.advance.9
-Bestattungsriten
+Totenkult
 @@rules.advance.10
 Chemie
 @@rules.advance.11
@@ -13470,7 +13470,7 @@ Industrialisierung
 @@rules.advance.38
 Erfindungen
 @@rules.advance.39
-Eisenverhüttung
+Eisentechnik
 @@rules.advance.40
 Gewerkschaften
 @@rules.advance.41

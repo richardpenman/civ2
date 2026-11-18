@@ -50,7 +50,7 @@ OpenCiv2 選項
 @@openciv2.mode.title
 模式
 @@openciv2.mode.standard_note
-標準：修正原版的錯誤，加上 OpenCiv2 的介面新增功能；規則變更依你的選擇。
+標準：修正原版的錯誤，加上 OpenCiv2 的介面新增功能；規則變更依您的選擇。
 @@openciv2.mode.classic_note
 經典：原汁原味的原版遊戲：保留其錯誤與外觀，不含任何 OpenCiv2 的新增功能。
 @@openciv2.mode.standard
@@ -108,7 +108,7 @@ U 讓整個堆疊警戒
 @@openciv2.interface.title
 介面新增功能
 @@openciv2.interface.intro
-OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：你看到的與能做的。
+OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：您看到的與能做的。
 @@openciv2.extra.MouseWheel
 滑鼠滾輪與按鍵
 @@openciv2.extra.UnitListScroll
@@ -116,7 +116,7 @@ OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：你看到�
 @@openciv2.extra.UnitListKeys
 該單位清單中的按鍵
 @@openciv2.extra.WorkCounter
-開拓者工作計數
+殖民者工作計數
 @@openciv2.extra.GameTurn
 狀態面板顯示回合
 @@openciv2.extra.ResearchNumbers
@@ -128,7 +128,7 @@ OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：你看到�
 @@openciv2.extra.SupportSort
 支援的單位排序
 @@openciv2.extra.AttitudeColors
-態度顧問的色彩
+民意顧問的色彩
 @@openciv2.extra.CityAttitude
 城市視窗中的態度
 @@openciv2.extra.RadioHotkeys
@@ -142,7 +142,7 @@ OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：你看到�
 @@openciv2.extra.CityStatus
 城市狀態：排序、變更
 @@openciv2.extra.MassSpecialists
-對專家按 Shift
+對專業人員按 Shift
 @@openciv2.extra.SuppressPopups
 地圖上的訊息
 @@openciv2.extra.ColorCorrection
@@ -268,7 +268,7 @@ HD 圖形
 @@openciv2.box.no
 否
 @@openciv2.quit.text
-要結束文明帝國 II 嗎？
+要結束文明帝國II 嗎？
 
 進行中的遊戲將在此結束；未儲存的內容都會遺失。
 @@openciv2.quit.quit
@@ -362,9 +362,9 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 @@openciv2.web.loading
 載入中 ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition，重建後可在你的瀏覽器中執行。它使用<em>你自己</em>的遊戲：文明帝國 II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（標準或經典、HD 圖形、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
+Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它使用<em>您自己</em>的遊戲：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（標準或經典、HD 圖形、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
 @@openciv2.web.choose
-選擇你的遊戲...
+選擇您的遊戲...
 @@openciv2.web.choose_folder
 資料夾
 @@openciv2.web.choose_folder_note
@@ -386,7 +386,7 @@ Civilization II Multiplayer Gold Edition，重建後可在你的瀏覽器中執�
 @@openciv2.web.export
 匯出存檔
 @@openciv2.web.export_title
-你的存檔、你製作的劇本、CIV.INI、CIV2.DAT 與 HALLFAME.DAT，打包為 .zip
+您的存檔、您製作的劇本、CIV.INI、CIV2.DAT 與 HALLFAME.DAT，打包為 .zip
 @@openciv2.web.import
 匯入存檔
 @@openciv2.web.saves
@@ -396,7 +396,7 @@ Civilization II Multiplayer Gold Edition，重建後可在你的瀏覽器中執�
 @@openciv2.web.saves_heading
 存檔
 @@openciv2.web.saves_note
-將你的存檔、你製作的劇本、<code>CIV.INI</code>、<code>CIV2.DAT</code> 與 <code>HALLFAME.DAT</code> 匯出為 .zip；或將存檔（.SAV，或這類 .zip）匯入遊戲。
+將您的存檔、您製作的劇本、<code>CIV.INI</code>、<code>CIV2.DAT</code> 與 <code>HALLFAME.DAT</code> 匯出為 .zip；或將存檔（.SAV，或這類 .zip）匯入遊戲。
 @@openciv2.web.close
 關閉
 @@openciv2.web.relay_title
@@ -894,9 +894,9 @@ HP
 @@label.200
 燃料
 @@label.201
-居住
+居住艙
 @@label.202
-維生
+維生系統
 @@label.203
 太陽能板
 @@label.204
@@ -1026,9 +1026,9 @@ HP
 @@label.266
 擷取：Shift+右鍵
 @@label.267
-新增項目： Shift+LEFT
+新增項目：Shift+左鍵
 @@label.268
-刪除項目： Shift+RIGHT
+刪除項目：Shift+右鍵
 @@label.269
 保護海岸線
 @@label.270
@@ -3356,7 +3356,7 @@ Civilization II Multiplayer Gold
 @options
 王座廳
 外交畫面
-動畫傳令官（需要 16 MB 記憶體）
+使節動畫（需要 16 MB 記憶體）
 文明科技的文明百科
 最高議會
 奇觀影片
@@ -4907,12 +4907,12 @@ Civilization II Multiplayer Gold
 「認為這次談話到此為止。」
 「提議建立永久的戰略同盟。」
 「提議簽訂永久和平條約。」
-「請求您們，我們仁慈的盟友，贈予禮物。」
-「要求您們為我們的耐心獻上貢品。」
-「堅持要您們撤出部隊。」
+「請求貴國——我們仁慈的盟友——贈予禮物。」
+「要求貴國為我們的耐心獻上貢品。」
+「堅持要貴國撤出部隊。」
 「要取消這個毫無價值的同盟。」
 「有個提議...」
-「想送您們一份禮物...」
+「想送貴國一份禮物...」
 
 @@game.TREATYMENU
 @width=320
@@ -6359,7 +6359,7 @@ Civilization II Multiplayer Gold
 
 @@game.HISTORY
 @width=480
-@title=Civilization II Multiplayer Gold
+@title=文明帝國II 多人遊戲黃金版
 ^^%STRING1完成了他的史詩鉅著：
 ^^『世界上%STRING2的文明』
 
@@ -6724,7 +6724,7 @@ Civilization II Multiplayer Gold
 @@game.CODECNOTFOUND
 @width=320
 @title=注意
-我們找不到動畫使節所需的
+我們找不到使節動畫所需的
 檔案，因此已關閉該項
 「圖形選項」。若要重新安裝必要的檔案，請執行
 遊戲光碟「vfw_rt」目錄中的「setup.exe」。
@@ -6765,7 +6765,7 @@ Civilization II Multiplayer Gold
 @width=440
 @title=退休計畫！
 舉行千禧年慶典！
-%STRING0%STRING1計劃在 20 年後退休！
+%STRING0%STRING1計畫在 20 年後退休！
 
 @@game.DORETIRE
 @width=440
@@ -7037,10 +7037,10 @@ Civilization II Multiplayer Gold
 切換使用目標勝利旗標（%NUMBER0）
 切換將奇觀計為目標（%NUMBER1）
 設定目標主角（%STRING0）
-決定性勝利（>= %NUMBER2）
+大獲全勝（>= %NUMBER2）
 險勝（>= %NUMBER3）
-惜敗（<= %NUMBER4）
-決定性失敗（<= %NUMBER5）
+險敗（<= %NUMBER4）
+慘敗（<= %NUMBER5）
 
 @@game.EDITVICTORYOBJ
 @title=設定所需目標數
@@ -7153,7 +7153,7 @@ Diese Spiel ist nun vollständig.
 @width=440
 我們發現您的影片設定
 可能有問題。如果在安裝
-Civilization II Multiplayer Gold 時已成功
+《文明帝國II 多人遊戲黃金版》時已成功
 安裝 Video for Windows，請試著執行 CD-ROM 上
 遊戲「civ2\video」目錄中的「vfwfix.bat」公用程式。
 如果您仍持續收到此訊息，請聯絡
@@ -7170,8 +7170,8 @@ MicroProse 客戶服務部。
 @@game.NOPICKMUSIC
 @width=360
 @title=選擇音樂
-除非光碟機中放有 Civilization II
-Multiplayer Gold 光碟或 Civilization II
+除非光碟機中放有《文明帝國II
+多人遊戲黃金版》光碟或《文明帝國II》
 劇本光碟，否則無法使用此選項。
 
 @@game.PICKMUSIC
@@ -7394,8 +7394,8 @@ Multiplayer Gold 光碟或 Civilization II
 
 @@game.HERALDWARNING
 @width=440
-@title=Civ2 外交使節動畫
-Civilization II Multiplayer Gold 需要
+@title=文明帝國II 外交使節動畫
+《文明帝國II 多人遊戲黃金版》需要
 16 MB 的 RAM 才能順暢執行，
 並正確顯示 3D 外交使節動畫。
 因此，如果您至少有 16 MB 的 RAM，
@@ -8523,7 +8523,7 @@ Civilization II Multiplayer Gold 需要
 ^
 ^「船艦容量」表示一艘船在海上最多可載運的單位數。
 ^
-^「範圍」表示空軍單位可停留空中的回合數。
+^「航程」表示空軍單位可停留空中的回合數。
 ^它們必須在最後一回合結束時返回基地，以免墜毀。
 ^
 ^「攻擊係數」衡量攻擊時命中的機率。 
@@ -8583,7 +8583,7 @@ Civilization II Multiplayer Gold 需要
 ^「暴動係數」設定在帝國規模開始造成不滿之前， 
 ^您最多可控制的城市數。
 ^
-^我們建議在「作弊」選單中修改「科技典範」，而非在此。
+^我們建議在「作弊」選單中修改「科技範式」，而非在此。
 ^
 ^「改造地形」其實是工兵完成一次改造
 ^所需回合數的兩倍。
@@ -8731,7 +8731,7 @@ Civilization II Multiplayer Gold 需要
 ^
 ^增加或減少部族的金錢。若要減少，請在數額前
 ^加上負號 (-)。若調整後部族的金錢
-^小於零，Civ II 會將其強制設為零。
+^小於零，文明帝國II 會將其強制設為零。
 ^
 ^Triggerattacker 指示巨集使用觸發此事件的
 ^攻擊方（在 UNITKILLED 觸發中消滅該單位的部族，或
@@ -8780,7 +8780,7 @@ Civilization II Multiplayer Gold 需要
 ^
 ^播放所選的 *.wav 檔案。您必須知道並輸入該檔案
 ^的確切名稱。編輯器會先在劇本的音效資料夾中搜尋
-^該音效，若找不到，再搜尋 Civ 2 的音效資料夾。
+^該音效，若找不到，再搜尋文明帝國II 的音效資料夾。
 ^為避免可能的名稱重複問題，它不會再搜尋其他地方。若您
 ^想為劇本匯入 wave 檔案，我們建議最好將其存放在
 ^劇本的音效資料夾中。請確認匯入的檔案為 8 位元、 
@@ -8793,15 +8793,15 @@ Civilization II Multiplayer Gold 需要
 @title=事件編輯器說明
 ^PLAYCDTRACK
 ^
-^指示遊戲播放一首音軌。在所有 Civ II 光碟上，第一
+^指示遊戲播放一首音軌。在所有《文明帝國II》光碟上，第一
 ^音軌都存放程式資料，因此第 2 軌才是第一首音樂
 ^音軌。所以您必須選擇大於或等於 2 的數字。
 ^
 ^第 2-10 軌是原版遊戲的音樂：
-^  (2) 葬禮 0:41                   (3) 歡樂頌 0:51
+^  (2) 葬禮 0:41                   (3) 快樂頌 0:51
 ^  (4) 特諾奇提特蘭現身 1:46       (5) 尼羅河的豐收 2:11
 ^  (6) 亞里斯多德的弟子 2:09       (7) 奧古斯都崛起 2:52
-^  (8) 喬達摩沉思 2:45             (9) 漢摩拉比法典 1:54
+^  (8) 喬達摩的沉思 2:45           (9) 漢摩拉比法典 1:54
 ^  (10) 光明之路 2:32
 ^
 ^第 11-18 軌來自 Conflicts in Civilization：
@@ -8948,9 +8948,9 @@ Civilization II Multiplayer Gold 需要
 ^同類地形的數量與位置。
 ^附表列出影響圖示放置的 16 種相鄰地形
 ^組合（NE＝東北，SE＝東南，SW＝西南，NW＝西北）。例如，只有當
-^唯一相鄰的森林格位於東北方時，Civ II 才會在該格放置 #2 森林。
+^唯一相鄰的森林格位於東北方時，文明帝國II 才會在該格放置 #2 森林。
 ^若森林位於西北與東南方的相鄰格，就會得到 #11。若該格
-^四周都是森林，CIV II 會使用方位 #16。
+^四周都是森林，文明帝國II 會使用方位 #16。
 ^
 ^  1 - 無         2 - NE            3 - SE            4 - NE & SE
 ^  5 - SW         6 - NE & SW       7 - SE & SW       8 - NE, SE, SW
@@ -8969,9 +8969,9 @@ Civilization II Multiplayer Gold 需要
 ^同類地形的數量與位置。
 ^附表列出影響圖示放置的 16 種相鄰地形
 ^組合（NE＝東北，SE＝東南，SW＝西南，NW＝西北）。例如，只有當
-^唯一相鄰的森林格位於東北方時，Civ II 才會在該格放置 #2 森林。
+^唯一相鄰的森林格位於東北方時，文明帝國II 才會在該格放置 #2 森林。
 ^若森林位於西北與東南方的相鄰格，就會得到 #11。若該格
-^四周都是森林，CIV II 會使用方位 #16。
+^四周都是森林，文明帝國II 會使用方位 #16。
 ^
 ^  1 - 無         2 - NE            3 - SE            4 - NE & SE
 ^  5 - SW         6 - NE & SW       7 - SE & SW       8 - NE, SE, SW
@@ -8990,9 +8990,9 @@ Civilization II Multiplayer Gold 需要
 ^同類地形的數量與位置。
 ^附表列出影響圖示放置的 16 種相鄰地形
 ^組合（NE＝東北，SE＝東南，SW＝西南，NW＝西北）。例如，只有當
-^唯一相鄰的森林格位於東北方時，Civ II 才會在該格放置 #2 森林。
+^唯一相鄰的森林格位於東北方時，文明帝國II 才會在該格放置 #2 森林。
 ^若森林位於西北與東南方的相鄰格，就會得到 #11。若該格
-^四周都是森林，CIV II 會使用方位 #16。
+^四周都是森林，文明帝國II 會使用方位 #16。
 ^
 ^  1 - 無         2 - NE            3 - SE            4 - NE & SE
 ^  5 - SW         6 - NE & SW       7 - SE & SW       8 - NE, SE, SW
@@ -9011,9 +9011,9 @@ Civilization II Multiplayer Gold 需要
 ^同類地形的數量與位置。 
 ^附表列出影響圖示放置的 16 種相鄰地形
 ^組合（NE＝東北，SE＝東南，SW＝西南，NW＝西北）。例如，只有當
-^唯一相鄰的河流格位於東北方時，Civ II 才會在該格放置 #2 河流。
+^唯一相鄰的河流格位於東北方時，文明帝國II 才會在該格放置 #2 河流。
 ^若河流位於西北與東南方的相鄰格，就會得到 #11。若該格
-^四周都是河流，CIV II 會使用方位 #16。
+^四周都是河流，文明帝國II 會使用方位 #16。
 ^
 ^  1 - 無         2 - NE            3 - SE            4 - NE & SE
 ^  5 - SW         6 - NE & SW       7 - SE & SW       8 - NE, SE, SW
@@ -10522,15 +10522,15 @@ t7, 3349,3382, 貿易：改天一起吃個午餐吧。
 end
 @@herald.HERALDWARNING
 @width=440
-@title=文明帝國II外交使者
+@title=文明帝國II外交使節動畫
 《文明帝國II》需要 8 MB 記憶體才能執行。
 不過，需要 16 MB 記憶體才能正確顯示
-3D 外交使者。因此，若您至少有
+3D 外交使節動畫。因此，若您至少有
 16 MB 記憶體，便可安心開啟此功能。
 （此訊息只會出現一次。）
 
-關閉外交使者。我的記憶體少於 16 MB。
-開啟外交使者。我的記憶體至少有 16 MB。
+關閉使節動畫。我的記憶體少於 16 MB。
+開啟使節動畫。我的記憶體至少有 16 MB。
 
 @@pedia.PEDIAPICKCIV
 @width=540
@@ -11732,7 +11732,7 @@ Y：
 依城市數計算的暴動係數（係數越高影響越小）
 超過此規模需要水道橋
 超過此規模需要下水道系統
-科技典範（數值越高研究越慢）
+科技範式（數值越高研究越慢）
 工兵改造地形的基本時間（x2）
 君主制：超過此數的單位需支付維持費
 共產主義：超過此數的單位需支付維持費
@@ -11741,7 +11741,7 @@ Y：
 基本教義損失此百分比的科學
 變更生產類型時的盾懲罰百分比
 最大空降範圍
-質量/推力典範（數值增加會延長太空船航行時間）
+質量/推力範式（數值增加會延長太空船航行時間）
 基本教義下最高有效科學率（x10，故 5 = 50%）
 
 
@@ -12500,7 +12500,7 @@ Daniel Quick，又名 The Emperor
 共產主義是一種構想中的政府體制，在這種體制下，資源與生產設施屬於整個社會，而非個人所有。在共產社會中，勞動也是平均分擔，勞動的成果則按需求分配。在這樣的體制下，人人平等，沒有階級分化。雖然共產主義的基本概念自柏拉圖的時代便已存在，但現代共產主義指的是卡爾·馬克思與弗里德里希·恩格斯在《共產黨宣言》中所描述的政府體制。他們認為，資本主義體制必將自我毀滅，因為在這種體制下，富有的上層階級靠剝削無權的下層階級而興旺。到了那時，窮人將起而反抗過去的壓迫者，建立無階級的社會。這個預言從未實現，而試圖以共產主義為政府基礎的國家，最終都未能實現馬克思與恩格斯所描述的烏托邦。
 
 @@describe.ADVANCE.Computers
-電腦是一種能以遠比人腦更快的速度，執行一連串重複算術或邏輯運算的裝置。最早的電腦是為了解複雜的數學方程式而設計的。英國數學家查爾斯·巴貝奇在 19 世紀構想出這樣一部機器，稱為分析機。20 世紀上半葉，人們製造了許多種類比式（即機械式）計算裝置，用於計算潛艇的魚雷追蹤以及控制轟炸瞄準器等工作。1940 年代末期電子學研究的蓬勃發展，促成了數位電腦的發明。第一部全電子式電腦於 1946 年製成，內含 18,000 支真空管，每分鐘能進行數百次乘法運算。自這個里程碑以來，電子學的持續進步迅速縮小了電腦的體積，並提升了速度與效率。如今電腦已十分普遍，幾乎應用於各個領域。電腦技術的重大進展仍以驚人的速度持續發生。
+電腦是一種能以遠比人腦更快的速度，執行一連串重複算術或邏輯運算的裝置。最早的電腦是為了解複雜的數學方程式而設計的。英國數學家查爾斯·巴貝奇在 19 世紀構想出這樣一部機器，稱為分析機。20 世紀上半葉，人們製造了許多種類比式（即機械式）計算裝置，用於計算潛艦的魚雷追蹤以及控制轟炸瞄準器等工作。1940 年代末期電子學研究的蓬勃發展，促成了數位電腦的發明。第一部全電子式電腦於 1946 年製成，內含 18,000 支真空管，每分鐘能進行數百次乘法運算。自這個里程碑以來，電子學的持續進步迅速縮小了電腦的體積，並提升了速度與效率。如今電腦已十分普遍，幾乎應用於各個領域。電腦技術的重大進展仍以驚人的速度持續發生。
 
 @@describe.ADVANCE.Conscription
 強制人民加入軍隊的做法已實行了數千年。在古希臘，於大約西元前 2000 年引進職業軍隊之前，17 歲到 60 歲的男子都有義務在民兵中服役。現代形式的徵兵制是在 1789 年法國大革命期間引進法國的。到了 19 世紀，除了英國與美國以外，幾乎每個國家都實施了平時徵兵制度。兩次世界大戰中的許多參戰國，其作戰部隊大多由徵召的士兵組成。美國 1948 年的《選擇性兵役法》在第二次世界大戰後維持了平時徵兵。這項原定於 1950 年失效的法案，因韓戰而延長。美國的平時徵兵一直持續到 1973 年，此後兵役改為志願制。

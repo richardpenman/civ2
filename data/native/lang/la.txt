@@ -379,7 +379,7 @@ Siste
 @@openciv2.web.have
 Fasciculi ludi in hoc navigatro sunt.
 @@openciv2.web.forget
-Remove eos
+Dele eos
 @@openciv2.web.play
 Lude
 @@openciv2.web.export
@@ -1995,7 +1995,7 @@ Territorium
 @@label.751
 Mappae
 @@label.752
-Ut bellum indicant
+Ut bellum indicent
 @@label.753
 Indictio belli
 @@label.754
@@ -2053,7 +2053,7 @@ Ordo per urbes
 @@label.780
 Propone:
 @@label.781
-Pete ut bellum indicant
+Pete ut bellum indicent
 @@label.782
 Pete ut mappas communicent
 @@label.783
@@ -2101,7 +2101,7 @@ Mappas terrarum et urbium permutemus.
 @@label.804
 Mappas terrarum permutemus.
 @@label.805
-Bellum communiter indicamus his gentibus:
+Bellum communiter indicemus his gentibus:
 @@label.806
 Haec dona offerimus:
 @@label.807
@@ -2129,7 +2129,7 @@ Has urbes cum unitatibus quae ibi habitant tibi dabimus:
 @@label.818
 Haec indicia praebebimus:
 @@label.819
-Bellum indicemus his gentibus:
+Bellum indicabimus his gentibus:
 @@label.820
 Sed tantum si nobis hanc scientiam dederis:
 @@label.821
@@ -3449,7 +3449,7 @@ viribus %NUMBER0/%NUMBER1.
 
 @@game.LANDFALL
 @title=Exscensio
-Egredimurne, Domine,
+Egrediamurne, Domine,
 navibus relictis?
 
 Cum navibus manere
@@ -4868,7 +4868,7 @@ nam nequaquam tam stulti sumus."
 @width=320
 @title=Nuntius (%STRING0)
 "Quamquam hoc instrumentum signamus, bene scimus
-nullum tecum pactum chartae dignum esse in qua
+nullum tecum pactum charta dignum esse in qua
 scriptum sit. Stultus es, si aliter nos acturos exspectas."
 
 @@game.OUTAHEREALLY
@@ -9428,7 +9428,7 @@ exploratores aliasque unitates ad continentes longinquas vehant.
 @title=Schola Civ: Propagatio finium (#1)
 Gens crescit fines suos proferendo. Hoc fieri
 potest aut novas urbes condendo aut urbes
-aemulorum expugnando. Fortasse uni ex urbibus nostris
+aemulorum expugnando. Fortasse unam ex urbibus nostris
 iubeamus novam unitatem COLONORUM parare.
 
 @@tutorial.EXPAND1
@@ -10521,15 +10521,15 @@ t7, 3349,3382, Mercatura: Prandeamus una.
 end
 @@herald.HERALDWARNING
 @width=440
-@title=Caduceatores diplomatici Civ2
+@title=Praecones Diplomatici Civ2
 Civilization II 8 megabytes memoriae RAM requirit ut ludi possit.
 Tamen 16 megabytes memoriae RAM requirit ut
-caduceatores diplomatici 3D recte monstrentur. Itaque si
+praecones diplomatici 3D recte monstrentur. Itaque si
 saltem 16 megabytes memoriae RAM habes, hanc facultatem tuto accendere potes.
 (Hic nuntius semel tantum apparebit.)
 
-Caduceatores EXSTINGUE. Minus quam 16 megabytes RAM habeo.
-Caduceatores ACCENDE. Saltem 16 megabytes RAM habeo.
+Praecones EXSTINGUE. Minus quam 16 megabytes RAM habeo.
+Praecones ACCENDE. Saltem 16 megabytes RAM habeo.
 
 @@pedia.PEDIAPICKCIV
 @width=540
@@ -11490,7 +11490,7 @@ Aedificium:
 
 
 @@debug.UNITNAME
-@title=Nomen unitatis
+@title=Nomen unitatis mutare
 @width=300
 Scribe nomen novum unitatis
 
@@ -11699,7 +11699,7 @@ Femina
 
 
 @@debug.LEADERNAME
-@title=Nomen principis
+@title=Nomen principis mutare
 @width=300
 Scribe nomen novum principis
 
@@ -11736,7 +11736,7 @@ Tempus fabrorum ad terram transformandam (x2)
 Monarchia sumptus unitatum ultra hunc numerum solvit
 Communismus sumptus unitatum ultra hunc numerum solvit
 Fundamentalismus sumptus unitatum ultra hunc numerum solvit
-Communismus huic distantiae a Palatio aequat.
+Communismus par est huic distantiae a Palatio.
 Fundamentalismus hanc partem % scientiae amittit
 Poena % scutorum ob genus productionis mutatum
 Spatium maximum desiliendi parachutis
@@ -12649,7 +12649,7 @@ Per Medium Aevum copiae militares tantum cum opus erat conscribebantur, et milit
 Unus e gradibus gravissimis ad industrializationem fuit facultas metallum solidum in formam desideratam accurate fingendi vel "machinandi". Machinae fabriles, modis mechanicis, chemicis, aliis, materias rudes in partes accuratas machinarum implicatarum fingunt et conformant. Prima machina fabrilis, instrumentum horizontale ad terebrandum, exeunte saeculo XVIII facta est. Instrumenta metiendi usque ad partem unciae decies centies millesimam accurata productionem massalem rerum cum partibus permutabilibus effecerunt. Technologia saeculi XX machinas fabriles computatro rectas produxit, quae ad varios usus accommodari possunt. Celeritas et accuratio harum machinarum productionem massalem rerum valde implicatarum parvo sumptu permittit.
 
 @@describe.ADVANCE.Miniaturization
-Prima instrumenta radiophonica et alia electronica tubis vacuis nitebantur. Quia tubi multum spatii occupabant, instrumenta quae eis utebantur plerumque valde ampla et incommoda erant. Exeuntibus annis 1940 transistor inventus pro tubis vacuis aliquid compactum praebuit. Transistores vim aeque amplificare poterant ac tubi, cum multo minus spatii occuparent et exiguam tantum partem energiae consumerent. Ab annis 1960 circuitus integratus gradum miniaturizationis etiam alterum praebuit. Circuitus integratus magnitudine transistoris munus viginti transistorum praestare poterat. Hodie microprocessorium, circuitum integratorum primorum perfectio recentior, munera complurium tabularum circuitus impressi in unum chip, parvae energiae consumptionis, minus duabus unciis quadratis, colligere potest; quo fit ut computatra manualia construi possint quae plus vis computandi habent quam ingentia computatra centralia annorum 1970 et 1980.
+Prima instrumenta radiophonica et alia electronica tubis vacuis nitebantur. Quia tubi multum spatii occupabant, instrumenta quae eis utebantur plerumque valde ampla et incommoda erant. Exeuntibus annis 1940 transistor inventus pro tubis vacuis aliquid compactum praebuit. Transistores vim aeque amplificare poterant ac tubi, cum multo minus spatii occuparent et exiguam tantum partem energiae consumerent. Ab annis 1960 circuitus integratus gradum miniaturizationis etiam alterum praebuit. Circuitus integratus magnitudine transistoris munus viginti transistorum praestare poterat. Hodie microprocessorium, circuituum integratorum primorum perfectio recentior, munera complurium tabularum circuitus impressi in unam lamellam siliceam, parvae energiae consumptionis, minus duabus unciis quadratis, colligere potest; quo fit ut computatra manualia construi possint quae plus vis computandi habent quam ingentia computatra centralia annorum 1970 et 1980.
 
 @@describe.ADVANCE.Mobile Warfare
 Usus armorum gravium in acie ad saeculum XV redit, cum bombardae graves rotis impositae ab equis in proelium trahebantur. Hic primus tormentorum mobilium usus, suo tempore vehementer efficax, cum arte belli loricati saeculi XX comparatus paene nihil est. Currus loricati primum Bello Mundano Primo adhibiti sunt. Impetus prosper 400 curruum mense Novembri anni 1917 prope Cameracum, quo 8000 milites hostium et 100 tormenta capta sunt, viam ad magnam artis proeliandi mutationem stravit. Bello Mundano Secundo vehicula loricata per Europam et Africam ab utraque parte, et Sociis et Axe, late adhibita sunt. Vis et mobilitas impetus loricati civitates quibus idonea contra talem impetum praesidia deerant facile superabat. Bellum loricatum etiam nunc magnas partes in arte proeliandi agit. Quod in bello Sinus Persici probatum est, ubi currus M1 Abrams pars necessaria copiarum terrestrium in Kuvaitum impetum facientium fuit.
@@ -12709,7 +12709,7 @@ Excogitatio instrumenti, rationis, processus antea ignoti, quo deinde propositum
 Quaedam ornamenta ferrea ad annum 4000 a.C.n. redeunt, sed usus ferri ad instrumenta, arma, alios usus practicos multo post demum vulgaris factus est. Ante id tempus aes metallum ad tales usus maxime adhibitum erat. Quamquam vocabulum "Aetas Ferrea" tempus circiter ab anno 1000 a.C.n. incipiens significat, ferrum aliis temporibus aliis locis in locum aeris ut metallum praelatum successit. Ferrum frequentius est quam et cuprum et stannum, metalla ex quibus aes constat, sed raro purum invenitur; plerumque cum aliis mineralibus et elementis mixtum invenitur. Ut adhiberi possit, ferrum a minera separandum est. Postquam haec ars inventa est et fornaces tam calidae factae sunt ut ferrum liquefacerent, ars ferraria vulgaris facta est. Ferrum fabricatum durius et minus fragile erat quam aes, et aciem multo acutiorem tenere poterat. Ferrum per totam historiam metallum magni momenti mansit, et inter praecipuas partes est ex quibus chalybs fit.
 
 @@describe.ADVANCE.Steel
-Mixturae ferri usque ad saeculum circiter XIV factae ita parabantur ut mixtura minerae ferri et carbonis ligni in fornace calefieret, deinde metallum liquefactum tunderetur ut sordes vel "scoria" expellerentur. Interdum mixtura ferri plus carbonis absorbebat, ita ut chalybs potius quam ferrum ductile fieret. Quia chalybs minus fragilis et corrosioni magis resistens quam ferrum esse probatus est, artes excogitatae sunt ad chalybem producendum. Hoc fiebat flando per ferrum liquefactum materiam e carbone fossili ductam quae "coke" appellatur. Plerique hodie chalybem conficientes "fornace flatili" utuntur, ab Henrico Bessemer anno 1855 inventa, ut hoc magna copia perficiant. Firmitas et aliae chalybis qualitates eum materiam praelatam reddunt ad naves bellicas, aeroplana, multa alia vehicula.
+Mixturae ferri usque ad saeculum circiter XIV factae ita parabantur ut mixtura minerae ferri et carbonis ligni in fornace calefieret, deinde metallum liquefactum tunderetur ut sordes vel "scoria" expellerentur. Interdum mixtura ferri plus carbonis absorbebat, ita ut chalybs potius quam ferrum ductile fieret. Quia chalybs minus fragilis et corrosioni magis resistens quam ferrum esse probatus est, artes excogitatae sunt ad chalybem producendum. Hoc fiebat flando per ferrum liquefactum materiam e carbone fossili ductam quae "carbo coctus" appellatur. Plerique hodie chalybem conficientes "fornace flatili" utuntur, ab Henrico Bessemer anno 1855 inventa, ut hoc magna copia perficiant. Firmitas et aliae chalybis qualitates eum materiam praelatam reddunt ad naves bellicas, aeroplana, multa alia vehicula.
 
 @@describe.ADVANCE.Superconductor
 Quaelibet materia per quam fluxus electricus parva cum resistentia transire potest conductor appellatur. Cum fluxus electricus per plerosque conductores transit, pars eius fluxus resistentia amittitur, quae pro materia conducente et temperatura ambiente variat. Quidam conductores, ad temperaturas prope zerum absolutum refrigerati, omnem resistentiam fluxui amittunt. Hi superconductores appellantur. Quia nulla energia resistentia amittitur, superconductores ad varios usus practicos adhiberi possunt. Inter quos sunt computatra celerrima, campi electromagnetici tam validi ut reactiones fusionis continere possint, vis electrica sine ullo dispendio generata et transmissa. Quamquam temperaturae valde humiles ad superconductivitatem necessariae usus eius adhuc finierunt, recentia inventa innuunt quasdam materias insolitas etiam temperatura conclavis superconductivas esse posse. Harum materiarum separatio et productio magna copia novam revolutionem in re electronica afferre possunt.
@@ -12784,7 +12784,7 @@ In historia investigatio rei bellicae semper vidit nova et potentia arma inventa
 Partes navis spatialis vim motricem navis praebent. Duo sunt genera: propulsio et combustibile. Partes propulsionis sunt machinae navis spatialis, et quaeque pars combustibilis satis combustibilis praebet ad unam machinam movendam. Quaeque pars propulsionis partem combustibilis requirit ut operari possit. Navis spatialis saltem unam partem utriusque generis requirit. Quo plures machinas navis spatialis habet, eo celerius  ad metam perveniet.
 
 @@describe.IMPROVEMENT.Spaceship Module
-Moduli sunt partes mediae navis spatialis. Tria sunt genera: habitatio, vitae subsidia, tabulae solares. Quisque modulus habitationis spatium habitandi 10.000 colonis praebet. Quisque modulus subsidiorum vitae satis cibi, aquae, aliarum rerum necessariarum praebet ad colonos unius moduli habitationis sustinendos. Et moduli habitationis et moduli subsidiorum vitae energia egent ut operentur, et quisque modulus tabularum solarium satis energiae praebet ad duos alios modulos movendos. Quaeque navis spatialis saltem unum modulum cuiusque generis requirit ut munus suum feliciter expleat.
+Moduli sunt partes mediae navis spatialis. Tria sunt genera: habitatio, vitae subsidia, tabulae solares. Quisque modulus habitationis spatium habitandi 10,000 colonis praebet. Quisque modulus subsidiorum vitae satis cibi, aquae, aliarum rerum necessariarum praebet ad colonos unius moduli habitationis sustinendos. Et moduli habitationis et moduli subsidiorum vitae energia egent ut operentur, et quisque modulus tabularum solarium satis energiae praebet ad duos alios modulos movendos. Quaeque navis spatialis saltem unum modulum cuiusque generis requirit ut munus suum feliciter expleat.
 
 @@describe.IMPROVEMENT.Spaceship Structural
 Structurae navis spatialis sunt compages cui omnes aliae navis partes affiguntur. Omnes partes et moduli navis spatialis cum aliqua structura coniungi debent ut operentur. Partes et moduli cum compage non coniuncti in conspectu navis spatialis linea rubra circumscribuntur. 
@@ -12817,7 +12817,7 @@ Naves maritimae et ad onera mercatoria vehenda et ad usus militares per milia an
 In historia bibliothecae et universitates praecipua centra investigationis novarum notionum et technologiarum fuerunt. Incrementum industriae privatae aetate hodierna etiam centena instituta investigationis privata peperit. Haec laboratoria privata, plerumque investigationi in una disciplina ad societatem conditricem pertinente dedicata, ingentes progressus in multis disciplinis, inter quas physica, biologia, chemia, medicina, fecerunt. Incrementum investigationis  pecunia privata sustentatae celeritatem qua genus humanum nova inventa in scientia et technologia assequitur valde auxit.
 
 @@describe.IMPROVEMENT.SAM Missile Battery
-Usus aeroplanorum in bello Bello Mundano Primo serio coepit. Exeunte Bello Mundano Secundo usus aeroplanorum venatoriorum et bombiferorum vulgaris erat, et momentum belli aerii crescere pergebat, sicut momentum defensionum contra aeroplana efficacium. Annis 1950 ars rochetica emendata permisit ut missilia compacta fabricarentur, quibus capita displosiva ad scopos celeriter et accurate mittebantur. Batteriae missilium e terra in aerem emissorum, sive SAM, aedificatae sunt ut urbes et instituta terrestria contra impetus aerios tuerentur. Longum spatium et magna accuratio batteriarum SAM defensionem multo efficaciorem praebebant quam tormenta contra aeroplana Belli Mundani Secundi.
+Usus aeroplanorum in Bello Mundano Primo serio coepit. Exeunte Bello Mundano Secundo usus aeroplanorum venatoriorum et bombiferorum vulgaris erat, et momentum belli aerii crescere pergebat, sicut momentum defensionum contra aeroplana efficacium. Annis 1950 ars rochetica emendata permisit ut missilia compacta fabricarentur, quibus capita displosiva ad scopos celeriter et accurate mittebantur. Batteriae missilium e terra in aerem emissorum, sive SAM, aedificatae sunt ut urbes et instituta terrestria contra impetus aerios tuerentur. Longum spatium et magna accuratio batteriarum SAM defensionem multo efficaciorem praebebant quam tormenta contra aeroplana Belli Mundani Secundi.
 
 @@describe.IMPROVEMENT.Sewer System
 Inter res quas magnae urbes secum ferunt est ingens sordium humanarum copia. Dum urbs crescere pergit, curandum est ut sordes a locis habitatis removeantur et "purgentur", ne saluti hominum periculo sint aut naturae loci noceant. Cloacae aquam sordidam ad officinas purgandi vehunt, ubi sordes crudae filtratione et processibus chemicis resolvuntur ut res solidae et bacteria noxia removeantur. Quod purgatum est deinde in flumina et alias aquas emittitur, unde tandem tuto in oceanum defertur.
@@ -12958,7 +12958,7 @@ Navis aeroplanifera primum per Bellum Mundanum Secundum late adhiberi coepit. Ae
 Catapulta inter prima tormentorum genera fuit. Erat bracchium mechanicum magnum, quod saxa gravia aliaque tela e magno spatio iaciebat, moenia quatiens et aedificia defensoresque laedens. Quamquam gravis et in acie paene inutilis, catapulta telum efficax erat ad urbes et hostes munitos oppugnandos.
 
 @@describe.UNIT.Cavalry
-Equitatus constat ex militibus equis vectis, ad pugnandum ex equo exercitatis. Propter celeritatem suam unitates equestres saepe ad explorandum et ad incursiones subitas in castra copiasque hostium adhibebantur. Quamquam bellatores ex equo variis armis pugnantes iam ad Aegyptum antiquam pertinent, equitatus qualem hodie fere cogitamus exeunte demum saeculo XVIII ortus est. Sub Napoleone equitatus in copias lectas versus est, saepe simul cum peditibus dispositae, ut motus agminis principalis tegerent. Equitatus late adhibitus est in Bello Civili Americano et in aliis certaminibus medio et exeunte saeculo XIX. Cum fusilia iterantia in locum priorum armorum igniferorum singulorum ictuum successissent, milites equestres facile a peditibus peti poterant. Bellum Africae Australis, ab anno 1899 ad 1902, ultimum magnum certamen fuit in quo equitatus magnas partes egit. Hodie munera olim ab equitatu suscepta milites vehiculis loricatis et aeroplanis utentes susceperunt.
+Equitatus constat ex militibus equis vectis, ad pugnandum ex equo exercitatis. Propter celeritatem suam unitates equestres saepe ad explorandum et ad incursiones subitas in castra copiasque hostium adhibebantur. Quamquam bellatores ex equo variis armis pugnantes iam ad Aegyptum antiquam pertinent, equitatus qualem hodie fere cogitamus exeunte demum saeculo XVIII ortus est. Sub Napoleone equitatus in copias lectas versus est, saepe simul cum peditibus dispositas, ut motus agminis principalis tegerent. Equitatus late adhibitus est in Bello Civili Americano et in aliis certaminibus medio et exeunte saeculo XIX. Cum fusilia iterantia in locum priorum armorum igniferorum singulorum ictuum successissent, milites equestres facile a peditibus peti poterant. Bellum Africae Australis, ab anno 1899 ad 1902, ultimum magnum certamen fuit in quo equitatus magnas partes egit. Hodie munera olim ab equitatu suscepta milites vehiculis loricatis et aeroplanis utentes susceperunt.
 
 @@describe.UNIT.Chariot
 Currus primum verum vehiculum bellicum fuit. Ab exercitibus antiquis adhibebatur ad sagittarios aliosque milites in aciem vehendos, ubi descendebant et pugnabant. Currus ab Assyriis in telum terribile ad impetum faciendum versus est, quorum sagittarii et hastati ex ipso curru pugnabant. Pauci hostes impetum curruum Assyriorum sustinere poterant. Hoc genus impetus vastissimum mox a multis hostibus Assyriorum susceptum est, qui curru contra eos bene usi sunt.
@@ -13108,7 +13108,7 @@ Fontibus naturalibus, nive liquefacta, rivisque parvis aucta, flumina e montibus
 Paludes sunt terrae umidae quae hominibus plerumque inhabitabiles sunt. Hae regiones plerumque aqua inundantur, cuius altitudo a paucis digitis ad plures pedes patet, propter pluvias graves et lacus fluminaque vicina exundantia. Quamquam vitae humanae inhospitae, paludes et animalibus et plantis abundant. Quaedam aromata et res utiles, ut turfa, quae ad stercorandum adhibetur, in quibusdam paludibus copiose inveniuntur. Paludes saepe siccantur et in prata et campos convertuntur, ut ad opes et cibum producendum utiliores fiant. Societates tamen naturae tuendae effecerunt ut terrarum umidarum vastatio tardaretur et asyla animalibus feris quae has regiones incolunt constituerentur.
 
 @@describe.TERRAIN.Tundra
-In regionibus mundi ultimis septentrionalibus, et in regionibus solitariis Antarcticae, sunt milia milium passuum camporum sterilium qui tundra appellantur. Hae regiones mediam temperaturam infimam et aestatem brevissimam habent. Tundrae proprium est stratum soli perpetuo gelati, permagelum appellatum, statim sub solo summo, quod multas plantas radices agere prohibet et agriculturam paene impossibilem reddit. Sicut deserta, tundra parum pluviae accipit; solum tamen planum et gelatum aquam subterraneam effluere prohibet, et paludes efficit ubi varia gramina, muscus, aliaeque plantae simplices crescere possunt. Quamquam condicio aspera est, magna animalium varietas in tundra floret, quae et cibum praebere potest et mercaturae pellium et venationis occasionem.
+In regionibus mundi ultimis septentrionalibus, et in regionibus solitariis Antarcticae, sunt multa milia passuum camporum sterilium qui tundra appellantur. Hae regiones mediam temperaturam infimam et aestatem brevissimam habent. Tundrae proprium est stratum soli perpetuo gelati, permagelum appellatum, statim sub solo summo, quod multas plantas radices agere prohibet et agriculturam paene impossibilem reddit. Sicut deserta, tundra parum pluviae accipit; solum tamen planum et gelatum aquam subterraneam effluere prohibet, et paludes efficit ubi varia gramina, muscus, aliaeque plantae simplices crescere possunt. Quamquam condicio aspera est, magna animalium varietas in tundra floret, quae et cibum praebere potest et mercaturae pellium et venationis occasionem.
 
 
 @@describe.TERRAIN.Buffalo
@@ -13176,7 +13176,7 @@ Anarchia non tam forma rei publicae est quam defectus cuiusvis regiminis stabili
 @@describe.GOVERNMENT.Despotism
 Sub Despotismo dominus summam potestatem in subditos suos habet, quae potestas plerumque vi militari confirmatur. Haec forma libertatem singulorum minuere et productionis efficacitatem imminuere solet. 
 
-* Quaeque unitas ultra magnitudinem urbis unum Scutum per vicem constat.
+* Quaeque unitas ultra magnitudinem urbis uno Scuto per vicem constat.
 * Coloni unum Cibum per vicem consumunt.
 
 Usque ad tres unitates militares in quaque urbe "ius militare" instituunt. Quaeque ex his unitatibus unum civem tristem contentum reddit.
@@ -13190,7 +13190,7 @@ Despotismus magnam corruptionem et magnum dispendium habet. Quo longius urbs a c
 @@describe.GOVERNMENT.Communism
 Res publica Communistica a factione dominante regitur, uno homine, qui praeses appellatur, civitati praeposito. In vera ratione Communistica omnia bona a populo communiter possidentur, et labor ita ordinatur ut omnibus aeque prosit. Hoc tamen exemplar numquam re vera effectum est, et regimina "Communistica" mundi plerumque longe aliter se habent.
 
-* Quaeque unitas ultra tertiam unum Scutum per vicem constat.
+* Quaeque unitas ultra tertiam uno Scuto per vicem constat.
 * Coloni unum Cibum per vicem consumunt.
 
 Usque ad tres unitates militares in quaque urbe "ius militare" instituunt. Quaeque ex his unitatibus duos cives tristes contentos reddit.
@@ -13206,7 +13206,7 @@ Sub Communismo res oeconomica a civitate gubernata scelera ordinata tollit. Urbe
 @@describe.GOVERNMENT.Democracy
 Democratia a praeside a populo electo regitur. Decreta praesidis a Senatu recognoscuntur, coetu legatorum electorum qui civium utilitati optime consulunt. Democratia civibus maiorem libertatem et participationem concedit quam ulla alia forma rei publicae.
 
-* Quaeque unitas unum scutum per vicem constat.
+* Quaeque unitas uno scuto per vicem constat.
 * Coloni duos Cibos per vicem consumunt.
 
 Quaeque unitas quae non est in urbe amica (aut in Castello intra tria quadra ab urbe amica) duos cives in urbe patria sua tristes reddit.
@@ -13224,7 +13224,7 @@ Democratiae neque corruptionem neque dispendium patiuntur.
 @@describe.GOVERNMENT.Fundamentalism
 Fundamentalismus est forma rei publicae circa certam fidei summam ordinata. Haec fides, plerumque religiosa, regulam rigidam constituit actionum et responsionum et principis et populi. In societate Fundamentalistica populus et principes fidei suae omnino dediti sunt, et plerumque parati ad mortem pro ea tuenda.
 
-* Quaeque unitas ultra decimam unum Scutum per vicem constat (praeter Fanaticos, qui numquam sustentationem requirunt).
+* Quaeque unitas ultra decimam uno Scuto per vicem constat (praeter Fanaticos, qui numquam sustentationem requirunt).
 * Coloni duos Cibos per vicem consumunt.
 
 Sub Fundamentalismo nullus umquam civis tristis est!
@@ -13241,7 +13241,7 @@ Fundamentalismus minimam corruptionem habet.
 @@describe.GOVERNMENT.Monarchy
 Monarchia ab uno homine regitur, qui monarcha appellatur. Imperium monarchae minus absolutum est quam tyranni, et plerumque saltem a nobilibus probatur. Optimates sub hac forma rei publicae aliquam libertatem oeconomicam habent, quo fit ut gens fructuosior sit. 
 
-* Quaeque unitas ultra tertiam unum Scutum per vicem constat.
+* Quaeque unitas ultra tertiam uno Scuto per vicem constat.
 * Coloni unum Cibum per vicem consumunt.
 
 Usque ad tres unitates militares in quaque urbe "ius militare" instituunt. Quaeque ex his unitatibus unum civem tristem contentum reddit.
@@ -13255,7 +13255,7 @@ Monarchia mediocrem corruptionem et dispendium habet. Quo longius urbs a capite 
 @@describe.GOVERNMENT.Republic
 Res Publica est coetus civitatum urbanarum sui iuris sub imperio regiminis centralis. Quamquam regimen centrale ultimam sententiam habet de rebus quae totam societatem afficiunt, civitatibus urbanis aliqua licentia datur in rebus localibus administrandis. Decreta a principe fiunt, sed a coetu magistratuum qui Senatus appellatur recognoscuntur.
 
-* Quaeque unitas unum scutum per vicem constat.
+* Quaeque unitas uno scuto per vicem constat.
 * Coloni duos Cibos per vicem consumunt.
 
 Quaeque unitas ultra primam quae non est in urbe amica (aut in Castello intra tria quadra ab urbe amica) unum civem in urbe patria sua tristem reddit.
@@ -13302,7 +13302,7 @@ Opera terrae ab aliis gentibus facta (irrigatio, fodinae, viae, etc.) deleri pos
 Unitates populari iuberi possunt clavem Shift tenendo et "P" premendo, aut iussum "Populari" e menu "Iussa" eligendo. Unitas semel pro quoque opere terrae quod delere vis populari iubenda est. Quadrum terrae plene excultum (arvum cum ferrivia, exempli gratia) quater populandum est ut omnia opera tollantur.
 
 @@describe.CONCEPT.Pollution
-Inquinatio plerumque nimia Scutorum productione in urbe efficitur; oriri tamen potest etiam ex magna urbium multitudine (invento Autocinetum reperto), ex impetibus nuclearibus, aut ex Officinae Nuclearis conflagratione. Cum urbs periculum inquinationis affert, calvariae in triangulis flavis in Tabula Notitiae Fenestrae Urbis apparent. Quo plures calvarias urbs gignit, eo maius est periculum ne quoque vice quadrum terrae intra ambitum urbis inquinet. Cum inquinatio mundi ad gradus satis graves pervenit, fieri potest ut calefactio globalis oriatur.
+Inquinatio plerumque nimia Scutorum productione in urbe efficitur; oriri tamen potest etiam ex magno incolarum urbium numero (invento Autocinetum reperto), ex impetibus nuclearibus, aut ex Officinae Nuclearis conflagratione. Cum urbs periculum inquinationis affert, calvariae in triangulis flavis in Tabula Notitiae Fenestrae Urbis apparent. Quo plures calvarias urbs gignit, eo maius est periculum ne quoque vice quadrum terrae intra ambitum urbis inquinet. Cum inquinatio mundi ad gradus satis graves pervenit, fieri potest ut calefactio globalis oriatur.
 
 Inquinatio purgari potest Colonis aut Fabris in quadrum inquinatum motis et clave "P" pressa, aut iusso "Inquinationem purgare" e menu "Iussa" electo. Inquinatio quam urbes producunt minui potest quibusdam Aedificiis Urbanis aedificandis, aut productione Scutorum urbis minuenda.
 
