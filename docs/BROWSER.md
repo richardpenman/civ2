@@ -58,14 +58,20 @@ away: keep such a site private (behind a password, as below), for people who may
 and never publish it.**
 
 - The game but its videos, music and the advisors' videos is `game/core.zip` (55 MB). On a first
-  visit (no game in the browser's storage) the page keeps it in the browser without asking, its
-  progress on the screen, and starts the game: an address such as `.../?lang=de` opens straight
-  into the game in German. `?setup` still offers to choose another copy.
+  visit (no game in the browser's storage) the page keeps it in the browser without asking (the
+  set-up page's choice of a game is not shown), its progress on a bar in two steps (the download,
+  in MB; then the files unpacked and kept), and starts the game: an address such as
+  `.../?lang=de` opens straight into the game in German. `?setup` still offers to choose another
+  copy.
 - `Video/`, `KINGS/` and `Music/` are `game/files/` as they are (the music's `.wav` tracks
   encoded to Ogg Vorbis, 30 MB rather than 233; `tools/wav2ogg.c`), listed in `game/index.json`,
   and are not kept in the browser's storage: the page reads one from the site when the game opens
   it, whole (the game reads them whole), which pauses the game for that download (a council video
   is 30 MB, a wonder's 6 MB, a music track 2 to 5 MB); the browser's HTTP cache keeps them after.
+  (The page cannot show that download's progress: the game, and the page with it, waits for it.)
+- The opening video (`Video/OPENING.AVI`, 13 MB) is not on the site: the game starts at its main
+  menu, as from a folder without the CD's `Video`, rather than on a black screen while the page
+  read the video.
 - The site's copy has a `CIV.INI` (where the installed game has none) with HD graphics on (with
   `HD=1`) and the animated heralds of `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).

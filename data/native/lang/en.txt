@@ -468,6 +468,16 @@ The browser's storage has no room for it (%s MB free).
 HD graphics: %s They stay off this time.
 @@openciv2.web.loading_files
 Loading the game files ...
+@@openciv2.web.installing
+Installing the game ...
+@@openciv2.web.install_download
+Step 1 of 2: downloading the game, %s of %s MB
+@@openciv2.web.install_unpack
+Step 2 of 2: unpacking the game, %s of %s files
+@@openciv2.web.install_keep
+Step 2 of 2: keeping the game in this browser, %s of %s files
+@@openciv2.web.install_note
+The first visit only: the game is then kept in this browser.
 @@openciv2.web.loading_hd
 Loading the HD graphics' art ...
 @@openciv2.web.starting

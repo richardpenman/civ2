@@ -51,7 +51,7 @@ function findGame(files) {
                         .map((f) => ({...f, name: f.name.slice(pre.length)}))};
 }
 
-async function importFiles(store, files) {
+async function importFiles(store, files, progress = null) {
     const found = findGame(files);
     if (typeof found === 'string') {
         const disc = findDisc(files);
@@ -69,6 +69,8 @@ async function importFiles(store, files) {
         n++;
         if (size > 16 << 20) {
             status(t('web.copying', n, found.files.length));
+            if (progress)
+                progress(n, found.files.length);
             await store.putMany(batch);
             batch = [];
             size = 0;
@@ -425,10 +427,22 @@ const siteGame = () => siteGameP || (siteGameP = fetch('game/index.json', {cache
     .then((r) => (r.ok ? r.json() : null)).catch(() => null));
 
 // A first visit to such a site: its copy (game/core.zip) kept in this
-// browser, its progress said, as a copy the player chose would be
+// browser, without asking (the set-up page's choice is not shown: ?setup
+// shows it), its progress shown in two steps on a bar: the download, then
+// the files unpacked and kept
+const installProgress = (step, frac) => {
+    const pct = Math.max(0, Math.min(100, Math.floor(frac * 100)));
+    $('install-step').textContent = step;
+    $('install-fill').style.width = `calc((100% - 6px) * ${pct / 100})`;
+    $('install-pct').textContent = pct + '%';
+    $('install-bar').setAttribute('aria-valuenow', pct);
+    window.civ2Status = step;
+};
+const MB1 = (n) => (n / 1e6).toFixed(1);
 async function installFromSite(store, g) {
-    $('setup').hidden = false;
-    const label = t('web.loading_files').replace(/\s*\.\.\.$/, '');
+    $('loading').hidden = true;
+    $('install').hidden = false;
+    installProgress(t('web.install_download', MB1(0), MB1(g.core.size)), 0);
     const r = await fetch('game/core.zip');
     if (!r.ok)
         throw new Error('game/core.zip: ' + r.status);
@@ -440,11 +454,20 @@ async function installFromSite(store, g) {
             break;
         parts.push(value);
         done += value.length;
-        status(t('web.hd_progress', label, MB(done), MB(total)));
+        installProgress(t('web.install_download', MB1(done), MB1(total)), done / total);
     }
-    const files = await zipFiles(new File(parts, 'core.zip'));
-    if (!await importFiles(store, files))
+    // (half the bar unpacking, half keeping)
+    let k = 0;
+    const count = g.core.files || 1;
+    installProgress(t('web.install_unpack', 0, count), 0);
+    const files = (await unzip(await new Blob(parts).arrayBuffer(), () => {
+        k++;
+        if (k % 8 === 0 || k === count)
+            installProgress(t('web.install_unpack', k, count), 0.5 * k / count);
+    })).map((f) => ({name: f.name, data: f.data}));
+    if (!await importFiles(store, files, (n, of) => installProgress(t('web.install_keep', n, of), 0.5 + 0.5 * n / of)))
         throw new Error(window.civ2Status);
+    installProgress(t('web.install_keep', files.length, files.length), 1);
 }
 
 // The site's files the stored game lacks (its videos and music: game/files),
@@ -488,6 +511,7 @@ async function play(store) {
     if (navigator.storage && navigator.storage.persist)
         navigator.storage.persist().catch(() => {});
     $('setup').hidden = true;
+    $('install').hidden = true;
     $('game').hidden = false;
     $('loading').hidden = false;
     status(t('web.loading_files'));
@@ -820,6 +844,7 @@ async function main() {
             return play(store);
         } catch (e) {
             console.error(e);
+            $('install').hidden = true;
             status(t('web.copy_failed', e.message));
         }
     }

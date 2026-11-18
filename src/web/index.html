@@ -23,7 +23,17 @@
                unicode-range: U+2E80-9FFF, U+F900-FAFF, U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF; }
   html, body { margin: 0; min-height: 100%; background: var(--desk); color: var(--ink);
                font: 18px/1.45 var(--serif); }
-  #setup { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  #setup, #install { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  /* the site's copy of the game being installed (make web GAME=1): a progress bar as the
+     game's own set-up draws one, blue blocks in a sunken box, the percentage over it */
+  #install .body { text-align: center; }
+  #install-step { margin: 0.6rem 0 0.2rem; }
+  .bar { position: relative; height: 1.7rem; margin: 0.5rem 0; background: #e8e8e8; border: 2px solid;
+         border-color: var(--lo) var(--hi) var(--hi) var(--lo); box-shadow: inset 1px 1px 0 var(--dark); }
+  .bar-fill { position: absolute; left: 3px; top: 3px; bottom: 3px; width: 0; max-width: calc(100% - 6px);
+              background: repeating-linear-gradient(90deg, #00007a 0 12px, transparent 12px 15px); }
+  .bar-text { position: relative; font: bold 1rem/1.7rem var(--serif); color: #fff;
+              text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; }
   /* a dialog: marble in a raised frame, its title on it embossed, its contents in a sunken panel */
   .panel { background: var(--face) var(--marble); border: 3px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
            box-shadow: 1px 1px 0 var(--dark), 0 0 0 1px #4a4030; padding: 0.35rem; margin: 0 0 1.5rem; }
@@ -132,6 +142,17 @@
     <label class="button" for="import-saves" data-t="web.import">Import saves</label>
   </div>
   <p class="dim" id="language-row"><label><span data-t="web.language">Language:</span> <select id="language"></select></label></p>
+  </div>
+ </section>
+</div>
+<div id="install" hidden>
+ <section class="panel" aria-labelledby="install-title">
+  <h1 class="title" id="install-title" data-t="web.installing">Installing the game ...</h1>
+  <div class="body">
+   <p id="install-step" role="status"></p>
+   <div class="bar" id="install-bar" role="progressbar" aria-labelledby="install-step" aria-valuemin="0"
+        aria-valuemax="100" aria-valuenow="0"><div class="bar-fill" id="install-fill"></div><span class="bar-text" id="install-pct">0%</span></div>
+   <p class="dim" data-t="web.install_note">The first visit only: the game is then kept in this browser.</p>
   </div>
  </section>
 </div>

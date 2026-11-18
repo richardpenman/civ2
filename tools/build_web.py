@@ -38,9 +38,12 @@ With GAME=1 (make web GAME=1) the site carries the game too, for a
 private site of people who have no copy of their own (docs/BROWSER.md:
 it distributes the game's files): the installed game (paths.GAME, ~/Civ2)
 as game/core.zip, but its videos, music and the advisors' videos (Video/,
-Music/, KINGS/) and logs, which are game/files/<path> as they are (the
+Music/, KINGS/), which are game/files/<path> as they are (the
 music's .wav tracks encoded to Ogg Vorbis, tools/wav2ogg.c), listed in
-game/index.json ({core: {size, files}, files: [[path, size]]}).  The page
+game/index.json ({core: {size, files}, files: [[path, size]]}); not the
+logs, nor the opening video (Video/OPENING.AVI: the game starts at its main
+menu, as without the CD's Video, rather than on a black screen while the
+page reads the video's 13 MB).  The page
 keeps core.zip's files on a first visit, without asking, and reads the
 others from the site when the game opens them.  A CIV.INI with HD graphics
 on ([OpenCiv2] Graphics=HD) where the site has the art (HD=1) and the game
@@ -175,6 +178,11 @@ def newer(src, dst):
 
 # Kept out of game/core.zip: read from the site when the game opens them
 LAZY_DIRS = ('video', 'music', 'kings')
+# Not on the site at all: the opening video (13 MB, read whole before its
+# first frame, the screen black meanwhile); the game then starts at its main
+# menu, as from a folder without the CD's Video (src/auto/game.cpp:
+# intro_play_opening_video)
+LEFT_OUT = ('video/opening.avi',)
 
 
 def wav2ogg():
@@ -210,7 +218,7 @@ def write_game():
         for f in sorted(files):
             path = os.path.join(d, f)
             rel = os.path.relpath(path, game).replace(os.sep, '/')
-            if f.lower().endswith('.log'):
+            if f.lower().endswith('.log') or rel.lower() in LEFT_OUT:
                 continue
             (lazy if rel.split('/')[0].lower() in LAZY_DIRS else core).append((rel, path))
     hd = os.environ.get('HD', '') not in ('', '0')

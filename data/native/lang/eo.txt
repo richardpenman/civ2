@@ -473,6 +473,16 @@ La memoro de la retumilo ne havas lokon por øi (%s MB liberaj).
 HD-grafiko: %s Øi restas malþaltita æi-foje.
 @@openciv2.web.loading_files
 Þargante la dosierojn de la ludo ...
+@@openciv2.web.installing
+Instalante la ludon ...
+@@openciv2.web.install_download
+Paþo 1 el 2: elþutante la ludon, %s el %s MB
+@@openciv2.web.install_unpack
+Paþo 2 el 2: malpakante la ludon, %s el %s dosieroj
+@@openciv2.web.install_keep
+Paþo 2 el 2: konservante la ludon en æi tiu retumilo, %s el %s dosieroj
+@@openciv2.web.install_note
+Nur æe la unua vizito: poste la ludo restas en æi tiu retumilo.
 @@openciv2.web.loading_hd
 Þargante la arton de la HD-grafiko ...
 @@openciv2.web.starting

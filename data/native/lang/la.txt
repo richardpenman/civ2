@@ -468,6 +468,16 @@ Repositorium navigatri spatium eis non habet (%s MB libera).
 Graphica HD: %s Hac vice exstincta manent.
 @@openciv2.web.loading_files
 Fasciculi ludi onerantur ...
+@@openciv2.web.installing
+Ludus instituitur ...
+@@openciv2.web.install_download
+Gradus 1 ex 2: ludus deprimitur, %s ex %s MB
+@@openciv2.web.install_unpack
+Gradus 2 ex 2: ludus explicatur, %s ex %s fasciculis
+@@openciv2.web.install_keep
+Gradus 2 ex 2: ludus in hoc navigatro servatur, %s ex %s fasciculis
+@@openciv2.web.install_note
+Primo tantum aditu: deinde ludus in hoc navigatro servatur.
 @@openciv2.web.loading_hd
 Picturae Graphicorum HD onerantur ...
 @@openciv2.web.starting

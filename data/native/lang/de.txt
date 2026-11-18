@@ -467,6 +467,16 @@ Im Speicher des Browsers ist dafür kein Platz (%s MB frei).
 HD-Grafik: %s Sie bleibt diesmal ausgeschaltet.
 @@openciv2.web.loading_files
 Die Spieldateien werden geladen ...
+@@openciv2.web.installing
+Das Spiel wird installiert ...
+@@openciv2.web.install_download
+Schritt 1 von 2: das Spiel wird heruntergeladen, %s von %s MB
+@@openciv2.web.install_unpack
+Schritt 2 von 2: das Spiel wird entpackt, %s von %s Dateien
+@@openciv2.web.install_keep
+Schritt 2 von 2: das Spiel wird in diesem Browser gespeichert, %s von %s Dateien
+@@openciv2.web.install_note
+Nur beim ersten Besuch: danach bleibt das Spiel in diesem Browser.
 @@openciv2.web.loading_hd
 Die HD-Grafiken werden geladen ...
 @@openciv2.web.starting
