@@ -37,15 +37,15 @@ only where the site has the art (otherwise build/web/hd is removed).
 With GAME=1 (make web GAME=1) the site carries the game too, for a
 private site of people who have no copy of their own (docs/BROWSER.md:
 it distributes the game's files): the installed game (paths.GAME, ~/Civ2)
-as game/core.zip, but its videos, music and the advisors' videos (Video/,
-Music/, KINGS/), which are game/files/<path> as they are (the
-music's .wav tracks encoded to Ogg Vorbis, tools/wav2ogg.c), listed in
-game/index.json ({core: {size, files}, files: [[path, size]]}); not the
-logs, nor the opening video (Video/OPENING.AVI: the game starts at its main
-menu, as without the CD's Video, rather than on a black screen while the
-page reads the video's 13 MB).  The page
-keeps core.zip's files on a first visit, without asking, and reads the
-others from the site when the game opens them.  A CIV.INI with HD graphics
+as game/core.zip, but its music and the animated advisors (Music/,
+KINGS/), which are game/files/<path> as they are (the music's .wav tracks
+encoded to Ogg Vorbis, tools/wav2ogg.c), listed in game/index.json ({core:
+{size, files}, files: [[path, size]]}); not the logs, nor the CD's videos
+(Video/: the opening, the wonders', the High Council's, 285 MB; the game
+then plays as from a folder without them: it starts at its main menu, a
+wonder's movie is skipped, the High Council does not open).  The page
+downloads and keeps all of it on a first visit, without asking, on one
+progress bar, so that the game never waits for the site.  A CIV.INI with HD graphics
 on ([OpenCiv2] Graphics=HD) where the site has the art (HD=1) and the game
 none of its own.  Without GAME=1, build/web/game is removed.
 
@@ -176,13 +176,13 @@ def newer(src, dst):
     return not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src)
 
 
-# Kept out of game/core.zip: read from the site when the game opens them
-LAZY_DIRS = ('video', 'music', 'kings')
-# Not on the site at all: the opening video (13 MB, read whole before its
-# first frame, the screen black meanwhile); the game then starts at its main
-# menu, as from a folder without the CD's Video (src/auto/game.cpp:
-# intro_play_opening_video)
-LEFT_OUT = ('video/opening.avi',)
+# Beside game/core.zip (game/files: the music encoded): downloaded with it
+BESIDE_DIRS = ('music', 'kings')
+# Not on the site at all: the CD's videos (285 MB, each read whole before its
+# first frame); the game then plays as from a folder without the CD's Video
+# (src/auto/game.cpp: intro_play_opening_video; no wonder movie,
+# WonderMovieWindow::play; no High Council, CouncilWindow::init)
+LEFT_OUT_DIRS = ('video',)
 
 
 def wav2ogg():
@@ -212,15 +212,15 @@ def write_game():
     if not os.path.exists(os.path.join(game, 'Civ2Art.dll')):
         sys.exit('GAME=1: no installed game in %s (CIV2_GAME)' % game)
     os.makedirs(out, exist_ok=True)
-    core, lazy = [], []
+    core, beside = [], []
     for d, dirs, files in os.walk(game):
         dirs.sort()
         for f in sorted(files):
             path = os.path.join(d, f)
             rel = os.path.relpath(path, game).replace(os.sep, '/')
-            if f.lower().endswith('.log') or rel.lower() in LEFT_OUT:
+            if f.lower().endswith('.log') or rel.split('/')[0].lower() in LEFT_OUT_DIRS:
                 continue
-            (lazy if rel.split('/')[0].lower() in LAZY_DIRS else core).append((rel, path))
+            (beside if rel.split('/')[0].lower() in BESIDE_DIRS else core).append((rel, path))
     hd = os.environ.get('HD', '') not in ('', '0')
     zpath = os.path.join(out, 'core.zip')
     # (what core.zip was made of, outside the site: made again when that changes)
@@ -248,8 +248,8 @@ def write_game():
         with open(spath, 'w') as f:
             f.write(stamp)
     files, listed = os.path.join(out, 'files'), []
-    have = {r.lower() for r, _ in lazy}
-    for rel, path in lazy:
+    have = {r.lower() for r, _ in beside}
+    for rel, path in beside:
         name = rel
         if rel.lower().startswith('music/') and rel.lower().endswith('.wav'):
             name = rel[:-4] + '.ogg'
@@ -281,10 +281,12 @@ def write_game():
                 shutil.copy2(path, dst)
         listed.append([name, os.path.getsize(dst)])
     keep = {os.path.join(files, n) for n, _ in listed}
-    for d, _, fs in os.walk(files):
+    for d, _, fs in os.walk(files, topdown=False):
         for f in fs:
             if os.path.join(d, f) not in keep:
                 os.remove(os.path.join(d, f))
+        if d != files and not os.listdir(d):
+            os.rmdir(d)
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump({'core': {'size': os.path.getsize(zpath), 'files': len(core)}, 'files': listed}, f)
     return os.path.getsize(zpath), sum(n for _, n in listed)
@@ -355,9 +357,9 @@ def main():
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
     if os.environ.get('GAME', '') not in ('', '0'):
-        core, lazy = write_game()
+        core, beside = write_game()
         print('the game on the site (GAME=1: for private use only): game/core.zip %.0f MB, game/files %.0f MB' %
-              (core / 1e6, lazy / 1e6), flush=True)
+              (core / 1e6, beside / 1e6), flush=True)
     elif os.path.isdir(os.path.join(OUT, 'game')):
         shutil.rmtree(os.path.join(OUT, 'game'))
     write_texts()

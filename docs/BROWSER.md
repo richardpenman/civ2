@@ -57,21 +57,20 @@ translation: **a site built so distributes Civilization II's files, which are no
 away: keep such a site private (behind a password, as below), for people who may play the game,
 and never publish it.**
 
-- The game but its videos, music and the advisors' videos is `game/core.zip` (55 MB). On a first
-  visit (no game in the browser's storage) the page keeps it in the browser without asking (the
-  set-up page's choice of a game is not shown), its progress on a bar in two steps (the download,
-  in MB; then the files unpacked and kept), and starts the game: an address such as
-  `.../?lang=de` opens straight into the game in German. `?setup` still offers to choose another
-  copy.
-- `Video/`, `KINGS/` and `Music/` are `game/files/` as they are (the music's `.wav` tracks
-  encoded to Ogg Vorbis, 30 MB rather than 233; `tools/wav2ogg.c`), listed in `game/index.json`,
-  and are not kept in the browser's storage: the page reads one from the site when the game opens
-  it, whole (the game reads them whole), which pauses the game for that download (a council video
-  is 30 MB, a wonder's 6 MB, a music track 2 to 5 MB); the browser's HTTP cache keeps them after.
-  (The page cannot show that download's progress: the game, and the page with it, waits for it.)
-- The opening video (`Video/OPENING.AVI`, 13 MB) is not on the site: the game starts at its main
-  menu, as from a folder without the CD's `Video`, rather than on a black screen while the page
-  read the video.
+- The game but its music and animated advisors is `game/core.zip` (55 MB); `Music/` and
+  `KINGS/` (the animated advisors and heralds) are `game/files/` as they are (the music's `.wav`
+  tracks encoded to Ogg Vorbis, 20 MB rather than 233; `tools/wav2ogg.c`), listed in
+  `game/index.json`. On a first visit (no game in the browser's storage) the page downloads all
+  of it, 109 MB (at 20 Mbit/s about 45 s, the game's main menu after about a minute), and keeps
+  it in the browser without asking (the set-up page's choice of a game is not shown), on one
+  progress bar (the download in MB, then the files unpacked and kept), and starts the game: an address such as `.../?lang=de` opens straight into the game in
+  German. `?setup` still offers to choose another copy. Nothing is read from the site while the
+  game plays, so the game never waits for it. A browser that kept the game before the site had
+  those files (or kept a copy of its own without them) downloads them, on the same bar, on its
+  next visit.
+- The CD's videos (`Video/`: the opening, the wonders', the High Council's; 285 MB) are not on
+  the site: the game plays as from a folder without them, at once, as the original does. It
+  starts at its main menu, a wonder's movie is skipped, and the High Council does not open.
 - The site's copy has a `CIV.INI` (where the installed game has none) with HD graphics on (with
   `HD=1`) and the animated heralds of `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).

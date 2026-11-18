@@ -426,10 +426,12 @@ let siteGameP = null;
 const siteGame = () => siteGameP || (siteGameP = fetch('game/index.json', {cache: 'no-cache'})
     .then((r) => (r.ok ? r.json() : null)).catch(() => null));
 
-// A first visit to such a site: its copy (game/core.zip) kept in this
-// browser, without asking (the set-up page's choice is not shown: ?setup
-// shows it), its progress shown in two steps on a bar: the download, then
-// the files unpacked and kept
+// A first visit to such a site: its copy kept in this browser, without
+// asking (the set-up page's choice is not shown: ?setup shows it), on one
+// progress bar: game/core.zip and the files beside it (game/files: the
+// music, the animated advisors), downloaded, then unpacked and kept.  On
+// later visits, those files the kept game lacks (a site that has added
+// them since): so that the game never waits on the site while it plays.
 const installProgress = (step, frac) => {
     const pct = Math.max(0, Math.min(100, Math.floor(frac * 100)));
     $('install-step').textContent = step;
@@ -439,70 +441,67 @@ const installProgress = (step, frac) => {
     window.civ2Status = step;
 };
 const MB1 = (n) => (n / 1e6).toFixed(1);
-async function installFromSite(store, g) {
+// (of the bar: the download, then the files unpacked and kept)
+const DOWNLOAD = 0.9;
+async function installFromSite(store, g, first) {
+    const have = first ? new Set() : new Set((await store.keys()).map((k) => k.toUpperCase()));
+    const extra = (g.files || []).filter(([path]) => !have.has(path.toUpperCase()));
+    if (!first && !extra.length)
+        return;
     $('loading').hidden = true;
     $('install').hidden = false;
-    installProgress(t('web.install_download', MB1(0), MB1(g.core.size)), 0);
-    const r = await fetch('game/core.zip');
-    if (!r.ok)
-        throw new Error('game/core.zip: ' + r.status);
-    const total = +r.headers.get('Content-Length') || g.core.size, parts = [], reader = r.body.getReader();
+    // ("the first visit only": not on a later one's top-up)
+    $('install').querySelector('[data-t="web.install_note"]').hidden = !first;
+    const total = (first ? g.core.size : 0) + extra.reduce((n, [, size]) => n + size, 0) || 1;
     let done = 0;
-    for (;;) {
-        const {done: end, value} = await reader.read();
-        if (end)
-            break;
-        parts.push(value);
-        done += value.length;
-        installProgress(t('web.install_download', MB1(done), MB1(total)), done / total);
-    }
-    // (half the bar unpacking, half keeping)
-    let k = 0;
-    const count = g.core.files || 1;
-    installProgress(t('web.install_unpack', 0, count), 0);
-    const files = (await unzip(await new Blob(parts).arrayBuffer(), () => {
-        k++;
-        if (k % 8 === 0 || k === count)
-            installProgress(t('web.install_unpack', k, count), 0.5 * k / count);
-    })).map((f) => ({name: f.name, data: f.data}));
-    if (!await importFiles(store, files, (n, of) => installProgress(t('web.install_keep', n, of), 0.5 + 0.5 * n / of)))
-        throw new Error(window.civ2Status);
-    installProgress(t('web.install_keep', files.length, files.length), 1);
-}
-
-// The site's files the stored game lacks (its videos and music: game/files),
-// read from the site when the game opens them: the whole file at once,
-// synchronously (the game reads them whole, fopen to fclose, without
-// waiting on the page), the browser's HTTP cache keeping it; the last
-// few kept in memory too
-function siteFiles(fs, g, have) {
-    const recent = [];
-    const fetchSync = (path) => {
-        const x = new XMLHttpRequest();
-        x.open('GET', 'game/files/' + path.split('/').map(encodeURIComponent).join('/'), false);
-        x.overrideMimeType('text/plain; charset=x-user-defined');
-        x.send();
-        if (x.status !== 200)
-            throw new Error(path + ': ' + x.status);
-        const s = x.responseText, out = new Uint8Array(s.length);
-        for (let i = 0; i < s.length; i++)
-            out[i] = s.charCodeAt(i);
-        return out;
+    const shown = () => installProgress(t('web.install_download', MB1(done), MB1(total)), DOWNLOAD * done / total);
+    shown();
+    const get = async (url) => {
+        const r = await fetch(url);
+        if (!r.ok)
+            throw new Error(url + ': ' + r.status);
+        const parts = [], reader = r.body.getReader();
+        for (;;) {
+            const {done: end, value} = await reader.read();
+            if (end)
+                break;
+            parts.push(value);
+            done += value.length;
+            shown();
+        }
+        return new Uint8Array(await new Blob(parts).arrayBuffer());
     };
-    for (const [path, size] of g.files) {
-        if (have.has(path.toUpperCase()))
-            continue;
-        let data = null;
-        fs.putSource(GAME + '/' + path, size, (pos, n) => {
-            if (!data) {
-                data = fetchSync(path);
-                recent.push(() => (data = null));
-                while (recent.length > 3)
-                    recent.shift()();
-            }
-            return data.subarray(pos, pos + n);
-        });
+    const core = first ? get('game/core.zip') : null;
+    // (the others a few at a time, beside it)
+    const got = new Array(extra.length);
+    let next = 0;
+    const worker = async () => {
+        while (next < extra.length) {
+            const k = next++;
+            got[k] = {name: extra[k][0], data: await get('game/files/' + extra[k][0].split('/').map(encodeURIComponent).join('/'))};
+        }
+    };
+    await Promise.all([core, ...[0, 1, 2].map(worker)]);
+    const keep = (n, of) => installProgress(t('web.install_keep', n, of), DOWNLOAD + (1 - DOWNLOAD) * n / of);
+    if (!first) {
+        keep(0, got.length);
+        await store.putMany(got.map((f) => [f.name, f.data, Date.now()]));
+        const meta = await store.getMeta('game');
+        if (meta && meta.names)
+            await store.setMeta('game', {...meta, names: [...meta.names, ...got.map((f) => f.name)]});
+        keep(got.length, got.length);
+        return;
     }
+    let k = 0;
+    const count = (g.core.files || 1) + got.length;
+    const files = (await unzip((await core).buffer, () => {
+        k++;
+        if (k % 8 === 0)
+            installProgress(t('web.install_unpack', k, count), DOWNLOAD + (1 - DOWNLOAD) * 0.5 * k / count);
+    })).map((f) => ({name: f.name, data: f.data})).concat(got);
+    if (!await importFiles(store, files, (n, of) => keep(n, of)))
+        throw new Error(window.civ2Status);
+    keep(files.length, files.length);
 }
 
 async function play(store) {
@@ -539,9 +538,6 @@ async function play(store) {
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
-    const g = await siteGame();
-    if (g)
-        siteFiles(fs, g, new Set(entries.map(([k]) => k.toUpperCase())));
     // ?lang=CODE: the game's language too, as its OpenCiv2 Options have it
     // (CIV.INI [OpenCiv2] Language=, in the game's files; kept in this
     // browser only when the game changes it: the language the player had
@@ -832,14 +828,20 @@ async function main() {
         chosen(files);
     };
     // later visits: straight into the game (?setup: this page first)
-    if (!setup && await store.count() > 0)
+    if (!setup && await store.count() > 0) {
+        // (the site's music and animated advisors this browser does not
+        // have yet: kept now, not read from the site while the game plays)
+        const g = await siteGame();
+        if (g)
+            await installFromSite(store, g, false).catch((e) => console.error(e));
         return play(store);
+    }
     // a first visit to a site with the game (make web GAME=1): its copy
     // kept, then the game
     const g = setup ? null : await siteGame();
     if (g) {
         try {
-            await installFromSite(store, g);
+            await installFromSite(store, g, true);
             return play(store);
         } catch (e) {
             console.error(e);

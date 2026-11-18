@@ -472,11 +472,11 @@ HD 圖形：%s 本次維持關閉。
 @@openciv2.web.installing
 正在安裝遊戲 ...
 @@openciv2.web.install_download
-步驟 1/2：正在下載遊戲，%s / %s MB
+正在下載遊戲、其音樂與動畫顧問：%s / %s MB
 @@openciv2.web.install_unpack
-步驟 2/2：正在解壓縮遊戲，%s / %s 個檔案
+正在解壓縮遊戲，%s / %s 個檔案
 @@openciv2.web.install_keep
-步驟 2/2：正在將遊戲保存在此瀏覽器中，%s / %s 個檔案
+正在將遊戲保存在此瀏覽器中，%s / %s 個檔案
 @@openciv2.web.install_note
 僅在第一次造訪時：之後遊戲會保存在此瀏覽器中。
 @@openciv2.web.loading_hd
