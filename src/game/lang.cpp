@@ -18,6 +18,7 @@
 #include <vector>
 #include "game.h"
 #include "lang.h"
+#include "../host/codepages.h"
 #include "rules.h"
 
 EXTERN_C char plat_data_dir[];
@@ -125,12 +126,8 @@ static int language_file(const char *code, char *path, size_t n)
 static int language_path(const char *code, char *path, size_t n)
 {
     char c[32];
-    size_t i;
-    snprintf(c, sizeof c, "%s", code);
-    c[strcspn(c, ".@")] = 0;
-    for (i = 0; c[i]; i++)
-        if (c[i] == '_')
-            c[i] = '-';
+    /* ("de_DE.UTF-8": de-DE; zh_TW, zh-HK ...: zh-Hant, codepages.h) */
+    language_alias(code, c, sizeof c);
     if (!c[0] || (tolower((unsigned char)c[0]) == 'e' && tolower((unsigned char)c[1]) == 'n' && (!c[2] || c[2] == '-')) || !__strcmpi(c, "auto") || !strcmp(c, "C") ||
         !strcmp(c, "POSIX"))
         return 0;
@@ -160,25 +157,84 @@ static void chosen_language(char *code, int n)
     }
 }
 
-/* The file's "openciv2.language.name" (the language's own name), into name. */
-static int language_name(const char *path, char *name, int n)
+/* A language's name (in the code page cp of its file) as the game's text
+   is now (plat_text_codepage_name: Windows-1252, a code page, UTF-8): 0 if
+   it has a character the game's text cannot have (Chinese in Windows-1252). */
+static int name_in_current_page(const char *cp, const char *in, char *out, int n)
 {
-    char line[256];
+    const char *now = plat_text_codepage_name();
+    const unsigned short *from = codepage_table(cp), *to = codepage_table(now);
+    int from_utf8 = codepage_is_utf8(cp), to_utf8 = codepage_is_utf8(now), o = 0, i = 0, len;
+    if (!from && !from_utf8)
+        from = codepage_1252;
+    if (!to && !to_utf8)
+        to = codepage_1252;
+    while (in[i]) {
+        unsigned c;
+        if (from_utf8) {
+            c = u8_decode(in + i, -1, &len);
+            i += len;
+            if (c == U8_BAD)
+                return 0;
+        } else
+            c = codepage_to_unicode(from, (unsigned char)in[i++]);
+        if (to_utf8) {
+            char u[4];
+            int k = 0;
+            if (c < 0x80) u[k++] = (char)c;
+            else if (c < 0x800) { u[k++] = (char)(0xc0 | c >> 6); u[k++] = (char)(0x80 | (c & 0x3f)); }
+            else if (c < 0x10000) { u[k++] = (char)(0xe0 | c >> 12); u[k++] = (char)(0x80 | ((c >> 6) & 0x3f));
+                                    u[k++] = (char)(0x80 | (c & 0x3f)); }
+            else { u[k++] = (char)(0xf0 | c >> 18); u[k++] = (char)(0x80 | ((c >> 12) & 0x3f));
+                   u[k++] = (char)(0x80 | ((c >> 6) & 0x3f)); u[k++] = (char)(0x80 | (c & 0x3f)); }
+            if (o + k >= n)
+                return 0;
+            memcpy(out + o, u, (size_t)k);
+            o += k;
+        } else {
+            unsigned char b = c ? codepage_from_unicode(to, c) : 0;
+            if (!b || o + 1 >= n)
+                return 0;
+            out[o++] = (char)b;
+        }
+    }
+    out[o] = 0;
+    return 1;
+}
+
+/* The file's "openciv2.language.name" (the language's own name), into name,
+   as the game's text can show it now (else, a language whose letters it
+   cannot have: its English name, or its code). */
+static int language_name(const char *path, const char *code, char *name, int n)
+{
+    static const char *const english[][2] = {{"zh-Hant", "Chinese (traditional)"}};
+    char line[256], cp[32] = "windows-1252", raw[256] = "";
     FILE *f = fopen(path, "r");
     int next = 0, found = 0;
+    size_t i;
     if (!f)
         return 0;
     while (fgets(line, sizeof line, f)) {
         line[strcspn(line, "\r\n")] = 0;
-        if (next) {
-            snprintf(name, (size_t)n, "%s", line);
+        if (next == 1) {
+            snprintf(raw, sizeof raw, "%s", line);
             found = 1;
-            break;
+            break;      /* (the code page, if any, is the first entry) */
         }
-        next = !strcmp(line, "@@openciv2.language.name");
+        if (next == 2)
+            snprintf(cp, sizeof cp, "%s", line);
+        next = !strcmp(line, "@@openciv2.language.name") ? 1 : !strcmp(line, "@@codepage") ? 2 : 0;
     }
     fclose(f);
-    return found;
+    if (!found)
+        return 0;
+    if (name_in_current_page(cp, raw, name, n))
+        return 1;
+    snprintf(name, (size_t)n, "%s", code);
+    for (i = 0; i < sizeof english / sizeof english[0]; i++)
+        if (!strcmp(code, english[i][0]))
+            snprintf(name, (size_t)n, "%s", english[i][1]);
+    return 1;
 }
 
 int lang_languages(LangChoice *out, int max)
@@ -196,7 +252,7 @@ int lang_languages(LangChoice *out, int max)
             continue;
         snprintf(out[n].code, sizeof out[n].code, "%.*s", (int)(len - 4), e->d_name);
         snprintf(path, sizeof path, "%s/%s", dir, e->d_name);
-        if (!language_name(path, out[n].name, sizeof out[n].name))
+        if (!language_name(path, out[n].code, out[n].name, sizeof out[n].name))
             snprintf(out[n].name, sizeof out[n].name, "%s", out[n].code);
         n++;
     }

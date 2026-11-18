@@ -415,6 +415,31 @@ static int vk_of_key(const SDL_Keysym *k)
     return 0;
 }
 
+/* The text input's characters not handed on yet. */
+static char pending_text[64];
+static size_t pending_at;
+
+static int pending_char(HostEvent *e)
+{
+    const unsigned char *p = (const unsigned char *)pending_text + pending_at;
+    for (; *p; p++) {
+        unsigned c = *p, n = c >= 0xf0 ? 3 : c >= 0xe0 ? 2 : c >= 0xc0 ? 1 : 0;
+        if (!n)
+            continue;
+        c &= 0x3f >> n;
+        while (n-- && (p[1] & 0xc0) == 0x80)
+            c = c << 6 | (*++p & 0x3f);
+        memset(e, 0, sizeof *e);
+        e->type = HOST_EV_CHAR;
+        e->vk = (int32_t)c;
+        pending_at = (size_t)((const char *)p + 1 - pending_text);
+        return 1;
+    }
+    pending_text[0] = 0;
+    pending_at = 0;
+    return 0;
+}
+
 /* SDL event -> host event; 0 for those of no interest. */
 static int convert(const SDL_Event *s, HostEvent *e)
 {
@@ -441,24 +466,13 @@ static int convert(const SDL_Event *s, HostEvent *e)
             return 0;
         e->type = s->type == SDL_KEYDOWN ? HOST_EV_KEYDOWN : HOST_EV_KEYUP;
         return 1;
-    case SDL_TEXTINPUT: {
-        /* a character beyond ASCII (a letter of the keyboard layout's that
-           the US keys the game reads have not: its key gave no vk): the
-           first one of the text */
-        const unsigned char *p = (const unsigned char *)s->text.text;
-        for (; *p; p++) {
-            unsigned c = *p, n = c >= 0xf0 ? 3 : c >= 0xe0 ? 2 : c >= 0xc0 ? 1 : 0;
-            if (!n)
-                continue;
-            c &= 0x3f >> n;
-            while (n-- && (p[1] & 0xc0) == 0x80)
-                c = c << 6 | (*++p & 0x3f);
-            e->type = HOST_EV_CHAR;
-            e->vk = (int32_t)c;
-            return 1;
-        }
-        return 0;
-    }
+    case SDL_TEXTINPUT:
+        /* characters beyond ASCII (a letter of the keyboard layout's that
+           the US keys the game reads have not: its key gave no vk; an input
+           method's text, several at once): one by one, from pending_text */
+        snprintf(pending_text, sizeof pending_text, "%s", s->text.text);
+        pending_at = 0;
+        return pending_char(e);
     case SDL_MOUSEMOTION:
         e->type = HOST_EV_MOTION;
         e->x = s->motion.x;
@@ -527,6 +541,8 @@ static int convert(const SDL_Event *s, HostEvent *e)
 int host_poll_event(HostEvent *e)
 {
     SDL_Event s;
+    if (pending_text[0] && pending_char(e))
+        return 1;
     while (SDL_PollEvent(&s))
         if (convert(&s, e))
             return 1;
@@ -537,6 +553,8 @@ int host_wait_event(HostEvent *e, int timeout_ms)
 {
     SDL_Event s;
     Uint32 end = SDL_GetTicks() + (Uint32)(timeout_ms < 0 ? 0 : timeout_ms);
+    if (pending_text[0] && pending_char(e))
+        return 1;
     for (;;) {
         int left = timeout_ms < 0 ? -1 : (int)(end - SDL_GetTicks());
         if (timeout_ms >= 0 && left <= 0)

@@ -86,6 +86,8 @@ EXTRAS_C int plat_profile_string(const char *file, const char *section, const ch
    @@codepage), its glyphs drawn for the bytes where it differs from
    Windows-1252, typed characters mapped into it; none: Windows-1252 */
 EXTRAS_C void plat_text_codepage(const char *name);
+/* its name ("windows-1252" if none) */
+EXTRAS_C const char *plat_text_codepage_name(void);
 
 /* src/game/extras.cpp */
 EXTRAS_C void extras_load(void);                /* the settings: at start, and as the OpenCiv2 Options change them */

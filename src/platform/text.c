@@ -5,9 +5,14 @@
  * (data/native/fonts_win.bin, tools/probe/fontdump.c) and antialiased ones on
  * deeper surfaces (data/native/fonts_win_aa.bin, tools/probe/fontdump_aa.c),
  * blended as its DIB engine does (tools/probe/aaprobe.c checks the model).
+ * Characters beyond Windows-1252 (other code pages, UTF-8): made when first
+ * drawn (extra_glyph, below).
  */
 #include "plat.h"
 #include "hd.h"
+#include "../include/utf8.h"
+#include "../host/codepages.h"
+#include <math.h>
 
 DC *dc_get(HDC h);
 
@@ -28,12 +33,15 @@ typedef struct {
     unsigned char *cov;             /* decoded on first use */
 } AaGlyph;
 
+typedef struct ExtraGlyph ExtraGlyph;
+
 struct FontFace {
     int face, height, bold, italic;
     int tm[11];
     Glyph g[256];
     AaGlyph *aa;                    /* 256 entries, loaded on demand */
     int aa_mono;                    /* drawn without antialiasing (gasp): advances as drawn */
+    ExtraGlyph *extra[64];          /* characters beyond Windows-1252 (extra_glyph), by code point % 64 */
 };
 
 #define NFACES 4
@@ -42,8 +50,6 @@ struct FontFace {
 static FontFace *faces[NFACES][MAXH + 1][2][2];
 static unsigned char *font_data, *aa_data;
 extern char plat_data_dir[];
-static void overlay_bitmaps(void);
-static void overlay_aa(void);
 
 /* The font files: captured under Wine with the Liberation 2 fonts, which
    have the widths of Times New Roman, Arial and Courier New, so text is laid
@@ -99,7 +105,6 @@ static void load_aa(void)
         else
             free(g);
     }
-    overlay_aa();
 }
 
 static const unsigned char *aa_coverage(AaGlyph *g)
@@ -190,26 +195,46 @@ static void load_fonts(void)
         if (ff->face < NFACES && ff->height >= MINH && ff->height <= MAXH)
             faces[ff->face][ff->height][ff->bold][ff->italic] = ff;
     }
-    overlay_bitmaps();
 }
 
-/* ---- a code page's glyphs (src/host/codepages.h) ----
+/* ---- characters beyond Windows-1252's 256 ----
  *
- * A translation in another code page than Windows-1252 (its file's
- * "@@codepage": iso-8859-3) has the bytes where that code page differs
- * drawn with their glyphs: data/native/fonts_<code page>.bin and
- * fonts_<code page>_aa.bin (tools/probe/fontdump.c, fontdump_aa.c with the
- * code page), captured as the others, for the same fonts, those bytes
- * only.  Laid over the 256 glyphs of each font as they are loaded.
+ * The game's text is drawn with the captured glyphs of Windows-1252
+ * (above).  A translation in another code page (its file's "@@codepage":
+ * iso-8859-3, src/host/codepages.h) or in UTF-8 (Chinese) also has
+ * characters those glyphs lack; they are made when first drawn, per font,
+ * and kept (extra_glyph):
  *
- * Delta files (little endian): "C2FONTD1" (1-bit) or "C2FONTDA"
- * (antialiased), u32 nfonts, u32 nchars, the nchars bytes, then per font
- * its 8-byte header (face, height, u16 weight, italic, 1 if drawn without
- * antialiasing (DA), 0, 0) and per byte its glyph as in fonts_win.bin
- * (D1) or fonts_win_aa.bin (DA). */
-static char codepage[32];
-static unsigned char *cp_data, *cp_aa_data;
-static long cp_size, cp_aa_size;
+ * - Latin letters with a mark (Esperanto's ĉ ĝ ĥ ĵ ŝ ŭ, the rest of
+ *   Latin-3: marks[] below) are put together from the captured glyphs, so
+ *   that they are hinted as the letters beside them: the base letter as
+ *   captured, the mark taken from a captured letter that has it (the
+ *   circumflex of â and Â, the cedilla of ç and Ç, the dot of i), moved
+ *   over the base as Liberation's composite glyphs place it (by half the
+ *   difference of the two letters' advances).  Breve and bar, which no
+ *   Windows-1252 glyph has, are drawn in the box the circumflex takes, with
+ *   the circumflex's stroke.
+ * - Other characters (Chinese) are drawn from the font files in
+ *   data/native/fonts (tools/cjk_fonts.py: Noto Sans TC and Noto Serif TC,
+ *   only the characters the translations use) with stb_truetype, at the
+ *   font's pixel height on its baseline: Noto Serif TC for Times New Roman
+ *   from 20 pixels up, else Noto Sans TC (a small serif is not legible
+ *   with few pixels), bold made by thickening, upright for italics
+ *   (Chinese has none).  On 8-bit surfaces (1-bit glyphs) a pixel is set
+ *   where it is more than about half covered, or where a thin stroke is
+ *   (the stroke's darker pixel across it), so that strokes neither vanish
+ *   nor thicken; on deeper ones antialiased (coverage 0..16), but 1-bit
+ *   where the font's Latin letters are (Liberation's "gasp" table).
+ * - A character neither has is a box (tofu); bytes that are no character
+ *   (UTF-8 cut short) are not drawn.
+ */
+#define STBTT_STATIC
+/* (its rasteriser asserts an edge's slope is not negative after flipping
+   it, which with x87's extra precision (the 32-bit build) can fail by a
+   rounding for a nearly vertical edge; the coverage is right either way) */
+#define STBTT_assert(x) ((void)0)
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "../third_party/stb_truetype/stb_truetype.h"
 
 static unsigned char *read_file(const char *name, long *size)
 {
@@ -232,102 +257,692 @@ static unsigned char *read_file(const char *name, long *size)
     return d;
 }
 
-static FontFace *face_of_header(const unsigned char *p)
-{
-    int face = p[0], height = p[1], bold = (p[2] | p[3] << 8) >= 600, it = p[4] != 0;
-    return face < NFACES && height >= MINH && height <= MAXH ? faces[face][height][bold][it] : NULL;
-}
+static const unsigned short *cp_table;  /* the translation's code page (non-UTF-8), else NULL */
+static char codepage[32];
+int plat_text_utf8;
 
-static void overlay_bitmaps(void)
-{
-    unsigned char *p, *end, *chars;
-    unsigned count, nchars, i, k;
-    if (!cp_data || !font_data || cp_size < 16 || memcmp(cp_data, "C2FONTD1", 8))
-        return;
-    memcpy(&count, cp_data + 8, 4);
-    memcpy(&nchars, cp_data + 12, 4);
-    chars = cp_data + 16;
-    p = chars + nchars;
-    end = cp_data + cp_size;
-    for (i = 0; i < count && p + 8 <= end; i++) {
-        FontFace *ff = face_of_header(p);
-        p += 8;
-        for (k = 0; k < nchars && p + 8 <= end; k++) {
-            Glyph g;
-            memcpy(&g.adv, p, 2);
-            memcpy(&g.dadv, p + 2, 2);
-            g.x = (signed char)p[4];
-            g.y = (signed char)p[5];
-            g.w = p[6];
-            g.h = p[7];
-            g.bits = p + 8;
-            p += 8 + (size_t)((g.w + 7) / 8) * g.h;
-            if (ff)
-                ff->g[chars[k]] = g;
-        }
-    }
-}
-
-static void overlay_aa(void)
-{
-    unsigned char *p, *end, *chars;
-    unsigned count, nchars, i, k;
-    if (!cp_aa_data || !aa_data || cp_aa_size < 16 || memcmp(cp_aa_data, "C2FONTDA", 8))
-        return;
-    memcpy(&count, cp_aa_data + 8, 4);
-    memcpy(&nchars, cp_aa_data + 12, 4);
-    chars = cp_aa_data + 16;
-    p = chars + nchars;
-    end = cp_aa_data + cp_aa_size;
-    for (i = 0; i < count && p + 8 <= end; i++) {
-        FontFace *ff = face_of_header(p);
-        p += 8;
-        for (k = 0; k < nchars && p + 8 <= end; k++) {
-            AaGlyph g;
-            g.adv = (short)(p[0] | p[1] << 8);
-            g.x = (signed char)p[2];
-            g.y = (signed char)p[3];
-            g.w = p[4];
-            g.h = p[5];
-            g.n = (unsigned short)(p[6] | p[7] << 8);
-            g.rle = p + 8;
-            g.cov = NULL;
-            p += 8 + g.n;
-            if (ff && ff->aa) {
-                free(ff->aa[chars[k]].cov);
-                ff->aa[chars[k]] = g;
-            }
-        }
-    }
-}
+struct ExtraGlyph {
+    unsigned cp;
+    Glyph g;
+    AaGlyph a;
+    int has_aa;
+    ExtraGlyph *next;
+};
 
 void plat_text_codepage(const char *name)
 {
-    char file[64];
     size_t i;
     if (!name || !*name || !strcasecmp(name, "windows-1252") || !strcasecmp(name, "cp1252"))
         return;
-    for (i = 0; name[i]; i++)
-        if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') ||
-              (name[i] >= '0' && name[i] <= '9') || name[i] == '-'))
-            return;
+    if (codepage_is_utf8(name)) {
+        snprintf(codepage, sizeof codepage, "utf-8");
+        plat_text_utf8 = 1;
+        return;
+    }
+    if (!(cp_table = codepage_table(name))) {
+        plat_log("text: no code page %s\n", name);
+        return;
+    }
     snprintf(codepage, sizeof codepage, "%s", name);
     for (i = 0; codepage[i]; i++)
         if (codepage[i] >= 'A' && codepage[i] <= 'Z')
             codepage[i] = (char)(codepage[i] + 32);
-    snprintf(file, sizeof file, "fonts_%s.bin", codepage);
-    cp_data = read_file(file, &cp_size);
-    snprintf(file, sizeof file, "fonts_%s_aa.bin", codepage);
-    cp_aa_data = read_file(file, &cp_aa_size);
-    if (!cp_data)
-        plat_log("text: no glyphs for code page %s (%s)\n", codepage, file);
-    overlay_bitmaps();
-    overlay_aa();
 }
 
 const char *plat_text_codepage_name(void)
 {
     return codepage[0] ? codepage : "windows-1252";
+}
+
+/* -- glyphs as coverage (0..16) in the cell's coordinates, for building -- */
+
+typedef struct {
+    int x, y, w, h;                 /* top left, relative to the pen and the cell's top */
+    unsigned char *v;
+} Pix;
+
+static void pix_free(Pix *p)
+{
+    free(p->v);
+    p->v = NULL;
+    p->w = p->h = 0;
+}
+
+static unsigned char pix_at(const Pix *p, int x, int y)
+{
+    x -= p->x;
+    y -= p->y;
+    return x >= 0 && y >= 0 && x < p->w && y < p->h ? p->v[y * p->w + x] : 0;
+}
+
+static void pix_alloc(Pix *p, int x, int y, int w, int h)
+{
+    p->x = x;
+    p->y = y;
+    p->w = w > 0 ? w : 0;
+    p->h = h > 0 ? h : 0;
+    p->v = calloc((size_t)p->w * p->h + 1, 1);
+}
+
+/* a captured glyph of byte c (aa: antialiased, f->aa loaded) */
+static void pix_of(FontFace *f, int c, int aa, Pix *p)
+{
+    int x, y;
+    if (aa) {
+        AaGlyph *g = &f->aa[c];
+        const unsigned char *cov = aa_coverage(g);
+        pix_alloc(p, g->x, g->y, g->w, g->h);
+        if (cov)
+            memcpy(p->v, cov, (size_t)g->w * g->h);
+        return;
+    }
+    {
+        const Glyph *g = &f->g[c];
+        int stride = (g->w + 7) / 8;
+        pix_alloc(p, g->x, g->y, g->w, g->h);
+        for (y = 0; y < g->h; y++)
+            for (x = 0; x < g->w; x++)
+                if (g->bits[y * stride + x / 8] & (0x80 >> (x & 7)))
+                    p->v[y * g->w + x] = 16;
+    }
+}
+
+/* the rows and columns with ink: 0 if none */
+static int pix_box(const Pix *p, int *x0, int *y0, int *x1, int *y1)
+{
+    int x, y, any = 0;
+    for (y = 0; y < p->h; y++)
+        for (x = 0; x < p->w; x++)
+            if (p->v[y * p->w + x]) {
+                if (!any || x + p->x < *x0) *x0 = x + p->x;
+                if (!any || x + p->x > *x1) *x1 = x + p->x;
+                if (!any) *y0 = y + p->y;
+                *y1 = y + p->y;
+                any = 1;
+            }
+    return any;
+}
+
+/* *dst = *dst with src over it (moved by dx, dy), keeping the larger coverage */
+static void pix_merge(Pix *dst, const Pix *src, int dx, int dy)
+{
+    Pix out;
+    int x0, y0, x1, y1, x, y;
+    if (!src->w || !src->h)
+        return;
+    if (!dst->w || !dst->h) {
+        x0 = src->x + dx; y0 = src->y + dy; x1 = x0 + src->w; y1 = y0 + src->h;
+    } else {
+        x0 = dst->x < src->x + dx ? dst->x : src->x + dx;
+        y0 = dst->y < src->y + dy ? dst->y : src->y + dy;
+        x1 = dst->x + dst->w > src->x + dx + src->w ? dst->x + dst->w : src->x + dx + src->w;
+        y1 = dst->y + dst->h > src->y + dy + src->h ? dst->y + dst->h : src->y + dy + src->h;
+    }
+    pix_alloc(&out, x0, y0, x1 - x0, y1 - y0);
+    for (y = y0; y < y1; y++)
+        for (x = x0; x < x1; x++) {
+            unsigned char a = pix_at(dst, x, y), b = pix_at(src, x - dx, y - dy);
+            out.v[(y - y0) * out.w + x - x0] = a > b ? a : b;
+        }
+    pix_free(dst);
+    *dst = out;
+}
+
+/* the rows of p from y0 to y1 (inclusive) */
+static void pix_rows(const Pix *p, int y0, int y1, Pix *out)
+{
+    int y;
+    if (y0 < p->y) y0 = p->y;
+    if (y1 > p->y + p->h - 1) y1 = p->y + p->h - 1;
+    pix_alloc(out, p->x, y0, p->w, y1 - y0 + 1);
+    for (y = y0; y <= y1; y++)
+        memcpy(out->v + (y - y0) * p->w, p->v + (y - p->y) * p->w, (size_t)p->w);
+}
+
+static void pix_to_glyph(Pix *p, Glyph *g)
+{
+    int x, y, stride;
+    unsigned char *bits;
+    int x0 = 0, y0 = 0, x1 = -1, y1 = -1;
+    if (!pix_box(p, &x0, &y0, &x1, &y1)) {
+        g->x = g->y = 0;
+        g->w = g->h = 0;
+        g->bits = NULL;
+        return;
+    }
+    stride = (x1 - x0 + 8) / 8;
+    bits = calloc((size_t)stride * (y1 - y0 + 1), 1);
+    for (y = y0; y <= y1; y++)
+        for (x = x0; x <= x1; x++)
+            if (pix_at(p, x, y) >= 8)
+                bits[(y - y0) * stride + (x - x0) / 8] |= (unsigned char)(0x80 >> ((x - x0) & 7));
+    g->x = (signed char)x0;
+    g->y = (signed char)y0;
+    g->w = (unsigned char)(x1 - x0 + 1);
+    g->h = (unsigned char)(y1 - y0 + 1);
+    g->bits = bits;
+}
+
+static void pix_to_aa(Pix *p, AaGlyph *a)
+{
+    int x, y, x0 = 0, y0 = 0, x1 = -1, y1 = -1;
+    a->rle = NULL;
+    a->n = 0;
+    if (!pix_box(p, &x0, &y0, &x1, &y1)) {
+        a->x = a->y = 0;
+        a->w = a->h = 0;
+        a->cov = NULL;
+        return;
+    }
+    a->x = (signed char)x0;
+    a->y = (signed char)y0;
+    a->w = (unsigned char)(x1 - x0 + 1);
+    a->h = (unsigned char)(y1 - y0 + 1);
+    a->cov = malloc((size_t)a->w * a->h);
+    for (y = y0; y <= y1; y++)
+        for (x = x0; x <= x1; x++)
+            a->cov[(y - y0) * a->w + x - x0] = pix_at(p, x, y);
+}
+
+/* -- Latin letters with marks, from the captured glyphs -- */
+
+enum { MARK_CIRCUMFLEX, MARK_BREVE, MARK_DOT, MARK_CEDILLA, MARK_BAR, MARK_NONE };
+#define MARK_CAP 0x10               /* the capitals' mark (of Â, Ç): higher */
+#define MARK_DOTLESS 0x20           /* the base without its dot (ı, ȷ) */
+
+/* (tests/lang_test.py reads this table: every character a code page has
+   beyond Windows-1252 must be here) */
+static const struct { unsigned short cp; unsigned char base, mark; } marks[] = {
+    /* Latin-3 (iso-8859-3): Esperanto */
+    {0x0108, 'C', MARK_CIRCUMFLEX | MARK_CAP}, {0x0109, 'c', MARK_CIRCUMFLEX},
+    {0x011c, 'G', MARK_CIRCUMFLEX | MARK_CAP}, {0x011d, 'g', MARK_CIRCUMFLEX},
+    {0x0124, 'H', MARK_CIRCUMFLEX | MARK_CAP}, {0x0125, 'h', MARK_CIRCUMFLEX | MARK_CAP},
+    {0x0134, 'J', MARK_CIRCUMFLEX | MARK_CAP}, {0x0135, 'j', MARK_CIRCUMFLEX | MARK_DOTLESS},
+    {0x015c, 'S', MARK_CIRCUMFLEX | MARK_CAP}, {0x015d, 's', MARK_CIRCUMFLEX},
+    {0x016c, 'U', MARK_BREVE | MARK_CAP}, {0x016d, 'u', MARK_BREVE},
+    /* Latin-3: Maltese, Turkish */
+    {0x010a, 'C', MARK_DOT | MARK_CAP}, {0x010b, 'c', MARK_DOT},
+    {0x0120, 'G', MARK_DOT | MARK_CAP}, {0x0121, 'g', MARK_DOT},
+    {0x017b, 'Z', MARK_DOT | MARK_CAP}, {0x017c, 'z', MARK_DOT},
+    {0x0130, 'I', MARK_DOT | MARK_CAP}, {0x0131, 'i', MARK_NONE | MARK_DOTLESS},
+    {0x011e, 'G', MARK_BREVE | MARK_CAP}, {0x011f, 'g', MARK_BREVE},
+    {0x015e, 'S', MARK_CEDILLA | MARK_CAP}, {0x015f, 's', MARK_CEDILLA},
+    {0x0126, 'H', MARK_BAR | MARK_CAP}, {0x0127, 'h', MARK_BAR},
+    {0x02d8, 0, MARK_BREVE}, {0x02d9, 0, MARK_DOT},     /* ˘ ˙ alone: in the place of ˆ */
+};
+
+static int floor_half(int d)        /* floor(d / 2 + 0.5) */
+{
+    return d >= 0 ? (d + 1) / 2 : -((-d) / 2);
+}
+
+/* the top row of the ink of byte c (the x-height for 'x') */
+static int ink_top(FontFace *f, int c, int aa)
+{
+    Pix p;
+    int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+    pix_of(f, c, aa, &p);
+    if (!pix_box(&p, &x0, &y0, &x1, &y1))
+        y0 = f->tm[1] / 2;
+    pix_free(&p);
+    return y0;
+}
+
+/* The mark of src over base (the rows above base's ink: â over a), or
+   (cedilla) under it (the rows below) */
+static void mark_of(FontFace *f, int src, int base, int below, int aa, Pix *mark)
+{
+    Pix s, b;
+    int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+    pix_of(f, src, aa, &s);
+    pix_of(f, base, aa, &b);
+    if (!pix_box(&b, &x0, &y0, &x1, &y1))
+        y0 = y1 = f->tm[1];
+    if (below)
+        pix_rows(&s, y1 + 1, s.y + s.h - 1, mark);
+    else
+        pix_rows(&s, s.y, y0 - 1, mark);
+    pix_free(&s);
+    pix_free(&b);
+}
+
+/* A breve in the box (x0, y0)-(x1, y1), drawn as the lower half of an
+   ellipse with a stroke `stroke` pixels wide (coverage sampled 4x4). */
+static void draw_breve(Pix *p, int x0, int y0, int x1, int y1, double stroke, int aa)
+{
+    double cx = (x0 + x1 + 1) / 2.0, rx = (x1 - x0 + 1 - stroke) / 2.0, ry = y1 - y0 + 1 - stroke / 2;
+    int x, y;
+    if (rx < 0.5) rx = 0.5;
+    if (ry < 0.5) ry = 0.5;
+    pix_alloc(p, x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+    for (y = y0; y <= y1; y++)
+        for (x = x0; x <= x1; x++) {
+            int sx, sy, n = 0;
+            for (sy = 0; sy < 4; sy++)
+                for (sx = 0; sx < 4; sx++) {
+                    double px = x + (sx + 0.5) / 4 - cx, py = y + (sy + 0.5) / 4 - y0;
+                    double r = sqrt(px * px / (rx * rx) + py * py / (ry * ry));
+                    /* the distance from the curve, about: |r - 1| times the radius there */
+                    double rad = r > 0 ? sqrt(px * px + py * py) / r : rx;
+                    if (fabs(r - 1) * rad <= stroke / 2)
+                        n++;
+                }
+            p->v[(y - y0) * p->w + x - x0] = (unsigned char)n;
+        }
+    if (!aa) {
+        /* 1-bit: the darker pixel of each column (a thin stroke) or more than half covered */
+        unsigned char *v = p->v;
+        int w = p->w, h = p->h;
+        unsigned char *o = calloc((size_t)w * h + 1, 1);
+        for (x = 0; x < w; x++) {
+            int best = -1;
+            for (y = 0; y < h; y++) {
+                if (v[y * w + x] >= 9)
+                    o[y * w + x] = 16;
+                if (best < 0 || v[y * w + x] > v[best * w + x])
+                    best = y;
+            }
+            if (best >= 0 && v[best * w + x] >= 4)
+                o[best * w + x] = 16;
+        }
+        free(p->v);
+        p->v = o;
+    }
+}
+
+/* the circumflex's stroke, in pixels: its ink over the length of its two strokes */
+static double mark_stroke(const Pix *m, int x0, int y0, int x1, int y1)
+{
+    int i, sum = 0;
+    double len = 2 * sqrt((x1 - x0 + 1) * (x1 - x0 + 1) / 4.0 + (y1 - y0 + 1) * (y1 - y0 + 1));
+    for (i = 0; i < m->w * m->h; i++)
+        sum += m->v[i];
+    return len > 0 && sum / 16.0 / len > 1 ? sum / 16.0 / len : 1;
+}
+
+/* f's glyph of marks[k] (aa: antialiased) into *out; 0 if it cannot be made */
+static int compose(FontFace *f, int k, int aa, Pix *out)
+{
+    int base = marks[k].base, mark = marks[k].mark & 15, cap = marks[k].mark & MARK_CAP;
+    int src = cap ? 0xc2 : 0xe2, sbase = cap ? 'A' : 'a';     /* Â over A, â over a */
+    int dx, mx0 = 0, my0 = 0, mx1 = 0, my1 = 0, have;
+    Pix circ, m = {0, 0, 0, 0, NULL};
+    if (aa && !f->aa)
+        return 0;
+    if (base)
+        pix_of(f, base, aa, out);
+    else
+        pix_alloc(out, 0, 0, 0, 0);
+    if (marks[k].mark & MARK_DOTLESS) {
+        /* without the dot: the rows from the x-height down */
+        Pix rows;
+        pix_rows(out, ink_top(f, 'x', aa), out->y + out->h - 1, &rows);
+        pix_free(out);
+        *out = rows;
+    }
+    if (mark == MARK_NONE)
+        return 1;
+    /* the circumflex, moved as composite glyphs place it: by half the
+       difference of the advances (ˆ alone: as it is) */
+    if (base) {
+        mark_of(f, src, sbase, 0, aa, &circ);
+        dx = floor_half(f->g[base].dadv - f->g[sbase].dadv);
+    } else {
+        pix_of(f, 0x88, aa, &circ);
+        dx = 0;
+    }
+    have = pix_box(&circ, &mx0, &my0, &mx1, &my1);
+    if (!have) {
+        /* (too small to have one) */
+        mx0 = mx1 = f->g[base].dadv / 2 - dx;
+        my0 = my1 = ink_top(f, base ? base : 'x', aa) - 2;
+    }
+    switch (mark) {
+    case MARK_CIRCUMFLEX:
+        pix_merge(out, &circ, dx, 0);
+        break;
+    case MARK_BREVE: {
+        int y1 = my1;
+        if (my1 - my0 < 1)
+            my0 = my1 - 1;
+        /* (as wide as the circumflex: at least 4 pixels, for a bowl) */
+        if (mx1 - mx0 < 3) {
+            mx0 -= (4 - (mx1 - mx0)) / 2;
+            mx1 = mx0 + 3;
+        }
+        draw_breve(&m, mx0, my0, mx1, y1, have ? mark_stroke(&circ, mx0, my0, mx1, my1) : 1, aa);
+        pix_merge(out, &m, dx, 0);
+        break;
+    }
+    case MARK_DOT: {
+        /* the dot of i, its bottom at the circumflex's, centred under it */
+        Pix i;
+        int ix0 = 0, iy0 = 0, ix1 = 0, iy1 = 0;
+        pix_of(f, 'i', aa, &i);
+        pix_rows(&i, i.y, ink_top(f, 'x', aa) - 1, &m);
+        pix_free(&i);
+        if (pix_box(&m, &ix0, &iy0, &ix1, &iy1))
+            pix_merge(out, &m, dx + floor_half(mx0 + mx1 - ix0 - ix1), my1 - iy1);
+        break;
+    }
+    case MARK_CEDILLA:
+        mark_of(f, cap ? 0xc7 : 0xe7, cap ? 'C' : 'c', 1, aa, &m);
+        pix_merge(out, &m, floor_half(f->g[base].dadv - f->g[cap ? 'C' : 'c'].dadv), 0);
+        break;
+    case MARK_BAR: {
+        /* across the stems, between the top and the crossbar (Ħ) or the
+           x-height (ħ), as thick as H's crossbar */
+        Pix h;
+        int x0 = 0, y0 = 0, x1 = 0, y1 = 0, y, x, t = 0, ycross = -1, w, bar_y, sx0, sx1;
+        pix_of(f, 'H', aa, &h);
+        if (pix_box(&h, &x0, &y0, &x1, &y1))
+            for (y = y0 + 1; y < y1; y++) {
+                int n = 0;
+                for (x = x0; x <= x1; x++)
+                    n += pix_at(&h, x, y) >= 8;
+                if (n * 4 >= (x1 - x0 + 1) * 3) {
+                    if (ycross < 0)
+                        ycross = y;
+                    t++;
+                } else if (ycross >= 0)
+                    break;
+            }
+        pix_free(&h);
+        if (t < 1)
+            t = 1;
+        if (!pix_box(out, &x0, &y0, &x1, &y1))
+            break;
+        if (cap) {
+            if (ycross < 0)
+                ycross = (y0 + y1) / 2;
+            bar_y = y0 + (ycross - y0 - t + 1) / 2;
+            sx0 = x0 - 1;
+            sx1 = x1 + 1;
+        } else {
+            /* (h: the stem is the ink of its top row) */
+            int xh = ink_top(f, 'x', aa);
+            bar_y = y0 + (xh - y0 - t + 1) / 2;
+            sx0 = x1;
+            sx1 = x0;
+            for (x = x0; x <= x1; x++)
+                if (pix_at(out, x, y0 + 1) >= 8) {
+                    if (x < sx0) sx0 = x;
+                    if (x > sx1) sx1 = x;
+                }
+            w = sx1 - sx0 + 1;
+            sx0 -= w > 2 ? w / 2 + 1 : 2;
+            sx1 += w > 2 ? w / 2 + 1 : 2;
+        }
+        pix_alloc(&m, sx0, bar_y, sx1 - sx0 + 1, t);
+        memset(m.v, 16, (size_t)m.w * m.h);
+        pix_merge(out, &m, 0, 0);
+        break;
+    }
+    }
+    pix_free(&circ);
+    pix_free(&m);
+    return 1;
+}
+
+/* -- other characters, from the font files (stb_truetype) -- */
+
+typedef struct {
+    const char *file;
+    int tried;
+    unsigned char *data;
+    stbtt_fontinfo info;
+} TtFont;
+
+static TtFont tt_fonts[] = {{"fonts/NotoSerifTC-Regular.otf", 0, NULL, {0}}, {"fonts/NotoSansTC-Regular.otf", 0, NULL, {0}}};
+
+static TtFont *tt_font(int serif)
+{
+    TtFont *t = &tt_fonts[serif ? 0 : 1];
+    long n;
+    if (!t->tried) {
+        t->tried = 1;
+        t->data = read_file(t->file, &n);
+        if (t->data && !stbtt_InitFont(&t->info, t->data, stbtt_GetFontOffsetForIndex(t->data, 0))) {
+            free(t->data);
+            t->data = NULL;
+        }
+        if (!t->data)
+            plat_log("text: no font %s/%s: characters beyond Windows-1252 drawn as boxes\n", plat_data_dir, t->file);
+    }
+    return t->data ? t : NULL;
+}
+
+/* f's glyph of cp from a font file into *out, its advance in *adv; 0 if none has it */
+static int render(FontFace *f, unsigned cp, int aa, Pix *out, int *adv)
+{
+    TtFont *t = tt_font(f->face == 0 && f->height >= 20);
+    int g, a, lsb, x0, y0, x1, y1, w, h, x, y, bold;
+    float scale;
+    unsigned char *cov;
+    if ((!t || !(g = stbtt_FindGlyphIndex(&t->info, (int)cp))) && f->face == 0 && f->height >= 20)
+        t = tt_font(0);         /* (the sans has what the serif lacks?) */
+    if (!t || !(g = stbtt_FindGlyphIndex(&t->info, (int)cp)))
+        return 0;
+    scale = stbtt_ScaleForMappingEmToPixels(&t->info, (float)f->height);
+    stbtt_GetGlyphHMetrics(&t->info, g, &a, &lsb);
+    *adv = (int)(a * scale + 0.5f);
+    bold = f->bold ? (f->height >= 32 ? 2 : 1) : 0;
+    /* Placed where its strokes fall best on the pixels: of the shifts by
+       quarters of a pixel (up to 32 pixels: larger glyphs are clear as
+       they are), the one whose pixels are the least partly covered.  (No
+       hinting: this is the little of it that helps Chinese, whose strokes
+       are mostly level and upright.) */
+    cov = NULL;
+    {
+        int steps = f->height <= 32 ? 4 : 1, sx, sy;
+        long best = -1;
+        for (sy = 0; sy < steps; sy++)
+            for (sx = 0; sx < steps; sx++) {
+                int bx0, by0, bx1, by1, i;
+                long score = 0;
+                unsigned char *c;
+                stbtt_GetGlyphBitmapBoxSubpixel(&t->info, g, scale, scale, sx / 4.0f, sy / 4.0f, &bx0, &by0, &bx1,
+                                                &by1);
+                if (bx1 <= bx0 || by1 <= by0)
+                    continue;
+                c = calloc((size_t)(bx1 - bx0) * (by1 - by0), 1);
+                stbtt_MakeGlyphBitmapSubpixel(&t->info, c, bx1 - bx0, by1 - by0, bx1 - bx0, scale, scale, sx / 4.0f,
+                                              sy / 4.0f, g);
+                for (i = 0; i < (bx1 - bx0) * (by1 - by0); i++)
+                    score += c[i] * (255 - c[i]);
+                if (best < 0 || score < best) {
+                    best = score;
+                    free(cov);
+                    cov = c;
+                    x0 = bx0; y0 = by0; x1 = bx1; y1 = by1;
+                } else
+                    free(c);
+            }
+    }
+    if (!cov) {
+        pix_alloc(out, 0, f->tm[1], 0, 0);
+        return 1;
+    }
+    w = x1 - x0;
+    h = y1 - y0;
+    pix_alloc(out, x0, f->tm[1] + y0, w + bold, h);
+    for (y = 0; y < h; y++)
+        for (x = 0; x < w; x++) {
+            int v = cov[y * w + x], set;
+            if (aa) {
+                /* (contrast raised a little: unhinted, a stroke's ink is
+                   spread over more pixels, paler, than the hinted glyphs'
+                   beside it, which Wine's blend makes paler still) */
+                set = v <= 26 ? 0 : ((v - 26) * 16 + 102) / 204;
+                if (set > 16)
+                    set = 16;
+            } else {
+                /* more than about half covered, or a thin stroke's darker
+                   pixel across it (a local maximum, down or across) */
+#define COV(xx, yy) ((xx) >= 0 && (yy) >= 0 && (xx) < w && (yy) < h ? cov[(yy) * w + (xx)] : 0)
+                int up = COV(x, y - 1), down = COV(x, y + 1), left = COV(x - 1, y), right = COV(x + 1, y);
+#undef COV
+                set = v >= 144 || (v >= 80 && ((v >= up && v > down) || (v > up && v >= down) ||
+                                                 (v >= left && v > right) || (v > left && v >= right)))
+                          ? 16 : 0;
+            }
+            if (set)
+                out->v[y * out->w + x] = (unsigned char)set;
+        }
+    free(cov);
+    /* bold: 1-bit, each pixel spread right by `bold` pixels, but not into
+       a one-pixel gap, which would close it; antialiased, the glyph over
+       itself moved right by half as much (more than that blurs a small
+       glyph's strokes together) */
+    for (y = 0; y < h && bold; y++) {
+        unsigned char *row = out->v + y * out->w, *orig = malloc((size_t)out->w);
+        memcpy(orig, row, (size_t)out->w);
+        for (x = 0; x < out->w; x++) {
+            int k;
+            if (aa) {
+                for (k = 1; k <= bold; k++) {
+                    /* moved by k/2: the mean of the two pixels it covers */
+                    int a0 = x - k / 2 >= 0 ? orig[x - k / 2] : 0, a1 = x - (k + 1) / 2 >= 0 ? orig[x - (k + 1) / 2] : 0;
+                    int v = (a0 + a1 + 1) / 2;
+                    if (row[x] < v)
+                        row[x] = (unsigned char)v;
+                }
+                continue;
+            }
+            if (!orig[x])
+                continue;
+            for (k = 1; k <= bold && x + k < out->w; k++) {
+                if (x + k + 1 < out->w && orig[x + k + 1] && !orig[x + k])
+                    break;
+                if (row[x + k] < orig[x])
+                    row[x + k] = orig[x];
+            }
+        }
+        free(orig);
+    }
+    return 1;
+}
+
+/* f's tofu: a box of most of the ascent, half an em wide */
+static void make_tofu(FontFace *f, Glyph *g, AaGlyph *a)
+{
+    int w = f->height / 2 > 3 ? f->height / 2 : 3, h = f->tm[1] * 3 / 4 > 4 ? f->tm[1] * 3 / 4 : 4, x, y;
+    Pix p;
+    pix_alloc(&p, 1, f->tm[1] - h, w, h);
+    for (y = 0; y < h; y++)
+        for (x = 0; x < w; x++)
+            if (!x || !y || x == w - 1 || y == h - 1)
+                p.v[y * w + x] = 16;
+    if (g) {
+        pix_to_glyph(&p, g);
+        g->adv = g->dadv = (short)(w + 2);
+    }
+    if (a) {
+        pix_to_aa(&p, a);
+        a->adv = (short)(w + 2);
+    }
+    pix_free(&p);
+}
+
+/* f's glyph of character cp, beyond Windows-1252: made when first asked
+   for, antialiased too if aa (f->aa loaded) */
+static ExtraGlyph *extra_glyph(FontFace *f, unsigned cp, int aa)
+{
+    ExtraGlyph *e;
+    unsigned bucket = cp % 64;
+    int k, nm = (int)(sizeof marks / sizeof marks[0]);
+    for (e = f->extra[bucket]; e && e->cp != cp; e = e->next)
+        ;
+    if (!e) {
+        Pix p;
+        int adv;
+        e = calloc(1, sizeof *e);
+        e->cp = cp;
+        e->next = f->extra[bucket];
+        f->extra[bucket] = e;
+        for (k = 0; k < nm && marks[k].cp != cp; k++)
+            ;
+        if (k < nm && compose(f, k, 0, &p)) {
+            int b = marks[k].base ? marks[k].base : 0x88;
+            pix_to_glyph(&p, &e->g);
+            e->g.adv = f->g[b].adv;
+            e->g.dadv = f->g[b].dadv;
+            pix_free(&p);
+        } else if (render(f, cp, 0, &p, &adv)) {
+            pix_to_glyph(&p, &e->g);
+            e->g.adv = e->g.dadv = (short)adv;
+            pix_free(&p);
+        } else
+            make_tofu(f, &e->g, NULL);
+    }
+    if (aa && !e->has_aa && f->aa) {
+        Pix p;
+        int adv;
+        e->has_aa = 1;
+        for (k = 0; k < nm && marks[k].cp != cp; k++)
+            ;
+        if (k < nm && compose(f, k, 1, &p)) {
+            pix_to_aa(&p, &e->a);
+            /* (the drawing advance where drawn without antialiasing, as captured) */
+            e->a.adv = f->aa[marks[k].base ? marks[k].base : 0x88].adv;
+            pix_free(&p);
+        } else if (render(f, cp, !f->aa_mono, &p, &adv)) {
+            /* (where the font's Latin letters are drawn without
+               antialiasing, as Liberation's "gasp" says for small sizes:
+               these too, as on 8-bit surfaces) */
+            pix_to_aa(&p, &e->a);
+            e->a.adv = (short)adv;
+            pix_free(&p);
+        } else
+            make_tofu(f, NULL, &e->a);
+    }
+    return e;
+}
+
+/* The glyphs of the character at s[*i] (s[0..n)), *i moved past it: 1-bit
+   (*g) and, if a is not NULL, antialiased (*a, aa_data loaded).  0 for a
+   byte that is no character: nothing drawn, no width.  Windows-1252 text:
+   the byte's glyphs, as ever. */
+static int glyph_at(FontFace *f, const char *s, int n, int *i, const Glyph **g, AaGlyph **a)
+{
+    unsigned char ch = (unsigned char)s[*i];
+    unsigned cp;
+    int len;
+    ExtraGlyph *e;
+    if (ch < 0x80 || (!plat_text_utf8 && (!cp_table || cp_table[ch - 0x80] == codepage_1252[ch - 0x80]))) {
+        (*i)++;
+        *g = &f->g[ch];
+        if (a)
+            *a = &f->aa[ch];
+        return 1;
+    }
+    if (plat_text_utf8) {
+        cp = u8_decode(s + *i, n - *i, &len);
+        *i += len;
+        if (cp == U8_BAD)
+            return 0;
+    } else {
+        (*i)++;
+        cp = cp_table[ch - 0x80];
+        if (!cp)                    /* (a hole of the code page: as Windows-1252's) */
+            cp = codepage_1252[ch - 0x80] ? codepage_1252[ch - 0x80] : ch;
+    }
+    if (cp < 0x100 || (ch = codepage_from_unicode(codepage_1252, cp)) != 0) {
+        ch = cp < 0x100 ? (unsigned char)cp : ch;
+        if (cp >= 0x80 && cp < 0xa0)
+            ch = 0;
+        if (ch) {
+            *g = &f->g[ch];
+            if (a)
+                *a = &f->aa[ch];
+            return 1;
+        }
+    }
+    e = extra_glyph(f, cp, a != NULL);
+    *g = &e->g;
+    if (a)
+        *a = &e->a;
+    return 1;
 }
 
 /* Wine's substitutes: Times New Roman -> Liberation Serif, Arial ->
@@ -414,6 +1029,13 @@ static int wine_text(void)
 int text_width(FontFace *f, const char *s, int n)
 {
     int i, w = 0, wine = wine_text();
+    if (plat_text_utf8 || cp_table) {
+        const Glyph *g;
+        for (i = 0; i < n;)
+            if (glyph_at(f, s, n, &i, &g, NULL))
+                w += wine ? g->adv : g->dadv;
+        return w;
+    }
     for (i = 0; i < n; i++)
         w += wine ? f->g[(unsigned char)s[i]].adv : f->g[(unsigned char)s[i]].dadv;
     return w;
@@ -444,15 +1066,16 @@ void text_draw_measured(DC *dc, int x, int y, const char *s, int n, const RECT *
 
 static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const RECT *clip);
 
-/* The advance of a glyph as text_draw_game places it on b. */
-static int drawn_advance(const FontFace *f, const Bitmap *b, unsigned char ch)
+/* The advance of a glyph (g, a: its 1-bit and antialiased forms) as
+   text_draw_game places it on b. */
+static int drawn_advance(const FontFace *f, const Bitmap *b, const Glyph *g, const AaGlyph *a)
 {
     if (b->bpp > 8) {
         if (!wine_text())
-            return f->g[ch].dadv;
-        return f->aa_mono && !measured_advances && f->aa ? f->aa[ch].adv : f->g[ch].adv;
+            return g->dadv;
+        return f->aa_mono && !measured_advances && f->aa ? a->adv : g->adv;
     }
-    return measured_advances ? f->g[ch].adv : f->g[ch].dadv;
+    return measured_advances ? g->adv : g->dadv;
 }
 
 /* HD graphics (hd.c): the text again on the surface's plane, from the
@@ -489,14 +1112,28 @@ static void hd_text(DC *dc, Bitmap *b, const Region *rg, FontFace *f, int x, int
                         plane[(size_t)py * b->w * d + px] = v;
             }
     }
-    for (i = 0; i < n; i++) {
-        unsigned char ch = (unsigned char)s[i];
-        AaGlyph *g = &fine->aa[ch];
-        const unsigned char *cov = aa_coverage(g);
+    for (i = 0; i < n;) {
+        const Glyph *fg, *gg;
+        AaGlyph *g, *ga;
+        const unsigned char *cov;
+        double xs;
+        int at = i;
+        if (!glyph_at(fine, s, n, &i, &fg, &g))
+            continue;
+        glyph_at(f, s, n, &at, &gg, f->aa ? &ga : NULL);
+        cov = aa_coverage(g);
         /* not wider than the game's glyph: its advance, density times */
-        double xs = fine->g[ch].adv ? (double)f->g[ch].dadv * d / fine->g[ch].adv : scale;
+        xs = fg->adv ? (double)gg->dadv * d / fg->adv : scale;
         int gx = x * d + (int)(g->x * xs), gy = y * d + (int)(g->y * scale);
         int gw = (int)(g->w * xs + .5), gh = (int)(g->h * scale + .5);
+        if (fg < fine->g || fg >= fine->g + 256) {
+            /* (a glyph made for a character beyond Windows-1252
+               (extra_glyph), at the fine font's size: scaled to the game
+               glyph's advance alike both ways, on the baseline) */
+            double base = y * d + fine->tm[1] * scale;
+            gy = (int)(base + (g->y - fine->tm[1]) * xs);
+            gh = (int)(g->h * xs + .5);
+        }
         for (k = 0; cov && gw > 0 && gh > 0 && k < rg->n; k++) {
             int l = rg->r[k].left * d, t = rg->r[k].top * d, r = rg->r[k].right * d, bot = rg->r[k].bottom * d, px, py;
             if (l < gx) l = gx;
@@ -516,7 +1153,7 @@ static void hd_text(DC *dc, Bitmap *b, const Region *rg, FontFace *f, int x, int
                              aa_blend((z >> 8) & 255, GetGValue(c), v) << 8 | aa_blend(z & 255, GetBValue(c), v);
                 }
         }
-        x += drawn_advance(f, b, ch);
+        x += drawn_advance(f, b, gg, f->aa ? ga : g);
     }
 }
 
@@ -604,10 +1241,16 @@ static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const REC
         unsigned tr = GetRValue(c), tg = GetGValue(c), tb = GetBValue(c);
         if (!aa_data)
             load_aa();
-        for (i = 0; i < n && f->aa; i++) {
-            AaGlyph *g = &f->aa[(unsigned char)s[i]];
-            const unsigned char *cov = aa_coverage(g);
-            int gx = x + ox + g->x, gy = y + oy + g->y, row, col, k;
+        for (i = 0; i < n && f->aa;) {
+            const Glyph *g1;
+            AaGlyph *g;
+            const unsigned char *cov;
+            int gx, gy, row, col, k;
+            if (!glyph_at(f, s, n, &i, &g1, &g))
+                continue;
+            cov = aa_coverage(g);
+            gx = x + ox + g->x;
+            gy = y + oy + g->y;
             for (k = 0; cov && k < rg.n; k++) {
                 RECT gr, a;
                 gr.left = gx; gr.top = gy; gr.right = gx + g->w; gr.bottom = gy + g->h;
@@ -631,9 +1274,9 @@ static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const REC
             /* Wine: antialiased glyphs advance as measured, the others as
                drawn; in play every glyph as text_width counts it */
             if (!wine_text())
-                x += f->g[(unsigned char)s[i]].dadv;
+                x += g1->dadv;
             else
-                x += f->aa_mono && !measured_advances ? g->adv : f->g[(unsigned char)s[i]].adv;
+                x += f->aa_mono && !measured_advances ? g->adv : g1->adv;
         }
         rgn_free(&rg);
         return;
@@ -641,9 +1284,14 @@ static void text_draw_game(DC *dc, int x, int y, const char *s, int n, const REC
     {
         int idx = b->bpp == 8 ? surf_nearest(b, c) : -1;
         DWORD v32 = (DWORD)(GetRValue(c) << 16 | GetGValue(c) << 8 | GetBValue(c));
-        for (i = 0; i < n; i++) {
-            const Glyph *g = &f->g[(unsigned char)s[i]];
-            int gx = x + ox + g->x, gy = y + oy + g->y, row, col, stride = (g->w + 7) / 8, k;
+        for (i = 0; i < n;) {
+            const Glyph *g;
+            int gx, gy, row, col, stride, k;
+            if (!glyph_at(f, s, n, &i, &g, NULL))
+                continue;
+            gx = x + ox + g->x;
+            gy = y + oy + g->y;
+            stride = (g->w + 7) / 8;
             for (k = 0; k < rg.n; k++) {
                 RECT gr, a;
                 gr.left = gx; gr.top = gy; gr.right = gx + g->w; gr.bottom = gy + g->h;
@@ -813,7 +1461,34 @@ int WINAPI DrawTextA(HDC h, LPCSTR str, int len, LPRECT rect, UINT fmt)
         }
         if ((fmt & DT_WORDBREAK) && !(fmt & DT_SINGLELINE) && text_width(f, line, n) > width) {
             /* Break after the last space that fits (or mid-word if none). */
-            int fit = 0, last_space = -1, i;
+            int fit = 0, last_space = -1, i, no_space = 0;
+            if (plat_text_utf8) {
+                /* (UTF-8 text: by character, and also next to a wide one:
+                   no_space, a break with no space to skip) */
+                unsigned prev = U8_BAD;
+                for (i = 0; i < n;) {
+                    int len;
+                    unsigned c = u8_decode(line + i, n - i, &len);
+                    int brk_here = i > 0 && line[i] != ' ' && u8_break_between(prev, c);
+                    if (text_width(f, line, i + len) > width) {
+                        if (brk_here) {
+                            last_space = i;
+                            no_space = 1;
+                        }
+                        break;
+                    }
+                    if (line[i] == ' ') {
+                        last_space = i;
+                        no_space = 0;
+                    } else if (brk_here) {
+                        last_space = i;
+                        no_space = 1;
+                    }
+                    prev = c;
+                    i += len;
+                    fit = i;
+                }
+            } else
             for (i = 0; i < n; i++) {
                 if (text_width(f, line, i + 1) > width)
                     break;
@@ -822,8 +1497,8 @@ int WINAPI DrawTextA(HDC h, LPCSTR str, int len, LPRECT rect, UINT fmt)
                 fit = i + 1;
             }
             if (i < n) {
-                int brk = last_space >= 0 ? last_space : (fit ? fit : 1);
-                int consumed = brk, skip = last_space >= 0 ? 1 : 0;
+                int brk = last_space >= 0 ? last_space : (fit ? fit : u8_len_at(line, n, 0));
+                int consumed = brk, skip = last_space >= 0 && !no_space ? 1 : 0;
                 /* Map back to the source: count source chars giving `consumed` output chars. */
                 const char *s = p;
                 int o = 0;
@@ -851,7 +1526,7 @@ int WINAPI DrawTextA(HDC h, LPCSTR str, int len, LPRECT rect, UINT fmt)
                     at_current_position(dc, &x, &ty, w);
                     text_draw(dc, x, ty, line, n, (fmt & DT_NOCLIP) ? NULL : rect);
                     if (ul >= 0)
-                        underline(dc, f, x, ty, line, ul, 1, (fmt & DT_NOCLIP) ? NULL : rect);
+                        underline(dc, f, x, ty, line, ul, u8_len_at(line, n, ul), (fmt & DT_NOCLIP) ? NULL : rect);
                 }
                 y += lh;
                 p = q;
@@ -871,7 +1546,7 @@ int WINAPI DrawTextA(HDC h, LPCSTR str, int len, LPRECT rect, UINT fmt)
             at_current_position(dc, &x, &ty, w);
             text_draw(dc, x, ty, line, n, (fmt & DT_NOCLIP) ? NULL : rect);
             if (ul >= 0)
-                underline(dc, f, x, ty, line, ul, 1, (fmt & DT_NOCLIP) ? NULL : rect);
+                underline(dc, f, x, ty, line, ul, u8_len_at(line, n, ul), (fmt & DT_NOCLIP) ? NULL : rect);
         }
         y += lh;
         p = q;

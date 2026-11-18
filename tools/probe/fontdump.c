@@ -22,20 +22,12 @@
  *             bitmap relative to the text origin (top left of the cell)
  * Run with tools/probe/run.sh fontdump OUTFILE.
  *
- * With a code page (src/host/codepages.h: tools/probe/run.sh fontdump
- * data/native/fonts_iso-8859-3.bin iso-8859-3): only the bytes where that
- * code page's characters differ from Windows-1252's, each drawn as its
- * Unicode character, into a delta file (src/platform/text.c lays it over
- * fonts_win.bin): "C2FONTD1" u32 nfonts, u32 nchars, the nchars bytes, then
- * per font its 8-byte header and per byte its glyph as above.
- *
  * Liberation's widths are those of the Windows fonts, so text is laid out as
  * on Windows (before, with the DejaVu fonts Wine substitutes without them,
  * wider, text overflowed: issue 17).  Their licence: THIRD-PARTY.txt.
  */
 #include <windows.h>
 #include <stdio.h>
-#include "../../src/host/codepages.h"
 
 #define W 192
 #define H 128
@@ -43,37 +35,6 @@
 #define OY 32
 
 static void put32(FILE *f, int v) { fwrite(&v, 4, 1, f); }
-
-/* The text drawn and measured: bytes (Windows-1252, as the game's), or (a
-   code page's delta) the Unicode characters of chars */
-static int wide_chars;
-static const unsigned short *page;
-
-static void out_text(HDC dc, int x, int y, const unsigned char *s, int n)
-{
-    WCHAR w[4];
-    int i;
-    if (!wide_chars) {
-        TextOutA(dc, x, y, (const char *)s, n);
-        return;
-    }
-    for (i = 0; i < n; i++)
-        w[i] = (WCHAR)codepage_to_unicode(page, s[i]);
-    TextOutW(dc, x, y, w, n);
-}
-
-static void extent(HDC dc, const unsigned char *s, int n, SIZE *sz)
-{
-    WCHAR w[4];
-    int i;
-    if (!wide_chars) {
-        GetTextExtentPoint32A(dc, (const char *)s, n, sz);
-        return;
-    }
-    for (i = 0; i < n; i++)
-        w[i] = (WCHAR)codepage_to_unicode(page, s[i]);
-    GetTextExtentPoint32W(dc, w, n, sz);
-}
 
 int main(int argc, char **argv)
 {
@@ -83,8 +44,7 @@ int main(int argc, char **argv)
     unsigned char *bits;
     HDC dc = CreateCompatibleDC(NULL);
     FILE *out = fopen(argc > 1 ? argv[1] : "fonts_win.bin", "wb");
-    int face, height, bold, italic, n = 0, c, k, nchars = 256;
-    unsigned char chars[256];
+    int face, height, bold, italic, n = 0, c;
 
     memset(&bi, 0, sizeof bi);
     bi.h.biSize = sizeof bi.h; bi.h.biWidth = W; bi.h.biHeight = -H; bi.h.biPlanes = 1; bi.h.biBitCount = 8;
@@ -94,25 +54,8 @@ int main(int argc, char **argv)
     SetTextColor(dc, RGB(0, 0, 0));
     SetTextAlign(dc, TA_TOP | TA_LEFT);
 
-    for (c = 0; c < 256; c++)
-        chars[c] = (unsigned char)c;
-    if (argc > 2) {
-        if (!(page = codepage_table(argv[2]))) {
-            fprintf(stderr, "fontdump: no code page %s\n", argv[2]);
-            return 1;
-        }
-        wide_chars = 1;
-        for (nchars = 0, c = 0x80; c < 256; c++)
-            if (page[c - 0x80] != codepage_1252[c - 0x80])
-                chars[nchars++] = (unsigned char)c;
-        fwrite("C2FONTD1", 8, 1, out);
-        put32(out, 4 * 43 * 4);
-        put32(out, nchars);
-        fwrite(chars, 1, (size_t)nchars, out);
-    } else {
-        fwrite("C2FONTS2", 8, 1, out);
-        put32(out, 4 * 43 * 4);
-    }
+    fwrite("C2FONTS2", 8, 1, out);
+    put32(out, 4 * 43 * 4);
     for (face = 0; face < 4; face++)
         for (height = 6; height <= 48; height++)
             for (bold = 0; bold < 2; bold++)
@@ -132,16 +75,14 @@ int main(int argc, char **argv)
                     hdr[0] = (BYTE)face; hdr[1] = (BYTE)height; hdr[2] = (BYTE)(lf.lfWeight & 0xff);
                     hdr[3] = (BYTE)(lf.lfWeight >> 8); hdr[4] = (BYTE)italic;
                     fwrite(hdr, 8, 1, out);
-                    if (!wide_chars) {
                     put32(out, tm.tmHeight); put32(out, tm.tmAscent); put32(out, tm.tmDescent);
                     put32(out, tm.tmInternalLeading); put32(out, tm.tmExternalLeading);
                     put32(out, tm.tmAveCharWidth); put32(out, tm.tmMaxCharWidth); put32(out, tm.tmWeight);
                     put32(out, tm.tmOverhang);
                     put32(out, tm.tmFirstChar | tm.tmLastChar << 8 | tm.tmDefaultChar << 16 | tm.tmBreakChar << 24);
                     put32(out, tm.tmPitchAndFamily | tm.tmCharSet << 8);
-                    }
-                    for (k = 0; k < nchars; k++) {
-                        unsigned char ch = chars[k];
+                    for (c = 0; c < 256; c++) {
+                        char ch = (char)c;
                         SIZE sz;
                         int x, y, x0 = W, y0 = H, x1 = -1, y1 = -1;
                         short adv;
@@ -150,17 +91,17 @@ int main(int argc, char **argv)
                         short dadv;
                         {
                             /* Drawing advance: where a following 'H' lands (its rightmost ink). */
-                            unsigned char pair[2];
+                            char pair[2];
                             int right_h = -1, right_pair = -1;
                             pair[0] = ch; pair[1] = 'H';
                             memset(bits, 1, W * H);
-                            out_text(dc, OX, OY, (const unsigned char *)"H", 1);
+                            TextOutA(dc, OX, OY, "H", 1);
                             for (y = 0; y < H; y++)
                                 for (x = 0; x < W; x++)
                                     if (bits[y * W + x] == 0 && x > right_h)
                                         right_h = x;
                             memset(bits, 1, W * H);
-                            out_text(dc, OX, OY, pair, 2);
+                            TextOutA(dc, OX, OY, pair, 2);
                             for (y = 0; y < H; y++)
                                 for (x = 0; x < W; x++)
                                     if (bits[y * W + x] == 0 && x > right_pair)
@@ -168,8 +109,8 @@ int main(int argc, char **argv)
                             dadv = (short)(right_pair - right_h);
                         }
                         memset(bits, 1, W * H);
-                        out_text(dc, OX, OY, &ch, 1);
-                        extent(dc, &ch, 1, &sz);
+                        TextOutA(dc, OX, OY, &ch, 1);
+                        GetTextExtentPoint32A(dc, &ch, 1, &sz);
                         for (y = 0; y < H; y++)
                             for (x = 0; x < W; x++)
                                 if (bits[y * W + x] == 0) {

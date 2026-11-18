@@ -735,11 +735,20 @@ message by message and clock event by clock event.
   the host's host_text and the page's i18n.js; exported alone by
   CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1: data/native/lang/en.txt), chosen
   in OpenCiv2 Options > Language (src/include/lang.h); a translation in
-  another code page (Esperanto: ISO-8859-3) has its letters drawn from glyphs
-  captured for it (data/native/fonts_iso-8859-3*.bin) and typed through the
+  another code page (Esperanto: ISO-8859-3) has its letters put together at
+  run time from the captured glyphs (base letter and mark: src/platform/text.c
+  marks[]) and typed through the
   host's text input (docs/TRANSLATING.md); a translation may key the game's
   texts too (the Esperanto one has them all: GAME.TXT's popups, the menus,
-  labels, rules' names, the Civilopedia, the council ...).  Not done: resizable
+  labels, rules' names, the Civilopedia, the council ...).  A translation in
+  UTF-8 ("@@codepage utf-8": Traditional Chinese, data/native/lang/zh-Hant.txt,
+  OpenCiv2's own texts and a sample of the game's) has its Chinese drawn at
+  run time (stb_truetype) from Noto Serif/Sans TC cut down to the characters
+  it uses (data/native/fonts, tools/cjk_fonts.py), lines broken next to
+  Chinese characters (the game's dialogs, DrawText, the edit control), texts
+  cut, typed and edited by whole characters (src/include/utf8.h); not done:
+  the full translation of the game's texts into Chinese, and the input
+  method's composition shown in the game's own fields.  Not done: resizable
   advisors and their larger caption area (CIV2UIA 26, 27): each advisor opens at
   600x400 and draws its list, buttons and background for that size from
   constants in its own drawing and opening functions (list bottom at client_y +

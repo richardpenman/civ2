@@ -26,7 +26,7 @@ static const struct {
 #define NTEXTS (sizeof english / sizeof english[0])
 
 static char *translated[NTEXTS];        /* UTF-8 */
-static const unsigned short *table = codepage_1252;
+static const unsigned short *table = codepage_1252;  /* 0: UTF-8 */
 static int inited;
 
 static int text_index(const char *key)
@@ -44,6 +44,26 @@ const char *host_lang_utf8(const char *text, char *out, size_t size)
     const unsigned char *p = (const unsigned char *)text;
     if (!size)
         return out;
+    if (!table) {
+        /* UTF-8 text: as it is, but a byte that is no character ('?') */
+        while (*p && k + 5 < size) {
+            unsigned c = *p, n = c < 0x80 ? 0 : c >= 0xc2 && c <= 0xdf ? 1 : c >= 0xe0 && c <= 0xef ? 2
+                                                : c >= 0xf0 && c <= 0xf4 ? 3 : 4, i;
+            for (i = 1; n < 4 && i <= n; i++)
+                if ((p[i] & 0xc0) != 0x80)
+                    n = 4;
+            if (n == 4) {
+                out[k++] = '?';
+                p++;
+                continue;
+            }
+            memcpy(out + k, p, n + 1);
+            k += n + 1;
+            p += n + 1;
+        }
+        out[k] = 0;
+        return out;
+    }
     for (; *p && k + 4 < size; p++) {
         unsigned u = codepage_to_unicode(table, *p);
         if (!u)
@@ -81,6 +101,8 @@ static void keep(const char *key, const char *text, char **raw)
         const unsigned short *t = codepage_table(text);
         if (t)
             table = t;
+        else if (codepage_is_utf8(text))
+            table = 0;
         return;
     }
     if (strncmp(key, "openciv2.", 9) || (i = text_index(key + 9)) < 0)
@@ -215,7 +237,6 @@ void host_lang_init(const char *game_dir)
 {
     char code[64], c[32], data[4096], path[4400];
     const char *e = getenv("CIV2_LANG");
-    size_t i;
     code[0] = 0;
     if (e && *e)
         snprintf(code, sizeof code, "%s", e);
@@ -227,12 +248,9 @@ void host_lang_init(const char *game_dir)
             snprintf(code, sizeof code, "%s", e ? e : "");
         }
     }
-    /* as lang.cpp's language_path: "de_DE.UTF-8": de-DE.txt, else de.txt */
-    snprintf(c, sizeof c, "%s", code);
-    c[strcspn(c, ".@")] = 0;
-    for (i = 0; c[i]; i++)
-        if (c[i] == '_')
-            c[i] = '-';
+    /* as lang.cpp's language_path: "de_DE.UTF-8": de-DE.txt, else de.txt
+       (zh_TW, zh-HK ...: zh-Hant.txt) */
+    language_alias(code, c, sizeof c);
     if (!c[0] || ((c[0] | 0x20) == 'e' && (c[1] | 0x20) == 'n' && (!c[2] || c[2] == '-')) ||
         !strcasecmp(c, "auto") || !strcmp(c, "C") || !strcmp(c, "POSIX")) {
         host_lang_load(NULL);

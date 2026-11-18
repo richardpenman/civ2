@@ -13,7 +13,10 @@ OpenCiv2 has two kinds of text:
   download, the browser version's page. These are translated here. English is built in;
   `data/native/lang/` has the translations that come with OpenCiv2: Esperanto (`eo.txt`, a first
   draft: machine-drafted, needs review by a native speaker), which translates the game's texts
-  too.
+  too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
+  by a native speaker), which has OpenCiv2's own texts and, so far, only a sample of the game's
+  (the main menu, naming a city, the envoys' greetings, the menu bar's titles, one advance and
+  its Civilopedia article).
 
 ## OpenCiv2's own English of the game's texts
 
@@ -48,7 +51,9 @@ without its text files.
   language), which is also the game's *Automatic* ([BROWSER.md](BROWSER.md#language)).
 
 A code is a file's name: `eo` reads `lang/eo.txt`; a system's `pt_BR` reads `lang/pt-BR.txt`,
-else `lang/pt.txt`. The file is looked for in the game's folder (`lang/` beside its files: a
+else `lang/pt.txt`. Chinese in traditional characters (a system's or browser's `zh_TW`, `zh-HK`,
+`zh_MO`, `zh-Hant...`) reads `lang/zh-Hant.txt` (`src/host/codepages.h`: `language_alias`);
+other Chinese (`zh_CN`, `zh-Hans`) is not taken for it. The file is looked for in the game's folder (`lang/` beside its files: a
 player's own) first, then in OpenCiv2's data directory (`data/lang/` beside the program;
 `data/native/lang/` in the source tree; in the macOS app `Contents/Resources/data/lang`; on
 Windows the program writes its own into `data\lang` beside it). The Language choice lists the
@@ -139,35 +144,40 @@ is read as Windows-1252 unless its first entry says otherwise:
 iso-8859-3
 ```
 
-Then the bytes where that code page differs from Windows-1252 are drawn with glyphs captured
-for it, of the same fonts at every size (`data/native/fonts_iso-8859-3.bin` and `_aa.bin`), the
-host shows the text (message boxes, the menu bar, the set-up) as those characters, and
+Then the bytes where that code page differs from Windows-1252 are drawn as their characters,
+the host shows the text (message boxes, the menu bar, the set-up) as those characters, and
 characters typed on a keyboard layout that has them (names of cities, of saved games) are put
 in as those bytes; others are dropped. Code pages so far (`src/host/codepages.h`):
 
 | Code page | Languages | Glyphs |
 |-----------|-----------|--------|
 | `windows-1252` (default) | Western European | `fonts_win.bin`, `fonts_win_aa.bin` |
-| `iso-8859-3` (Latin-3) | Esperanto (ĉ ĝ ĥ ĵ ŝ ŭ), Maltese | `fonts_iso-8859-3.bin`, `_aa.bin` |
+| `iso-8859-3` (Latin-3) | Esperanto (ĉ ĝ ĥ ĵ ŝ ŭ), Maltese | Windows-1252's, put together (below) |
+| `utf-8` | Chinese (`zh-Hant`), any other | Windows-1252's; the others from `data/native/fonts` (below) |
 
 Write the file in its code page's bytes (e.g. `iconv -f utf-8 -t iso-8859-3`); the browser page
 reads it in the same code page and shows the letters as Unicode.
 
-Where a code page's glyphs are missing (a build without them), Esperanto can be written in the
-**x-system** instead, in Windows-1252: `cx gx hx jx sx ux` for `ĉ ĝ ĥ ĵ ŝ ŭ` (`Cx` ... for the
-capitals), as Esperanto does without its letters.
+**Letters with marks** (Latin-3's ĉ ĝ ĥ ĵ ŝ ŭ, ċ ġ ż İ ı ş ğ ħ ...) are put together when first
+drawn from the captured glyphs of Windows-1252 (`src/platform/text.c`, its table `marks[]`), so
+that they are hinted as the letters beside them, at every size and style, 1-bit and
+antialiased: the base letter as captured (ĵ and ı without their dot), the mark taken from a
+captured letter that has it (the circumflex of `â` and `Â`, the cedilla of `ç` and `Ç`, the dot
+of `i`), placed as Liberation's composite glyphs place it (moved by half the difference of the
+two letters' advances); the marks no Windows-1252 letter has (the breve of ŭ and ğ, the bar of ħ)
+are drawn in the circumflex's box with its stroke. A letter takes its base letter's advance, so
+text is laid out as with the glyphs Wine draws for it (they match those within a pixel or two).
+The same letters in a UTF-8 translation are put together alike.
 
-**Adding a code page** (`cp1250` for Polish or Czech, `cp1251` for Cyrillic):
+**Adding a code page** (`cp1250` for Polish or Czech):
 
 1. its table in `src/host/codepages.h` (the Unicode character of bytes 0x80-0xFF) and its
    names in `codepage_table`;
-2. its glyphs, captured under Wine with the same fonts as the others
-   (`tools/dk2 sh tools/probe/run.sh fontdump /work/data/native/fonts_<name>.bin <name>` and
-   `fontdump_aa ... fonts_<name>_aa.bin <name>`): only the bytes where it differs from
-   Windows-1252, for every face, size and style;
-3. nothing else: the builds package `data/native/fonts_*.bin` and `lang/*.txt` (the releases,
-   the Windows program's resources, the browser site), and `make test` checks the glyph files
-   cover every font.
+2. each of its letters Windows-1252 lacks in `marks[]` of `src/platform/text.c` (base letter and
+   mark; a new kind of mark, as the caron's or the ogonek's, needs its few lines there):
+   `make test` (`tests/lang_test.py`) fails while a byte has no glyph;
+3. nothing else: no files. (A script with letters of its own, as Cyrillic or Greek, would be
+   written in UTF-8 instead, with a font file for its letters as Chinese has: below.)
 
 The game's text is still single bytes: names saved under one code page (a city named in
 Esperanto, a saved game's leader) show as other characters under another (in English, `ĉ` saved
@@ -175,16 +185,92 @@ as byte 0xE6 shows as `æ`), and the game's own texts from a Windows-1252 copy o
 their accented letters wrongly under another code page. A translation of the game's texts for
 another code page is written in it too.
 
+### UTF-8: Chinese and other languages beyond one byte a letter
+
+A translation whose `@@codepage` is `utf-8` has the game's text in UTF-8: a character is one to
+four bytes. UTF-8 rather than Big5 (or GBK) because a Big5 character's second byte can be
+`@`, `\`, `^`, `|`, `{`, `%` ..., which the game's texts use as codes; UTF-8's are 0x80-0xBF
+and never one of them. Then:
+
+- **Drawing.** Characters up to U+00FF and Windows-1252's others are drawn with the game's
+  glyphs (`fonts_win*.bin`), letters with marks put together from them (above); the others are
+  drawn when first needed from the font files in `data/native/fonts` (below), on the font's
+  baseline. A character they lack is drawn as a box; bytes that are no character (a sequence cut
+  short) are not drawn and take no room.
+- **Line breaking.** Chinese has no spaces between words: a line may break at a space, or before
+  or after any wide character (CJK ideographs, kana, hangul, full-width forms), but never inside
+  a character, not before a closing mark (`，。、；：？！」』）》〉】` and `,.;:!?)]}%`), not after
+  an opening one (`「『（《〈【` and `([{`), and not next to `_` (the game's texts' space that
+  does not break, as in `_._._.`). So it is in the game's dialogs (`Dialog::draw_wrapped_text`),
+  DrawText (wrapped labels, the advisors' and the status panels' boxes) and the edit control
+  (the Civilopedia's descriptions). In the game's texts the lines of a paragraph are joined: with
+  a space between Latin words, with none where the line before ends or the next starts with a
+  wide character, so a Chinese paragraph may be split over lines as the English one is.
+- **Typing.** Characters typed (the system's input method, a keyboard layout's letters) go in
+  whole: the host's text input hands them on one by one (all of an input method's text), the
+  edit control's caret, Backspace, Delete, arrows, selection and clicks go by character, and a
+  name cut to its room (a city's 15 bytes and the like) loses whole characters. The input
+  method's composition (the text being composed, before it is chosen) is shown in the system's
+  own window where it has one, not in the game's field; the browser version takes characters
+  typed on a keyboard layout, but no input method (its canvas is not a text field).
+- **Case.** The game changes the case of ASCII letters only (`toupper`, `strupr`, `CharUpper`:
+  its C library's "C" locale), so UTF-8's bytes are never changed.
+- **Menus' letters.** A menu's or button's `&` letter is a key on the keyboard: keep an ASCII
+  one, after the label in parentheses, as Chinese Windows does: `遊戲(&G)`, `檢視(&V)`.
+- **The host** shows the text as it is (its message boxes, menu bar, set-up: UTF-8 already).
+- **Saved games and names** are bytes: a city named in Chinese shows as other characters under
+  another code page (in English, as Windows-1252 letters) and the other way round.
+
+**The fonts** (`data/native/fonts`): Noto Serif TC (for Times New Roman from 20 pixels up) and
+Noto Sans TC (Arial, System, Courier, and Times below 20 pixels, where a serif's strokes are not
+legible with few pixels), SIL Open Font License 1.1 (`THIRD-PARTY.txt`,
+`data/native/fonts/OFL.txt`), regular weight only, cut down to the characters the UTF-8
+translations in `data/native/lang` use (and common full-width punctuation), without hinting or
+layout tables. `src/platform/text.c` draws them with stb_truetype (`src/third_party`) at the
+font's pixel height and keeps each glyph it has drawn:
+
+- on the game's 8-bit surfaces (and where Liberation draws the Latin letters of that size
+  without antialiasing) as 1-bit glyphs: a pixel is set where it is more than about half
+  covered, or where it is the darker pixel across a thin stroke, so that strokes neither vanish
+  nor thicken; elsewhere antialiased (coverage 0..16, a little more contrast than the outline's
+  own, as the hinted glyphs beside them have), blended as Wine blends;
+- placed, of the shifts by quarters of a pixel, where the fewest pixels are partly covered (up
+  to 32 pixels: no hinting, but Chinese strokes are mostly level and upright, and this puts most
+  of them on whole pixels);
+- bold made by thickening (1-bit: a pixel wider, but never closing a one-pixel gap;
+  antialiased: half a pixel), italics upright (Chinese has none); HD's larger text is drawn at
+  its own size.
+
+After adding characters to a translation run `tools/dk python3 tools/cjk_fonts.py`: it fetches
+the fonts (Noto Serif TC 2.003, Noto Sans TC 2.004) and fontTools 4.55.0, each pinned by its
+SHA-256, into `run/cjk-fonts`, and writes the two files again (the same bytes for the same
+characters). `make test` fails while a character of a UTF-8 translation is in neither
+Windows-1252, `marks[]` nor both font files.
+
+Size: about 220 bytes (sans) and 330 bytes (serif) a character, 280 KB for the 500 characters of
+`zh-Hant.txt` now; a full translation of the game (some 3,000 characters) about 1.9 MB (the
+browser version's files are gzipped: some 15% less).
+
 ## Testing a translation
 
 - `make test` (`tests/lang_test.py`) checks that `en.txt` is `src/host/texts.h`, that every
   translation in `data/native/lang` has every key of the template and no other, each with the
-  template's placeholders in order, and its code page's glyph files.
+  template's placeholders in order, and that every character of its code page is Windows-1252's
+  or put together (`marks[]`); a UTF-8 one, that it is valid UTF-8 and that the font files have
+  every other character it uses. `tests/utf8_text_test.cpp`
+  tests the UTF-8 handling itself (cutting to fit, break rules, the edit control's wrapping and
+  caret).
 - `CIV2_LANG=<code>` runs the game in it; `harness/extras/x-lang-eo.txt` (`make test-extras`)
   shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
   letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
   city window, an advisor, the Civilopedia.
-- The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto.
+- `harness/extras/x-lang-zh.txt` does the same in Traditional Chinese: the main menu, Options
+  and its Language page, the file dialog with Chinese typed and taken back character by
+  character, the map's status panel, a city renamed in Chinese and its window, the menu bar, the
+  Civilopedia's page of an advance and its description (wrapped), an envoy's greeting (lines
+  joined and wrapped); and with sharp text.
+- The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto and
+  in Chinese (`?lang=zh-TW`: the page's fonts are the system's that have its characters).
 
 ## Adding a translation to OpenCiv2
 

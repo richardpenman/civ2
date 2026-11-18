@@ -30,8 +30,9 @@ drawn as the original's), sharp text and interface on high-resolution screens (o
 HD graphics, full screen, the rule changes and the interface additions, kept in `CIV.INI`
 ([EXTRAS.md](docs/EXTRAS.md#openciv2-options)).
 
-OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English and
-Esperanto (a first draft) come with it, chosen in OpenCiv2 Options > Language. The game's own
+OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English, Esperanto
+and Traditional Chinese (繁體中文, in UTF-8; first drafts) come with it, chosen in OpenCiv2
+Options > Language. The game's own
 texts come in the language of your Civilization II, or in that of a translation that has them:
 the Esperanto one translates the whole game ([TRANSLATING.md](docs/TRANSLATING.md)). Where your
 copy lacks one of the game's text files, OpenCiv2 uses its own English of it, written for it.

@@ -9,6 +9,7 @@
  */
 #include "plat.h"
 #include "../host/codepages.h"
+#include "../include/utf8.h"
 #ifndef __wasm__
 #include <dlfcn.h>
 #include <execinfo.h>
@@ -1253,6 +1254,27 @@ void input_char(unsigned code)
 {
     const unsigned short *table = codepage_table(plat_text_codepage_name());
     unsigned char b = table && code >= 0x80 ? codepage_from_unicode(table, code) : 0;
+    if (plat_text_utf8 && code >= 0x80 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff)) {
+        /* (UTF-8 text: the character's bytes, a WM_CHAR each; the edit
+           control puts them in together) */
+        unsigned char u[4];
+        int n, k;
+        if (code < 0x800) {
+            u[0] = (unsigned char)(0xc0 | code >> 6);
+            n = 2;
+        } else if (code < 0x10000) {
+            u[0] = (unsigned char)(0xe0 | code >> 12);
+            n = 3;
+        } else {
+            u[0] = (unsigned char)(0xf0 | code >> 18);
+            n = 4;
+        }
+        for (k = 1; k < n; k++)
+            u[k] = (unsigned char)(0x80 | ((code >> (6 * (n - 1 - k))) & 0x3f));
+        for (k = 0; k < n; k++)
+            msg_post(KBD_PENDING, WM_CHAR, (WPARAM)u[k], 1);
+        return;
+    }
     if (!b)
         return;
     /* (as keyboard input: after the keys typed before it, to the focus) */

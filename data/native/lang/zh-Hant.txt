@@ -1,0 +1,576 @@
+; OpenCiv2: 繁體中文 (Traditional Chinese, Taiwan) — machine-drafted, needs review by a native speaker.
+; OpenCiv2's own texts (openciv2.*, web.*): complete. The game's texts after them (game.*, menu.*, rules.*, describe.*) are only a SAMPLE for testing the engine (the full translation of the game's texts is a later job).
+; Encoding UTF-8 (@@codepage utf-8). Menu accelerators: keep an ASCII letter after the label, e.g. 遊戲(&G).
+@@codepage
+utf-8
+@@openciv2.language.name
+繁體中文
+@@openciv2.turn
+回合
+@@openciv2.cities
+城市
+@@openciv2.size
+規模
+@@openciv2.name
+名稱
+@@openciv2.production
+生產
+@@openciv2.menu.arrange_s
+排列視窗 S
+@@openciv2.menu.arrange_l
+排列視窗 L
+@@openciv2.mainmenu.options
+OpenCiv2 選項
+@@openciv2.options.title
+OpenCiv2 選項
+@@openciv2.options.kept
+儲存在 CIV.INI 的 [OpenCiv2] 區段中。
+@@openciv2.options.mode
+模式
+@@openciv2.options.graphics
+圖形與螢幕
+@@openciv2.options.rules
+規則變更
+@@openciv2.options.limits
+上限
+@@openciv2.options.interface
+介面新增功能
+@@openciv2.options.colours
+色彩與訊息
+@@openciv2.options.language
+語言
+@@openciv2.options.next_start
+自下次啟動遊戲起生效。
+@@openciv2.options.override_one
+已設定 %s：本次執行時以它為準，不採用這些選擇。
+@@openciv2.options.override_many
+已設定 %s：本次執行時以它們為準，不採用這些選擇。
+@@openciv2.options.list_and
+ 和 
+@@openciv2.mode.title
+模式
+@@openciv2.mode.standard_note
+標準：修正原版的錯誤，加上 OpenCiv2 的介面新增功能；規則變更依你的選擇。
+@@openciv2.mode.classic_note
+經典：原汁原味的原版遊戲：保留其錯誤與外觀，不含任何 OpenCiv2 的新增功能。
+@@openciv2.mode.standard
+標準
+@@openciv2.mode.classic
+經典
+@@openciv2.graphics.title
+圖形與螢幕
+@@openciv2.graphics.sharp_note
+清晰的文字與介面：文字、選單與控制項以螢幕的完整解析度顯示（圖片則放大）。
+@@openciv2.graphics.hd_installed
+HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。美術圖像已安裝。
+@@openciv2.graphics.hd_later
+HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。美術圖像（%d MB）將在遊戲再次啟動時從本網站下載。
+@@openciv2.graphics.hd_no_site
+HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。本網站建置時未包含美術圖像。
+@@openciv2.graphics.hd_download
+HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。需要美術圖像：%d MB，選取時從 GitHub 上的 openciv2-assets 下載一次。
+@@openciv2.graphics.fullscreen_note
+全螢幕：取代填滿螢幕的視窗。
+@@openciv2.graphics.sharp
+清晰的文字與介面
+@@openciv2.graphics.hd
+HD 圖形
+@@openciv2.graphics.fullscreen
+全螢幕
+@@openciv2.rules.title
+規則變更
+@@openciv2.rules.intro
+對原版規則的變更，適用於人類玩家的單位；網路遊戲則使用原版規則。
+@@openciv2.rule.GotoNoZocStop
+「前往」可越過外國單位
+@@openciv2.rule.MassMove
+Shift+右鍵移動同類單位
+@@openciv2.rule.WorkerHandover
+工人交接工作
+@@openciv2.rule.UnitRotation
+堆疊中的單位輪流行動
+@@openciv2.rule.StackSentry
+U 讓整個堆疊警戒
+@@openciv2.limits.title
+上限
+@@openciv2.limits.intro
+設為原版的數值時：與原版相同。
+@@openciv2.limit.RetirementYear
+退休年份
+@@openciv2.limit.RetirementWarningYear
+其警告年份
+@@openciv2.limit.PopulationLimit
+人口（萬）
+@@openciv2.limit.GoldLimit
+金錢
+@@openciv2.limit.MapTilesLimit
+自訂地圖格數
+@@openciv2.interface.title
+介面新增功能
+@@openciv2.interface.intro
+OpenCiv2 對介面的新增功能（源自 FoxAhead 的 CIV2UIA）：你看到的與能做的。
+@@openciv2.extra.MouseWheel
+滑鼠滾輪與按鍵
+@@openciv2.extra.UnitListScroll
+單位清單超過 9 個單位
+@@openciv2.extra.UnitListKeys
+該單位清單中的按鍵
+@@openciv2.extra.WorkCounter
+開拓者工作計數
+@@openciv2.extra.GameTurn
+狀態面板顯示回合
+@@openciv2.extra.ResearchNumbers
+研究數據
+@@openciv2.extra.ZeroUpkeep
+列出免維護的建築
+@@openciv2.extra.SupportScroll
+支援的單位：捲動
+@@openciv2.extra.SupportSort
+支援的單位排序
+@@openciv2.extra.AttitudeColors
+態度顧問的色彩
+@@openciv2.extra.CityAttitude
+城市視窗中的態度
+@@openciv2.extra.RadioHotkeys
+選項的快速鍵
+@@openciv2.extra.Quickinfo
+按 Ctrl 顯示快速資訊
+@@openciv2.extra.ProductionCancel
+變更生產中的取消
+@@openciv2.extra.ProductionCost
+變更生產中的成本
+@@openciv2.extra.CityStatus
+城市狀態：排序、變更
+@@openciv2.extra.MassSpecialists
+對專家按 Shift
+@@openciv2.extra.SuppressPopups
+地圖上的訊息
+@@openciv2.extra.ColorCorrection
+色彩校正
+@@openciv2.extra.ForeignGold
+外交部長中的金錢
+@@openciv2.extra.ArrangeWindowsSL
+排列視窗 S 與 L
+@@openciv2.extra.PathLines
+按 Shift 顯示路徑線
+@@openciv2.extra.SentryHalftone
+警戒單位以灰階顯示
+@@openciv2.extra.DefaultZoom1
+新遊戲縮放為 1:1
+@@openciv2.extra.HotkeyUnderlines
+選項快速鍵加底線
+@@openciv2.colours.title
+色彩與訊息
+@@openciv2.colours.intro
+Gamma：百分比，100 表示不變；亮度與對比：-100 至 100。地圖上的訊息：GAME.TXT 的區段，例如 HIDDENTERRAIN,CITYSIZE。
+@@openciv2.colour.Gamma
+Gamma (%)
+@@openciv2.colour.Brightness
+亮度
+@@openciv2.colour.Contrast
+對比
+@@openciv2.colour.SuppressList
+地圖上的訊息
+@@openciv2.language.title
+語言
+@@openciv2.language.intro
+OpenCiv2 自身文字的語言，以及翻譯所涵蓋的遊戲文字的語言（其餘的遊戲文字來自已安裝的檔案）。
+@@openciv2.language.auto
+自動（系統的語言）
+@@openciv2.language.override
+已設定 CIV2_LANG：本次執行時以它為準，不採用此選擇。
+@@openciv2.restart.title
+重新啟動
+@@openciv2.restart.next_time
+這些選擇將在下次啟動遊戲時生效。
+@@openciv2.restart.ask
+這些選擇將在遊戲再次啟動時生效：現在重新啟動嗎？
+@@openciv2.restart.ask_page
+這些選擇將在遊戲再次啟動時生效：現在重新啟動嗎（頁面將重新載入）？
+@@openciv2.restart.now
+立即重新啟動
+@@openciv2.restart.later
+稍後
+@@openciv2.restart.failed
+無法再次啟動遊戲：這些選擇將在下次啟動時生效。
+@@openciv2.hd.title
+HD 圖形
+@@openciv2.hd.downloading
+正在下載美術圖像
+@@openciv2.hd.checking
+正在檢查
+@@openciv2.hd.installing
+正在安裝
+@@openciv2.hd.progress
+%s：%d / %d MB
+@@openciv2.hd.stop
+停止
+@@openciv2.hd.failed
+下載失敗。
+@@openciv2.hd.stay_off
+%s HD 圖形維持關閉。
+@@openciv2.hd.err.no_curl_windows
+找不到用來下載美術圖像的 Windows curl.exe（Windows 10 及更新版本內建）。
+@@openciv2.hd.err.download
+下載失敗（%s）。電腦是否已連上網際網路？
+@@openciv2.hd.err.no_tool
+找不到用來下載美術圖像的 curl 或 wget：請安裝 curl。
+@@openciv2.hd.err.read
+無法讀取 %s。
+@@openciv2.hd.err.not_pack
+%s 不是 openciv2-assets 套件。
+@@openciv2.hd.err.mismatch
+套件中的 %s 與其 package.json 不符。
+@@openciv2.hd.err.write
+無法寫入 %s。
+@@openciv2.hd.err.not_pinned
+下載的內容不是指定的美術圖像（SHA-256 不符）：未安裝任何內容。
+@@openciv2.hd.err.no_url
+此版本不知道要下載哪一份美術圖像。
+@@openciv2.hd.err.no_folder
+沒有可安裝美術圖像的資料夾。
+@@openciv2.hd.err.start
+無法開始下載。
+@@openciv2.hd.err.test_run
+測試執行時不會下載任何內容。
+@@openciv2.hd.err.no_site_art
+本網站建置時未包含 HD 美術圖像。
+@@openciv2.file.open
+開啟
+@@openciv2.file.save_as
+另存新檔
+@@openciv2.file.save
+儲存
+@@openciv2.file.cancel
+取消
+@@openciv2.file.name
+檔案名稱：
+@@openciv2.file.sort_name
+排序：名稱
+@@openciv2.file.sort_date
+排序：日期
+@@openciv2.file.modified
+修改日期：%s
+@@openciv2.file.folder
+資料夾：%s
+@@openciv2.file.not_found
+%s
+找不到檔案。
+@@openciv2.file.replace
+%s 已存在。
+要取代它嗎？
+@@openciv2.box.ok
+確定
+@@openciv2.box.cancel
+取消
+@@openciv2.box.yes
+是
+@@openciv2.box.no
+否
+@@openciv2.quit.text
+要結束文明帝國 II 嗎？
+
+進行中的遊戲將在此結束；未儲存的內容都會遺失。
+@@openciv2.quit.quit
+結束
+@@openciv2.menu.full_screen
+全螢幕
+@@openciv2.setup.title
+OpenCiv2：設定遊戲
+@@openciv2.setup.copy_failed
+無法將 %s 複製到 %s。
+@@openciv2.setup.read_failed
+無法讀取 %s。
+@@openciv2.setup.unpack_failed
+無法解壓縮 %s。
+@@openciv2.setup.write_failed
+無法寫入 %s。
+@@openciv2.setup.unpacking
+正在解壓縮
+@@openciv2.setup.copying_file
+正在複製
+@@openciv2.setup.unpacking_cd
+正在從光碟解壓縮遊戲
+@@openciv2.setup.unpacking_image
+正在從光碟映像檔解壓縮遊戲
+@@openciv2.setup.copying
+正在複製遊戲
+@@openciv2.setup.copying_image
+正在從光碟映像檔複製
+@@openciv2.setup.copy_image_failed
+無法從光碟映像檔複製 %s。
+@@openciv2.setup.encoding
+正在編碼音樂（第 %d 首，共 %d 首）
+@@openciv2.setup.music_failed_only
+無法從光碟機讀取音樂。
+@@openciv2.setup.music_failed
+遊戲已設定完成，但沒有音樂：無法從光碟機讀取。
+@@openciv2.setup.no_folder
+資料夾 %s 不存在。
+@@openciv2.setup.not_game
+%s 中既沒有已安裝的 Civilization II Multiplayer Gold Edition，也沒有它的光碟或光碟映像檔。
+@@openciv2.setup.not_found
+在一般的安裝位置、光碟機中，以及常用資料夾中的光碟映像檔（.cue 檔及其 .bin 檔）裡，都找不到 Civilization II Multiplayer Gold Edition。請指出它的位置：它的安裝資料夾、它的光碟，或光碟映像檔（或其所在的資料夾）。
+@@openciv2.setup.music_image
+光碟映像檔 %s
+@@openciv2.setup.music_cd
+%s 中的光碟
+@@openciv2.setup.confirm_music
+OpenCiv2 會將音樂加入位於
+%s
+的遊戲，音樂來自 %s（編碼為 Ogg Vorbis）。
+
+這需要幾分鐘；之後遊戲便會開始。
+@@openciv2.setup.confirm_copy
+OpenCiv2 會從 %s 設定遊戲，將它複製到
+%s
+
+這需要一兩分鐘；之後遊戲便會開始。
+@@openciv2.setup.confirm_unpack
+OpenCiv2 會從 %s 設定遊戲，將它解壓縮到
+%s
+
+這需要一兩分鐘；之後遊戲便會開始。
+@@openciv2.setup.confirm_copy_music
+OpenCiv2 會從 %s 設定遊戲，將它複製到
+%s
+
+音樂來自 %s（編碼為 Ogg Vorbis）。
+
+這需要幾分鐘；之後遊戲便會開始。
+@@openciv2.setup.confirm_unpack_music
+OpenCiv2 會從 %s 設定遊戲，將它解壓縮到
+%s
+
+音樂來自 %s（編碼為 Ogg Vorbis）。
+
+這需要幾分鐘；之後遊戲便會開始。
+@@openciv2.setup.stopped
+設定已中止；下次會重新開始。
+@@openciv2.setup.where
+Civilization II Multiplayer Gold Edition 在哪裡？請選擇它的安裝資料夾、它的光碟，或光碟的映像檔（其 .cue 檔，或其所在的資料夾）。
+@@openciv2.setup.where_short
+Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、它的光碟，或光碟映像檔所在的資料夾）
+@@openciv2.setup.where_command
+以該資料夾（或 .cue 檔）啟動 OpenCiv2：OpenCiv2 --setup FOLDER
+@@openciv2.setup.set_up
+設定
+@@openciv2.setup.quit
+結束
+@@openciv2.setup.choose
+選擇
+@@openciv2.web.loading
+載入中 ...
+@@openciv2.web.intro
+Civilization II Multiplayer Gold Edition，重建後可在你的瀏覽器中執行。它使用<em>你自己</em>的遊戲：文明帝國 II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（標準或經典、HD 圖形、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
+@@openciv2.web.choose
+選擇你的遊戲...
+@@openciv2.web.choose_folder
+資料夾
+@@openciv2.web.choose_folder_note
+已安裝的遊戲，或光碟
+@@openciv2.web.choose_files
+檔案
+@@openciv2.web.choose_files_note
+資料夾的 .zip 檔，或光碟映像檔（.cue 與 .bin）
+@@openciv2.web.drop
+或拖放到這裡
+@@openciv2.web.stop
+停止
+@@openciv2.web.have
+遊戲檔案已在此瀏覽器中。
+@@openciv2.web.forget
+移除檔案
+@@openciv2.web.play
+開始遊戲
+@@openciv2.web.export
+匯出存檔
+@@openciv2.web.export_title
+你的存檔、你製作的劇本、CIV.INI、CIV2.DAT 與 HALLFAME.DAT，打包為 .zip
+@@openciv2.web.import
+匯入存檔
+@@openciv2.web.saves
+存檔
+@@openciv2.web.saves_title
+匯出或匯入存檔
+@@openciv2.web.saves_heading
+存檔
+@@openciv2.web.saves_note
+將你的存檔、你製作的劇本、<code>CIV.INI</code>、<code>CIV2.DAT</code> 與 <code>HALLFAME.DAT</code> 匯出為 .zip；或將存檔（.SAV，或這類 .zip）匯入遊戲。
+@@openciv2.web.close
+關閉
+@@openciv2.web.relay_title
+網路遊戲
+@@openciv2.web.relay_label
+中繼伺服器：
+@@openciv2.web.relay_use
+使用
+@@openciv2.web.relay_none
+網路遊戲須透過中繼伺服器，但 %s 沒有任何回應：請在 %s 上執行 tools/webrelay.py，或在此輸入其位址（或以 ?relay=ws://HOST:PORT 開啟此頁面）。
+@@openciv2.web.relay_bad
+中繼伺服器的位址以 ws://（或 wss://）開頭。
+@@openciv2.web.language
+語言：
+@@openciv2.web.language_auto
+自動（瀏覽器的語言）
+@@openciv2.web.not_game
+這些檔案既不是已安裝的 Civilization II Multiplayer Gold Edition（其資料夾內有 Civ2Art.dll 與 RULES.TXT），也不是它的光碟（DATA1.CAB 與 CIV2），也不是光碟的映像檔（.cue 及其 .bin）。
+@@openciv2.web.copying
+正在複製遊戲：%s / %s 個檔案
+@@openciv2.web.kept
+遊戲的 %s 個檔案保存在此瀏覽器中。
+@@openciv2.web.setup_no_game
+設定未能產生遊戲（沒有 Civ2Art.dll、RULES.TXT）。
+@@openciv2.web.keep_failed
+無法保存檔案：%s
+@@openciv2.web.set_up_cd
+遊戲已從光碟設定完成：%s 個檔案保存在此瀏覽器中（沒有音樂：瀏覽器無法讀取光碟的音軌；光碟映像檔則含有音軌）。
+@@openciv2.web.set_up_image
+遊戲已從光碟映像檔設定完成：%s 個檔案保存在此瀏覽器中。
+@@openciv2.web.setup_failed
+設定失敗：%s
+@@openciv2.web.setup_stopped
+設定已中止；請再次選擇檔案以重新開始。
+@@openciv2.web.setting_up_cd
+正在從光碟設定遊戲 ...
+@@openciv2.web.setting_up_image
+正在從光碟映像檔設定遊戲 ...
+@@openciv2.web.chosen_folder
+資料夾：%s（%s 個檔案）
+@@openciv2.web.chosen_image
+光碟映像檔：%s
+@@openciv2.web.reading
+正在讀取 %s ...
+@@openciv2.web.no_saves
+目前還沒有可匯出的存檔。
+@@openciv2.web.exported_one
+已匯出 1 個檔案：%s。
+@@openciv2.web.exported
+已匯出 %s 個檔案：%s。
+@@openciv2.web.export_failed
+無法匯出存檔：%s
+@@openciv2.web.imported_one
+已匯入 1 個檔案：%s。
+@@openciv2.web.imported
+已匯入 %s 個檔案：%s。
+@@openciv2.web.nothing_to_import
+沒有可匯入的內容：存檔是 .SAV 檔（或其 .zip 檔）。
+@@openciv2.web.import_failed
+無法匯入：%s
+@@openciv2.web.hd_progress
+%s：%s / %s MB
+@@openciv2.web.hd_downloading
+正在下載 HD 圖形的美術圖像
+@@openciv2.web.hd_checking
+正在檢查
+@@openciv2.web.hd_keeping
+正在保存到此瀏覽器
+@@openciv2.web.hd_no_room
+瀏覽器的儲存空間不足（剩餘 %s MB）。
+@@openciv2.web.hd_off
+HD 圖形：%s 本次維持關閉。
+@@openciv2.web.loading_files
+正在載入遊戲檔案 ...
+@@openciv2.web.loading_hd
+正在載入 HD 圖形的美術圖像 ...
+@@openciv2.web.starting
+正在啟動（檔案載入耗時 %s 毫秒）...
+@@openciv2.web.ended
+遊戲已結束。
+@@openciv2.web.ended_code
+遊戲已結束（%s）。
+@@openciv2.web.stopped
+遊戲已停止：%s
+@@openciv2.web.forget_confirm
+要從此瀏覽器移除遊戲檔案（包括存檔）以及 HD 圖形的美術圖像嗎？
+@@openciv2.web.copy_failed
+無法複製檔案：%s
+@@openciv2.web.read_failed
+無法讀取 %s：%s
+@@openciv2.web.the_files
+檔案
+@@openciv2.web.no_browser
+此瀏覽器缺少遊戲所需的功能（WebAssembly、IndexedDB、DecompressionStream）。
+@@openciv2.web.other_tab
+正在等待另一個 OpenCiv2 分頁（更新前開啟的）關閉：請關閉它，或重新載入它。
+@@game.MAINMENU
+@width=200
+@title=OpenCiv2
+@options
+開始新遊戲
+在預製的世界中遊戲
+塑造世界
+進行劇本
+載入遊戲
+多人遊戲
+觀看名人堂
+觀看製作群
+
+@@game.NAMECITY
+@title=這座城市該叫什麼名字？
+@options
+城市名稱：
+
+
+@@game.RENAMECITY
+@title=這座城市要改叫什麼名字？
+@options
+新城市名稱：
+
+
+@@game.GREETINGS00
+@width=320
+@title=%STRING0使節
+「謹代表%STRING3最尊貴的%STRING2，
+%STRING1，向您致意_._._.」
+
+@@game.GREETINGS01
+@width=320
+@title=%STRING0使節
+「我奉%STRING3的%STRING2
+%STRING1之命前來傳話_._._.」
+
+@@game.GREETINGS02
+@width=320
+@title=%STRING0使節
+「請聽我們英明的統治者%STRING2%STRING1，
+%STRING3之主的話語_._._.」
+
+@@game.GREETINGS03
+@width=320
+@title=%STRING0使節
+「我代表令眾生顫慄的%STRING5發言：
+%STRING3的統治者，%STRING2%STRING1_._._.」
+
+
+@@game.ADJACENTCITY
+@title=文明規則：城市
+城市不能建立在
+緊鄰其他城市之處。
+
+
+@@menu.title.1
+遊戲(&G)
+@@menu.title.2
+王國(&K)
+@@menu.title.3
+檢視(&V)
+@@menu.title.4
+命令(&O)
+@@menu.title.5
+顧問(&A)
+@@menu.title.6
+世界(&W)
+@@menu.title.7
+作弊(&C)
+@@menu.title.8
+編輯器(&E)
+@@menu.title.9
+文明百科(&C)
+@@rules.advance.0
+高等飛行
+@@describe.ADVANCE.Advanced Flight
+第二次世界大戰推動航空技術前進的速度，超越了以往任何時期。陸軍與海軍需要能飛抵數百英里外目標的轟炸機，以及能載運部隊與物資橫越海洋和大陸的運輸機。
+
+德國在多個領域居於領先。它的 V-2 火箭於 1944 年首度投入實戰，是第一種真正的導引飛彈，能攜帶約 2,000 磅的彈頭飛行約 200 英里。梅塞施密特 Me 262 是最早正式服役的噴射戰鬥機，在大戰的最後幾個月執行作戰任務。兩者都來得太晚，未能改變戰爭的結局，但那些年的噴射引擎、後掠翼與長程設計，為我們今日搭乘的飛機奠定了基礎。
+

@@ -507,7 +507,7 @@ char * __cdecl str_copy_max(char *dest,const char *src,size_t size)
   if (size != 0) {
     len = _strlen(src);
     if (size - 1 < len) {
-      len = size - 1;
+      len = (size_t)u8_clip(src,(int)(size - 1));  /* (UTF-8 text: no character cut in two) */
     }
     crt_memcpy(dest,src,len);
     dest[len] = '\0';

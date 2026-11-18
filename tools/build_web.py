@@ -18,8 +18,10 @@ setup_disc.c, unshield, zlib, libogg and libvorbis, as the native build has
 them: wasi-sdk's clang; the page runs it in a Web Worker).
 
 The translations (data/native/lang/*.txt but the template en.txt) into
-lang/, listed in lang/index.json (code, name), the glyphs of their code
-pages (data/native/fonts_<code page>*.bin, gzipped) into data/, and
+lang/, listed in lang/index.json (code, name), the font files of
+characters beyond Windows-1252 that UTF-8 ones need (data/native/fonts,
+gzipped, listed in data/fonts/index.json, their licence beside them) into
+data/fonts/, and
 texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
 OpenCiv2's English of the game's text files (data/native/text/*.TXT, used
 where the game has none of its own) into data/text/, gzipped, listed in
@@ -108,11 +110,21 @@ def write_languages():
         cp, texts = lang_file(path)
         shutil.copy(path, os.path.join(out, code + '.txt'))
         index.append({'code': code, 'name': texts.get('openciv2.language.name', code)})
-        if cp not in ('windows-1252', 'cp1252'):
-            pages.add(cp)
+        if cp in ('utf-8', 'utf8'):
+            pages.add('utf-8')      # (UTF-8 text: data/native/fonts' files, text.c)
     with open(os.path.join(out, 'index.json'), 'w', encoding='utf-8') as f:
         json.dump(index, f, ensure_ascii=False)
-    return ['fonts_%s.bin' % cp for cp in sorted(pages)] + ['fonts_%s_aa.bin' % cp for cp in sorted(pages)]
+    fonts = os.path.join(OUT, 'data', 'fonts')
+    if os.path.isdir(fonts):
+        shutil.rmtree(fonts)
+    if not pages:
+        return []
+    os.makedirs(fonts)
+    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(ROOT, 'data', 'native', 'fonts', '*.otf')))
+    with open(os.path.join(fonts, 'index.json'), 'w') as f:
+        json.dump(names, f)
+    shutil.copy(os.path.join(ROOT, 'data', 'native', 'fonts', 'OFL.txt'), os.path.join(fonts, 'OFL.txt'))
+    return ['fonts/' + n for n in names]
 
 
 def write_texts():
@@ -207,6 +219,9 @@ def main():
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
     write_texts()
+    for f in glob.glob(os.path.join(OUT, 'data', 'fonts_*.bin.gz')):
+        if os.path.basename(f)[:-3] not in FONTS:
+            os.remove(f)        # (the code pages' glyphs of before: text.c makes them)
     for f in FONTS + write_languages():
         s, d = os.path.join(ROOT, 'data', 'native', f), os.path.join(OUT, 'data', f + '.gz')
         if newer(s, d):

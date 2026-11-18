@@ -9,23 +9,24 @@
   code page; its keys of the game's texts (game.*, label.*, rules.* ...: the
   English is the player's copy of the game, not here) are of the files
   src/game/lang.cpp keys, and no key is there twice;
-- a code page's glyphs (data/native/fonts_<code page>.bin, _aa.bin) cover
-  every font (face, height, weight, slant) of fonts_win.bin and
-  fonts_win_aa.bin, each byte where the code page differs from
-  Windows-1252 (src/host/codepages.h).
+- every character a code page has beyond Windows-1252 (src/host/codepages.h)
+  is one src/platform/text.c puts together from the captured glyphs (its
+  table marks[]);
+- a translation in UTF-8 ("@@codepage utf-8": Chinese) is valid UTF-8 and
+  every character it uses beyond Windows-1252's and marks[] is in both font
+  files of data/native/fonts (tools/cjk_fonts.py writes them).
 """
 import glob
 import os
 import re
-import struct
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 from build_web import english_texts, lang_file  # noqa: E402
+import cjk_fonts  # noqa: E402
 
 LANG = os.path.join(ROOT, 'data', 'native', 'lang')
-NATIVE = os.path.join(ROOT, 'data', 'native')
 failures = []
 # the prefixes of the game's texts' keys (src/game/lang.cpp: section_files,
 # menu.*, label.*, rules.*, describe.*)
@@ -66,35 +67,18 @@ def codepage_tables():
     return {n: tables[t] for n, t in names.items()}
 
 
-def font_keys(path, magic, delta):
-    """The fonts of a font file (or delta): {(face, height, bold, italic)}, its chars (delta)."""
-    d = open(path, 'rb').read()
-    if d[:8] != magic:
-        fail('%s: not a %s file' % (os.path.relpath(path, ROOT), magic.decode()))
-        return set(), b''
-    count, = struct.unpack_from('<I', d, 8)
-    if delta:
-        nchars, = struct.unpack_from('<I', d, 12)
-        chars = d[16:16 + nchars]
-        p = 16 + nchars
-    else:
-        chars, p = bytes(range(256)), 12
-    keys = set()
-    aa = magic in (b'C2FONTAA', b'C2FONTDA')
-    for _ in range(count):
-        face, height, weight, italic = d[p], d[p + 1], d[p + 2] | d[p + 3] << 8, d[p + 4]
-        keys.add((face, height, weight >= 600, italic != 0))
-        p += 8 if delta else 52
-        for _ in chars:
-            if aa:
-                n, = struct.unpack_from('<H', d, p + 6)
-                p += 8 + n
-            else:
-                w, h = d[p + 6], d[p + 7]
-                p += 8 + (w + 7) // 8 * h
-    if p != len(d):
-        fail('%s: %d bytes, read %d' % (os.path.relpath(path, ROOT), len(d), p))
-    return keys, chars
+def check_utf8():
+    """the UTF-8 translations' characters: Windows-1252's, made by text.c
+    (marks[]) or in both font files of data/native/fonts"""
+    for name, _, _ in cjk_fonts.FONTS:
+        if not os.path.exists(os.path.join(cjk_fonts.OUT, name)):
+            fail('data/native/fonts/%s: missing (tools/dk python3 tools/cjk_fonts.py)' % name)
+    missing = cjk_fonts.check(cjk_fonts.wanted())
+    if missing:
+        fail('data/native/fonts: no glyphs for %d characters of the translations (%s...): '
+             'tools/dk python3 tools/cjk_fonts.py' % (len(missing), ''.join(map(chr, missing[:10]))))
+    if not os.path.exists(os.path.join(cjk_fonts.OUT, 'OFL.txt')):
+        fail('data/native/fonts/OFL.txt: missing (the fonts\' licence)')
 
 
 def main():
@@ -114,7 +98,9 @@ def main():
         except (UnicodeDecodeError, LookupError) as e:
             fail('%s: not readable in its code page (%s)' % (name, e))
             continue
-        if cp not in tables:
+        if cp in ('utf-8', 'utf8'):
+            pages.add('utf-8')
+        elif cp not in tables:
             fail('%s: code page %s is not in src/host/codepages.h' % (name, cp))
         elif tables[cp] != tables['windows-1252']:
             pages.add(cp)
@@ -139,20 +125,15 @@ def main():
             if placeholders(texts['openciv2.' + k]) != placeholders(en[k]):
                 fail('%s: %s has placeholders %s, the template %s' % (name, k, placeholders(texts['openciv2.' + k]),
                                                                       placeholders(en[k])))
-    base, _ = font_keys(os.path.join(NATIVE, 'fonts_win.bin'), b'C2FONTS2', False)
-    base_aa, _ = font_keys(os.path.join(NATIVE, 'fonts_win_aa.bin'), b'C2FONTAA', False)
-    for cp in sorted(pages):
-        differ = bytes(0x80 + i for i in range(128) if tables[cp][i] != tables['windows-1252'][i])
-        for suffix, magic, want in (('', b'C2FONTD1', base), ('_aa', b'C2FONTDA', base_aa)):
-            path = os.path.join(NATIVE, 'fonts_%s%s.bin' % (cp, suffix))
-            if not os.path.exists(path):
-                fail('%s: missing (tools/probe/fontdump%s.c %s)' % (os.path.relpath(path, ROOT), suffix, cp))
-                continue
-            keys, chars = font_keys(path, magic, True)
-            if keys != want:
-                fail('%s: %d fonts, not those of the full file (%d)' % (os.path.relpath(path, ROOT), len(keys), len(want)))
-            if chars != differ:
-                fail('%s: its bytes are not those where %s differs from Windows-1252' % (os.path.relpath(path, ROOT), cp))
+    if 'utf-8' in pages:
+        check_utf8()
+    made = cjk_fonts.composed()
+    for cp in sorted(pages - {'utf-8'}):
+        for i in range(128):
+            u = tables[cp][i]
+            if u != tables['windows-1252'][i] and u and u not in made:
+                fail('%s: byte 0x%02X (U+%04X) has no glyph: add it to marks[] in src/platform/text.c'
+                     % (cp, 0x80 + i, u))
     if failures:
         sys.exit(1)
     print('lang: %d texts, translations and code pages (%s) complete' % (len(en), ', '.join(sorted(pages)) or 'none'))

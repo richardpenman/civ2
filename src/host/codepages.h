@@ -3,16 +3,17 @@
  * game's text is single bytes, drawn with the glyphs of Windows-1252
  * (data/native/fonts_win*.bin); a translation whose file says
  * "@@codepage" iso-8859-3 (Latin-3: Esperanto, Maltese) has the bytes that
- * differ drawn with the glyphs of data/native/fonts_iso-8859-3*.bin
- * (tools/probe/fontdump.c, fontdump_aa.c), typed and shown by the host as
- * those characters.  Per code page the Unicode character of bytes 0x80 to
+ * differ drawn as their Unicode characters (src/platform/text.c: letters
+ * with marks put together from the captured glyphs, its table marks[]),
+ * typed and shown by the host as those characters.  Per code page the Unicode character of bytes 0x80 to
  * 0xff (0: none, as Windows-1252's holes).  The game's Latin-3 keeps
  * Windows-1252's 0x80-0x9f (Latin-3 has control codes there) and its
  * characters where Latin-3 has none.
  *
- * Adding one (cp1250 for Polish or Czech, cp1251 for Cyrillic): a table
- * here, the fonts captured for it (tools/probe/fontdump.c CODEPAGE), the
- * files packaged as the others (docs/TRANSLATING.md).
+ * Adding one (cp1250 for Polish or Czech): a table here, and its letters
+ * in src/platform/text.c's marks[] (tests/lang_test.py checks that every
+ * one is there; docs/TRANSLATING.md).  (Letters no Latin letter makes, as
+ * Cyrillic, need a font file: UTF-8, as Chinese.)
  */
 #ifndef CIV2_CODEPAGES_H
 #define CIV2_CODEPAGES_H
@@ -72,6 +73,52 @@ static inline const unsigned short *codepage_table(const char *name)
             return pages[i].table;
     }
     return 0;
+}
+
+/* "utf-8" (any case, or "utf8"): the game's text in UTF-8 (a translation
+   in Chinese ...: src/include/utf8.h), no table. */
+static inline int codepage_is_utf8(const char *name)
+{
+    const char *u = "utf-8";
+    unsigned k = 0, i = 0;
+    for (; name[k]; k++) {
+        char c = (char)(name[k] | (name[k] >= 'A' && name[k] <= 'Z' ? 0x20 : 0));
+        if (c == '-' && u[i] != '-')
+            return 0;
+        if (u[i] == '-' && c != '-')
+            i++;
+        if (c != u[i++])
+            return 0;
+    }
+    return !u[i];
+}
+
+/* A language code as the system or the player gives it, as the name of a
+   translation: Chinese in traditional characters (zh_TW, zh-HK, zh_MO,
+   zh-Hant ...) is zh-Hant; others as they are (code: "pt-BR", '_' as '-',
+   without ".UTF-8"; into out). */
+static inline void language_alias(const char *code, char *out, unsigned size)
+{
+    unsigned i;
+    char low[32];
+    if (!size)
+        return;
+    for (i = 0; code[i] && code[i] != '.' && code[i] != '@' && i + 1 < sizeof low; i++)
+        low[i] = (char)(code[i] == '_' ? '-' : code[i] | (code[i] >= 'A' && code[i] <= 'Z' ? 0x20 : 0));
+    low[i] = 0;
+    if (low[0] == 'z' && low[1] == 'h' && low[2] == '-' &&
+        ((low[3] == 't' && low[4] == 'w') || (low[3] == 'h' && low[4] == 'k') ||
+         (low[3] == 'm' && low[4] == 'o') || (low[3] == 'h' && low[4] == 'a' && low[5] == 'n' && low[6] == 't')) &&
+        (!low[5] || low[5] == '-' || (low[4] == 'a' && (!low[7] || low[7] == '-')))) {
+        const char *z = "zh-Hant";
+        for (i = 0; z[i] && i + 1 < size; i++)
+            out[i] = z[i];
+        out[i] = 0;
+        return;
+    }
+    for (i = 0; code[i] && code[i] != '.' && code[i] != '@' && i + 1 < size; i++)
+        out[i] = code[i] == '_' ? '-' : code[i];
+    out[i] = 0;
 }
 
 /* A byte of a code page as Unicode (the bytes below 0x80: ASCII). */

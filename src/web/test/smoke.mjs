@@ -4,7 +4,7 @@
 // own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its OpenCiv2 Options), a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
 // (from the set-up page, and while playing), the saved game loaded; first the set-up page in
-// Esperanto (?lang=eo).  Screenshots in run/web-smoke (the game's
+// Esperanto (?lang=eo) and Chinese (?lang=zh-TW).  Screenshots in run/web-smoke (the game's
 // images: never committed).
 //
 //   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME] [GAME_DIR]
@@ -191,6 +191,19 @@ async function main() {
                 !/Aŭtomata/.test(eo.language[0]))
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
             await shot('00-setup-eo');
+            // in Chinese (traditional characters: ?lang=zh-TW finds zh-Hant.txt, in UTF-8;
+            // the page's fonts: the system's that have the characters)
+            await send('Page.navigate', {url: url + '?setup&lang=zh-TW'});
+            await waitFor('window.civ2Setup', 10000, 'the page in Chinese');
+            const zh = await evaluate(`({choose: document.getElementById('choose').textContent,
+                folder: document.getElementById('choose-folder').textContent,
+                language: [...document.getElementById('language').options].map((o) => o.textContent),
+                lang: document.documentElement.lang})`);
+            log('page in Chinese: ' + JSON.stringify(zh).slice(0, 300));
+            if (zh.lang !== 'zh-Hant' || !/選擇你的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) ||
+                !zh.language.includes('繁體中文') || !/自動/.test(zh.language[0]))
+                throw new Error('the page is not in Chinese: ' + JSON.stringify(zh));
+            await shot('00-setup-zh-Hant');
         }
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page');

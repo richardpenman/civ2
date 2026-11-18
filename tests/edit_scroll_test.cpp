@@ -2,6 +2,7 @@
 // SOURCE src/platform/controls.c edit_format_rect
 // SOURCE src/platform/controls.c lb_class
 // SOURCE src/platform/controls.c edit_soft_breaks
+// SOURCE src/platform/controls.c edit_soft_breaks_utf8
 // SOURCE src/platform/controls.c edit_layout
 // SOURCE src/platform/controls.c edit_page_lines
 // SOURCE src/platform/controls.c edit_update_scroll
@@ -17,6 +18,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include "utf8.h"
+int plat_text_utf8;     // (Windows-1252 text here: tests/utf8_text_test.cpp has UTF-8)
 enum { ES_MULTILINE=4, ES_AUTOHSCROLL=0x80, WS_HSCROLL=0x100000,
        WS_VSCROLL=0x200000, WS_EX_CLIENTEDGE=0x200, SM_CXBORDER=5,
        EN_VSCROLL=0x602, TRUE=1, EDIT_MAX_LINES=1024 };

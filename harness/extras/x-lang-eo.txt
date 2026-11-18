@@ -1,5 +1,5 @@
 # A translation (docs/TRANSLATING.md): Esperanto (data/native/lang/eo.txt,
-# in ISO-8859-3: its letters drawn with data/native/fonts_iso-8859-3*.bin).
+# in ISO-8859-3: its letters put together from the captured glyphs, text.c).
 # The main menu's OpenCiv2 Options, the Options dialog and its Language
 # page, the file dialog (the real one), a city renamed with Esperanto's
 # letters typed (input_char: as the host's text input gives them), the

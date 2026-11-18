@@ -14,18 +14,11 @@
  * a byte b < 0x80 is followed by b+1 literal values; b >= 0x80 by one value
  * repeated b-0x80+2 times.
  * Run with tools/probe/run.sh fontdump_aa OUTFILE (data/native/fonts_win_aa.bin).
- *
- * With a code page (tools/probe/run.sh fontdump_aa
- * data/native/fonts_iso-8859-3_aa.bin iso-8859-3), as fontdump.c's: only the
- * bytes where its characters differ from Windows-1252's, drawn as their
- * Unicode characters: "C2FONTDA" u32 nfonts, u32 nchars, the nchars bytes,
- * then per font its 8-byte header and per byte its glyph as above.
  */
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../src/host/codepages.h"
 
 #define W 192
 #define H 128
@@ -33,24 +26,6 @@
 #define OY 32
 
 static void put32(FILE *f, int v) { fwrite(&v, 4, 1, f); }
-
-/* The text drawn and measured: bytes (Windows-1252, as the game's), or (a
-   code page's delta) the Unicode characters of those bytes */
-static int wide_chars;
-static const unsigned short *page;
-
-static void out_text(HDC dc, int x, int y, const unsigned char *s, int n)
-{
-    WCHAR w[4];
-    int i;
-    if (!wide_chars) {
-        TextOutA(dc, x, y, (const char *)s, n);
-        return;
-    }
-    for (i = 0; i < n; i++)
-        w[i] = (WCHAR)codepage_to_unicode(page, s[i]);
-    TextOutW(dc, x, y, w, n);
-}
 
 static int rle(const BYTE *in, int n, BYTE *out)
 {
@@ -96,7 +71,7 @@ static int drawn_mono(HFONT font, int c, BYTE *cov, int *w, int *h, signed char 
 #define mdc mdc32
 #define px px32
     int x, y, x0 = W, y0 = H, x1 = -1, y1 = -1;
-    unsigned char ch = (unsigned char)c;
+    char ch = (char)c;
     if (!mdc) {
         BITMAPINFO bi;
         memset(&bi, 0, sizeof bi);
@@ -111,7 +86,7 @@ static int drawn_mono(HFONT font, int c, BYTE *cov, int *w, int *h, signed char 
     SelectObject(mdc, font);
     for (y = 0; y < W * H; y++)
         px[y] = 0xffffff;
-    out_text(mdc, OX, OY, &ch, 1);
+    TextOutA(mdc, OX, OY, &ch, 1);
     GdiFlush();
     for (y = 0; y < H; y++)
         for (x = 0; x < W; x++) {
@@ -142,14 +117,14 @@ static int drawn_mono(HFONT font, int c, BYTE *cov, int *w, int *h, signed char 
 /* The drawing advance on a 32-bpp surface of a font drawn without
    antialiasing: where a following 'H' lands (its rightmost ink), as
    fontdump.c measures it on 8-bpp ones, where it can differ. */
-static int right_ink(HFONT font, const unsigned char *s, int n)
+static int right_ink(HFONT font, const char *s, int n)
 {
     int x, y, r = -1;
     drawn_mono(font, 'H', NULL, NULL, NULL, NULL);     /* sets up the surface */
     SelectObject(mdc32, font);
     for (y = 0; y < W * H; y++)
         px32[y] = 0xffffff;
-    out_text(mdc32, OX, OY, s, n);
+    TextOutA(mdc32, OX, OY, s, n);
     GdiFlush();
     for (y = 0; y < H; y++)
         for (x = 0; x < W; x++)
@@ -165,29 +140,11 @@ int main(int argc, char **argv)
     MAT2 m = {{0, 1}, {0, 0}, {0, 0}, {0, 1}};
     HDC dc = CreateCompatibleDC(NULL);
     FILE *out = fopen(argc > 1 ? argv[1] : "fonts_win_aa.bin", "wb");
-    int face, height, bold, italic, c, mono, k, nchars = 256;
-    unsigned char chars[256];
+    int face, height, bold, italic, c, mono;
     BYTE *buf = malloc(1 << 20), *pk = malloc(1 << 21), *cov = malloc(1 << 20);
 
-    for (c = 0; c < 256; c++)
-        chars[c] = (unsigned char)c;
-    if (argc > 2) {
-        if (!(page = codepage_table(argv[2]))) {
-            fprintf(stderr, "fontdump_aa: no code page %s\n", argv[2]);
-            return 1;
-        }
-        wide_chars = 1;
-        for (nchars = 0, c = 0x80; c < 256; c++)
-            if (page[c - 0x80] != codepage_1252[c - 0x80])
-                chars[nchars++] = (unsigned char)c;
-        fwrite("C2FONTDA", 8, 1, out);
-        put32(out, 4 * 43 * 4);
-        put32(out, nchars);
-        fwrite(chars, 1, (size_t)nchars, out);
-    } else {
-        fwrite("C2FONTAA", 8, 1, out);
-        put32(out, 4 * 43 * 4);
-    }
+    fwrite("C2FONTAA", 8, 1, out);
+    put32(out, 4 * 43 * 4);
     for (face = 0; face < 4; face++)
         for (height = 6; height <= 48; height++)
             for (bold = 0; bold < 2; bold++)
@@ -213,44 +170,32 @@ int main(int argc, char **argv)
                     }
                     hdr[5] = (BYTE)mono;
                     fwrite(hdr, 8, 1, out);
-                    if (!wide_chars) {
                     put32(out, tm.tmHeight); put32(out, tm.tmAscent); put32(out, tm.tmDescent);
                     put32(out, tm.tmInternalLeading); put32(out, tm.tmExternalLeading);
                     put32(out, tm.tmAveCharWidth); put32(out, tm.tmMaxCharWidth); put32(out, tm.tmWeight);
                     put32(out, tm.tmOverhang);
                     put32(out, tm.tmFirstChar | tm.tmLastChar << 8 | tm.tmDefaultChar << 16 | tm.tmBreakChar << 24);
                     put32(out, tm.tmPitchAndFamily | tm.tmCharSet << 8);
-                    }
-                    for (k = 0; k < nchars; k++) {
+                    for (c = 0; c < 256; c++) {
                         GLYPHMETRICS gm;
-                        unsigned char ch = chars[k];
-                        WCHAR wch = (WCHAR)(wide_chars ? codepage_to_unicode(page, ch) : ch);
+                        char ch = (char)c;
                         SIZE sz;
-                        DWORD n;
-                        c = ch;
-                        n = wide_chars ? GetGlyphOutlineW(dc, wch, GGO_GRAY4_BITMAP, &gm, 0, NULL, &m)
-                                       : GetGlyphOutlineA(dc, (unsigned char)c, GGO_GRAY4_BITMAP, &gm, 0, NULL, &m);
+                        DWORD n = GetGlyphOutlineA(dc, (unsigned char)c, GGO_GRAY4_BITMAP, &gm, 0, NULL, &m);
                         int w = 0, h = 0, x, y, stride, packed = 0;
                         short adv;
                         signed char xy[2] = {0, 0};
                         unsigned char wh[2];
                         unsigned short np;
-                        if (wide_chars)
-                            GetTextExtentPoint32W(dc, &wch, 1, &sz);
-                        else
-                            GetTextExtentPoint32A(dc, (const char *)&ch, 1, &sz);
+                        GetTextExtentPoint32A(dc, &ch, 1, &sz);
                         adv = (short)sz.cx;
                         if (mono) {
-                            unsigned char pair[2];
+                            char pair[2];
                             pair[0] = ch; pair[1] = 'H';
-                            adv = (short)(right_ink(font, pair, 2) - right_ink(font, (const unsigned char *)"H", 1));  /* as drawn */
+                            adv = (short)(right_ink(font, pair, 2) - right_ink(font, "H", 1));  /* as drawn */
                             if (drawn_mono(font, (unsigned char)c, cov, &w, &h, xy))
                                 packed = rle(cov, w * h, pk);   /* as drawn */
                         } else if (n != GDI_ERROR && n && n < (1 << 20)) {
-                            if (wide_chars)
-                                GetGlyphOutlineW(dc, wch, GGO_GRAY4_BITMAP, &gm, n, buf, &m);
-                            else
-                                GetGlyphOutlineA(dc, (unsigned char)c, GGO_GRAY4_BITMAP, &gm, n, buf, &m);
+                            GetGlyphOutlineA(dc, (unsigned char)c, GGO_GRAY4_BITMAP, &gm, n, buf, &m);
                             w = (int)gm.gmBlackBoxX;
                             h = (int)gm.gmBlackBoxY;
                             stride = (w + 3) & ~3;

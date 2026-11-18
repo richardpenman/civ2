@@ -10,6 +10,7 @@
 #include <string.h>
 #include <time.h>
 #include "../platform/win32_api.h"
+#include "utf8.h"                   /* (port) UTF-8 text: whole characters */
 
 #include "ghidra.h"
 /* The code was written for MSVC, whose `long` is 32-bit (the system headers

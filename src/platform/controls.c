@@ -5,6 +5,7 @@
  */
 #include "plat.h"
 #include "hd.h"
+#include "../include/utf8.h"
 
 #ifndef ODT_LISTBOX
 #define ODT_LISTBOX 2
@@ -69,6 +70,8 @@ typedef struct {
     int focused, modified, readonly;
     int border;                 /* draws a one-pixel border itself */
     int left_margin, right_margin;
+    char pending[4];            /* UTF-8 text: a character's bytes typed so far (WM_CHAR) */
+    int npending;
 } Edit;
 
 static Edit *edit_of(Window *w) { return w ? (Edit *)w->control : NULL; }
@@ -77,7 +80,7 @@ static void edit_set_text(Edit *e, const char *s)
 {
     int n = s ? (int)strlen(s) : 0;
     if (e->limit && n > e->limit)
-        n = e->limit;
+        n = u8_clip(s, e->limit);
     if (n + 1 > e->cap) {
         e->cap = n + 64;
         e->text = realloc(e->text, (size_t)e->cap);
@@ -99,6 +102,7 @@ static void edit_replace(Edit *e, const char *s)
         n = e->limit - (e->len - (b - a));
     if (n < 0)
         n = 0;
+    n = u8_clip(s, n);          /* (no character cut in two) */
     if (e->len - (b - a) + n + 1 > e->cap) {
         e->cap = e->len - (b - a) + n + 64;
         e->text = realloc(e->text, (size_t)e->cap);
@@ -177,11 +181,16 @@ static int edit_item_end(const char *s, int i, int end)
 {
     int cls = 0;
     for (; i < end; i++) {
-        int k = edit_char_class((unsigned char)s[i]);
+        int k = edit_char_class((unsigned char)s[i]), len = 1;
+        if (plat_text_utf8 && (unsigned char)s[i] >= 0x80) {
+            k = 4;              /* (UTF-8 text: a character beyond ASCII, whole, as a letter) */
+            len = u8_len_at(s, end, i);
+        }
         if (k && cls && k != cls)
             break;
         if (k)
             cls = k;
+        i += len - 1;
     }
     return i;
 }
@@ -395,6 +404,23 @@ static void edit_soft_breaks(const char *t, int n, char *soft)
     free(before);
 }
 
+/* soft[i] for UTF-8 text (utf8.h): a break after spaces, and next to a
+ * wide character (Chinese), never inside a character. */
+static void edit_soft_breaks_utf8(const char *t, int n, char *soft)
+{
+    unsigned prev = U8_BAD;
+    int i = 0;
+    memset(soft, 0, (size_t)n + 1);
+    while (i < n) {
+        int len;
+        unsigned c = u8_decode(t + i, n - i, &len);
+        if (i > 0 && ((t[i - 1] == ' ' && t[i] != ' ') || (t[i] != ' ' && u8_break_between(prev, c))))
+            soft[i] = 1;
+        prev = c;
+        i += len;
+    }
+}
+
 /* The lines of a multi-line edit, as Wine's EDIT_BuildLineDefs_ML: a hard
  * break at "\r\n" or "\n" ("\r\r\n", a soft one, without its first "\r")
  * and, unless it scrolls sideways, a wrap when the line is wider than the
@@ -430,7 +456,10 @@ static int edit_layout(Window *w, int *starts, int *lens)
             float d = (float)wdt / (float)width;
             if (!soft) {
                 soft = (char *)malloc(e->len + 1);
-                edit_soft_breaks(e->text, e->len, soft);
+                if (plat_text_utf8)
+                    edit_soft_breaks_utf8(e->text, e->len, soft);
+                else
+                    edit_soft_breaks(e->text, e->len, soft);
             }
             if (d > 1.2f)
                 d -= 0.2f;
@@ -447,12 +476,24 @@ static int edit_layout(Window *w, int *starts, int *lens)
             if (prev == 0) {                            /* no break: force one */
                 wdt = text_width(f, e->text + i, count);
                 prev = count - 1;
+                if (plat_text_utf8) {
+                    /* (by character: the line's characters before prev) */
+                    prev = count;
+                    do {
+                        int k = u8_prev(e->text + i, prev);
+                        wdt -= text_width(f, e->text + i + k, prev - k);
+                        prev = k;
+                    } while (prev > 0 && wdt > width);
+                    if (prev <= 0)
+                        prev = u8_len_at(e->text + i, count, 0);
+                } else {
                 do {
                     wdt -= text_width(f, e->text + i + prev, 1);
                     prev--;
                 } while (prev > 0 && wdt > width);
                 if (prev <= 0)
                     prev = 1;
+                }
             }
             if (n < EDIT_MAX_LINES) {
                 starts[n] = i;
@@ -648,6 +689,10 @@ static void edit_paint(Window *w, HDC hdc)
                wide, inverted, at the selection end */
             int cx, cy, k;
             edit_origin(w, &cx, &cy);
+            if (plat_text_utf8) {
+                if (e->sel_end > first)
+                    cx += text_width(f, e->text + first, e->sel_end - first);
+            } else
             for (k = first; k < e->sel_end && k < e->len; k++)
                 cx += text_width(f, e->text + k, 1);
             PatBlt(hdc, cx, cy, 1, text_height(f), DSTINVERT);
@@ -673,11 +718,12 @@ static int edit_pos_from_point(Window *w, int px, int py)
         i = starts[line];
         end = i + lens[line];
     }
-    for (; i < end; i++) {
-        int cw = text_width(f, e->text + i, 1);
+    while (i < end) {
+        int len = u8_len_at(e->text, end, i), cw = text_width(f, e->text + i, len);
         if (px < x + cw / 2)
             return i;
         x += cw;
+        i += len;
     }
     return end;
 }
@@ -703,7 +749,7 @@ static void edit_scroll(Window *w)
     if (e->sel_end < e->first)
         e->first = e->sel_end;
     while (e->first < e->sel_end && text_width(f, e->text + e->first, e->sel_end - e->first) > r.right - 2)
-        e->first++;
+        e->first += u8_len_at(e->text, e->len, e->first);
 }
 
 static void edit_move_vertical(Window *w, int delta, int page_move)
@@ -720,10 +766,11 @@ static void edit_move_vertical(Window *w, int delta, int page_move)
     if (target < 0) target = 0;
     if (target >= n) target = n - 1;
     end = starts[target] + lens[target];
-    for (i = starts[target]; i < end; i++) {
-        int width = text_width(f, e->text + i, 1);
+    for (i = starts[target]; i < end;) {
+        int len = u8_len_at(e->text, end, i), width = text_width(f, e->text + i, len);
         if (x < width / 2) break;
         x -= width;
+        i += len;
     }
     e->sel_end = i;
     if (page_move) edit_scroll_to(w, e->top_line + delta);
@@ -825,9 +872,31 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
     case WM_CHAR:
         if (e->readonly)
             return 0;
-        if (wp == '\b') {
+        if (plat_text_utf8 && wp >= 0x80 && wp <= 0xff) {
+            /* (UTF-8 text: a character's bytes, one WM_CHAR each, put in
+               together when they are all there) */
+            int len, lead, need;
+            if (wp >= 0xc0)
+                e->npending = 0;
+            else if (!e->npending)
+                return 0;
+            e->pending[e->npending++] = (char)wp;
+            lead = (unsigned char)e->pending[0];
+            need = lead >= 0xf0 ? 4 : lead >= 0xe0 ? 3 : 2;
+            if (e->npending < need)
+                return 0;
+            e->npending = 0;
+            if (u8_decode(e->pending, need, &len) == U8_BAD)
+                return 0;
+            {
+                char s[5];
+                memcpy(s, e->pending, (size_t)need);
+                s[need] = 0;
+                edit_replace(e, s);
+            }
+        } else if (wp == '\b') {
             if (e->sel_start == e->sel_end && e->sel_end > 0)
-                e->sel_start = e->sel_end - 1;
+                e->sel_start = u8_prev(e->text, e->sel_end);
             edit_replace(e, "");
         } else if (wp >= ' ' || (wp == '\r' && (w->style & ES_MULTILINE))) {
             char s[3] = {(char)wp, 0, 0};
@@ -844,8 +913,8 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
     case WM_KEYDOWN: {
         int shift = GetKeyState(VK_SHIFT) < 0, moved = 1;
         switch (wp) {
-        case VK_LEFT: if (e->sel_end > 0) e->sel_end--; break;
-        case VK_RIGHT: if (e->sel_end < e->len) e->sel_end++; break;
+        case VK_LEFT: if (e->sel_end > 0) e->sel_end = u8_prev(e->text, e->sel_end); break;
+        case VK_RIGHT: if (e->sel_end < e->len) e->sel_end += u8_len_at(e->text, e->len, e->sel_end); break;
         case VK_HOME: e->sel_end = 0; break;
         case VK_END: e->sel_end = e->len; break;
         case VK_UP: case VK_DOWN: case VK_PRIOR: case VK_NEXT:
@@ -858,7 +927,7 @@ LRESULT ctl_edit_proc(HWND h, UINT m, WPARAM wp, LPARAM lp)
         case VK_DELETE:
             if (!e->readonly) {
                 if (e->sel_start == e->sel_end && e->sel_end < e->len)
-                    e->sel_end++;
+                    e->sel_end += u8_len_at(e->text, e->len, e->sel_end);
                 edit_replace(e, "");
                 notify(h, EN_CHANGE);
             }

@@ -21,6 +21,8 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include "utf8.h"
+int plat_text_utf8;     // (str_copy_max: Windows-1252 text here)
 #include "native.h"
 #include "win32_types.h"
 #include "civ2types.h"

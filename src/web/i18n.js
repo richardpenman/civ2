@@ -81,7 +81,11 @@ export function choose(code) {
 // Among the site's languages, the one a code asks for ("pt-BR": pt-BR,
 // else pt); 'en' if none.
 export function match(code, list) {
-    const c = (code || '').replace('_', '-').toLowerCase();
+    let c = (code || '').replace('_', '-').toLowerCase();
+    // Chinese in traditional characters (zh-TW, zh-HK, zh-MO, zh-Hant...): zh-Hant
+    // (as src/host/codepages.h's language_alias)
+    if (/^zh-(tw|hk|mo|hant)(-|$)/.test(c))
+        c = 'zh-hant';
     const codes = list.map((l) => l.code);
     return codes.find((k) => k.toLowerCase() === c) || codes.find((k) => k.toLowerCase() === c.split('-')[0]) || 'en';
 }

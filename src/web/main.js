@@ -455,18 +455,19 @@ async function play(store) {
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
     // the translations (the game's Language choice lists them; Auto is the
-    // page's language), and the glyphs of the game's language's code page
+    // page's language), and for one in UTF-8 (Chinese) the font files of its
+    // characters beyond Windows-1252 (text.c draws them; other code pages'
+    // letters it makes from the fonts above)
     const gameLang = await gameLanguage(ini);
     for (const [code, bytes] of gameLang.files)
         fs.put(DATA + '/lang/' + code + '.txt', bytes);
-    if (gameLang.codepage !== 'windows-1252') {
+    if (/^utf-?8$/.test(gameLang.codepage)) {
         try {
-            const [d, a] = await Promise.all([fetchGz(`data/fonts_${gameLang.codepage}.bin.gz`),
-                                              fetchGz(`data/fonts_${gameLang.codepage}_aa.bin.gz`)]);
-            fs.put(DATA + `/fonts_${gameLang.codepage}.bin`, d);
-            fs.put(DATA + `/fonts_${gameLang.codepage}_aa.bin`, a);
+            const names = await fetch('data/fonts/index.json').then((r) => (r.ok ? r.json() : []));
+            const files = await Promise.all(names.map((n) => fetchGz('data/fonts/' + n + '.gz')));
+            names.forEach((n, i) => fs.put(DATA + '/fonts/' + n, files[i]));
         } catch (e) {
-            console.warn('no glyphs for', gameLang.codepage, e);
+            console.warn('no font files for', gameLang.codepage, e);
         }
     }
     // HD graphics (?hd=N as --hd=N, else CIV.INI's choice): the art the

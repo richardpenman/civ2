@@ -1392,6 +1392,10 @@ int Dialog::draw_wrapped_text(int draw)
   int line_width;
   DialogLine *line;
   int line_height;
+  char *word_start;
+  char space_char;
+  int join_space;
+  int first_word;
   
   has_shadow = shadow_color != text_color;
   line = line_list;
@@ -1442,16 +1446,38 @@ int Dialog::draw_wrapped_text(int draw)
           y2 += line_height;
         }
       }
+      first_word = 1;
       while (remaining = _strlen(src), remaining != 0) {
+        word_start = src;
         for (; *src == ' '; src++) {
         }
-        space = _strchr(src,0x20);
+        /* (port) UTF-8 text (utf8.h): a word also ends where a line may
+           break next to a wide (Chinese) character; words not apart in the
+           text are joined without a space, as are a line's first and the
+           text before it when one of them is wide */
+        if (plat_text_utf8) {
+          space = (char *)u8_word_end(src);
+          space_char = *space;
+          if (space_char == '\0') {
+            space = (char *)0x0;
+          }
+          int ll = (int)_strlen(line_buf);
+          int fl;
+          join_space = src != word_start ||
+                       (first_word && !u8_wide(u8_before(line_buf,ll)) && !u8_wide(u8_decode(src,-1,&fl)));
+        }
+        else {
+          space = _strchr(src,0x20);
+          space_char = ' ';
+          join_space = 1;
+        }
+        first_word = 0;
         if (space != (char *)0x0) {
           *space = '\0';
         }
         word_len = _strlen(src);
         word_buf[0] = '\0';
-        if (line_buf[0] != '\0') {
+        if ((line_buf[0] != '\0') && join_space) {
           crt_strcat(word_buf,((i8 *)&dialog_wrap_space_str));
         }
         str_append_max(word_buf,src,sizeof word_buf);
@@ -1478,7 +1504,7 @@ int Dialog::draw_wrapped_text(int draw)
         str_append_max(line_buf,word_buf,sizeof line_buf);
         line_width += text_width;
         if (space != (char *)0x0) {
-          *space = ' ';
+          *space = space_char;
         }
         src += word_len;
       }
