@@ -105,7 +105,7 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   page's), *English*, or one of the translations in the data directory's `lang/` (German,
   Latin, Greek, Esperanto and Traditional Chinese come with it); `Language=<code>` (`Language=Auto` or none: automatic).  It takes effect when
   the game starts again (*Restart now*); `CIV2_LANG=<code>` wins over it.  A translation may
-  carry the game's own texts too (German's, Latin's, Greek's and Esperanto's do: the whole game); otherwise they are those
+  carry the game's own texts too (all of those that come with it do: the whole game); otherwise they are those
   of the installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
 
 The interface additions, the rule changes and the limits take effect at once (from the game

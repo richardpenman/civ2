@@ -7,8 +7,10 @@
 # BackSpace, a city renamed in Chinese and the city window with that name,
 # the menu bar, the map's status panel, an advisor, the Civilopedia (an
 # advance's page and its description: wrapped in the edit control), and an
-# emissary's greeting (a dialog of two lines joined and wrapped).  The
-# game's texts are only a sample (the rest English).
+# emissary's greeting (a dialog of two lines joined and wrapped); the
+# game's texts all in Chinese (the translation has them too), the orders
+# menu, the science advisor, the tax rates, the advisors' advice, the
+# date in its Chinese form (label.0's "西元前%d年").
 # test: CIV2_LANG=zh-Hant CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 # (sharp: the same with sharp text and interface at density 2: the
 # antialiased glyphs, the -hd shots)
@@ -72,7 +74,7 @@ key Escape
 wait 2000
 call menu_command 4e2803 0 2305     # Civilopedia: advances
 wait 3000
-key End                     # the last entry: Advanced Flight (高等飛行, after the English names)
+key End                     # the last entry (in the order of the names' bytes)
 wait 1000
 click 113 405               # Info: its page
 wait 3000

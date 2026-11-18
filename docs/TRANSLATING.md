@@ -14,10 +14,9 @@ OpenCiv2 has two kinds of text:
   `data/native/lang/` has the translations that come with OpenCiv2 (first drafts:
   machine-drafted, need review by a native speaker): German (`de.txt`, Deutsch) and
   Latin (`la.txt`, Latina: classical, with Vicipaedia's words for modern things), in
-  Windows-1252, Greek (`el.txt`, Ελληνικά, monotonic, in UTF-8) and Esperanto (`eo.txt`), which translate the game's texts too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
-  by a native speaker), which has OpenCiv2's own texts and, so far, only a sample of the game's
-  (the main menu, naming a city, the envoys' greetings, the menu bar's titles, one advance and
-  its Civilopedia article).
+  Windows-1252, Greek (`el.txt`, Ελληνικά, monotonic) and Traditional Chinese (`zh-Hant.txt`,
+  繁體中文, Taiwan usage), in UTF-8, and Esperanto (`eo.txt`); all of them translate the game's
+  texts too.
 
 ## OpenCiv2's own English of the game's texts
 
@@ -257,9 +256,9 @@ again (the same bytes for the same characters; a family no translation needs has
 test` fails while a character of a UTF-8 translation is in neither Windows-1252, `marks[]` nor
 both font files of its family.
 
-Size: Greek's 68 characters take 17 KB (both files); Chinese about 220 bytes (sans) and 330 bytes (serif) a character, 280 KB for the 500 characters of
-`zh-Hant.txt` now; a full translation of the game (some 3,000 characters) about 1.9 MB (the
-browser version's files are gzipped: some 15% less).
+Size: Greek's 68 characters take 17 KB (both files); Chinese about 230 bytes (sans) and 340
+bytes (serif) a character: 1.3 MB for the 2,289 characters of `zh-Hant.txt`, the whole game
+(the browser version's files are gzipped: some 15% less).
 
 ## Testing a translation
 
@@ -279,7 +278,8 @@ browser version's files are gzipped: some 15% less).
   and its Language page, the file dialog with Chinese typed and taken back character by
   character, the map's status panel, a city renamed in Chinese and its window, the menu bar, the
   Civilopedia's page of an advance and its description (wrapped), an envoy's greeting (lines
-  joined and wrapped); and with sharp text.
+  joined and wrapped), the advisors, the tax rates and the date in Chinese (`西元前2400年`); and
+  with sharp text.
 - The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto and
   in Chinese (`?lang=zh-TW`: the page's fonts are the system's that have its characters), in
   English without `?lang`, and starts the game in Esperanto (`?lang=eo`).

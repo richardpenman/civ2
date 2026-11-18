@@ -739,15 +739,15 @@ message by message and clock event by clock event.
   run time from the captured glyphs (base letter and mark: src/platform/text.c
   marks[]) and typed through the
   host's text input (docs/TRANSLATING.md); a translation may key the game's
-  texts too (the Esperanto one has them all: GAME.TXT's popups, the menus,
+  texts too (the Esperanto, German, Latin, Greek and Chinese ones have them all: GAME.TXT's popups, the menus,
   labels, rules' names, the Civilopedia, the council ...).  A translation in
   UTF-8 ("@@codepage utf-8": Traditional Chinese, data/native/lang/zh-Hant.txt,
-  OpenCiv2's own texts and a sample of the game's) has its Chinese drawn at
-  run time (stb_truetype) from Noto Serif/Sans TC cut down to the characters
+  and Greek, el.txt, both the whole game) has its Chinese drawn at
+  run time (stb_truetype) from Noto Serif/Sans TC (Greek: Noto Serif/Sans) cut down to the characters
   it uses (data/native/fonts, tools/lang_fonts.py), lines broken next to
   Chinese characters (the game's dialogs, DrawText, the edit control), texts
-  cut, typed and edited by whole characters (src/include/utf8.h); not done:
-  the full translation of the game's texts into Chinese, and the input
+  cut, typed and edited by whole characters (src/include/utf8.h); German,
+  Latin, Greek and Chinese translate the whole game too; not done: the input
   method's composition shown in the game's own fields.  Not done: resizable
   advisors and their larger caption area (CIV2UIA 26, 27): each advisor opens at
   600x400 and draws its list, buttons and background for that size from
