@@ -17,7 +17,7 @@ is not included: it is set up from the player's own copy.
   9. wasi-libc (wasi-sdk)     MIT licence (and others, see below)
  10. Liberation fonts 2.1.5   SIL Open Font License 1.1
  11. stb_image 2.30           MIT licence (or public domain)
- 12. Noto Serif TC, Noto Sans TC  SIL Open Font License 1.1 (Chinese text)
+ 12. Noto Serif TC, Noto Sans TC, Noto Serif, Noto Sans  SIL Open Font License 1.1 (Chinese, Greek text)
  13. stb_truetype 1.26        MIT licence (or public domain)
 
 and, not in the programs but used by them when the player installs it
@@ -404,19 +404,23 @@ domain (www.unlicense.org); the full text is at the end of the file.
 
 
 12. Noto Serif TC 2.003, Noto Sans TC 2.004  https://github.com/notofonts/noto-cjk
+    Noto Serif 2.015, Noto Sans 2.015  https://github.com/notofonts/latin-greek-cyrillic
 -------------------------------------------------------------------------------
 
 data/fonts/NotoSerifTC-Regular.otf and NotoSansTC-Regular.otf are the
-Noto Serif TC and Noto Sans TC fonts cut down to the characters the
-translations in UTF-8 use (Chinese), without hinting or layout tables
-(tools/cjk_fonts.py, with fontTools); the program draws them
-(src/platform/text.c).  As a Modified Version of the Font Software they are
-under the SIL Open Font License 1.1 (its text: 10. above, and
+Noto Serif TC and Noto Sans TC fonts, NotoSerif-Regular.ttf and
+NotoSans-Regular.ttf the Noto Serif and Noto Sans fonts (unhinted), cut down
+to the characters the translations in UTF-8 use (Chinese; Greek), without
+hinting or layout tables (tools/lang_fonts.py, with fontTools); the program
+draws them (src/platform/text.c).  As Modified Versions of the Font Software
+they are under the SIL Open Font License 1.1 (its text: 10. above, and
 data/fonts/OFL.txt beside them), not OpenCiv2's licence, and are not named
-after the Reserved Font Name.
+after a Reserved Font Name (Noto Serif and Noto Sans have none).
 
   Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font
   Name 'Source'.
+  Copyright 2022 The Noto Project Authors
+  (https://github.com/notofonts/latin-greek-cyrillic).
 
   This Font Software is licensed under the SIL Open Font License,
   Version 1.1.

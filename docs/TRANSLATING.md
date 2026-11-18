@@ -6,7 +6,7 @@ OpenCiv2 has two kinds of text:
   `MENU.TXT`, the advisors', the scenarios' ...) come from your copy of Civilization II, as the
   original reads them. A localized Civilization II (German, French, Spanish ...) gives them in
   its language as it is. A translation may carry them too (keyed: below): the German,
-  Latin and Esperanto ones that come with OpenCiv2 translate the whole game. Where your copy of the game has no
+  Latin, Greek and Esperanto ones that come with OpenCiv2 translate the whole game. Where your copy of the game has no
   such file, OpenCiv2 uses its own English of it (below).
 - **OpenCiv2's own texts**: what it adds — OpenCiv2 Options, the interface additions' few words,
   the file dialog, its message boxes, the set-up's messages and progress, the HD graphics'
@@ -14,7 +14,7 @@ OpenCiv2 has two kinds of text:
   `data/native/lang/` has the translations that come with OpenCiv2 (first drafts:
   machine-drafted, need review by a native speaker): German (`de.txt`, Deutsch) and
   Latin (`la.txt`, Latina: classical, with Vicipaedia's words for modern things), in
-  Windows-1252, and Esperanto (`eo.txt`), which translate the game's texts too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
+  Windows-1252, Greek (`el.txt`, Ελληνικά, monotonic, in UTF-8) and Esperanto (`eo.txt`), which translate the game's texts too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
   by a native speaker), which has OpenCiv2's own texts and, so far, only a sample of the game's
   (the main menu, naming a city, the envoys' greetings, the menu bar's titles, one advance and
   its Civilopedia article).
@@ -123,6 +123,9 @@ the game's English. What to keep as it is:
   name is in the translation; a block that serves several (`@@Coastal Fortress` and
   `@@SAM Missile Battery`) is keyed by the first, its other `@@` names (written `\@@...`)
   are its first lines and stay as they are.
+- `label.0` and `label.1` (B.C., A.D.) may hold `%d`: then each is the whole date's form, the
+  year at `%d` (`西元前%d年`, `%d n. Chr.`); without it the label goes before (A.D.) or after
+  (B.C.) the year, as in English.
 - `menu.*`, `label.<n>` are MENU.TXT's and LABELS.TXT's lines; `rules.*` the names of
   RULES.TXT (the advances, units, improvements ..., one per key: the rules' numbers stay in the
   game's RULES.TXT); `describe.<GROUP>.<entry>` the Civilopedia's descriptions, a paragraph a
@@ -155,7 +158,7 @@ in as those bytes; others are dropped. Code pages so far (`src/host/codepages.h`
 |-----------|-----------|--------|
 | `windows-1252` (default) | Western European | `fonts_win.bin`, `fonts_win_aa.bin` |
 | `iso-8859-3` (Latin-3) | Esperanto (ĉ ĝ ĥ ĵ ŝ ŭ), Maltese | Windows-1252's, put together (below) |
-| `utf-8` | Chinese (`zh-Hant`), any other | Windows-1252's; the others from `data/native/fonts` (below) |
+| `utf-8` | Chinese (`zh-Hant`), Greek (`el`), any other | Windows-1252's; the others from `data/native/fonts` (below) |
 
 Write the file in its code page's bytes (e.g. `iconv -f utf-8 -t iso-8859-3`); the browser page
 reads it in the same code page and shows the letters as Unicode.
@@ -218,18 +221,22 @@ and never one of them. Then:
 - **Case.** The game changes the case of ASCII letters only (`toupper`, `strupr`, `CharUpper`:
   its C library's "C" locale), so UTF-8's bytes are never changed.
 - **Menus' letters.** A menu's or button's `&` letter is a key on the keyboard: keep an ASCII
-  one, after the label in parentheses, as Chinese Windows does: `遊戲(&G)`, `檢視(&V)`.
+  one, after the label in parentheses, as Chinese Windows does: `遊戲(&G)`, `檢視(&V)`,
+  `Παιχνίδι(&G)`. (The menu bar of a 640-pixel window has room for about 90 letters.)
 - **The host** shows the text as it is (its message boxes, menu bar, set-up: UTF-8 already).
 - **Saved games and names** are bytes: a city named in Chinese shows as other characters under
   another code page (in English, as Windows-1252 letters) and the other way round.
 
-**The fonts** (`data/native/fonts`): Noto Serif TC (for Times New Roman from 20 pixels up) and
-Noto Sans TC (Arial, System, Courier, and Times below 20 pixels, where a serif's strokes are not
-legible with few pixels), SIL Open Font License 1.1 (`THIRD-PARTY.txt`,
+**The fonts** (`data/native/fonts`), a serif and a sans for each family of scripts: for Chinese
+Noto Serif TC (for Times New Roman from 20 pixels up) and Noto Sans TC (Arial, System, Courier,
+and Times below 20 pixels, where a serif's strokes are not legible with few pixels); for Greek
+(and Cyrillic) Noto Serif (Times New Roman at every size, as the Latin letters beside it) and
+Noto Sans (the others). SIL Open Font License 1.1 (`THIRD-PARTY.txt`,
 `data/native/fonts/OFL.txt`), regular weight only, cut down to the characters the UTF-8
-translations in `data/native/lang` use (and common full-width punctuation), without hinting or
-layout tables. `src/platform/text.c` draws them with stb_truetype (`src/third_party`) at the
-font's pixel height and keeps each glyph it has drawn:
+translations in `data/native/lang` use (and, with Chinese, common full-width punctuation),
+without hinting or layout tables. `src/platform/text.c` draws them with stb_truetype
+(`src/third_party`), Chinese at the font's pixel height, Greek with its capitals as high as the
+captured `H` (so that both alphabets look one size), and keeps each glyph it has drawn:
 
 - on the game's 8-bit surfaces (and where Liberation draws the Latin letters of that size
   without antialiasing) as 1-bit glyphs: a pixel is set where it is more than about half
@@ -243,13 +250,14 @@ font's pixel height and keeps each glyph it has drawn:
   antialiased: half a pixel), italics upright (Chinese has none); HD's larger text is drawn at
   its own size.
 
-After adding characters to a translation run `tools/dk python3 tools/cjk_fonts.py`: it fetches
-the fonts (Noto Serif TC 2.003, Noto Sans TC 2.004) and fontTools 4.55.0, each pinned by its
-SHA-256, into `run/cjk-fonts`, and writes the two files again (the same bytes for the same
-characters). `make test` fails while a character of a UTF-8 translation is in neither
-Windows-1252, `marks[]` nor both font files.
+After adding characters to a translation run `tools/dk python3 tools/lang_fonts.py`: it fetches
+the fonts (Noto Serif TC 2.003, Noto Sans TC 2.004, Noto Serif and Noto Sans 2.015 unhinted)
+and fontTools 4.55.0, each pinned by its SHA-256, into `run/lang-fonts`, and writes the files
+again (the same bytes for the same characters; a family no translation needs has none). `make
+test` fails while a character of a UTF-8 translation is in neither Windows-1252, `marks[]` nor
+both font files of its family.
 
-Size: about 220 bytes (sans) and 330 bytes (serif) a character, 280 KB for the 500 characters of
+Size: Greek's 68 characters take 17 KB (both files); Chinese about 220 bytes (sans) and 330 bytes (serif) a character, 280 KB for the 500 characters of
 `zh-Hant.txt` now; a full translation of the game (some 3,000 characters) about 1.9 MB (the
 browser version's files are gzipped: some 15% less).
 
@@ -266,6 +274,7 @@ browser version's files are gzipped: some 15% less).
   shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
   letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
   city window, an advisor, the Civilopedia; `x-lang-de.txt` and `x-lang-la.txt` the same in German and Latin.
+- `harness/extras/x-lang-el.txt` does the same in Greek (its letters from the font files).
 - `harness/extras/x-lang-zh.txt` does the same in Traditional Chinese: the main menu, Options
   and its Language page, the file dialog with Chinese typed and taken back character by
   character, the map's status panel, a city renamed in Chinese and its window, the menu bar, the

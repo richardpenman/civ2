@@ -493,7 +493,7 @@ Exspectatur ut alia tabella OpenCiv2 (ex tempore ante renovationem) claudatur: c
 @@label.0
 a.C.n.
 @@label.1
-p.C.n.
+%d p.C.n.
 @@label.2
 Civilization II Multiplayer Gold
 @@label.3

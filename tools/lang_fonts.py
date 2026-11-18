@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""The font files UTF-8 translations (Chinese ...) are drawn with beyond
-Windows-1252's glyphs: data/native/fonts/NotoSerifTC-Regular.otf and
-NotoSansTC-Regular.otf (src/platform/text.c draws them at run time with
-stb_truetype; docs/TRANSLATING.md).
+"""The font files UTF-8 translations (Chinese, Greek ...) are drawn with
+beyond Windows-1252's glyphs, in data/native/fonts (src/platform/text.c
+draws them at run time with stb_truetype; docs/TRANSLATING.md): a serif and
+a sans per family of scripts,
+
+- Greek and Cyrillic: NotoSerif-Regular.ttf and NotoSans-Regular.ttf (Noto
+  Serif and Noto Sans 2.015, unhinted);
+- the others (Chinese): NotoSerifTC-Regular.otf and NotoSansTC-Regular.otf
+  (Noto Serif TC 2.003, Noto Sans TC 2.004).
 
 Scans data/native/lang/*.txt for the translations whose @@codepage is
 utf-8, takes every character they use that Windows-1252's glyphs
 (fonts_win*.bin) and text.c's composed letters (marks[]: ĉ, ŭ ...) have
-not, plus common full-width punctuation, fetches the fonts (Noto Serif TC
-and Noto Sans TC, SIL Open Font License 1.1: pinned releases, checked by
-SHA-256, kept in run/cjk-fonts) and fontTools (pinned, checked, run from its
-wheel), and writes the fonts with only those characters (no hinting, no
-layout tables: text.c needs outlines and advances).  Run it after adding
-characters to a translation (in Docker or not; it needs no installed
-package):
+not (plus common full-width punctuation for Chinese), each in its family,
+fetches the fonts (SIL Open Font License 1.1, no Reserved Font Name but
+Source Han's 'Source': pinned releases, checked by SHA-256, kept in
+run/lang-fonts) and fontTools (pinned, checked, run from its wheel), and
+writes the fonts with only those characters (no hinting, no layout tables:
+text.c needs outlines and advances).  A family no translation needs has
+no files.  Run it after adding characters to a translation (in Docker or
+not; it needs no installed package):
 
-    tools/dk python3 tools/cjk_fonts.py     (--check: only say whether the
+    tools/dk python3 tools/lang_fonts.py    (--check: only say whether the
                                              fonts have every character;
                                              make test)
 """
@@ -30,14 +36,25 @@ import urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LANG = os.path.join(ROOT, 'data', 'native', 'lang')
 OUT = os.path.join(ROOT, 'data', 'native', 'fonts')
-WORK = os.path.join(ROOT, 'run', 'cjk-fonts')
+WORK = os.path.join(ROOT, 'run', 'lang-fonts')
 
-FONTS = [   # (file, url, sha256): the serif (Times New Roman from 20 pixels up), the sans (the others)
+NOTO = 'https://github.com/notofonts/notofonts.github.io/raw/28b15b4b43b7bed62b5cf6e6b0b5ff5846270535/fonts/'
+FONTS = [   # (file, url, sha256, family): per family the serif (Times New Roman from 20 pixels up), the sans
+    ('NotoSerif-Regular.ttf', NOTO + 'NotoSerif/unhinted/ttf/',
+     'a15cfbbc1539d707115111d672d590a3d70d4f74b4c0a315956da20ae19a14e1', 'alphabets'),
+    ('NotoSans-Regular.ttf', NOTO + 'NotoSans/unhinted/ttf/',
+     'f3961a9cde016d41a4879aecda1474d3a36d6bf54fa0e4643de029cc2248b0e8', 'alphabets'),
     ('NotoSerifTC-Regular.otf', 'https://github.com/notofonts/noto-cjk/raw/Serif2.003/Serif/SubsetOTF/TC/',
-     '63515eb0622d589a2f4062e8757c598b3da3bffd053f69abd181c210158ef10c'),
+     '63515eb0622d589a2f4062e8757c598b3da3bffd053f69abd181c210158ef10c', 'cjk'),
     ('NotoSansTC-Regular.otf', 'https://github.com/notofonts/noto-cjk/raw/Sans2.004/Sans/SubsetOTF/TC/',
-     '5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537'),
+     '5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537', 'cjk'),
 ]
+
+
+def family(c):
+    """the family of fonts that draws character c: Greek and Cyrillic (and
+    Greek Extended) in Noto's, the others in Noto TC's"""
+    return 'alphabets' if 0x370 <= c < 0x530 or 0x1f00 <= c < 0x2000 else 'cjk'
 FONTTOOLS = ('fonttools-4.55.0-py3-none-any.whl',
              'https://files.pythonhosted.org/packages/b4/4a/786589606d4989cb34d8bc766cd687d955aaf3039c367fe7104bcf82dc98/',
              '12db5888cd4dd3fcc9f0ee60c6edd3c7e1fd44b7dd0f31381ea03df68f8a153f')
@@ -75,20 +92,22 @@ def utf8_translations():
 
 
 def used():
-    """the characters the UTF-8 translations use (and EXTRA) beyond
-    Windows-1252's, ascending"""
-    chars = {ord(c) for c in EXTRA}
+    """the characters the UTF-8 translations use (and, with Chinese, EXTRA)
+    beyond Windows-1252's, ascending"""
+    chars = set()
     for text in utf8_translations().values():
         for line in text.split('\n'):
             if not line.startswith(';'):
                 chars |= {ord(c) for c in line}
+    if any(family(c) == 'cjk' and c >= 0x2e80 for c in chars):
+        chars |= {ord(c) for c in EXTRA}
     return sorted(c for c in chars if c >= 0x80 and c not in CP1252 and not 0x80 <= c < 0xa0)
 
 
-def wanted():
-    """the characters the font files must have, ascending"""
+def wanted(fam=None):
+    """the characters the font files (of family fam) must have, ascending"""
     made = composed()
-    return [c for c in used() if c not in made]
+    return [c for c in used() if c not in made and (fam is None or family(c) == fam)]
 
 
 def cmap(path):
@@ -149,10 +168,16 @@ def fetch(name, url, sha):
     return path
 
 
+def needed():
+    """the font files the translations need: [(file, url, sha256, family)]"""
+    return [f for f in FONTS if wanted(f[3])]
+
+
 def check(chars):
+    """the characters of chars not in their family's two files"""
     missing = set()
-    for name, _, _ in FONTS:
-        missing |= set(chars) - cmap(os.path.join(OUT, name))
+    for name, _, _, fam in FONTS:
+        missing |= {c for c in chars if family(c) == fam} - cmap(os.path.join(OUT, name))
     return sorted(missing)
 
 
@@ -161,14 +186,19 @@ def main():
     if '--check' in sys.argv:
         missing = check(chars)
         if missing:
-            sys.exit('data/native/fonts lack %d characters (%s): run tools/dk python3 tools/cjk_fonts.py'
+            sys.exit('data/native/fonts lack %d characters (%s): run tools/dk python3 tools/lang_fonts.py'
                      % (len(missing), ''.join(map(chr, missing[:20]))))
         print('data/native/fonts: all %d characters' % len(chars))
         return
     sys.path.insert(0, fetch(*FONTTOOLS))
     from fontTools import subset, ttLib
     os.makedirs(OUT, exist_ok=True)
-    for name, url, sha in FONTS:
+    for name in os.listdir(OUT):
+        if name.endswith(('.otf', '.ttf')) and name not in [f[0] for f in needed()]:
+            os.remove(os.path.join(OUT, name))
+            print('removed', name)
+    for name, url, sha, fam in needed():
+        part = wanted(fam)
         options = subset.Options()
         options.hinting = False
         options.layout_features = []
@@ -177,11 +207,11 @@ def main():
         options.name_languages = ['*']
         font = ttLib.TTFont(fetch(name, url, sha), recalcTimestamp=False)
         sub = subset.Subsetter(options)
-        sub.populate(unicodes=chars)
+        sub.populate(unicodes=part)
         sub.subset(font)
         out = os.path.join(OUT, name)
         font.save(out)
-        print('%s: %d characters, %d bytes' % (os.path.relpath(out, ROOT), len(chars), os.path.getsize(out)))
+        print('%s: %d characters, %d bytes' % (os.path.relpath(out, ROOT), len(part), os.path.getsize(out)))
     if check(chars):
         sys.exit('the fonts lack characters')
 

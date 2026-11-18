@@ -207,7 +207,7 @@ static int name_in_current_page(const char *cp, const char *in, char *out, int n
    cannot have: its English name, or its code). */
 static int language_name(const char *path, const char *code, char *name, int n)
 {
-    static const char *const english[][2] = {{"zh-Hant", "Chinese (traditional)"}};
+    static const char *const english[][2] = {{"zh-Hant", "Chinese (traditional)"}, {"el", "Greek"}};
     char line[256], cp[32] = "windows-1252", raw[256] = "";
     FILE *f = fopen(path, "r");
     int next = 0, found = 0;

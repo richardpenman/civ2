@@ -492,7 +492,7 @@ Warte darauf, dass ein anderer OpenCiv2-Tab (von vor einem Update) geschlossen w
 @@label.0
 v. Chr.
 @@label.1
-n. Chr.
+%d n. Chr.
 @@label.2
 Civilization II Multiplayer Gold
 @@label.3

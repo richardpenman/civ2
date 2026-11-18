@@ -1168,7 +1168,10 @@ void __cdecl menu_build_main(void)
   i32 cheat_disabled;
   int row;
   
-  ((GameMenu *)((i8 *)&main_menu_block.main_menu))->reset(0x1bbc);
+  /* (port) 0x5000 bytes for the items, 0x1bbc in the original: a
+     translation's labels in UTF-8 (Greek, Chinese) take two or three bytes
+     a letter */
+  ((GameMenu *)((i8 *)&main_menu_block.main_menu))->reset(0x5000);
   /* (port) The menus' structure is menu_rows; their texts are looked up by
      key (lang.h), not read from MENU.TXT line by line.  An item without a
      text is left out (the CD's MENU.TXT has no Game Profile). */

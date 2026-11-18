@@ -1,9 +1,12 @@
 Noto Serif TC 2.003 and Noto Sans TC 2.004 (https://github.com/notofonts/noto-cjk),
-of which NotoSerifTC-Regular.otf and NotoSansTC-Regular.otf here are subsets
-(only the characters OpenCiv2's translations use: tools/cjk_fonts.py;
-THIRD-PARTY.txt 12.):
+of which NotoSerifTC-Regular.otf and NotoSansTC-Regular.otf here are subsets,
+and Noto Serif 2.015 and Noto Sans 2.015
+(https://github.com/notofonts/latin-greek-cyrillic), of which
+NotoSerif-Regular.ttf and NotoSans-Regular.ttf here are subsets (only the
+characters OpenCiv2's translations use: tools/lang_fonts.py; THIRD-PARTY.txt 12.):
 
 Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic).
 
 This Font Software is licensed under the SIL Open Font License,
 Version 1.1.

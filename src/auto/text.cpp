@@ -854,6 +854,20 @@ void __cdecl str_append_year(char *dest,uint year)
   int month_pos;
   
   if (((game.game_flags & GAME_SCENARIO) == 0) || (-1 < scenario.year_increment)) {
+    /* (port) a translation's B.C. / A.D. label (0 / 1) holding "%d" is the
+       whole date's form, the year in its place (Chinese: "西元前%d年") */
+    {
+      const char *form = (const char *)label_string(label_table.string_ids[(int)year < 0 ? 0 : 1]);
+      const char *d = form != 0 ? strstr(form,"%d") : 0;
+      if (d != 0) {
+        char num[16];
+        snprintf(num,sizeof num,"%d",(int)year < 0 ? -(int)year : (int)year);
+        strncat(dest,form,(size_t)(d - form));
+        strcat(dest,num);
+        strcat(dest,d + 2);
+        return;
+      }
+    }
     if ((-1 < (int)year) && (game_language == 0)) {
       str_append_label(dest,1);
       str_append_space(dest);

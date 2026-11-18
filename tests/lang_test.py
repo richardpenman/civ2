@@ -14,7 +14,7 @@
   table marks[]);
 - a translation in UTF-8 ("@@codepage utf-8": Chinese) is valid UTF-8 and
   every character it uses beyond Windows-1252's and marks[] is in both font
-  files of data/native/fonts (tools/cjk_fonts.py writes them).
+  files of its family (Chinese, Greek ...) in data/native/fonts (tools/lang_fonts.py writes them).
 """
 import glob
 import os
@@ -24,7 +24,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 from build_web import english_texts, lang_file  # noqa: E402
-import cjk_fonts  # noqa: E402
+import lang_fonts  # noqa: E402
 
 LANG = os.path.join(ROOT, 'data', 'native', 'lang')
 failures = []
@@ -69,15 +69,15 @@ def codepage_tables():
 
 def check_utf8():
     """the UTF-8 translations' characters: Windows-1252's, made by text.c
-    (marks[]) or in both font files of data/native/fonts"""
-    for name, _, _ in cjk_fonts.FONTS:
-        if not os.path.exists(os.path.join(cjk_fonts.OUT, name)):
-            fail('data/native/fonts/%s: missing (tools/dk python3 tools/cjk_fonts.py)' % name)
-    missing = cjk_fonts.check(cjk_fonts.wanted())
+    (marks[]) or in both font files of its family in data/native/fonts"""
+    for name, _, _, _ in lang_fonts.needed():
+        if not os.path.exists(os.path.join(lang_fonts.OUT, name)):
+            fail('data/native/fonts/%s: missing (tools/dk python3 tools/lang_fonts.py)' % name)
+    missing = lang_fonts.check(lang_fonts.wanted())
     if missing:
         fail('data/native/fonts: no glyphs for %d characters of the translations (%s...): '
-             'tools/dk python3 tools/cjk_fonts.py' % (len(missing), ''.join(map(chr, missing[:10]))))
-    if not os.path.exists(os.path.join(cjk_fonts.OUT, 'OFL.txt')):
+             'tools/dk python3 tools/lang_fonts.py' % (len(missing), ''.join(map(chr, missing[:10]))))
+    if not os.path.exists(os.path.join(lang_fonts.OUT, 'OFL.txt')):
         fail('data/native/fonts/OFL.txt: missing (the fonts\' licence)')
 
 
@@ -127,7 +127,7 @@ def main():
                                                                       placeholders(en[k])))
     if 'utf-8' in pages:
         check_utf8()
-    made = cjk_fonts.composed()
+    made = lang_fonts.composed()
     for cp in sorted(pages - {'utf-8'}):
         for i in range(128):
             u = tables[cp][i]

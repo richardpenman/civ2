@@ -214,13 +214,14 @@ static void load_fonts(void)
  *   difference of the two letters' advances).  Breve and bar, which no
  *   Windows-1252 glyph has, are drawn in the box the circumflex takes, with
  *   the circumflex's stroke.
- * - Other characters (Chinese) are drawn from the font files in
- *   data/native/fonts (tools/cjk_fonts.py: Noto Sans TC and Noto Serif TC,
- *   only the characters the translations use) with stb_truetype, at the
- *   font's pixel height on its baseline: Noto Serif TC for Times New Roman
- *   from 20 pixels up, else Noto Sans TC (a small serif is not legible
- *   with few pixels), bold made by thickening, upright for italics
- *   (Chinese has none).  On 8-bit surfaces (1-bit glyphs) a pixel is set
+ * - Other characters (Chinese, Greek) are drawn from the font files in
+ *   data/native/fonts (tools/lang_fonts.py: Noto Sans TC and Noto Serif TC,
+ *   Noto Sans and Noto Serif for Greek, only the characters the
+ *   translations use) with stb_truetype on the font's baseline, Chinese at
+ *   the font's pixel height, Greek with its capitals as high as the
+ *   captured H: the serif for Times New Roman (Chinese from 20 pixels up:
+ *   a small serif's strokes are not legible with few pixels), else the
+ *   sans, bold made by thickening, upright for italics.  On 8-bit surfaces (1-bit glyphs) a pixel is set
  *   where it is more than about half covered, or where a thin stroke is
  *   (the stroke's darker pixel across it), so that strokes neither vanish
  *   nor thicken; on deeper ones antialiased (coverage 0..16), but 1-bit
@@ -688,16 +689,23 @@ static int compose(FontFace *f, int k, int aa, Pix *out)
 
 typedef struct {
     const char *file;
+    int serif;          /* a serif face (Times New Roman's) */
+    int latin_like;     /* an alphabet drawn beside Latin letters (Greek): sized by its capitals */
     int tried;
     unsigned char *data;
     stbtt_fontinfo info;
+    int cap_height;     /* (latin_like) its capitals' height, in font units (OS/2) */
 } TtFont;
 
-static TtFont tt_fonts[] = {{"fonts/NotoSerifTC-Regular.otf", 0, NULL, {0}}, {"fonts/NotoSansTC-Regular.otf", 0, NULL, {0}}};
+/* (tools/lang_fonts.py: each character in one family, Greek and Cyrillic
+   in Noto Serif/Sans, the others (Chinese) in Noto Serif/Sans TC) */
+static TtFont tt_fonts[] = {{"fonts/NotoSerif-Regular.ttf", 1, 1, 0, NULL, {0}, 0},
+                            {"fonts/NotoSerifTC-Regular.otf", 1, 0, 0, NULL, {0}, 0},
+                            {"fonts/NotoSans-Regular.ttf", 0, 1, 0, NULL, {0}, 0},
+                            {"fonts/NotoSansTC-Regular.otf", 0, 0, 0, NULL, {0}, 0}};
 
-static TtFont *tt_font(int serif)
+static TtFont *tt_load(TtFont *t)
 {
-    TtFont *t = &tt_fonts[serif ? 0 : 1];
     long n;
     if (!t->tried) {
         t->tried = 1;
@@ -707,23 +715,52 @@ static TtFont *tt_font(int serif)
             t->data = NULL;
         }
         if (!t->data)
-            plat_log("text: no font %s/%s: characters beyond Windows-1252 drawn as boxes\n", plat_data_dir, t->file);
+            plat_log("text: no font %s/%s: characters it has drawn as boxes\n", plat_data_dir, t->file);
+        else if (t->latin_like) {
+            /* OS/2's sCapHeight (version 2 and up) */
+            stbtt_uint32 os2 = stbtt__find_table(t->data, t->info.fontstart, "OS/2");
+            if (os2 && ttUSHORT(t->data + os2) >= 2)
+                t->cap_height = ttSHORT(t->data + os2 + 88);
+        }
     }
     return t->data ? t : NULL;
+}
+
+/* the font file that has cp, for f (for Times New Roman its serif ones
+   first: Chinese from 20 pixels up, Greek at every size, as the Latin
+   letters beside it; then the sans ones); its glyph's index in *g */
+static TtFont *tt_font(FontFace *f, unsigned cp, int *g)
+{
+    int pass;
+    size_t i;
+    for (pass = f->face == 0 ? 1 : 0; pass >= 0; pass--)
+        for (i = 0; i < sizeof tt_fonts / sizeof tt_fonts[0]; i++) {
+            TtFont *t = &tt_fonts[i];
+            if (t->serif != pass || (pass && !t->latin_like && f->height < 20) || !tt_load(t))
+                continue;
+            if ((*g = stbtt_FindGlyphIndex(&t->info, (int)cp)) != 0)
+                return t;
+        }
+    return NULL;
 }
 
 /* f's glyph of cp from a font file into *out, its advance in *adv; 0 if none has it */
 static int render(FontFace *f, unsigned cp, int aa, Pix *out, int *adv)
 {
-    TtFont *t = tt_font(f->face == 0 && f->height >= 20);
     int g, a, lsb, x0, y0, x1, y1, w, h, x, y, bold;
     float scale;
     unsigned char *cov;
-    if ((!t || !(g = stbtt_FindGlyphIndex(&t->info, (int)cp))) && f->face == 0 && f->height >= 20)
-        t = tt_font(0);         /* (the sans has what the serif lacks?) */
-    if (!t || !(g = stbtt_FindGlyphIndex(&t->info, (int)cp)))
+    TtFont *t = tt_font(f, cp, &g);
+    if (!t)
         return 0;
     scale = stbtt_ScaleForMappingEmToPixels(&t->info, (float)f->height);
+    if (t->latin_like && t->cap_height > 0) {
+        /* (an alphabet beside Latin letters: its capitals as high as the
+           captured H, so that both look one size) */
+        int cap = f->tm[1] - ink_top(f, 'H', aa);
+        if (cap > 0)
+            scale = (float)cap / t->cap_height;
+    }
     stbtt_GetGlyphHMetrics(&t->info, g, &a, &lsb);
     *adv = (int)(a * scale + 0.5f);
     bold = f->bold ? (f->height >= 32 ? 2 : 1) : 0;

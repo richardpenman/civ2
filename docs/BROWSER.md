@@ -52,7 +52,7 @@ Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 ## Language
 
 The page is in English unless its address asks for a language: `?lang=CODE`, for the set-up
-page and the game alike, e.g. `http://localhost:8000/?lang=de` (German), `?lang=la` (Latin), `?lang=eo` (Esperanto) or
+page and the game alike, e.g. `http://localhost:8000/?lang=de` (German), `?lang=la` (Latin), `?lang=el` (Greek), `?lang=eo` (Esperanto) or
 `http://localhost:8000/?setup&lang=zh-TW`.  The code is matched loosely against the site's
 translations (those of `data/native/lang`, listed in `lang/index.json` by `make web`): `de-AT`
 finds `de`, a `zh-TW`, `zh-HK` or `zh-Hant` the Traditional Chinese, and one the site has no
@@ -60,7 +60,7 @@ translation of is English.  The browser's own language is not looked at.  The se
 *Language* choice (English, or a translation) sets or removes `lang=` in the address and loads the
 page again in it, so that a reload or a bookmark keeps it.  The page's texts are OpenCiv2's own,
 keyed as the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
-translation files, in their code page: Esperanto's letters as Unicode, Chinese in the system's
+translation files, in their code page: Esperanto's letters as Unicode, Greek and Chinese in the system's
 fonts that have its characters); the set-up from a CD or disc image shows its progress in it too.
 
 The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts (OpenCiv2

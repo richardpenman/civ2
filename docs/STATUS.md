@@ -744,7 +744,7 @@ message by message and clock event by clock event.
   UTF-8 ("@@codepage utf-8": Traditional Chinese, data/native/lang/zh-Hant.txt,
   OpenCiv2's own texts and a sample of the game's) has its Chinese drawn at
   run time (stb_truetype) from Noto Serif/Sans TC cut down to the characters
-  it uses (data/native/fonts, tools/cjk_fonts.py), lines broken next to
+  it uses (data/native/fonts, tools/lang_fonts.py), lines broken next to
   Chinese characters (the game's dialogs, DrawText, the edit control), texts
   cut, typed and edited by whole characters (src/include/utf8.h); not done:
   the full translation of the game's texts into Chinese, and the input

@@ -120,7 +120,7 @@ def write_languages():
     if not pages:
         return []
     os.makedirs(fonts)
-    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(ROOT, 'data', 'native', 'fonts', '*.otf')))
+    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(ROOT, 'data', 'native', 'fonts', '*.[ot]tf')))
     with open(os.path.join(fonts, 'index.json'), 'w') as f:
         json.dump(names, f)
     shutil.copy(os.path.join(ROOT, 'data', 'native', 'fonts', 'OFL.txt'), os.path.join(fonts, 'OFL.txt'))
