@@ -415,8 +415,6 @@ Retaj ludoj iras tra relajso, kaj neniu respondis æe %s: lanæu tools/webrelay.py
 La adreso de la relajso komenciøas per ws:// (aý wss://).
 @@openciv2.web.language
 Lingvo:
-@@openciv2.web.language_auto
-Aýtomata (la lingvo de la retumilo)
 @@openciv2.web.not_game
 Æi tiuj dosieroj estas nek instalita Civilization II Multiplayer Gold Edition (øia dosierujo enhavas Civ2Art.dll kaj RULES.TXT), nek øia KD (DATA1.CAB kaj CIV2), nek diskobildo de la KD (.cue kun sia .bin).
 @@openciv2.web.copying

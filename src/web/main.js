@@ -8,11 +8,11 @@ import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
 import {findDisc} from './setup_run.js';
 import {packFrom, keepPack, loadPack, download, siteArt} from './hdpack.js';
-import {hdWanted, iniGet} from './options.js';
-import {t, languages, pageLanguage, useLanguage, chosen, choose, langFile, parseLang, match} from './i18n.js';
+import {hdWanted, iniGet, iniSet} from './options.js';
+import {t, languages, pageLanguage, urlLanguage, withLanguage, useLanguage, langFile, parseLang, match} from './i18n.js';
 
 const GAME = '/civ2', DATA = '/data';
-let pageLang = 'en';        // the page's language (i18n.js), the game's Auto
+let pageLang = 'en';        // the page's language (i18n.js: ?lang=CODE, else English)
 const $ = (id) => document.getElementById(id);
 // (on the set-up page, and over the screen until the game's first frame)
 const status = (s) => {
@@ -350,6 +350,15 @@ function iniOf(entries) {
     return {name: e ? e[0] : 'CIV.INI', text: e ? latin.decode(e[1].data) : ''};
 }
 
+// CIV.INI's bytes with [OpenCiv2] key=value (its other bytes as they are)
+function iniBytesSet(bytes, key, value) {
+    let s = '';
+    for (const b of bytes)
+        s += String.fromCharCode(b);
+    return Uint8Array.from(iniSet(s, 'OpenCiv2', key, value), (c) => c.charCodeAt(0));
+}
+const iniLanguage = (bytes) => (iniGet(latin.decode(bytes || new Uint8Array(0)), 'OpenCiv2', 'Language') || '').trim();
+
 async function artInfo(store) {
     const [info, p] = await Promise.all([store.hdGet('info'), pin()]);
     return info && info.sha256 === p.pack_sha256 ? info : null;
@@ -441,6 +450,17 @@ async function play(store) {
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
+    // ?lang=CODE: the game's language too, as its OpenCiv2 Options have it
+    // (CIV.INI [OpenCiv2] Language=, in the game's files; kept in this
+    // browser only when the game changes it: the language the player had
+    // before stays theirs, for a visit without ?lang)
+    const iniPath = GAME + '/' + (iniName || 'CIV.INI');
+    let urlLang = null, gameIni = ini;
+    if (urlLanguage()) {
+        urlLang = {code: pageLang, before: iniGet(ini, 'OpenCiv2', 'Language') || 'Auto'};
+        fs.put(iniPath, iniBytesSet(fs.get(iniPath) || new Uint8Array(0), 'Language', pageLang));
+        gameIni = latin.decode(fs.get(iniPath));
+    }
     // OpenCiv2's English of the game's text files the player's game lacks
     // (data/text: the game reads them where it has none of its own)
     try {
@@ -454,11 +474,11 @@ async function play(store) {
     }
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
-    // the translations (the game's Language choice lists them; Auto is the
-    // page's language), and for one in UTF-8 (Chinese) the font files of its
+    // the translations (the game's Language choice lists them; Auto is
+    // English), and for one in UTF-8 (Chinese) the font files of its
     // characters beyond Windows-1252 (text.c draws them; other code pages'
     // letters it makes from the fonts above)
-    const gameLang = await gameLanguage(ini);
+    const gameLang = await gameLanguage(gameIni);
     for (const [code, bytes] of gameLang.files)
         fs.put(DATA + '/lang/' + code + '.txt', bytes);
     if (/^utf-?8$/.test(gameLang.codepage)) {
@@ -503,6 +523,8 @@ async function play(store) {
             const data = fs.get(path);
             if (removed || !data)
                 await store.remove(rel);
+            else if (urlLang && path.toLowerCase() === iniPath.toLowerCase() && iniLanguage(data) === urlLang.code)
+                put.push([rel, iniBytesSet(data, 'Language', urlLang.before), Date.now()]);
             else
                 put.push([rel, data.slice(), Date.now()]);
         }
@@ -528,7 +550,8 @@ async function play(store) {
     const canvas = $('screen');
     canvas.focus();
     // (the platform's log: ?log, in the console)
-    const env = {CIV2_DATA: DATA, CIV2_SYSTEM_LANG: pageLang};
+    // (Auto, the system's language: English)
+    const env = {CIV2_DATA: DATA, CIV2_SYSTEM_LANG: 'en'};
     if (!new URLSearchParams(location.search).has('log'))
         env.CIV2_HOOK_LOG = '/dev/null';
     // (tests, src/web/test/smoke.mjs: files and settings of a replay)
@@ -545,13 +568,17 @@ async function play(store) {
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               // (the game's OpenCiv2 Options: where the art is, and their restart:
-                              // the page loaded again, into the game, without what would override them)
+                              // the page loaded again, into the game, without what would override them;
+                              // ?lang= the game's language now, where the game changed it)
                               hdArt: {kept: kept ? kept.size : 0, siteSize: siteHd ? siteHd.size : 0},
                               restart: async () => {
                                   await window.civ2Flush();
                                   const u = new URL(location.href);
                                   for (const k of ['setup', 'hd', 'sharp'])
                                       u.searchParams.delete(k);
+                                  const now = iniLanguage(fs.get(iniPath));
+                                  if (!urlLang || now !== urlLang.code)
+                                      withLanguage(u, now);
                                   location.replace(u.href);
                               }});
         status(code ? t('web.ended_code', code) : t('web.ended'));
@@ -566,19 +593,20 @@ async function play(store) {
 }
 
 // The game's language (as src/game/lang.cpp chooses it: CIV.INI's
-// Language=, else, Auto, the page's) and the site's translation files
+// Language=, ?lang='s where the URL has it; Auto: English) and the site's translation files
 // -> {files: [[code, bytes]], codepage: the game's language's}
 async function gameLanguage(ini) {
     const list = await languages();
     const files = (await Promise.all(list.map(async (l) => [l.code, await langFile(l.code)])))
         .filter(([, b]) => b);
     const set = (iniGet(ini, 'OpenCiv2', 'Language') || '').trim();
-    const code = set && !/^auto$/i.test(set) ? (/^en\b/i.test(set) ? 'en' : match(set, list)) : pageLang;
+    const code = set && !/^auto$/i.test(set) ? (/^en\b/i.test(set) ? 'en' : match(set, list)) : 'en';
     const own = files.find(([c]) => c === code);
     return {files, codepage: own ? parseLang(own[1]).codepage : 'windows-1252'};
 }
 
-// The page's Language choice: Auto (the browser's), English, the site's
+// The page's Language choice: English, the site's translations; the
+// URL's ?lang= (kept by a reload or a bookmark), the page loaded again in it
 async function languageChoice() {
     const list = await languages();
     const sel = $('language');
@@ -590,13 +618,12 @@ async function languageChoice() {
         o.textContent = label;
         sel.append(o);
     };
-    add('', t('web.language_auto'));
     add('en', 'English');
     for (const l of list)
         add(l.code, l.name);
-    sel.value = chosen();
+    sel.value = pageLang;
     sel.onchange = () => {
-        choose(sel.value);
+        history.replaceState(null, '', withLanguage(new URL(location.href), sel.value).href);
         location.reload();
     };
 }

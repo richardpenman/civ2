@@ -4,7 +4,8 @@
 // own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its OpenCiv2 Options), a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
 // (from the set-up page, and while playing), the saved game loaded; first the set-up page in
-// Esperanto (?lang=eo) and Chinese (?lang=zh-TW).  Screenshots in run/web-smoke (the game's
+// Esperanto (?lang=eo) and Chinese (?lang=zh-TW), and in English without ?lang (whatever the
+// browser's language); the game started in Esperanto by ?lang=eo.  Screenshots in run/web-smoke (the game's
 // images: never committed).
 //
 //   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME] [GAME_DIR]
@@ -184,11 +185,12 @@ async function main() {
                 intro: document.querySelector('[data-t="web.intro"]').innerHTML,
                 folder: document.getElementById('choose-folder').textContent,
                 language: [...document.getElementById('language').options].map((o) => o.textContent),
+                chosen: document.getElementById('language').value,
                 lang: document.documentElement.lang})`);
             log('page in Esperanto: ' + JSON.stringify(eo).slice(0, 300));
             if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/<em>via propra<\/em>/.test(eo.intro) ||
                 !/^Dosierujo/.test(eo.folder) || !eo.language.includes('Esperanto') ||
-                !/Aŭtomata/.test(eo.language[0]))
+                eo.language[0] !== 'English' || eo.chosen !== 'eo')
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
             await shot('00-setup-eo');
             // in Chinese (traditional characters: ?lang=zh-TW finds zh-Hant.txt, in UTF-8;
@@ -198,15 +200,27 @@ async function main() {
             const zh = await evaluate(`({choose: document.getElementById('choose').textContent,
                 folder: document.getElementById('choose-folder').textContent,
                 language: [...document.getElementById('language').options].map((o) => o.textContent),
+                chosen: document.getElementById('language').value,
                 lang: document.documentElement.lang})`);
             log('page in Chinese: ' + JSON.stringify(zh).slice(0, 300));
             if (zh.lang !== 'zh-Hant' || !/選擇你的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) ||
-                !zh.language.includes('繁體中文') || !/自動/.test(zh.language[0]))
+                !zh.language.includes('繁體中文') || zh.chosen !== 'zh-Hant')
                 throw new Error('the page is not in Chinese: ' + JSON.stringify(zh));
             await shot('00-setup-zh-Hant');
+            // without ?lang: English, though the browser's language is Esperanto
+            const {userAgent} = await send('Browser.getVersion');
+            await send('Emulation.setUserAgentOverride', {userAgent, acceptLanguage: 'eo'});
         }
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page');
+        if (!REPLAY) {
+            const en = await evaluate(`({choose: document.getElementById('choose').textContent,
+                chosen: document.getElementById('language').value, browser: navigator.languages.join(),
+                lang: document.documentElement.lang})`);
+            log('page without ?lang: ' + JSON.stringify(en));
+            if (en.lang !== 'en' || !/^Choose your game/.test(en.choose) || en.chosen !== 'en' || en.browser !== 'eo')
+                throw new Error('the page without ?lang is not in English: ' + JSON.stringify(en));
+        }
         if (!REPLAY) {
             // the set-up from a disc image, a made-up one (disc.mjs: the
             // cabinet, the videos, two audio tracks), chosen as the player
@@ -256,6 +270,29 @@ async function main() {
             throw new Error(copied);
         if (REPLAY)
             return await replay(send, evaluate, waitFor);
+        // ?lang=eo: the game in Esperanto (its CIV.INI's Language=, its
+        // Options' choice), which this browser does not keep for later
+        // visits (the first run's question answered: the game writes CIV.INI)
+        await send('Page.navigate', {url: url + '?lang=eo'});
+        await waitFor('window.civ2Fs', 60000, 'the start in Esperanto');
+        await waitFor(pictured, 60000, 'the first picture in Esperanto');
+        const gameIni = () => evaluate(`new TextDecoder().decode(window.civ2Fs.get('/civ2/CIV.INI') || new Uint8Array(0))`);
+        const started = await evaluate('window.civ2Status');
+        log('started in Esperanto: ' + started);
+        if (!/Lanĉante/.test(started) || !/\[OpenCiv2\][^[]*Language=eo/.test(await gameIni()))
+            throw new Error('the game is not in Esperanto: ' + started + ' ' + JSON.stringify(await gameIni()));
+        await settle(3000, 60000);
+        await shot('00-start-eo');
+        if (!await menuShown()) {
+            await key('Enter', 13);
+            await settle(3000, 15000);
+        }
+        await evaluate('window.civ2Flush()');
+        const keptIni = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
+            const q = r.result.transaction("files").objectStore("files").get("CIV.INI");
+            q.onsuccess = () => { r.result.close(); resolve(q.result ? new TextDecoder().decode(q.result.data) : ''); }; }; })`);
+        if (/Language=eo/.test(keptIni))
+            throw new Error('?lang=eo kept in this browser: ' + JSON.stringify(keptIni));
         // a later visit: straight into the game
         const t1 = performance.now();
         await send('Page.navigate', {url});

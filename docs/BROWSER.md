@@ -51,17 +51,25 @@ Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 
 ## Language
 
-The set-up page has a *Language* choice: *Automatic* (the browser's language, where the site has
-a translation of it), *English*, or a translation (Esperanto and Traditional Chinese come with
-it: a browser's `zh-TW`, `zh-HK` or `zh-Hant` finds the Chinese; the site has those of
-`data/native/lang`, listed in `lang/index.json` by `make web`).  The choice is kept in this
-browser; `?lang=CODE` chooses one for a visit.  The page's texts are OpenCiv2's own, keyed as
-the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
+The page is in English unless its address asks for a language: `?lang=CODE`, for the set-up
+page and the game alike, e.g. `http://localhost:8000/?lang=eo` (Esperanto) or
+`http://localhost:8000/?setup&lang=zh-TW`.  The code is matched loosely against the site's
+translations (those of `data/native/lang`, listed in `lang/index.json` by `make web`): `de-AT`
+finds `de`, a `zh-TW`, `zh-HK` or `zh-Hant` the Traditional Chinese, and one the site has no
+translation of is English.  The browser's own language is not looked at.  The set-up page's
+*Language* choice (English, or a translation) sets or removes `lang=` in the address and loads the
+page again in it, so that a reload or a bookmark keeps it.  The page's texts are OpenCiv2's own,
+keyed as the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
 translation files, in their code page: Esperanto's letters as Unicode, Chinese in the system's
-fonts that have its characters); the set-up from a CD or
-disc image shows its progress in it too.  The game gets the page's language as its *Automatic*
-one (`CIV2_SYSTEM_LANG`); OpenCiv2 Options > Language in the game wins over it, as natively
-([TRANSLATING.md](TRANSLATING.md)).
+fonts that have its characters); the set-up from a CD or disc image shows its progress in it too.
+
+The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts (OpenCiv2
+Options > Language shows it), for that visit only: what this browser keeps of `CIV.INI` keeps the
+language the player had chosen before, unless the game itself changes it.  Without `?lang=`,
+`CIV.INI` is as the game left it: a language chosen in the game's OpenCiv2 Options applies, and
+*Automatic* is English (`CIV2_SYSTEM_LANG=en`; [TRANSLATING.md](TRANSLATING.md)).  The Options'
+*Restart now* puts the game's language in the address (`lang=`, none for Automatic or English),
+so that a language changed in the game is the one the page is loaded again in.
 
 ## How to play: OpenCiv2 Options
 
@@ -71,7 +79,8 @@ interface, HD graphics, the rule changes and limits, and the interface additions
 correction and the messages shown on the map.  They are kept in the game's `CIV.INI`
 (`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take effect when
 the game starts again (the mode, the graphics) offer *Restart now*: the page is loaded again,
-into the game (without `?setup`, `?hd` or `?sharp`, which would win over them).  Full screen is
+into the game (without `?setup`, `?hd` or `?sharp`, which would win over them; `?lang=` as the
+game's language now).  Full screen is
 not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
 them, *Remove them* (with the HD art), *Play*, and the saved games' *Export* and *Import*.
 

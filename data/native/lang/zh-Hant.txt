@@ -411,8 +411,6 @@ Civilization II Multiplayer Gold Edition，重建後可在你的瀏覽器中執�
 中繼伺服器的位址以 ws://（或 wss://）開頭。
 @@openciv2.web.language
 語言：
-@@openciv2.web.language_auto
-自動（瀏覽器的語言）
 @@openciv2.web.not_game
 這些檔案既不是已安裝的 Civilization II Multiplayer Gold Edition（其資料夾內有 Civ2Art.dll 與 RULES.TXT），也不是它的光碟（DATA1.CAB 與 CIV2），也不是光碟的映像檔（.cue 及其 .bin）。
 @@openciv2.web.copying

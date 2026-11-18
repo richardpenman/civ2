@@ -410,8 +410,6 @@ Network games go through a relay, and none answered at %s: run tools/webrelay.py
 The relay's address starts with ws:// (or wss://).
 @@openciv2.web.language
 Language:
-@@openciv2.web.language_auto
-Automatic (the browser's language)
 @@openciv2.web.not_game
 These files are neither an installed Civilization II Multiplayer Gold Edition (its folder has Civ2Art.dll and RULES.TXT in it), nor its CD (DATA1.CAB and CIV2), nor a disc image of the CD (a .cue with its .bin).
 @@openciv2.web.copying

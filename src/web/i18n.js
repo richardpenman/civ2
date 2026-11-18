@@ -2,12 +2,11 @@
 // translation files as the game's (lang/<code>.txt, "@@openciv2.<key>"
 // lines, in their code page: "@@codepage", else Windows-1252), the page's
 // keys "web.*"; English (texts.js, built by tools/build_web.py from
-// src/host/texts.h) where a translation has none.  The language: the one
-// chosen on the page (kept in this browser), else the browser's.
+// src/host/texts.h) where a translation has none.  The language: the URL's
+// ?lang=CODE, else English.
 
 import {EN} from './texts.js';
 
-const STORE = 'civ2.lang';
 let texts = {};             // the translation's, by key (without "openciv2.")
 let current = 'en';
 
@@ -60,24 +59,6 @@ export function languages() {
     return listP || (listP = fetch('lang/index.json').then((r) => (r.ok ? r.json() : []), () => []).catch(() => []));
 }
 
-// The code chosen on the page ('' : the browser's)
-export function chosen() {
-    try {
-        return localStorage.getItem(STORE) || '';
-    } catch (e) {
-        return '';
-    }
-}
-
-export function choose(code) {
-    try {
-        if (code)
-            localStorage.setItem(STORE, code);
-        else
-            localStorage.removeItem(STORE);
-    } catch (e) { /* not kept */ }
-}
-
 // Among the site's languages, the one a code asks for ("pt-BR": pt-BR,
 // else pt); 'en' if none.
 export function match(code, list) {
@@ -90,22 +71,23 @@ export function match(code, list) {
     return codes.find((k) => k.toLowerCase() === c) || codes.find((k) => k.toLowerCase() === c.split('-')[0]) || 'en';
 }
 
-// The page's language: chosen, else (Auto) the first of the browser's the
-// site has (?lang=CODE wins: the tests)
+// The page's language: the URL's ?lang=CODE (as match finds it: zh-TW
+// zh-Hant, de-AT de, one the site has not English), else English
 export async function pageLanguage() {
-    const list = await languages();
-    const q = new URLSearchParams(location.search).get('lang');
-    if (q)
-        return match(q, list);
-    const c = chosen();
-    if (c)
-        return c === 'en' ? 'en' : match(c, list);
-    for (const l of navigator.languages || [navigator.language]) {
-        const m = match(l, list);
-        if (m !== 'en' || /^en\b/i.test(l))
-            return m;
-    }
-    return 'en';
+    const q = urlLanguage();
+    return q ? match(q, await languages()) : 'en';
+}
+
+// The URL's ?lang= ('' : none)
+export const urlLanguage = () => (new URLSearchParams(location.search).get('lang') || '').trim();
+
+// url (a URL) with its ?lang= code (none for English or Auto)
+export function withLanguage(url, code) {
+    if (!code || /^(auto$|en\b)/i.test(code))
+        url.searchParams.delete('lang');
+    else
+        url.searchParams.set('lang', code);
+    return url;
 }
 
 // A translation file's bytes (null: none, or English)

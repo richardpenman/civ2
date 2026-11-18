@@ -47,8 +47,9 @@ without its text files.
   Language=eo`; `Auto` or none: automatic) and takes effect when the game starts again.
 - `CIV2_LANG=<code>` in the environment wins over that choice (and is the only one test runs
   read).
-- In the browser version: the set-up page's *Language* choice (automatic: the browser's
-  language), which is also the game's *Automatic* ([BROWSER.md](BROWSER.md#language)).
+- In the browser version: the address's `?lang=CODE` (English without it), for the set-up page
+  and the game, which the set-up page's *Language* choice sets; the game's *Automatic* is English
+  ([BROWSER.md](BROWSER.md#language)).
 
 A code is a file's name: `eo` reads `lang/eo.txt`; a system's `pt_BR` reads `lang/pt-BR.txt`,
 else `lang/pt.txt`. Chinese in traditional characters (a system's or browser's `zh_TW`, `zh-HK`,
@@ -270,7 +271,8 @@ browser version's files are gzipped: some 15% less).
   Civilopedia's page of an advance and its description (wrapped), an envoy's greeting (lines
   joined and wrapped); and with sharp text.
 - The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto and
-  in Chinese (`?lang=zh-TW`: the page's fonts are the system's that have its characters).
+  in Chinese (`?lang=zh-TW`: the page's fonts are the system's that have its characters), in
+  English without `?lang`, and starts the game in Esperanto (`?lang=eo`).
 
 ## Adding a translation to OpenCiv2
 
