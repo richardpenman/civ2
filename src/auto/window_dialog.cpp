@@ -1400,6 +1400,15 @@ int Dialog::draw_wrapped_text(int draw)
   has_shadow = shadow_color != text_color;
   line = line_list;
   max_width = content_width;
+  if (plat_text_utf8 && (sprite_list != 0) && (sprite_list->label == 0)) {
+    /* (port) UTF-8 text: the text right of a picture (an advisor's) starts
+       sprite_gap further right than the window is widened for
+       (compute_layout), so a line that fills content_width (Chinese, which
+       breaks next to any character, fills it to the pixel) ran into the
+       window's border: as wide as the window has room for.  In the game's
+       code page the original's width (a line of words seldom fills it). */
+    max_width = content_width - sprite_gap;
+  }
   total_height = 0;
   y2 = text_y;
   line_height = ((GameFont *)body_font)->line_spacing();

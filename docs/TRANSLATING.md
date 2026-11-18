@@ -268,7 +268,8 @@ bytes (serif) a character: 1.3 MB for the 2,289 characters of `zh-Hant.txt`, the
   or put together (`marks[]`); a UTF-8 one, that it is valid UTF-8 and that the font files have
   every other character it uses. `tests/utf8_text_test.cpp`
   tests the UTF-8 handling itself (cutting to fit, break rules, the edit control's wrapping and
-  caret).
+  caret), `tests/dialog_wrap_utf8_test.cpp` the game's dialogs' wrapping beside a picture (an
+  advisor's: a line of Chinese kept inside the window).
 - `CIV2_LANG=<code>` runs the game in it; `harness/extras/x-lang-eo.txt` (`make test-extras`)
   shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
   letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
@@ -280,6 +281,10 @@ bytes (serif) a character: 1.3 MB for the 2,289 characters of `zh-Hant.txt`, the
   Civilopedia's page of an advance and its description (wrapped), an envoy's greeting (lines
   joined and wrapped), the advisors, the tax rates and the date in Chinese (`西元前2400年`); and
   with sharp text.
+- These tests measure text as the game does in play (`CIV2_PLAY_TEXT=1`): the other tests
+  measure it as Wine did in the original's recordings (`CIV2_WINE_TEXT=1`,
+  `tools/native-run.sh`), some letters narrower than they are drawn, so that a word drawn in a
+  box of its measured width (the science advisor's advances) lost its last letter there.
 - The browser page: `?lang=<code>`; `src/web/test/smoke.mjs` looks at the page in Esperanto and
   in Chinese (`?lang=zh-TW`: the page's fonts are the system's that have its characters), in
   English without `?lang`, and starts the game in Esperanto (`?lang=eo`).

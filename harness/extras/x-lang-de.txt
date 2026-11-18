@@ -8,10 +8,11 @@
 # Civilopedia's page of an advance and of a unit, the tax rates, the
 # advisors' advice to build (ADVICE.TXT's blocks, found by the English
 # names) and an emissary's greeting (a section named at run time).
-# test: CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# (text measured as in play, as drawn: CIV2_PLAY_TEXT=1, tools/native-run.sh)
+# test: CIV2_PLAY_TEXT=1 CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 # (sharp: the same with sharp text and interface at density 2: the letters
 # drawn from the antialiased glyphs, the -hd shots)
-# test sharp: CIV2_TEST_SHARP=2 CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# test sharp: CIV2_PLAY_TEXT=1 CIV2_TEST_SHARP=2 CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 wait 8000
 shot xd-a-mainmenu
 key Down Down Down Down Down Down Down Down

@@ -11,10 +11,11 @@
 # game's texts all in Chinese (the translation has them too), the orders
 # menu, the science advisor, the tax rates, the advisors' advice, the
 # date in its Chinese form (label.0's "西元前%d年").
-# test: CIV2_LANG=zh-Hant CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# (text measured as in play, as drawn: CIV2_PLAY_TEXT=1, tools/native-run.sh)
+# test: CIV2_PLAY_TEXT=1 CIV2_LANG=zh-Hant CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 # (sharp: the same with sharp text and interface at density 2: the
 # antialiased glyphs, the -hd shots)
-# test sharp: CIV2_TEST_SHARP=2 CIV2_LANG=zh-Hant CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# test sharp: CIV2_PLAY_TEXT=1 CIV2_TEST_SHARP=2 CIV2_LANG=zh-Hant CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
 wait 8000
 shot xz-a-mainmenu
 key Down Down Down Down Down Down Down Down
