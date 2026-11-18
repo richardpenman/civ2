@@ -269,7 +269,7 @@ int replay_file_dialog(OPENFILENAMEA *ofn, const char *kind)
     base = strrchr(ofn->lpstrFile, '\\');
     dot = strrchr(ofn->lpstrFile, '.');
     ofn->nFileOffset = (WORD)(base ? base - ofn->lpstrFile + 1 : 0);
-    ofn->nFileExtension = (WORD)(dot ? dot - ofn->lpstrFile + 1 : 0);
+    ofn->nFileExtension = (WORD)(dot && dot > base ? dot - ofn->lpstrFile + 1 : 0);
     next_file[0] = 0;
     return TRUE;
 }

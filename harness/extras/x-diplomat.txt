@@ -1,0 +1,27 @@
+# A diplomat moved into a foreign city after a load from a folder with a
+# dot in its path (docs/BUGS.md B39, issue #31): the save is loaded as
+# SCENARIO\..\Ca_Auto.SAV, as from ~/.local/share/OpenCiv2/GameData on
+# Linux, so the game's GAME text file is "C:\...\SCENARIO\..\GAME".  The
+# diplomat, made at (19,69) next to Wounded Knee (18,68) and made the
+# active unit (W: the active phalanx waits), moves north-west (numpad 7): the mission dialog opens (before
+# the fix, nothing: GAME.TXT could not be opened).  Fixed in every mode.
+# test:
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file SCENARIO\..\Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+call unit_create 5b3d06 46 1 19 69     # a diplomat
+wait 300
+key w                       # the phalanx waits: the diplomat is next
+wait 3000
+shot 00-active
+key KP_7                    # into Wounded Knee
+wait 4000
+shot 01-mission
+key Escape
+wait 2000
+shot 02-after

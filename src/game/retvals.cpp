@@ -424,7 +424,7 @@ int __cdecl save_read_game(char *path)
     });
   save_set_file_ext(0);
   crt_strcpy(save_path,path);
-  dot_ptr = _strchr(save_path,0x2e);
+  dot_ptr = _strchr(path_file_part(save_path),0x2e);  /* B39: in the file's name */
   if (dot_ptr == (char *)0x0) {
     crt_strcat(save_path,((i8 *)&grey_palette_block.save_file_path));
   }

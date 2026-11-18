@@ -756,6 +756,7 @@ void __cdecl endgame_spaceship_arrival(int civ); /* 004710d0 */
 void __cdecl arrival_movie_on_frame(void); /* 00471c2a */
 void __cdecl arrival_movie_on_video_end(void); /* 00471db7 */
 void __cdecl endgame_show_centauri_beaten(uptr civ); /* 00471dd8 */
+char * __cdecl path_file_part(char *path); /* OpenCiv2: src/game/regargs.cpp */
 void __cdecl path_default_extension(char *name, char *ext); /* 00472950, hand-written */
 void __cdecl path_set_extension(char *dst, char *src, char *ext); /* 004729ab, hand-written */
 void __cdecl mapview_draw_tile_number(i32 x,i32 y,int number,i32 color); /* 00472b0a */

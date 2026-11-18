@@ -160,25 +160,41 @@ short __cdecl snd_mix_8bit_resample(char *dst_chars, byte *src, uint count,
 
 /* ------------------------------------------------------------------------ */
 
+/* (OpenCiv2) The file's own name in a path: what follows its last '\\', '/'
+ * or ':'.  The original looked for an extension's dot in the whole path, so a
+ * folder with a dot in its name (~/.local/... on Linux) took the place of the
+ * file's extension (docs/BUGS.md B39). */
+char * __cdecl path_file_part(char *path)
+{
+    char *file = path, *p;
+
+    for (p = path; *p != '\0'; p++)
+        if (*p == '\\' || *p == '/' || *p == ':')
+            file = p + 1;
+    return file;
+}
+
 /* 0x00472950: append "." + ext if the file name has no extension, then
- * uppercase it. */
+ * uppercase it.  B39: the dot is looked for in the file's name only. */
 void __cdecl path_default_extension(char *name, char *ext)
 {
-    if (crt_strrchr(name, '.') == NULL) {
+    if (crt_strrchr(path_file_part(name), '.') == NULL) {
         crt_strcat(name, ((i8 *)&path_default_ext_dot_str));
         crt_strcat(name, ext);
     }
     __strupr(name);
 }
 
-/* 0x004729ab: dst = src with its extension replaced by ext, uppercased. */
+/* 0x004729ab: dst = src with its extension replaced by ext, uppercased.
+ * B39: the extension is looked for in the file's name only (the original
+ * cut a name without one at a dot in its folder). */
 void __cdecl path_set_extension(char *dst, char *src, char *ext)
 {
     char *dot;
 
     if (src != dst)
         crt_strcpy(dst, src);
-    dot = crt_strrchr(dst, '.');
+    dot = crt_strrchr(path_file_part(dst), '.');
     if (dot != NULL)
         *dot = '\0';
     crt_strcat(dst, ((i8 *)&path_set_ext_dot_str));

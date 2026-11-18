@@ -28,11 +28,11 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 38 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
+Status of the list: 39 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
 B23 to B25, B28 and B32 to B38. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
-anyway. Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
+anyway, and B39 (the same result wherever the original's worked). Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
 stale reads of locals that are not bugs, are listed separately. Reports traced
 to code that has no bug are under "Checked, not bugs in MGE". Hot-seat games are not network
 games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
@@ -722,6 +722,30 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   did.
 - **Saves:** none.
 - **Status: fixed** (`bugfix_ui()`). `harness/extras/x-pediakeys.txt` (with `CIV2_TEST_FIXES=1`).
+
+### B39. A dot in a folder's name taken for the file's extension
+- **Where:** `src/game/regargs.cpp`, `path_default_extension` (00472950) and
+  `path_set_extension` (004729ab) look for the extension's dot with `strrchr` in the whole
+  path; `save_read_game` (`src/game/retvals.cpp`) and `save_write_game`
+  (`src/auto/game_save.cpp`) with `strchr`, and `game_load_dialog` looks for ".SCN" anywhere
+  in the path.
+- **What goes wrong:** after a load, the game's text file is `<save's folder>\GAME`. On Linux
+  the saves are under `~/.local/share/OpenCiv2/GameData`: the dot of ".local" counts as
+  GAME's extension, ".TXT" is not added and GAME.TXT cannot be opened. A Diplomat or Spy
+  moved into a foreign city then does nothing (`spy_city_mission_menu` stops at
+  `SPYOPTIONS` as if cancelled), and the pillage and diplomacy menus, the historians and
+  the throne room, which read GAME.TXT, fail too. A file name typed without an extension
+  in such a folder was saved without ".SAV", and `path_set_extension` cut such a name at the
+  folder's dot.
+- **Source:** issue #31, reported by blank-file (with the fix).
+- **Fix:** the dot is looked for in the file's own name, after the last `\`, `/` or `:`
+  (`path_file_part`). In every mode: a path whose folders have no dot comes out as before
+  (the original's Windows folders, the recordings). The replay script's file dialog
+  (`src/platform/replay.c`) sets `nFileExtension` the same way.
+- **Saves:** none.
+- **Status: fixed in every mode.** `tests/path_extension_test.cpp`;
+  `harness/extras/x-diplomat.txt` loads `SCENARIO\..\Ca_Auto.SAV` and moves a Diplomat into a
+  foreign city: the mission dialog opens (before the fix, nothing).
 
 ## Memory errors of the original (fixed in every mode)
 

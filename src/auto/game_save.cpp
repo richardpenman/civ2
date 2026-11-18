@@ -571,7 +571,7 @@ i32 __cdecl save_write_game(const char *file_name,int is_scenario)
   }
   save_set_file_ext(is_scenario);
   crt_strcpy(path,(const char *)((const void *)file_name));
-  dot = _strchr(path,0x2e);
+  dot = _strchr(path_file_part(path),0x2e);  /* B39: in the file's name */
   if (dot == (char *)0x0) {
     crt_strcat(path,((i8 *)&grey_palette_block.save_file_path));
   }
@@ -1060,7 +1060,7 @@ int __cdecl game_load_dialog(int is_scenario,i32 unused_arg,int show_title)
     }
     crt_strcpy(upper_path,file_path);
     __strupr(upper_path);
-    ext_match = _strstr(upper_path,((i8 *)&game_load_scn_ext_str));
+    ext_match = _strstr(path_file_part(upper_path),((i8 *)&game_load_scn_ext_str));  /* B39 */
     if (ext_match != (char *)0x0) {
       crt_strcpy(upper_path,file_path);
       slash_ptr = _strrchr(upper_path,0x5c);
