@@ -15,7 +15,13 @@
  * and ASCII ,.;:!?)]}%) nor after an opening one (「『（《 ... ([{), nor
  * next to '_' (the game's texts' space that does not break: "_._._.").
  * UTF-8's continuation bytes are 0x80-0xbf, so the game's own codes
- * (ASCII: '%', '@', '^', '|', '\\' ...) are never inside a character.
+ * (ASCII: '%', '@', '^', '|', '\\' ...) are never inside a character. *
+ * One escape, in any code page: U8_ESC (0x1a, the byte that ended a DOS
+ * text file, so no text of the game has it) followed by one character in
+ * UTF-8 is that character.  Only the Language list of the OpenCiv2 Options
+ * uses it (src/game/lang.cpp), so that each language's own name (Ελληνικά,
+ * 繁體中文) shows in a Windows-1252 or Latin-3 interface; src/platform/
+ * text.c draws and measures it, these helpers count it as one character.
  */
 #ifndef CIV2_UTF8_H
 #define CIV2_UTF8_H
@@ -32,6 +38,7 @@ extern int plat_text_utf8;
 #endif
 
 #define U8_BAD 0xffffffffu
+#define U8_ESC 0x1a
 
 /* The character at s[0..n) (n < 0: up to the NUL) and its length in *len;
    U8_BAD (with *len 1) for a byte that starts no whole character: a
@@ -59,19 +66,44 @@ static inline unsigned u8_decode(const char *str, int n, int *len)
     return cp;
 }
 
+/* The length of an escaped character (U8_ESC and a UTF-8 character) at s,
+   of s[0..n) (n < 0: up to the NUL); 0 if s has none. */
+static inline int u8_escaped_len(const char *s, int n)
+{
+    int len;
+    if (s[0] != U8_ESC || n == 1 || n == 0 || !s[1] || u8_decode(s + 1, n < 0 ? -1 : n - 1, &len) == U8_BAD)
+        return 0;
+    return len + 1;
+}
+
 /* The length of the character at s[i] (1 if not UTF-8 text). */
 static inline int u8_len_at(const char *s, int n, int i)
 {
     int len = 1;
+    if (s[i] == U8_ESC && (len = u8_escaped_len(s + i, n < 0 ? -1 : n - i)) != 0)
+        return len;
+    len = 1;
     if (plat_text_utf8 && (unsigned char)s[i] >= 0x80)
         u8_decode(s + i, n < 0 ? -1 : n - i, &len);
     return len;
+}
+
+/* The start of an escaped character that ends at s[i], or -1. */
+static inline int u8_escaped_before(const char *s, int i)
+{
+    int k;
+    for (k = i - 2; k >= 0 && k >= i - 5; k--)
+        if (s[k] == U8_ESC && u8_escaped_len(s + k, i - k) == i - k)
+            return k;
+    return -1;
 }
 
 /* The start of the character before s[i] (i - 1 if not UTF-8 text). */
 static inline int u8_prev(const char *s, int i)
 {
     int k = i - 1, len;
+    if (i >= 2 && (unsigned char)s[i - 1] >= 0x80 && (len = u8_escaped_before(s, i)) >= 0)
+        return len;
     if (!plat_text_utf8 || i <= 0)
         return i > 0 ? i - 1 : 0;
     while (k > 0 && k > i - 4 && ((unsigned char)s[k] & 0xc0) == 0x80)
@@ -85,6 +117,13 @@ static inline int u8_prev(const char *s, int i)
 static inline int u8_clip(const char *s, int n)
 {
     int k, len;
+    for (k = n - 1; k >= 0 && k >= n - 4; k--)
+        if (s[k] == U8_ESC) {
+            /* (an escaped character cut short: before it) */
+            if (u8_escaped_len(s + k, -1) > n - k)
+                return k;
+            break;
+        }
     if (!plat_text_utf8 || n <= 0)
         return n;
     k = n - 1;

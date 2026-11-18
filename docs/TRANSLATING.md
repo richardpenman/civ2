@@ -81,7 +81,9 @@ Dosiero ne trovita.
 ```
 
 - `openciv2.<key>`: OpenCiv2's own texts. `openciv2.language.name` is the language's name in
-  itself, as the Language choice shows it.
+  itself, as the Language choice shows it in every interface language (letters the
+  interface's code page lacks, such as Greek or Chinese in Windows-1252, are drawn from the
+  font files of `data/native/fonts`).
 - Placeholders (`%s`, `%d`) stay, in the same order as in English (they are filled in that
   order).
 - Keys the file lacks stay English; a key that is not OpenCiv2's (below) is one of the game's.

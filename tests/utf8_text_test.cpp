@@ -153,6 +153,19 @@ int main()
     w.edit.sel_end=21;                                                // second line, after its first character
     edit_move_vertical(&w,-1,0);
     assert(w.edit.sel_end==3);
+    // an escaped character (U8_ESC + UTF-8: a language's own name in a
+    // single-byte interface) is one character in any code page
+    for (int utf8 = 0; utf8 < 2; utf8++) {
+        plat_text_utf8 = utf8;
+        const char *el = "E\x1a\xce\xbb\x1a\xce\xbbx";        // "Eλλx"
+        assert(u8_escaped_len(el + 1, -1) == 3 && u8_escaped_len(el, -1) == 0);
+        assert(u8_len_at(el, -1, 1) == 3 && u8_len_at(el, 8, 4) == 3 && u8_len_at(el, -1, 7) == 1);
+        assert(u8_prev(el, 8) == 7 && u8_prev(el, 7) == 4 && u8_prev(el, 4) == 1 && u8_prev(el, 1) == 0);
+        assert(u8_clip(el, 3) == 1 && u8_clip(el, 2) == 1 && u8_clip(el, 4) == 4 && u8_clip(el, 6) == 4);
+        assert(u8_escaped_len("\x1a", -1) == 0 && u8_escaped_len("\x1a\xce", 2) == 0 &&
+               u8_escaped_len("\x1a\xe7\xb9\x81", -1) == 4);  // cut short; 繁
+    }
+    plat_text_utf8 = 1;
     printf("UTF-8 text: decoding, cutting to fit, break rules, dialog words, edit wrapping and caret passed\n");
     return 0;
 }

@@ -228,6 +228,10 @@ static void load_fonts(void)
  *   where the font's Latin letters are (Liberation's "gasp" table).
  * - A character neither has is a box (tofu); bytes that are no character
  *   (UTF-8 cut short) are not drawn.
+ * - In any code page, U8_ESC and a character in UTF-8 (src/include/utf8.h)
+ *   is that character: the Language list's names (Ελληνικά, 繁體中文) in a
+ *   single-byte interface.  The font files are read when first needed,
+ *   whatever the language (the browser's page gives them to every game).
  */
 #define STBTT_STATIC
 /* (its rasteriser asserts an edge's slope is not negative after flipping
@@ -946,14 +950,17 @@ static int glyph_at(FontFace *f, const char *s, int n, int *i, const Glyph **g, 
     unsigned cp;
     int len;
     ExtraGlyph *e;
-    if (ch < 0x80 || (!plat_text_utf8 && (!cp_table || cp_table[ch - 0x80] == codepage_1252[ch - 0x80]))) {
+    if (ch == U8_ESC && (len = u8_escaped_len(s + *i, n - *i)) != 0) {
+        /* (an escaped character, in any code page: utf8.h) */
+        cp = u8_decode(s + *i + 1, n - *i - 1, &len);
+        *i += len + 1;
+    } else if (ch < 0x80 || (!plat_text_utf8 && (!cp_table || cp_table[ch - 0x80] == codepage_1252[ch - 0x80]))) {
         (*i)++;
         *g = &f->g[ch];
         if (a)
             *a = &f->aa[ch];
         return 1;
-    }
-    if (plat_text_utf8) {
+    } else if (plat_text_utf8) {
         cp = u8_decode(s + *i, n - *i, &len);
         *i += len;
         if (cp == U8_BAD)
@@ -1066,7 +1073,7 @@ static int wine_text(void)
 int text_width(FontFace *f, const char *s, int n)
 {
     int i, w = 0, wine = wine_text();
-    if (plat_text_utf8 || cp_table) {
+    if (plat_text_utf8 || cp_table || (n > 0 && memchr(s, U8_ESC, (size_t)n))) {
         const Glyph *g;
         for (i = 0; i < n;)
             if (glyph_at(f, s, n, &i, &g, NULL))

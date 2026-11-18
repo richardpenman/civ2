@@ -5,7 +5,10 @@
 # graphics ticked (their art: nothing downloaded in a test run) and sharp
 # text off (the restart offered); Go To past foreign units, the retirement
 # year, the turn in the status panel off and gamma 150 chosen, which hold
-# at once: a saved game loaded without the turn after the year, brighter.
+# at once: a saved game loaded without the turn after the year, brighter;
+# the Language page (each language by its own name: Greek and Chinese
+# escaped in the Windows-1252 interface, src/include/utf8.h), Greek and
+# Chinese selected, the page cancelled.
 # test: CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
 # (sharp: the same with sharp text and interface at density 2: the dialogs'
 # text and controls drawn sharp, the -hd shots)
@@ -85,6 +88,18 @@ wait 1000
 shot xo-p-colours
 type 150                    # gamma
 key Return
+wait 1000
+key Down                    # Language: each one's own name
+key Return
+wait 1000
+shot xo-p2-language
+key Down Down Down          # Ελληνικά: its own name, measured as drawn
+wait 500
+shot xo-p3-language-greek
+key Down Down Down          # 繁體中文
+wait 500
+shot xo-p4-language-chinese
+key Escape
 wait 1000
 key Escape
 wait 2000

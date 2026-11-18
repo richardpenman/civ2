@@ -158,8 +158,10 @@ static void chosen_language(char *code, int n)
 }
 
 /* A language's name (in the code page cp of its file) as the game's text
-   is now (plat_text_codepage_name: Windows-1252, a code page, UTF-8): 0 if
-   it has a character the game's text cannot have (Chinese in Windows-1252). */
+   is now (plat_text_codepage_name: Windows-1252, a code page, UTF-8), a
+   character the game's text cannot have (Greek or Chinese in Windows-1252)
+   escaped (U8_ESC and the character in UTF-8, src/include/utf8.h: text.c
+   draws it); 0 if it does not fit or is not text. */
 static int name_in_current_page(const char *cp, const char *in, char *out, int n)
 {
     const char *now = plat_text_codepage_name();
@@ -178,9 +180,14 @@ static int name_in_current_page(const char *cp, const char *in, char *out, int n
                 return 0;
         } else
             c = codepage_to_unicode(from, (unsigned char)in[i++]);
-        if (to_utf8) {
-            char u[4];
+        unsigned char b = 0;
+        if (!to_utf8 && c)
+            b = codepage_from_unicode(to, c);
+        if (to_utf8 || (c && !b)) {
+            char u[5];
             int k = 0;
+            if (!to_utf8)
+                u[k++] = U8_ESC;
             if (c < 0x80) u[k++] = (char)c;
             else if (c < 0x800) { u[k++] = (char)(0xc0 | c >> 6); u[k++] = (char)(0x80 | (c & 0x3f)); }
             else if (c < 0x10000) { u[k++] = (char)(0xe0 | c >> 12); u[k++] = (char)(0x80 | ((c >> 6) & 0x3f));
@@ -192,7 +199,6 @@ static int name_in_current_page(const char *cp, const char *in, char *out, int n
             memcpy(out + o, u, (size_t)k);
             o += k;
         } else {
-            unsigned char b = c ? codepage_from_unicode(to, c) : 0;
             if (!b || o + 1 >= n)
                 return 0;
             out[o++] = (char)b;
@@ -203,15 +209,13 @@ static int name_in_current_page(const char *cp, const char *in, char *out, int n
 }
 
 /* The file's "openciv2.language.name" (the language's own name), into name,
-   as the game's text can show it now (else, a language whose letters it
-   cannot have: its English name, or its code). */
+   as the game's text can show it now, its letters beyond the interface's
+   code page escaped (name_in_current_page); else its code. */
 static int language_name(const char *path, const char *code, char *name, int n)
 {
-    static const char *const english[][2] = {{"zh-Hant", "Chinese (traditional)"}, {"el", "Greek"}};
     char line[256], cp[32] = "windows-1252", raw[256] = "";
     FILE *f = fopen(path, "r");
     int next = 0, found = 0;
-    size_t i;
     if (!f)
         return 0;
     while (fgets(line, sizeof line, f)) {
@@ -231,9 +235,6 @@ static int language_name(const char *path, const char *code, char *name, int n)
     if (name_in_current_page(cp, raw, name, n))
         return 1;
     snprintf(name, (size_t)n, "%s", code);
-    for (i = 0; i < sizeof english / sizeof english[0]; i++)
-        if (!strcmp(code, english[i][0]))
-            snprintf(name, (size_t)n, "%s", english[i][1]);
     return 1;
 }
 
