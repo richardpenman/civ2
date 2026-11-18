@@ -417,6 +417,71 @@ function fromSite() {
     return siteP;
 }
 
+// ---- the game from the site itself (make web GAME=1: game/index.json) ----
+
+// The site's copy of the game, or null: {core: {size, files}, files: [[path, size]]}
+let siteGameP = null;
+const siteGame = () => siteGameP || (siteGameP = fetch('game/index.json', {cache: 'no-cache'})
+    .then((r) => (r.ok ? r.json() : null)).catch(() => null));
+
+// A first visit to such a site: its copy (game/core.zip) kept in this
+// browser, its progress said, as a copy the player chose would be
+async function installFromSite(store, g) {
+    $('setup').hidden = false;
+    const label = t('web.loading_files').replace(/\s*\.\.\.$/, '');
+    const r = await fetch('game/core.zip');
+    if (!r.ok)
+        throw new Error('game/core.zip: ' + r.status);
+    const total = +r.headers.get('Content-Length') || g.core.size, parts = [], reader = r.body.getReader();
+    let done = 0;
+    for (;;) {
+        const {done: end, value} = await reader.read();
+        if (end)
+            break;
+        parts.push(value);
+        done += value.length;
+        status(t('web.hd_progress', label, MB(done), MB(total)));
+    }
+    const files = await zipFiles(new File(parts, 'core.zip'));
+    if (!await importFiles(store, files))
+        throw new Error(window.civ2Status);
+}
+
+// The site's files the stored game lacks (its videos and music: game/files),
+// read from the site when the game opens them: the whole file at once,
+// synchronously (the game reads them whole, fopen to fclose, without
+// waiting on the page), the browser's HTTP cache keeping it; the last
+// few kept in memory too
+function siteFiles(fs, g, have) {
+    const recent = [];
+    const fetchSync = (path) => {
+        const x = new XMLHttpRequest();
+        x.open('GET', 'game/files/' + path.split('/').map(encodeURIComponent).join('/'), false);
+        x.overrideMimeType('text/plain; charset=x-user-defined');
+        x.send();
+        if (x.status !== 200)
+            throw new Error(path + ': ' + x.status);
+        const s = x.responseText, out = new Uint8Array(s.length);
+        for (let i = 0; i < s.length; i++)
+            out[i] = s.charCodeAt(i);
+        return out;
+    };
+    for (const [path, size] of g.files) {
+        if (have.has(path.toUpperCase()))
+            continue;
+        let data = null;
+        fs.putSource(GAME + '/' + path, size, (pos, n) => {
+            if (!data) {
+                data = fetchSync(path);
+                recent.push(() => (data = null));
+                while (recent.length > 3)
+                    recent.shift()();
+            }
+            return data.subarray(pos, pos + n);
+        });
+    }
+}
+
 async function play(store) {
     // (the game files and saved games kept for good: without this the browser
     // may clear them when disk space runs low, Safari after a week unused)
@@ -450,6 +515,9 @@ async function play(store) {
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
+    const g = await siteGame();
+    if (g)
+        siteFiles(fs, g, new Set(entries.map(([k]) => k.toUpperCase())));
     // ?lang=CODE: the game's language too, as its OpenCiv2 Options have it
     // (CIV.INI [OpenCiv2] Language=, in the game's files; kept in this
     // browser only when the game changes it: the language the player had
@@ -743,6 +811,18 @@ async function main() {
     // later visits: straight into the game (?setup: this page first)
     if (!setup && await store.count() > 0)
         return play(store);
+    // a first visit to a site with the game (make web GAME=1): its copy
+    // kept, then the game
+    const g = setup ? null : await siteGame();
+    if (g) {
+        try {
+            await installFromSite(store, g);
+            return play(store);
+        } catch (e) {
+            console.error(e);
+            status(t('web.copy_failed', e.message));
+        }
+    }
     showSetup(store);
 }
 

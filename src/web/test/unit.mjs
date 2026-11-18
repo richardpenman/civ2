@@ -8,7 +8,7 @@ import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
-import {sha256, packFrom, keepPack, loadPack, packIndex, prunePack, drawn} from '../hdpack.js';
+import {sha256, sha256js, packFrom, keepPack, loadPack, packIndex, prunePack, drawn} from '../hdpack.js';
 import {iniGet, iniSet, hdWanted} from '../options.js';
 
 // keys
@@ -295,5 +295,11 @@ assert.equal(hdWanted(ini0, '3'), 3);
 assert.equal(hdWanted(ini1, '0'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);
+
+// SHA-256 without crypto.subtle (a plain http:// site): as node's, at the block boundaries
+for (const n of [0, 1, 55, 56, 63, 64, 65, 119, 120, 1000]) {
+    const b = Uint8Array.from({length: n}, (_, i) => (i * 37 + n) & 255);
+    assert.equal(Buffer.from(sha256js(b)).toString('hex'), createHash('sha256').update(b).digest('hex'));
+}
 
 console.log('src/web unit tests passed');

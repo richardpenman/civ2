@@ -8,7 +8,7 @@ graphics and your own copy of Civilization II. How it is built and how it works 
 
 `make web` builds a static site into `build/web`: a page, its scripts, the game as a 3.0 MB
 WebAssembly module, the set-up as a second 0.8 MB module, and the fonts (`make web HD=1`: the HD
-graphics' art too, below). There is no server-side
+graphics' art too, below; `make web GAME=1`: the game itself, for a private site only, below). There is no server-side
 code: any web server can serve the folder.
 
 ```sh
@@ -48,6 +48,39 @@ disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up 
 replace the game files or remove them.
 
 Music plays where the game's folder has it (`Music/TrackNN.ogg`).
+
+## A site with the game on it (GAME=1)
+
+`make web GAME=1` (with `HD=1` as well, usually) puts the installed game (`~/Civ2`, or
+`CIV2_GAME`) on the site too, for people who have no copy of their own, such as the reviewers of a
+translation: **a site built so distributes Civilization II's files, which are not ours to give
+away: keep such a site private (behind a password, as below), for people who may play the game,
+and never publish it.**
+
+- The game but its videos, music and the advisors' videos is `game/core.zip` (55 MB). On a first
+  visit (no game in the browser's storage) the page keeps it in the browser without asking, its
+  progress on the screen, and starts the game: an address such as `.../?lang=de` opens straight
+  into the game in German. `?setup` still offers to choose another copy.
+- `Video/`, `KINGS/` and `Music/` are `game/files/` as they are (the music's `.wav` tracks
+  encoded to Ogg Vorbis, 30 MB rather than 233; `tools/wav2ogg.c`), listed in `game/index.json`,
+  and are not kept in the browser's storage: the page reads one from the site when the game opens
+  it, whole (the game reads them whole), which pauses the game for that download (a council video
+  is 30 MB, a wonder's 6 MB, a music track 2 to 5 MB); the browser's HTTP cache keeps them after.
+- The site's copy has a `CIV.INI` (where the installed game has none) with HD graphics on (with
+  `HD=1`) and the animated heralds of `KINGS/` on, without their first-start question.
+- Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).
+
+`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`HD=1 GAME=1`) and serves it
+on this machine with Caddy in Docker (container `civ2-review`, restarted with the machine; down:
+`docker rm -f civ2-review`) at `/civ2/`, behind a user name and password (HTTP Basic Auth; the
+root and anything else is a plain 404, with `X-Robots-Tag: noindex` and a `robots.txt` that
+disallows all). By default over HTTPS at the machine's `sslip.io` name with a Let's Encrypt
+certificate (ports 80 and 443 reachable from outside); `REVIEW_HTTP=1`: plain HTTP on port 80
+(the password in clear text). Its files are outside the repository, in `~/civ2-review`: the site's
+copy, the `Caddyfile` and `config` (the user name and password; `REVIEW_USER=` and
+`REVIEW_PASSWORD=` set them). Other projects' routes on the same server go in
+`~/web-routes/*.caddy`. The page works over plain HTTP too: where the browser has no
+`crypto.subtle` (an `http://` page but localhost), the HD art's check computes SHA-256 itself.
 
 ## Language
 

@@ -33,6 +33,18 @@ HD=1 in the environment (make web HD=1) the installed art
 with hd/pack.json saying so: the game's OpenCiv2 Options offer HD graphics
 only where the site has the art (otherwise build/web/hd is removed).
 
+With GAME=1 (make web GAME=1) the site carries the game too, for a
+private site of people who have no copy of their own (docs/BROWSER.md:
+it distributes the game's files): the installed game (paths.GAME, ~/Civ2)
+as game/core.zip, but its videos, music and the advisors' videos (Video/,
+Music/, KINGS/) and logs, which are game/files/<path> as they are (the
+music's .wav tracks encoded to Ogg Vorbis, tools/wav2ogg.c), listed in
+game/index.json ({core: {size, files}, files: [[path, size]]}).  The page
+keeps core.zip's files on a first visit, without asking, and reads the
+others from the site when the game opens them.  A CIV.INI with HD graphics
+on ([OpenCiv2] Graphics=HD) where the site has the art (HD=1) and the game
+none of its own.  Without GAME=1, build/web/game is removed.
+
 Usage: build_web.py [--no-module]   (--no-module: build/wasm/civ2.wasm as it is)
 Binaryen comes from tools/fetch-toolchain.sh web (or $BINARYEN: its folder).
 """
@@ -43,6 +55,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import paths  # noqa: E402
@@ -154,6 +167,115 @@ def newer(src, dst):
     return not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src)
 
 
+# Kept out of game/core.zip: read from the site when the game opens them
+LAZY_DIRS = ('video', 'music', 'kings')
+
+
+def wav2ogg():
+    """build/wav2ogg (tools/wav2ogg.c, the host's cc): raw PCM to Ogg Vorbis."""
+    out = os.path.join(ROOT, 'build', 'wav2ogg')
+    src = os.path.join(ROOT, 'tools', 'wav2ogg.c')
+    if not newer(src, out):
+        return out
+    if not os.path.exists(os.path.join(paths.VORBIS, 'lib', 'vorbisenc.c')):
+        run(['sh', os.path.join(ROOT, 'tools', 'fetch-toolchain.sh')])
+    sources = [src] + [os.path.join(paths.OGG, 'src', f + '.c') for f in ('bitwise', 'framing')] + \
+        [os.path.join(paths.VORBIS, 'lib', f + '.c') for f in
+         ('analysis', 'bitrate', 'block', 'codebook', 'envelope', 'floor0', 'floor1', 'info', 'lookup', 'lpc', 'lsp',
+          'mapping0', 'mdct', 'psy', 'registry', 'res0', 'sharedbook', 'smallft', 'synthesis', 'vorbisenc', 'window')]
+    # (libogg's config_types.h: setup_web.c's build has it in its include folder)
+    run([os.environ.get('CC', 'cc'), '-O2', '-w', '-I' + os.path.join(paths.OGG, 'include'),
+         '-I' + os.path.join(paths.VORBIS, 'include'), '-I' + os.path.join(paths.VORBIS, 'lib'), '-o', out] +
+        sources + ['-lm'])
+    return out
+
+
+def write_game():
+    """game/: the installed game (GAME=1): core.zip, files/, index.json."""
+    import wave
+    import zipfile
+    game, out = paths.GAME, os.path.join(OUT, 'game')
+    if not os.path.exists(os.path.join(game, 'Civ2Art.dll')):
+        sys.exit('GAME=1: no installed game in %s (CIV2_GAME)' % game)
+    os.makedirs(out, exist_ok=True)
+    core, lazy = [], []
+    for d, dirs, files in os.walk(game):
+        dirs.sort()
+        for f in sorted(files):
+            path = os.path.join(d, f)
+            rel = os.path.relpath(path, game).replace(os.sep, '/')
+            if f.lower().endswith('.log'):
+                continue
+            (lazy if rel.split('/')[0].lower() in LAZY_DIRS else core).append((rel, path))
+    hd = os.environ.get('HD', '') not in ('', '0')
+    zpath = os.path.join(out, 'core.zip')
+    # (what core.zip was made of, outside the site: made again when that changes)
+    stamp, spath = json.dumps([[r, os.path.getsize(p), os.path.getmtime(p)] for r, p in core] + [hd]), \
+        os.path.join(ROOT, 'build', 'web-game.stamp')
+    if not os.path.exists(zpath) or not os.path.exists(spath) or open(spath).read() != stamp:
+        print('packing %s into %s' % (game, os.path.relpath(zpath, ROOT)), flush=True)
+        # (a game with none of its own set-up, as the site gives it: the
+        # animated heralds of KINGS/ on, their warning already shown --
+        # CIV2.DAT's game options, offset 14, OPT_ANIMATED_HERALDS -- and HD
+        # graphics where the site has the art)
+        ini = not any(r.lower() == 'civ.ini' for r, _ in core)
+        with zipfile.ZipFile(zpath + '.part', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+            for rel, path in core:
+                data = open(path, 'rb').read()
+                if ini and rel.lower() == 'civ2.dat' and len(data) >= 18:
+                    opts = int.from_bytes(data[14:18], 'little') | 0x200000
+                    data = data[:14] + opts.to_bytes(4, 'little') + data[18:]
+                z.writestr(zipfile.ZipInfo(rel, time.localtime(os.path.getmtime(path))[:6]), data,
+                           zipfile.ZIP_DEFLATED, 9)
+            if ini:
+                z.writestr('CIV.INI', '[Civilization Gold]\r\nHerald Warning Shown=1\r\n' +
+                           ('\r\n[OpenCiv2]\r\nGraphics=HD\r\n' if hd else ''))
+        os.replace(zpath + '.part', zpath)
+        with open(spath, 'w') as f:
+            f.write(stamp)
+    files, listed = os.path.join(out, 'files'), []
+    have = {r.lower() for r, _ in lazy}
+    for rel, path in lazy:
+        name = rel
+        if rel.lower().startswith('music/') and rel.lower().endswith('.wav'):
+            name = rel[:-4] + '.ogg'
+            if name.lower() in have:
+                continue        # (the game plays the .ogg: TrackNN.ogg, else .wav)
+            dst = os.path.join(files, name)
+            if newer(path, dst):
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                print('encoding %s' % rel, flush=True)
+                with wave.open(path) as w:
+                    if (w.getnchannels(), w.getsampwidth(), w.getframerate()) != (2, 2, 44100):
+                        sys.exit('%s: not 16-bit stereo 44.1 kHz' % path)
+                    with open(dst + '.part', 'wb') as o:
+                        p = subprocess.Popen([wav2ogg(), rel[-6:-4] if rel[-6:-4].isdigit() else '1'],
+                                             stdin=subprocess.PIPE, stdout=o)
+                        while True:
+                            b = w.readframes(1 << 16)
+                            if not b:
+                                break
+                            p.stdin.write(b)
+                        p.stdin.close()
+                        if p.wait():
+                            sys.exit('wav2ogg failed on ' + path)
+                os.replace(dst + '.part', dst)
+        else:
+            dst = os.path.join(files, name)
+            if newer(path, dst):
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy2(path, dst)
+        listed.append([name, os.path.getsize(dst)])
+    keep = {os.path.join(files, n) for n, _ in listed}
+    for d, _, fs in os.walk(files):
+        for f in fs:
+            if os.path.join(d, f) not in keep:
+                os.remove(os.path.join(d, f))
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump({'core': {'size': os.path.getsize(zpath), 'files': len(core)}, 'files': listed}, f)
+    return os.path.getsize(zpath), sum(n for _, n in listed)
+
+
 def build_setup():
     """build/web/setup.wasm: the set-up (its sources as tools/build_port.py's exe step has them)."""
     if not all(os.path.exists(f) for f in (os.path.join(paths.UNSHIELD, 'lib', 'libunshield.c'),
@@ -218,6 +340,12 @@ def main():
                 shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
+    if os.environ.get('GAME', '') not in ('', '0'):
+        core, lazy = write_game()
+        print('the game on the site (GAME=1: for private use only): game/core.zip %.0f MB, game/files %.0f MB' %
+              (core / 1e6, lazy / 1e6), flush=True)
+    elif os.path.isdir(os.path.join(OUT, 'game')):
+        shutil.rmtree(os.path.join(OUT, 'game'))
     write_texts()
     for f in glob.glob(os.path.join(OUT, 'data', 'fonts_*.bin.gz')):
         if os.path.basename(f)[:-3] not in FONTS:
