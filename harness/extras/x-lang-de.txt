@@ -1,0 +1,100 @@
+# A translation (docs/TRANSLATING.md): German (data/native/lang/de.txt, in
+# Windows-1252, the game's own code page).
+# The main menu's OpenCiv2 Options, the Options dialog and its Language
+# page, the file dialog (the real one), a city renamed with German's
+# letters typed (input_char: as the host's text input gives them), the
+# city window with that name; then the game's own texts in German (the
+# translation has them too): the Orders menu, the science advisor, the
+# Civilopedia's page of an advance and of a unit, the tax rates, the
+# advisors' advice to build (ADVICE.TXT's blocks, found by the English
+# names) and an emissary's greeting (a section named at run time).
+# test: CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+# (sharp: the same with sharp text and interface at density 2: the letters
+# drawn from the antialiased glyphs, the -hd shots)
+# test sharp: CIV2_TEST_SHARP=2 CIV2_LANG=de CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_REAL_FILEDLG=1
+wait 8000
+shot xd-a-mainmenu
+key Down Down Down Down Down Down Down Down
+key Return
+wait 2000
+shot xd-b-options
+key Down Down Down Down Down Down          # Sprache (Language)
+key Return
+wait 1000
+shot xd-c-language
+key Escape
+wait 1000
+key Escape
+wait 2000
+key Up Up Up Up             # "Load a Game"
+key Return
+wait 3000
+shot xd-d-filedlg
+type äöüßÄÖ
+wait 500
+shot xd-e-filedlg-typed
+key BackSpace BackSpace BackSpace BackSpace BackSpace BackSpace
+type Ca_Auto.SAV
+key Return
+wait 30000
+key Return
+wait 8000
+call menu_command 4e2803 0 528
+wait 3000
+key Return
+wait 12000
+click 235 265
+wait 12000
+call city_button_rename 50b74e 0
+wait 3000
+type Münster Öß
+wait 500
+shot xd-f-rename
+key Return
+wait 3000
+shot xd-g-city
+key Escape
+wait 3000
+click 130 28                # the Orders menu
+wait 1500
+shot xd-h-orders
+key Escape
+wait 1000
+call menu_command 4e2803 0 1286     # 0x506 Science Advisor
+wait 3000
+shot xd-i-science
+key Escape
+wait 2000
+call menu_command 4e2803 0 2305     # Civilopedia: advances
+wait 3000
+click 113 405               # Info: the first entry's page
+wait 3000
+shot xd-j-pedia-advance
+key Escape
+wait 2000
+call menu_command 4e2803 0 2311     # Civilopedia: units
+wait 3000
+click 163 405               # Info
+wait 3000
+shot xd-k-pedia-unit
+key Escape
+wait 2000
+call menu_command 4e2803 0 513      # 0x201 Tax Rate
+wait 3000
+shot xd-l-taxrate
+key Escape
+wait 2000
+click 235 265               # the city again
+wait 12000
+call city_button_change 50a473 0    # Change: the advisors' advice (Instant Advice)
+wait 1500
+shot xd-m-advice
+key Escape
+wait 2000
+key Escape
+wait 3000
+call diplo_greet_emissary 458ab1 1 7    # an emissary's greeting (GREETINGS and a number)
+wait 3000
+shot xd-n-emissary
+key Return
+wait 2000

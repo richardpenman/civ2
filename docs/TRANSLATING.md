@@ -5,15 +5,15 @@ OpenCiv2 has two kinds of text:
 - **The game's own texts** (`GAME.TXT`, `RULES.TXT`, `LABELS.TXT`, `DESCRIBE.TXT`, `CITY.TXT`,
   `MENU.TXT`, the advisors', the scenarios' ...) come from your copy of Civilization II, as the
   original reads them. A localized Civilization II (German, French, Spanish ...) gives them in
-  its language as it is. A translation may carry them too (keyed: below): the Esperanto one
-  that comes with OpenCiv2 translates the whole game. Where your copy of the game has no
+  its language as it is. A translation may carry them too (keyed: below): the German and
+  Esperanto ones that come with OpenCiv2 translate the whole game. Where your copy of the game has no
   such file, OpenCiv2 uses its own English of it (below).
 - **OpenCiv2's own texts**: what it adds — OpenCiv2 Options, the interface additions' few words,
   the file dialog, its message boxes, the set-up's messages and progress, the HD graphics'
   download, the browser version's page. These are translated here. English is built in;
-  `data/native/lang/` has the translations that come with OpenCiv2: Esperanto (`eo.txt`, a first
-  draft: machine-drafted, needs review by a native speaker), which translates the game's texts
-  too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
+  `data/native/lang/` has the translations that come with OpenCiv2 (first drafts:
+  machine-drafted, need review by a native speaker): German (`de.txt`, Deutsch, in
+  Windows-1252) and Esperanto (`eo.txt`), which translate the game's texts too, and Traditional Chinese (`zh-Hant.txt`, 繁體中文, in UTF-8: machine-drafted, needs review
   by a native speaker), which has OpenCiv2's own texts and, so far, only a sample of the game's
   (the main menu, naming a city, the envoys' greetings, the menu bar's titles, one advance and
   its Civilopedia article).
@@ -264,7 +264,7 @@ browser version's files are gzipped: some 15% less).
 - `CIV2_LANG=<code>` runs the game in it; `harness/extras/x-lang-eo.txt` (`make test-extras`)
   shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
   letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
-  city window, an advisor, the Civilopedia.
+  city window, an advisor, the Civilopedia; `x-lang-de.txt` the same in German.
 - `harness/extras/x-lang-zh.txt` does the same in Traditional Chinese: the main menu, Options
   and its Language page, the file dialog with Chinese typed and taken back character by
   character, the map's status panel, a city renamed in Chinese and its window, the menu bar, the

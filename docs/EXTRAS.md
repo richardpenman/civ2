@@ -102,10 +102,10 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   the messages shown on the map (`SuppressList=`).
 - **Language**: the language of OpenCiv2's own texts (this dialog, the file dialog, the
   message boxes, the set-up): *Automatic* (the system's language; in the browser version the
-  page's), *English*, or one of the translations in the data directory's `lang/` (Esperanto
-  and Traditional Chinese come with it); `Language=<code>` (`Language=Auto` or none: automatic).  It takes effect when
+  page's), *English*, or one of the translations in the data directory's `lang/` (German,
+  Esperanto and Traditional Chinese come with it); `Language=<code>` (`Language=Auto` or none: automatic).  It takes effect when
   the game starts again (*Restart now*); `CIV2_LANG=<code>` wins over it.  A translation may
-  carry the game's own texts too (Esperanto's does: the whole game); otherwise they are those
+  carry the game's own texts too (German's and Esperanto's do: the whole game); otherwise they are those
   of the installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
 
 The interface additions, the rule changes and the limits take effect at once (from the game
@@ -122,7 +122,7 @@ It is not in replays and unit tests, which compare the main menu with the origin
 (`CIV2_TEST_OPTIONS=1` shows it in a replay, where nothing is written to `CIV.INI`, downloaded
 or restarted: `harness/extras/x-options.txt`).  Its texts are keyed (`src/host/texts.h`) and
 translated with the rest ([TRANSLATING.md](TRANSLATING.md); `harness/extras/x-lang-eo.txt`
-shows it in Esperanto, `x-lang-zh.txt` in Chinese).
+shows it in Esperanto, `x-lang-de.txt` in German, `x-lang-zh.txt` in Chinese).
 
 These choices were made before in an opening window shown before the game started (and, before
 that, in Game > OpenCiv2 Options); OpenCiv2 Options in the main menu replaces both.

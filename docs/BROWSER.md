@@ -52,7 +52,7 @@ Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 ## Language
 
 The page is in English unless its address asks for a language: `?lang=CODE`, for the set-up
-page and the game alike, e.g. `http://localhost:8000/?lang=eo` (Esperanto) or
+page and the game alike, e.g. `http://localhost:8000/?lang=de` (German), `?lang=eo` (Esperanto) or
 `http://localhost:8000/?setup&lang=zh-TW`.  The code is matched loosely against the site's
 translations (those of `data/native/lang`, listed in `lang/index.json` by `make web`): `de-AT`
 finds `de`, a `zh-TW`, `zh-HK` or `zh-Hant` the Traditional Chinese, and one the site has no
