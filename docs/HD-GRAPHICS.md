@@ -57,6 +57,10 @@ Otherwise:
    set-up takes `--hd` out of its arguments (as `--fix-cue-gaps`) and passes it to the game
    as `CIV2_HD_ARG`.
 
+Where the game folder has no original graphics at all, the art is also what they are made from,
+at the original's size and layout, HD graphics on or off ([NO-INSTALL.md](NO-INSTALL.md),
+`src/platform/synth.c`).
+
 Without the art the game says so in its log and plays with the original graphics (sharp text and
 interface still, where they are on: below).  HD graphics are never on with `CIV2_CLASSIC=1`, in
 replays (but with `CIV2_TEST_HD=N`, density N) or in the unit tests.  `CIV2_HD_PACK=FILE` names another pack.

@@ -1,0 +1,97 @@
+# Playing without the original's install (docs/NO-INSTALL.md), as
+# x-no-install (the install's pictures, .DAT files, text files, RULES.TXT
+# and sounds removed): the autosave loaded, the advisors, the tax rates, the Civilopedia, an announcement's
+# picture, a city's view, the spaceship, the Hall of Fame, the map at its
+# largest zoom and the throne room; the same
+# with HD graphics (the hd run).
+# test: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test hd: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 6000
+shot ni2-00-map
+key F2
+wait 3000
+shot ni2-01-defense
+key Escape
+wait 2000
+key F4
+wait 3000
+shot ni2-02-attitude
+key Escape
+wait 2000
+key F5
+wait 3000
+shot ni2-03-trade
+key Escape
+wait 2000
+key F6
+wait 3000
+shot ni2-04-science
+key Escape
+wait 2000
+key F7
+wait 3000
+shot ni2-05-wonders
+key Escape
+wait 2000
+key F8
+wait 3000
+shot ni2-06-topfive
+key Escape
+wait 2000
+key F11
+wait 3000
+shot ni2-07-demographics
+key Escape
+wait 2000
+call taxrate_dialog_show 0 1
+wait 3000
+shot ni2-08-taxrate
+key Escape
+wait 2000
+call menu_command 4e2803 0 2305     # Civilopedia: advances
+wait 3000
+click 92 382                 # Info: the first entry's page
+wait 3000
+shot ni2-09-pedia-advance
+key Escape
+wait 2000
+call menu_command 4e2803 0 2311     # Civilopedia: units
+wait 3000
+shot ni2-10-pedia-units
+key Escape
+wait 2000
+call hd_test_city_picture 0 76 0
+wait 3000
+shot ni2-11-picture
+key Return
+wait 3000
+call cityview_open 454260 0       # a city's view
+wait 8000
+shot ni2-12-cityview
+key Escape
+wait 3000
+call hd_test_spaceship 0 20 4 3 2 1 1
+wait 5000
+shot ni2-13-spaceship
+key Escape
+wait 3000
+key Escape
+wait 3000
+call hall_of_fame_show 0 -1
+wait 5000
+shot ni2-14-halloffame
+key Escape
+wait 3000
+key ctrl+z                  # the map at its largest zoom
+wait 4000
+shot ni2-15-maxin
+call throneroom_show 0 1
+wait 400000
+shot ni2-16-throne

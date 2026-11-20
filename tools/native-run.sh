@@ -12,6 +12,11 @@ rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g
 # game starts as on a fresh install), else the harness's CIV2.DAT (it skips
 # the question of the heralds' memory)
 if [ -n "$CIV2_NO_DAT" ]; then find /tmp/g -maxdepth 1 -iname '*.dat' -exec rm -f {} +; else cp /work/harness/CIV2.DAT /tmp/g/; fi
+# CIV2_NO_GRAPHICS=1: the original's pictures left out (the sheets, *.GIF; the
+# picture libraries, *.dll; civ2.exe, whose resources are cursors, icons and
+# bitmaps): made from the HD art instead (src/platform/synth.c,
+# docs/NO-INSTALL.md; the pack in CIV2_HD_PACK or data/native/hd)
+[ -z "$CIV2_NO_GRAPHICS" ] || find /tmp/g -maxdepth 1 \( -iname '*.gif' -o -iname '*.dll' -o -iname 'civ2.exe' \) -exec rm -f {} +
 # CIV2_NO_SOUND=1: the game's Sound folder left out (it plays nothing)
 [ -z "$CIV2_NO_SOUND" ] || find /tmp/g -maxdepth 1 -type d -iname sound -exec rm -rf {} +
 # (the recordings were made without the CD's videos and music: a copy of the

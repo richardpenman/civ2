@@ -292,6 +292,13 @@ void plat_screenshot(const char *path);
 
 void plat_log(const char *fmt, ...);
 int plat_audit_on(void);       /* CIV2_AUDIT: files and resources asked for, logged */
+/* Pictures for a game folder without the original's graphics (synth.c,
+   docs/NO-INSTALL.md): a sheet's file made (1, its host path), a picture
+   library's GIF resource, a civ2.exe resource's picture as RGBA. */
+int synth_file(const char *name, char *host, size_t n);
+int synth_module(const char *module);
+const unsigned char *synth_resource(const char *module, int id, unsigned *len);
+unsigned char *synth_exe_rgba(int type, int id, int w, int h, int x, int y, int cw, int ch);
 void api_trace(const char *name, void *caller);
 #ifdef __wasm__
 #define API_TRACE() api_trace(__func__, 0)       /* (no return addresses: every call counts) */

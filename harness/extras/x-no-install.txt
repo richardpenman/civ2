@@ -1,0 +1,61 @@
+# Playing without the original's install (docs/NO-INSTALL.md): the game run
+# with the install's pictures (the sheets, *.GIF; the picture libraries,
+# *.dll; civ2.exe: CIV2_NO_GRAPHICS=1, made from the HD art,
+# src/platform/synth.c), its CIV2.DAT and HALLFAME.DAT (CIV2_NO_DAT=1: a
+# fresh install's first start), its text files and RULES.TXT (CIV2_NO_TEXT=1,
+# CIV2_NO_RULES=1: OpenCiv2's own) and its Sound folder (CIV2_NO_SOUND=1)
+# removed.  The first start's question (the heralds' memory), the main menu,
+# a new game set up with its pictures (world size ... city style), the
+# world made, the map, a city founded and its window; then the autosave
+# loaded: the map at three zooms, a city's view, the advisors, the tax rates, the Civilopedia, the throne room, an
+# announcement's picture, a diplomat's talks, the spaceship and the Hall of
+# Fame; the same with HD graphics (the hd run).
+# test: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test hd: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+wait 8000
+shot ni-00-first
+key Return              # Begin a New Game
+wait 3000
+shot ni-01-worldsize
+key Return
+wait 3000
+shot ni-02-difficulty
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+shot ni-03-rules
+key Return
+wait 3000
+key Return
+wait 3000
+shot ni-04-tribe
+key Return
+wait 3000
+key Return
+wait 5000
+shot ni-05-citystyle
+key Return
+wait 600000             # world generation
+shot ni-06-intro
+key Return
+wait 5000
+shot ni-07-next
+key Return
+wait 5000
+shot ni-08-map
+key b                   # a city founded
+wait 3000
+key Return
+wait 5000
+shot ni-09-founded
+key Return
+wait 3000
+shot ni-09-tutorial
+key Return
+wait 5000
+shot ni-09-city
+key Escape
+wait 3000

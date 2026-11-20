@@ -75,8 +75,19 @@ scenario's nor the game's folder has the file (`lang_builtin_text_file`).  `test
 (`tests/text_skeleton.txt`); replays without the game's text files and RULES.TXT
 (`CIV2_NO_TEXT=1 CIV2_NO_RULES=1`): newgame, long50, editors, editors2, scenario, setup and
 rome have the recordings' `rand()` traces (their screens differ in wording only), and
-`harness/extras/x-own-text.txt` shows them.  Still from the game: its graphics, sounds,
-videos and music, scenarios.
+`harness/extras/x-own-text.txt` shows them.
+
+Without the install ([NO-INSTALL.md](NO-INSTALL.md): every file and resource the game asks for,
+measured with `CIV2_AUDIT=1`, and what stands in for each): where the game folder lacks its
+pictures (the sheets, the picture libraries, `civ2.exe`'s cursors and bitmaps), they are made
+from the HD art at the original's size and layout (`src/platform/synth.c`), keeping the palette
+indices the game's code relies on; `CIV2.DAT` and `HALLFAME.DAT` are made by the game as on a
+fresh install; `timerdll.dll` and `XDaemon.dll` are built in.  `harness/extras/x-no-install.txt`
+and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text, rules and sounds
+(`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), with and
+without HD graphics.  Still from the game: its sounds, videos and music, scenarios; without HD
+graphics the throne room and the spaceship are the pack's pieces misplaced, the wonders' movie
+border a painting.
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads

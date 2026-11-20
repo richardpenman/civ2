@@ -1808,6 +1808,57 @@ void hd_init(int classic, int unit_test, int scale)
         plat_log("Sharp text and interface: density %d\n", hd_density);
 }
 
+/* ---- the art for the pictures a game folder lacks (src/platform/synth.c) ----
+
+   The pack (and OpenCiv2's own pictures) opened whether or not HD graphics
+   are on, to make the original's pictures where the game folder has none
+   (docs/NO-INSTALL.md).  hd_art and the planes are left as they are. */
+int hd_art_open(void)
+{
+    char path[1100];
+    if (pack)
+        return 1;
+    if (!hd_pack_path(path, sizeof path) || !open_pack(path))
+        return 0;
+    load_extras();
+    return 1;
+}
+
+/* The picture of key, decoded: a copy (free()), pw x ph RGBA; w x h its
+   size in the game's pixels.  NULL: none. */
+unsigned char *hd_art_copy(const char *key, int *pw, int *ph, int *w, int *h)
+{
+    int id = pack ? find(key) : 0;
+    Entry *a;
+    unsigned char *copy;
+    if (!id || !(a = decode(id)))
+        return NULL;
+    if (!(copy = malloc((size_t)a->pw * a->ph * 4)))
+        return NULL;
+    memcpy(copy, a->rgba, (size_t)a->pw * a->ph * 4);
+    *pw = a->pw;
+    *ph = a->ph;
+    if (w)
+        *w = (int)a->w;
+    if (h)
+        *h = (int)a->h;
+    return copy;
+}
+
+/* Each key that begins with prefix, in order, with its size in the game's
+   pixels. */
+void hd_art_each(const char *prefix, void (*fn)(const char *key, int w, int h, void *ctx), void *ctx)
+{
+    size_t n = strlen(prefix);
+    unsigned lo = 0, hi = nentries;
+    while (lo < hi) {           /* the first key not before prefix */
+        unsigned mid = lo + (hi - lo) / 2;
+        if (strcmp(entries[mid].key, prefix) < 0) lo = mid + 1; else hi = mid;
+    }
+    for (; lo < nentries && !strncmp(entries[lo].key, prefix, n); lo++)
+        fn(entries[lo].key, (int)entries[lo].w, (int)entries[lo].h, ctx);
+}
+
 /* ---- tests ---- */
 
 unsigned int *hd_debug_capture(void *bits, int x, int y, int w, int h)

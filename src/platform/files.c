@@ -69,6 +69,23 @@ static void audit_path(const char *win, const char *host, int for_create)
         plat_log("audit path %s %s\n", stat(host, &st) ? (for_create ? "create" : "missing") : S_ISDIR(st.st_mode) ? "dir" : "found", win);
 }
 
+/* A picture the game folder lacks (TERRAIN1.GIF ...): made from the art
+   (synth.c, docs/NO-INSTALL.md), host the file made. */
+static void synth_path(char *host, size_t n)
+{
+    struct stat st;
+    const char *slash = strrchr(host, '/');
+    size_t g = strlen(plat_game_dir);
+    char made[1200];
+    if (!slash || (size_t)(slash - host) != g || strncmp(host, plat_game_dir, g) || stat(host, &st) == 0)
+        return;
+    if (synth_file(slash + 1, made, sizeof made)) {
+        if (plat_audit_on())
+            plat_log("audit synth %s\n", slash + 1);
+        snprintf(host, n, "%s", made);
+    }
+}
+
 void plat_host_path(const char *win, char *host, size_t n, int for_create)
 {
     char tmp[1024], *comp, *save = NULL;
@@ -115,6 +132,8 @@ void plat_host_path(const char *win, char *host, size_t n, int for_create)
         resolve_component(host, n, comp);
     }
     audit_path(win, host, for_create);
+    if (!for_create)
+        synth_path(host, n);
 }
 
 /* The game keeps its paths in 128-byte buffers (sounds, videos ...), enough

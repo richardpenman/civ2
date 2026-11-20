@@ -14,6 +14,7 @@ typedef struct {
     unsigned rsrc_off;          /* file offset of the resource directory (0: none) */
     unsigned sec_raw, sec_va;   /* its section: file offset and RVA, to map data RVAs */
     int builtin;                /* timerdll */
+    int synth;                  /* a picture library the game folder lacks: its pictures made (synth.c) */
 } Module;
 
 static HMODULE exe_module;
@@ -124,6 +125,10 @@ static const unsigned char *find_res(Module *m, const char *name, const char *ty
 static const unsigned char *find_res_in(Module *m, const char *name, const char *type, unsigned *size)
 {
     const unsigned char *t, *n, *l, *base;
+    if (m && m->synth)
+        return !IS_INTRESOURCE(type) && !strcasecmp(type, "GIFS") && IS_INTRESOURCE(name)
+                   ? synth_resource(m->name, (int)(uintptr_t)name, size)
+                   : NULL;
     if (!m || !m->rsrc_off)
         return NULL;
     base = m->image + m->rsrc_off;
@@ -181,6 +186,21 @@ HMODULE WINAPI LoadLibraryExA(LPCSTR name, HANDLE file, DWORD flags)
     m = load_pe(name);
     if (plat_audit_on())
         plat_log("audit lib %s %s\n", m ? "found" : "missing", name);
+    if ((!m || !m->rsrc_off) && synth_module(base)) {
+        /* the game folder lacks this picture library: its pictures are made
+           from the art (synth.c, docs/NO-INSTALL.md) */
+        size_t i;
+        if (m) {
+            free(m->image);
+            free(m);
+        }
+        m = calloc(1, sizeof *m);
+        m->synth = 1;
+        for (i = 0; base[i] && i < sizeof m->name - 1; i++)
+            m->name[i] = (char)tolower((unsigned char)base[i]);
+        plat_log("LoadLibrary(%s): not found; its pictures made from the art\n", name);
+        return obj_new(OBJ_MODULE, m);
+    }
     if (!m) {
         plat_log("LoadLibrary(%s): not found\n", name);
         return 0;
@@ -328,18 +348,71 @@ static Bitmap *dib_to_bitmap(const unsigned char *p, int icon, Bitmap **mask)
     return b;
 }
 
+/* ---- civ2.exe's pictures where the game folder has no civ2.exe (synth.c) ---- */
+
+static int exe_missing(HINSTANCE inst)
+{
+    Module *m = module_of(inst);
+    return m && module_of(0) == m && !m->rsrc_off;
+}
+
+/* The radio buttons' and check boxes' pictures (301 to 306, 32 x 32): the
+   art's in the original's place (16 x 16 in the middle), on its
+   transparent colour (the game draws them with teal, 0x808000, as
+   transparent: gdi_blit_transparent). */
+static HBITMAP synth_bitmap(int id)
+{
+    unsigned char *px = synth_exe_rgba(2, id, 32, 32, 8, 8, 16, 16);
+    Bitmap *b;
+    int x, y;
+    if (!px)
+        return 0;
+    b = bmp_create(32, 32, 32, 0);
+    for (y = 0; y < 32; y++)
+        for (x = 0; x < 32; x++) {
+            const unsigned char *p = px + (y * 32 + x) * 4;
+            surf_put(b, x, y, p[3] >= 128 ? RGB(p[0], p[1], p[2]) : RGB(0, 128, 128));
+        }
+    free(px);
+    return obj_new(OBJ_BITMAP, b);
+}
+
+typedef struct { Bitmap *image, *mask; int hx, hy; int host; } Cursor;
+
+/* A cursor or the icon: the art's, 32 x 32; the cursors' hot spot is their
+   arrow's tip, at the top left. */
+static Cursor *synth_cursor(int id, int cursor)
+{
+    unsigned char *px = synth_exe_rgba(cursor ? 12 : 14, id, 32, 32, 0, 0, 32, 32);
+    Cursor *c;
+    int x, y;
+    if (!px)
+        return NULL;
+    c = calloc(1, sizeof *c);
+    c->image = bmp_create(32, 32, 32, 0);
+    c->mask = bmp_create(32, 32, 1, 0);
+    for (y = 0; y < 32; y++)
+        for (x = 0; x < 32; x++) {
+            const unsigned char *p = px + (y * 32 + x) * 4;
+            surf_put(c->image, x, y, RGB(p[0], p[1], p[2]));
+            if (p[3] < 128)
+                bmp_row(c->mask, y)[x >> 3] |= (unsigned char)(0x80 >> (x & 7));
+        }
+    c->hx = c->hy = cursor ? 1 : 0;
+    free(px);
+    return c;
+}
+
 HBITMAP WINAPI LoadBitmapA(HINSTANCE inst, LPCSTR name)
 { API_TRACE();
     unsigned size;
     const unsigned char *p = find_res(module_of(inst), name, (LPCSTR)RT_BITMAP, &size);
     if (!p)
-        return 0;
+        return exe_missing(inst) && IS_INTRESOURCE(name) ? synth_bitmap((int)(uintptr_t)name) : 0;
     return obj_new(OBJ_BITMAP, dib_to_bitmap(p, 0, NULL));
 }
 
 /* ---- icons and cursors ---- */
-
-typedef struct { Bitmap *image, *mask; int hx, hy; int host; } Cursor;
 
 /* The best image of an icon/cursor group: the largest. */
 static const unsigned char *group_image(Module *m, LPCSTR name, int cursor, int *hx, int *hy)
@@ -392,6 +465,8 @@ static HCURSOR load_cursor_or_icon(HINSTANCE inst, LPCSTR name, int cursor)
     if (!inst && IS_INTRESOURCE(name))
         return system_cursor((int)(uintptr_t)name);
     img = group_image(module_of(inst), name, cursor, &hx, &hy);
+    if (!img && exe_missing(inst) && IS_INTRESOURCE(name) && (c = synth_cursor((int)(uintptr_t)name, cursor)))
+        return obj_new(OBJ_CURSOR, c);
     if (!img)
         return cursor ? system_cursor(32512) : 0;
     c = calloc(1, sizeof *c);

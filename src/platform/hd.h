@@ -131,6 +131,13 @@ void hd_init(int classic, int unit_test, int scale);
 /* The art's file (CIV2_HD_PACK, the program's data/hd, the user's folder's
    hd): 1 if it is there. */
 int hd_pack_path(char *path, int size);
+/* The art read for the pictures a game folder lacks (synth.c), HD graphics
+   on or not: hd_art_open opens the pack (0: none); hd_art_copy a picture's
+   RGBA pixels, pw x ph (free()), its size in the game's pixels w x h;
+   hd_art_each the keys beginning with prefix. */
+int hd_art_open(void);
+unsigned char *hd_art_copy(const char *key, int *pw, int *ph, int *w, int *h);
+void hd_art_each(const char *prefix, void (*fn)(const char *key, int w, int h, void *ctx), void *ctx);
 void hd_bitmap_free(struct Bitmap *b);
 void hd_redrawn(struct Bitmap *b, int x, int y, int w, int h);     /* fills */
 /* b's colour table changed (it was old): its pixels enlarged in the plane
