@@ -50,6 +50,25 @@ static int resolve_component(char *path, size_t n, const char *name)
     return 0;
 }
 
+/* CIV2_AUDIT=1: every file the game asks for, and every resource, logged
+   ("audit ..." lines in the hook log; docs/NO-INSTALL.md). */
+int plat_audit_on(void)
+{
+    static int on = -1;
+    if (on < 0) {
+        const char *v = getenv("CIV2_AUDIT");
+        on = v && *v && strcmp(v, "0");
+    }
+    return on;
+}
+
+static void audit_path(const char *win, const char *host, int for_create)
+{
+    struct stat st;
+    if (plat_audit_on())
+        plat_log("audit path %s %s\n", stat(host, &st) ? (for_create ? "create" : "missing") : S_ISDIR(st.st_mode) ? "dir" : "found", win);
+}
+
 void plat_host_path(const char *win, char *host, size_t n, int for_create)
 {
     char tmp[1024], *comp, *save = NULL;
@@ -95,6 +114,7 @@ void plat_host_path(const char *win, char *host, size_t n, int for_create)
         }
         resolve_component(host, n, comp);
     }
+    audit_path(win, host, for_create);
 }
 
 /* The game keeps its paths in 128-byte buffers (sounds, videos ...), enough
@@ -429,6 +449,8 @@ HANDLE WINAPI FindFirstFileA(LPCSTR spec, LPWIN32_FIND_DATAA fd)
     char win[1024], *slash;
     Find *f = calloc(1, sizeof *f);
     snprintf(win, sizeof win, "%s", spec);
+    if (plat_audit_on())
+        plat_log("audit find %s\n", spec);
     slash = strrchr(win, '\\');
     if (!slash)
         slash = strrchr(win, '/');

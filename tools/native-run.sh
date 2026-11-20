@@ -7,7 +7,13 @@
 # SIGTERM (SDL makes it a quit event, which a replay does not read), so it is
 # killed TIMEOUT_KILL seconds (default 10) after.
 script=$1; out=$2
-rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g && cp /work/harness/CIV2.DAT /tmp/g/
+rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g
+# CIV2_NO_DAT=1: the game's .DAT files left out (CIV2.DAT, HALLFAME.DAT: the
+# game starts as on a fresh install), else the harness's CIV2.DAT (it skips
+# the question of the heralds' memory)
+if [ -n "$CIV2_NO_DAT" ]; then find /tmp/g -maxdepth 1 -iname '*.dat' -exec rm -f {} +; else cp /work/harness/CIV2.DAT /tmp/g/; fi
+# CIV2_NO_SOUND=1: the game's Sound folder left out (it plays nothing)
+[ -z "$CIV2_NO_SOUND" ] || find /tmp/g -maxdepth 1 -type d -iname sound -exec rm -rf {} +
 # (the recordings were made without the CD's videos and music: a copy of the
 # game that has them, KINGS, Video, Music, plays them, and its timing differs;
 # CIV2_KEEP_MEDIA=1 keeps them)

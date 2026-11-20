@@ -291,6 +291,7 @@ void plat_screenshot(const char *path);
 /* ---- misc ---- */
 
 void plat_log(const char *fmt, ...);
+int plat_audit_on(void);       /* CIV2_AUDIT: files and resources asked for, logged */
 void api_trace(const char *name, void *caller);
 #ifdef __wasm__
 #define API_TRACE() api_trace(__func__, 0)       /* (no return addresses: every call counts) */

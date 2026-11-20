@@ -102,7 +102,26 @@ static const unsigned char *dir_find(Module *m, const unsigned char *dir, const 
     return NULL;
 }
 
+static const unsigned char *find_res_in(Module *m, const char *name, const char *type, unsigned *size);
+
+/* CIV2_AUDIT: each resource asked for, by module, type and name */
 static const unsigned char *find_res(Module *m, const char *name, const char *type, unsigned *size)
+{
+    const unsigned char *p = find_res_in(m, name, type, size);
+    if (plat_audit_on()) {
+        const char *base = m ? m->name : "?", *c;
+        char t[32], nm[64];
+        for (c = base; *c; c++)
+            if (*c == '/' || *c == '\\' || *c == ':')
+                base = c + 1;
+        if (IS_INTRESOURCE(type)) snprintf(t, sizeof t, "%u", (unsigned)(uintptr_t)type); else snprintf(t, sizeof t, "%s", type);
+        if (IS_INTRESOURCE(name)) snprintf(nm, sizeof nm, "%u", (unsigned)(uintptr_t)name); else snprintf(nm, sizeof nm, "%s", name);
+        plat_log("audit res %s %s %s %s\n", p ? "found" : "missing", base, t, nm);
+    }
+    return p;
+}
+
+static const unsigned char *find_res_in(Module *m, const char *name, const char *type, unsigned *size)
 {
     const unsigned char *t, *n, *l, *base;
     if (!m || !m->rsrc_off)
@@ -155,9 +174,13 @@ HMODULE WINAPI LoadLibraryExA(LPCSTR name, HANDLE file, DWORD flags)
         m = calloc(1, sizeof *m);
         m->builtin = 1;
         snprintf(m->name, sizeof m->name, "timerdll.dll");
+        if (plat_audit_on())
+            plat_log("audit lib builtin %s\n", name);
         return obj_new(OBJ_MODULE, m);
     }
     m = load_pe(name);
+    if (plat_audit_on())
+        plat_log("audit lib %s %s\n", m ? "found" : "missing", name);
     if (!m) {
         plat_log("LoadLibrary(%s): not found\n", name);
         return 0;
