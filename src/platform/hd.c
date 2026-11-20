@@ -12,6 +12,8 @@
  * pack has one (4 to 8 times as large); terrain blends are bound by role
  * ("dither/T/Q", "fog/Q").  The pictures of the game's libraries are
  * "resource/MODULE/gifs/ID" and their sprites "crop/resource/..." (below).
+ * OpenCiv2's own pictures (data/native/hd-extra, load_extras) are drawn in
+ * place of the pack's of the same key.
  * (The browser version gives the game only the pictures drawn here:
  * src/web/hdpack.js, KEEP; a picture of another kind drawn here is to be
  * added there.)
@@ -46,6 +48,7 @@ int hd_density = 1;
 typedef struct {
     char key[160];
     uint32_t w, h, off, len;
+    char *file;                 /* OpenCiv2's own picture (load_extras): its file; NULL: the pack's */
     unsigned char *rgba;        /* decoded, pw x ph; NULL: not now */
     int pw, ph;
     uint64_t used;
@@ -113,10 +116,79 @@ static int find(const char *key)        /* 1 + index, 0 none */
     return 0;
 }
 
+/* A file's bytes (*n of them), or NULL. */
+static unsigned char *read_file(const char *path, uint32_t *n)
+{
+    FILE *f = fopen(path, "rb");
+    unsigned char *data = NULL;
+    long size;
+    if (f && !fseek(f, 0, SEEK_END) && (size = ftell(f)) > 0 && size < (64L << 20) && !fseek(f, 0, SEEK_SET) &&
+        (data = malloc((size_t)size)) && fread(data, 1, (size_t)size, f) != (size_t)size) {
+        free(data);
+        data = NULL;
+    }
+    if (f)
+        fclose(f);
+    if (data)
+        *n = (uint32_t)size;
+    return data;
+}
+
+static int by_key(const void *a, const void *b)
+{
+    return strcmp(((const Entry *)a)->key, ((const Entry *)b)->key);
+}
+
+/* OpenCiv2's own art (data/native/hd-extra, docs/HD-GRAPHICS.md): the
+   pictures of hd-extra/pictures.txt, a line "KEY W H FILE" each (the pack's
+   key, the size in the game's pixels, the picture in that folder, WebP or
+   PNG; "#" a comment), are drawn as the pack's of that key would be, in its place
+   where it has one; a resource picture among them is painted whole (as
+   WHOLE's are, below), the original's no longer kept. */
+static void load_extras(void)
+{
+    char dir[1100], path[1400], line[600], key[160], file[256];
+    unsigned w, h, n = 0;
+    FILE *f;
+    snprintf(dir, sizeof dir, "%s/hd-extra", plat_data_dir);
+    snprintf(path, sizeof path, "%s/pictures.txt", dir);
+    if (!(f = fopen(path, "r")))
+        return;
+    while (fgets(line, sizeof line, f)) {
+        Entry *a;
+        int id;
+        if (line[0] == '#' || sscanf(line, "%159s %u %u %255s", key, &w, &h, file) != 4 || !w || !h || w > 4096 ||
+            h > 4096)
+            continue;
+        snprintf(path, sizeof path, "%s/%s", dir, file);
+        if ((id = find(key)))
+            a = entries + id - 1;
+        else {
+            Entry *more = realloc(entries, (nentries + 1) * sizeof *entries);
+            if (!more)
+                break;
+            entries = more;
+            a = entries + nentries++;
+            memset(a, 0, sizeof *a);
+            snprintf(a->key, sizeof a->key, "%s", key);
+        }
+        free(a->file);
+        a->file = strdup(path);
+        a->w = w;
+        a->h = h;
+        a->off = a->len = 0;
+        qsort(entries, nentries, sizeof *entries, by_key);
+        n++;
+    }
+    fclose(f);
+    if (n)
+        plat_log("HD graphics: %s, %u pictures of OpenCiv2's own\n", dir, n);
+}
+
 static Entry *decode(int id)
 {
     Entry *a = entries + id - 1;
-    unsigned char *png;
+    unsigned char *file;
     a->used = ++tick;
     if (a->rgba)
         return a;
@@ -132,13 +204,17 @@ static Entry *decode(int id)
         free(old->rgba);
         old->rgba = NULL;
     }
-    png = malloc(a->len);
-    if (!png || fseek(pack, (long)a->off, SEEK_SET) || fread(png, 1, a->len, pack) != a->len) {
-        free(png);
+    if (a->file) {
+        if (!(file = read_file(a->file, &a->len))) {
+            plat_log("HD graphics: cannot read %s\n", a->file);
+            return NULL;
+        }
+    } else if (!(file = malloc(a->len)) || fseek(pack, (long)a->off, SEEK_SET) || fread(file, 1, a->len, pack) != a->len) {
+        free(file);
         return NULL;
     }
-    a->rgba = hd_decode_image(png, a->len, &a->pw, &a->ph);     /* PNG or WebP: hd_image.c */
-    free(png);
+    a->rgba = hd_decode_image(file, a->len, &a->pw, &a->ph);     /* PNG or WebP: hd_image.c */
+    free(file);
     if (!a->rgba) {
         plat_log("HD graphics: cannot decode %s\n", a->key);
         return NULL;
@@ -951,7 +1027,8 @@ static const struct {
     {"mk.dll", 200, 206, 0},    /* diplomacy: the rooms, by government */
     /* (not the advisors' backgrounds, tiles.dll 50 to 59, 65 and 66: the
        pack's are a pale parchment, and the game's text on them, coloured
-       for the original's dark photographs, could not be read: docs/HD-GRAPHICS.md) */
+       for the original's dark photographs, could not be read: docs/HD-GRAPHICS.md;
+       OpenCiv2's own are drawn in their place: load_extras) */
     /* the announcements' pictures (tiles.dll 70 to 77: a city captured, in
        disorder, celebrating, founded; + 1 the modern one): the pack's are
        vignettes on a transparent ground, at the original's size; the wide
@@ -1042,6 +1119,9 @@ void hd_resource_loaded(void *bits, int id)
     for (i = 0; i < sizeof WHOLE / sizeof *WHOLE; i++)
         if (!strcmp(WHOLE[i].module, plat_res_module) && id >= WHOLE[i].lo && id <= WHOLE[i].hi)
             whole = WHOLE[i].inset;
+    /* (OpenCiv2's own picture of it: whole, the original's not kept) */
+    if (whole < 0 && (pid = find(b->hd_sheet)) && entries[pid - 1].file)
+        whole = 0;
     /* (the surface's rows are whole dwords: up to 3 pixels wider) */
     if (whole < 0 || !(pid = find(b->hd_sheet)) || (int)entries[pid - 1].h != b->h || (int)entries[pid - 1].w > b->w ||
         b->w - (int)entries[pid - 1].w > 3 || b->bpp != 8 || !plane(b))
@@ -1667,8 +1747,10 @@ static void close_pack(void)
     if (pack)
         fclose(pack);
     pack = NULL;
-    for (i = 0; i < nentries; i++)
+    for (i = 0; i < nentries; i++) {
         free(entries[i].rgba);
+        free(entries[i].file);
+    }
     free(entries);
     entries = NULL;
     nentries = 0;
@@ -1715,7 +1797,8 @@ void hd_init(int classic, int unit_test, int scale)
        sharp text and interface only where the screen has more pixels */
     if (art >= 1 && hd_pack_path(path, sizeof path)) {
         hd_density = art > 4 ? 4 : art;
-        hd_art = open_pack(path);
+        if ((hd_art = open_pack(path)))
+            load_extras();
     } else if (art >= 1)
         plat_log("hd: no art (%s/hd/atlas-hd.pack, nor in the user's folder)\n", plat_data_dir);
     if (!hd_art)

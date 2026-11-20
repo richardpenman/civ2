@@ -31,7 +31,8 @@ data/text/index.json: the page fetches those the player's game lacks.
 The HD graphics' pin (data/hd-pack.json) is copied as hd-pack.json; with
 HD=1 in the environment (make web HD=1) the installed art
 (data/native/hd/atlas-hd.pack, make hd) is copied to hd/atlas-hd.pack too,
-with hd/pack.json saying so: the game's OpenCiv2 Options offer HD graphics
+with hd/pack.json saying so, and OpenCiv2's own pictures
+(data/native/hd-extra) in hd/extra: the game's OpenCiv2 Options offer HD graphics
 only where the site has the art (otherwise build/web/hd is removed).
 
 With GAME=1 (make web GAME=1) the site carries the game too, for a
@@ -354,6 +355,10 @@ def main():
         for f in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
             if os.path.exists(os.path.join(ROOT, 'data', 'native', 'hd', f)):
                 shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
+        # OpenCiv2's own pictures (data/native/hd-extra), as they are
+        if os.path.isdir(os.path.join(hd, 'extra')):
+            shutil.rmtree(os.path.join(hd, 'extra'))
+        shutil.copytree(os.path.join(ROOT, 'data', 'native', 'hd-extra'), os.path.join(hd, 'extra'))
     elif os.path.isdir(hd):
         shutil.rmtree(hd)
     if os.environ.get('GAME', '') not in ('', '0'):

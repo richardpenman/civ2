@@ -4,10 +4,12 @@
 // art; then the site with the art (as make web HD=1: data/native/hd/
 // atlas-hd.pack, make hd, served at hd/), HD graphics ticked there and the
 // game restarted: the page loaded again, the art downloaded from the site,
-// checked, kept in IndexedDB, HD graphics on in CIV.INI; then the game at a
+// checked, kept in IndexedDB, OpenCiv2's own pictures (hd/extra) beside it,
+// HD graphics on in CIV.INI; then the game at a
 // device pixel ratio of 2 (density Auto: 2), the menu and a saved game's map
 // drawn in HD (the canvas twice the desktop's size, and not the desktop's
-// pixels enlarged), the first screen's text sharp; then a later visit's
+// pixels enlarged), the first screen's text sharp, the Domestic Advisor on
+// OpenCiv2's own background (a WebP); then a later visit's
 // start (said at once, its first frame within START_MS); then
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics.  Screenshots in
@@ -220,6 +222,8 @@ async function main() {
         log(`art from ${art} (${Math.round(performance.now() - t0)} ms): ${JSON.stringify(await evaluate('window.civ2Hd'))}`);
         if (!(await evaluate('window.civ2Hd') || {}).packBytes)
             throw new Error('the art not downloaded and kept at the restart');
+        if (!(await evaluate('window.civ2Hd') || {}).extra)
+            throw new Error("OpenCiv2's own pictures (hd/extra) not put beside the art");
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -255,6 +259,14 @@ async function main() {
         await shot('02-map');
         if (st.mixed < 0.05)
             throw new Error('the map is not drawn in HD (the desktop\'s pixels enlarged)');
+        // the Domestic Advisor (F1): OpenCiv2's own background (hd/extra's
+        // tiles-50.webp), decoded by the module (src/platform/hd_image.c)
+        // (look at it: a steward's table, not the original's picture)
+        await key('F1', 112);
+        await settle(2000, 15000);
+        await shot('02-advisor');
+        await key('Escape', 27);
+        await settle(1000, 10000);
         // a later visit (the page opened again, the art kept, its pruned
         // copy made by the start above; the site without it now: the art
         // kept still used): what it does said at once, the pruned art read

@@ -64,11 +64,21 @@ export function zipFolder(dir, out) {
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm', '.gz': 'application/gzip'};
 // (opts.hd(): an atlas-hd.pack the site has as make web HD=1 gives it, at
-// /hd/atlas-hd.pack with /hd/pack.json; null: none)
+// /hd/atlas-hd.pack with /hd/pack.json, and data/native/hd-extra at /hd/extra;
+// null: none)
 export function serve(opts = {}) {
     const server = createServer((req, res) => {
         const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
         const art = opts.hd ? opts.hd() : null;
+        if (path.startsWith('/hd/extra/') && art) {
+            // (OpenCiv2's own pictures, as make web HD=1 puts them there)
+            const dir = join(ROOT, 'data', 'native', 'hd-extra'), p = join(dir, path.slice(10));
+            if (!p.startsWith(dir + '/') || !existsSync(p))
+                res.writeHead(404).end();
+            else
+                res.writeHead(200, {'Content-Type': 'application/octet-stream'}).end(readFileSync(p));
+            return;
+        }
         if (path.startsWith('/hd/')) {
             if (!art || !['/hd/pack.json', '/hd/atlas-hd.pack'].includes(path)) {
                 res.writeHead(404).end();

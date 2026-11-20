@@ -341,6 +341,29 @@ function savesControls(store) {
 
 // ---- the HD graphics' art (hdpack.js), as CIV.INI asks for it (options.js) ----
 
+// OpenCiv2's own HD pictures (data/native/hd-extra, on the site in hd/extra
+// with the art: hd.c draws them in place of the pack's of the same key),
+// where hd.c looks for them (CIV2_DATA/hd-extra) -> how many
+async function putExtraArt(fs) {
+    try {
+        const list = await fetch('hd/extra/pictures.txt').then((r) => (r.ok ? r.text() : ''));
+        const names = [...new Set(list.split('\n').filter((l) => l.trim() && !l.startsWith('#'))
+            .map((l) => l.trim().split(/\s+/)[3]).filter(Boolean))];
+        const files = await Promise.all(names.map((n) => fetch('hd/extra/' + n).then((r) => {
+            if (!r.ok)
+                throw new Error(n + ': ' + r.status);
+            return r.arrayBuffer();
+        })));
+        names.forEach((n, i) => fs.put(DATA + '/hd-extra/' + n, new Uint8Array(files[i])));
+        if (list)
+            fs.put(DATA + '/hd-extra/pictures.txt', new TextEncoder().encode(list));
+        return names.length;
+    } catch (e) {
+        console.warn('HD graphics: OpenCiv2\'s own pictures:', e);
+        return 0;
+    }
+}
+
 let pinP = null;
 const pin = () => pinP || (pinP = fetch('hd-pack.json').then((r) => r.json()));
 const latin = new TextDecoder('windows-1252');
@@ -589,9 +612,12 @@ async function play(store) {
         const since = performance.now();
         status(t('web.loading_hd'));
         const pack = await packP;
-        if (pack)
+        let extra = 0;
+        if (pack) {
             fs.put(DATA + '/hd/atlas-hd.pack', pack);
-        window.civ2Hd = {packBytes: pack ? pack.length : 0, loadMs: Math.round(performance.now() - since)};
+            extra = await putExtraArt(fs);
+        }
+        window.civ2Hd = {packBytes: pack ? pack.length : 0, extra, loadMs: Math.round(performance.now() - since)};
         if (!pack)
             console.warn('HD graphics: the art is not in this browser');
     }

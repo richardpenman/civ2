@@ -99,6 +99,46 @@ here:
 | `palace-resource/ID` | the original's throne room pieces redrawn (`pv.dll`; not used here) |
 | `city/...`, `building/...`, `house/...`, `lot/...`, `advance/...`, `wonder/...` ... | pictures that PR #11's renderers of their own place themselves (not used here) |
 
+### OpenCiv2's own pictures (`data/native/hd-extra`)
+
+Where the pack has no fitting picture, OpenCiv2 can bring its own: `data/native/hd-extra`, in the
+repository and packaged with every build (beside the program's `data` on Linux and macOS, in the
+Windows program's resources, unpacked into its `data`; on a site built with the art, `make web HD=1`,
+in `hd/extra`, put into the game's files with the pack).  Its `pictures.txt` lists them, a line
+each, `KEY W H FILE`: the pack's key, the picture's size in the game's pixels, the picture in that
+folder, WebP (libwebp's decoder, `src/third_party/libwebp`) or PNG (stb_image), told apart by its first bytes
+(`hd_decode_image`, `src/platform/hd_image.c`).  When the pack is opened, hd.c (`load_extras`) adds them to its pictures, in place of the
+pack's of the same key: they are drawn exactly as the pack's would be (a sprite's crop, a sheet, a
+resource picture); a resource picture among them is painted whole, as `WHOLE`'s are, even where
+the pack's is not drawn and the original's kept.  Without the pack they are not drawn either.
+Their credits, licence (the repository's, MIT) and, for the AI-generated ones, the model and the
+exact prompt are in `data/native/hd-extra/README`.
+
+| Key | Picture |
+| --- | --- |
+| `resource/tiles.dll/gifs/50` to `59`, `65`, `66` | the advisors' backgrounds (`tiles-ID.webp`, below; each 1280x960: density 2, as the pack's backgrounds; lossy WebP at quality 90, 40 to 121 KB, 0.7 MB in all): dark painted still lifes and scenes, each fitting its report, made with Gemini 3 Pro Image from two of the pack's backgrounds as references (`tools/gen_hd_backgrounds.py`).  The advisors' windows show the top left 600x400 of their 640x480 picture, so the painting fills that area (1200x800) and the rest is it mirrored; the tax rates' dialog shows its top left 400x256 on small screens (65: the painting fills 800x512) and 600x384 on large ones (66: the same painting, prepared as the advisors'). |
+
+The advisors' backgrounds, by `tiles.dll` id (`PictureWindow::open`'s first argument + 49, at
+600x400 of the 640x480 picture; the original's are dark grey photographs and engravings on a map,
+the pack's all the same pale parchment), and OpenCiv2's own:
+
+| Id | Screen | OpenCiv2's own |
+| --- | --- | --- |
+| 50 | Domestic Advisor, city status (F1) | a steward's table: a ledger, grain sacks, an oil lamp, keys |
+| 51 | Defense Minister (F2), its statistics and casualties; the casualty timeline; the power graph (World > Civilization Score with the map revealed) | a war-room table with a world map |
+| 52 | Foreign Minister's intelligence report (F3, a civilization's report) | an envoy's desk: sealed letters, sealing wax, a quill |
+| 53 | Attitude Advisor (F4) | a crowded town square at dusk, from above |
+| 54 | Trade Advisor (F5) | coins, a balance, cloth and spice jars |
+| 55 | Science Advisor (F6) | an astrolabe, a telescope and star charts |
+| 56 | Wonders of the World (F7) | statues, a model pyramid and columns in a dim gallery |
+| 57 | Top 5 Cities (F8); the Hall of Fame | a city's skyline of every era at night |
+| 58 | Demographics (F11) | census ledgers, record books, an abacus |
+| 59 | Civilization Score (F9); the civilization rating | a laurel wreath and trophies on a plinth |
+| 65 | the tax rates (Kingdom > Tax Rate), small screens (the dialog 400x256) | a treasury table: coin chests, a tally board |
+| 66 | the tax rates, large screens, 1000 pixels wide or more (the dialog 1.5 times as large) | the same painting as 65 |
+
+(The credits, 95, are a 640x480 picture of their own.)
+
 ## How it is drawn
 
 The game is left to draw exactly as it does, into its 8-bit surfaces; its code is not changed
@@ -176,12 +216,18 @@ The rest is in the platform layer (`src/platform/hd.c`):
   window takes its 64 x 32 border tile; the pack's are each wonder's own painted picture, 74 x 74,
   which as a border tile would be absurd, so the window keeps the original's
   (`harness/media/m-wonder.txt`, HD run: the Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
-  graph, the Hall of Fame ...; 65 and 66: the tax rates) are the original's, enlarged: the pack's
+  graph, the Hall of Fame ...; 65 and 66: the tax rates) are not the pack's: the pack's
   are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
   original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
   is 1.0 to 1.4 on the parchment (its average colour under the text, 229,220,198) against 4.0 to
   7.5 on the original's (about 90,90,90); a dark overlay bringing light grey text to 4.5 would
-  leave the parchment nearly black.  Single crops not drawn either (`NOT_CROPPED_KEYS` in hd.c):
+  leave the parchment nearly black.  They are OpenCiv2's own (above), each chosen for the
+  contrast of the text on it, measured the same way in the World War I scenario's screens (at
+  800x600; the tax rates also at 1280x1024): the white and light grey text 7.4 to 16.3 against
+  3.5 to 7.9 on the original's, the yellow 7.2 to 10.3 against 3.7 to 5.5, the cyan 4.8 to 7.2
+  against 2.6 to 3.3, the orange and green 5.3 to 8.1 against 2.7 to 4.3, the civilizations'
+  lilac 5.1 to 5.7 against 2.9 to 3.5 and their blue 2.9 to 3.4 against 1.6 to 1.9 (that blue
+  is at most 4.9 even on black).  Single crops not drawn either (`NOT_CROPPED_KEYS` in hd.c):
   in `tiles.dll` 86, the information seal of the popups (the quit confirmation's), the tutorial's
   owl and the podium in a civilization's colour, which the pack has as a thin pale "i", a "?"
   and a flat shield on nothing.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
@@ -417,6 +463,8 @@ The art: openciv2-assets by Peter Johnson, MIT licence (installed beside the pac
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
+OpenCiv2's own pictures (`data/native/hd-extra`) are under its licence (MIT); the AI-generated
+ones' model, prompt and references are in its `README`.
 
 ## Tests
 
@@ -455,7 +503,11 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   of HD off), `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
-  tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
+  tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, OpenCiv2's own),
+  `harness/hd/hd-advisors.txt` (with `CIV2_TEST_FULL=800x600`, in the World War I scenario: every
+  screen with OpenCiv2's own background once, F1 to F9, F11, the Foreign Minister's intelligence
+  report, the Defense Minister's casualties and the tax rates; with `CIV2_TEST_FULL=1280x1024`,
+  `harness/hd/hd-advisors-large.txt`, the tax rates on a large screen), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
   logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window), `harness/hd/hd-spaceship.txt` (the ship's window empty, partly built with parts not yet supported, complete, launched: its logical screenshots and `rand()` trace are those of the same run with HD graphics off).  With `CIV2_TEST_HD=2`, for
@@ -486,6 +538,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`);
+* OpenCiv2's own (`data/native/hd-extra`), not from the pack: `resource/tiles.dll/gifs/50` to `59`, `65`, `66`;
 * `ship/propulsion`, `engine-active`, `fuel`, `structural-spine`, `structural-dock`,
   `habitation`, `life-support`, `solar`: the spaceship (`hd_spaceship`).
 
@@ -511,7 +564,7 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
   the announcements' tall pictures (`tiles.dll` 71, 75, 77: wide vignettes in a tall frame)
-  and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
+  and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above; OpenCiv2's own drawn instead) and
   the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's pieces not
   drawn (below); the city view's

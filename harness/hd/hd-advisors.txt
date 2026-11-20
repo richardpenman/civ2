@@ -1,0 +1,99 @@
+# HD graphics (docs/HD-GRAPHICS.md): every screen with OpenCiv2's own background
+# (data/native/hd-extra: tiles.dll 50 to 59, 65), once, in the World War I
+# scenario: the Domestic Advisor (F1, 50), the Defense Minister (F2, 51) and
+# its casualties, the Foreign Minister's intelligence report (F3, 52), the
+# Attitude (F4, 53), Trade (F5, 54) and Science (F6, 55) Advisors, the Wonders
+# (F7, 56), the Top 5 Cities (F8, 57), the Civilization Score (F9, 59), the
+# Demographics (F11, 58) and the tax rates (Shift+T, 65); 66, the tax rates on
+# a large screen: hd-advisors-large.txt.  (The first advisor's key after the
+# start is not taken: an F1 and an Escape first.)
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=800x600 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down      # "Begin Scenario"
+wait 500
+file SCENARIO\WW1\WW1.SCN
+key Return
+wait 20000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key F1
+wait 3000
+key Escape
+wait 2000
+key F1
+wait 3000
+shot 01-F1
+key Escape
+wait 2000
+key F2
+wait 3000
+shot 02-F2
+click 252 505               # "Casualties"
+wait 3000
+shot 03-F2-casualties
+key Escape
+wait 2000
+key F3
+wait 3000
+click 180 390               # "Check Intelligence"
+wait 3000
+shot 04-F3
+key Escape
+wait 2000
+key Escape
+wait 2000
+key F4
+wait 3000
+shot 05-F4
+key Escape
+wait 2000
+key F5
+wait 3000
+shot 06-F5
+key Escape
+wait 2000
+key F6
+wait 3000
+shot 07-F6
+key Escape
+wait 2000
+key F7
+wait 3000
+shot 08-F7
+key Escape
+wait 2000
+key F8
+wait 3000
+shot 09-F8
+key Escape
+wait 2000
+key F9
+wait 3000
+shot 10-F9
+key Escape
+wait 2000
+key F11
+wait 3000
+shot 11-F11
+key Escape
+wait 2000
+key shift+t                 # Kingdom > Tax Rate
+wait 3000
+shot 12-tax
+key Escape
+wait 2000
+quit

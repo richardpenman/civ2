@@ -1,0 +1,36 @@
+# HD graphics (docs/HD-GRAPHICS.md): the tax rates on a large screen (the
+# dialog 1.5 times as large) with OpenCiv2's own background (data/native/hd-extra:
+# tiles.dll 66), in the World War I scenario; the other screens: hd-advisors.txt.
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1280x1024 CIV2_HD_PACK=.../atlas-hd.pack
+wait 8000
+key Down Down Down      # "Begin Scenario"
+wait 500
+file SCENARIO\WW1\WW1.SCN
+key Return
+wait 20000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key Return
+wait 8000
+key F1
+wait 3000
+key Escape
+wait 2000
+key shift+t                 # Kingdom > Tax Rate
+wait 3000
+shot 01-tax
+key Escape
+wait 2000
+quit
