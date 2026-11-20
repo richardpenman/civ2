@@ -984,8 +984,11 @@ static const struct {
    the leaders' portraits (mk.dll 220 + the tribe, + 21 for a woman, at
    1,1,225,275 in the diplomacy room) are 42 people of their own, not the
    tribes' leaders in the original's order (the Vikings' is a man in a
-   19th-century frock coat), so the original's portrait is drawn, enlarged;
-   210 and 211 (a sheet of small faces the game never loads) likewise. */
+   19th-century frock coat), so a portrait's own crop is never drawn: the
+   game's side gives each tribe the pack's portrait that fits it
+   (hd_diplomacy_portrait in src/game/hd_graphics.cpp), or the original's,
+   enlarged; 210 and 211 (the sheets of small faces, which the custom
+   tribe's portrait chooser copies whole) are the original's. */
 static const struct {
     const char *module;
     int lo, hi;

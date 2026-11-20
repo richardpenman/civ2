@@ -1,8 +1,8 @@
 # HD graphics (docs/HD-GRAPHICS.md): the diplomacy room.  The autosave's
 # AI leaders (the player the Romans), then the Roman leader himself under
 # each government (the Cheat menu's dialog): the room by government
-# (mk.dll 200 to 206) from the pack, the leader's portrait the original's,
-# enlarged (the pack's portraits are not the tribes' leaders).  Each talk
+# (mk.dll 200 to 206) from the pack, the leader's portrait the pack's that
+# fits the tribe (src/game/hd_graphics.cpp's hd_portraits).  Each talk
 # ended with Escapes.
 # run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
 wait 8000

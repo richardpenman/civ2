@@ -186,14 +186,48 @@ The rest is in the platform layer (`src/platform/hd.c`):
   owl and the podium in a civilization's colour, which the pack has as a thin pale "i", a "?"
   and a flat shield on nothing.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
   government: anarchy to democracy) is the pack's, an empty hall with the panels where the game
-  draws the military icons, the portrait and the advances; the leader's portrait drawn in it
-  (`mk.dll` 220 + the tribe, + 21 for a woman: the 225x275 sprite at 1,1) is the original's,
-  enlarged: the pack's 42 portraits (and its sheet of small faces, 210 and 211, which the game
-  never loads) are people of their own, not the tribes' leaders in the original's order (the
-  Vikings' is a 19th-century man in a frock coat, the Babylonians' a red-bearded Celt), so
-  their crops are not drawn (`NOT_CROPPED` in hd.c).  The leader's animation (*Animated
+  draws the military icons, the portrait and the advances.  The leader's portrait drawn in it
+  (`mk.dll` 220 + the tribe's slot, + 21 for a woman: the 225x275 sprite at 1,1) is one of the
+  pack's 42 portraits, but not the one at its own id: those are regional archetypes of the
+  pack's own (its manifest's `leaders.leader-00` to `-41`, at `mk.dll` 220 + N), not the
+  tribes' leaders in the original's order (at the Vikings' id a 19th-century man in a frock
+  coat, at the Babylonians' a red-bearded Celt), so a portrait's own crop is never drawn
+  (`NOT_CROPPED` in hd.c, with the sheets of small faces, 210 and 211, of which the game takes
+  no sprites: the custom tribe's portrait chooser copies them whole, the original's) and each tribe and gender is given the portrait that fits it best, by region, then
+  era, several tribes sharing one (`hd_portraits` in `src/game/hd_graphics.cpp`, bound by
+  `hd_diplomacy_portrait` in `DiploLeaderWindow::init_portrait`).  The portrait's number chooses,
+  as in the game: the tribe's slot (a scenario's tribe in a slot has the slot's portrait), or
+  the face a custom tribe chose in the portrait chooser.  The pack's bust is drawn in the
+  sprite's frame, centred on the panel, as its art is laid out.
+
+  | Tribe | Man | Woman |
+  |---|---|---|
+  | Romans | 220: Mediterranean civic leader, ivory mantle | 241: the same, laurel wreath |
+  | Babylonians, Persians | 228: Near Eastern leader, blue robe, cap | 249: Near Eastern ruler, silver circlet |
+  | Germans | 232: medieval European ruler, circlet, blue velvet | 253: the same |
+  | Egyptians, Carthaginians | 223: North African statesman, linen headcloth | 244: North African stateswoman |
+  | Americans | 236: industrial-era civic leader, suit | 257: industrial-era civic leader, jacket |
+  | Greeks | 233: Byzantine statesman, grey beard, purple robe | 254: Byzantine stateswoman |
+  | Indians | 224: South Asian ruler, saffron turban | 245: South Asian ruler, sari |
+  | Russians, French | 235: early modern northern European diplomat, powdered hair, cravat | 256: the same, lace collar |
+  | Zulus | the original's | the original's |
+  | Aztecs | 226: Central American leader, jade collar | 247: the same |
+  | Chinese | 222: East Asian scholar-ruler, teal silk robe | 243: the same |
+  | English, Spanish | 234: Renaissance civic leader, black cap, brocade | 255: the same, ruff |
+  | Mongols | 229: steppe leader, fur-trimmed coat | 250: the same |
+  | Celts, Vikings | 221: northern European chieftain, red beard, green cloak | 242: the same, red braids |
+  | Japanese | 237: modern East Asian diplomat | 258: the same |
+  | Sioux | 239: Indigenous North American diplomat, blue wool | 260: the same |
+
+  The Zulus keep the original's (a warrior with shield and spear, enlarged): the pack's only
+  Africans (225, 246) are West African, in indigo robes and headwraps.  Not given to any tribe:
+  the Andean (227, 248), Southeast Asian (230, 251), Pacific (231, 252), modern South Asian
+  (238, 259) and modern Mediterranean (240, 261) portraits.  `harness/hd/hd-talks-all.sh` shows
+  every tribe's leader, man and woman, beside the original's.  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
-  enlarged smoothly (below, *Videos*): the pack has no pictures for it.  Each pixel the decoder
+  enlarged smoothly (below, *Videos*): the pack has no pictures for it; the herald, a whole
+  figure standing at the portrait's left, is drawn over the pack's portrait as over the
+  original's (its transparent pixels show the room and the portrait).  Each pixel the decoder
   writes is shown, opaque, even where its colour index is the one already there (`draw_frame` in
   `src/platform/video.c`, run by run); before, such pixels were
   not seen as changed and the pack's room (in the video's backdrop, a copy of the room with its
@@ -381,7 +415,8 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   `newgame.txt` (the new game's backdrop and pictures), `harness/hd/hd-pictures.txt` (the eight
   announcements' pictures, each in its popup), `talks.txt` (the diplomacy room, the
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
-  room under each of the seven governments), `harness/hd/hd-cityview-eras.txt` (a city view
+  room under each of the seven governments), `harness/hd/hd-talks-all.sh` (every tribe's
+  leader, man and woman, from a new game: a contact sheet beside the original's), `harness/hd/hd-cityview-eras.txt` (a city view
   ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
   every zoom, each slide's plane compared with a full render: its results in `hook.log`, "0 of
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
@@ -407,13 +442,15 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,256 pictures, 100 MB of PNGs, about 80 MB with each
+For a stripped pack, the keys hd.c draws (1,288 pictures, 116 MB of PNGs, about 96 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
   the city's disorder marker (`crop/file/icons/166,223,30,30`: `NOT_CROPPED_KEYS`);
-* `crop/resource/...` (127): the sprites taken from the libraries' pictures, but for the
-  leaders' portraits (`mk.dll` 210, 211, 220 to 261: hd.c's `NOT_CROPPED`), three of
+* `crop/resource/...` (159): the sprites taken from the libraries' pictures, but for the
+  sheet of small faces (`mk.dll` 210, 211: hd.c's `NOT_CROPPED`), the leaders' portraits no
+  tribe is given (`mk.dll` 225, 227, 230, 231, 238, 240, 246, 248, 251, 252, 259, 261:
+  `hd_portraits`), three of
   `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city
   view's houses (`cv.dll` 310) all but the industrial era's (y 231 and 512);
 * `advance/` (58): the advances;
@@ -433,9 +470,13 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   shows it grey at every moment looked at.  A possible cause, since removed: a copy between
   surfaces whose colour tables differ (the slide's and the blink's background surfaces) could
   give art the destination's colour for its pixel's index (`hd_big`, above).
-* The leaders' portraits and their animation (the heralds' videos) are the original's,
-  enlarged (the videos smoothly): the pack's portraits are not the tribes' leaders, and it has
-  none for the videos.
+* The leaders' portraits are the pack's regional archetypes, not the tribes' own leaders
+  (*The diplomacy room*, above: the table): candidates for portraits of their own are the
+  Zulus' (the original's kept: the pack has no southern African), the Japanese (modern
+  diplomats for a tribe of samurai and court ladies in the original), the Egyptians' and
+  Carthaginians' (North Africans in headcloths, not pharaonic or Punic), and the tribes that
+  share one (Babylonians and Persians, Russians and French, English and Spanish, Celts and
+  Vikings).  The heralds' videos are the original's, enlarged smoothly: the pack has none.
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern
   landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the

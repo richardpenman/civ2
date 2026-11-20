@@ -397,6 +397,55 @@ void hd_diplomacy_flag(DibSurface *room, int colour)
     hd_picture((void *)room->bits, key, 24, 16, 28, 44, 1);
 }
 
+/* The leader's portrait in the diplomacy room (DiploLeaderWindow::
+   init_portrait: mk.dll 220 + the civilization's leader_portrait, the tribe's
+   slot, + 21 for a woman).  The pack's 42 portraits at those ids are regional
+   archetypes of its own (its manifest's leaders.leader-00 to -41: mk.dll 220 +
+   N), not the tribes' leaders in the original's order, so each tribe and
+   gender is given the one that fits it best by region, then era; several
+   tribes share one.  0: the original's portrait, enlarged.  The portrait's
+   number, not the tribe's name, chooses, as the game's own: the tribe's slot
+   (a scenario's tribe in a slot keeps the slot's portrait) or the face a
+   custom tribe chose (PortraitDialog).  The pack's crop by its own id is
+   never drawn (hd.c's NOT_CROPPED). */
+static const struct {
+    const char *tribe;
+    short male, female;         /* mk.dll id of the pack's portrait (0: none) */
+} hd_portraits[21] = {
+    {"Romans", 220, 241},        /* Mediterranean civic leaders, ivory mantles (her laurel wreath) */
+    {"Babylonians", 228, 249},   /* Near Eastern rulers, blue robes */
+    {"Germans", 232, 253},       /* medieval European rulers, circlets, blue velvet */
+    {"Egyptians", 223, 244},     /* North African, linen headcloths, ochre robes */
+    {"Americans", 236, 257},     /* industrial-era civic leaders, a suit, a jacket */
+    {"Greeks", 233, 254},        /* Byzantine: a grey-bearded statesman, purple robes */
+    {"Indians", 224, 245},       /* South Asian rulers, saffron turban, sari */
+    {"Russians", 235, 256},      /* early modern northern European, navy coats */
+    {"Zulus", 0, 0},             /* the original's: the pack's Africans are West African */
+    {"French", 235, 256},        /* early modern: grey powdered hair, cravat, lace */
+    {"Aztecs", 226, 247},        /* Central American, jade collars, woven cloaks */
+    {"Chinese", 222, 243},       /* East Asian scholar-rulers, teal silk robes */
+    {"English", 234, 255},       /* Renaissance: black caps, brocade, her ruff */
+    {"Mongols", 229, 250},       /* steppe leaders, fur-trimmed coats */
+    {"Celts", 221, 242},         /* northern European chieftains, red hair, green cloaks */
+    {"Japanese", 237, 258},      /* modern East Asian diplomats */
+    {"Vikings", 221, 242},       /* northern European chieftains (the Celts') */
+    {"Spanish", 234, 255},       /* Renaissance (the English') */
+    {"Persians", 228, 249},      /* Near Eastern (the Babylonians'): her silver circlet */
+    {"Carthaginians", 223, 244}, /* North African (the Egyptians') */
+    {"Sioux", 239, 260},         /* Indigenous North American, braids, blue wool */
+};
+
+void hd_diplomacy_portrait(Sprite *sprite, int portrait)
+{
+    char key[48];
+    int id = portrait >= 0 && portrait < 42 ?
+                 (portrait < 21 ? hd_portraits[portrait].male : hd_portraits[portrait - 21].female) : 0;
+    if (!hd_art || !id)
+        return;
+    snprintf(key, sizeof key, "crop/resource/mk.dll/gifs/%d/1,1,225,275", id);
+    hd_sprite_bind(sprite, sprite->data_handle, key, 0);
+}
+
 /* A test (harness/hd/hd-redraw.txt, after Peter Johnson's map redraw
    probe and tools/test_map_redraw.py in PR #11): a trireme, alone and
    stacked (its second shield reaches outside its sprite), slid from the

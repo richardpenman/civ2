@@ -26,19 +26,20 @@ export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/', 'a
     'resource/cv.dll/gifs/351',
     'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
 // Of those, the throne room's decorations (not drawn), the crops hd.c does
-// not draw: its NOT_CROPPED (the pack's
-// leaders' portraits, not the tribes' leaders), and of the city view's
+// not draw: its NOT_CROPPED (the sheet of small faces; the pack's leaders'
+// portraits, which src/game/hd_graphics.cpp's hd_portraits gives to the
+// tribes they fit: those it gives none), and of the city view's
 // houses (cv.dll 310, src/game/hd_graphics.cpp) all but the industrial
 // era's rows (y 231 and 512).
 const CV = 'crop/resource/cv.dll/gifs/310/';
+const UNUSED_PORTRAITS = [225, 227, 230, 231, 238, 240, 246, 248, 251, 252, 259, 261];
 export const DROP = ['palace/decor-', 'crop/resource/mk.dll/gifs/210/', 'crop/resource/mk.dll/gifs/211/',
     // its NOT_CROPPED_KEYS: the city's disorder marker; tiles.dll 86's information seal,
     // tutorial owl, podium
     'crop/file/icons/166,223,30,30', 'tint/crop/file/icons/166,223,30,30',
     'crop/resource/tiles.dll/gifs/86/398,134,', 'crop/resource/tiles.dll/gifs/86/134,398,',
     'crop/resource/tiles.dll/gifs/86/2,398,', 'tint/crop/resource/tiles.dll/gifs/86/2,398,',
-    'crop/resource/mk.dll/gifs/22', 'crop/resource/mk.dll/gifs/23', 'crop/resource/mk.dll/gifs/24',
-    'crop/resource/mk.dll/gifs/25', 'crop/resource/mk.dll/gifs/26',
+    ...UNUSED_PORTRAITS.map((id) => `crop/resource/mk.dll/gifs/${id}/`),
     ...[1, 160, 319, 478].flatMap((x) => [`${CV}${x},1,`, `${CV}${x},116,`]),
     ...[1, 125, 249, 373].flatMap((x) => [`${CV}${x},346,`, `${CV}${x},429,`])];
 // A key of a picture hd.c draws.

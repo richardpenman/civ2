@@ -39,5 +39,8 @@ void hd_test_city_picture(int picture, int city);
 void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
+/* The leader's portrait (its sprite, just taken; portrait: the
+   civilization's leader_portrait) drawn with the pack's that fits its tribe. */
+void hd_diplomacy_portrait(Sprite *sprite, int portrait);
 
 #endif

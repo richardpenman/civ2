@@ -5051,6 +5051,7 @@ i32 DiploLeaderWindow::init_portrait()
     ;
     surface.set_palette(&leader_palette);
     sprite.grab_from_surface(&surface,9,1,1,0xe1,0x113);
+    hd_diplomacy_portrait(&sprite,civs[leader_civ].leader_portrait);   /* (port) HD: the pack's for the tribe */
     sprite.draw((RECT *)draw_ctx,&leader_surface,0xd0,0x39);
     result = 1;
   }
