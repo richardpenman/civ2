@@ -330,6 +330,32 @@ The rest is in the platform layer (`src/platform/hd.c`):
   bonus pieces 4 and 5 share their regions: the one shown is the one the game gives, 5 first).
   Some regions are narrow (the throne's, the bonus pieces'), so some pieces are small.
   The pictures the original drew for the room, enlarged, are no longer seen.
+* **The spaceship** is drawn whole from the pack's side-view pieces (`ship/...`, 96 x 80, made
+  for PR #11's own spaceship screen), in a layout of OpenCiv2's own built from the ship's actual
+  parts: the game draws its ship as ever (`render_ship`: the original's cells, in its pixels;
+  the same pictures, palettes and `rand()` calls), then `hd_spaceship`
+  (`src/game/hd_graphics.cpp`; at the end of `render_ship`, or of `init_starfield` once
+  launched) paints on the window's plane, over the ship's rectangle (457 x 304 at 175,99), the
+  window's own picture (`ss.dll` 499; launched: the starfield's colour and the stars the game
+  drew there) and then the ship, and the game's pixels there are taken as shown.  The ship lies
+  along the pieces' own axis (sloping down to the right, 0.28), stern at the left: the
+  components are up to eight rows, filled from the middle outwards, each a propulsion unit
+  (`ship/propulsion`; launched, `ship/engine-active`, its engine firing) and a fuel tank
+  (`ship/fuel`); the structurals are four truss rails (`ship/structural-spine`, at 0.44 of the
+  scale, sheared by -0.084 so that its own slope, 0.364, is the axis') growing from the four
+  middle tanks towards the bow a bay at a time, four structurals a bay (the game's rule: a pair
+  of components for each four structurals), ending in a docking hub
+  (`ship/structural-dock`); the habitation modules run along above the frame, the life support
+  modules below it, the solar panels spread above and below them (two of each side).  A part
+  built but not yet supported by the frame (beyond `spaceship_part_count`, which the original
+  draws as its "unconnected" cell, the status's `*`) is drawn as a faded grey outline (40%,
+  grey); a part not built is not drawn.  The scale is that of the complete ship (39
+  structurals, 8 and 8 components, 4, 4 and 4 modules), fitted in the window's ship area clear
+  of the text panel (236,104 to 626,398), so the ship grows in place, centred.  Once launched,
+  the stars the game moves (`spaceship_wnd_starfield_tick`, pixel by pixel) stay behind the
+  ship: where the ship is drawn, their pixels are taken as shown (`hd_spaceship_stars`).  The
+  pack's other pieces (antenna, arrival, command, escape, fusion, radiator, the truss's cross
+  and elbow) map to nothing the game counts, and are not drawn.
 * **Palettes**: when a surface's colour table changes (`SetDIBColorTable`: a palette loaded
   for another picture, the throne room's colours given to its surface, all black until it is
   first shown), the plane's pixels that are the surface's pixels enlarged in the old colour
@@ -431,7 +457,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
   tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, the original's), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
   times by clicks on its choice screen, with the choice screens, on a 640x480 desktop: its
-  logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window), `harness/hd/hd-spaceship.txt` (a ship with parts).  With `CIV2_TEST_HD=2`, for
+  logical screenshots and `rand()` trace are those of the same run with HD graphics off), `screens.txt` (the spaceship's window), `harness/hd/hd-spaceship.txt` (the ship's window empty, partly built with parts not yet supported, complete, launched: its logical screenshots and `rand()` trace are those of the same run with HD graphics off).  With `CIV2_TEST_HD=2`, for
   `harness/scripts/citywindow.txt` and `newgame.txt` every logical
   screenshot, the `rand()` trace (1,049 and 13,280 calls) and the sounds are identical to the
   original's recording; the `-hd` screenshots are looked at by eye.  On the replays'
@@ -442,7 +468,7 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,288 pictures, 116 MB of PNGs, about 96 MB with each
+For a stripped pack, the keys hd.c draws (1,296 pictures, 117 MB of PNGs, about 97 MB with each
 repeated PNG once; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
@@ -458,7 +484,9 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
-  `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`).
+  `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`);
+* `ship/propulsion`, `engine-active`, `fuel`, `structural-spine`, `structural-dock`,
+  `habitation`, `life-support`, `solar`: the spaceship (`hd_spaceship`).
 
 ## Not yet done
 
@@ -484,23 +512,18 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
   the announcements' tall pictures (`tiles.dll` 71, 75, 77: wide vignettes in a tall frame)
   and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above) and
   the framed parchments of `mk.dll` 10000 to 10002 and
-  `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's parts
-  (below); the city view's
+  `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's pieces not
+  drawn (below); the city view's
   larger `city/buildings.*` and `wonders.*`, `building/`, `house/`, `lot/` (its sprites have
   their crops; `house/` and `lot/` are the same 19th-century houses); the cursors and icons (`resource/civ2.exe/12/...`, `14/...`) and the map
   editor's (`resource/civ2map.exe/...`: the editor program is not part of OpenCiv2).
-* The spaceship's parts are the original's, enlarged, over the pack's window (`ss.dll` 498,
-  499).  The game draws the ship from its sheets of parts (`render_ship`: the structure, 400 to
-  440, a picture of the whole frame at each count of structurals, and the components' and
-  modules' sheets 441/442, 455/456, 470/471, 480/481, 489/490, 491, each a row of cells, built
-  and not built, of the shapes seen at the ship's own angle: wedges, panels, discs, cut to fit
-  their neighbours) into one picture.  The pack has none of those cells: its pictures under
-  those keys are placeholders (400 to 440 one picture, each sheet a single truss at the
-  sheet's size), and its `ship/` modules (a command module, fuel tank, solar panel ... 96x80,
-  isometric) are made for PR #11's own spaceship screen, a grid of its own (`hd_spaceship`), and
-  map to no cell of the original's; laid in the original's cells they would be a collage
-  without the ship's shape.  `harness/hd/hd-spaceship.txt` (a ship with 20 structurals and
-  some components and modules, `hd_test_spaceship`).
+* The spaceship's arrival (the game's own screen) and its launch video are the original's;
+  the spaceship's window is not the original's composition (above: its own layout), and the
+  pack's pieces not drawn (antenna, arrival, command, escape, fusion, radiator, the truss's
+  cross and elbow) await a use; the original's cells (`ss.dll` 400 to 491) have no pictures
+  in the pack (its pictures under those keys are placeholders).  `harness/hd/hd-spaceship.txt`
+  (`hd_test_spaceship`: none built; 12/4/4/1/1/1, with parts not yet supported; 20/4/3/2/1/1;
+  the complete ship; the complete ship launched).
 * The new game's pictures are vignettes over black (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where
   the game puts its harbour.

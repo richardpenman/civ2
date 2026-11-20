@@ -95,6 +95,18 @@ int hd_picture(void *bits, const char *key, double x, double y, double w, double
 int hd_picture_size(const char *key, int *w, int *h);
 /* A rectangle of colour 0xAARRGGBB (AA the opacity) over the plane. */
 void hd_picture_fill(void *bits, double x, double y, double w, double h, unsigned int argb);
+/* The same, clipped to clip (l, t, r, b, surface pixels), each column of
+   the picture moved down by shear times its distance from the middle (a
+   slope given to a straight piece), its opacity times alpha/255, in grey
+   shades (grey); where it is mostly opaque, cover (the clip's size, row by
+   row, NULL: none) is set.  0 if the pack has none (nothing drawn). */
+int hd_picture_part(void *bits, const char *key, double x, double y, double w, double h, double shear, int alpha,
+                    int grey, const int *clip, unsigned char *cover);
+/* The colour 0xffRRGGBB of index in the surface's colour table. */
+unsigned int hd_bits_colour(void *bits, int index);
+/* The game's pixels where mask (w x h) is set shown as the plane has them
+   (hd_bits_shown, those pixels only). */
+void hd_bits_shown_mask(void *bits, int x, int y, int w, int h, const unsigned char *mask);
 /* Done: the game's pixels as they are now are shown as the plane has them,
    and the plane is a picture of its own, which a change of the surface's
    colour table leaves as it is (until another picture is loaded there). */

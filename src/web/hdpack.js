@@ -24,7 +24,10 @@ export const KEEP = ['crop/', 'tint/', 'dither/', 'fog/', 'file/', 'palace/', 'a
     'resource/intro.dll/', 'resource/cv.dll/gifs/340', 'resource/cv.dll/gifs/341',
     'resource/cv.dll/gifs/345', 'resource/cv.dll/gifs/346', 'resource/cv.dll/gifs/350',
     'resource/cv.dll/gifs/351',
-    'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499'];
+    'resource/ss.dll/gifs/498', 'resource/ss.dll/gifs/499',
+    // the spaceship's pieces (src/game/hd_graphics.cpp, hd_spaceship)
+    'ship/propulsion', 'ship/engine-active', 'ship/fuel', 'ship/structural-spine', 'ship/structural-dock',
+    'ship/habitation', 'ship/life-support', 'ship/solar'];
 // Of those, the throne room's decorations (not drawn), the crops hd.c does
 // not draw: its NOT_CROPPED (the sheet of small faces; the pack's leaders'
 // portraits, which src/game/hd_graphics.cpp's hd_portraits gives to the

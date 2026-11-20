@@ -42,5 +42,9 @@ void hd_diplomacy_flag(DibSurface *room, int colour);
 /* The leader's portrait (its sprite, just taken; portrait: the
    civilization's leader_portrait) drawn with the pack's that fits its tribe. */
 void hd_diplomacy_portrait(Sprite *sprite, int portrait);
+/* The spaceship drawn from the pack's pieces (after the game drew it:
+   render_ship, init_starfield); the starfield's stars kept behind it. */
+void hd_spaceship(SpaceshipWindow *w);
+void hd_spaceship_stars(SpaceshipWindow *w);
 
 #endif

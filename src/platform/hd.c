@@ -1272,6 +1272,24 @@ void hd_bits_shown(void *bits, int x, int y, int w, int h)
         commit_rect(bmp_of_bits(bits), x, y, x + w, y + h);
 }
 
+void hd_bits_shown_mask(void *bits, int x, int y, int w, int h, const unsigned char *mask)
+{
+    Bitmap *b;
+    int l = x, t = y, r = x + w, bot = y + h, n, i, j;
+    if (!hd_on || !(b = bmp_of_bits(bits)) || !valid(b) || !clip_rect(b, &l, &t, &r, &bot))
+        return;
+    n = pixel_bytes(b);
+    for (j = t; j < bot; j++) {
+        const unsigned char *row = bmp_row(b, j), *m = mask + (size_t)(j - y) * w;
+        unsigned char *prev = b->hd_prev + (size_t)j * b->w * n;
+        for (i = l; i < r; i++)
+            if (m[i - x]) {
+                memcpy(prev + i * n, row + i * n, (size_t)n);
+                b->hd_big[(size_t)j * b->w + i] = 0;
+            }
+    }
+}
+
 /* The picture in grey shades (SentryHalftone): a copy, premultiplied. */
 static uint32_t *greyed(const uint32_t *px, int n)
 {
@@ -1369,6 +1387,64 @@ int hd_picture(void *bits, const char *key, double x, double y, double w, double
         return 0;
     paint(b, px, pw, ph, l, t, pw, ph, 0, 0, b->w * d, b->h * d, -1);
     return 1;
+}
+
+int hd_picture_part(void *bits, const char *key, double x, double y, double w, double h, double shear, int alpha,
+                    int grey, const int *clip, unsigned char *cover)
+{
+    Bitmap *b;
+    const uint32_t *px;
+    int id, d = hd_density, l, t, pw, ph, cl, ct, cr, cb, pitch, i, j;
+    if (!hd_art || !(id = find(key)) || !(b = bmp_of_bits(bits)) || b->bpp != 8 || !plane(b) || w <= 0 || h <= 0)
+        return 0;
+    l = (int)floor(x * d + .5);
+    t = (int)floor(y * d + .5);
+    pw = (int)floor((x + w) * d + .5) - l;
+    ph = (int)floor((y + h) * d + .5) - t;
+    if (pw <= 0 || ph <= 0 || !(px = picture(id, pw, ph, 0)))
+        return 0;
+    cl = clip[0] < 0 ? 0 : clip[0] * d;
+    ct = clip[1] < 0 ? 0 : clip[1] * d;
+    cr = (clip[2] > b->w ? b->w : clip[2]) * d;
+    cb = (clip[3] > b->h ? b->h : clip[3]) * d;
+    pitch = b->w * d;
+    for (i = 0; i < pw; i++) {
+        int X = l + i, off = (int)floor(shear * (i - pw / 2.0) + .5);
+        if (X < cl || X >= cr)
+            continue;
+        for (j = 0; j < ph; j++) {
+            int Y = t + j + off;
+            uint32_t s = px[(size_t)j * pw + i], a, dst, ia, *out;
+            if (Y < ct || Y >= cb || !(s >> 24))
+                continue;
+            if (grey) {
+                uint32_t v = (((s >> 16) & 255) * 77 + ((s >> 8) & 255) * 150 + (s & 255) * 29) >> 8;
+                s = (s & 0xff000000u) | v << 16 | v << 8 | v;
+            }
+            if (alpha < 255)
+                s = ((s >> 24) * alpha / 255) << 24 | (((s >> 16) & 255) * alpha / 255) << 16 |
+                    (((s >> 8) & 255) * alpha / 255) << 8 | (s & 255) * alpha / 255;
+            if (!(a = s >> 24))
+                continue;
+            if (cover && a >= 128)
+                cover[(size_t)(Y / d - clip[1]) * (clip[2] - clip[0]) + X / d - clip[0]] = 1;
+            out = b->hd + (size_t)Y * pitch + X;
+            dst = *out;
+            ia = 255 - a;
+            *out = 0xff000000u | (((s >> 16) & 255) + ((dst >> 16) & 255) * ia / 255) << 16 |
+                   (((s >> 8) & 255) + ((dst >> 8) & 255) * ia / 255) << 8 | ((s & 255) + (dst & 255) * ia / 255);
+        }
+    }
+    return 1;
+}
+
+unsigned int hd_bits_colour(void *bits, int index)
+{
+    Bitmap *b = bmp_of_bits(bits);
+    if (!b || b->bpp != 8)
+        return 0xff000000u;
+    return 0xff000000u | (uint32_t)b->colors[index & 255].rgbRed << 16 | (uint32_t)b->colors[index & 255].rgbGreen << 8 |
+           b->colors[index & 255].rgbBlue;
 }
 
 void hd_picture_fill(void *bits, double x, double y, double w, double h, unsigned int argb)

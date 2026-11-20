@@ -567,14 +567,180 @@ void hd_test_city_picture(int picture, int city)
     popup_city_picture_zoom(sections[(picture - 70) / 2], city, (uint)picture, 1, cities[city].owner);
 }
 
+/* The spaceship (SpaceshipWindow::render_ship, docs/HD-GRAPHICS.md): the
+   ship drawn whole from the pack's pieces (ship/..., side views, the ship's
+   axis sloping down to the right as they are drawn) in OpenCiv2's own
+   layout, over the original's picture, which the game still draws in its
+   pixels.  The stern is a cluster of up to eight rows, each a propulsion
+   unit (its engine firing once launched) and a fuel tank, filled from the
+   middle outwards; the frame grows from the tanks towards the bow, four
+   truss rails a bay at a time (four structurals a bay: a pair of
+   components needs four more), ending in a docking hub; the habitation
+   modules run along above the frame, the life support modules below, the
+   solar panels spread above and below them.  A part built but not yet
+   supported by the frame (beyond spaceship_part_count, which the original
+   draws "unconnected") is a faded grey outline; a part not built is not
+   drawn.  The scale is that of the complete ship, so the ship grows in
+   place, centred in the picture.  Units: the pack's pieces are 96 x 80
+   game pixels at scale 1. */
+struct ShipPiece {
+    int z;                      /* drawn by z, back to front */
+    const char *key;
+    double u, v, scale, shear;  /* along the axis, across it (both game pixels) */
+    int ghost;
+};
+
+enum { SHIP_MAX_PIECES = 128 };
+static const double SHIP_SLOPE = .28, SHIP_TUBE = 62, SHIP_ROW = 21, SHIP_BAY = 25.5, SHIP_TRUSS = .44;
+static const int SHIP_PIECE_W = 96, SHIP_PIECE_H = 80;
+static const int ship_rect[4] = {0xaf, 99, 0xaf + 0x1c9, 99 + 0x130};     /* where the game draws the ship */
+static const double ship_box[4] = {236, 104, 626, 398};                  /* the ship's own, clear of the panel */
+
+static int ship_layout(const int *n, const int *built, int launched, ShipPiece *p)
+{
+    static const int rows[8] = {3, 4, 2, 5, 1, 6, 0, 7};    /* the stern's rows, from the middle */
+    static const int rails[4] = {3, 4, 2, 5};               /* the frame's, the four middle rows */
+    static const double solar[4][2] = {{1.2, -3.7}, {1.2, 3.7}, {3.0, -3.7}, {3.0, 3.7}};
+    const double u0 = SHIP_TUBE * .5 + SHIP_BAY * .5 - 6, front = u0 - SHIP_BAY * .5;
+    int k = 0, j;
+#define PUT(Z, KEY, U, V, SC, GHOST, SHEAR)                                                         \
+    do {                                                                                          \
+        ShipPiece q = {(Z), (KEY), (U), (V), (SC), (SHEAR), (GHOST)};                             \
+        if (k < SHIP_MAX_PIECES)                                                                  \
+            p[k++] = q;                                                                           \
+    } while (0)
+    for (j = 0; j < n[1] || j < n[2]; j++) {
+        double v = (rows[j] - 3.5) * SHIP_ROW;
+        if (j < n[1])
+            PUT(rows[j] * 10 + 1, launched ? "ship/engine-active" : "ship/propulsion", -SHIP_TUBE * .92, v, 1.0,
+                j >= built[1], 0.0);
+        if (j < n[2])
+            PUT(rows[j] * 10 + 2, "ship/fuel", 0.0, v, 1.0, j >= built[2], 0.0);
+    }
+    for (j = 0; j < n[0]; j++)
+        PUT(rails[j % 4] * 10 + 3, "ship/structural-spine", u0 + j / 4 * SHIP_BAY, (rails[j % 4] - 3.5) * SHIP_ROW,
+            SHIP_TRUSS, 0, SHIP_SLOPE - .364);     /* the truss drawn at .364: given the axis' slope */
+    if (n[0])
+        PUT(47, "ship/structural-dock", u0 + (n[0] + 3) / 4 * SHIP_BAY + SHIP_BAY * .1, 0.0, 1.25, 0, 0.0);
+    for (j = 0; j < n[3]; j++)
+        PUT(15, "ship/habitation", front + SHIP_TUBE * (j + .5), -2.6 * SHIP_ROW, 1.0, j >= built[3], 0.0);
+    for (j = 0; j < n[4]; j++)
+        PUT(65, "ship/life-support", front + SHIP_TUBE * (j + .5), 2.6 * SHIP_ROW, 1.0, j >= built[4], 0.0);
+    for (j = 0; j < n[5]; j++)
+        PUT(solar[j][1] < 0 ? 5 : 85, "ship/solar", front + solar[j][0] * SHIP_TUBE, solar[j][1] * SHIP_ROW, 1.0,
+            j >= built[5], 0.0);
+#undef PUT
+    return k;
+}
+
+/* The pieces' extent (game pixels at scale 1, the axis' origin at 0, 0). */
+static void ship_bounds(const ShipPiece *p, int k, double *b)
+{
+    int i;
+    b[0] = b[1] = 1e9;
+    b[2] = b[3] = -1e9;
+    for (i = 0; i < k; i++) {
+        double x = p[i].u, y = p[i].u * SHIP_SLOPE + p[i].v, hw = SHIP_PIECE_W * p[i].scale / 2,
+               hh = SHIP_PIECE_H * p[i].scale / 2;
+        if (x - hw < b[0]) b[0] = x - hw;
+        if (y - hh < b[1]) b[1] = y - hh;
+        if (x + hw > b[2]) b[2] = x + hw;
+        if (y + hh > b[3]) b[3] = y + hh;
+    }
+}
+
+/* The ship's cover (where it is drawn) for the starfield. */
+static unsigned char ship_cover[0x1c9 * 0x130];
+static const void *ship_cover_of;
+
+void hd_spaceship(SpaceshipWindow *w)
+{
+    static const int full[6] = {39, 8, 8, 4, 4, 4};
+    ShipPiece p[SHIP_MAX_PIECES];
+    void *bits = (void *)w->surface_wnd.bits;
+    int n[6], built[6], k, i, pw, ph, launched = w->launch_state == 3;
+    double b[4], scale, ox, oy;
+    ship_cover_of = NULL;
+    if (!hd_art || !hd_picture_size("ship/structural-spine", &pw, &ph))
+        return;     /* a pack without the pieces: the original's ship, enlarged */
+    for (i = 0; i < 6; i++) {
+        n[i] = civs[w->ship_civ].spaceship_parts[i];
+        if (n[i] < 0) n[i] = 0;
+        if (n[i] > full[i]) n[i] = full[i];
+        built[i] = spaceship_part_count(w->ship_civ, i);
+    }
+    /* the scale of the complete ship, fitted in the box */
+    k = ship_layout(full, full, launched, p);
+    ship_bounds(p, k, b);
+    scale = (ship_box[2] - ship_box[0]) / (b[2] - b[0]);
+    if (scale > (ship_box[3] - ship_box[1]) / (b[3] - b[1]))
+        scale = (ship_box[3] - ship_box[1]) / (b[3] - b[1]);
+    /* the background: the window's picture, or space once launched (the
+       starfield's colour, its stars as the game drew them) */
+    if (launched) {
+        static unsigned char stars[0x1c9 * 0x130];
+        const int rw = ship_rect[2] - ship_rect[0];
+        memset(stars, 0, sizeof stars);
+        hd_picture_fill(bits, ship_rect[0], ship_rect[1], rw, ship_rect[3] - ship_rect[1], hd_bits_colour(bits, 10));
+        for (i = 0; i < 80; i++) {
+            int x, y;
+            if (!w->stars[i].depth)
+                continue;
+            x = w->stars[i].x / w->stars[i].depth + 0x140;
+            y = w->stars[i].y / w->stars[i].depth + 0xf0;
+            if (x >= ship_rect[0] && x < ship_rect[2] && y >= ship_rect[1] && y < ship_rect[3] &&
+                w->surface_wnd.get_pixel(x, y) == 0x29)
+                stars[(y - ship_rect[1]) * rw + x - ship_rect[0]] = 1;
+        }
+        hd_bits_redrawn_mask(bits, ship_rect[0], ship_rect[1], rw, ship_rect[3] - ship_rect[1], stars);
+    } else
+        hd_picture_part(bits, "resource/ss.dll/gifs/499", 0, 0, 640, 480, 0, 255, 0, ship_rect, NULL);
+    memset(ship_cover, 0, sizeof ship_cover);
+    k = ship_layout(n, built, launched, p);
+    if (k) {
+        /* back to front (a stable sort: few pieces) */
+        for (i = 1; i < k; i++) {
+            ShipPiece q = p[i];
+            int j = i;
+            for (; j > 0 && p[j - 1].z > q.z; j--)
+                p[j] = p[j - 1];
+            p[j] = q;
+        }
+        ship_bounds(p, k, b);
+        ox = (ship_box[0] + ship_box[2]) / 2 - (b[0] + b[2]) / 2 * scale;
+        oy = (ship_box[1] + ship_box[3]) / 2 - (b[1] + b[3]) / 2 * scale;
+        for (i = 0; i < k; i++) {
+            double dw = SHIP_PIECE_W * p[i].scale * scale, dh = SHIP_PIECE_H * p[i].scale * scale;
+            hd_picture_part(bits, p[i].key, ox + p[i].u * scale - dw / 2,
+                            oy + (p[i].u * SHIP_SLOPE + p[i].v) * scale - dh / 2, dw, dh, p[i].shear,
+                            p[i].ghost ? 100 : 255, p[i].ghost, ship_rect, ship_cover);
+        }
+    }
+    hd_bits_shown(bits, ship_rect[0], ship_rect[1], ship_rect[2] - ship_rect[0], ship_rect[3] - ship_rect[1]);
+    ship_cover_of = bits;
+}
+
+/* The starfield's stars, moved by the game (spaceship_wnd_starfield_tick):
+   those under the ship stay behind it. */
+void hd_spaceship_stars(SpaceshipWindow *w)
+{
+    void *bits = (void *)w->surface_wnd.bits;
+    if (hd_art && ship_cover_of == bits)
+        hd_bits_shown_mask(bits, ship_rect[0], ship_rect[1], ship_rect[2] - ship_rect[0],
+                           ship_rect[3] - ship_rect[1], ship_cover);
+}
+
 /* A test (harness/hd/hd-spaceship.txt): the player's spaceship with these
    parts built (structurals, the two kinds of components, the three kinds
-   of modules), in its window. */
+   of modules), in its window; s negative: -s structurals, the ship
+   launched. */
 void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3)
 {
-    const int n[6] = {s, c1, c2, m1, m2, m3};
+    const int n[6] = {s < 0 ? -s : s, c1, c2, m1, m2, m3};
     int i;
     for (i = 0; i < 6; i++)
         civs[human_civ[0]].spaceship_parts[i] = (i16)n[i];
+    if (s < 0)
+        civs[human_civ[0]].spaceship_flags |= SHIP_LAUNCHED;
     spaceship_wnd_run(human_civ[0]);
 }

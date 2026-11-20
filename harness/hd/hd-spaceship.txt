@@ -1,7 +1,12 @@
-# HD graphics (docs/HD-GRAPHICS.md): the spaceship's window with parts
-# built (hd_test_spaceship: 20 structurals, 4 and 3 components, 2, 1 and 1
-# modules): its window is the pack's (ss.dll 498, 499), its parts the
-# original's, enlarged.  The window does not close on a key: last.
+# HD graphics (docs/HD-GRAPHICS.md): the spaceship's window (hd_test_spaceship:
+# structurals, propulsion and fuel components, habitation, life support and
+# solar modules), its ship drawn from the pack's pieces (hd_spaceship): none
+# built; 12/4/4/1/1/1 (a propulsion unit, two fuel tanks and the solar panel
+# not yet supported by the frame: faded); 20/4/3/2/1/1; the complete ship;
+# the complete ship launched (its engines firing, among the stars: last, the
+# launched window does not close).  The window closes on a click on its
+# close button (once the text is typed): at 0x22f,0x1a1 on the 1024x768
+# desktop's centred window, at 0x1f5 when the ship can be launched.
 # run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
 wait 8000
 key Down Down Down Down     # "Load a Game"
@@ -11,7 +16,43 @@ key Return
 wait 20000
 key Return
 wait 5000
+call hd_test_spaceship 0 0 0 0 0 0 0
+wait 30000
+shot s1-empty
+mousemove 784 581
+wait 300
+mousedown 784 581
+wait 300
+mouseup 784 581
+wait 2000
+call hd_test_spaceship 0 12 4 4 1 1 1
+wait 30000
+shot s2-partial
+mousemove 784 581
+wait 300
+mousedown 784 581
+wait 300
+mouseup 784 581
+wait 2000
 call hd_test_spaceship 0 20 4 3 2 1 1
-wait 5000
-shot s1-spaceship
+wait 30000
+shot s3-spaceship
+mousemove 719 581
+wait 300
+mousedown 719 581
+wait 300
+mouseup 719 581
+wait 2000
+call hd_test_spaceship 0 39 8 8 4 4 4
+wait 30000
+shot s4-complete
+mousemove 719 581
+wait 300
+mousedown 719 581
+wait 300
+mouseup 719 581
+wait 2000
+call hd_test_spaceship 0 -39 8 8 4 4 4
+wait 8000
+shot s5-launched
 quit

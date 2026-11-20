@@ -1,6 +1,8 @@
 /* The game, the space race: functions translated from the original
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
+#include "hd_game.h"
+#include "../platform/hd.h"
 
 /* 004d0160 auto */
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
@@ -785,6 +787,7 @@ void SpaceshipWindow::init_starfield()
              (const char *)success_text,(RECT *)(iptr)(status_line_rect),0);
   surface_wnd.wnd_blit_surface_rect(((RECT *)status_line_rect));
   ship_image_sprite.draw((RECT *)clip_rect,&surface_wnd,0xaf,99);
+  if (hd_art) hd_spaceship(this);     /* (port) HD graphics: the pack's ship */
   if (launch_state == 3) {
     type_y = 0x8c;
   }
@@ -1085,6 +1088,7 @@ void __cdecl spaceship_wnd_starfield_tick(void)
       }
     }
   }
+  if (hd_art) hd_spaceship_stars(ship_wnd);     /* (port) HD graphics: the stars behind the ship */
   ship_wnd->surface_wnd.wnd_blit_surface();
   return;
 }

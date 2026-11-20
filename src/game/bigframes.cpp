@@ -5,6 +5,8 @@
  * code on the function's own locals, exception bookkeeping is dropped.
  */
 #include "game.h"
+#include "hd_game.h"
+#include "../platform/hd.h"
 
 /* Part of setup_new_game_dialogs (0041ba52): the advanced rules (checkboxes)
    dialog.  Returns the accelerated start check. */
@@ -966,6 +968,9 @@ i32 SpaceshipWindow::render_ship()
   }
   ship_image_sprite.draw((RECT *)sprite_final,&surface_wnd,0xaf,
                99);
+  if (hd_art && (int)launch_state != 3) {
+    hd_spaceship(this);     /* (port) HD graphics: the pack's ship (launched: init_starfield) */
+  }
   spaceship_wnd_draw_title(ship_civ);
   render_ship_free_surfaces(sf,unwind_state);
   return 1;
