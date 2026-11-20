@@ -14,6 +14,7 @@
  */
 #ifndef CIV2_HD_H
 #define CIV2_HD_H
+#include <stddef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -21,6 +22,11 @@ extern "C" {
 extern int hd_on;           /* the planes in use (sharp text and interface, HD graphics) */
 extern int hd_art;          /* HD graphics: the art in use */
 extern int hd_density;      /* plane pixels per surface pixel, each way (1..4) */
+
+/* A picture's pixels as 8-bit RGBA, w x h, from a PNG or a WebP file's bytes
+   (by their first bytes; src/platform/hd_image.c); NULL: neither, or bad.
+   Freed with free(). */
+unsigned char *hd_decode_image(const unsigned char *data, size_t len, int *w, int *h);
 
 /* The game's side (src/auto/graphics*.cpp).  Surfaces are named by their
    pixels (DibSurface::bits); rectangles are in surface pixels. */

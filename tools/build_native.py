@@ -289,6 +289,9 @@ def compile_one(job):
             # Third-party C (src/third_party/*/), built as its authors' code.
             flags = [f for f in CFLAGS if not f.startswith('-std') and f not in ('-O1',)]
             extra = ['-std=gnu99', '-O2', '-I', os.path.dirname(src)]
+            if '/src/third_party/libwebp/' in src:
+                # (its includes are from its root; its src/webp/config.h: plain C, no threads)
+                extra += ['-I', os.path.join(ROOT, 'src', 'third_party', 'libwebp'), '-DHAVE_CONFIG_H']
         elif '/src/host/' in src:
             # The host interface over SDL2: plain C, none of the game's headers.
             flags = []
@@ -323,6 +326,8 @@ def main():
         # The Indeo 4 decoder (FFmpeg's, LGPL): indeo4.c is included by iv41.c.
         sources += [os.path.join(ROOT, 'src', 'third_party', 'indeo4', f + '.c')
                     for f in ('iv41', 'ivi', 'ivi_dsp', 'vlc', 'reverse', 'zigzag')]
+        # The WebP decoder (libwebp's, BSD): OpenCiv2's own HD pictures (src/platform/hd.c).
+        sources += sorted(glob.glob(os.path.join(ROOT, 'src', 'third_party', 'libwebp', 'src', '*', '*.c')))
     if args.target.startswith('linux'):
         sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c', 'host_options.c', 'host_lang.c')]
         # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.

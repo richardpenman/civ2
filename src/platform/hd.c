@@ -27,16 +27,11 @@
  * Peter Johnson's (PR #11 of richardpenman/civ2, src/platform/hd.c); this
  * is a smaller implementation of it.
  */
+#include <math.h>
+#include <unistd.h>
 #include "plat.h"
 #include "hd.h"
 #include "../host/host.h"
-#define STBI_ONLY_PNG
-#define STBI_NO_STDIO
-#define STBI_NO_LINEAR
-#define STBI_NO_HDR
-#define STBI_MAX_DIMENSIONS 16384
-#define STB_IMAGE_IMPLEMENTATION
-#include "../third_party/stb_image/stb_image.h"
 
 extern char plat_data_dir[];
 extern char plat_game_dir[];
@@ -122,7 +117,6 @@ static Entry *decode(int id)
 {
     Entry *a = entries + id - 1;
     unsigned char *png;
-    int ch;
     a->used = ++tick;
     if (a->rgba)
         return a;
@@ -143,7 +137,7 @@ static Entry *decode(int id)
         free(png);
         return NULL;
     }
-    a->rgba = stbi_load_from_memory(png, (int)a->len, &a->pw, &a->ph, &ch, 4);
+    a->rgba = hd_decode_image(png, a->len, &a->pw, &a->ph);     /* PNG or WebP: hd_image.c */
     free(png);
     if (!a->rgba) {
         plat_log("HD graphics: cannot decode %s\n", a->key);

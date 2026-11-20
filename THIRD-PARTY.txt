@@ -19,11 +19,12 @@ is not included: it is set up from the player's own copy.
  11. stb_image 2.30           MIT licence (or public domain)
  12. Noto Serif TC, Noto Sans TC, Noto Serif, Noto Sans  SIL Open Font License 1.1 (Chinese, Greek text)
  13. stb_truetype 1.26        MIT licence (or public domain)
+ 14. libwebp 1.5.0 (decoder)  BSD licence (3 clauses) and Google's patent grant
 
 and, not in the programs but used by them when the player installs it
 (make hd, tools/fetch_hd_pack.py; docs/HD-GRAPHICS.md):
 
- 14. openciv2-assets          MIT licence: the HD graphics' art
+ 15. openciv2-assets          MIT licence: the HD graphics' art
 
 unshield, zlib (the set-up's reader of the CD's InstallShield cabinet),
 libogg and libvorbis (its Ogg Vorbis encoder of the CD's music) are in the
@@ -436,7 +437,47 @@ preferred: the MIT licence, Copyright (c) 2017 Sean Barrett, as in 5., or
 public domain (www.unlicense.org); the full text is at the end of the file.
 
 
-14. openciv2-assets  https://github.com/PeterJohnson/openciv2-assets
+14. libwebp  https://chromium.googlesource.com/webm/libwebp  (src/third_party/libwebp)
+--------------------------------------------------------------------------------------
+
+The decoder of OpenCiv2's own HD pictures (data/native/hd-extra, WebP;
+src/platform/hd_image.c): libwebp 1.5.0's decoder (its src/dec, and what it
+needs of src/dsp and src/utils, in plain C), as released.  Its AUTHORS and
+PATENTS (Google's additional grant of patent rights) are beside it.
+
+Copyright (c) 2010, Google Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+  * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  * Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the
+    distribution.
+
+  * Neither the name of Google nor the names of its contributors may
+    be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+15. openciv2-assets  https://github.com/PeterJohnson/openciv2-assets
 ---------------------------------------------------------------------
 
 The replacement art of the optional HD graphics, by Peter Johnson: the

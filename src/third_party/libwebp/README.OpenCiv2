@@ -1,0 +1,11 @@
+libwebp 1.5.0's decoder, as released
+(https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.5.0.tar.gz,
+SHA-256 7d6fab70cf844bf6769077bd5d7a74893f8ffd4dfb42861745750c63c2a5c92c),
+for OpenCiv2's own HD pictures (src/platform/hd_image.c).  Only what
+WebPDecodeRGBA needs, the files of libwebpdecoder's plain C: src/dec/*,
+src/dsp's COMMON_SOURCES (no SSE2, NEON, MIPS or MSA variants), src/utils's
+COMMON_SOURCES, and the headers they include (src/webp/*.h,
+src/enc/histogram_enc.h, backward_references_enc.h).  src/webp/config.h is
+OpenCiv2's: compiled with HAVE_CONFIG_H (tools/build_native.py), it turns
+off the instruction-set variants and threads.  Licence: COPYING and PATENTS
+(THIRD-PARTY.txt, 14.).

@@ -415,7 +415,8 @@ window by window.
 The art: openciv2-assets by Peter Johnson, MIT licence (installed beside the pack as `LICENSE`,
 `THIRD-PARTY.txt` and `ATLAS-PROVENANCE.md`), never committed here; `THIRD-PARTY.txt` lists it.
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
-(`src/third_party/stb_image`).  The renderer is OpenCiv2's, after Peter Johnson's design.
+(`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
+(`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
 
 ## Tests
 
