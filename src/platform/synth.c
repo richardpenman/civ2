@@ -827,6 +827,36 @@ static const struct { const char *module; int lo, hi, first, count; } OWN[] = {
     {"cv.dll", 399, 399, 0, 0},
 };
 
+/* The leaders' portraits (mk.dll 220 to 261: the diplomacy room's, the
+   225x275 sprite at 1,1) and the sheets of small faces (210, 211: 7 x 3 of
+   90x110, which the custom tribe's portrait chooser shows): the pack's 42
+   portraits are people of its own, not the tribes' leaders in the
+   original's order (data/hd-pack.json leaves out those no tribe is given
+   and the sheets), so each frame is a plain dark panel, in the diplomacy
+   room's slate; with HD graphics the room draws the pack's portrait that
+   fits the tribe over it (src/game/hd_graphics.cpp, hd_diplomacy_portrait;
+   the Zulus' none: the frame).  1: a portrait's. */
+static int portrait_frames(Canvas *c, const char *module, int id)
+{
+    static const unsigned char panel[4] = {38, 41, 48, 255}, edge[4] = {84, 88, 98, 255};
+    int cell, cells, x0, y0, cw, ch, x, y;
+    if (strcasecmp(module, "mk.dll") || !((id >= 220 && id <= 261) || id == 210 || id == 211))
+        return 0;
+    cells = id >= 220 ? 1 : 21;
+    cw = id >= 220 ? 225 : 90;
+    ch = id >= 220 ? 275 : 110;
+    for (cell = 0; cell < cells; cell++) {
+        x0 = 1 + cell % 7 * (cw + 1);
+        y0 = 1 + cell / 7 * (ch + 1);
+        for (y = y0; y < y0 + ch && y < c->h; y++)
+            for (x = x0; x < x0 + cw && x < c->w; x++) {
+                int rim = x - x0 < 3 || x0 + cw - 1 - x < 3 || y - y0 < 3 || y0 + ch - 1 - y < 3;
+                memcpy(c->px + ((size_t)y * c->w + x) * 4, rim ? edge : panel, 4);
+            }
+    }
+    return 1;
+}
+
 /* The picture resource GIFS id of the module, made from the art, if the
    original has it: the GIF's bytes (kept), else NULL. */
 const unsigned char *synth_resource(const char *module, int id, unsigned *len)
@@ -839,7 +869,7 @@ const unsigned char *synth_resource(const char *module, int id, unsigned *len)
     char key[200];
     unsigned char *idx;
     size_t i, n;
-    int whole = 0, art;
+    int whole = 0, art, frames = 0;
     for (i = 0; i < sizeof RESOURCES / sizeof *RESOURCES; i++)
         if (RESOURCES[i].id == id && !strcasecmp(RESOURCES[i].module, module))
             r = &RESOURCES[i];
@@ -856,14 +886,17 @@ const unsigned char *synth_resource(const char *module, int id, unsigned *len)
     art = hd_art_open();
     snprintf(key, sizeof key, "resource/%s/gifs/%d", r->module, id);
     if (art) {
-        /* (not wonder.dll's: the game takes only the movie window's border
+        frames = portrait_frames(&c, r->module, id);
+        /* (not the portraits' art: frames; nor wonder.dll's: the game takes only the movie window's border
            tile from them, 1,1,64,32, and the pack's are each wonder's
            painting, whose corner is no border: the tile is the art's crop
            of that key where it has one, else plain grey) */
-        if (strcasecmp(r->module, "wonder.dll"))
+        if (!frames && strcasecmp(r->module, "wonder.dll"))
             whole = put_art(&c, key, 0, 0, r->w, r->h);
-        cs = crops_of(key);
-        draw_crops(&c, &cs);
+        if (!frames) {
+            cs = crops_of(key);
+            draw_crops(&c, &cs);
+        }
     }
     pal = calloc(1, sizeof *pal);
     n = (size_t)r->w * r->h;
@@ -889,11 +922,11 @@ const unsigned char *synth_resource(const char *module, int id, unsigned *len)
                 pal->hi++;
             free(hist);
         }
-    if (!whole && !cs.n) {
+    if (!whole && !cs.n && !frames) {
         m->gif = grey_picture(r->w, r->h, pal, &m->len);
         plat_log("synth: %s has no art: grey\n", key);
     } else {
-        if (cs.n)
+        if (cs.n && !frames)
             index_crops(idx, &c, &cs, pal, BACK);
         else
             dither(idx, &c, pal);

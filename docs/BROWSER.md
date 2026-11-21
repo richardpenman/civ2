@@ -165,7 +165,7 @@ device pixel ratio of 2 or more the canvas is the device's pixels, its text, men
 drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in the address
 switches it for that visit, as `--sharp=0` natively.
 
-What it takes: 30 MB from the site (the pictures the game uses, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
+What it takes: 25 MB from the site (the pictures the game uses, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
 without, 179 MB with sharp text alone); showing a 2560x1600 frame takes about 10 ms (Chrome, this
 machine).
 

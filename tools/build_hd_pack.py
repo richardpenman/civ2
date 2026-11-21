@@ -36,8 +36,8 @@ release's jobs) run it first.
    data/hd-pack.json's "keep" and with none of its "drop" (src/platform/hd.c
    and src/game/hd_graphics.cpp draw no others), and those
    src/platform/synth.c reads to make the original's pictures where the game
-   folder lacks them, the keys beginning with one of its "synth".  Pictures
-   with the same PNG are kept once.
+   folder lacks them, the keys beginning with one of its "synth"; never
+   those beginning with one of its "exclude" (if it has one).  Pictures with the same PNG are kept once.
 3. Each is made no larger than the largest size the game uses it at: one
    drawn, its size in the game's pixels times MAX_DENSITY (hd.c's hd_density
    is at most 4) times MAP_ZOOM for the map's pictures (the map's zoom goes
@@ -183,6 +183,8 @@ def drawn(key, pin):
 
 
 def used(key, pin):
+    if key.startswith(tuple(pin.get('exclude', ()))):
+        return False            # never in the art
     return drawn(key, pin) or key.startswith(tuple(pin['synth']))
 
 

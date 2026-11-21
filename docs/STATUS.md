@@ -95,8 +95,12 @@ OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain
 into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
 music, scenarios.  The editors'
 backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's
-own offered to it, openciv2-assets pull request 7).  A tribe's
-herald of OpenCiv2's own (an animated WebP with alpha,
+own offered to it, openciv2-assets pull request 7).  The
+leaders' portraits in HD are the art pack's, each tribe given the one that fits it (its 42 are
+people of its own, not the tribes' leaders: [HD-GRAPHICS.md](HD-GRAPHICS.md), the diplomacy
+room), with the install or without it, but the Zulus' (the original's, enlarged, or without the
+install a plain dark frame).  A tribe's herald of OpenCiv2's own
+(an animated WebP with alpha,
 `data/native/hd-extra/heralds.txt`, a local staging folder not in the repository; `tools/build_herald.py`) plays in HD in place of the CD's
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
 heralds*): the Russians' so far.

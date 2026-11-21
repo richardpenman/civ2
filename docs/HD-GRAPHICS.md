@@ -114,7 +114,10 @@ FORCE=1`):
    draw (the keys beginning with one of `data/hd-pack.json`'s `keep` and none of its `drop`:
    *The pictures drawn*, below) and those `src/platform/synth.c` reads to make the original's
    pictures where the game folder lacks them (its `synth`: [NO-INSTALL.md](NO-INSTALL.md)),
-   1,606 keys, 1,026 distinct pictures (the release has 2,105);
+   but never those beginning with one of its `exclude` (the pack's leaders' portraits whole and
+   its sheets of small faces, `mk.dll` 210, 211, 220 to 261, and the portraits' crops no tribe is
+   given: not used), 1,538 keys, 958 distinct
+   pictures (the release has 2,105);
 3. makes each no larger than the largest size the game uses it at: a picture drawn, its size in
    the game's pixels times 4 (the largest density, `hd_density`) and times 2 more for the map's
    (its largest zoom, +8: twice the size); one only read by synth.c, its size in the game's
@@ -455,12 +458,13 @@ The rest is in the platform layer (`src/platform/hd.c`):
   tribes' leaders in the original's order (at the Vikings' id a 19th-century man in a frock
   coat, at the Babylonians' a red-bearded Celt), so a portrait's own crop is never drawn
   (`NOT_CROPPED` in hd.c, with the sheets of small faces, 210 and 211, of which the game takes
-  no sprites: the custom tribe's portrait chooser copies them whole, the original's) and each tribe and gender is given the portrait that fits it best, by region, then
-  era, several tribes sharing one (`hd_portraits` in `src/game/hd_graphics.cpp`, bound by
-  `hd_diplomacy_portrait` in `DiploLeaderWindow::init_portrait`).  The portrait's number chooses,
-  as in the game: the tribe's slot (a scenario's tribe in a slot has the slot's portrait), or
-  the face a custom tribe chose in the portrait chooser.  The pack's bust is drawn in the
-  sprite's frame, centred on the panel, as its art is laid out.
+  no sprites: the custom tribe's portrait chooser copies them whole, the original's) and each
+  tribe and gender is given the portrait that fits it best, by region, then era, several tribes
+  sharing one (`hd_portraits` in `src/game/hd_graphics.cpp`, bound by `hd_diplomacy_portrait`
+  in `DiploLeaderWindow::init_portrait`).  The portrait's number chooses, as in the game: the
+  tribe's slot (a scenario's tribe in a slot has the slot's portrait), or the face a custom
+  tribe chose in the portrait chooser.  The pack's bust is drawn in the sprite's frame, centred
+  on the panel, as its art is laid out.
 
   | Tribe | Man | Woman |
   |---|---|---|
@@ -482,14 +486,19 @@ The rest is in the platform layer (`src/platform/hd.c`):
   | Sioux | 239: Indigenous North American diplomat, blue wool | 260: the same |
 
   The Zulus keep the original's (a warrior with shield and spear, enlarged): the pack's only
-  Africans (225, 246) are West African, in indigo robes and headwraps.  Not given to any tribe:
-  the Andean (227, 248), Southeast Asian (230, 251), Pacific (231, 252), modern South Asian
-  (238, 259) and modern Mediterranean (240, 261) portraits.  `harness/hd/hd-talks-all.sh` shows
-  every tribe's leader, man and woman, beside the original's.  The leader's animation (*Animated
+  Africans (225, 246) are West African, in indigo robes and headwraps.  Not given to any tribe,
+  and left out of the art (`data/hd-pack.json`'s `exclude`, with the pack's whole pictures of
+  the portraits and the sheets of small faces): the Andean (227, 248), West African (225, 246),
+  Southeast Asian (230, 251), Pacific (231, 252), modern South Asian (238, 259) and modern
+  Mediterranean (240, 261) portraits.  Without the install the game's own pictures of the
+  portraits and the small faces are a plain dark frame in the room's slate (`portrait_frames` in
+  `src/platform/synth.c`), under the pack's portrait as above: the Zulus' leader is that frame.
+  `harness/hd/hd-talks-all.sh` shows every tribe's leader, man and woman, beside the
+  original's.  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
   enlarged smoothly (below, *Videos*): the pack has no pictures for it; the herald, a whole
-  figure standing at the portrait's left, is drawn over the pack's portrait as over the
-  original's (its transparent pixels show the room and the portrait).  Each pixel the decoder
+  figure standing at the portrait's left, is drawn over the portrait (its transparent pixels
+  show the room and the portrait).  Each pixel the decoder
   writes is shown, opaque, even where its colour index is the one already there (`draw_frame` in
   `src/platform/video.c`, run by run); before, such pixels were
   not seen as changed and the pack's room (in the video's backdrop, a copy of the room with its
@@ -747,15 +756,15 @@ pixels; without the install's pictures too (*Without the install*, NO-INSTALL.md
 
 ## The pictures drawn
 
-The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop`: 1,294 keys, 799 distinct
+The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop` and `exclude`: 1,324 keys, 829 distinct
 pictures; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
   the city's disorder marker (`crop/file/icons/166,223,30,30`: `NOT_CROPPED_KEYS`);
-* `crop/resource/...` (159): the sprites taken from the libraries' pictures, but for the
+* `crop/resource/...` (157): the sprites taken from the libraries' pictures, but for the
   sheet of small faces (`mk.dll` 210, 211: hd.c's `NOT_CROPPED`), the leaders' portraits no
   tribe is given (`mk.dll` 225, 227, 230, 231, 238, 240, 246, 248, 251, 252, 259, 261:
-  `hd_portraits`), three of
+  `hd_portraits`; `exclude`), three of
   `tiles.dll` 86 (`NOT_CROPPED_KEYS`), and of the city
   view's `cv.dll` 310 in the rows at y 1, 116, 346 and 429 (`drop`; the houses of the eras
   but the industrial are bound by key instead, `house/ERA/...`);
@@ -781,14 +790,9 @@ pictures; the whole pack holds 2,105, 250 MB):
   shows it grey at every moment looked at.  A possible cause, since removed: a copy between
   surfaces whose colour tables differ (the slide's and the blink's background surfaces) could
   give art the destination's colour for its pixel's index (`hd_big`, above).
-* The leaders' portraits are the pack's regional archetypes, not the tribes' own leaders
-  (*The diplomacy room*, above: the table): candidates for portraits of their own are the
-  Zulus' (the original's kept: the pack has no southern African), the Japanese (modern
-  diplomats for a tribe of samurai and court ladies in the original), the Egyptians' and
-  Carthaginians' (North Africans in headcloths, not pharaonic or Punic), and the tribes that
-  share one (Babylonians and Persians, Russians and French, English and Spanish, Celts and
-  Vikings).  The heralds' videos are the original's, enlarged smoothly (the pack has none),
-  but where OpenCiv2 has one of its own (*Your own heralds*: the Russians').
+* The Zulus' leaders have no portrait in the pack that fits (above): the original's, enlarged,
+  or without the install the dark frame.  The heralds' videos are the original's, enlarged smoothly (the pack has none), but where OpenCiv2
+  has one of its own (*Your own heralds*: the Russians').
 * The city view's empty lots (woods) are the original's, enlarged, awaiting art.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);

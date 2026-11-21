@@ -185,8 +185,9 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | | 340-353 | the city view's landscapes (site x 5 + era) | replaced |
 | | 399 | the city view's icons | replaced (greys) |
 | `mk.dll` | 200-206 | the diplomacy rooms, by government | replaced: the pack's rooms are laid out otherwise (HD mode draws them whole; the 8-bit picture's medallion behind a panel, never shown) |
-| | 210, 211, 215 | the diplomacy room's panels (crops) | replaced |
-| | 220-261 | the leaders' portraits | replaced |
+| | 210, 211 | the sheets of small faces (the custom tribe's portrait chooser) | a placeholder: a plain dark frame per face (the pack's faces are not the tribes' leaders: not used) |
+| | 215 | the diplomacy room's icons (crops) | replaced |
+| | 220-261 | the leaders' portraits | a placeholder: a plain dark frame in the room's slate (`portrait_frames` in `src/platform/synth.c`), under which HD draws the pack's portrait that fits the tribe (the pack's 42 are not the tribes' leaders in the original's order: [HD-GRAPHICS.md](HD-GRAPHICS.md), the diplomacy room); the Zulus' the frame |
 | | 299 | the diplomacy's tile | replaced (greys) |
 | | 10000-10002 | the destroyed civilizations' window | replaced |
 | `pv.dll` | 100, 105-184 | the throne room's hall and its pieces by section and level | replaced, layout differs: the pack's pieces are vignettes placed otherwise; HD mode, always on without the install, composes the room whole (`hd_throne_room`); the 8-bit pieces are not shown (out of scope by design) |
