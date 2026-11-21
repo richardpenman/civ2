@@ -72,6 +72,8 @@ utf-8
 Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης. Χρειάζονται τα σχέδια: %d MB, που λαμβάνονται μία φορά από το openciv2-assets στο GitHub όταν τα επιλέξετε.
 @@openciv2.graphics.fullscreen_note
 Πλήρης οθόνη: αντί για παράθυρο που γεμίζει την οθόνη.
+@@openciv2.graphics.need_original
+Τα κλασικά γραφικά χρειάζονται τα αρχικά αρχεία του Civilization II: χωρίς αυτά τα γραφικά HD είναι πάντα ενεργά.
 @@openciv2.graphics.sharp
 Ευκρινές κείμενο και περιβάλλον
 @@openciv2.graphics.hd
@@ -236,6 +238,8 @@ Shift στους ειδικούς
 Σε δοκιμαστική εκτέλεση δεν γίνεται καμία λήψη.
 @@openciv2.hd.err.no_site_art
 Αυτός ο ιστότοπος δημιουργήθηκε χωρίς τα σχέδια HD.
+@@openciv2.hd.err.no_graphics
+Το OpenCiv2 δεν βρήκε ούτε τις αρχικές εικόνες του Civilization II (TERRAIN1.GIF, Tiles.dll και τις άλλες) στον φάκελο του παιχνιδιού, %s, ούτε τα σχέδια HD του. Αντιγράψτε τα αρχεία του αρχικού παιχνιδιού σε αυτόν τον φάκελο ή κατεβάστε τα σχέδια HD (atlas-hd.pack, από το openciv2-assets: github.com/PeterJohnson/openciv2-assets) στο %s.
 @@openciv2.file.open
 Άνοιγμα
 @@openciv2.file.save_as

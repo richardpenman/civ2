@@ -1785,11 +1785,12 @@ void hd_init(int classic, int unit_test, int scale)
         return;
     if (plat_replay) {
         /* replays are compared with the original: only on request */
-        art = test && atoi(test) >= 1 ? atoi(test) : -1;
+        art = test && atoi(test) >= 1 ? atoi(test) : plat_hd_forced ? scale : -1;
         sharp = test_sharp && atoi(test_sharp) >= 1 ? atoi(test_sharp) : -1;
     } else {
         /* the art: the command line's --hd[=N] (CIV2_HD_ARG), else
-           CIV2_HD=N, else CIV.INI's Graphics=HD; never in Classic mode */
+           CIV2_HD=N, else CIV.INI's Graphics= (plat_graphics_hd: the
+           default when unset); never in Classic mode */
         const char *arg = getenv("CIV2_HD_ARG"), *env = getenv("CIV2_HD");
         const char *on = arg && *arg ? arg : env && *env ? env : NULL;
         if (classic)
@@ -1798,8 +1799,10 @@ void hd_init(int classic, int unit_test, int scale)
             art = wanted(on);
         else {
             plat_profile_string("CIV.INI", "OpenCiv2", "Graphics", value, sizeof value);
-            art = strcasecmp(value, "HD") ? -1 : 0;
+            art = plat_graphics_hd(value) ? 0 : -1;
         }
+        if (art < 0 && plat_hd_forced)
+            art = 0;                /* (no original pictures: HD whatever is chosen) */
         if (!art)
             art = (int)GetPrivateProfileIntA("OpenCiv2", "GraphicsDensity", 0, "CIV.INI");
         if (!art)
@@ -1816,6 +1819,15 @@ void hd_init(int classic, int unit_test, int scale)
             load_extras();
     } else if (art >= 1)
         plat_log("hd: no art (%s/hd/atlas-hd.pack, nor in the user's folder)\n", plat_data_dir);
+    if (!hd_art && plat_hd_forced) {
+        /* neither the original's pictures nor the art: nothing to show */
+        char where[1100], user[1024];
+        if (host_user_dir(user, sizeof user) > 0)
+            snprintf(where, sizeof where, "%s/hd/atlas-hd.pack", user);
+        else
+            snprintf(where, sizeof where, "%s/hd/atlas-hd.pack", plat_data_dir);
+        plat_fatal(extras_text("hd.err.no_graphics"), plat_game_dir, where);
+    }
     if (!hd_art)
         hd_density = sharp > 4 ? 4 : sharp > 1 ? sharp : 1;
     hd_on = hd_art || hd_density > 1;
@@ -1825,18 +1837,12 @@ void hd_init(int classic, int unit_test, int scale)
 
 /* ---- the art for the pictures a game folder lacks (src/platform/synth.c) ----
 
-   The pack (and OpenCiv2's own pictures) opened whether or not HD graphics
-   are on, to make the original's pictures where the game folder has none
-   (docs/NO-INSTALL.md).  hd_art and the planes are left as they are. */
+   Where the game folder lacks the original's pictures HD graphics are on
+   (plat_hd_forced: hd_init opened the pack, or the game stopped there), so
+   the original's are made from the pack HD mode draws (docs/NO-INSTALL.md). */
 int hd_art_open(void)
 {
-    char path[1100];
-    if (pack)
-        return 1;
-    if (!hd_pack_path(path, sizeof path) || !open_pack(path))
-        return 0;
-    load_extras();
-    return 1;
+    return pack != NULL;
 }
 
 /* The picture of key, decoded: a copy (free()), pw x ph RGBA; w x h its

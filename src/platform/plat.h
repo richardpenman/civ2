@@ -296,6 +296,11 @@ int plat_audit_on(void);       /* CIV2_AUDIT: files and resources asked for, log
    docs/NO-INSTALL.md): a sheet's file made (1, its host path), a picture
    library's GIF resource, a civ2.exe resource's picture as RGBA. */
 int synth_file(const char *name, char *host, size_t n);
+const char *synth_missing(void);        /* the first of the original's pictures missing, or NULL */
+int plat_game_file_exists(const char *name);    /* files.c: in the game folder, any case */
+/* The game folder lacks the original's pictures (main.c: synth_missing):
+   HD graphics whatever is chosen, and no Classic mode (docs/NO-INSTALL.md) */
+extern int plat_hd_forced;
 int synth_module(const char *module);
 const unsigned char *synth_resource(const char *module, int id, unsigned *len);
 unsigned char *synth_exe_rgba(int type, int id, int w, int h, int x, int y, int cw, int ch);

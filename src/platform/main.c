@@ -290,6 +290,18 @@ int main(int argc, char **argv)
         plat_profile_string("CIV.INI", "OpenCiv2", "Mode", mode, sizeof mode);
         classic = !strcasecmp(mode, "Classic");
     }
+    /* Without the original's pictures (docs/NO-INSTALL.md): HD graphics,
+       whatever is chosen (hd_init), and no Classic mode (the original's look
+       needs them); the pictures the game reads made from the art (synth.c). */
+    if (!unit_test) {
+        const char *missing = synth_missing();
+        if (missing) {
+            plat_hd_forced = 1;
+            plat_log("graphics: the game folder has no %s: HD graphics%s\n", missing,
+                     classic ? ", Standard mode (Classic needs the original's pictures)" : "");
+            classic = 0;
+        }
+    }
     /* The original's bugs are fixed (docs/BUGS.md) except with CIV2_CLASSIC=1
        (the original game) and in replays and unit tests, which are compared
        with the original; CIV2_TEST_FIXES=1 fixes them in a replay (tests). */

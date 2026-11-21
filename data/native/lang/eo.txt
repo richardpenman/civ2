@@ -75,6 +75,8 @@ HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Æi tiu r
 HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Øi bezonas la arton: %d MB, elþutotaj unufoje el openciv2-assets æe GitHub, kiam vi elektas øin.
 @@openciv2.graphics.fullscreen_note
 Plena ekrano: anstataý fenestro, kiu plenigas la ekranon.
+@@openciv2.graphics.need_original
+Klasika grafiko bezonas la originalajn dosierojn de Civilization II: sen ili la HD-grafiko æiam estas þaltita.
 @@openciv2.graphics.sharp
 Akra teksto kaj interfaco
 @@openciv2.graphics.hd
@@ -239,6 +241,8 @@ Ne eblis komenci la elþuton.
 Nenio elþutiøas en testa lanæo.
 @@openciv2.hd.err.no_site_art
 Æi tiu retejo estis konstruita sen la HD-arto.
+@@openciv2.hd.err.no_graphics
+OpenCiv2 trovis nek la originalajn bildojn de Civilization II (TERRAIN1.GIF, Tiles.dll kaj la aliajn) en la dosierujo de la ludo, %s, nek øian HD-arton. Kopiu la dosierojn de la originala ludo en tiun dosierujon, aý elþutu la HD-arton (atlas-hd.pack, el openciv2-assets: github.com/PeterJohnson/openciv2-assets) al %s.
 @@openciv2.file.open
 Malfermi
 @@openciv2.file.save_as

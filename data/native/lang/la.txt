@@ -70,6 +70,8 @@ Graphica HD: picturae novae mappae, plena albi resolutione. Hic situs sine pictu
 Graphica HD: picturae novae mappae, plena albi resolutione. Picturis egent (%d MB), quae semel ex openciv2-assets in GitHub depromuntur cum eliguntur.
 @@openciv2.graphics.fullscreen_note
 Album plenum: pro fenestra quae album implet.
+@@openciv2.graphics.need_original
+Graphica classica fasciculis archetypis Civilization II egent: sine eis graphica HD semper adhibentur.
 @@openciv2.graphics.sharp
 Textus et interfacies nitidi
 @@openciv2.graphics.hd
@@ -234,6 +236,8 @@ Depromptio incipi non potuit.
 In cursu probationis nihil depromitur.
 @@openciv2.hd.err.no_site_art
 Hic situs sine picturis HD factus est.
+@@openciv2.hd.err.no_graphics
+OpenCiv2 neque imagines archetypas Civilization II (TERRAIN1.GIF, Tiles.dll ceterasque) in capsa ludi, %s, neque picturas HD suas invenit. Fasciculos ludi archetypi in eam capsam transcribe, aut picturas HD (atlas-hd.pack, ex openciv2-assets: github.com/PeterJohnson/openciv2-assets) in %s depromito.
 @@openciv2.file.open
 Aperi
 @@openciv2.file.save_as

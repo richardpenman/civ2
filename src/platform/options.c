@@ -13,6 +13,30 @@
 _Static_assert(PLAT_HD_POLL == HOST_HD_POLL && PLAT_HD_CANCEL == HOST_HD_CANCEL && PLAT_HD_LATER == HOST_HD_LATER &&
                PLAT_HD_IDLE == HOST_HD_IDLE && PLAT_HD_DONE == HOST_HD_DONE, "the HD art's states");
 
+/* ---- the graphics: the one place that decides (docs/EXTRAS.md "HD graphics") ----
+
+   HD graphics where CIV.INI's [OpenCiv2] Graphics= says nothing: off (the
+   original's look).  Making HD the default is this line (and its mirror in
+   the browser's page, src/web/options.js: HD_BY_DEFAULT); Classic and
+   Graphics=Standard keep the original's look where the game folder has its
+   pictures. */
+#define HD_BY_DEFAULT 0
+
+/* The game folder lacks the original's pictures: HD graphics whatever is
+   chosen, no Classic mode (set at the start, src/platform/main.c). */
+int plat_hd_forced;
+
+/* Whether Graphics=value asks for HD graphics (value "" or NULL: none set). */
+int plat_graphics_hd(const char *value)
+{
+    return value && *value ? !strcasecmp(value, "HD") : HD_BY_DEFAULT;
+}
+
+int plat_graphics_forced(void)
+{
+    return plat_hd_forced;
+}
+
 int plat_hd_art(int op, int *info, char *msg, int n)
 {
     char path[1100];

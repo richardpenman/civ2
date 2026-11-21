@@ -69,6 +69,8 @@ HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms.
 HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms. Dafür werden die Grafiken benötigt: %d MB, bei Auswahl einmalig von openciv2-assets auf GitHub heruntergeladen.
 @@openciv2.graphics.fullscreen_note
 Vollbild: statt eines Fensters, das den Bildschirm ausfüllt.
+@@openciv2.graphics.need_original
+Klassische Grafik braucht die Originaldateien von Civilization II: ohne sie ist die HD-Grafik immer eingeschaltet.
 @@openciv2.graphics.sharp
 Scharfe Schrift und Oberfläche
 @@openciv2.graphics.hd
@@ -233,6 +235,8 @@ Der Download konnte nicht gestartet werden.
 In einem Testlauf wird nichts heruntergeladen.
 @@openciv2.hd.err.no_site_art
 Diese Seite wurde ohne die HD-Grafiken erstellt.
+@@openciv2.hd.err.no_graphics
+OpenCiv2 hat weder die Originalbilder von Civilization II (TERRAIN1.GIF, Tiles.dll und die anderen) im Ordner des Spiels, %s, noch seine HD-Grafiken gefunden. Kopieren Sie die Dateien des Originalspiels in diesen Ordner, oder laden Sie die HD-Grafiken (atlas-hd.pack, aus openciv2-assets: github.com/PeterJohnson/openciv2-assets) nach %s herunter.
 @@openciv2.file.open
 Öffnen
 @@openciv2.file.save_as

@@ -30,11 +30,45 @@ the menus, the file dialog and the multiplayer set-up.  Then with the install's 
 `.DAT` files (`CIV2_NO_DAT=1`), its `Sound` folder (`CIV2_NO_SOUND=1`) and its pictures: the
 sheets (`*.GIF`), the libraries (`*.dll`) and `civ2.exe` (`CIV2_NO_GRAPHICS=1`).  Without the
 pictures, text, rules and sounds the 44 scenarios run to their end with as many screenshots;
-without the `.DAT` files too, `harness/extras/x-no-install.txt` and `x-no-install2.txt` (with an HD
-run each) are the regression tests: a fresh install's first start, a new game set up (its
+without the `.DAT` files too, `harness/extras/x-no-install.txt` and `x-no-install2.txt` (HD
+graphics not asked for, so on at density 1, and an HD run at density 2 each) are the regression tests: a fresh install's first start, a new game set up (its
 pictures), the world made, a city founded, its window; the autosave's advisors, tax rates,
 Civilopedia, an announcement's picture, a city's view, the spaceship, the Hall of Fame, the map
-at its largest zoom and the throne room.
+at its largest zoom and the throne room; `x-no-install-options.txt` shows OpenCiv2 Options
+without the pictures (below).
+
+## Graphics without the install: HD only
+
+Two situations are supported, by design: the original's look (Classic mode, or Standard
+without HD graphics) **with** the install's pictures, pixel for pixel as the original; and HD
+graphics, with or without them.  Where the game folder lacks any of the original's pictures
+(a sheet, a picture library or `civ2.exe`: `synth_missing` in `src/platform/synth.c`, at the
+start, `src/platform/main.c`: `plat_hd_forced`):
+
+* HD graphics are on whatever `Graphics=`, `--hd` / `CIV2_HD` or `GraphicsDensity=` say (the
+  density as asked, else the screen's; in a replay `CIV2_TEST_HD`'s, else 1), and Classic mode
+  (`Mode=Classic`, `CIV2_CLASSIC=1`) plays as Standard;
+* OpenCiv2 Options shows Classic (Mode) not offered and HD graphics (Graphics and screen)
+  ticked and not to be unticked, each page with the note "Classic graphics need the original
+  Civilization II files: without them HD graphics are always on." (`graphics.need_original`,
+  in every shipped language);
+* without the HD art as well the game stops at once with a message (`hd.err.no_graphics`,
+  translated): the game's folder, where the original's files go, and where the art goes
+  (`hd/atlas-hd.pack` in the user's folder, from openciv2-assets);
+* the browser's page does the same (`src/web/options.js`: `hasOriginalPictures`, `hdWanted`):
+  it loads the art where the game's files lack the original's pictures.
+
+The 8-bit pictures made from the art (below) stay: the game's code takes its sprites from
+their rectangles, reads their marker pixels and loads their palette under HD graphics too.
+They are not meant to be looked at: where the HD art is drawn whole over a picture whose
+8-bit layout differs (the throne room, the spaceship, the diplomacy room's medallion), or the
+art gives no marker places (the units' shields, the cities' flags and size boxes: a default),
+that is out of scope, as there is no original look without the original's files.
+
+Whether HD graphics are on where nothing chooses is decided in one place, `HD_BY_DEFAULT`
+in `src/platform/options.c` (its mirror for the browser in `src/web/options.js`): making HD
+the default later is that line; Classic would then be the step that needs the original's
+files.
 
 ## Summary
 
@@ -43,15 +77,14 @@ at its largest zoom and the throne room.
 | replaced: built in (OpenCiv2's text, rules, timerdll, XDaemon) | 22 | |
 | replaced: made by the game when missing (`CIV2.DAT`, `HALLFAME.DAT`) | 2 | |
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
-| of those, the 8-bit picture's layout differs (HD mode draws it whole): needs code or art for the classic look | | 93 (pv.dll 55, ss.dll 400-499 38) |
+| of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
 | missing sound: the game plays nothing | 78 (`Sound\*.WAV`) | |
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
 So a game can be set up and played with none of the install's files but its sounds, music and
-videos, given the HD art (`make hd`, or OpenCiv2 Options; `data/native/hd/atlas-hd.pack`).
-Without the art the pictures are neutral grey and the sprites empty: the game runs, but is not
-playable by eye.
+videos, given the HD art (`make hd`, or OpenCiv2 Options; `data/native/hd/atlas-hd.pack`), in HD
+graphics (above).  Without the art too the game does not start: it says what is missing.
 
 ## The game folder's files
 
@@ -141,13 +174,13 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | `cv.dll` | 300, 305, 310 | the city view's improvements, wonders and houses (crops) | replaced |
 | | 340-353 | the city view's landscapes (site x 5 + era) | replaced |
 | | 399 | the city view's icons | replaced (greys) |
-| `mk.dll` | 200-206 | the diplomacy rooms, by government | replaced: the pack's rooms are laid out otherwise (the leader's medallion hidden behind a panel without HD) |
+| `mk.dll` | 200-206 | the diplomacy rooms, by government | replaced: the pack's rooms are laid out otherwise (HD mode draws them whole; the 8-bit picture's medallion behind a panel, never shown) |
 | | 210, 211, 215 | the diplomacy room's panels (crops) | replaced |
 | | 220-261 | the leaders' portraits | replaced |
 | | 299 | the diplomacy's tile | replaced (greys) |
 | | 10000-10002 | the destroyed civilizations' window | replaced |
-| `pv.dll` | 100, 105-184 | the throne room's hall and its pieces by section and level | replaced, layout differs: the pack's pieces are vignettes placed otherwise; HD mode composes the room whole (`hd_throne_room`); without HD it shows misplaced pieces: **needs code** (an 8-bit composition) or art |
-| `ss.dll` | 400-499 | the spaceship's window, its parts and cells | replaced, layout differs: HD mode composes the ship (`hd_spaceship`); without HD the parts are misplaced: **needs code** or art |
+| `pv.dll` | 100, 105-184 | the throne room's hall and its pieces by section and level | replaced, layout differs: the pack's pieces are vignettes placed otherwise; HD mode, always on without the install, composes the room whole (`hd_throne_room`); the 8-bit pieces are not shown (out of scope by design) |
+| `ss.dll` | 400-499 | the spaceship's window, its parts and cells | replaced, layout differs: HD mode, always on without the install, composes the ship (`hd_spaceship`); the 8-bit parts are not shown (out of scope by design) |
 | | 20000-20007 | the spaceship's launch and arrival frames | replaced |
 | `civ2art.dll` | 999 | the windows' frame texture | replaced |
 | | 1000, 2000, 4000, 30000 | the end of the game: the arrival, the defeat, Alpha Centauri beaten | replaced |
@@ -188,9 +221,9 @@ scope here.
 ## What remains
 
 * **Art**: the sounds; music (planned).
-* **Code**: an 8-bit composition of the throne room and the spaceship from the pack's pieces,
-  for the classic look (HD mode has them); the diplomacy room's leader medallion shows only in
-  HD mode; the units' shields', the cities' flags' and size boxes' places from the art rather
-  than a default.
+* (Out of scope by design: the original's look without its files, so an 8-bit composition of
+  the throne room and the spaceship, the diplomacy room's medallion in 8 bits, and the units'
+  shields', the cities' flags' and size boxes' places from the art; HD graphics, always on
+  then, have them.)
 * The browser version gives the game only the pack's pictures HD mode draws
   (`src/web/hdpack.js`): a site without the install would need the sprites' crops too.

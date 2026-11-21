@@ -25,7 +25,12 @@
  *    ground dark grey; what the pack has no picture for is left empty (the
  *    background), and a picture it lacks altogether is a neutral grey.
  *
- * With the game's own files present nothing here is used.  Sheets are
+ * With the game's own files present nothing here is used; without them the
+ * game runs with HD graphics, whatever is chosen (synth_missing, main.c:
+ * plat_hd_forced), which draw the art over these: the 8-bit pictures serve
+ * the game's code (its rectangles, the pixels it reads, the palette), not
+ * the eye, and there is no original look without the original's files
+ * (docs/NO-INSTALL.md).  Sheets are
  * written once a run into the folder "OpenCiv2Pictures" of the Windows
  * directory (plat_host_path finds them there); resources are kept in memory.
  */
@@ -764,6 +769,24 @@ int synth_file(const char *name, char *host, size_t n)
     sheet_written[i] = 1;
     plat_log("synth: %s made from the art\n", SHEETS[i].file);
     return 1;
+}
+
+/* The first of the original's pictures the game folder lacks (a sheet, a
+   picture library, civ2.exe), NULL if it has them all: then nothing here is
+   used.  Without them the game runs with HD graphics, whatever is chosen
+   (main.c: plat_hd_forced; docs/NO-INSTALL.md): the 8-bit pictures made here
+   are what the game's code reads, the art what is shown. */
+const char *synth_missing(void)
+{
+    static const char *const OTHERS[] = {"civ2.exe", "Civ2Art.dll", "Intro.dll", "cv.dll", "mk.dll",
+                                         "pv.dll", "ss.dll", "Tiles.dll", "Wonder.dll"};
+    int i;
+    for (i = 0; i < NSHEETS + (int)(sizeof OTHERS / sizeof *OTHERS); i++) {
+        const char *name = i < NSHEETS ? SHEETS[i].file : OTHERS[i - NSHEETS];
+        if (!plat_game_file_exists(name))
+            return name;
+    }
+    return NULL;
 }
 
 /* ---- the libraries' pictures (Tiles.dll ...) ---- */

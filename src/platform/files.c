@@ -50,6 +50,14 @@ static int resolve_component(char *path, size_t n, const char *name)
     return 0;
 }
 
+/* Whether the game folder has the file name (any case). */
+int plat_game_file_exists(const char *name)
+{
+    char path[1200];
+    snprintf(path, sizeof path, "%s", plat_game_dir);
+    return resolve_component(path, sizeof path, name);
+}
+
 /* CIV2_AUDIT=1: every file the game asks for, and every resource, logged
    ("audit ..." lines in the hook log; docs/NO-INSTALL.md). */
 int plat_audit_on(void)

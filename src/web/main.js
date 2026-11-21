@@ -8,7 +8,7 @@ import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
 import {findDisc} from './setup_run.js';
 import {packFrom, keepPack, loadPack, download, siteArt} from './hdpack.js';
-import {hdWanted, iniGet, iniSet} from './options.js';
+import {hdWanted, hasOriginalPictures, iniGet, iniSet} from './options.js';
 import {t, languages, pageLanguage, urlLanguage, withLanguage, useLanguage, langFile, parseLang, match} from './i18n.js';
 
 const GAME = '/civ2', DATA = '/data';
@@ -544,9 +544,12 @@ async function play(store) {
     // CIV.INI first (a moment): the HD graphics' art, when wanted, read
     // alongside the other files
     const query = new URLSearchParams(location.search), args = ['civ2', GAME];
-    const iniName = (await store.keys()).find((k) => /^civ\.ini$/i.test(k));
+    const keys = await store.keys();
+    const iniName = keys.find((k) => /^civ\.ini$/i.test(k));
     const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
-    const hd = hdWanted(ini, query.get('hd')) >= 0;
+    // (always where the game's files lack the original's pictures: the game
+    // makes them from the art, docs/NO-INSTALL.md)
+    const hd = hdWanted(ini, query.get('hd'), hasOriginalPictures(keys)) >= 0;
     // (the art: where the site has it, for the game's OpenCiv2 Options; kept
     // in this browser once downloaded, used then even where the site has none)
     const siteHd = await siteHdP;

@@ -9,7 +9,9 @@
 # world made, the map, a city founded and its window; then the autosave
 # loaded: the map at three zooms, a city's view, the advisors, the tax rates, the Civilopedia, the throne room, an
 # announcement's picture, a diplomat's talks, the spaceship and the Hall of
-# Fame; the same with HD graphics (the hd run).
+# Fame; in HD graphics, which are always on without the pictures.
+# (test: HD graphics not asked for, on all the same without the pictures, at the
+# replay's density, 1; hd: at density 2)
 # test: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
 # test hd: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
 wait 8000

@@ -53,6 +53,7 @@ T("graphics.hd_later", "HD graphics: new art for the map, at the screen's full r
 T("graphics.hd_no_site", "HD graphics: new art for the map, at the screen's full resolution. This site was built without the art.")
 T("graphics.hd_download", "HD graphics: new art for the map, at the screen's full resolution. They need the art: %d MB, downloaded once from openciv2-assets on GitHub when chosen.")
 T("graphics.fullscreen_note", "Full screen: instead of a window filling the screen.")
+T("graphics.need_original", "Classic graphics need the original Civilization II files: without them HD graphics are always on.")
 T("graphics.sharp", "Sharp text and interface")
 T("graphics.hd", "HD graphics")
 T("graphics.fullscreen", "Full screen")
@@ -137,6 +138,7 @@ T("hd.err.no_folder", "There is no folder to install the art in.")
 T("hd.err.start", "Could not start the download.")
 T("hd.err.test_run", "Nothing is downloaded in a test run.")
 T("hd.err.no_site_art", "This site was built without the HD art.")
+T("hd.err.no_graphics", "OpenCiv2 found neither the original Civilization II pictures (TERRAIN1.GIF, Tiles.dll and the others) in the game's folder, %s, nor its HD art. Copy the original game's files into that folder, or download the HD art (atlas-hd.pack, from openciv2-assets: github.com/PeterJohnson/openciv2-assets) to %s.")
 
 /* The platform: the file dialog, message boxes (src/platform) */
 T("file.open", "Open")

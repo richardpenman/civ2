@@ -21,6 +21,10 @@
  *                        docs/TRANSLATING.md): Auto, English, the data
  *                        directory's translations.
  *
+ * Where the game folder lacks the original's pictures (docs/NO-INSTALL.md:
+ * plat_graphics_forced) Classic is not offered and HD graphics stay ticked,
+ * with a note saying why ("graphics.need_original").
+ *
  * Its texts are keyed (src/host/texts.h: extras_text).
  *
  * OK writes what changed to CIV.INI's [OpenCiv2] section.  The rule changes
@@ -147,9 +151,11 @@ static void read_choices(Choices *c)
     int i, year;
     memset(c, 0, sizeof *c);
     get("Mode", v, sizeof v);
-    c->classic = !__strcmpi(v, "Classic");
+    /* (without the original's pictures: no Classic, HD graphics whatever is
+       chosen; plat_graphics_hd: the default where Graphics= is unset) */
+    c->classic = !plat_graphics_forced() && !__strcmpi(v, "Classic");
     get("Graphics", v, sizeof v);
-    c->hd = !__strcmpi(v, "HD");
+    c->hd = plat_graphics_forced() || plat_graphics_hd(v);
     get("SharpText", v, sizeof v);
     c->sharp_set = v[0] != 0;
     c->sharp = c->sharp_set ? atoi(v) != 0 : !c->classic;
@@ -333,11 +339,15 @@ static int page_mode(Choices *c)
     paragraph(d, extras_text("mode.standard_note"), 1);
     paragraph(d, extras_text("mode.classic_note"), 0);
     paragraph(d, extras_text("options.next_start"), 0);
+    if (plat_graphics_forced())
+        paragraph(d, extras_text("graphics.need_original"), 0);
     overrides(1, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
     d.add_option(extras_text("mode.standard"), 0, 0);
     d.add_option(extras_text("mode.classic"), 1, 0);
+    if (plat_graphics_forced())
+        d.set_option_disabled(1, 1);    /* (the original's look needs its pictures) */
     d.set_default_choice(c->classic);
     choice = d.show_modal(0);
     if (choice < 0 || choice == c->classic)
@@ -430,8 +440,8 @@ static int page_graphics(Choices *c)
     mb = (int)((info[2] > 0 ? info[2] : 228595) * 1024LL / 1000000);
     dialog_begin(d, extras_text("graphics.title"), 480);
     paragraph(d, extras_text("graphics.sharp_note"), 1);
-    if (state == PLAT_HD_DONE)
-        paragraph(d, extras_text("graphics.hd_installed"), 0);
+    if (state == PLAT_HD_DONE || plat_graphics_forced())
+        paragraph(d, extras_text("graphics.hd_installed"), 0);     /* (forced: the art is there) */
     else if (state == PLAT_HD_LATER) {
         snprintf(note, sizeof note, extras_text("graphics.hd_later"), mb);
         paragraph(d, note, 0);
@@ -443,16 +453,21 @@ static int page_graphics(Choices *c)
     }
     if (!browser)
         paragraph(d, extras_text("graphics.fullscreen_note"), 0);
+    if (plat_graphics_forced())
+        paragraph(d, extras_text("graphics.need_original"), 0);
     paragraph(d, extras_text("options.next_start"), 0);
     overrides(2, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
-    hd_offered = !c->classic && !(state == PLAT_HD_FAILED && browser);
+    /* (without the original's pictures HD graphics are always on: ticked;
+       unticked, the note again and they stay on.  A disabled checkbox is
+       drawn without its tick, so it is left enabled.) */
+    hd_offered = !c->classic && !plat_graphics_forced() && !(state == PLAT_HD_FAILED && browser);
     d.add_checkbox_option(extras_text("graphics.sharp"), 0, c->sharp);
-    d.add_checkbox_option(extras_text("graphics.hd"), 1, c->hd && hd_offered);
+    d.add_checkbox_option(extras_text("graphics.hd"), 1, plat_graphics_forced() || (c->hd && hd_offered));
     if (!browser)
         d.add_checkbox_option(extras_text("graphics.fullscreen"), 2, c->fullscreen);
-    if (!hd_offered)
+    if (!hd_offered && !plat_graphics_forced())
         d.set_option_disabled(1, 1);
     result = d.show_modal(0);
     if (result != 0)
@@ -461,6 +476,8 @@ static int page_graphics(Choices *c)
         c->sharp = d.option_is_checked(0) != 0;
         c->sharp_set = 1;
     }
+    if (plat_graphics_forced() && !d.option_is_checked(1))
+        message(extras_text("graphics.title"), extras_text("graphics.need_original"));
     if (hd_offered) {
         int hd = d.option_is_checked(1) != 0;
         /* (natively the art downloaded now, where it is missing; in the

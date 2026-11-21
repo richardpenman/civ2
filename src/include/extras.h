@@ -113,6 +113,12 @@ enum { PLAT_HD_START, PLAT_HD_POLL, PLAT_HD_CANCEL };
 enum { PLAT_HD_IDLE = -2, PLAT_HD_FAILED = -1, PLAT_HD_DONE = 0, PLAT_HD_RUNNING = 1, PLAT_HD_LATER = 2 };
 EXTRAS_C int plat_hd_art(int op, int *info, char *msg, int n);
 EXTRAS_C int plat_restart(int now);
+/* the graphics (src/platform/options.c, the one place that decides): whether
+   CIV.INI's Graphics=value asks for HD ("": the default), whether HD
+   graphics are forced on (the game folder lacks the original's pictures:
+   no Classic, no original look; docs/NO-INSTALL.md) */
+EXTRAS_C int plat_graphics_hd(const char *value);
+EXTRAS_C int plat_graphics_forced(void);
 
 /* In a dialog list row's text (X30, X37): EXTRAS_ICON then 'g' (a gold coin),
    's' (a shield) or 'f' (food): that icon. */

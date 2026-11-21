@@ -2,8 +2,10 @@
 # x-no-install (the install's pictures, .DAT files, text files, RULES.TXT
 # and sounds removed): the autosave loaded, the advisors, the tax rates, the Civilopedia, an announcement's
 # picture, a city's view, the spaceship, the Hall of Fame, the map at its
-# largest zoom and the throne room; the same
-# with HD graphics (the hd run).
+# largest zoom and the throne room;
+# in HD graphics, which are always on without the pictures.
+# (test: HD graphics not asked for, on all the same without the pictures, at the
+# replay's density, 1; hd: at density 2)
 # test: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
 # test hd: CIV2_NO_GRAPHICS=1 CIV2_NO_DAT=1 CIV2_NO_TEXT=1 CIV2_NO_RULES=1 CIV2_NO_SOUND=1 CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
 wait 8000

@@ -1,0 +1,49 @@
+# Without the original's pictures (docs/NO-INSTALL.md): the game runs with HD
+# graphics, though none is asked for (no CIV2_TEST_HD: the forced HD at the
+# replay's density, 1), and the OpenCiv2 Options dialog says why: the Mode
+# page with Classic not offered, the Graphics and screen page with HD
+# graphics ticked, each with the note "Classic graphics need the original
+# Civilization II files"; HD graphics unticked and OK: the note again, and
+# they stay on (the page opened again: ticked); then a saved game loaded,
+# its map in HD.  The install's other files
+# are there (its .DAT files, text, rules, sounds).
+# test: CIV2_NO_GRAPHICS=1 CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+wait 8000
+shot nio-a-mainmenu
+key Down Down Down Down Down Down Down Down
+key Return
+wait 2000
+shot nio-b-options
+key Return                  # Mode
+wait 1000
+shot nio-c-mode
+key Escape
+wait 1000
+key Down                    # Graphics and screen
+key Return
+wait 1000
+shot nio-d-graphics
+click 120 357               # HD graphics: unticked
+wait 500
+shot nio-e-graphics-unticked
+key Return                  # OK
+wait 1000
+shot nio-f-message
+key Return
+wait 1000
+key Return                  # Graphics and screen again: HD still ticked
+wait 1000
+shot nio-g-graphics-again
+key Escape
+wait 1000
+key Escape
+wait 2000
+key Up Up Up Up             # "Load a Game"
+key Return
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 8000
+shot nio-h-game

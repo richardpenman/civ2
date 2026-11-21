@@ -71,6 +71,8 @@ HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。本�
 HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。需要美術圖像：%d MB，選取時從 GitHub 上的 openciv2-assets 下載一次。
 @@openciv2.graphics.fullscreen_note
 全螢幕：取代填滿螢幕的視窗。
+@@openciv2.graphics.need_original
+經典圖形需要原版 Civilization II 的檔案：沒有這些檔案時，HD 圖形會一直開啟。
 @@openciv2.graphics.sharp
 清晰的文字與介面
 @@openciv2.graphics.hd
@@ -235,6 +237,8 @@ HD 圖形
 測試執行時不會下載任何內容。
 @@openciv2.hd.err.no_site_art
 本網站建置時未包含 HD 美術圖像。
+@@openciv2.hd.err.no_graphics
+OpenCiv2 在遊戲資料夾 %s 中找不到原版 Civilization II 的圖像（TERRAIN1.GIF、Tiles.dll 等），也找不到其 HD 美術圖像。請將原版遊戲的檔案複製到該資料夾，或下載 HD 美術圖像（atlas-hd.pack，來自 openciv2-assets：github.com/PeterJohnson/openciv2-assets）到 %s。
 @@openciv2.file.open
 開啟
 @@openciv2.file.save_as

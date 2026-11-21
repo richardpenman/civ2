@@ -90,12 +90,16 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
 
 - **Mode**: *Standard* (the original's bugs fixed, [BUGS.md](BUGS.md), and these additions) or
   *Classic* (the original game: its look, its bugs, none of these; `Mode=Classic`, as
-  `CIV2_CLASSIC=1`).  In Classic the other choices but the graphics are not offered.
+  `CIV2_CLASSIC=1`).  In Classic the other choices but the graphics are not offered.  Classic
+  needs the original's pictures: where the game folder lacks them it is not offered (the page
+  says "Classic graphics need the original Civilization II files") and `Mode=Classic` /
+  `CIV2_CLASSIC=1` play in Standard.
 - **Graphics and screen**: [sharp text and interface](#sharp-text-and-interface) (`SharpText=`,
   on by default in Standard, off in Classic); [HD graphics](#hd-graphics) (`Graphics=HD`, at the
   screen's own density), the art downloaded when they are ticked where it is not installed (234 MB,
   with its progress and a Stop button; see [HD-GRAPHICS.md](HD-GRAPHICS.md)); full screen
-  (`FullScreen=`).
+  (`FullScreen=`).  Where the game folder lacks the original's pictures, HD graphics are
+  ticked and cannot be unticked, with the same note ([NO-INSTALL.md](NO-INSTALL.md)).
 - **Rule changes** and **Limits**: the [rule changes](#rule-changes) and the limits.
 - **Interface additions**: the additions above.
 - **Colours and messages**: the colour correction (`Gamma=`, `Brightness=`, `Contrast=`) and
@@ -155,7 +159,10 @@ in OpenCiv2 Options as natively, or `?sharp=0` in the address ([BROWSER.md](BROW
 the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures appear) with
 The replacement art (openciv2-assets), once installed (by OpenCiv2 Options, or `make hd`), at the screen's
 full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
-unit tests; it changes only what is shown.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
+unit tests; it changes only what is shown.  Always on where the game folder lacks the
+original's pictures, whatever is chosen.  The default (where `Graphics=` is unset) is decided
+in one place, `HD_BY_DEFAULT` in `src/platform/options.c` (mirrored in `src/web/options.js`),
+so that making HD the default is a one-line change.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
 
 ## Rule changes
 

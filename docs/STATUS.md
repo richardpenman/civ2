@@ -84,9 +84,11 @@ from the HD art at the original's size and layout (`src/platform/synth.c`), keep
 indices the game's code relies on; `CIV2.DAT` and `HALLFAME.DAT` are made by the game as on a
 fresh install; `timerdll.dll` and `XDaemon.dll` are built in.  `harness/extras/x-no-install.txt`
 and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text, rules and sounds
-(`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), with and
-without HD graphics.  Still from the game: its sounds, videos and music, scenarios; without HD
-graphics the throne room and the spaceship are the pack's pieces misplaced.  The editors'
+(`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), in HD
+graphics, which are always on without the original's pictures (no Classic mode, no original
+look: by design only the original's look with its install, or HD with or without it;
+`x-no-install-options.txt` shows OpenCiv2 Options saying so).  Still from the game: its
+sounds, videos and music, scenarios.  The editors'
 backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).
 
 Reads of locals the 1997 code never initialises are the main source of

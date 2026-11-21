@@ -9,7 +9,7 @@ import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import {sha256, sha256js, packFrom, keepPack, loadPack, packIndex, prunePack, drawn} from '../hdpack.js';
-import {iniGet, iniSet, hdWanted} from '../options.js';
+import {iniGet, iniSet, hdWanted, hasOriginalPictures, ORIGINAL_PICTURES} from '../options.js';
 
 // keys
 assert.equal(vkOf({code: 'KeyA', key: 'a'}), 0x41);
@@ -298,6 +298,14 @@ assert.equal(hdWanted(ini0, '3'), 3);
 assert.equal(hdWanted(ini1, '0'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);
+// without the original's pictures: HD graphics whatever is chosen (Classic too)
+assert.equal(hasOriginalPictures(ORIGINAL_PICTURES.map((n) => n.toLowerCase()).concat(['RULES.TXT'])), true);
+assert.equal(hasOriginalPictures(ORIGINAL_PICTURES.filter((n) => n !== 'TILES.DLL')), false);
+assert.equal(hdWanted(ini0, null, false), 0);
+assert.equal(hdWanted(ini1, '0', false), 0);
+assert.equal(hdWanted(iniSet(ini0, 'OpenCiv2', 'Mode', 'Classic'), null, false), 0);
+assert.equal(hdWanted(iniSet(ini0, 'OpenCiv2', 'GraphicsDensity', '2'), null, false), 2);
+assert.equal(hdWanted(ini0, '3', false), 3);
 
 // SHA-256 without crypto.subtle (a plain http:// site): as node's, at the block boundaries
 for (const n of [0, 1, 55, 56, 63, 64, 65, 119, 120, 1000]) {

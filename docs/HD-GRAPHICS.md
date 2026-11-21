@@ -57,13 +57,24 @@ Otherwise:
    set-up takes `--hd` out of its arguments (as `--fix-cue-gaps`) and passes it to the game
    as `CIV2_HD_ARG`.
 
-Where the game folder has no original graphics at all, the art is also what they are made from,
-at the original's size and layout, HD graphics on or off ([NO-INSTALL.md](NO-INSTALL.md),
-`src/platform/synth.c`).
+Where the game folder lacks any of the original's pictures (a sheet, a picture library,
+`civ2.exe`: `synth_missing`), HD graphics are always on, whatever `Graphics=`, `--hd`,
+`CIV2_HD` or the mode say (Classic, which is the original's look, is not offered then; in a
+replay at the density of `CIV2_TEST_HD`, else 1), and the art is also what the original's
+pictures the game's code reads are made from, at their size and layout
+([NO-INSTALL.md](NO-INSTALL.md), `src/platform/synth.c`).  Only two situations are supported:
+the original's look with its install, and HD graphics with or without it.  Without either the
+original's pictures or the art the game stops at once with a message saying where each goes
+(`hd.err.no_graphics`, translated).
 
-Without the art the game says so in its log and plays with the original graphics (sharp text and
+Whether HD graphics are on where nothing chooses is one line: `HD_BY_DEFAULT` in
+`src/platform/options.c` (`plat_graphics_hd`, read by `hd_init` and OpenCiv2 Options; its
+mirror for the browser's page is `HD_BY_DEFAULT` in `src/web/options.js`).  It is off today.
+
+Without the art (and with the original's pictures) the game says so in its log and plays with the original graphics (sharp text and
 interface still, where they are on: below).  HD graphics are never on with `CIV2_CLASSIC=1`, in
-replays (but with `CIV2_TEST_HD=N`, density N) or in the unit tests.  `CIV2_HD_PACK=FILE` names another pack.
+replays (but with `CIV2_TEST_HD=N`, density N) or in the unit tests, unless the original's
+pictures are missing.  `CIV2_HD_PACK=FILE` names another pack.
 
 With HD graphics on (the art in use, not sharp text alone), the game goes straight to its main
 menu: the opening video (`Video\OPENING.AVI`, 92 seconds, where the game folder has the CD's

@@ -63,17 +63,40 @@ export function iniSet(text, section, key, value) {
     return lines.join(nl) + nl;
 }
 
+// HD graphics where CIV.INI's Graphics= says nothing: the mirror of
+// src/platform/options.c's HD_BY_DEFAULT (the one place natively)
+export const HD_BY_DEFAULT = false;
+
+// The original's pictures the game folder must have for their look
+// (src/platform/synth.c: synth_missing); without any of them the game makes
+// them from the HD art and runs with HD graphics, whatever is chosen
+// (docs/NO-INSTALL.md)
+export const ORIGINAL_PICTURES = ['TERRAIN1.GIF', 'TERRAIN2.GIF', 'UNITS.GIF', 'CITIES.GIF', 'ICONS.GIF',
+    'PEOPLE.GIF', 'EDITORPT.GIF', 'CITY.GIF', 'SCREDITS.GIF', 'EDITORAS.GIF', 'EDITORSA.GIF', 'EDITORSQ.GIF',
+    'CIV2.EXE', 'CIV2ART.DLL', 'INTRO.DLL', 'CV.DLL', 'MK.DLL', 'PV.DLL', 'SS.DLL', 'TILES.DLL', 'WONDER.DLL'];
+export function hasOriginalPictures(names) {
+    const have = new Set(names.map((n) => n.toUpperCase()));
+    return ORIGINAL_PICTURES.every((n) => have.has(n));
+}
+
 // Whether the game will want HD graphics: ?hd=N (as --hd=N) wins, else
-// CIV.INI's choice; never in Classic mode, as natively.  -> the density
-// wanted (0: auto), or -1 off
-export function hdWanted(ini, query) {
+// CIV.INI's choice; never in Classic mode, as natively; always where the
+// game folder lacks the original's pictures (pictures false), as natively
+// (the density as asked, else auto).  -> the density wanted (0: auto), or
+// -1 off
+export function hdWanted(ini, query, pictures = true) {
+    if (!pictures) {
+        const n = hdWanted(iniSet(ini, SECTION, 'Mode', 'Standard'), query);
+        return n >= 0 ? n : parseInt(iniGet(ini, SECTION, 'GraphicsDensity') || '0', 10) || 0;
+    }
     if ((iniGet(ini, SECTION, 'Mode') || '').toLowerCase() === 'classic')
         return -1;
     if (query !== null && query !== undefined) {
         const n = query === '' ? 1 : parseInt(query, 10) || (/^on$/i.test(query) ? 1 : 0);
         return n >= 1 ? (n > 1 ? Math.min(n, 4) : 0) : -1;
     }
-    if ((iniGet(ini, SECTION, 'Graphics') || '').toLowerCase() !== 'hd')
+    const graphics = (iniGet(ini, SECTION, 'Graphics') || '').toLowerCase();
+    if (graphics ? graphics !== 'hd' : !HD_BY_DEFAULT)
         return -1;
     return parseInt(iniGet(ini, SECTION, 'GraphicsDensity') || '0', 10) || 0;
 }
