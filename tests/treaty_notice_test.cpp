@@ -29,6 +29,7 @@ static_assert(sizeof(void *) == 4, "run with a 32-bit compiler");
 static_assert(sizeof(Civ) == 0x594, "production layout");
 
 static Civ civs[8];
+static int notice_ai, notice_human, notice_reply_y = -1;   // extras.cpp's, beside its functions
 static int game_language;
 static char str_er[4] = "er";
 static char str_game_7[8] = "GAME";

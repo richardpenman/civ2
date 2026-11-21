@@ -28,6 +28,8 @@ utf-8
 «Ακούστε: οι %s δεν θεωρούν πλέον ότι δεσμεύονται από τη συνθήκη ειρήνης μαζί σας.»
 @@openciv2.diplo.cancel_ceasefire
 «Ακούστε: οι %s δεν θεωρούν πλέον ότι δεσμεύονται από την ανακωχή μαζί σας.»
+@@openciv2.diplo.you_reply
+Απαντάτε:
 @@openciv2.options.title
 Επιλογές OpenCiv2
 @@openciv2.options.kept

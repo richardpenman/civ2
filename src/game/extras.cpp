@@ -234,29 +234,41 @@ void extras_texts_each(void (*add)(const char *key, const char *english))
     }
 }
 
-/* B37: the notice's pictures (its placeholder's draw callback). */
+/* B37: the notice's emblems: the AI's beside its emissary's words, at the
+   top, and the player's beside "You reply:", notice_reply_y lower (-1: no
+   reply).  The dialog stacks its pictures in one column and its text in
+   another, so one placeholder picture as tall as both holds the place and
+   this, its draw callback, puts each emblem where the text has its line. */
+static int notice_ai, notice_human, notice_reply_y = -1;
+
 void treaty_notice_draw_emblems(i32 sprite, DibSurface *surface, i32 id, i32 data, i32 x, i32 y)
 {
+    RECT r;
     (void)sprite;
-    (void)surface;
     (void)id;
     (void)data;
-    (void)x;
-    (void)y;
+    road_sprites_block.civ_portrait_sprites[notice_ai].draw(&r, surface, x, y);
+    if (notice_reply_y >= 0)
+        road_sprites_block.civ_portrait_sprites[notice_human].draw(&r, surface, x, y + notice_reply_y);
 }
 
 /* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
-   that ai has ended their peace treaty (was_peace) or cease-fire.  One popup,
-   titled as the game's emissary messages are (diplo_set_attitude_arg:
-   "<attitude> <adjective> Emissary"), with ai's emblem in its colour, the
-   emissary's words (diplo.cancel_peace or diplo.cancel_ceasefire) and our
-   reply as the one choice: GAME.TXT's @CANCELOURPEACE (what an emissary says
-   when the player cancels a peace treaty) or @NOPEACE (when the player turns
-   down its peace), their lines joined; none if the section is missing. */
+   that ai has ended their peace treaty (was_peace) or cease-fire.  One popup
+   of the game's usual width, titled as the game's emissary messages are
+   (diplo_set_attitude_arg: "<attitude> <adjective> Emissary"): the
+   emissary's words (diplo.cancel_peace or diplo.cancel_ceasefire), a blank
+   line, "You reply:" (diplo.you_reply) and our reply as quoted text:
+   GAME.TXT's @CANCELOURPEACE (what an emissary says when the player cancels
+   a peace treaty) or @NOPEACE (when the player turns down its peace), their
+   lines joined (none if the section is missing).  Not a choice: a choice is
+   one line, which widened the dialog to fit it.  The emblems: see above;
+   where "You reply:" starts is measured with the dialog's own wrapping. */
 void diplo_treaty_break_notice(int ai, int human, int was_peace)
 {
-    char who[96], title[128], body[256], reply[512];
+    char who[96], title[128], body[256], reply[512], label[96];
     char *line;
+    Sprite holder;
+    Sprite *emblem = &road_sprites_block.civ_portrait_sprites[ai];
     int level = diplo_attitude_level(civs[ai].attitude[human]);
     snprintf(who, sizeof who, "%s%s %s", label_string(attitude_names[level]),
              game_language == 2 ? (const char *)str_er : "", (const char *)(iptr)civ_get_adjective(ai));
@@ -274,15 +286,35 @@ void diplo_treaty_break_notice(int ai, int human, int was_peace)
         }
         text_close_file();
     }
-    Dialog d(0x4000);
-    d.init(0, 0, 0, 0);
-    d.set_width(320);
-    d.set_title(title);
-    d.add_line(body, -1, -1, -1, 0);
-    if (reply[0])
-        d.add_option(reply, 0, 0);
-    d.add_sprite(&road_sprites_block.civ_portrait_sprites[ai], 0, 0);
-    d.show_modal(0);
+    sprite_init(&holder);
+    {
+        Dialog d(0x4000);
+        int width = emblem->width(), height = emblem->height();
+        d.init(0, 0, 0, 0);
+        d.set_width(320);
+        d.set_title(title);
+        holder.create_solid(width, height, 0);
+        d.add_sprite(&holder, 0, 0);
+        d.set_sprite_draw_fn(treaty_notice_draw_emblems);
+        notice_ai = ai;
+        notice_human = human;
+        notice_reply_y = -1;
+        d.add_line(body, -1, -1, -1, 0);
+        if (reply[0]) {
+            d.add_line("^", -1, -1, -1, 0);
+            notice_reply_y = d.draw_wrapped_text(0);
+            snprintf(label, sizeof label, "^%s", extras_text("diplo.you_reply"));
+            d.add_line(label, -1, -1, -1, 0);
+            d.add_line(reply, -1, -1, -1, 0);
+            height = d.draw_wrapped_text(0);
+            if (height < notice_reply_y + road_sprites_block.civ_portrait_sprites[human].height())
+                height = notice_reply_y + road_sprites_block.civ_portrait_sprites[human].height();
+            holder.free();
+            holder.create_solid(width, height, 0);
+        }
+        d.show_modal(0);
+    }
+    sprite_destroy(&holder);
 }
 
 

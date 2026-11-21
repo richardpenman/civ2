@@ -415,11 +415,13 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   not made here.
 - **Fix:** in both places, end the treaty on both sides. When the other civilization is the
   player at the screen, the AI's emissary tells them, for a peace treaty and for a cease-fire
-  (`diplo_treaty_break_notice`, `src/game/extras.cpp`). It's one popup titled as the game's
-  emissary messages are ("Enraged French Emissary"), with the AI's emblem in its colour and the
-  emissary's words ("Hear now the words of the French: we no longer consider ourselves bound by
-  our peace treaty with you."; OpenCiv2's text, translatable). Our reply is the one choice: GAME.TXT's
-  `@CANCELOURPEACE` for a peace treaty, `@NOPEACE` for a cease-fire. (A first version showed the
+  (`diplo_treaty_break_notice`, `src/game/extras.cpp`). It's one popup of the game's usual width,
+  titled as the game's emissary messages are ("Enraged French Emissary"). It has the AI's emblem
+  in its colour beside the emissary's words ("Hear now the words of the French: we no longer
+  consider ourselves bound by our peace treaty with you."; OpenCiv2's text, translatable). Then
+  comes "You reply:", with the player's emblem beside it, and our reply as quoted text: GAME.TXT's
+  `@CANCELOURPEACE` for a peace treaty, `@NOPEACE` for a cease-fire. It's not a choice, because a
+  choice is one line and widened the dialog to fit it. (A first version showed the
   AI-vs-AI `CANCELPEACE` Diplomats Report, which reads as news about others, and nothing for
   a cease-fire.) A cease-fire running out on its own (`@CEASEEXPIRE`, `diplomacy.cpp`
   line 4102) is unchanged. How often the AI breaks a treaty is unchanged. **State.**

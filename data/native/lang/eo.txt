@@ -31,6 +31,8 @@ Agordoj de OpenCiv2
 "Aýskultu: la %s ne plu konsideras sin ligitaj de sia pactraktato kun vi."
 @@openciv2.diplo.cancel_ceasefire
 "Aýskultu: la %s ne plu konsideras sin ligitaj de sia batalhalto kun vi."
+@@openciv2.diplo.you_reply
+Vi respondas:
 @@openciv2.options.title
 Agordoj de OpenCiv2
 @@openciv2.options.kept

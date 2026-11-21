@@ -27,6 +27,8 @@ OpenCiv2 選項
 「%s宣布：我們不再受與您的和平條約約束。」
 @@openciv2.diplo.cancel_ceasefire
 「%s宣布：我們不再受與您的停火協議約束。」
+@@openciv2.diplo.you_reply
+您回答：
 @@openciv2.options.title
 OpenCiv2 選項
 @@openciv2.options.kept
