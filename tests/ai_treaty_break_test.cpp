@@ -1,10 +1,11 @@
 // SOURCE src/auto/diplomacy.cpp diplo_clear_treaty_flags
 // SOURCE src/auto/civ.cpp civ_turn_update_diplomacy
 // B37: an AI that means to break its treaty with a civ (TREATY_HOSTILE_INTENT,
-// set when the AIs gang up on the leader) drops cease-fire and peace at the
-// start of its turn.  The original drops them on its own side only and says
-// nothing: the player's side still says peace.  Fixed: both sides, and the
-// player is told when a peace treaty ends (CANCELPEACE).
+// set after a meeting where it decided on war, or when the AIs gang up on the
+// leader) drops cease-fire and peace at the start of its turn.  The original
+// drops them on its own side only and says nothing: the player's side still
+// says peace.  Fixed: both sides, and the AI's emissary tells the player
+// (diplo_treaty_break_notice), for a peace treaty and for a cease-fire.
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -60,6 +61,12 @@ static std::vector<std::string> popups;     // key: STRING0, STRING1
 static void popup_game_with_sprite(const char *key, Sprite *, int) {
     popups.push_back(std::string(key) + ": " + args[0] + ", " + args[1]);
 }
+static std::vector<std::string> notices;    // ai, human, peace or cease-fire
+static void diplo_treaty_break_notice(int ai, int human, int was_peace) {
+    char s[64];
+    std::snprintf(s, sizeof s, "%d %d %s", ai, human, was_peace ? "peace" : "ceasefire");
+    notices.push_back(s);
+}
 static void diplo_civs_meet(int, int, int, int) {}
 static void diplo_ai_swap_advances(int, int) {}
 static void diplo_ai_review_relations(int, int) {}
@@ -88,6 +95,7 @@ static void setup(uint treaty) {
     civs[HUMAN].treaties[AI] = civs[AI].treaties[HUMAN] = TREATY_CONTACT | TREATY_EMBASSY | treaty;
     civs[AI].treaties[HUMAN] |= TREATY_HOSTILE_INTENT;
     popups.clear();
+    notices.clear();
 }
 
 int main() {
@@ -98,9 +106,10 @@ int main() {
     assert((civs[AI].treaties[HUMAN] & (TREATY_PEACE | TREATY_HOSTILE_INTENT)) == 0);
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
     assert(civs[HUMAN].treaties[AI] & TREATY_PEACE);
-    assert(popups.empty());
+    assert(popups.empty() && notices.empty());
 
-    // Fixed: both sides drop peace and the player is told.
+    // Fixed: both sides drop peace and the AI's emissary tells the player
+    // (not the AI-vs-AI Diplomats Report, CANCELPEACE).
     plat_fix_bugs = 1;
     setup(TREATY_PEACE);
     civ_turn_update_diplomacy(AI);
@@ -108,19 +117,23 @@ int main() {
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
     assert((civs[HUMAN].treaties[AI] & (TREATY_CEASEFIRE | TREATY_PEACE)) == 0);
     assert(civs[HUMAN].treaties[AI] & TREATY_CONTACT);
-    assert(popups.size() == 1 && popups[0] == "CANCELPEACE: Greeks, Romans");
+    std::printf("peace: %zu popups, notice %s\n", popups.size(), notices.empty() ? "none" : notices[0].c_str());
+    assert(popups.empty());
+    assert(notices.size() == 1 && notices[0] == "2 1 peace");
 
-    // Fixed, a cease-fire only: dropped on both sides, no message (it speaks of peace).
+    // Fixed, a cease-fire: dropped on both sides, and the player is told too.
     setup(TREATY_CEASEFIRE);
     civ_turn_update_diplomacy(AI);
     assert((civs[AI].treaties[HUMAN] & TREATY_CEASEFIRE) == 0);
     assert((civs[HUMAN].treaties[AI] & TREATY_CEASEFIRE) == 0);
     assert(popups.empty());
+    assert(notices.size() == 1 && notices[0] == "2 1 ceasefire");
 
     // Fixed, in a network game: the original (every player must compute the same game).
     setup(TREATY_PEACE);
     game.multiplayer = 3;
     civ_turn_update_diplomacy(AI);
     assert(civs[HUMAN].treaties[AI] & TREATY_PEACE);
+    assert(notices.empty());
     return 0;
 }

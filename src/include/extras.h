@@ -165,6 +165,9 @@ int extras_retirement_warning_year(void);
 int extras_population_limit(void);
 int extras_gold_limit(void);
 int extras_map_tiles_limit(void);
+/* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
+   that ai has ended their peace treaty (was_peace) or cease-fire */
+void diplo_treaty_break_notice(int ai, int human, int was_peace);
 #endif
 
 #endif
