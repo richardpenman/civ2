@@ -2300,12 +2300,20 @@ static void play_loop_casualty_popup(Dialog *dialog2)
   casualties = net.casualty_counts[(*(i8 *)&human_civ)] -
              net.casualty_reported_counts[(*(i8 *)&human_civ)];
   if (autoplay.active == 0) {
-    dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+    /* B40: the popup timeout is armed for the report only, when it is shown
+       (the original armed it also with no casualties: the next popup of the
+       turn, whatever it was, then closed by itself after 20 seconds) */
+    if (!bugfix_state()) {
+      dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+    }
     name_str = (char *)civ_leader_title((*(i8 *)&human_civ));
     text_set_string_arg(0,name_str);
     name_str = (civ_leader_name((*(i8 *)&human_civ)));
     text_set_string_arg(1,name_str);
     if (0 < casualties) {
+      if (bugfix_state()) {  /* B40 */
+        dlg_style.pending_idle_callback = turn_popup_timeout_idle;
+      }
       net.casualty_reported_counts[(*(i8 *)&human_civ)] =
            net.casualty_counts[(*(i8 *)&human_civ)];
       text_set_number_arg(0,casualties);

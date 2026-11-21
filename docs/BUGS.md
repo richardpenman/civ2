@@ -28,8 +28,8 @@ Each entry gives an ID, where the code is (file, function, line at the time of w
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 39 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
-B23 to B25, B28 and B32 to B38. Fixed in every mode: B1 (our build reads the original's usual
+Status of the list: 40 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
+B23 to B25, B28, B32 to B38 and B40. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
 reads its stack and our build would read another value, so classic mode could not match it
 anyway, and B39 (the same result wherever the original's worked). Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
@@ -746,6 +746,29 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Status: fixed in every mode.** `tests/path_extension_test.cpp`;
   `harness/extras/x-diplomat.txt` loads `SCENARIO\..\Ca_Auto.SAV` and moves a Diplomat into a
   foreign city: the mission dialog opens (before the fix, nothing).
+
+### B40. A popup closes by itself after 20 seconds, also in a single-player game
+- **Where:** `src/auto/game.cpp`, `play_loop_casualty_popup` (part of `game_play_loop`,
+  0048b340), line 2303. At the start of each civ's turn (not in autoplay), it arms the network
+  games' popup timeout for the next dialog, the casualties report:
+  ```cpp
+  dlg_style.pending_idle_callback = turn_popup_timeout_idle;   /* closes the dialog after 20 s */
+  ...
+  if (0 < casualties) { ... dialog2->show_modal(0); }
+  ```
+  The next dialog's window takes it (`Dialog::create_window`, `window_dialog.cpp` line 2538).
+- **What goes wrong:** with no casualties no report is shown, and the timeout stays armed. The
+  next popup of that turn, whatever it is, takes it and closes by itself after 20 seconds
+  (`turn_popup_timeout_idle`, `game.cpp` line 1113), with its default answer. The popup after it
+  waits as usual. Seen in a single-player game: "Spanish acquire The Wheel from the Great
+  Library!" closed by itself, the next ("... Warrior Code ...") waited, and a Travellers Report
+  at the next turn's start closed by itself.
+- **Source:** our code (a user's report).
+- **Fix:** the timeout is armed only when the report is shown, just before it. The report keeps
+  its timeout. In network games every dialog has it anyway (`dlg_style.default_idle_callback`,
+  `game.cpp` line 561). **State** (a choice that closes by itself takes its default answer).
+- **Saves:** none.
+- **Status: fixed** (`bugfix_state()`). `tests/popup_timeout_test.cpp` checks both modes.
 
 ## Memory errors of the original (fixed in every mode)
 
