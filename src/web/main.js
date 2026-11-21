@@ -7,7 +7,6 @@ import {openStore} from './store.js';
 import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
 import {findDisc} from './setup_run.js';
-import {packFrom, keepPack, loadPack, download, siteArt} from './hdpack.js';
 import {hdWanted, hasOriginalPictures, iniGet, iniSet} from './options.js';
 import {t, languages, pageLanguage, urlLanguage, withLanguage, useLanguage, langFile, parseLang, match} from './i18n.js';
 
@@ -339,35 +338,31 @@ function savesControls(store) {
     d.addEventListener('close', () => $('screen').focus());
 }
 
-// ---- the HD graphics' art (hdpack.js), as CIV.INI asks for it (options.js) ----
+// ---- the HD graphics' art, as CIV.INI asks for it (options.js) ----
 
-// OpenCiv2's own HD pictures (data/native/hd-extra, on the site in hd/extra
-// with the art: hd.c draws them in place of the pack's of the same key),
-// where hd.c looks for them (CIV2_DATA/hd-extra) -> how many
-async function putExtraArt(fs) {
-    try {
-        const list = await fetch('hd/extra/pictures.txt').then((r) => (r.ok ? r.text() : ''));
-        const names = [...new Set(list.split('\n').filter((l) => l.trim() && !l.startsWith('#'))
-            .map((l) => l.trim().split(/\s+/)[3]).filter(Boolean))];
-        const files = await Promise.all(names.map((n) => fetch('hd/extra/' + n).then((r) => {
-            if (!r.ok)
-                throw new Error(n + ': ' + r.status);
-            return r.arrayBuffer();
-        })));
-        names.forEach((n, i) => fs.put(DATA + '/hd-extra/' + n, new Uint8Array(files[i])));
-        if (list)
-            fs.put(DATA + '/hd-extra/pictures.txt', new TextEncoder().encode(list));
-        return names.length;
-    } catch (e) {
-        console.warn('HD graphics: OpenCiv2\'s own pictures:', e);
-        return 0;
-    }
+// The art (data/native/hd: hd/pictures.txt and its pictures) and OpenCiv2's
+// own HD pictures (data/native/hd-extra: hd-extra/...), on the site as one
+// file, hd/art.bin, its files one after another as hd/index.json lists them
+// ([path, size] each) -> [[path, bytes]], put where hd.c looks for them
+// (CIV2_DATA/hd, CIV2_DATA/hd-extra)
+async function fetchArt() {
+    const index = await fetch('hd/index.json').then((r) => {
+        if (!r.ok)
+            throw new Error('hd/index.json: ' + r.status);
+        return r.json();
+    });
+    const r = await fetch('hd/art.bin');
+    if (!r.ok)
+        throw new Error('hd/art.bin: ' + r.status);
+    const bytes = new Uint8Array(await r.arrayBuffer());
+    let at = 0;
+    const files = index.map(([path, size]) => [path, bytes.subarray(at, (at += size))]);
+    if (at !== bytes.length)
+        throw new Error('hd/art.bin is not as hd/index.json says');
+    return files;
 }
 
-let pinP = null;
-const pin = () => pinP || (pinP = fetch('hd-pack.json').then((r) => r.json()));
 const latin = new TextDecoder('windows-1252');
-const MB = (n) => Math.round(n / 1e6);
 
 // CIV.INI as the game has it in its folder (any case), or where it will write it
 function iniOf(entries) {
@@ -384,40 +379,8 @@ function iniBytesSet(bytes, key, value) {
 }
 const iniLanguage = (bytes) => (iniGet(latin.decode(bytes || new Uint8Array(0)), 'OpenCiv2', 'Language') || '').trim();
 
-async function artInfo(store) {
-    const [info, p] = await Promise.all([store.hdGet('info'), pin()]);
-    return info && info.sha256 === p.pack_sha256 ? info : null;
-}
-
-// The art downloaded from the site (where it has it: make web HD=1),
-// checked and kept in this browser, its progress said: when the game's
-// OpenCiv2 Options chose HD graphics and the page was loaded again for them
-// -> 1, or 0 (why said, HD graphics off this time)
-async function getArt(store, site) {
-    const progress = (doing) => (done, total) =>
-        status(t('web.hd_progress', doing, MB(done), MB(total || site.size)));
-    try {
-        const p = await pin();
-        const b = await download(site.size, {progress: progress(t('web.hd_downloading'))});
-        const pack = await packFrom(b, p, {progress: (phase, d, tt) => progress(t('web.hd_checking'))(d, tt)});
-        if (navigator.storage && navigator.storage.estimate) {
-            const {usage, quota} = await navigator.storage.estimate();
-            if (quota && quota - usage < pack.length)
-                throw new Error(t('web.hd_no_room', MB(quota - usage)));
-        }
-        await keepPack(store, pack, p, {progress: progress(t('web.hd_keeping'))});
-        return 1;
-    } catch (e) {
-        console.error(e);
-        status(t('web.hd_off', e.message));
-        if (!await artInfo(store).catch(() => null))
-            await store.hdClear().catch(() => {});
-        return 0;
-    }
-}
-
 // What a start needs from the site, fetched at once, alongside the stored
-// files: the module (compiled as it downloads), the fonts, the art's pin
+// files: the module (compiled as it downloads), the fonts
 let siteP = null;
 function fromSite() {
     if (!siteP) {
@@ -433,8 +396,7 @@ function fromSite() {
             }
         };
         siteP = {wasm: mark('wasm', compile()),
-                 fonts: mark('fonts', Promise.all([fetchGz('data/fonts_win.bin.gz'), fetchGz('data/fonts_win_aa.bin.gz')])),
-                 pin: pin()};
+                 fonts: mark('fonts', Promise.all([fetchGz('data/fonts_win.bin.gz'), fetchGz('data/fonts_win_aa.bin.gz')]))};
         // (a failure is met where it is awaited)
         for (const p of Object.values(siteP))
             p.catch(() => {});
@@ -539,7 +501,6 @@ async function play(store) {
     status(t('web.loading_files'));
     const t0 = performance.now();
     const site = fromSite();
-    const siteHdP = siteArt(), keptP = artInfo(store).catch(() => null);
     const fs = new MemFS();
     // CIV.INI first (a moment): the HD graphics' art, when wanted, read
     // alongside the other files
@@ -550,16 +511,13 @@ async function play(store) {
     // (always where the game's files lack the original's pictures: the game
     // makes them from the art, docs/NO-INSTALL.md)
     const hd = hdWanted(ini, query.get('hd'), hasOriginalPictures(keys)) >= 0;
-    // (the art: where the site has it, for the game's OpenCiv2 Options; kept
-    // in this browser once downloaded, used then even where the site has none)
-    const siteHd = await siteHdP;
-    let kept = await keptP;
-    if (hd && !kept && siteHd && await getArt(store, siteHd))
-        kept = await artInfo(store).catch(() => null);
-    const packP = hd && kept ? mark('hd', site.pin.then((p) => loadPack(store, p, timing))).catch((e) => {
+    const artP = hd ? mark('hd', fetchArt()).catch((e) => {
         console.error(e);
         return null;
     }) : null;
+    // (the HD art of former versions, downloaded and kept in this browser:
+    // the art is the site's now, its room freed)
+    store.hdClear().catch(() => {});
     const [entries, [fonts, fontsAa]] = await Promise.all([mark('files', store.all()), site.fonts]);
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
@@ -629,15 +587,13 @@ async function play(store) {
     if (hd) {
         const since = performance.now();
         status(t('web.loading_hd'));
-        const pack = await packP;
-        let extra = 0;
-        if (pack) {
-            fs.put(DATA + '/hd/atlas-hd.pack', pack);
-            extra = await putExtraArt(fs);
-        }
-        window.civ2Hd = {packBytes: pack ? pack.length : 0, extra, loadMs: Math.round(performance.now() - since)};
-        if (!pack)
-            console.warn('HD graphics: the art is not in this browser');
+        const art = await artP;
+        for (const [path, bytes] of art || [])
+            fs.put(DATA + '/' + path, bytes);
+        window.civ2Hd = {files: art ? art.length : 0, bytes: art ? art.reduce((n, [, b]) => n + b.length, 0) : 0,
+                         loadMs: Math.round(performance.now() - since)};
+        if (!art)
+            console.warn('HD graphics: the site\'s art could not be loaded');
     }
     // what the game writes, kept: at once when a file is closed, renamed or
     // removed (a saved game is safe as soon as the game has written it),
@@ -698,10 +654,9 @@ async function play(store) {
                               }, canvas, args, env, messageBox, codepage: gameLang.codepage,
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
-                              // (the game's OpenCiv2 Options: where the art is, and their restart:
-                              // the page loaded again, into the game, without what would override them;
-                              // ?lang= the game's language now, where the game changed it)
-                              hdArt: {kept: kept ? kept.size : 0, siteSize: siteHd ? siteHd.size : 0},
+                              // (the game's OpenCiv2 Options' restart: the page loaded again, into the
+                              // game, without what would override them; ?lang= the game's language now,
+                              // where the game changed it)
                               restart: async () => {
                                   await window.civ2Flush();
                                   const u = new URL(location.href);

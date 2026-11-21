@@ -62,14 +62,8 @@ utf-8
 Γραφικά και Οθόνη
 @@openciv2.graphics.sharp_note
 Ευκρινές κείμενο και περιβάλλον: κείμενο, μενού και στοιχεία ελέγχου στην πλήρη ανάλυση της οθόνης (οι εικόνες μεγεθυμένες).
-@@openciv2.graphics.hd_installed
-Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης. Τα σχέδια είναι εγκατεστημένα.
-@@openciv2.graphics.hd_later
-Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης. Τα σχέδια (%d MB) θα ληφθούν από αυτόν τον ιστότοπο στην επόμενη εκκίνηση του παιχνιδιού.
-@@openciv2.graphics.hd_no_site
-Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης. Αυτός ο ιστότοπος δημιουργήθηκε χωρίς τα σχέδια.
-@@openciv2.graphics.hd_download
-Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης. Χρειάζονται τα σχέδια: %d MB, που λαμβάνονται μία φορά από το openciv2-assets στο GitHub όταν τα επιλέξετε.
+@@openciv2.graphics.hd_note
+Γραφικά HD: νέα σχέδια για τον χάρτη, στην πλήρη ανάλυση της οθόνης.
 @@openciv2.graphics.fullscreen_note
 Πλήρης οθόνη: αντί για παράθυρο που γεμίζει την οθόνη.
 @@openciv2.graphics.need_original
@@ -196,50 +190,8 @@ Shift στους ειδικούς
 Αργότερα
 @@openciv2.restart.failed
 Το παιχνίδι δεν μπόρεσε να ξεκινήσει ξανά: αυτές οι επιλογές θα ισχύσουν στην επόμενη εκκίνησή του.
-@@openciv2.hd.title
-Γραφικά HD
-@@openciv2.hd.downloading
-Λήψη των σχεδίων
-@@openciv2.hd.checking
-Έλεγχος
-@@openciv2.hd.installing
-Εγκατάσταση
-@@openciv2.hd.progress
-%s: %d από %d MB
-@@openciv2.hd.stop
-Διακοπή
-@@openciv2.hd.failed
-Η λήψη απέτυχε.
-@@openciv2.hd.stay_off
-%s Τα γραφικά HD παραμένουν απενεργοποιημένα.
-@@openciv2.hd.err.no_curl_windows
-Δεν βρέθηκε το curl.exe των Windows, που κατεβάζει τα σχέδια (περιλαμβάνεται στα Windows 10 και νεότερα).
-@@openciv2.hd.err.download
-Η λήψη απέτυχε (%s). Είναι ο υπολογιστής συνδεδεμένος στο διαδίκτυο;
-@@openciv2.hd.err.no_tool
-Δεν βρέθηκε ούτε το curl ούτε το wget, που κατεβάζουν τα σχέδια: εγκαταστήστε το curl.
-@@openciv2.hd.err.read
-Δεν ήταν δυνατή η ανάγνωση του αρχείου %s.
-@@openciv2.hd.err.not_pack
-Το %s δεν είναι πακέτο openciv2-assets.
-@@openciv2.hd.err.mismatch
-Το αρχείο %s του πακέτου δεν ταιριάζει με το package.json του.
-@@openciv2.hd.err.write
-Δεν ήταν δυνατή η εγγραφή του αρχείου %s.
-@@openciv2.hd.err.not_pinned
-Η λήψη δεν είναι τα καθορισμένα σχέδια (το SHA-256 διαφέρει): δεν εγκαταστάθηκε τίποτα.
-@@openciv2.hd.err.no_url
-Αυτή η έκδοση δεν ξέρει ποια σχέδια να κατεβάσει.
-@@openciv2.hd.err.no_folder
-Δεν υπάρχει φάκελος για την εγκατάσταση των σχεδίων.
-@@openciv2.hd.err.start
-Δεν ήταν δυνατή η έναρξη της λήψης.
-@@openciv2.hd.err.test_run
-Σε δοκιμαστική εκτέλεση δεν γίνεται καμία λήψη.
-@@openciv2.hd.err.no_site_art
-Αυτός ο ιστότοπος δημιουργήθηκε χωρίς τα σχέδια HD.
 @@openciv2.hd.err.no_graphics
-Το OpenCiv2 δεν βρήκε ούτε τις αρχικές εικόνες του Civilization II (TERRAIN1.GIF, Tiles.dll και τις άλλες) στον φάκελο του παιχνιδιού, %s, ούτε τα σχέδια HD του. Αντιγράψτε τα αρχεία του αρχικού παιχνιδιού σε αυτόν τον φάκελο ή κατεβάστε τα σχέδια HD (atlas-hd.pack, από το openciv2-assets: github.com/PeterJohnson/openciv2-assets) στο %s.
+Το OpenCiv2 δεν βρήκε ούτε τις αρχικές εικόνες του Civilization II (TERRAIN1.GIF, Tiles.dll και τις άλλες) στον φάκελο του παιχνιδιού, %s, ούτε τα σχέδια HD που το συνοδεύουν (%s). Αντιγράψτε τα αρχεία του αρχικού παιχνιδιού σε αυτόν τον φάκελο ή εγκαταστήστε ξανά το OpenCiv2.
 @@openciv2.file.open
 Άνοιγμα
 @@openciv2.file.save_as
@@ -460,18 +412,6 @@ OpenCiv2: εγκατάσταση του παιχνιδιού
 Δεν υπάρχει τίποτα για εισαγωγή εκεί: τα αποθηκευμένα παιχνίδια είναι αρχεία .SAV (ή ένα .zip με αυτά).
 @@openciv2.web.import_failed
 Δεν ήταν δυνατή η εισαγωγή: %s
-@@openciv2.web.hd_progress
-%s: %s από %s MB
-@@openciv2.web.hd_downloading
-Λήψη των σχεδίων των γραφικών HD
-@@openciv2.web.hd_checking
-Έλεγχος
-@@openciv2.web.hd_keeping
-Φύλαξη σε αυτόν τον περιηγητή
-@@openciv2.web.hd_no_room
-Ο χώρος αποθήκευσης του περιηγητή δεν επαρκεί (%s MB ελεύθερα).
-@@openciv2.web.hd_off
-Γραφικά HD: %s Αυτή τη φορά παραμένουν απενεργοποιημένα.
 @@openciv2.web.loading_files
 Φόρτωση των αρχείων του παιχνιδιού ...
 @@openciv2.web.installing

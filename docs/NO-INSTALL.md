@@ -53,9 +53,9 @@ start, `src/platform/main.c`: `plat_hd_forced`):
   ticked and not to be unticked, each page with the note "Classic graphics need the original
   Civilization II files: without them HD graphics are always on." (`graphics.need_original`,
   in every shipped language);
-* without the HD art as well the game stops at once with a message (`hd.err.no_graphics`,
-  translated): the game's folder, where the original's files go, and where the art goes
-  (`hd/atlas-hd.pack` in the user's folder, from openciv2-assets);
+* without the HD art as well (it comes with OpenCiv2: the program's `data/hd`) the game stops at
+  once with a message (`hd.err.no_graphics`, translated): the game's folder, where the
+  original's files go, and where the art should be;
 * the browser's page does the same (`src/web/options.js`: `hasOriginalPictures`, `hdWanted`):
   it loads the art where the game's files lack the original's pictures.
 
@@ -83,7 +83,7 @@ files.
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
-So a game can be set up and played with none of the install's files but its music and videos, given the HD art (`make hd`, or OpenCiv2 Options; `data/native/hd/atlas-hd.pack`), in HD
+So a game can be set up and played with none of the install's files but its music and videos, given the HD art (which comes with OpenCiv2: `data/native/hd`), in HD
 graphics (above).  Without the art too the game does not start: it says what is missing.
 
 ## The game folder's files
@@ -115,7 +115,10 @@ graphics (above).  Without the art too the game does not start: it says what is 
 `src/platform/synth.c` (`docs/HD-GRAPHICS.md` for the art): where the game folder has no picture
 the game asks for, an 8-bit one is made at the original's size and layout, the HD art shrunk into
 it, so that the game's code, which takes its sprites from fixed rectangles and reads some of
-their pixels back, works unchanged; HD mode then draws the art over it as with the original's.
+their pixels back, works unchanged; HD mode then draws the art over it as with the original's.  The
+pictures of the art it reads that HD mode does not draw (the libraries' pictures not painted
+whole, the crops not drawn, civ2.exe's) are in `data/native/hd` at the original's size
+(`data/hd-pack.json`: `synth`; `tools/build_hd_pack.py`), the others as HD mode draws them.
 
 * **When**: `plat_host_path` (`src/platform/files.c`) asks `synth_file` for a sheet the game
   folder lacks (only there: a scenario's own art is its own), which is written, once a run, in
@@ -243,5 +246,3 @@ scope here.
   the throne room and the spaceship, the diplomacy room's medallion in 8 bits, and the units'
   shields', the cities' flags' and size boxes' places from the art; HD graphics, always on
   then, have them.)
-* The browser version gives the game only the pack's pictures HD mode draws
-  (`src/web/hdpack.js`): a site without the install would need the sprites' crops too.

@@ -4,7 +4,7 @@
 # research (civ_research_complete), the Civilopedia's list of advances, an
 # advance's page and its tree; each logical screenshot and the rand() trace
 # are those of the run with HD graphics off.
-# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

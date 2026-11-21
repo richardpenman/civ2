@@ -4,7 +4,7 @@
 # (mk.dll 200 to 206) from the pack, the leader's portrait the pack's that
 # fits the tribe (src/game/hd_graphics.cpp's hd_portraits).  Each talk
 # ended with Escapes.
-# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

@@ -381,28 +381,6 @@ export async function runGame(opts) {
                 setDesktop(w, h);
         },
         host_minimize: () => {},
-        host_user_dir: () => 0,
-        // HD graphics' art for the OpenCiv2 Options dialog (src/game/
-        // options.cpp): never downloaded by the game here, but by the page
-        // when it is loaded again (main.js, hdpack.js): kept in this browser
-        // (HOST_HD_DONE), on the site (HOST_HD_LATER, its size in KB) or
-        // neither (HOST_HD_FAILED, and why)
-        host_hd_fetch: (op, info, msg, size) => {
-            const art = opts.hdArt || {};
-            const state = art.kept ? 0 : art.siteSize ? 2 : -1;
-            if (info) {
-                dv().setInt32(info, 0, true);
-                dv().setInt32(info + 4, 0, true);
-                dv().setInt32(info + 8, Math.round((art.kept || art.siteSize || 0) / 1024), true);
-            }
-            if (msg && size > 0) {
-                const text = new TextEncoder().encode(state < 0 ? '@hd.err.no_site_art' : '');
-                const n = Math.min(text.length, size - 1);
-                new Uint8Array(memory.buffer).set(text.subarray(0, n), msg);
-                new Uint8Array(memory.buffer)[msg + n] = 0;
-            }
-            return state;
-        },
         host_time_us: () => BigInt(Math.round(performance.now() * 1000)),
         host_cursor_system: (kind) => cursorSlot({css: SYSTEM_CURSORS[kind] || 'default'}),
         host_cursor_image: (argb, w, h, x, y) => {

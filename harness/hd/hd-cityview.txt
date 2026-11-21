@@ -1,7 +1,7 @@
 # HD graphics (docs/HD-GRAPHICS.md): Rome's city view (the city window's
 # View): the landscape (cv.dll 340...) and the improvements and houses
 # (crop/resource/cv.dll/...) from the pack, on a 640x480 desktop.
-# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

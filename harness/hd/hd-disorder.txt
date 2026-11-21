@@ -3,7 +3,7 @@
 # Rome (36,60) of the autosave put in disorder and the map centred on it
 # (hd_test_city_disorder, a test hook: address 0) at the zooms 0, 2, 4, -2
 # and -4; then the Sioux' Slim Buttes (38,76): its marker in purple.
-# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1024x768
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

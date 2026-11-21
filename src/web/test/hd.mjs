@@ -1,10 +1,8 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
 // headless shell (as smoke.mjs), the game's files given as a .zip, then in
-// the game's OpenCiv2 Options HD graphics not offered while the site has no
-// art; then the site with the art (as make web HD=1: data/native/hd/
-// atlas-hd.pack, make hd, served at hd/), HD graphics ticked there and the
-// game restarted: the page loaded again, the art downloaded from the site,
-// checked, kept in IndexedDB, OpenCiv2's own pictures (hd/extra) beside it,
+// the game's OpenCiv2 Options HD graphics ticked and the game restarted:
+// the page loaded again, the art (the site's hd/art.bin: data/native/hd and
+// OpenCiv2's own pictures, data/native/hd-extra) put into the game's files,
 // HD graphics on in CIV.INI; then the game at a
 // device pixel ratio of 2 (density Auto: 2), the menu and a saved game's map
 // drawn in HD (the canvas twice the desktop's size, and not the desktop's
@@ -13,8 +11,7 @@
 // start (said at once, its first frame within START_MS); then
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics.  Screenshots in
-// run/web-hd (look at them).  Without the art (or the game) it says so and
-// passes.
+// run/web-hd (look at them).  Without the game it says so and passes.
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
 
@@ -30,14 +27,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const START_MS = 15000;
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
-const artFile = () => [join(ROOT, 'data', 'native', 'hd', 'atlas-hd.pack')].find((f) => existsSync(f));
-
 async function main() {
     if (!existsSync(join(WEB, 'civ2.wasm')))
         throw new Error('no build/web: make web first');
-    const art = artFile();
-    if (!art || !existsSync(join(GAME, 'Ca_Auto.SAV'))) {
-        console.log('hd.mjs: skipped (' + (art ? 'no ' + join(GAME, 'Ca_Auto.SAV') : 'no art: make hd') + ')');
+    if (!existsSync(join(WEB, 'hd', 'art.bin')))
+        throw new Error('no build/web/hd/art.bin: make web first');
+    if (!existsSync(join(GAME, 'Ca_Auto.SAV'))) {
+        console.log('hd.mjs: skipped (no ' + join(GAME, 'Ca_Auto.SAV') + ')');
         return;
     }
     rmSync(OUT, {recursive: true, force: true});
@@ -45,8 +41,7 @@ async function main() {
     const tmp = mkdtempSync(join(ROOT, 'run', 'web-tmp-'));
     const zip = join(tmp, 'Civ2.zip');
     log(`zipping ${GAME}: ${zipFolder(GAME, zip)} files`);
-    let siteArt = null;
-    const server = await serve({hd: () => siteArt});
+    const server = await serve();
     const url = `http://127.0.0.1:${server.address().port}/`;
     const b = await browser(join(tmp, 'profile'));
     const errors = [];
@@ -168,8 +163,7 @@ async function main() {
         await waitFor('/kept in this browser/.test(window.civ2Status) || /not|Could/.test(window.civ2Status) && window.civ2Status',
                       300000, 'the copy');
         log('game: ' + await evaluate('window.civ2Status'));
-        // the game's OpenCiv2 Options (the main menu's last choice) where
-        // the site has no art: HD graphics not offered there (look at the shot)
+        // the game's OpenCiv2 Options (the main menu's last choice)
         const toMenu = async () => {
             await settle(3000, 60000);
             if (!await evaluate('(() => { const c = document.getElementById("screen");' +
@@ -187,19 +181,19 @@ async function main() {
             await key('Enter', 13);
             await settle(1000, 10000);
         };
+        // a first start (the heralds' question answered), its Graphics and
+        // screen page (look at the shot), then the page loaded again
         await evaluate('document.getElementById("play").click()');
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
         await toMenu();
         await toGraphics();
-        await shot('00-graphics-no-art');
+        await shot('00-graphics-first');
         await key('Escape', 27);
         await settle(1000, 10000);
         await key('Escape', 27);
         await settle(1000, 10000);
-        // the site with the art: HD graphics ticked there (Tab, Space), OK,
-        // Restart now: the page loaded again, the art downloaded from the
-        // site, checked, kept in this browser, the game in HD
-        siteArt = art;
+        // HD graphics ticked there (Tab, Space), OK, Restart now: the page
+        // loaded again, the art from the site, the game in HD
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page again');
         await evaluate('document.getElementById("play").click()');
@@ -219,11 +213,12 @@ async function main() {
         await waitFor('!window.civ2Before && window.civ2Status', 60000, 'the page loaded again');
         log('restarted: ' + await evaluate('window.civ2Status'));
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 600000, 'the art');
-        log(`art from ${art} (${Math.round(performance.now() - t0)} ms): ${JSON.stringify(await evaluate('window.civ2Hd'))}`);
-        if (!(await evaluate('window.civ2Hd') || {}).packBytes)
-            throw new Error('the art not downloaded and kept at the restart');
-        if (!(await evaluate('window.civ2Hd') || {}).extra)
-            throw new Error("OpenCiv2's own pictures (hd/extra) not put beside the art");
+        const hdArt = await evaluate('window.civ2Hd') || {};
+        log(`the art (${Math.round(performance.now() - t0)} ms): ${JSON.stringify(hdArt)}`);
+        if (!(hdArt.files > 100))
+            throw new Error('the art not loaded from the site at the restart');
+        if (!await evaluate('!!window.civ2Fs.get("/data/hd-extra/pictures.txt") && !!window.civ2Fs.get("/data/hd/pictures.txt")'))
+            throw new Error("the art's or OpenCiv2's own pictures' list not in the game's files");
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -267,11 +262,8 @@ async function main() {
         await shot('02-advisor');
         await key('Escape', 27);
         await settle(1000, 10000);
-        // a later visit (the page opened again, the art kept, its pruned
-        // copy made by the start above; the site without it now: the art
-        // kept still used): what it does said at once, the pruned art read
-        // alone, the game's first frame within START_MS
-        siteArt = null;
+        // a later visit (the page opened again): what it does said at once,
+        // the game's first frame within START_MS
         await send('Page.navigate', {url});
         const opened = performance.now();
         const said0 = await waitFor('(() => { const l = document.getElementById("loading");' +
@@ -280,11 +272,8 @@ async function main() {
         await waitFor('window.civ2Timing && window.civ2Timing.frame', START_MS, `the first frame within ${START_MS} ms`);
         const timing = await evaluate('window.civ2Timing');
         log(`a later start: "${said0}" ${Math.round(performance.now() - opened)} ms; ${JSON.stringify(timing)}`);
-        if (!(await evaluate('window.civ2Hd') || {}).packBytes)
-            throw new Error('the art kept not used where the site has none');
-        // (the pruned copy some 104 MB, 25 chunks; the whole pack 60)
-        if (!(timing.packChunks <= 30))
-            throw new Error('the whole pack read at a start, not its pruned copy');
+        if (!((await evaluate('window.civ2Hd') || {}).files > 100))
+            throw new Error('the art not loaded at a later start');
         await settle(2000, 30000);
         // ?hd=0: the original graphics, as natively --hd=0, with sharp
         // text and interface (on by default): the planes without the art

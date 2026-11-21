@@ -7,7 +7,7 @@
 # Demographics (F11, 58) and the tax rates (Shift+T, 65); 66, the tax rates on
 # a large screen: hd-advisors-large.txt.  (The first advisor's key after the
 # start is not taken: an F1 and an Escape first.)
-# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=800x600 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=800x600
 wait 8000
 key Down Down Down      # "Begin Scenario"
 wait 500

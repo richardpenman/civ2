@@ -7,9 +7,8 @@
 // {names, at}: its paths, when it was made), so that the player's own files
 // can be told from the game's (saves.js).
 
-// A third, hd, keeps the HD graphics' art (hdpack.js): the pack in chunks
-// (keys 0, 1 ...) and 'info', its description; not the game's, so not
-// cleared with it.
+// A third, hd, kept the HD graphics' art of former versions, downloaded
+// then (the art is the site's now: main.js clears it, to free its room).
 
 const DB = 'OpenCiv2', FILES = 'files', META = 'meta', HD = 'hd';
 
@@ -82,16 +81,6 @@ export async function openStore(onBlocked) {
         },
         async get(k) {
             return req(tx('readonly').get(k));
-        },
-        async hdGet(k) {
-            return req(db.transaction(HD, 'readonly').objectStore(HD).get(k));
-        },
-        async hdPutMany(entries) {
-            const t = db.transaction(HD, 'readwrite');
-            const s = t.objectStore(HD);
-            for (const [k, v] of entries)
-                s.put(v, k);
-            return done(t);
         },
         async hdClear() {
             const t = db.transaction(HD, 'readwrite');

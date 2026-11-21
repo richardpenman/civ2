@@ -65,14 +65,8 @@ Klasika
 Grafiko kaj ekrano
 @@openciv2.graphics.sharp_note
 Akra teksto kaj interfaco: teksto, menuoj kaj regiloj je la plena distingivo de la ekrano (la bildoj pligrandigitaj).
-@@openciv2.graphics.hd_installed
-HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. La arto estas instalita.
-@@openciv2.graphics.hd_later
-HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. La arto (%d MB) elþutiøas de æi tiu retejo, kiam la ludo denove lanæiøas.
-@@openciv2.graphics.hd_no_site
-HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Æi tiu retejo estis konstruita sen la arto.
-@@openciv2.graphics.hd_download
-HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano. Øi bezonas la arton: %d MB, elþutotaj unufoje el openciv2-assets æe GitHub, kiam vi elektas øin.
+@@openciv2.graphics.hd_note
+HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano.
 @@openciv2.graphics.fullscreen_note
 Plena ekrano: anstataý fenestro, kiu plenigas la ekranon.
 @@openciv2.graphics.need_original
@@ -199,50 +193,8 @@ Relanæi nun
 Poste
 @@openciv2.restart.failed
 La ludo ne povis esti relanæita: æi tiuj elektoj efikas ekde øia venonta lanæo.
-@@openciv2.hd.title
-HD-grafiko
-@@openciv2.hd.downloading
-Elþutante la arton
-@@openciv2.hd.checking
-Kontrolante øin
-@@openciv2.hd.installing
-Instalante øin
-@@openciv2.hd.progress
-%s: %d el %d MB
-@@openciv2.hd.stop
-Haltigi
-@@openciv2.hd.failed
-La elþuto malsukcesis.
-@@openciv2.hd.stay_off
-%s HD-grafiko restas malþaltita.
-@@openciv2.hd.err.no_curl_windows
-curl.exe de Windows, kiu elþutas la arton, ne troviøis (øi venas kun Windows 10 kaj postaj).
-@@openciv2.hd.err.download
-La elþuto malsukcesis (%s). Æu la komputilo estas konektita al la interreto?
-@@openciv2.hd.err.no_tool
-Nek curl nek wget, kiuj elþutas la arton, troviøis: bonvolu instali curl.
-@@openciv2.hd.err.read
-Ne eblis legi %s.
-@@openciv2.hd.err.not_pack
-%s ne estas pako de openciv2-assets.
-@@openciv2.hd.err.mismatch
-%s en la pako ne kongruas kun øia package.json.
-@@openciv2.hd.err.write
-Ne eblis skribi %s.
-@@openciv2.hd.err.not_pinned
-La elþuta¼o ne estas la fiksita arto (øia SHA-256 malsamas): nenio estis instalita.
-@@openciv2.hd.err.no_url
-Æi tiu versio ne scias, kiun arton elþuti.
-@@openciv2.hd.err.no_folder
-Ne estas dosierujo por instali la arton.
-@@openciv2.hd.err.start
-Ne eblis komenci la elþuton.
-@@openciv2.hd.err.test_run
-Nenio elþutiøas en testa lanæo.
-@@openciv2.hd.err.no_site_art
-Æi tiu retejo estis konstruita sen la HD-arto.
 @@openciv2.hd.err.no_graphics
-OpenCiv2 trovis nek la originalajn bildojn de Civilization II (TERRAIN1.GIF, Tiles.dll kaj la aliajn) en la dosierujo de la ludo, %s, nek øian HD-arton. Kopiu la dosierojn de la originala ludo en tiun dosierujon, aý elþutu la HD-arton (atlas-hd.pack, el openciv2-assets: github.com/PeterJohnson/openciv2-assets) al %s.
+OpenCiv2 trovis nek la originalajn bildojn de Civilization II (TERRAIN1.GIF, Tiles.dll kaj la aliajn) en la dosierujo de la ludo, %s, nek la HD-arton, kiu venas kun øi (%s). Kopiu la dosierojn de la originala ludo en tiun dosierujon, aý instalu OpenCiv2 denove.
 @@openciv2.file.open
 Malfermi
 @@openciv2.file.save_as
@@ -463,18 +415,6 @@ Importitaj %s dosieroj: %s.
 Nenio importebla tie: konservitaj ludoj estas dosieroj .SAV (aý .zip de ili).
 @@openciv2.web.import_failed
 Ne eblis importi: %s
-@@openciv2.web.hd_progress
-%s: %s el %s MB
-@@openciv2.web.hd_downloading
-Elþutante la arton de la HD-grafiko
-@@openciv2.web.hd_checking
-Kontrolante øin
-@@openciv2.web.hd_keeping
-Konservante øin en æi tiu retumilo
-@@openciv2.web.hd_no_room
-La memoro de la retumilo ne havas lokon por øi (%s MB liberaj).
-@@openciv2.web.hd_off
-HD-grafiko: %s Øi restas malþaltita æi-foje.
 @@openciv2.web.loading_files
 Þargante la dosierojn de la ludo ...
 @@openciv2.web.installing

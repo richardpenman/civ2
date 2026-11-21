@@ -60,14 +60,8 @@ Classicus
 Graphica et Album
 @@openciv2.graphics.sharp_note
 Textus et interfacies nitidi: textus, indices et moderamina plena albi resolutione (imagines auctae).
-@@openciv2.graphics.hd_installed
-Graphica HD: picturae novae mappae, plena albi resolutione. Picturae institutae sunt.
-@@openciv2.graphics.hd_later
-Graphica HD: picturae novae mappae, plena albi resolutione. Picturae (%d MB) ex hoc situ depromentur cum ludus denuo incipiet.
-@@openciv2.graphics.hd_no_site
-Graphica HD: picturae novae mappae, plena albi resolutione. Hic situs sine picturis factus est.
-@@openciv2.graphics.hd_download
-Graphica HD: picturae novae mappae, plena albi resolutione. Picturis egent (%d MB), quae semel ex openciv2-assets in GitHub depromuntur cum eliguntur.
+@@openciv2.graphics.hd_note
+Graphica HD: picturae novae mappae, plena albi resolutione.
 @@openciv2.graphics.fullscreen_note
 Album plenum: pro fenestra quae album implet.
 @@openciv2.graphics.need_original
@@ -194,50 +188,8 @@ Nunc denuo incipe
 Postea
 @@openciv2.restart.failed
 Ludus denuo incipi non potuit: hae electiones valebunt proxima vice qua incipiet.
-@@openciv2.hd.title
-Graphica HD
-@@openciv2.hd.downloading
-Picturae depromuntur
-@@openciv2.hd.checking
-Probantur
-@@openciv2.hd.installing
-Instituuntur
-@@openciv2.hd.progress
-%s: %d ex %d MB
-@@openciv2.hd.stop
-Siste
-@@openciv2.hd.failed
-Depromptio defecit.
-@@openciv2.hd.stay_off
-%s Graphica HD exstincta manent.
-@@openciv2.hd.err.no_curl_windows
-curl.exe systematis Windows, quod picturas depromit, inventum non est (cum Windows 10 et posterioribus venit).
-@@openciv2.hd.err.download
-Depromptio defecit (%s). Estne computatrum cum interreti conexum?
-@@openciv2.hd.err.no_tool
-Neque curl neque wget, quae picturas depromunt, inventum est: quaeso, curl institue.
-@@openciv2.hd.err.read
-%s legi non potuit.
-@@openciv2.hd.err.not_pack
-%s non est fascis openciv2-assets.
-@@openciv2.hd.err.mismatch
-%s in fasce cum package.json eius non congruit.
-@@openciv2.hd.err.write
-%s scribi non potuit.
-@@openciv2.hd.err.not_pinned
-Quod depromptum est non sunt picturae constitutae (SHA-256 eius differt): nihil institutum est.
-@@openciv2.hd.err.no_url
-Haec compilatio nescit quas picturas depromat.
-@@openciv2.hd.err.no_folder
-Nulla est capsa in qua picturae instituantur.
-@@openciv2.hd.err.start
-Depromptio incipi non potuit.
-@@openciv2.hd.err.test_run
-In cursu probationis nihil depromitur.
-@@openciv2.hd.err.no_site_art
-Hic situs sine picturis HD factus est.
 @@openciv2.hd.err.no_graphics
-OpenCiv2 neque imagines archetypas Civilization II (TERRAIN1.GIF, Tiles.dll ceterasque) in capsa ludi, %s, neque picturas HD suas invenit. Fasciculos ludi archetypi in eam capsam transcribe, aut picturas HD (atlas-hd.pack, ex openciv2-assets: github.com/PeterJohnson/openciv2-assets) in %s depromito.
+OpenCiv2 neque imagines archetypas Civilization II (TERRAIN1.GIF, Tiles.dll ceterasque) in capsa ludi, %s, neque picturas HD quae cum eo veniunt (%s) invenit. Fasciculos ludi archetypi in eam capsam transcribe, aut OpenCiv2 denuo instituito.
 @@openciv2.file.open
 Aperi
 @@openciv2.file.save_as
@@ -458,18 +410,6 @@ Importati sunt %s fasciculi: %s.
 Nihil ibi importandum: ludi servati sunt fasciculi .SAV (aut eorum .zip).
 @@openciv2.web.import_failed
 Importari non potuit: %s
-@@openciv2.web.hd_progress
-%s: %s ex %s MB
-@@openciv2.web.hd_downloading
-Picturae Graphicorum HD depromuntur
-@@openciv2.web.hd_checking
-Probantur
-@@openciv2.web.hd_keeping
-In hoc navigatro servantur
-@@openciv2.web.hd_no_room
-Repositorium navigatri spatium eis non habet (%s MB libera).
-@@openciv2.web.hd_off
-Graphica HD: %s Hac vice exstincta manent.
 @@openciv2.web.loading_files
 Fasciculi ludi onerantur ...
 @@openciv2.web.installing

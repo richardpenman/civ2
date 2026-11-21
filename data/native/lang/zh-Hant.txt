@@ -61,14 +61,8 @@ OpenCiv2 選項
 圖形與螢幕
 @@openciv2.graphics.sharp_note
 清晰的文字與介面：文字、選單與控制項以螢幕的完整解析度顯示（圖片則放大）。
-@@openciv2.graphics.hd_installed
-HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。美術圖像已安裝。
-@@openciv2.graphics.hd_later
-HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。美術圖像（%d MB）將在遊戲再次啟動時從本網站下載。
-@@openciv2.graphics.hd_no_site
-HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。本網站建置時未包含美術圖像。
-@@openciv2.graphics.hd_download
-HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。需要美術圖像：%d MB，選取時從 GitHub 上的 openciv2-assets 下載一次。
+@@openciv2.graphics.hd_note
+HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。
 @@openciv2.graphics.fullscreen_note
 全螢幕：取代填滿螢幕的視窗。
 @@openciv2.graphics.need_original
@@ -195,50 +189,8 @@ OpenCiv2 自身文字的語言，以及翻譯所涵蓋的遊戲文字的語言�
 稍後
 @@openciv2.restart.failed
 無法再次啟動遊戲：這些選擇將在下次啟動時生效。
-@@openciv2.hd.title
-HD 圖形
-@@openciv2.hd.downloading
-正在下載美術圖像
-@@openciv2.hd.checking
-正在檢查
-@@openciv2.hd.installing
-正在安裝
-@@openciv2.hd.progress
-%s：%d / %d MB
-@@openciv2.hd.stop
-停止
-@@openciv2.hd.failed
-下載失敗。
-@@openciv2.hd.stay_off
-%s HD 圖形維持關閉。
-@@openciv2.hd.err.no_curl_windows
-找不到用來下載美術圖像的 Windows curl.exe（Windows 10 及更新版本內建）。
-@@openciv2.hd.err.download
-下載失敗（%s）。電腦是否已連上網際網路？
-@@openciv2.hd.err.no_tool
-找不到用來下載美術圖像的 curl 或 wget：請安裝 curl。
-@@openciv2.hd.err.read
-無法讀取 %s。
-@@openciv2.hd.err.not_pack
-%s 不是 openciv2-assets 套件。
-@@openciv2.hd.err.mismatch
-套件中的 %s 與其 package.json 不符。
-@@openciv2.hd.err.write
-無法寫入 %s。
-@@openciv2.hd.err.not_pinned
-下載的內容不是指定的美術圖像（SHA-256 不符）：未安裝任何內容。
-@@openciv2.hd.err.no_url
-此版本不知道要下載哪一份美術圖像。
-@@openciv2.hd.err.no_folder
-沒有可安裝美術圖像的資料夾。
-@@openciv2.hd.err.start
-無法開始下載。
-@@openciv2.hd.err.test_run
-測試執行時不會下載任何內容。
-@@openciv2.hd.err.no_site_art
-本網站建置時未包含 HD 美術圖像。
 @@openciv2.hd.err.no_graphics
-OpenCiv2 在遊戲資料夾 %s 中找不到原版 Civilization II 的圖像（TERRAIN1.GIF、Tiles.dll 等），也找不到其 HD 美術圖像。請將原版遊戲的檔案複製到該資料夾，或下載 HD 美術圖像（atlas-hd.pack，來自 openciv2-assets：github.com/PeterJohnson/openciv2-assets）到 %s。
+OpenCiv2 在遊戲資料夾 %s 中找不到原版 Civilization II 的圖像（TERRAIN1.GIF、Tiles.dll 等），也找不到其 HD 美術圖像（%s）。請將原版遊戲的檔案複製到該資料夾，或重新安裝 OpenCiv2。
 @@openciv2.file.open
 開啟
 @@openciv2.file.save_as
@@ -459,18 +411,6 @@ Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執�
 沒有可匯入的內容：存檔是 .SAV 檔（或其 .zip 檔）。
 @@openciv2.web.import_failed
 無法匯入：%s
-@@openciv2.web.hd_progress
-%s：%s / %s MB
-@@openciv2.web.hd_downloading
-正在下載 HD 圖形的美術圖像
-@@openciv2.web.hd_checking
-正在檢查
-@@openciv2.web.hd_keeping
-正在保存到此瀏覽器
-@@openciv2.web.hd_no_room
-瀏覽器的儲存空間不足（剩餘 %s MB）。
-@@openciv2.web.hd_off
-HD 圖形：%s 本次維持關閉。
 @@openciv2.web.loading_files
 正在載入遊戲檔案 ...
 @@openciv2.web.installing

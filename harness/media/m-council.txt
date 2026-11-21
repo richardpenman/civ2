@@ -5,7 +5,7 @@
 # the government made Anarchy (the Cheat menu's dialog), the council under
 # anarchy; the map after each.
 # test:
-# test hd: CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test hd: CIV2_TEST_HD=2
 wait 3000
 key Escape
 wait 5000

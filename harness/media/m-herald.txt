@@ -3,7 +3,7 @@
 # video skipped (Escape), the autosave loaded (Animated Heralds on), an
 # emissary of the Romans; shots as the video plays, then after the dialogs.
 # test:
-# test hd: CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test hd: CIV2_TEST_HD=2
 wait 3000
 key Escape
 wait 5000

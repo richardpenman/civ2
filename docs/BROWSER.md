@@ -7,8 +7,8 @@ graphics and your own copy of Civilization II. How it is built and how it works 
 ## Building and serving it
 
 `make web` builds a static site into `build/web`: a page, its scripts, the game as a 3.0 MB
-WebAssembly module, the set-up as a second 0.8 MB module, and the fonts (`make web HD=1`: the HD
-graphics' art too, below; `make web GAME=1`: the game itself, for a private site only, below). There is no server-side
+WebAssembly module, the set-up as a second 0.8 MB module, the fonts and the HD graphics' art
+(below; `make web GAME=1`: the game itself, for a private site only, below). There is no server-side
 code: any web server can serve the folder.
 
 ```sh
@@ -51,7 +51,7 @@ Music plays where the game's folder has it (`Music/TrackNN.ogg`).
 
 ## A site with the game on it (GAME=1)
 
-`make web GAME=1` (with `HD=1` as well, usually) puts the installed game (`~/Civ2`, or
+`make web GAME=1` puts the installed game (`~/Civ2`, or
 `CIV2_GAME`) on the site too, for people who have no copy of their own, such as the reviewers of a
 translation: **a site built so distributes Civilization II's files, which are not ours to give
 away: keep such a site private (behind a password, as below), for people who may play the game,
@@ -71,12 +71,11 @@ and never publish it.**
 - The CD's videos (`Video/`: the opening, the wonders', the High Council's; 285 MB) are not on
   the site: the game plays as from a folder without them, at once, as the original does. It
   starts at its main menu, a wonder's movie is skipped, and the High Council does not open.
-- The site's copy has a `CIV.INI` (where the installed game has none) with HD graphics on (with
-  `HD=1`) and the animated heralds of `KINGS/` on, without their first-start question.
+- The site's copy has a `CIV.INI` (where the installed game has none) with the animated heralds of
+  `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).
 
-`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`, without the HD graphics' art: a quicker first load; any
-`hd/` an earlier deploy left is removed with it) and serves it
+`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`) and serves it
 on this machine with Caddy in Docker (container `civ2-review`, restarted with the machine; down:
 `docker rm -f civ2-review`) at `/civ2/`, behind a user name and password (HTTP Basic Auth; the
 root and anything else is a plain 404, with `X-Robots-Tag: noindex` and a `robots.txt` that
@@ -122,21 +121,17 @@ the game starts again (the mode, the graphics) offer *Restart now*: the page is 
 into the game (without `?setup`, `?hd` or `?sharp`, which would win over them; `?lang=` as the
 game's language now).  Full screen is
 not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
-them, *Remove them* (with the HD art), *Play*, and the saved games' *Export* and *Import*.
+them, *Remove them*, *Play*, and the saved games' *Export* and *Import*.
 
 ## HD graphics
 
 The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.md)) as the desktop
-version does, where the site has the art: `make web HD=1` copies the installed art (`make hd`,
-openciv2-assets, the release pinned in `data/hd-pack.json`) to `build/web/hd/atlas-hd.pack` (250 MB
-more to serve; the art's licence beside it), with `hd/pack.json` saying so. On such a site, tick
-*HD graphics* in OpenCiv2 Options (Graphics and screen) and restart: as the page is loaded again
-it downloads the art from the site, with its progress on the screen, checks it against the pin's
-`pack_sha256` and keeps it in the browser's storage (IndexedDB, 250 MB; unticking *HD graphics*
-keeps it, *Remove them* on the `?setup` page takes it out with the game files), so that it works
-offline from then on. A site built without it (`make web`) does not offer HD graphics: the tick is
-greyed, with *This site was built without the art*; art already kept in the browser still works
-there (the page tells the game which: kept, on the site, or neither).
+version does: `make web` puts the art (`data/native/hd`, and OpenCiv2's own pictures,
+`data/native/hd-extra`) on the site as one file, `hd/art.bin` (30 MB, its files listed in
+`hd/index.json`; the art's licence beside it). Tick *HD graphics* in OpenCiv2 Options (Graphics and
+screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
+it) and puts the pictures into the game's files, where the game reads them. Art an earlier
+version downloaded and kept in the browser's storage (IndexedDB, 250 MB) is removed at a start.
 
 `?hd=1` (or `?hd=N`, N the density 2 to 4) in the address turns them on for that visit, `?hd=0` off,
 as `--hd` does natively. The page has no density choice: it is *Auto* (unless `CIV.INI` has
@@ -149,9 +144,7 @@ device pixel ratio of 2 or more the canvas is the device's pixels, its text, men
 drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in the address
 switches it for that visit, as `--sharp=0` natively.
 
-What it takes: the game gets only the pictures it draws (65 MB of the pack's 250 MB), kept beside
-the pack as their own copy when the art is kept, so that a start reads that copy alone (its 16 chunks
-at once, under a second) and never the whole pack; the module's memory was 175 MB on a saved game's map at density 2 (87 MB
+What it takes: 30 MB from the site (the pictures the game uses, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
 without, 179 MB with sharp text alone); showing a 2560x1600 frame takes about 10 ms (Chrome, this
 machine).
 
@@ -211,7 +204,5 @@ options: `tools/webrelay.py --help`.
 - The browser keeps a few shortcuts for itself (Ctrl+W, Ctrl+T and Ctrl+N close or open tabs and
   windows): use the game's menus for those commands.
 - No LAN game lists (see above).
-- HD graphics only where the site has the art (`make web HD=1`): GitHub's release downloads do not
-  allow a page of another site to fetch them.
-- HD graphics need memory: about 300 MB of the browser's storage with the game, and some 175 MB for
-  the game's module on the map at density 2 (more at 3 or 4).
+- HD graphics need memory: some 175 MB for the game's module on the map at density 2 (more at 3
+  or 4).

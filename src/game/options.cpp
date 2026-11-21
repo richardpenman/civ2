@@ -286,22 +286,6 @@ static const char *label(const char *prefix, const char *key)
     return extras_text(k);
 }
 
-/* The host's message on the HD art (src/host/host_options.c): "@key" or
-   "@key|argument", the text of key ("hd.err.read": "Could not read %s.")
-   with the argument; else as it is. */
-static void hd_message(const char *msg, char *out, int n)
-{
-    char key[64];
-    const char *bar;
-    if (msg[0] != '@') {
-        snprintf(out, (size_t)n, "%s", msg);
-        return;
-    }
-    bar = strchr(msg, '|');
-    snprintf(key, sizeof key, "%.*s", (int)(bar ? bar - msg - 1 : (int)strlen(msg) - 1), msg + 1);
-    snprintf(out, (size_t)n, extras_text(key), bar ? bar + 1 : "");
-}
-
 /* A dialog as the game's: its title, its width, Cancel too. */
 static void dialog_begin(Dialog &d, const char *title, int width)
 {
@@ -358,99 +342,17 @@ static int page_mode(Choices *c)
     return 1;
 }
 
-/* The art's download, shown with its progress and Stop. */
-static struct {
-    int state, info[3];
-    char text[96], msg[512];
-} fetch;
-
-static void fetch_text(void)
-{
-    static const char *const doing[3] = {"hd.downloading", "hd.checking", "hd.installing"};
-    int phase = fetch.info[0] < 0 || fetch.info[0] > 2 ? 0 : fetch.info[0];
-    int done = fetch.info[1], total = fetch.info[2] > 0 ? fetch.info[2] : 1;
-    if (done > total)
-        done = total;
-    snprintf(fetch.text, sizeof fetch.text, extras_text("hd.progress"), extras_text(doing[phase]),
-             (int)(done * 1024LL / 1000000), (int)(total * 1024LL / 1000000));
-}
-
-/* (polled while the progress dialog is shown: 1 ends it) */
-static i32 fetch_poll(Dialog *d)
-{
-    static u32 last;
-    u32 now;
-    if (!win_dispatch_one_message())
-        Sleep(10);
-    now = GetTickCount();
-    if (now - last < 250)
-        return 0;
-    last = now;
-    fetch.state = plat_hd_art(PLAT_HD_POLL, fetch.info, fetch.msg, sizeof fetch.msg);
-    if (fetch.state != PLAT_HD_RUNNING)
-        return 1;
-    fetch_text();
-    if (d->set_item_text(1, fetch.text))
-        d->render();
-    return 0;
-}
-
-/* The art downloaded and installed (natively; src/host/host_options.c):
-   1 if it is there. */
-static int fetch_art(void)
-{
-    fetch.state = plat_hd_art(PLAT_HD_START, fetch.info, fetch.msg, sizeof fetch.msg);
-    if (fetch.state == PLAT_HD_RUNNING) {
-        Dialog d(0x4000);
-        d.init(0, 0, 0, 0x2000000);
-        d.set_width(400);
-        d.set_title(extras_text("hd.title"));
-        fetch_text();
-        d.add_line(fetch.text, -1, -1, 80, 0);
-        d.add_button(extras_text("hd.stop"));
-        d.on_modal_poll = fetch_poll;
-        d.show_modal(0);
-        if (fetch.state == PLAT_HD_RUNNING) {
-            /* (Stop) */
-            plat_hd_art(PLAT_HD_CANCEL, NULL, NULL, 0);
-            return 0;
-        }
-    }
-    if (fetch.state == PLAT_HD_DONE)
-        return 1;
-    {
-        char s[700], why[600];
-        hd_message(fetch.msg, why, sizeof why);
-        snprintf(s, sizeof s, extras_text("hd.stay_off"), why[0] ? why : extras_text("hd.failed"));
-        message(extras_text("hd.title"), s);
-    }
-    return 0;
-}
-
 /* Graphics and screen: sharp text and interface, HD graphics, full screen.
    1 if changed. */
 static int page_graphics(Choices *c)
 {
-    char art[300], note[200];
-    int info[3] = {0, 0, 0}, state, mb, browser = plat_restart(0) == 2, result, hd_offered;
+    char note[200];
+    int browser = plat_restart(0) == 2, result, hd_offered;
     Choices was = *c;
     Dialog d(0x4000);
-    state = plat_hd_art(PLAT_HD_POLL, info, art, sizeof art);
-    (void)art;
-    mb = (int)((info[2] > 0 ? info[2] : 228595) * 1024LL / 1000000);
     dialog_begin(d, extras_text("graphics.title"), 480);
     paragraph(d, extras_text("graphics.sharp_note"), 1);
-    if (state == PLAT_HD_DONE || plat_graphics_forced())
-        paragraph(d, extras_text("graphics.hd_installed"), 0);     /* (forced: the art is there) */
-    else if (state == PLAT_HD_LATER) {
-        snprintf(note, sizeof note, extras_text("graphics.hd_later"), mb);
-        paragraph(d, note, 0);
-    } else if (state == PLAT_HD_FAILED && browser) {
-        paragraph(d, extras_text("graphics.hd_no_site"), 0);
-    } else {
-        snprintf(note, sizeof note, extras_text("graphics.hd_download"), mb);
-        paragraph(d, note, 0);
-    }
+    paragraph(d, extras_text("graphics.hd_note"), 0);
     if (!browser)
         paragraph(d, extras_text("graphics.fullscreen_note"), 0);
     if (plat_graphics_forced())
@@ -462,7 +364,7 @@ static int page_graphics(Choices *c)
     /* (without the original's pictures HD graphics are always on: ticked;
        unticked, the note again and they stay on.  A disabled checkbox is
        drawn without its tick, so it is left enabled.) */
-    hd_offered = !c->classic && !plat_graphics_forced() && !(state == PLAT_HD_FAILED && browser);
+    hd_offered = !c->classic && !plat_graphics_forced();
     d.add_checkbox_option(extras_text("graphics.sharp"), 0, c->sharp);
     d.add_checkbox_option(extras_text("graphics.hd"), 1, plat_graphics_forced() || (c->hd && hd_offered));
     if (!browser)
@@ -478,14 +380,8 @@ static int page_graphics(Choices *c)
     }
     if (plat_graphics_forced() && !d.option_is_checked(1))
         message(extras_text("graphics.title"), extras_text("graphics.need_original"));
-    if (hd_offered) {
-        int hd = d.option_is_checked(1) != 0;
-        /* (natively the art downloaded now, where it is missing; in the
-           browser the page gets it from its site at the restart) */
-        if (hd && !c->hd && state != PLAT_HD_DONE && state != PLAT_HD_LATER)
-            hd = fetch_art();
-        c->hd = hd;
-    }
+    if (hd_offered)
+        c->hd = d.option_is_checked(1) != 0;
     if (!browser)
         c->fullscreen = d.option_is_checked(2) != 0;
     return memcmp(&was, c, sizeof was) != 0;

@@ -3,7 +3,7 @@
 # end, then the main menu; with HD graphics (its hd run) no video: the main
 # menu at once (the rand() trace the same).
 # test:
-# test hd: CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test hd: CIV2_TEST_HD=2
 wait 3000
 shot o1
 wait 27000

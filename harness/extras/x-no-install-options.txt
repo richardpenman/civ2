@@ -7,7 +7,7 @@
 # they stay on (the page opened again: ticked); then a saved game loaded,
 # its map in HD.  The install's other files
 # are there (its .DAT files, text, rules, sounds).
-# test: CIV2_NO_GRAPHICS=1 CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack
+# test: CIV2_NO_GRAPHICS=1 CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
 wait 8000
 shot nio-a-mainmenu
 key Down Down Down Down Down Down Down Down
@@ -23,7 +23,7 @@ key Down                    # Graphics and screen
 key Return
 wait 1000
 shot nio-d-graphics
-click 120 357               # HD graphics: unticked
+click 120 339               # HD graphics: unticked
 wait 500
 shot nio-e-graphics-unticked
 key Return                  # OK

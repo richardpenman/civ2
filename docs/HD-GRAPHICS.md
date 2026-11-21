@@ -9,30 +9,15 @@ a prototype: the map is done, and many of the other windows' pictures (below).
 
 ## Playing with it
 
-The simplest way: in the game's main menu choose *OpenCiv2 Options*, then *Graphics and screen*,
-tick *HD graphics* and OK (docs/EXTRAS.md, "OpenCiv2 Options"): the art is downloaded and
-installed the first time (below), and the game offers to restart, which turns them on.
+The art comes with OpenCiv2: it is in the repository (`data/native/hd`, below) and in every build
+(beside the program's `data` on Linux and macOS, in the Windows program's resources, unpacked
+into its `data`, and on the browser version's site), so nothing is downloaded.  In the game's
+main menu choose *OpenCiv2 Options*, then *Graphics and screen*, tick *HD graphics* and OK
+(docs/EXTRAS.md, "OpenCiv2 Options"): the game offers to restart, which turns them on.
 Otherwise:
 
-1. Install the art, any of these ways:
-
-   * in OpenCiv2 Options: ticking *HD graphics* (and OK) downloads the release pinned
-     in `data/hd-pack.json` (234 MB, once) with the system's `curl` (on Windows 10 and later
-     `curl.exe`; on Linux `wget` where there is no curl), showing its progress, with a Stop
-     button; checks its SHA-256 and each file's (as below), and installs the files in the
-     user's own OpenCiv2 folder: `${XDG_DATA_HOME:-~/.local/share}/OpenCiv2/hd` on Linux (beside
-     `GameData`), `~/Library/Application Support/OpenCiv2/hd` on macOS,
-     `%LOCALAPPDATA%\OpenCiv2\hd` on Windows.  The archive is kept in the same cache as
-     `tools/fetch_hd_pack.py`'s (it can be deleted once installed).  If the download or a check
-     fails, the dialog says why and HD graphics stay off (src/game/options.cpp,
-     src/host/host_options.c);
-   * `make hd` (or `python3 tools/fetch_hd_pack.py`) in a source checkout: it downloads the
-     release pinned in `data/hd-pack.json` (234 MB, once, into `~/.cache/openciv2`), checks its
-     SHA-256 and each file's, and installs `atlas-hd.pack` with its licence and provenance in
-     `data/native/hd` (not part of the repository: `.gitignore`).
-
-   The game looks for `atlas-hd.pack` in `CIV2_HD_PACK`, then its data folder's `hd`
-   (`data/native/hd`), then the user's folder's `hd`.
+1. The art is read from the program's data folder's `hd` (`data/native/hd`): its `pictures.txt`
+   and the pictures it lists.
 2. Switch it on, any of these ways (the first that says anything wins):
 
    * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
@@ -74,7 +59,7 @@ mirror for the browser's page is `HD_BY_DEFAULT` in `src/web/options.js`).  It i
 Without the art (and with the original's pictures) the game says so in its log and plays with the original graphics (sharp text and
 interface still, where they are on: below).  HD graphics are never on with `CIV2_CLASSIC=1`, in
 replays (but with `CIV2_TEST_HD=N`, density N) or in the unit tests, unless the original's
-pictures are missing.  `CIV2_HD_PACK=FILE` names another pack.
+pictures are missing.
 
 With HD graphics on (the art in use, not sharp text alone), the game goes straight to its main
 menu: the opening video (`Video\OPENING.AVI`, 92 seconds, where the game folder has the CD's
@@ -84,23 +69,66 @@ opening the video makes (the player's palette, `avi_open_file`) is still made, s
 random numbers are those of a start with the video.  With HD graphics off the video plays as
 ever (a click, or Escape, Space or Enter, ends it).
 
-In the browser version: *HD graphics* on its `?setup` page, the art downloaded or chosen there and
-kept in the browser, or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
+In the browser version: *HD graphics* in the game's OpenCiv2 Options (the page loads the art from
+its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
 ## What the art is
 
-The release (`openciv2-assets-2026.11.08.1.zip`) holds `data/atlas-hd.pack` (250 MB), two
-bitmap font caches of DejaVu glyphs (`fonts.bin`, `fonts_aa.bin`, not used here: OpenCiv2 has
-its own fonts), a generated layout header and a layout contract for PR #11's renderer
-(`include/hd_layouts.h`, `data/cityview-rects.json`, not used here), `package.json` (each
-file's SHA-256), `LICENSE` (MIT), `THIRD-PARTY.txt` and `data/ATLAS-PROVENANCE.md`.  The
-provenance says the paintings were made with an image generator from written descriptions and
-the rest drawn as vector geometry, with no pixels of the original game's or Freeciv's art.
+The art is Peter Johnson's runtime art pack, [openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)
+(MIT licence), at the release pinned in `data/hd-pack.json` (v2026.11.08.1): the part of it the
+game uses, in `data/native/hd`, made by `tools/build_hd_pack.py` (`make hd-art`).  The release
+(`openciv2-assets-2026.11.08.1.zip`, 234 MB) holds `data/atlas-hd.pack` (250 MB), two bitmap
+font caches of DejaVu glyphs (`fonts.bin`, `fonts_aa.bin`, not used here: OpenCiv2 has its own
+fonts), a generated layout header and a layout contract for PR #11's renderer
+(`include/hd_layouts.h`, `data/cityview-rects.json`, not used here), `package.json` (each file's
+SHA-256), `LICENSE` (MIT), `THIRD-PARTY.txt` and `data/ATLAS-PROVENANCE.md`.  The provenance
+says the paintings were made with an image generator from written descriptions and the rest drawn
+as vector geometry, with no pixels of the original game's or Freeciv's art.
 
 `atlas-hd.pack`: `C2ATLAS1`, a count, a 256-colour palette, then 2,105 entries of 180 bytes
 (a key, the picture's size in the game's pixels, the offset and length of its PNG, and for
-whole sheets an indexed copy), keys in ascending order, then the PNGs.  The keys that matter
-here:
+whole sheets an indexed copy), keys in ascending order, then the PNGs.
+
+`data/native/hd` (30 MB, in git; 1,026 WebP files): `pictures.txt`, a line per key, `KEY W H FILE`
+(the pack's key, the picture's size in the game's pixels, its file there; the format of
+`data/native/hd-extra`'s, below), a WebP file per distinct picture (named by its first key, `/`
+as `_`; keys with the same picture share it), and the release's `LICENSE`, `THIRD-PARTY.txt` and
+`ATLAS-PROVENANCE.md`.  The tool:
+
+1. downloads the pinned release (into `~/.cache/openciv2`, once) and checks its SHA-256 and
+   size, then each file it uses against the SHA-256 and size of its `package.json`;
+2. keeps of the pack the pictures the game uses: those hd.c and `src/game/hd_graphics.cpp`
+   draw (the keys beginning with one of `data/hd-pack.json`'s `keep` and none of its `drop`:
+   *The pictures drawn*, below) and those `src/platform/synth.c` reads to make the original's
+   pictures where the game folder lacks them (its `synth`: [NO-INSTALL.md](NO-INSTALL.md)),
+   1,606 keys, 1,026 distinct pictures (the release has 2,105);
+3. makes each no larger than the largest size the game uses it at: a picture drawn, its size in
+   the game's pixels times 4 (the largest density, `hd_density`) and times 2 more for the map's
+   (its largest zoom, +8: twice the size); one only read by synth.c, its size in the game's
+   pixels (synth.c shrinks it to that, into the 8-bit picture HD mode then shows enlarged).  A
+   larger one is shrunk (Lanczos, premultiplied alpha).  None drawn is, in this release: its
+   sprites are 4 times the game's size, the map's blends, fog and shields 8 and its backgrounds
+   2, so at density 4 (a 5K screen, or `--hd=4`) none is drawn larger than it is stored; the
+   synth-only ones (the libraries' pictures hd.c does not paint, the crops it does not draw)
+   are shrunk to the original's size (218 pictures);
+4. encodes each as WebP with cwebp 1.5.0 (Debian 13's package, in a throwaway container of the
+   pinned Debian image: Docker), as an earlier comparison of encoders on these pictures chose
+   (SSIMULACRA2 85 or more for all but ten backgrounds at quality 90): a picture with
+   transparent pixels at most 53 of the game's pixels each way lossless (small sprites,
+   icons); the others lossy at quality 90 (`-m 4 -sharp_yuv`, alpha lossless), or 95 for the
+   backgrounds below 85 at 90 (the throne room's hall `pv.dll` 100, the spaceship's window
+   `ss.dll` 499, the diplomacy rooms `mk.dll` 200 to 206, the credits `tiles.dll` 90), unless
+   the lossless file is at most 1.15 times as large (flat pictures);
+5. writes `data/native/hd` again.  The same release gives the same files.
+
+Upgrading the art (a new release of openciv2-assets, e.g. once its PR #1 lands): change `tag`,
+`url`, `sha256` and `size` in `data/hd-pack.json`, run `make hd-art` (`python3
+tools/build_hd_pack.py`; `--zip FILE` takes a release already downloaded), look at the HD
+scripts' screenshots (*Tests*, below), and commit `data/native/hd`.  A picture of a kind not yet
+used is added to `keep` (drawn) or `synth` (read by synth.c) first.  The game reads PNG too
+(stb_image), so a picture can also be put there by hand.
+
+The keys that matter here:
 
 | Key | What |
 | --- | --- |
@@ -118,15 +146,15 @@ here:
 
 Where the pack has no fitting picture, OpenCiv2 can bring its own: `data/native/hd-extra`, in the
 repository and packaged with every build (beside the program's `data` on Linux and macOS, in the
-Windows program's resources, unpacked into its `data`; on a site built with the art, `make web HD=1`,
-in `hd/extra`, put into the game's files with the pack).  Its `pictures.txt` lists them, a line
+Windows program's resources, unpacked into its `data`; on the browser version's site in `hd/art.bin`
+with the art, put into the game's files with it).  Its `pictures.txt` lists them, a line
 each, `KEY W H FILE`: the pack's key, the picture's size in the game's pixels, the picture in that
 folder, WebP (libwebp's decoder, `src/third_party/libwebp`) or PNG (stb_image), told apart by its first bytes
-(`hd_decode_image`, `src/platform/hd_image.c`).  When the pack is opened, hd.c (`load_extras`) adds them to its pictures, in place of the
+(`hd_decode_image`, `src/platform/hd_image.c`).  When the art is read, hd.c (`load_pictures`) adds them to its pictures, in place of the
 pack's of the same key: they are drawn exactly as the pack's would be (a sprite's crop, a sheet, a
 resource picture); a resource picture among them is painted whole, as `WHOLE`'s are, even where
 the pack's is not drawn and the original's kept, and so is a whole sheet of the game's folder
-(`file/SHEET` at the sheet's size: `hd_sheet_loaded`).  Without the pack they are not drawn either.
+(`file/SHEET` at the sheet's size: `hd_sheet_loaded`).  Without the art (`data/native/hd`) they are not drawn either.
 Their credits, licence (the repository's, MIT) and, for the AI-generated ones, the model and the
 exact prompt are in `data/native/hd-extra/README`.
 
@@ -477,8 +505,9 @@ window by window.
 
 ## Licence and credits
 
-The art: openciv2-assets by Peter Johnson, MIT licence (installed beside the pack as `LICENSE`,
-`THIRD-PARTY.txt` and `ATLAS-PROVENANCE.md`), never committed here; `THIRD-PARTY.txt` lists it.
+The art: openciv2-assets by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PARTY.txt` and
+`ATLAS-PROVENANCE.md` beside its pictures in `data/native/hd`, and on the browser version's site in
+`hd/`); `THIRD-PARTY.txt` lists it.
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
@@ -487,11 +516,10 @@ ones' model, prompt and references are in its `README`.
 
 ## Tests
 
-* The browser version: `make web-test` (`src/web/test/unit.mjs`: the art's checks, its chunks in
-  the store, the pack pruned; `src/web/test/hd.mjs`: HD graphics not offered in the game's
-  OpenCiv2 Options where the site has no art, then ticked there where it has and the game
-  restarted, the art downloaded from the site, checked and kept as the page is loaded again, then a saved game's map at a device pixel ratio of 2, checked to be drawn
-  in HD; screenshots in `run/web-hd`).
+* The browser version: `make web-test` (`src/web/test/hd.mjs`: HD graphics ticked in the game's
+  OpenCiv2 Options and the game restarted, the art loaded from the site as the page is loaded
+  again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD;
+  screenshots in `run/web-hd`).
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (OpenCiv2 Options in the main menu: `x-options`).
 * Sharp text and interface: `make test-extras` runs `harness/extras/x-sharp.txt` (the main menu,
@@ -536,12 +564,13 @@ ones' model, prompt and references are in its `README`.
   reference desktop the game's window is 600x438 at its top left and the city window larger,
   so `citywindow.txt` shows it cut off, as the original's recording does (the HD frame is that
   area times the density); `harness/hd/hd-city.txt` shows it whole on a 640x480 desktop.  The native and portable
-  builds draw identical HD frames.  Without the pack the game logs it and plays as ever.
+  builds draw identical HD frames.  Without the art (no `data/native/hd/pictures.txt`) the game
+logs it and plays as ever.
 
 ## The pictures drawn
 
-For a stripped pack, the keys hd.c draws (1,296 pictures, 117 MB of PNGs, about 97 MB with each
-repeated PNG once; the whole pack holds 2,105, 250 MB):
+The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop`: 1,294 keys, 799 distinct
+pictures; the whole pack holds 2,105, 250 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
   the city's disorder marker (`crop/file/icons/166,223,30,30`: `NOT_CROPPED_KEYS`);
@@ -622,8 +651,6 @@ repeated PNG once; the whole pack holds 2,105, 250 MB):
 * The game's own dialogs' frames and buttons are its own pixels enlarged (straight lines, so
   as crisp as a Windows desktop at that scale draws them; their text is sharp); its radio
   buttons and check boxes are its own pictures, enlarged.
-* The browser version gives the game only the pictures hd.c draws (`src/web/hdpack.js`: `KEEP`,
-  the keys' first parts, and the same PNG once where the pack repeats it); a picture of another
-  kind drawn here must be added there.  The page
-  cannot download the art from GitHub itself (no CORS on release downloads): the player chooses
-  the downloaded `.zip`, or the site serves it (`make web HD=1`).
+* The art in the repository has only the pictures hd.c draws and synth.c reads
+  (`data/hd-pack.json`: `keep`, `drop`, `synth`, the keys' first parts); a picture of another
+  kind drawn or read is to be added there and the art made again (`make hd-art`).

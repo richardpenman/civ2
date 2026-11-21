@@ -40,9 +40,8 @@ copy lacks one of the game's text files, OpenCiv2 uses its own English of it, wr
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 Optionally, the map can be drawn with new high-resolution art
-([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)): tick HD graphics in
-OpenCiv2 Options (Graphics and screen), which downloads it the first time (234 MB); or `make hd`,
-then `--hd`
+([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2):
+tick HD graphics in OpenCiv2 Options (Graphics and screen), or start it with `--hd`
 ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
 ### Multiplayer

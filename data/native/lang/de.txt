@@ -59,14 +59,8 @@ Klassisch
 Grafik und Bildschirm
 @@openciv2.graphics.sharp_note
 Scharfe Schrift und Oberfläche: Text, Menüs und Bedienelemente in der vollen Auflösung des Bildschirms (die Bilder vergrößert).
-@@openciv2.graphics.hd_installed
-HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms. Die Grafiken sind installiert.
-@@openciv2.graphics.hd_later
-HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms. Die Grafiken (%d MB) werden von dieser Seite heruntergeladen, wenn das Spiel neu startet.
-@@openciv2.graphics.hd_no_site
-HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms. Diese Seite wurde ohne die Grafiken erstellt.
-@@openciv2.graphics.hd_download
-HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms. Dafür werden die Grafiken benötigt: %d MB, bei Auswahl einmalig von openciv2-assets auf GitHub heruntergeladen.
+@@openciv2.graphics.hd_note
+HD-Grafik: neue Grafiken für die Karte, in der vollen Auflösung des Bildschirms.
 @@openciv2.graphics.fullscreen_note
 Vollbild: statt eines Fensters, das den Bildschirm ausfüllt.
 @@openciv2.graphics.need_original
@@ -193,50 +187,8 @@ Jetzt neu starten
 Später
 @@openciv2.restart.failed
 Das Spiel konnte nicht neu gestartet werden: Diese Einstellungen gelten ab dem nächsten Start.
-@@openciv2.hd.title
-HD-Grafik
-@@openciv2.hd.downloading
-Grafiken werden heruntergeladen
-@@openciv2.hd.checking
-Wird geprüft
-@@openciv2.hd.installing
-Wird installiert
-@@openciv2.hd.progress
-%s: %d von %d MB
-@@openciv2.hd.stop
-Stopp
-@@openciv2.hd.failed
-Der Download ist fehlgeschlagen.
-@@openciv2.hd.stay_off
-%s Die HD-Grafik bleibt ausgeschaltet.
-@@openciv2.hd.err.no_curl_windows
-curl.exe von Windows, das die Grafiken herunterlädt, wurde nicht gefunden (es ist ab Windows 10 enthalten).
-@@openciv2.hd.err.download
-Der Download ist fehlgeschlagen (%s). Ist der Computer mit dem Internet verbunden?
-@@openciv2.hd.err.no_tool
-Weder curl noch wget, die die Grafiken herunterladen, wurde gefunden: Bitte installieren Sie curl.
-@@openciv2.hd.err.read
-%s konnte nicht gelesen werden.
-@@openciv2.hd.err.not_pack
-%s ist kein Paket von openciv2-assets.
-@@openciv2.hd.err.mismatch
-%s im Paket stimmt nicht mit seiner package.json überein.
-@@openciv2.hd.err.write
-%s konnte nicht geschrieben werden.
-@@openciv2.hd.err.not_pinned
-Der Download enthält nicht die festgelegten Grafiken (die SHA-256-Prüfsumme weicht ab): Es wurde nichts installiert.
-@@openciv2.hd.err.no_url
-Diese Version weiß nicht, welche Grafiken heruntergeladen werden sollen.
-@@openciv2.hd.err.no_folder
-Es gibt keinen Ordner, in den die Grafiken installiert werden können.
-@@openciv2.hd.err.start
-Der Download konnte nicht gestartet werden.
-@@openciv2.hd.err.test_run
-In einem Testlauf wird nichts heruntergeladen.
-@@openciv2.hd.err.no_site_art
-Diese Seite wurde ohne die HD-Grafiken erstellt.
 @@openciv2.hd.err.no_graphics
-OpenCiv2 hat weder die Originalbilder von Civilization II (TERRAIN1.GIF, Tiles.dll und die anderen) im Ordner des Spiels, %s, noch seine HD-Grafiken gefunden. Kopieren Sie die Dateien des Originalspiels in diesen Ordner, oder laden Sie die HD-Grafiken (atlas-hd.pack, aus openciv2-assets: github.com/PeterJohnson/openciv2-assets) nach %s herunter.
+OpenCiv2 hat weder die Originalbilder von Civilization II (TERRAIN1.GIF, Tiles.dll und die anderen) im Ordner des Spiels, %s, noch die mitgelieferten HD-Grafiken (%s) gefunden. Kopieren Sie die Dateien des Originalspiels in diesen Ordner, oder installieren Sie OpenCiv2 erneut.
 @@openciv2.file.open
 Öffnen
 @@openciv2.file.save_as
@@ -457,18 +409,6 @@ Die Spielstände konnten nicht exportiert werden: %s
 Dort gibt es nichts zu importieren: Spielstände sind .SAV-Dateien (oder eine .zip-Datei davon).
 @@openciv2.web.import_failed
 Import fehlgeschlagen: %s
-@@openciv2.web.hd_progress
-%s: %s von %s MB
-@@openciv2.web.hd_downloading
-Die HD-Grafiken werden heruntergeladen
-@@openciv2.web.hd_checking
-Wird geprüft
-@@openciv2.web.hd_keeping
-Wird in diesem Browser gespeichert
-@@openciv2.web.hd_no_room
-Im Speicher des Browsers ist dafür kein Platz (%s MB frei).
-@@openciv2.web.hd_off
-HD-Grafik: %s Sie bleibt diesmal ausgeschaltet.
 @@openciv2.web.loading_files
 Die Spieldateien werden geladen ...
 @@openciv2.web.installing

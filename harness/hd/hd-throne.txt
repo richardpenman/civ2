@@ -16,7 +16,7 @@
 # click while the choices dissolve in is dropped, as by the original, and the
 # shots want each room whole.  A room opened inside another no longer crashes
 # the game: docs/BUGS.md, memory errors.)
-# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

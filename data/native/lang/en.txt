@@ -60,14 +60,8 @@ Classic
 Graphics and Screen
 @@openciv2.graphics.sharp_note
 Sharp text and interface: text, menus and controls at the screen's full resolution (the pictures enlarged).
-@@openciv2.graphics.hd_installed
-HD graphics: new art for the map, at the screen's full resolution. The art is installed.
-@@openciv2.graphics.hd_later
-HD graphics: new art for the map, at the screen's full resolution. The art (%d MB) is downloaded from this site when the game starts again.
-@@openciv2.graphics.hd_no_site
-HD graphics: new art for the map, at the screen's full resolution. This site was built without the art.
-@@openciv2.graphics.hd_download
-HD graphics: new art for the map, at the screen's full resolution. They need the art: %d MB, downloaded once from openciv2-assets on GitHub when chosen.
+@@openciv2.graphics.hd_note
+HD graphics: new art for the map, at the screen's full resolution.
 @@openciv2.graphics.fullscreen_note
 Full screen: instead of a window filling the screen.
 @@openciv2.graphics.need_original
@@ -194,50 +188,8 @@ Restart now
 Later
 @@openciv2.restart.failed
 The game could not be started again: these choices take effect the next time it starts.
-@@openciv2.hd.title
-HD Graphics
-@@openciv2.hd.downloading
-Downloading the art
-@@openciv2.hd.checking
-Checking it
-@@openciv2.hd.installing
-Installing it
-@@openciv2.hd.progress
-%s: %d of %d MB
-@@openciv2.hd.stop
-Stop
-@@openciv2.hd.failed
-The download failed.
-@@openciv2.hd.stay_off
-%s HD graphics stay off.
-@@openciv2.hd.err.no_curl_windows
-Windows' curl.exe, which downloads the art, was not found (it comes with Windows 10 and later).
-@@openciv2.hd.err.download
-The download failed (%s). Is the computer connected to the internet?
-@@openciv2.hd.err.no_tool
-Neither curl nor wget, which download the art, was found: please install curl.
-@@openciv2.hd.err.read
-Could not read %s.
-@@openciv2.hd.err.not_pack
-%s is not an openciv2-assets pack.
-@@openciv2.hd.err.mismatch
-%s in the pack does not match its package.json.
-@@openciv2.hd.err.write
-Could not write %s.
-@@openciv2.hd.err.not_pinned
-The download is not the pinned art (its SHA-256 differs): nothing was installed.
-@@openciv2.hd.err.no_url
-This build does not know which art to download.
-@@openciv2.hd.err.no_folder
-There is no folder to install the art in.
-@@openciv2.hd.err.start
-Could not start the download.
-@@openciv2.hd.err.test_run
-Nothing is downloaded in a test run.
-@@openciv2.hd.err.no_site_art
-This site was built without the HD art.
 @@openciv2.hd.err.no_graphics
-OpenCiv2 found neither the original Civilization II pictures (TERRAIN1.GIF, Tiles.dll and the others) in the game's folder, %s, nor its HD art. Copy the original game's files into that folder, or download the HD art (atlas-hd.pack, from openciv2-assets: github.com/PeterJohnson/openciv2-assets) to %s.
+OpenCiv2 found neither the original Civilization II pictures (TERRAIN1.GIF, Tiles.dll and the others) in the game's folder, %s, nor the HD art that comes with it (%s). Copy the original game's files into that folder, or install OpenCiv2 again.
 @@openciv2.file.open
 Open
 @@openciv2.file.save_as
@@ -458,18 +410,6 @@ Imported %s files: %s.
 Nothing to import there: saved games are .SAV files (or a .zip of them).
 @@openciv2.web.import_failed
 Could not import: %s
-@@openciv2.web.hd_progress
-%s: %s of %s MB
-@@openciv2.web.hd_downloading
-Downloading the HD graphics' art
-@@openciv2.web.hd_checking
-Checking it
-@@openciv2.web.hd_keeping
-Keeping it in this browser
-@@openciv2.web.hd_no_room
-The browser's storage has no room for it (%s MB free).
-@@openciv2.web.hd_off
-HD graphics: %s They stay off this time.
 @@openciv2.web.loading_files
 Loading the game files ...
 @@openciv2.web.installing

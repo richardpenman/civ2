@@ -13,7 +13,7 @@
 # Animated Heralds on; the emissary is the Romans' with the CD's videos (the
 # opening video plays first), the Japanese with the stand-in.  Shots: h0 to
 # h3 as the video plays, h4 to h6 after the dialogs.
-# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack (the stand-in: and
+# run: CIV2_TEST_HD=2 (the stand-in: and
 # CIV2_GAME=.../copy CIV2_TEST_VIDEO_KEY=1)
 wait 8000
 key Down Down Down Down     # "Load a Game"

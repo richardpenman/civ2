@@ -7,8 +7,6 @@ import {MemFS, makeWasi, normalize} from '../wasi.js';
 import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
 import {deflateRawSync, inflateRawSync} from 'node:zlib';
-import {createHash} from 'node:crypto';
-import {sha256, sha256js, packFrom, keepPack, loadPack, packIndex, prunePack, drawn} from '../hdpack.js';
 import {iniGet, iniSet, hdWanted, hasOriginalPictures, ORIGINAL_PICTURES} from '../options.js';
 
 // keys
@@ -180,105 +178,6 @@ const savesZip = await makeZip([{name: 'Civ2/ONE.SAV', data: Buffer.from('1')}, 
 const toPut = await savesToImport([{name: 'saves.zip', data: savesZip}, {name: 'TWO.SAV', data: Buffer.from('2')},
                                    {name: 'notes.txt', data: Buffer.from('no')}], have);
 assert.deepEqual(toPut.map(([k, d]) => k + '=' + Buffer.from(d)), ['ONE.SAV=1', 'civ.ini=i', 'TWO.SAV=2']);
-// ---- HD graphics' art (hdpack.js) ----
-
-// a pack as the release's: C2ATLAS1, a count, a palette, entries in key order, the PNGs
-function makePack(pics) {
-    const keys = Object.keys(pics).sort(), head = 12 + 768 + 180 * keys.length;
-    const out = new Uint8Array(head + keys.reduce((n, k) => n + pics[k].length, 0)), v = new DataView(out.buffer);
-    out.set(Buffer.from('C2ATLAS1'));
-    v.setUint32(8, keys.length, true);
-    for (let i = 0; i < 768; i++)
-        out[12 + i] = i & 255;
-    // (the PNGs in reverse order: the stored pack's offsets need not follow its keys)
-    let at = out.length;
-    keys.forEach((k, i) => {
-        const p = 12 + 768 + 180 * i;
-        out.set(Buffer.from(k), p);
-        v.setUint32(p + 160, 8, true);
-        v.setUint32(p + 164, 4, true);
-        at -= pics[k].length;
-        v.setUint32(p + 168, at, true);
-        v.setUint32(p + 172, pics[k].length, true);
-        v.setUint32(p + 176, 12345, true);
-        out.set(pics[k], at);
-    });
-    return out;
-}
-const pics = {'advance/0': Buffer.alloc(300, 1), 'crop/file/units/1,1,64,48': Buffer.alloc(200, 2),
-              'dither/1/0': Buffer.from('dither'), 'file/units': Buffer.alloc(150, 4), 'fog/2': Buffer.from('f'),
-              'crop/resource/mk.dll/gifs/240/1,1,225,275': Buffer.alloc(40, 7),
-              'crop/resource/mk.dll/gifs/215/1,1,108,30': Buffer.alloc(30, 8),
-              'resource/x/gifs/1': Buffer.alloc(500, 5), 'tint/crop/file/units/1,1,64,48/3': Buffer.alloc(90, 6)};
-const pack = makePack(pics);
-const hex = (b) => createHash('sha256').update(b).digest('hex');
-assert.equal(await sha256(pack), hex(pack));
-assert.deepEqual(packIndex(pack).map((e) => e.key), Object.keys(pics).sort());
-// the leaders' portraits no tribe is given not drawn (hd_portraits), those given drawn, the
-// small faces not, the diplomacy icons drawn
-assert.ok(!drawn('crop/resource/mk.dll/gifs/240/1,1,225,275') && drawn('crop/resource/mk.dll/gifs/236/1,1,225,275') &&
-          !drawn('crop/resource/mk.dll/gifs/246/1,1,225,275') && !drawn('crop/resource/mk.dll/gifs/210/1,1,90,110') &&
-          drawn('crop/resource/mk.dll/gifs/215/1,1,108,30'));
-// the city view's houses of the industrial era only, its early landscapes only
-assert.ok(drawn('crop/resource/cv.dll/gifs/310/1,231,158,114') && !drawn('crop/resource/cv.dll/gifs/310/1,116,158,114'));
-assert.ok(!drawn('crop/resource/cv.dll/gifs/310/1,1,158,114') && !drawn('crop/resource/cv.dll/gifs/310/125,429,123,82'));
-assert.ok(drawn('resource/cv.dll/gifs/351') && !drawn('resource/cv.dll/gifs/352'));
-// the advances' pictures; not the advisors' parchments nor tiles.dll 86's thin glyphs
-assert.ok(drawn('advance/12') && !drawn('resource/tiles.dll/gifs/52') && !drawn('crop/resource/tiles.dll/gifs/86/398,134,64,64'));
-// the announcements' wide pictures, not the tall ones (hd.c's WHOLE)
-assert.ok(drawn('resource/tiles.dll/gifs/72') && drawn('resource/tiles.dll/gifs/76') && !drawn('resource/tiles.dll/gifs/71') &&
-          !drawn('resource/tiles.dll/gifs/75') && !drawn('resource/tiles.dll/gifs/77'));
-assert.ok(!drawn('crop/file/icons/166,223,30,30') && drawn('crop/file/icons/166,356,32,32'));
-// the pictures hd.c draws kept, in their order, each with its PNG, read in chunks
-for (const chunk of [64, 100, 1 << 20]) {
-    const reads = [];
-    const pruned = await prunePack(async (k) => {
-        reads.push(k);
-        return pack.subarray(k * chunk, (k + 1) * chunk);
-    }, chunk);
-    const idx = packIndex(pruned);
-    assert.deepEqual(idx.map((e) => e.key), Object.keys(pics).sort().filter((k) => drawn(k)));
-    for (const e of idx)
-        assert.deepEqual(Buffer.from(pruned.subarray(e.off, e.off + e.len)), pics[e.key]);
-    assert.deepEqual(pruned.subarray(12, 12 + 768), pack.subarray(12, 12 + 768));
-    assert.equal(new DataView(pruned.buffer).getUint32(12 + 768 + 176, true), 0);
-    assert.equal(pruned.length, 12 + 768 + 180 * idx.length + idx.reduce((n, e) => n + e.len, 0));
-    assert.equal(new Set(reads).size, reads.length);       // each chunk read once
-}
-// the site's pack: checked against the pin
-const pinned = {tag: 'vT', pack_sha256: hex(pack), pack_size: pack.length};
-const phases = new Set();
-assert.deepEqual(await packFrom(new Blob([pack]), pinned, {progress: (ph) => phases.add(ph)}), pack);
-assert.deepEqual([...phases], ['check']);
-const other = makePack({...pics, 'fog/2': Buffer.from('g')});
-await assert.rejects(packFrom(new Blob([other]), pinned), /not the one of the art's release vT/);
-await assert.rejects(packFrom(new Blob([Buffer.from('hello world')]), pinned), /not an HD art pack/);
-const stop = new AbortController();
-stop.abort();
-await assert.rejects(packFrom(new Blob([pack]), pinned, {signal: stop.signal}), {name: 'AbortError'});
-// kept in the store in chunks, its description last; loaded for the game pruned
-const hdStore = new Map();
-const fake = {hdClear: async () => hdStore.clear(), hdPutMany: async (es) => es.forEach(([k, v]) => hdStore.set(k, v)),
-              hdGet: async (k) => hdStore.get(k)};
-const info = await keepPack(fake, pack, pinned);
-assert.equal(info.size, pack.length);
-assert.equal(info.chunks, 1);
-assert.ok(hdStore.has('pruned') && hdStore.has('p0'));   // the pruned pack kept with it, read alone at a start
-const again = {};
-assert.deepEqual(await loadPack(fake, pinned, again), await prunePack(async () => pack));
-assert.equal(again.packChunks, hdStore.get('pruned').chunks);
-assert.equal(again.kept, undefined);
-for (const k of [...hdStore.keys()])                    // (art kept before the pruned copy was: made at a start)
-    if (/^p|pruned/.test(k))
-        hdStore.delete(k);
-const first = {};
-assert.deepEqual(await loadPack(fake, pinned, first), await prunePack(async () => pack));
-await first.kept;
-assert.ok(hdStore.has('pruned') && hdStore.has('p0'));
-assert.equal(await loadPack(fake, {...pinned, pack_sha256: 'other'}), null);         // another release's
-await fake.hdClear();
-assert.equal(await loadPack(fake, pinned), null);
-
 // ---- the game's OpenCiv2 Options in CIV.INI, as the page reads them (options.js) ----
 
 const ini0 = '[Civ2]\r\nFoo=1\r\n\r\n[OpenCiv2]\r\nMode=Standard\r\n\r\n[Other]\r\nx=y\r\n';
@@ -306,11 +205,5 @@ assert.equal(hdWanted(ini1, '0', false), 0);
 assert.equal(hdWanted(iniSet(ini0, 'OpenCiv2', 'Mode', 'Classic'), null, false), 0);
 assert.equal(hdWanted(iniSet(ini0, 'OpenCiv2', 'GraphicsDensity', '2'), null, false), 2);
 assert.equal(hdWanted(ini0, '3', false), 3);
-
-// SHA-256 without crypto.subtle (a plain http:// site): as node's, at the block boundaries
-for (const n of [0, 1, 55, 56, 63, 64, 65, 119, 120, 1000]) {
-    const b = Uint8Array.from({length: n}, (_, i) => (i * 37 + n) & 255);
-    assert.equal(Buffer.from(sha256js(b)).toString('hex'), createHash('sha256').update(b).digest('hex'));
-}
 
 console.log('src/web unit tests passed');

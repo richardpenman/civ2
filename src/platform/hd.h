@@ -128,12 +128,9 @@ void hd_bits_redrawn_mask(void *bits, int x, int y, int w, int h, const unsigned
 /* The platform's side (src/platform). */
 struct Bitmap;
 void hd_init(int classic, int unit_test, int scale);
-/* The art's file (CIV2_HD_PACK, the program's data/hd, the user's folder's
-   hd): 1 if it is there. */
-int hd_pack_path(char *path, int size);
 /* The art read for the pictures a game folder lacks (synth.c; HD graphics
-   are on then, plat_hd_forced): hd_art_open whether the pack is open (0:
-   none); hd_art_copy a picture's
+   are on then, plat_hd_forced): hd_art_open whether the art is loaded (0:
+   no); hd_art_copy a picture's
    RGBA pixels, pw x ph (free()), its size in the game's pixels w x h;
    hd_art_each the keys beginning with prefix. */
 int hd_art_open(void);

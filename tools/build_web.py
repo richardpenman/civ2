@@ -32,12 +32,12 @@ the game has none of its own: src/platform/sound.c) into data/sound/, as
 they are, listed in data/sound/index.json: the page fetches those the
 player's game lacks.
 
-The HD graphics' pin (data/hd-pack.json) is copied as hd-pack.json; with
-HD=1 in the environment (make web HD=1) the installed art
-(data/native/hd/atlas-hd.pack, make hd) is copied to hd/atlas-hd.pack too,
-with hd/pack.json saying so, and OpenCiv2's own pictures
-(data/native/hd-extra) in hd/extra: the game's OpenCiv2 Options offer HD graphics
-only where the site has the art (otherwise build/web/hd is removed).
+The HD graphics' art (data/native/hd, tools/build_hd_pack.py) and
+OpenCiv2's own HD pictures (data/native/hd-extra) as one file, hd/art.bin,
+the files one after another as hd/index.json lists them ([path, size]:
+hd/..., hd-extra/...): the page fetches it when the game wants HD graphics
+and puts the files where hd.c looks for them; the art's licence and
+notices beside it.
 
 With GAME=1 (make web GAME=1) the site carries the game too, for a
 private site of people who have no copy of their own (docs/BROWSER.md:
@@ -50,9 +50,8 @@ encoded to Ogg Vorbis, tools/wav2ogg.c), listed in game/index.json ({core:
 then plays as from a folder without them: it starts at its main menu, a
 wonder's movie is skipped, the High Council does not open).  The page
 downloads and keeps all of it on a first visit, without asking, on one
-progress bar, so that the game never waits for the site.  A CIV.INI with HD graphics
-on ([OpenCiv2] Graphics=HD) where the site has the art (HD=1) and the game
-none of its own.  Without GAME=1, build/web/game is removed.
+progress bar, so that the game never waits for the site.  Without GAME=1,
+build/web/game is removed.
 
 Usage: build_web.py [--no-module]   (--no-module: build/wasm/civ2.wasm as it is)
 Binaryen comes from tools/fetch-toolchain.sh web (or $BINARYEN: its folder).
@@ -77,7 +76,7 @@ BINARYEN = os.environ.get('BINARYEN') or os.path.join(ROOT, 'tools', 'toolchain'
 ASYNC_IMPORTS = ['host.host_wait_event', 'host.host_poll_event', 'host.host_delay_ms', 'host.host_message_box',
                  'host.host_restart']
 PAGE = ['index.html', 'main.js', 'host.js', 'wasi.js', 'store.js', 'zip.js', 'saves.js', 'setup_run.js',
-        'setup_worker.js', 'net.js', 'hdpack.js', 'options.js', 'i18n.js']
+        'setup_worker.js', 'net.js', 'options.js', 'i18n.js']
 FONTS = ['fonts_win.bin', 'fonts_win_aa.bin']
 LANG = os.path.join(ROOT, 'data', 'native', 'lang')
 
@@ -189,6 +188,30 @@ def write_sounds():
         json.dump(names, f)
 
 
+def write_art():
+    """hd/art.bin and hd/index.json: the HD art (data/native/hd) and
+    OpenCiv2's own pictures (data/native/hd-extra), the files one after
+    another; the art's notices beside them."""
+    out = os.path.join(OUT, 'hd')
+    if os.path.isdir(out):
+        shutil.rmtree(out)
+    os.makedirs(out)
+    native = os.path.join(ROOT, 'data', 'native')
+    index = []
+    with open(os.path.join(out, 'art.bin'), 'wb') as f:
+        for d in ('hd', 'hd-extra'):
+            for name in sorted(os.listdir(os.path.join(native, d))):
+                if name == 'pictures.txt' or name.endswith(('.webp', '.png')):
+                    data = open(os.path.join(native, d, name), 'rb').read()
+                    f.write(data)
+                    index.append([d + '/' + name, len(data)])
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump(index, f)
+    for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
+        shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
+    shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))
+
+
 def run(cmd):
     print(' '.join(cmd), flush=True)
     subprocess.run(cmd, check=True)
@@ -243,17 +266,15 @@ def write_game():
             if f.lower().endswith('.log') or rel.split('/')[0].lower() in LEFT_OUT_DIRS:
                 continue
             (beside if rel.split('/')[0].lower() in BESIDE_DIRS else core).append((rel, path))
-    hd = os.environ.get('HD', '') not in ('', '0')
     zpath = os.path.join(out, 'core.zip')
     # (what core.zip was made of, outside the site: made again when that changes)
-    stamp, spath = json.dumps([[r, os.path.getsize(p), os.path.getmtime(p)] for r, p in core] + [hd]), \
+    stamp, spath = json.dumps([[r, os.path.getsize(p), os.path.getmtime(p)] for r, p in core]), \
         os.path.join(ROOT, 'build', 'web-game.stamp')
     if not os.path.exists(zpath) or not os.path.exists(spath) or open(spath).read() != stamp:
         print('packing %s into %s' % (game, os.path.relpath(zpath, ROOT)), flush=True)
         # (a game with none of its own set-up, as the site gives it: the
         # animated heralds of KINGS/ on, their warning already shown --
-        # CIV2.DAT's game options, offset 14, OPT_ANIMATED_HERALDS -- and HD
-        # graphics where the site has the art)
+        # CIV2.DAT's game options, offset 14, OPT_ANIMATED_HERALDS)
         ini = not any(r.lower() == 'civ.ini' for r, _ in core)
         with zipfile.ZipFile(zpath + '.part', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
             for rel, path in core:
@@ -264,8 +285,7 @@ def write_game():
                 z.writestr(zipfile.ZipInfo(rel, time.localtime(os.path.getmtime(path))[:6]), data,
                            zipfile.ZIP_DEFLATED, 9)
             if ini:
-                z.writestr('CIV.INI', '[Civilization Gold]\r\nHerald Warning Shown=1\r\n' +
-                           ('\r\n[OpenCiv2]\r\nGraphics=HD\r\n' if hd else ''))
+                z.writestr('CIV.INI', '[Civilization Gold]\r\nHerald Warning Shown=1\r\n')
         os.replace(zpath + '.part', zpath)
         with open(spath, 'w') as f:
             f.write(stamp)
@@ -359,29 +379,10 @@ def main():
     build_setup()
     for f in PAGE:
         shutil.copy(os.path.join(SRC, f), os.path.join(OUT, f))
-    if os.path.exists(os.path.join(OUT, 'choices.json')):
-        os.remove(os.path.join(OUT, 'choices.json'))     # (an older build's)
-    shutil.copy(os.path.join(ROOT, 'data', 'hd-pack.json'), os.path.join(OUT, 'hd-pack.json'))
-    hd = os.path.join(OUT, 'hd')
-    if os.environ.get('HD', '') not in ('', '0'):
-        pack = os.path.join(ROOT, 'data', 'native', 'hd', 'atlas-hd.pack')
-        if not os.path.exists(pack):
-            run([sys.executable, os.path.join(ROOT, 'tools', 'fetch_hd_pack.py')])
-        os.makedirs(hd, exist_ok=True)
-        if newer(pack, os.path.join(hd, 'atlas-hd.pack')):
-            shutil.copy(pack, os.path.join(hd, 'atlas-hd.pack'))
-        # (what tells the page the site has the art: without it, no HD graphics there)
-        with open(os.path.join(hd, 'pack.json'), 'w') as f:
-            json.dump({'size': os.path.getsize(pack)}, f)
-        for f in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
-            if os.path.exists(os.path.join(ROOT, 'data', 'native', 'hd', f)):
-                shutil.copy(os.path.join(ROOT, 'data', 'native', 'hd', f), os.path.join(hd, f))
-        # OpenCiv2's own pictures (data/native/hd-extra), as they are
-        if os.path.isdir(os.path.join(hd, 'extra')):
-            shutil.rmtree(os.path.join(hd, 'extra'))
-        shutil.copytree(os.path.join(ROOT, 'data', 'native', 'hd-extra'), os.path.join(hd, 'extra'))
-    elif os.path.isdir(hd):
-        shutil.rmtree(hd)
+    for f in ('hd-pack.json', 'choices.json', 'hdpack.js'):
+        if os.path.exists(os.path.join(OUT, f)):
+            os.remove(os.path.join(OUT, f))     # (an older build's)
+    write_art()
     if os.environ.get('GAME', '') not in ('', '0'):
         core, beside = write_game()
         print('the game on the site (GAME=1: for private use only): game/core.zip %.0f MB, game/files %.0f MB' %

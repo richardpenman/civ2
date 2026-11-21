@@ -11,7 +11,7 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 
 PORT ?= 8000
 
-.PHONY: all build run windows web serve deploy-review web-test web-replay hd images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean
+.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -40,14 +40,14 @@ windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
 # The browser version (README "Browser version", docs/DEVELOPMENT.md): a
 # static site in build/web; its tests in Chrome's headless shell (Linux
 # x86-64; they need the game files, $$CIV2_GAME or ~/Civ2).
-web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; HD=1: with the HD graphics' art on the site; GAME=1: with the installed game, for private use only)
-	HD=$(HD) GAME=$(GAME) python3 tools/build_web.py
+web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; GAME=1: with the installed game, for private use only)
+	GAME=$(GAME) python3 tools/build_web.py
 
-serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000; HD=1 as for web); Ctrl+C stops it
+serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000); Ctrl+C stops it
 	@echo "OpenCiv2: http://localhost:$(PORT)"
 	python3 -m http.server -d build/web $(PORT)
 
-deploy-review:                ## the browser version with the game, without the HD art (GAME=1: for private use only) served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
+deploy-review:                ## the browser version with the game (GAME=1: for private use only) served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
 	tools/deploy_review.sh
 
 web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke), then HD graphics (run/web-hd)
@@ -63,10 +63,10 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs --replay $(NAME)
 	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; [Image.open(f).save(f[:-4] + '.png') for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
 
-# HD graphics (docs/HD-GRAPHICS.md): Peter Johnson's art, at the release
-# pinned in data/hd-pack.json, checked and installed in data/native/hd.
-hd:                           ## download and install the HD graphics' art (234 MB; then CIV.INI [OpenCiv2] Graphics=HD)
-	python3 tools/fetch_hd_pack.py
+# HD graphics (docs/HD-GRAPHICS.md): data/native/hd made again from the
+# release of Peter Johnson's art pinned in data/hd-pack.json (Docker).
+hd-art:                       ## make the HD graphics' art in data/native/hd again from the pinned release (tools/build_hd_pack.py)
+	python3 tools/build_hd_pack.py
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)
 	docker build -t civ2-dev-base tools/docker

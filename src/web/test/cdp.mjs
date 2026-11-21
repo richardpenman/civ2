@@ -5,7 +5,7 @@
 
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
-import {readFileSync, writeFileSync, readdirSync, statSync, existsSync, createReadStream} from 'node:fs';
+import {readFileSync, writeFileSync, readdirSync, statSync, existsSync} from 'node:fs';
 import {join, relative, extname, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -63,33 +63,9 @@ export function zipFolder(dir, out) {
 // ---- the site ----
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm', '.gz': 'application/gzip'};
-// (opts.hd(): an atlas-hd.pack the site has as make web HD=1 gives it, at
-// /hd/atlas-hd.pack with /hd/pack.json, and data/native/hd-extra at /hd/extra;
-// null: none)
-export function serve(opts = {}) {
+export function serve() {
     const server = createServer((req, res) => {
         const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-        const art = opts.hd ? opts.hd() : null;
-        if (path.startsWith('/hd/extra/') && art) {
-            // (OpenCiv2's own pictures, as make web HD=1 puts them there)
-            const dir = join(ROOT, 'data', 'native', 'hd-extra'), p = join(dir, path.slice(10));
-            if (!p.startsWith(dir + '/') || !existsSync(p))
-                res.writeHead(404).end();
-            else
-                res.writeHead(200, {'Content-Type': 'application/octet-stream'}).end(readFileSync(p));
-            return;
-        }
-        if (path.startsWith('/hd/')) {
-            if (!art || !['/hd/pack.json', '/hd/atlas-hd.pack'].includes(path)) {
-                res.writeHead(404).end();
-            } else if (path === '/hd/pack.json') {
-                res.writeHead(200, {'Content-Type': 'application/json'}).end(JSON.stringify({size: statSync(art).size}));
-            } else {
-                res.writeHead(200, {'Content-Type': 'application/octet-stream', 'Content-Length': statSync(art).size});
-                createReadStream(art).pipe(res);
-            }
-            return;
-        }
         // (a replay's files: /__test/NAME.txt, CIV2.DAT, CIV.INI from harness/)
         const base = path.startsWith('/__test/') ? join(ROOT, 'harness') : WEB;
         const rel = path.startsWith('/__test/') ? (path.endsWith('.txt') ? 'scripts/' : '') + path.slice(8) : path;

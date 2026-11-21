@@ -296,7 +296,7 @@ def compile_one(job):
             # The host interface over SDL2: plain C, none of the game's headers.
             flags = []
             extra = subprocess.run(['sdl2-config', '--cflags'], capture_output=True, text=True).stdout.split()
-            extra += ['-O1', '-g', '-Wall', '-std=gnu99', '-fno-pie'] + paths.hd_pack_defines()
+            extra += ['-O1', '-g', '-Wall', '-std=gnu99', '-fno-pie']
         r = subprocess.run([cc, '-c', '-o', o] + lang + [src] + tflags + flags + extra, capture_output=True, text=True)
         if r.returncode:
             return o, r.stderr

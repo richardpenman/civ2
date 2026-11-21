@@ -2,7 +2,7 @@
  * OpenCiv2's own texts, keyed (docs/TRANSLATING.md): the English of every
  * text OpenCiv2 adds to the game (its interface additions, the OpenCiv2
  * Options dialog, the platform's file dialog and message boxes, the HD
- * graphics' download, the set-up, the browser's set-up page).  A
+ * graphics' message, the set-up, the browser's set-up page).  A
  * translation (lang/<code>.txt, src/include/lang.h) gives them as
  * "@@openciv2.<key>"; data/native/lang/en.txt is this table as such a file,
  * the template (CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1 writes it).
@@ -48,10 +48,7 @@ T("mode.standard", "Standard")
 T("mode.classic", "Classic")
 T("graphics.title", "Graphics and Screen")
 T("graphics.sharp_note", "Sharp text and interface: text, menus and controls at the screen's full resolution (the pictures enlarged).")
-T("graphics.hd_installed", "HD graphics: new art for the map, at the screen's full resolution. The art is installed.")
-T("graphics.hd_later", "HD graphics: new art for the map, at the screen's full resolution. The art (%d MB) is downloaded from this site when the game starts again.")
-T("graphics.hd_no_site", "HD graphics: new art for the map, at the screen's full resolution. This site was built without the art.")
-T("graphics.hd_download", "HD graphics: new art for the map, at the screen's full resolution. They need the art: %d MB, downloaded once from openciv2-assets on GitHub when chosen.")
+T("graphics.hd_note", "HD graphics: new art for the map, at the screen's full resolution.")
 T("graphics.fullscreen_note", "Full screen: instead of a window filling the screen.")
 T("graphics.need_original", "Classic graphics need the original Civilization II files: without them HD graphics are always on.")
 T("graphics.sharp", "Sharp text and interface")
@@ -116,29 +113,8 @@ T("restart.now", "Restart now")
 T("restart.later", "Later")
 T("restart.failed", "The game could not be started again: these choices take effect the next time it starts.")
 
-/* The HD graphics' art: its download (src/host/host_options.c, natively) */
-T("hd.title", "HD Graphics")
-T("hd.downloading", "Downloading the art")
-T("hd.checking", "Checking it")
-T("hd.installing", "Installing it")
-T("hd.progress", "%s: %d of %d MB")
-T("hd.stop", "Stop")
-T("hd.failed", "The download failed.")
-T("hd.stay_off", "%s HD graphics stay off.")
-T("hd.err.no_curl_windows", "Windows' curl.exe, which downloads the art, was not found (it comes with Windows 10 and later).")
-T("hd.err.download", "The download failed (%s). Is the computer connected to the internet?")
-T("hd.err.no_tool", "Neither curl nor wget, which download the art, was found: please install curl.")
-T("hd.err.read", "Could not read %s.")
-T("hd.err.not_pack", "%s is not an openciv2-assets pack.")
-T("hd.err.mismatch", "%s in the pack does not match its package.json.")
-T("hd.err.write", "Could not write %s.")
-T("hd.err.not_pinned", "The download is not the pinned art (its SHA-256 differs): nothing was installed.")
-T("hd.err.no_url", "This build does not know which art to download.")
-T("hd.err.no_folder", "There is no folder to install the art in.")
-T("hd.err.start", "Could not start the download.")
-T("hd.err.test_run", "Nothing is downloaded in a test run.")
-T("hd.err.no_site_art", "This site was built without the HD art.")
-T("hd.err.no_graphics", "OpenCiv2 found neither the original Civilization II pictures (TERRAIN1.GIF, Tiles.dll and the others) in the game's folder, %s, nor its HD art. Copy the original game's files into that folder, or download the HD art (atlas-hd.pack, from openciv2-assets: github.com/PeterJohnson/openciv2-assets) to %s.")
+/* The HD graphics' art (src/platform/hd.c) */
+T("hd.err.no_graphics", "OpenCiv2 found neither the original Civilization II pictures (TERRAIN1.GIF, Tiles.dll and the others) in the game's folder, %s, nor the HD art that comes with it (%s). Copy the original game's files into that folder, or install OpenCiv2 again.")
 
 /* The platform: the file dialog, message boxes (src/platform) */
 T("file.open", "Open")
@@ -243,12 +219,6 @@ T("web.imported_one", "Imported 1 file: %s.")
 T("web.imported", "Imported %s files: %s.")
 T("web.nothing_to_import", "Nothing to import there: saved games are .SAV files (or a .zip of them).")
 T("web.import_failed", "Could not import: %s")
-T("web.hd_progress", "%s: %s of %s MB")
-T("web.hd_downloading", "Downloading the HD graphics' art")
-T("web.hd_checking", "Checking it")
-T("web.hd_keeping", "Keeping it in this browser")
-T("web.hd_no_room", "The browser's storage has no room for it (%s MB free).")
-T("web.hd_off", "HD graphics: %s They stay off this time.")
 T("web.loading_files", "Loading the game files ...")
 T("web.installing", "Installing the game ...")
 T("web.install_download", "Downloading the game, its music and animated advisors: %s of %s MB")

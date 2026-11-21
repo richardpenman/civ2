@@ -31,7 +31,7 @@ Music: CIV2_KEEP_MEDIA=1, the music on the virtual clock: CIV2_TEST_MUSIC=1),
 expected in harness/media/expected, their runs in run/media-NAME; calls.log
 (the sounds, videos and music the game asks for) is compared too
 (NAME.calls).  Skipped, with a message, where the game folder lacks those
-folders; the HD runs (CIV2_HD_PACK) where there is no pack.
+folders.
 """
 import argparse, glob, gzip, hashlib, html, os, shutil, subprocess, sys
 from PIL import Image
@@ -251,10 +251,6 @@ def main():
     print('testing build/%s' % os.environ.get('EXE', 'civ2-linux32'), flush=True)
     fail = 0
     for name, script, env in tests:
-        pack = env.get('CIV2_HD_PACK')
-        if pack and not os.path.exists(pack):
-            print(f'SKIP {name} (no HD pack: {pack}; make hd)', flush=True)
-            continue
         out = os.path.join(RUN, '%s-%s' % (KIND, name))
         status = run(script, env, out)
         if status:

@@ -1,9 +1,7 @@
 #!/bin/sh
-# make deploy-review: the browser version with the game, without the HD
-# graphics' art (make web GAME=1: it distributes the game's files, so for a
-# private site only: docs/BROWSER.md; no HD=1, for a quicker first load: the
-# page then offers no HD graphics, and the site's copy loses any hd/ an
-# earlier deploy left) served by Caddy in Docker (container
+# make deploy-review: the browser version with the game (make web GAME=1: it
+# distributes the game's files, so for a private site only: docs/BROWSER.md)
+# served by Caddy in Docker (container
 # civ2-review, restarted with the machine) at https://HOST/civ2/, behind a
 # user name and password (HTTP Basic Auth), the root and everything else a
 # plain 404.  HOST is this machine's address as an sslip.io name
@@ -53,9 +51,8 @@ if [ -n "$HTTP_ASKED" ]; then
 	mv "$CONFIG.new" "$CONFIG"
 fi
 
-HD= make web GAME=1
+make web GAME=1
 rsync -a --delete build/web/ "$DIR/site/civ2/"
-rm -rf "$DIR/site/civ2/hd"     # (rsync --delete took it already: build/web has none)
 
 if [ -n "$REVIEW_HTTP" ]; then
 	ADDRESS=":80"

@@ -96,8 +96,7 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   `CIV2_CLASSIC=1` play in Standard.
 - **Graphics and screen**: [sharp text and interface](#sharp-text-and-interface) (`SharpText=`,
   on by default in Standard, off in Classic); [HD graphics](#hd-graphics) (`Graphics=HD`, at the
-  screen's own density), the art downloaded when they are ticked where it is not installed (234 MB,
-  with its progress and a Stop button; see [HD-GRAPHICS.md](HD-GRAPHICS.md)); full screen
+  screen's own density; the art comes with OpenCiv2: see [HD-GRAPHICS.md](HD-GRAPHICS.md)); full screen
   (`FullScreen=`).  Where the game folder lacks the original's pictures, HD graphics are
   ticked and cannot be unticked, with the same note ([NO-INSTALL.md](NO-INSTALL.md)).
 - **Rule changes** and **Limits**: the [rule changes](#rule-changes) and the limits.
@@ -157,7 +156,7 @@ in OpenCiv2 Options as natively, or `?sharp=0` in the address ([BROWSER.md](BROW
 
 `Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in OpenCiv2 Options; or `--hd` on
 the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures appear) with
-The replacement art (openciv2-assets), once installed (by OpenCiv2 Options, or `make hd`), at the screen's
+the replacement art (openciv2-assets, which comes with OpenCiv2: `data/native/hd`), at the screen's
 full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
 unit tests; it changes only what is shown.  Always on where the game folder lacks the
 original's pictures, whatever is chosen.  The default (where `Graphics=` is unset) is decided

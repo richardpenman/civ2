@@ -7,7 +7,7 @@
 # launched window does not close).  The window closes on a click on its
 # close button (once the text is typed): at 0x22f,0x1a1 on the 1024x768
 # desktop's centred window, at 0x1f5 when the ship can be launched.
-# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

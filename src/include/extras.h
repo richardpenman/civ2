@@ -106,12 +106,8 @@ EXTRAS_C void options_dialog(void);
 /* a setting chosen there in a test run (1, its text in out), which the
    game reads instead of CIV.INI's */
 EXTRAS_C int options_test_setting(const char *key, char *out, int n);
-/* src/platform/options.c: the HD graphics' art (op, info, msg and the
-   states as host_hd_fetch's, src/host/host.h; _DONE: there), the restart
-   (now 0: how it can be, 1 restarted; host_restart's) */
-enum { PLAT_HD_START, PLAT_HD_POLL, PLAT_HD_CANCEL };
-enum { PLAT_HD_IDLE = -2, PLAT_HD_FAILED = -1, PLAT_HD_DONE = 0, PLAT_HD_RUNNING = 1, PLAT_HD_LATER = 2 };
-EXTRAS_C int plat_hd_art(int op, int *info, char *msg, int n);
+/* src/platform/options.c: the restart (now 0: how it can be, 1 restarted;
+   host_restart's) */
 EXTRAS_C int plat_restart(int now);
 /* the graphics (src/platform/options.c, the one place that decides): whether
    CIV.INI's Graphics=value asks for HD ("": the default), whether HD

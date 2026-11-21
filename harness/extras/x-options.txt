@@ -1,9 +1,8 @@
 # The OpenCiv2 Options dialog (src/game/options.cpp), the main menu's last
-# choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI, downloaded or
-# restarted; the choices hold for the run): its pages; Classic chosen (the
-# restart offered, the other pages not in it) and Standard again; HD
-# graphics ticked (their art: nothing downloaded in a test run) and sharp
-# text off (the restart offered); Go To past foreign units, the retirement
+# choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI or restarted; the
+# choices hold for the run): its pages; Classic chosen (the restart
+# offered, the other pages not in it) and Standard again; HD graphics
+# ticked and sharp text off (the restart offered); Go To past foreign units, the retirement
 # year, the turn in the status panel off and gamma 150 chosen, which hold
 # at once: a saved game loaded without the turn after the year, brighter;
 # the Language page (each language by its own name: Greek and Chinese
@@ -39,13 +38,10 @@ key Down                    # Graphics and screen
 key Return
 wait 1000
 shot xo-f-graphics
-click 100 330               # HD graphics
-click 100 308               # Sharp text and interface: off
+click 100 312               # HD graphics
+click 100 290               # Sharp text and interface: off
 wait 500
 shot xo-g-graphics-chosen
-key Return
-wait 1000
-shot xo-h-no-art
 key Return
 wait 1000
 shot xo-i-restart

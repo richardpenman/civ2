@@ -25,7 +25,7 @@ for t in $tribes; do
             -e "s/^\(call [a-z_]* [0-9a-f]*\) 4 3\(.*\)# VIEWER LEADER/\1 $viewer $leader\2/" \
             harness/hd/hd-talks-new.txt > $out/$t-$g.txt
         rm -rf $d
-        tools/dk sh -c "CIV2_TEST_HD=2 CIV2_HD_PACK=/work/data/native/hd/atlas-hd.pack EXE=OpenCiv2 TIMEOUT=300 \
+        tools/dk sh -c "CIV2_TEST_HD=2 EXE=OpenCiv2 TIMEOUT=300 \
             sh tools/native-run.sh /work/$out/$t-$g.txt /work/$d" >/dev/null 2>&1
         echo "$t-$g: $(/usr/bin/grep -o 'hrld[A-Z]*' $d/calls.log | tr '\n' ' ')"
     done

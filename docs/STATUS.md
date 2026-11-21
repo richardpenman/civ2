@@ -92,6 +92,10 @@ OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain
 into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
 music, scenarios.  The editors'
 backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).
+The HD art comes with OpenCiv2, nothing downloaded: `data/native/hd` (30 MB in git), the
+pictures of openciv2-assets' pinned release the game draws or synth.c reads, as WebP, made by
+`tools/build_hd_pack.py` (`make hd-art`; [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every build and
+on the browser version's site; the native and browser downloads of the release are gone.
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
@@ -735,7 +739,7 @@ message by message and clock event by clock event.
   started, which had replaced Game > OpenCiv2 Options, November 2026), switches
   them, the rule changes and the limits (at once: extras_load again), the mode
   (Standard or Classic: `Mode=Classic`), sharp text, full screen and HD
-  graphics (downloading the art, src/host/host_options.c), those offering a
+  graphics (the art in the repository, data/native/hd), those offering a
   restart (host_restart: the program executed again, the page loaded again in
   the browser); in a test run (CIV2_TEST_OPTIONS) its choices hold for the run
   instead (options_test_setting).  Arrange Windows S/L are always in the menu, hidden while
@@ -745,7 +749,7 @@ message by message and clock event by clock event.
   back, so the game's next search is unchanged; it uses the real map, so on
   unexplored land it shows the way the game would take there.  All of OpenCiv2's
   own texts (the additions, OpenCiv2 Options, the platform's file dialog and
-  message boxes, the set-up, the HD art's download, the browser's page) are
+  message boxes, the set-up, the browser's page) are
   keyed `openciv2.<key>` (src/host/texts.h, read by the game's extras_text,
   the host's host_text and the page's i18n.js; exported alone by
   CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1: data/native/lang/en.txt), chosen

@@ -21,8 +21,8 @@ is not included: it is set up from the player's own copy.
  13. stb_truetype 1.26        MIT licence (or public domain)
  14. libwebp 1.5.0 (decoder)  BSD licence (3 clauses) and Google's patent grant
 
-and, not in the programs but used by them when the player installs it
-(make hd, tools/fetch_hd_pack.py; docs/HD-GRAPHICS.md):
+and, with the programs, the HD graphics' art (data/native/hd, made by
+tools/build_hd_pack.py from the release; docs/HD-GRAPHICS.md):
 
  15. openciv2-assets          MIT licence: the HD graphics' art
 
@@ -485,11 +485,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 15. openciv2-assets  https://github.com/PeterJohnson/openciv2-assets
 ---------------------------------------------------------------------
 
-The replacement art of the optional HD graphics, by Peter Johnson: the
-release pinned in data/hd-pack.json, downloaded and installed by the player
-(data/native/hd), with its LICENSE, THIRD-PARTY.txt (the notices of what
-its art was made with) and ATLAS-PROVENANCE.md (how it was made).  Not part
-of this repository nor of OpenCiv2's releases.
+The replacement art of the optional HD graphics, by Peter Johnson: of the
+release pinned in data/hd-pack.json, the pictures the game uses, re-encoded
+as WebP (tools/build_hd_pack.py), in data/native/hd with the release's
+LICENSE, THIRD-PARTY.txt (the notices of what its art was made with) and
+ATLAS-PROVENANCE.md (how it was made); part of this repository and of
+OpenCiv2's releases.
 
 MIT License
 

@@ -6,7 +6,7 @@
 # same leader's emissary (diplo_ai_meet_player: its second civilization's
 # leader).  harness/hd/hd-talks-all.sh makes this script for every tribe and
 # gender (the lines marked GENDER, TRIBE, VIEWER and LEADER).
-# run: CIV2_TEST_HD=2 CIV2_HD_PACK=.../atlas-hd.pack
+# run: CIV2_TEST_HD=2
 wait 8000
 key Return              # Start a New Game
 wait 3000

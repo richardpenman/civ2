@@ -107,8 +107,8 @@ def windows_resources(cc, obj):
     """src/host/setup.rc compiled: the program's own files the set-up puts
     beside it (src/host/setup_win.c), the fonts (data/native), the font
     files of characters beyond Windows-1252 (fonts/*), the translations (lang/*.txt),
-    OpenCiv2's English of the game's texts (text/*.TXT), its own HD pictures (hd-extra/*) and sound effects
-    (sound/*), each 8 bytes of size
+    OpenCiv2's English of the game's texts (text/*.TXT), the HD graphics' art (hd/*: tools/build_hd_pack.py),
+    its own HD pictures (hd-extra/*) and sound effects (sound/*), each 8 bytes of size
     and the file deflated."""
     import zlib
     res = os.path.join(obj, 'res')
@@ -120,11 +120,12 @@ def windows_resources(cc, obj):
             print('compressing %s' % os.path.relpath(src, ROOT), flush=True)
             data = open(src, 'rb').read()
             open(out, 'wb').write(len(data).to_bytes(8, 'little') + zlib.compress(data, 9))
-    # the other files (the font files, the translations, the texts, the HD pictures, the sounds), numbered
+    # the other files (the font files, the translations, the texts, the HD art and pictures, the sounds), numbered
     # from 100, listed in resource 99 (setup.h SETUP_RES_FILES)
     native = os.path.join(ROOT, 'data', 'native')
     others = sorted(glob.glob(os.path.join(native, 'fonts', '*'))) + \
         sorted(glob.glob(os.path.join(native, 'lang', '*.txt'))) + sorted(glob.glob(os.path.join(native, 'text', '*.TXT'))) + \
+        sorted(glob.glob(os.path.join(native, 'hd', '*'))) + \
         sorted(glob.glob(os.path.join(native, 'hd-extra', '*'))) + sorted(glob.glob(os.path.join(native, 'sound', '*')))
     index, lines = [], []
     for i, src in enumerate(others):
@@ -221,7 +222,7 @@ def exe(cross_windows=False):
     jobs = [(s, ['-O2', '-fno-strict-aliasing', '-w'] + cflags) for s in gen + rt] + \
            [(s, ['-std=gnu17', '-O2', '-w'] + cflags + third_inc) for s in third] + \
            [(s, ['-O2', '-Wall', '-Wno-format-truncation', '-Werror=implicit-function-declaration'] + cflags +
-             sdl_cflags + third_inc + paths.hd_pack_defines() +
+             sdl_cflags + third_inc +
              (['-fobjc-arc'] if s.endswith('.m') else [])) for s in host]
 
     # Every file depends on the generated header too (the host's files
@@ -233,8 +234,7 @@ def exe(cross_windows=False):
         src, flags = job
         o = os.path.join(obj, os.path.basename(src) + '.o')
         deps = [src] + ([header] if os.path.exists(header) else []) + \
-            (glob.glob(os.path.join(ROOT, 'src', 'host', '*.h')) + [os.path.join(ROOT, 'data', 'hd-pack.json')]
-             if src in host else [])
+            (glob.glob(os.path.join(ROOT, 'src', 'host', '*.h')) if src in host else [])
         if not os.path.exists(o) or os.path.getmtime(o) < max(os.path.getmtime(d) for d in deps):
             subprocess.run([cc, '-c', '-o', o, src, '-I', CDIR, '-I', os.path.join(ROOT, 'src', 'host')] + flags,
                            check=True)
@@ -263,12 +263,10 @@ def pack():
     with tarfile.open(out, 'w:gz') as t:
         for rel in ('build/wasm/c', 'src/host', 'src/platform/win32_vk.h', 'tools/build_port.py',
                     'tools/paths.py', 'tools/run-civ2.sh', 'tools/toolchain/unshield', 'tools/toolchain/zlib',
-                    'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native', 'data/hd-pack.json',
+                    'tools/toolchain/libogg', 'tools/toolchain/libvorbis', 'data/native',
                     'harness/CIV2.DAT',
                     'README.md', 'THIRD-PARTY.txt'):
-            # not the HD graphics' art (data/native/hd, tools/fetch_hd_pack.py): fetched by each player
-            t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel),
-                  filter=lambda ti: None if ti.name.startswith('OpenCiv2/data/native/hd') else ti)
+            t.add(os.path.join(ROOT, rel), arcname=os.path.join('OpenCiv2', rel))
     print('wrote %s (%d MB)' % (os.path.relpath(out, ROOT), os.path.getsize(out) >> 20))
 
 
