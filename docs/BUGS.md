@@ -5,34 +5,88 @@ that OpenCiv2 reproduces: what goes wrong, where the code does it, and how to fi
 covers the bugs found in the code during the reconstruction and the ones the community has
 documented and that can be traced to our code.
 
-OpenCiv2 fixes them by default. `CIV2_CLASSIC=1` restores the original behaviour (it
-also restores the original look). Replays and unit tests always use the original behaviour:
-they are compared with the original. A fix that changes the game's state (**state** below)
-is also off in network games, where every player, the original game included, must compute
-the same game. A fix that changes only what one player sees (**UI only** below) stays on
-there.
+OpenCiv2 fixes them by default. The player can switch the fixes off in OpenCiv2 Options (the
+main menu's last choice: *Bug fixes*, "Fix the original game's bugs", `FixBugs=` in `CIV.INI`'s
+`[OpenCiv2]` section), or one by one ([below](#switching-the-fixes)); the choice is apart from the
+graphics, so the original's rules can be played with HD graphics too, and without the original's
+files. `CIV2_CLASSIC=1` restores the original behaviour whatever is chosen (it also restores the
+original look). Replays and unit tests always use the original behaviour: they are compared with
+the original. A fix that changes the game's state (**state** below) is also off in network games,
+where every player, the original game included, must compute the same game, whatever is chosen. A
+fix that changes only what one player sees (**UI only** below) stays on there.
 
-In the code: `plat_fix_bugs` (src/platform/main.c) is set once at start, and two helpers in
-`src/include/auto_common.h` test it: `bugfix_state()` (off in network games too:
-`game.multiplayer` > 2) and `bugfix_ui()`. Each fix reads `if (bugfix_state()) <fixed> else
-<original>` (or the `bugfix_ui()` form), marked `B<n>` in a comment, the original's code kept
-as it was. `CIV2_TEST_FIXES=1` turns the fixes on in a replay (tests only: such a replay
-no longer matches the original's recording).
+In the code: `plat_fixes` (a bit per fix, by its number) is set at start and again when OpenCiv2
+Options changes the choice (`fixes_load`, `src/game/extras.cpp`, where `plat_fixes_allowed`:
+not with `CIV2_CLASSIC=1`, in replays or unit tests; `src/platform/main.c`), and two helpers in
+`src/include/auto_common.h` test it: `bugfix_state(n)` (off in network games too:
+`game.multiplayer` > 2) and `bugfix_ui(n)`. Each fix reads `if (bugfix_state(n)) <fixed> else
+<original>` (or the `bugfix_ui(n)` form), marked `B<n>` in a comment, the original's code kept as
+it was. `CIV2_TEST_FIXES=1` turns the fixes on in a replay (tests only: such a replay no longer
+matches the original's recording); `CIV2_TEST_SETTINGS=Fix.B16=0` (or `FixBugs=0`) switches
+them there as `CIV.INI` would.
+
+## Switching the fixes
+
+`FixBugs=1` (the default) or `=0` in `CIV.INI`'s `[OpenCiv2]` section switches all the fixes
+below at once; it is the tick of OpenCiv2 Options' *Bug fixes* page. `Fix.B<n>=1` or `=0` (the
+number of a fix in this file) switches one of them, and wins over `FixBugs=` for it: with
+`FixBugs=0` and `Fix.B16=1` the game has the original's bugs but a city stops at size 127; with
+`Fix.B35=0` the advisors call a democracy a republic again, the other fixes on. The keys are
+read when the game starts and when OpenCiv2 Options changes the choice; a change takes effect
+from the game started or loaded next. The fixes not in this table (B1, B8, B21, B22 in part,
+B26, B27, B29 to B31, B39, and the memory errors below) are in every mode and cannot be switched:
+the original's behaviour there is a read of stale stack or memory that our build could not
+match anyway, or a crash. A **state** fix stays off in network games whatever its key says.
+
+| Key | Kind | Bug |
+| --- | --- | --- |
+| `Fix.B2` | state | [A new game in the same session keeps the human players' place in the city name list](#b2-a-new-game-in-the-same-session-keeps-the-human-players-place-in-the-city-name-list) |
+| `Fix.B3` | state | [The AI's attitude change starts from an uninitialised local ("aggression bug")](#b3-the-ais-attitude-change-starts-from-an-uninitialised-local-aggression-bug) |
+| `Fix.B4` | state | [Border intrusions: only the first intruded tile per city is examined](#b4-border-intrusions-only-the-first-intruded-tile-per-city-is-examined) |
+| `Fix.B6` | UI only | [A stale parley cancel ends the next granted audience at once](#b6-a-stale-parley-cancel-ends-the-next-granted-audience-at-once) |
+| `Fix.B7` | UI only | ["Opponent's Response" popups nest](#b7-opponents-response-popups-nest) |
+| `Fix.B9` | state | [The "long move" warning comes too early](#b9-the-long-move-warning-comes-too-early) |
+| `Fix.B10` | UI only | [Clicking a citizen in the city window changes the one to its right](#b10-clicking-a-citizen-in-the-city-window-changes-the-one-to-its-right) |
+| `Fix.B11` | UI only | [Hot-seat: crash in the status panel between players](#b11-hot-seat-crash-in-the-status-panel-between-players) |
+| `Fix.B12` | UI only | [A city opened from an advisor leaves the keyboard with the advisor](#b12-a-city-opened-from-an-advisor-leaves-the-keyboard-with-the-advisor) |
+| `Fix.B13` | state | [A ship's unloading choice tests a flag that starts set](#b13-a-ships-unloading-choice-tests-a-flag-that-starts-set) |
+| `Fix.B14` | UI only | [An enemy unit that fails to move pauses the game as if seen](#b14-an-enemy-unit-that-fails-to-move-pauses-the-game-as-if-seen) |
+| `Fix.B15` | UI only | [Hall of Fame scores over 32767 are hidden](#b15-hall-of-fame-scores-over-32767-are-hidden) |
+| `Fix.B16` | state | [A city grows past 127 to a negative size](#b16-a-city-grows-past-127-to-a-negative-size) |
+| `Fix.B17` | UI only | [The Defense Minister's Casualties view frames a column at a stale position](#b17-the-defense-ministers-casualties-view-frames-a-column-at-a-stale-position) |
+| `Fix.B18` | UI only | [Joining a network game sets "Open Game" from a stale value](#b18-joining-a-network-game-sets-open-game-from-a-stale-value) |
+| `Fix.B19` | state | [A ship away from its own city keeps every defender aboard fortified](#b19-a-ship-away-from-its-own-city-keeps-every-defender-aboard-fortified) |
+| `Fix.B20` | UI only | [Buttons wider than their dialog run past its left edge](#b20-buttons-wider-than-their-dialog-run-past-its-left-edge) |
+| `Fix.B22` | state | [Hot-seat: an AI unit's move is shown, paused for and announced by stale values](#b22-hot-seat-an-ai-units-move-is-shown-paused-for-and-announced-by-stale-values) |
+| `Fix.B23` | state | [A MOVEUNIT event for a named unit type moves nothing](#b23-a-moveunit-event-for-a-named-unit-type-moves-nothing) |
+| `Fix.B24` | state | [A ship with no port to gather at makes its own city a ferry port](#b24-a-ship-with-no-port-to-gather-at-makes-its-own-city-a-ferry-port) |
+| `Fix.B25` | state | [A human unit under autoplay meets a lone diplomat and does what its stack says](#b25-a-human-unit-under-autoplay-meets-a-lone-diplomat-and-does-what-its-stack-says) |
+| `Fix.B28` | UI only | [A save whose end could not be written is reported saved](#b28-a-save-whose-end-could-not-be-written-is-reported-saved) |
+| `Fix.B32` | state | [Renaming in a rules editor to a shorter name shifts every later name](#b32-renaming-in-a-rules-editor-to-a-shorter-name-shifts-every-later-name) |
+| `Fix.B33` | UI only | [The events parser's debug output names a stale civilization](#b33-the-events-parsers-debug-output-names-a-stale-civilization) |
+| `Fix.B34` | state | [Hot-seat: a player whose civilization is destroyed in its own turn becomes an earlier player](#b34-hot-seat-a-player-whose-civilization-is-destroyed-in-its-own-turn-becomes-an-earlier-player) |
+| `Fix.B35` | UI only | [The advisors call a democracy a republic](#b35-the-advisors-call-a-democracy-a-republic) |
+| `Fix.B36` | state | [A ship lost at sea takes every unit on its square with it](#b36-a-ship-lost-at-sea-takes-every-unit-on-its-square-with-it) |
+| `Fix.B37` | state | [An AI breaks its treaty with the player on its own side only, and says nothing](#b37-an-ai-breaks-its-treaty-with-the-player-on-its-own-side-only-and-says-nothing) |
+| `Fix.B38` | UI only | [A Civilopedia description does not take the keyboard](#b38-a-civilopedia-description-does-not-take-the-keyboard) |
+
+An earlier version's `Mode=Classic` (OpenCiv2 Options' Mode page, now gone) becomes `FixBugs=0`
+at the next start, with Classic graphics and the additions off ([EXTRAS.md](EXTRAS.md#what-classic-mode-was)).
 
 Several bugs read a local the original never set (B1, B3, B13, B19). What such a local holds
-is whatever an earlier call left on the stack, which depends on what ran before. Classic mode
-gives it the value seen in our recordings of the original (under Wine), so it reproduces those
-games exactly, not every possible run of the original.
+is whatever an earlier call left on the stack, which depends on what ran before. With the fix off
+the game gives it the value seen in our recordings of the original (under Wine), so it reproduces
+those games exactly, not every possible run of the original.
 
 Each entry gives an ID, where the code is (file, function, line at the time of writing), what
 goes wrong, the source, and the proposed fix. **Saves** says whether the fix could change what
 is saved or break loading the original's saves.
 
-Status of the list: 39 bugs. Fixed by the flag: B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
+Status of the list: 39 bugs. Fixed unless switched off ([above](#switching-the-fixes)): B2, B3, B4, B6, B7, B9 to B20, B22 (in part),
 B23 to B25, B28 and B32 to B38. Fixed in every mode: B1 (our build reads the original's usual
 value), B8 (a memory error), and B21, B22 (in part), B26, B27 and B29 to B31, where the original
-reads its stack and our build would read another value, so classic mode could not match it
-anyway, and B39 (the same result wherever the original's worked). Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
+reads its stack and our build would read another value, so the original's behaviour could not
+be matched anyway, and B39 (the same result wherever the original's worked). Not fixed: B5 (dead code, no effect). Memory errors already fixed in every mode, and
 stale reads of locals that are not bugs, are listed separately. Reports traced
 to code that has no bug are under "Checked, not bugs in MGE". Hot-seat games are not network
 games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
@@ -63,7 +117,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   (`CIV2_STACKPROBE`, tools/gen_c.py FRAME_PRESETS `local_12c`): under Wine its stack held 0 there
   in 687 of 713 calls over 50 turns, an address left by an earlier call in the rest. Our code
   has started it at 0 since then (the line was lost when the function was split into parts, and
-  is back), which is the fix. Classic mode does not reproduce the original's occasional stale
+  is back), which is the fix. With the fix off the game does not reproduce the original's occasional stale
   address (it depends on what ran before, and differs under Windows, where the community saw
   the bug often); no replay shows a difference. Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) traced the
   value when it is not 0: the saved frame pointer of an earlier call (pushed at 005ae3bf), a
@@ -86,7 +140,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** reset `city_name_index` with `times_used` in `game_init_new`. **State**, but only
   default city names, at game start.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`).
+- **Status: fixed** (`bugfix_state(2)`).
 
 ### B16. A city grows past 127 to a negative size
 - **Where:** `City.size` is a signed byte. `city_process_food` (004ebbde) and the celebration
@@ -99,7 +153,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** community (same page), traced here.
 - **Fix:** no growth at 127 (the food box stays full). **State.**
 - **Saves:** none (sizes stay in range).
-- **Status: fixed** (`bugfix_state()`). The cheat menu's Set City Size still accepts any number.
+- **Status: fixed** (`bugfix_state(16)`). The cheat menu's Set City Size still accepts any number.
 
 ### B25. A human unit under autoplay meets a lone diplomat and does what its stack says
 - **Where:** `src/auto/unit_move.cpp`, `unit_move_dir` (0059062c), its part `unit_move_dir_expel`:
@@ -113,7 +167,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** found by Peter Johnson's reconstruction (BF-105).
 - **Fix:** not asked, `answer` is 0: expelled, as an AI unit does. **State.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`). No replay uses autoplay.
+- **Status: fixed** (`bugfix_state(25)`). No replay uses autoplay.
 
 ### B36. A ship lost at sea takes every unit on its square with it
 - **Where:** `src/auto/unit.cpp`, `unit_delete_with_cargo` (005b5d93): for a ship at sea it calls
@@ -129,7 +183,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   `unit_gather_cargo` counts it). Other ships, the rest of their cargo, aircraft in flight and
   other civilizations' units stay. **State.** Tested by `tests/ship_at_sea_test.cpp`.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`).
+- **Status: fixed** (`bugfix_state(36)`).
 
 ## AI
 
@@ -158,7 +212,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** start `attitude_delta` at 0. **State.** This changes how AIs treat everyone, so it
   changes play a lot, intended or not.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x6715d7a0`. With the fix
+- **Status: fixed** (`bugfix_state(3)`). With the fix off the game keeps the preset `0x6715d7a0`. With the fix
   on, the WWII replay diverges where expected (the AI keeps calling `rand()` past the point
   where the original's recording ends). In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) the stale value was
   0x00453e93 instead (a return address left by an earlier call at 00453e8e): different, but
@@ -188,7 +242,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** remove the `break`, so every tile is examined. **State.**
 - **Saves:** none (the unit flags it sets, `UNITF_BORDER_INTRUDER`/`UNITF_BORDER_WARNED`,
   already exist).
-- **Status: fixed** (`bugfix_state()`: the `break` only in classic mode). The original's
+- **Status: fixed** (`bugfix_state(4)`: the `break` only with the fix off). The original's
   machine code has it too (re/decomp.c: the loop's end jumps past the loop).
 
 ### B5. SAM Battery score tests a city flag nothing sets
@@ -234,7 +288,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) the value was 0x013fde70 on two calls: not 4, but
   non-zero too, so the test passes there as well.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`).
+- **Status: fixed** (`bugfix_state(13)`).
 
 ### B19. A ship away from its own city keeps every defender aboard fortified
 - **Where:** `src/auto/ai.cpp`, `ai_unit_choose_orders` (00538a29), its parts
@@ -262,7 +316,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   conquest: no AI ship away from its own city carried a defender that was not fortified), so
   the effect is not measured.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x64a8c19c`.
+- **Status: fixed** (`bugfix_state(19)`). With the fix off the game keeps the preset `0x64a8c19c`.
 
 ### B21. A city's wonder score doubled by its other locals when it builds something else
 - **Where:** `src/auto/city_production.cpp`, `city_choose_production` (00498e8b), its part
@@ -294,7 +348,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** `needs_units` starts at 0: the landmass's own test (`ai_continent_defense_quota`,
   the policy) decides. **State** (AI). No replay reaches this path (counted over the 41 replays).
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`). Classic mode keeps the preset `0x21f238`.
+- **Status: fixed** (`bugfix_state(24)`). With the fix off the game keeps the preset `0x21f238`.
 
 ## Diplomacy and multiplayer
 
@@ -319,7 +373,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   parley window is the protocol's normal course, which the other side, which granted it,
   expects.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`, also in network games). Only the clearing on a new request;
+- **Status: fixed** (`bugfix_ui(6)`, also in network games). Only the clearing on a new request;
   the handler still counts every cancel (counting only matching ones would also change when the
   receiver's `net_popup_parley_request` closes). Checked with `tools/xdnet/nettest.py --diplo
   --after-late fixed` (one more audience after the late grant: the requester's parley window
@@ -349,13 +403,13 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   on the message (the parley's mode, `NM_PARLEY_EXECUTE` sent or the transaction executed, the
   window closed) is done at once as before, so the other player sees the same and nothing on
   the network changes. The window closing meanwhile leaves the keyboard with the popup and
-  gives it to the main window when the last one has closed. **UI only** (`bugfix_ui()`:
-  classic mode and replays keep the original's nesting).
+  gives it to the main window when the last one has closed. **UI only** (`bugfix_ui(7)`:
+  the fix off and replays keep the original's nesting).
 - **Saves:** none.
 - **Status: fixed by the flag.** `nettest.py ours-orig --nest` and `orig-ours --nest`: the
   original's side shows the two popups at once, ours one after the other, Enter closing each;
   both runs pass otherwise as before (every message received in order and byte for byte), and
-  so do `--diplo` both ways. `ours-ours --nest --classic`: ours in classic mode nests them as
+  so do `--diplo` both ways. `ours-ours --nest --classic`: ours with `CIV2_CLASSIC=1` nests them as
   the original does.
 
 ### B18. Joining a network game sets "Open Game" from a stale value
@@ -369,7 +423,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** start `saved_open_game` from `mp_options.open_game`. **UI only** in effect (a local
   option, set before the game; nothing another player computes from it but whether it may join).
 - **Saves:** none (`open_game` is not saved; CIV2.DAT stores `menu_prefs.mp_open_game`).
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(18)`).
 
 ### B34. Hot-seat: a player whose civilization is destroyed in its own turn becomes an earlier player
 - **Where:** `src/auto/game.cpp`, `game_play_loop` (0048b340), lines 5346-5376. Before an AI
@@ -384,7 +438,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** found by Peter Johnson's reconstruction (BF-164).
 - **Fix:** put the player back only when this turn saved it. **State.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`); classic mode restores the player saved at an earlier
+- **Status: fixed** (`bugfix_state(34)`); with the fix off the game restores the player saved at an earlier
   turn, as the original, and keeps the player when no turn saved one (the original's stack).
 
 ### B37. An AI breaks its treaty with the player on its own side only, and says nothing
@@ -411,7 +465,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   an AI's war on another AI does (`diplomacy.cpp`, line 6099). How often the AI breaks a treaty
   is unchanged. **State.**
 - **Saves:** none (the existing treaty flags).
-- **Status: fixed** (`bugfix_state()`); `tests/ai_treaty_break_test.cpp` checks both modes.
+- **Status: fixed** (`bugfix_state(37)`); `tests/ai_treaty_break_test.cpp` checks both modes.
 
 ## Scenario and events
 
@@ -439,8 +493,8 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** found by Peter Johnson's reconstruction (BF-015).
 - **Fix:** compare with the unit's type. **State.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`). Test: `harness/extras/x-b23-moveunit.txt` (the Civil
-  War scenario, fixed and classic: fixed, a Blockade Runner sails on the AI's turn).
+- **Status: fixed** (`bugfix_state(23)`). Test: `harness/extras/x-b23-moveunit.txt` (the Civil
+  War scenario, with the fix and without: fixed, a Blockade Runner sails on the AI's turn).
 
 ### B32. Renaming in a rules editor to a shorter name shifts every later name
 - **Where:** the rules editors' OK: `tech_editor_save_items` (00415307, `src/auto/civ.cpp`
@@ -455,7 +509,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** the rest of the old name is cleared too (`editor_copy_pool_name`,
   `src/include/auto_common.h`). **State** (the rules).
 - **Saves:** none (the rules editors' RULES.TXT gets the names as shown).
-- **Status: fixed** (`bugfix_state()`). Not reached with the game's own rules: none of their
+- **Status: fixed** (`bugfix_state(32)`). Not reached with the game's own rules: none of their
   names is longer than its editor's width.
 
 ### B33. The events parser's debug output names a stale civilization
@@ -467,7 +521,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** found by Peter Johnson's reconstruction (BF-235).
 - **Fix:** print the civilization just read. **UI only.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(33)`).
 
 ## User interface
 
@@ -494,7 +548,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   moves ask (`unit_move_by_local_human`), but the counter is unit data and orders can be
   cancelled, so treat it as **state**.
 - **Saves:** none (the byte is saved already).
-- **Status: fixed** (`bugfix_state()`): the map click in goto mode, Go To a city
+- **Status: fixed** (`bugfix_state(9)`): the map click in goto mode, Go To a city
   (`unit_cmd_goto_city`), and the city window's "go to this city" for a unit
   (`city_window_supported_unit_menu`, which CIV2UIA does not patch).
 
@@ -508,9 +562,9 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   `@width=220`) shows "...alty Timeline" for "Zoom to Casualty Timeline".
 - **Source:** reported by the user playing the Rome scenario.
 - **Fix:** when the buttons are wider than the window, the window grows to hold them.
-  **UI only.** Test: `harness/extras/x-b20-buttons.txt` (fixed and classic).
+  **UI only.** Test: `harness/extras/x-b20-buttons.txt` (with the fix and without).
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(20)`).
 
 ### B10. Clicking a citizen in the city window changes the one to its right
 - **Where:** `src/auto/city_window.cpp`, `CityWindow::draw_citizens`, which adds one hotspot
@@ -532,7 +586,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   instead of `scale(5)` (CIV2UIA's formula, its patch at 00502203: `(zoom * 19 - spacing) / 2 -
   1`). **UI only.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(10)`).
 
 ### B11. Hot-seat: crash in the status panel between players
 - **Where:** `src/auto/game_status.cpp`, `status_draw_unit_panel` (00569801), its part for the tile
@@ -550,7 +604,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** read the human player's view only when `human_civ > 0`, the whole map's otherwise.
   **UI only.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`). Classic mode reads `known[-1]` as the original does, which
+- **Status: fixed** (`bugfix_ui(11)`). With the fix off the game reads `known[-1]` as the original does, which
   can crash in ours too.
 
 ### B12. A city opened from an advisor leaves the keyboard with the advisor
@@ -566,7 +620,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   of 0040138e), and gives it back to an open advisor (`advisor_state.report_id >= 0`) when it
   closes (CIV2UIA: 00509985). **UI only.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`). The same replay with the fix: Escape closes the city window,
+- **Status: fixed** (`bugfix_ui(12)`). The same replay with the fix: Escape closes the city window,
   a second Escape the advisor.
 
 ### B14. An enemy unit that fails to move pauses the game as if seen
@@ -580,7 +634,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** our code (stale-stack reads).
 - **Fix:** `civ_sees` all 0 at the start. **UI only** (a delay).
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(14)`).
 
 ### B15. Hall of Fame scores over 32767 are hidden
 - **Where:** `src/auto/reports.cpp`: `hall_of_fame_add_entry` (00436f5a) stores the score in a
@@ -593,7 +647,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** read the field as unsigned (0..65534; 0xffff is an empty place): shown unless 0xffff,
   printed unsigned, a new score clamped to 65534. **UI only.**
 - **Saves:** HALLFAME.DAT keeps its format; the original hides such an entry, as it does today.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(15)`).
 
 ### B17. The Defense Minister's Casualties view frames a column at a stale position
 - **Where:** `src/auto/reports.cpp`, the Defense Minister's draw function (0042e220): the
@@ -603,7 +657,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** our code (`-Wmaybe-uninitialized`).
 - **Fix:** no frame when no row was listed. **UI only.**
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(17)`).
 
 ### B22. Hot-seat: an AI unit's move is shown, paused for and announced by stale values
 - **Where:** `unit_move_dir` (0059062c, `src/auto/unit_move.cpp`) and `unit_paradrop`
@@ -623,7 +677,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** with no player here (human_civ -1 or 0) nobody here sees the move
   (`unit_move_dir_local_view`). **State** (the landing count).
 - **Saves:** none.
-- **Status: fixed** (`bugfix_state()`) in `unit_move_dir`; classic mode reads what the
+- **Status: fixed** (`bugfix_state(22)`) in `unit_move_dir`; with the fix off the game reads what the
   original reads: `has_hut`, `civ_sees` and `civ_animates` are one array in the original's
   order (`views`), and entry 0 is 0. In `unit_paradrop` the original reads locals not set at
   that point (the approach direction, `civ_sees[7]` only set for a human player 7), so the fix
@@ -661,7 +715,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Fix:** the file is closed before returning, and a failed close is a failed save
   (SAVEERROR, as the other write errors). **UI only** (the message; the file is the same).
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`).
+- **Status: fixed** (`bugfix_ui(28)`).
 
 ### B29. The High Council's first advisor button may not clear the speech area
 - **Where:** `src/auto/reports.cpp`, `CouncilWindow::draw_speech` (line 6853) reads
@@ -708,7 +762,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Source:** community (duplij's civ2.exe fixes on CivFanatics, item 24; issue #24), traced here.
 - **Fix:** clamp to 5. **UI only.** (Anarchy still shows "Empire".)
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`; also in the `CityStatus` extra's own City Status view).
+- **Status: fixed** (`bugfix_ui(35)`; also in the `CityStatus` extra's own City Status view).
 
 ### B38. A Civilopedia description does not take the keyboard
 - **Where:** `src/game/retvals.cpp`, `PediaWindow::load_description` (the description's edit
@@ -721,7 +775,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   Back at the list (Go Back), the arrows move the list's selection as before; Escape does what it
   did.
 - **Saves:** none.
-- **Status: fixed** (`bugfix_ui()`). `harness/extras/x-pediakeys.txt` (with `CIV2_TEST_FIXES=1`).
+- **Status: fixed** (`bugfix_ui(38)`). `harness/extras/x-pediakeys.txt` (with `CIV2_TEST_FIXES=1`).
 
 ### B39. A dot in a folder's name taken for the file's extension
 - **Where:** `src/game/regargs.cpp`, `path_default_extension` (00472950) and

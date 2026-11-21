@@ -85,9 +85,12 @@ indices the game's code relies on; `CIV2.DAT` and `HALLFAME.DAT` are made by the
 fresh install; `timerdll.dll` and `XDaemon.dll` are built in.  `harness/extras/x-no-install.txt`
 and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text, rules and sounds
 (`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), in HD
-graphics, which are always on without the original's pictures (no Classic mode, no original
-look: by design only the original's look with its install, or HD with or without it;
-`x-no-install-options.txt` shows OpenCiv2 Options saying so).  The sound effects are
+graphics, which are always on without the original's pictures (no Classic graphics, no
+original look: by design only the original's look with its install, or HD with or without it;
+the bug fixes, additions and rule changes are chosen apart from the graphics, so the original's
+rules play without the install too; `x-no-install-options.txt` shows OpenCiv2 Options saying so,
+and ticking Classic graphics there opening the dialog that offers to find the original's files
+and copy them in, as the set-up does).  The sound effects are
 OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0; decoded
 into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
 music, scenarios.  The editors'
@@ -716,8 +719,11 @@ message by message and clock event by clock event.
   the long-move warning's counter, city names in a second game, citizens'
   click areas, the focus of a city opened from an advisor, Hall of Fame scores
   over 32767, cities past size 127, a hot-seat read past the knowledge maps,
-  and smaller ones.  `CIV2_CLASSIC=1` keeps them (the original game, as it
-  keeps its look); replays and unit tests always run the original's code, and
+  and smaller ones.  Switched off together in OpenCiv2 Options (Bug fixes:
+  `FixBugs=0`) or one by one (`Fix.B<n>=0|1`, docs/BUGS.md "Switching the
+  fixes"; `plat_fixes`, a bit per fix, `bugfix_state(n)`/`bugfix_ui(n)`);
+  `CIV2_CLASSIC=1` keeps them all (the original game, as it keeps its look);
+  replays and unit tests always run the original's code, and
   network games the original's game rules (the fixes that change only what one
   player sees stay on).  The suite passes 36 of 36 and `make test` all cases;
   with the fixes on in the replays (`CIV2_TEST_FIXES=1`, tests only) none
@@ -737,12 +743,17 @@ message by message and clock event by clock event.
   OpenCiv2 Options, the main menu's last choice (src/game/options.cpp, the
   game's own dialogs; it replaced the opening window shown before the game
   started, which had replaced Game > OpenCiv2 Options, November 2026), switches
-  them, the rule changes and the limits (at once: extras_load again), the mode
-  (Standard or Classic: `Mode=Classic`), sharp text, full screen and HD
-  graphics (the art in the repository, data/native/hd), those offering a
-  restart (host_restart: the program executed again, the page loaded again in
+  them, the bug fixes, the rule changes and the limits (at once: extras_load,
+  fixes_load again), Classic graphics (unticked: HD graphics, the art in the
+  repository, data/native/hd; without the original's pictures, ticked, the
+  set-up's import offered: an installed game, its CD, a .zip of it, a disc
+  image, the files the game folder lacks copied in; the browser's set-up page),
+  sharp text and full screen, those offering a restart (host_restart: the program executed again, the page loaded again in
   the browser); in a test run (CIV2_TEST_OPTIONS) its choices hold for the run
-  instead (options_test_setting).  Arrange Windows S/L are always in the menu, hidden while
+  instead (options_test_setting).  The Mode page (Standard or Classic) of
+  earlier versions is gone: a CIV.INI with `Mode=Classic` becomes Classic
+  graphics, the fixes and the additions off at the next start
+  (extras_migrate_classic).  Arrange Windows S/L are always in the menu, hidden while
   X38 is off.  The trade-road path line (X39's second half)
   walks the path finder as map_road_connection does (road planning: every land
   step costs 1, ties to the square nearer the goal), its state saved and put

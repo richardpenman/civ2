@@ -6424,9 +6424,13 @@ i32 __cdecl ai_unit_choose_orders(void)
     score, tile_flags, tasks_mask};
   defender_count = 0x108; needed_defenders = 0x64a8c19c; cand_score = 0x3bd; best_score = 0; goal_match = 4;  /* stale stack the original reads (FRAME_PRESETS) */
   needs_units = 0x21f238; target_policy = 0x21f2dc;  /* stale stack the original reads (FRAME_PRESETS; CIV2_STACKPROBE=538a29:dc:4 and 538a29:2c:4, civilwar) */
-  if (bugfix_state()) {
+  if (bugfix_state(13)) {
     goal_match = 0;  /* B13: a ship's cargo flag starts set from stale stack (docs/BUGS.md) */
+  }
+  if (bugfix_state(19)) {
     needed_defenders = 0;  /* B19: away from its own city a ship keeps every defender aboard fortified (docs/BUGS.md) */
+  }
+  if (bugfix_state(24)) {
     needs_units = 0;  /* B24: a ship with no port to go to makes its own city a ferry port for stale stack (docs/BUGS.md) */
   }
   

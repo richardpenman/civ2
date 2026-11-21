@@ -196,7 +196,12 @@ assert.equal(hdWanted(ini0, ''), 0);
 assert.equal(hdWanted(ini0, '3'), 3);
 assert.equal(hdWanted(ini1, '0'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
-assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);   // (an earlier version's)
+// Classic graphics (OpenCiv2 Options: Graphics=Classic; Standard, as earlier versions wrote it)
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Classic'), null), -1);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Standard'), null), -1);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Classic'), '2'), 2);
+assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Classic'), null, false), 0);
 // without the original's pictures: HD graphics whatever is chosen (Classic too)
 assert.equal(hasOriginalPictures(ORIGINAL_PICTURES.map((n) => n.toLowerCase()).concat(['RULES.TXT'])), true);
 assert.equal(hasOriginalPictures(ORIGINAL_PICTURES.filter((n) => n !== 'TILES.DLL')), false);

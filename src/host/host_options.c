@@ -176,3 +176,12 @@ int host_restart(int now)
 #endif
     return 0;
 }
+
+/* ---- the original's files ---- */
+
+/* (the native test build, which has no set-up: src/host/setup.c is the
+   portable build's, whose port_main.c gives the module setup_add_original) */
+int host_add_original(void)
+{
+    return -1;
+}

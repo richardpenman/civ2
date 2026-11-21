@@ -59,15 +59,16 @@ typedef struct mmtime_tag mmtime_tag;
 /* Scope-bound release: files, DCs, locks, local objects (step 6, RAII). */
 #include "scoped.h"
 /* The original's bugs (docs/BUGS.md) are fixed unless the original game is
- * wanted: CIV2_CLASSIC=1, replays and unit tests (plat_fix_bugs,
- * src/platform/main.c).  Each fix: if (bugfix_state()) <fixed> else
- * <original>, marked B<n>.  bugfix_state: a fix that changes the game's state,
- * also off in network games (every player, the original game included, must
- * compute the same game); bugfix_ui: one that changes only what this player
- * sees. */
-EXTERN_C int plat_fix_bugs;
-static inline int bugfix_ui(void) { return plat_fix_bugs; }
-static inline int bugfix_state(void) { return plat_fix_bugs && game.multiplayer < 3; }
+ * wanted: CIV2_CLASSIC=1, replays and unit tests, or switched off in OpenCiv2
+ * Options ([OpenCiv2] FixBugs=0) or one by one (Fix.B<n>=0|1, which wins over
+ * FixBugs=): plat_fixes, a bit per fix by its number (src/game/extras.cpp:
+ * fixes_load).  Each fix: if (bugfix_state(n)) <fixed> else <original>, marked
+ * B<n>.  bugfix_state: a fix that changes the game's state, also off in
+ * network games (every player, the original game included, must compute the
+ * same game); bugfix_ui: one that changes only what this player sees. */
+EXTERN_C uint64_t plat_fixes;
+static inline int bugfix_ui(int n) { return (int)((plat_fixes >> n) & 1); }
+static inline int bugfix_state(int n) { return bugfix_ui(n) && game.multiplayer < 3; }
 /* B32: a rules editor's new name written over a name in the string pool, at
  * the editor's width (_strncpy pads it with NULs).  A pool entry can be longer
  * than that width (a scenario's RULES.TXT); a shorter new name then leaves the
@@ -76,7 +77,7 @@ static inline int bugfix_state(void) { return plat_fix_bugs && game.multiplayer 
  * is cleared too. */
 static inline void editor_copy_pool_name(char *dest, const char *src, size_t width)
 {
-  size_t old_len = bugfix_state() ? _strlen(dest) : 0;
+  size_t old_len = bugfix_state(32) ? _strlen(dest) : 0;
   _strncpy(dest, src, width);
   if (old_len > width)
     memset(dest + width, 0, old_len - width);

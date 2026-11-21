@@ -6,9 +6,9 @@
  * draws from Peter Johnson's replacement art (openciv2-assets).  Whatever
  * else changes a surface's pixels shows in its plane as those pixels
  * enlarged.  On with sharp text and interface (CIV.INI's [OpenCiv2]
- * SharpText=, on by default but in Classic mode) on a screen of more than
+ * SharpText=, on by default but with CIV2_CLASSIC=1) on a screen of more than
  * one pixel per game pixel, or with HD graphics (Graphics=HD, the art
- * installed; never in Classic mode); never in replays (but CIV2_TEST_SHARP=N,
+ * installed; never with CIV2_CLASSIC=1); never in replays (but CIV2_TEST_SHARP=N,
  * CIV2_TEST_HD=N) or the unit tests.  Nothing here changes what the game
  * computes, nor calls rand().
  */

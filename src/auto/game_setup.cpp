@@ -1013,7 +1013,7 @@ i32 __cdecl setup_network_game(int conn_type)
   {
     ((ErrorContext *)((i8 *)&err_report_ctx_block.err_report_ctx))->report(7,(const char*)&str_whichnetwork_internet_whichnetwork_local,(const char*)&str_d_ss_franklinton_startup_lan_cpp,0x21);
   }
-  if (bugfix_ui()) {
+  if (bugfix_ui(18)) {
     saved_open_game = (int)mp_options.open_game;  /* B18: joining keeps the option (docs/BUGS.md) */
   }
   net.connection_type = conn_type;

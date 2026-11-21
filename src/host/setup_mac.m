@@ -1,5 +1,5 @@
 /*
- * macOS: the folder (or disc image, a .cue file) for the set-up asked with
+ * macOS: the folder (or disc image, a .cue file, or a .zip of the game) for the set-up asked with
  * the system's open panel (setup_unix.c).  Compiled with ARC.
  */
 #import <Cocoa/Cocoa.h>
@@ -16,7 +16,7 @@ int setup_mac_ask_folder(const char *prompt, char *out, size_t size)
         [NSApp activateIgnoringOtherApps:YES];
         panel = [NSOpenPanel openPanel];
         panel.canChooseFiles = YES;
-        panel.allowedContentTypes = @[[UTType typeWithFilenameExtension:@"cue"]];     /* macOS 11 */
+        panel.allowedContentTypes = @[[UTType typeWithFilenameExtension:@"cue"], UTTypeZIP];     /* macOS 11 */
         panel.canChooseDirectories = YES;
         panel.allowsMultipleSelection = NO;
         panel.message = [NSString stringWithUTF8String:prompt];

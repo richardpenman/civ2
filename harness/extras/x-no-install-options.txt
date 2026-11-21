@@ -1,12 +1,16 @@
 # Without the original's pictures (docs/NO-INSTALL.md): the game runs with HD
 # graphics, though none is asked for (no CIV2_TEST_HD: the forced HD at the
-# replay's density, 1), and the OpenCiv2 Options dialog says why: the Mode
-# page with Classic not offered, the Graphics and screen page with HD
-# graphics ticked, each with the note "Classic graphics need the original
-# Civilization II files"; HD graphics unticked and OK: the note again, and
-# they stay on (the page opened again: ticked); then a saved game loaded,
-# its map in HD.  The install's other files
-# are there (its .DAT files, text, rules, sounds).
+# replay's density, 1), and OpenCiv2 Options says why: the Graphics and
+# screen page with Classic graphics unticked and the note "Classic graphics
+# need the original Civilization II files"; Classic graphics ticked and OK:
+# the dialog that offers to find the original's files (docs/EXTRAS.md
+# "Classic graphics without the original files"); Keep HD graphics: the
+# note, and HD graphics stay (the page opened again: unticked); ticked
+# again, Find the original files: in a test run nothing is copied (the note
+# says it cannot be done there); the bug fixes' page as with the install
+# (the fixes are chosen apart from the graphics); then a saved game loaded,
+# its map in HD.  The install's other files are there (its .DAT files,
+# text, rules, sounds).
 # test: CIV2_NO_GRAPHICS=1 CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
 wait 8000
 shot nio-a-mainmenu
@@ -14,27 +18,37 @@ key Down Down Down Down Down Down Down Down
 key Return
 wait 2000
 shot nio-b-options
-key Return                  # Mode
+key Return                  # Bug fixes: as with the install
 wait 1000
-shot nio-c-mode
+shot nio-c-fixes
 key Escape
 wait 1000
 key Down                    # Graphics and screen
 key Return
 wait 1000
 shot nio-d-graphics
-click 120 339               # HD graphics: unticked
+click 100 326               # Classic graphics: ticked
 wait 500
-shot nio-e-graphics-unticked
-key Return                  # OK
+shot nio-e-graphics-ticked
+key Return                  # OK: the original's files needed
 wait 1000
-shot nio-f-message
+shot nio-f-locate
+key Down                    # Keep HD graphics
 key Return
 wait 1000
-key Return                  # Graphics and screen again: HD still ticked
+shot nio-g-kept
+key Return
 wait 1000
-shot nio-g-graphics-again
-key Escape
+key Return                  # Graphics and screen again: Classic graphics unticked
+wait 1000
+shot nio-h-graphics-again
+click 100 326               # Classic graphics: ticked
+key Return
+wait 1000
+key Return                  # Find the original files...: not in a test run
+wait 1000
+shot nio-i-cannot
+key Return
 wait 1000
 key Escape
 wait 2000
@@ -46,4 +60,4 @@ key Return
 wait 20000
 key Return
 wait 8000
-shot nio-h-game
+shot nio-j-game

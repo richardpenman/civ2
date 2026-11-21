@@ -779,7 +779,7 @@ i32 __cdecl save_write_game(const char *file_name,int is_scenario)
                   }
                 }
                 result = 0;
-                if ((file.close() != 0) && bugfix_ui()) {
+                if ((file.close() != 0) && bugfix_ui(28)) {
                   /* B28: the end of the file could not be written (a full disk): a
                      failed save, not a saved game cut short (docs/BUGS.md) */
                   result = 1;

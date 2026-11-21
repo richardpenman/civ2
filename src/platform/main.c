@@ -282,30 +282,29 @@ int main(int argc, char **argv)
     }
     set_dirs(argv[0], argc > 1 && !unit_test ? argv[1] : NULL);
     clock_init();
-    /* Classic: CIV2_CLASSIC=1, or chosen in the OpenCiv2 Options dialog
-       (src/game/options.cpp: CIV.INI's [OpenCiv2] Mode=Classic; not in
-       replays and the unit tests). */
-    if (!classic && !unit_test && !plat_replay) {
-        char mode[32] = "";
-        plat_profile_string("CIV.INI", "OpenCiv2", "Mode", mode, sizeof mode);
-        classic = !strcasecmp(mode, "Classic");
-    }
+    /* CIV2_CLASSIC=1: the original game (its look, its bugs, none of the
+       additions; tests).  A CIV.INI of an earlier version with Mode=Classic
+       (OpenCiv2 Options' Mode page, now gone) becomes its choices of now:
+       Classic graphics, the original's bugs, none of the additions
+       (extras_migrate_classic). */
+    if (!unit_test && !plat_replay)
+        extras_migrate_classic();
     /* Without the original's pictures (docs/NO-INSTALL.md): HD graphics,
-       whatever is chosen (hd_init), and no Classic mode (the original's look
-       needs them); the pictures the game reads made from the art (synth.c). */
+       whatever is chosen (hd_init; with CIV2_CLASSIC=1 too: the original's
+       look needs them, its rules do not); the pictures the game reads made
+       from the art (synth.c). */
     if (!unit_test) {
         const char *missing = synth_missing();
         if (missing) {
             plat_hd_forced = 1;
-            plat_log("graphics: the game folder has no %s: HD graphics%s\n", missing,
-                     classic ? ", Standard mode (Classic needs the original's pictures)" : "");
-            classic = 0;
+            plat_log("graphics: the game folder has no %s: HD graphics\n", missing);
         }
     }
-    /* The original's bugs are fixed (docs/BUGS.md) except with CIV2_CLASSIC=1
+    /* The original's bugs are fixed (docs/BUGS.md) as chosen in OpenCiv2
+       Options (FixBugs=, Fix.B<n>=: fixes_load), but not with CIV2_CLASSIC=1
        (the original game) and in replays and unit tests, which are compared
        with the original; CIV2_TEST_FIXES=1 fixes them in a replay (tests). */
-    plat_fix_bugs = !classic && !unit_test &&
+    plat_fixes_allowed = !classic && !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_FIXES") && *getenv("CIV2_TEST_FIXES")));
     /* The interface additions (docs/EXTRAS.md) likewise; CIV2_TEST_EXTRAS
        turns them on in a replay (tests). */
@@ -379,6 +378,7 @@ int main(int argc, char **argv)
     }
     replay_init();
     extras_load();
+    fixes_load();
     pointer_init(screen_w / 2, screen_h / 2);      /* where the X server puts it */
     /* The game's static data, then the C and C++ initializers the MSVC
      * runtime ran before WinMain. */

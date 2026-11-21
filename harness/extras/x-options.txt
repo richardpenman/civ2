@@ -1,13 +1,13 @@
 # The OpenCiv2 Options dialog (src/game/options.cpp), the main menu's last
 # choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI or restarted; the
-# choices hold for the run): its pages; Classic chosen (the restart
-# offered, the other pages not in it) and Standard again; HD graphics
-# ticked and sharp text off (the restart offered); Go To past foreign units, the retirement
-# year, the turn in the status panel off and gamma 150 chosen, which hold
-# at once: a saved game loaded without the turn after the year, brighter;
-# the Language page (each language by its own name: Greek and Chinese
-# escaped in the Windows-1252 interface, src/include/utf8.h), Greek and
-# Chinese selected, the page cancelled.
+# choices hold for the run): its pages; the bug fixes unticked (at once, no
+# restart) and the page again; Classic graphics unticked (HD graphics) and
+# sharp text off (the restart offered); Go To past foreign units, the
+# retirement year, the turn in the status panel off and gamma 150 chosen,
+# which hold at once: a saved game loaded without the turn after the year,
+# brighter; the Language page (each language by its own name: Greek and
+# Chinese escaped in the Windows-1252 interface, src/include/utf8.h), Greek
+# and Chinese selected, the page cancelled.
 # test: CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
 # (sharp: the same with sharp text and interface at density 2: the dialogs'
 # text and controls drawn sharp, the -hd shots)
@@ -18,28 +18,26 @@ key Down Down Down Down Down Down Down Down
 key Return
 wait 2000
 shot xo-b-options
-key Return                  # Mode
+key Return                  # Bug fixes
 wait 1000
-shot xo-c-mode
-key Down                    # Classic
+shot xo-c-fixes
+click 100 312               # Fix the original game's bugs: off
+wait 500
+shot xo-d-fixes-off
 key Return
 wait 1000
-shot xo-d-restart
-key Down                    # Later
-key Return
+shot xo-e-options
+key Return                  # Bug fixes again: unticked
 wait 1000
-shot xo-e-options-classic
-key Return                  # Mode
-wait 1000
-key Up                      # Standard
-key Return
+shot xo-e2-fixes-again
+key Escape
 wait 1000
 key Down                    # Graphics and screen
 key Return
 wait 1000
 shot xo-f-graphics
-click 100 312               # HD graphics
-click 100 290               # Sharp text and interface: off
+click 100 299               # Classic graphics: off (HD graphics)
+click 100 321               # Sharp text and interface: off
 wait 500
 shot xo-g-graphics-chosen
 key Return

@@ -1,11 +1,13 @@
 # Media test (make test-media): an animated herald (KINGS\HRLDxxx.AVI from
 # the CD) over the leader's portrait in the diplomacy room: the opening
-# video skipped (Escape), the autosave loaded (Animated Heralds on), an
-# emissary of the Romans; shots as the video plays, then after the dialogs.
+# video ended with a click (with HD graphics none is played: the click
+# falls on the main menu's backdrop), the autosave loaded (Animated Heralds
+# on), an emissary of the Romans; shots as the video plays, then after the
+# dialogs.
 # test:
 # test hd: CIV2_TEST_HD=2
 wait 3000
-key Escape
+click 20 400                # ends the opening video (HD: none, a click on the menu's backdrop)
 wait 5000
 key Down Down Down Down     # "Load a Game"
 wait 500

@@ -1466,7 +1466,7 @@ void __cdecl map_window_click(i32 screen_x,i32 screen_y,int alt_click)
                   units[unit].goto_x = (i16)x2;
                   units[unit].goto_y = (i16)y2;
                   units[unit].orders = ORDER_GOTO;
-                  if (bugfix_state()) {
+                  if (bugfix_state(9)) {
                     units[unit].aux_timer = '\0';  /* B9: the long move count starts again (docs/BUGS.md) */
                   }
                   unit_goto_step(unit);

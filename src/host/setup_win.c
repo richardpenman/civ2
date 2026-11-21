@@ -468,6 +468,14 @@ int os_confirm(const char *text)
     return 1;
 }
 
+int os_ask(const char *text, const char *yes, const char *no)
+{
+    static WCHAR w[4096];
+    (void)yes;
+    (void)no;
+    return MessageBoxW(NULL, wide(text, w, 4096), L"OpenCiv2", MB_OKCANCEL | MB_ICONQUESTION) == IDOK;
+}
+
 /* ---- the CD's music, from its drive ---- */
 
 #define CD_SECTOR 2352

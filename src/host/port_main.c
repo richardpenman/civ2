@@ -110,6 +110,9 @@ void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density)
 { (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
 u32 HOST(restart)(Host *h, u32 now) { (void)h; return (u32)host_restart((int)now); }
+/* (the game's folder, as the system names it: setup_choose_game's) */
+static char game_folder[4096];
+u32 HOST(add_original)(Host *h) { (void)h; return (u32)setup_add_original(game_folder); }
 void HOST(resize_desktop)(Host *h, u32 w, u32 hh) { (void)h; host_resize_desktop((int)w, (int)hh); }
 
 static u32 event_out(int got, const HostEvent *e, u32 out)
@@ -232,6 +235,7 @@ int main(int argc, char **argv)
        starts at "/", so it is named (main.c's argument). */
     if (!setup_choose_game(argc, argv, cwd, sizeof cwd))
         return 0;
+    snprintf(game_folder, sizeof game_folder, "%s", cwd);
     host_lang_init(cwd);            /* (the game's CIV.INI known now) */
     module_path(cwd, game, sizeof game);
     args[0] = argv[0];

@@ -1805,7 +1805,7 @@ void __cdecl science_advisor_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,cur_y,advisor_state.client_width);
   cur_y += line_height;
   text_clear();
-  govt_index = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  govt_index = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(govt_index + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -7112,7 +7112,7 @@ void __cdecl civ_turn_update_diplomacy(uptr civ)
                 value = game.turn - 8;
               }
               civs[civ2].last_contact_turn[civ] = (short)value;
-              if (bugfix_state()) {  /* B37 */
+              if (bugfix_state(37)) {  /* B37 */
                 /* the treaty ends on both sides, and the player is told when
                    it was peace (the original ended it on the AI's side only and
                    said nothing: the player's side still read peace) */

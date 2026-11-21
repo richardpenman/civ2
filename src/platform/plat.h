@@ -58,10 +58,8 @@ extern int plat_lbutton_held;           /* a scroll bar control's arrow is being
                                            tracking runs while it is (controls.c) */
 extern int plat_lock_panels;            /* the game's panels (child windows: map, world, status) not
                                            moved or sized by the mouse, as the original allows */
-extern int plat_fix_bugs;               /* the original's bugs fixed (docs/BUGS.md): not with
-                                           CIV2_CLASSIC=1, in replays or the unit tests */
-#include "../include/extras.h"              /* plat_extras: the interface additions (docs/EXTRAS.md),
-                                           on or off as plat_fix_bugs */
+#include "../include/extras.h"              /* plat_extras: the interface additions (docs/EXTRAS.md);
+                                           plat_fixes: the bug fixes (docs/BUGS.md) */
 
 /* ---- regions: lists of rectangles ---- */
 
@@ -299,7 +297,7 @@ int synth_file(const char *name, char *host, size_t n);
 const char *synth_missing(void);        /* the first of the original's pictures missing, or NULL */
 int plat_game_file_exists(const char *name);    /* files.c: in the game folder, any case */
 /* The game folder lacks the original's pictures (main.c: synth_missing):
-   HD graphics whatever is chosen, and no Classic mode (docs/NO-INSTALL.md) */
+   HD graphics whatever is chosen, no Classic graphics (docs/NO-INSTALL.md) */
 extern int plat_hd_forced;
 int synth_module(const char *module);
 const unsigned char *synth_resource(const char *module, int id, unsigned *len);

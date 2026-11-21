@@ -2537,7 +2537,7 @@ void __cdecl game_play_loop(void)
             /* B34: a hot-seat player whose civ was destroyed in its own turn
                (its last city starved) keeps the player: the original took
                the player saved at an earlier AI civ's turn (or its stack) */
-            if (bugfix_state() ? (human_civ_saved == 2) : (human_civ_saved != 0)) {
+            if (bugfix_state(34) ? (human_civ_saved == 2) : (human_civ_saved != 0)) {
               (*(i8 *)&human_civ) = (iptr)saved_human_civ;
             }
           }
@@ -3582,7 +3582,7 @@ void __cdecl game_init_new(void)
   }
   for (leader = 0; leader < 0x15; leader++) {
     leaders[leader].times_used = '\0';
-    if (bugfix_state()) {
+    if (bugfix_state(2)) {
       leaders[leader].city_name_index = '\0';  /* B2: a new game names the cities from the list's start (docs/BUGS.md) */
     }
   }

@@ -5390,7 +5390,7 @@ int __cdecl diplo_count_border_intruders(int civ,int intruder_civ)
             }
           }
           /* only the first tile with a unit of intruder_civ is examined */
-          if (!bugfix_state()) {
+          if (!bugfix_state(4)) {
             break;  /* B4: the other tiles are not examined (docs/BUGS.md) */
           }
         }
@@ -5752,7 +5752,7 @@ static void diplo_civs_meet_parley(uptr civ,uptr civ2)
   
   advisor_window_block.mp_meeting_reply = -1;
   diplo_meeting.mp_pending = 1;
-  if (bugfix_ui()) {
+  if (bugfix_ui(6)) {
     net.nm_parley_cancel_count = 0;  /* B6: a cancel left from an earlier audience does not end this one (docs/BUGS.md) */
   }
   net_send_text_args(0x3d,net.net_slots[net.net_civ_slots[civ2]].id,0,0,
@@ -6685,7 +6685,7 @@ void __cdecl diplo_ai_review_relations(int civ,uptr civ2)
 {
   int attitude_delta;
   iptr unit;
-  if (bugfix_state()) {
+  if (bugfix_state(3)) {
     attitude_delta = 0;  /* B3: the change starts from stale stack (docs/BUGS.md) */
   }
   else {

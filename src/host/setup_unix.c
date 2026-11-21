@@ -351,6 +351,30 @@ int os_confirm(const char *text)
     return id == 1;
 }
 
+int os_ask(const char *text, const char *yes, const char *no)
+{
+    SDL_MessageBoxButtonData buttons[] = {
+        {SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, NULL},
+        {SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, NULL},
+    };
+    SDL_MessageBoxData box;
+    char wrapped[4 * SETUP_PATH];
+    int id;
+    buttons[0].text = yes;
+    buttons[1].text = no;
+    memset(&box, 0, sizeof box);
+    box.flags = SDL_MESSAGEBOX_INFORMATION;
+    box.title = TITLE;
+    box.message = box_text(text, wrapped, sizeof wrapped);
+    box.numbuttons = 2;
+    box.buttons = buttons;
+    if (SDL_ShowMessageBox(&box, &id)) {
+        fprintf(stderr, "OpenCiv2: %s\n", text);       /* (no display for it: no) */
+        return 0;
+    }
+    return id == 1;
+}
+
 /* (no window: what is done, on the terminal) */
 void os_progress_open(void)
 {

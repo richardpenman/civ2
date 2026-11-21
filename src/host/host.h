@@ -114,6 +114,14 @@ void HOST_API(host_minimize)(void);
  * browser); 0 it cannot be.  now 1: does it, and does not return (0: it
  * could not). */
 int HOST_API(host_restart)(int now);
+/* The original's files the game folder lacks, from the player's copy of
+ * the game (an installed game, its CD, a .zip of the installed folder, a
+ * disc image), as the set-up takes them (src/host/setup.c:
+ * setup_add_original; in the browser the set-up page's choice): for the
+ * OpenCiv2 Options dialog's Classic graphics.  The game folder's own files
+ * are kept.  1 done, 0 cancelled or failed (the player told), -1 it cannot
+ * be done here (the native test build). */
+int HOST_API(host_add_original)(void);
 /* (port_main.c: the program's arguments, for host_restart; not an import) */
 void host_save_args(int argc, char **argv);
 

@@ -5,8 +5,8 @@ Goal: reconstruct the source of *Sid Meier's Civilization II: Multiplayer Gold E
 
 ## Download and play
 
-You need your own copy of Civilization II Multiplayer Gold Edition: installed, on CD, or a
-disc image (`.cue`/`.bin`). Download the program for your system:
+You need your own copy of Civilization II Multiplayer Gold Edition: installed (or a `.zip` of
+the installed folder), on CD, or a disc image (`.cue`/`.bin`). Download the program for your system:
 
 - **Windows:** [OpenCiv2-windows.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-windows.zip): unzip and run `OpenCiv2.exe`.
 - **macOS** 11+: [OpenCiv2-macos.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-macos.zip): unzip and open `OpenCiv2.app`. The first time macOS
@@ -14,8 +14,8 @@ disc image (`.cue`/`.bin`). Download the program for your system:
 - **Linux** x86-64: [OpenCiv2-linux-x86_64.tar.gz](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-linux-x86_64.tar.gz): unpack and run `OpenCiv2/OpenCiv2`.
 
 The first time, it finds your copy of the game (or asks where it is) and sets it up, music
-included when it comes from the CD or a disc image. `--setup [FOLDER or IMAGE.cue]` sets it
-up again. From a disc image, each music track ends at the silence before the next one where
+included when it comes from the CD or a disc image. `--setup [FOLDER, GAME.zip or IMAGE.cue]`
+sets it up again. From a disc image, each music track ends at the silence before the next one where
 the cue sheet's track marks are a second or two off (`--no-fix-cue-gaps` with `--setup` cuts
 them exactly where the cue sheet says).
 
@@ -24,10 +24,10 @@ improvements of FoxAhead's [CIV2UIA](https://github.com/FoxAhead/Civ2-UI-Additio
 wheel, scrolling lists, more figures in the advisors, quick information with Ctrl ...:
 [EXTRAS.md](docs/EXTRAS.md)), and, off unless switched on, its rule changes (Go To past enemy
 units, moving a stack's units of a type together, higher limits for gold, population and the
-map ...). OpenCiv2 Options, the last choice of the game's main menu, lets you choose: Standard,
-or Classic (the original game: its bugs, its interface, and its menu bar and window caption
-drawn as the original's), sharp text and interface on high-resolution screens (on by default),
-HD graphics, full screen, the rule changes and the interface additions, kept in `CIV.INI`
+map ...). OpenCiv2 Options, the last choice of the game's main menu, lets you choose: the bug
+fixes (on by default; each one can be switched in `CIV.INI` too), Classic graphics (the
+original's pictures) or HD graphics, sharp text and interface on high-resolution screens (on
+by default), full screen, the rule changes and the interface additions, kept in `CIV.INI`
 ([EXTRAS.md](docs/EXTRAS.md#openciv2-options)).
 
 OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English, German,
@@ -41,7 +41,7 @@ The game opens in a window filling the screen. To play full screen, see [EXTRAS.
 
 Optionally, the map can be drawn with new high-resolution art
 ([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2):
-tick HD graphics in OpenCiv2 Options (Graphics and screen), or start it with `--hd`
+untick Classic graphics in OpenCiv2 Options (Graphics and screen), or start it with `--hd`
 ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
 ### Multiplayer

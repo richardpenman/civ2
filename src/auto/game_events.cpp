@@ -1075,7 +1075,7 @@ int ScenarioEvents::action_move_unit(ScenarioEvent *event)
             return moved;
           }
         } while ((((units[unit].id == 0) ||
-                  ((((event->move_unit_type != (bugfix_state() ? (iptr)units[unit].type : unit) &&  /* B23: the unit's type, not its slot (docs/BUGS.md) */
+                  ((((event->move_unit_type != (bugfix_state(23) ? (iptr)units[unit].type : unit) &&  /* B23: the unit's type, not its slot (docs/BUGS.md) */
                      (event->move_unit_type != -2)) ||
                     (units[unit].owner != civ)) ||
                    (('b' < (char)unit_types[units[unit].type].attack ||
@@ -1934,7 +1934,7 @@ int ScenarioEvents::parse_trigger_received_tech(EventsParseState *ps)
         ps->event->whom_civ = cmp;
         if (events_parse_verbose != 0) {
           /* B33: the civilization just read, not the one of an earlier line (docs/BUGS.md) */
-          _printf(str_found_receiver_s_king_id_d,arg,bugfix_ui() ? cmp : ps->parsed_civ);
+          _printf(str_found_receiver_s_king_id_d,arg,bugfix_ui(33) ? cmp : ps->parsed_civ);
         }
         ps->have_defender = 1;
       }
@@ -2006,7 +2006,7 @@ int ScenarioEvents::parse_trigger_city_taken(EventsParseState *ps)
         cmp = events_parse_civ((const char *)arg);
         ps->event->who_civ = cmp;
         if (events_parse_verbose != 0) {
-          _printf(str_found_attacker_s_king_id_d_2,arg,bugfix_ui() ? cmp : ps->parsed_civ);  /* B33 */
+          _printf(str_found_attacker_s_king_id_d_2,arg,bugfix_ui(33) ? cmp : ps->parsed_civ);  /* B33 */
         }
         ps->have_attacker = 1;
       }

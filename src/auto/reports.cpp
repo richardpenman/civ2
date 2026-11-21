@@ -469,7 +469,7 @@ void __cdecl attitude_advisor_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
   text_clear();
-  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(gov_index + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -800,7 +800,7 @@ void __cdecl defense_minister_draw(void)
   i8 frame_rect2[16];
   int rows_per_page;
   
-  if (bugfix_ui()) {
+  if (bugfix_ui(17)) {
     lost_x = -0x8000;  /* B17: no casualty listed yet, no frame (docs/BUGS.md) */
   }
   civ = advisor_state.report_civ;
@@ -828,7 +828,7 @@ void __cdecl defense_minister_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,y,advisor_state.client_width);
   y += line_height;
   text_clear();
-  list_top = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  list_top = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(list_top + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -891,7 +891,7 @@ void __cdecl defense_minister_draw(void)
         }
         row_index = next_row;
       }
-      if ((advisor_state.report_param != 0) && (!bugfix_ui() || (lost_x != -0x8000))) {
+      if ((advisor_state.report_param != 0) && (!bugfix_ui(17) || (lost_x != -0x8000))) {
         rect_set((RECT *)frame_rect2,lost_x - 8,list_top,lost_x + 0x10,bottom);
         value = civ_color_primary(civ);
         gfx_draw_rect_frame(&advisor_state.window,(RECT *)frame_rect2,value);
@@ -1691,7 +1691,7 @@ static void foreign_minister_request_audience(int civ,iptr civ2)
   diplo_set_treaty_flags(civ,civ2,0x401);
   advisor_window_block.mp_meeting_reply = -1;
   diplo_meeting.mp_pending = 1;
-  if (bugfix_ui()) {
+  if (bugfix_ui(6)) {
     net.nm_parley_cancel_count = 0;  /* B6: a cancel left from an earlier audience does not end this one (docs/BUGS.md) */
   }
   net_send_text_args(0x3d,net.net_slots[net.net_civ_slots[civ2]].id,0
@@ -2910,7 +2910,7 @@ void __cdecl hall_of_fame_draw(void)
     /* B15: a score over 32767 is negative as a signed 16-bit number: the
        original hides the entry (docs/BUGS.md) */
     if (((entry != 5) || (highlight == 5)) &&
-        (bugfix_ui() ? (advisor_window_block.hall_of_fame[entry].score != -1)
+        (bugfix_ui(15) ? (advisor_window_block.hall_of_fame[entry].score != -1)
                      : (-1 < advisor_window_block.hall_of_fame[entry].score))) {
       if (advisor_window_block.hall_of_fame[entry].leader_female == 0) {
         crt_strcpy(line_buf,str_malefame_2);
@@ -3027,7 +3027,7 @@ void __cdecl hall_of_fame_draw(void)
       text_append_space();
       text_append_label(0x1bc);
       text_append_colon();
-      if (bugfix_ui()) {
+      if (bugfix_ui(15)) {
         text_append_int((u16)advisor_window_block.hall_of_fame[entry].score);  /* B15 */
       }
       else {
@@ -3223,7 +3223,7 @@ void __cdecl hall_of_fame_add_entry(int civ)
   if (civ_score.total <= civ_score.conquest_bonus) {
     score = civ_score.conquest_bonus;
   }
-  if (bugfix_ui() && (0xfffe < score)) {
+  if (bugfix_ui(15) && (0xfffe < score)) {
     score = 0xfffe;  /* B15: the most a 16-bit score holds (0xffff: an empty place) */
   }
   advisor_font_block.hof_new_entry.score = (i16)score;
@@ -3713,7 +3713,7 @@ void __cdecl casualty_timeline_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,casualty.client_x,y,casualty.client_width);
   y += line_height;
   text_clear();
-  row_x = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  row_x = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(row_x + 0x148);
   text_append_space();
   text_append_label(0x8c);

@@ -24,8 +24,8 @@ OpenCiv2 Options
 OpenCiv2 Options
 @@openciv2.options.kept
 Kept in CIV.INI, under [OpenCiv2].
-@@openciv2.options.mode
-Mode
+@@openciv2.options.fixes
+Bug fixes
 @@openciv2.options.graphics
 Graphics and screen
 @@openciv2.options.rules
@@ -46,32 +46,42 @@ From the next start of the game.
 %s set: for this run they win over these choices.
 @@openciv2.options.list_and
  and 
-@@openciv2.mode.title
-Mode
-@@openciv2.mode.standard_note
-Standard: the original's bugs fixed, with OpenCiv2's interface additions; rule changes as chosen.
-@@openciv2.mode.classic_note
-Classic: the original game as it was: its bugs, its look, none of OpenCiv2's additions.
-@@openciv2.mode.standard
-Standard
-@@openciv2.mode.classic
-Classic
+@@openciv2.fixes.title
+Bug Fixes
+@@openciv2.fixes.intro
+OpenCiv2 fixes bugs of the original game: in its rules, its computer players and its interface. Unticked, the game keeps the original's bugs. In network games the fixes that change the game are off whatever is chosen.
+@@openciv2.fixes.each
+Each fix can be switched on or off by itself in CIV.INI, under [OpenCiv2]: Fix.B<n>=1 or 0, n its number in OpenCiv2's list of the original's bugs; that wins over this choice.
+@@openciv2.fixes.fix
+Fix the original game's bugs
 @@openciv2.graphics.title
 Graphics and Screen
+@@openciv2.graphics.classic_note
+Classic graphics: the original's pictures. Unticked: HD graphics, new art for the map, at the screen's full resolution.
 @@openciv2.graphics.sharp_note
 Sharp text and interface: text, menus and controls at the screen's full resolution (the pictures enlarged).
-@@openciv2.graphics.hd_note
-HD graphics: new art for the map, at the screen's full resolution.
 @@openciv2.graphics.fullscreen_note
 Full screen: instead of a window filling the screen.
 @@openciv2.graphics.need_original
 Classic graphics need the original Civilization II files: without them HD graphics are always on.
+@@openciv2.graphics.classic
+Classic graphics
 @@openciv2.graphics.sharp
 Sharp text and interface
-@@openciv2.graphics.hd
-HD graphics
 @@openciv2.graphics.fullscreen
 Full screen
+@@openciv2.locate.title
+Classic Graphics
+@@openciv2.locate.intro
+Classic graphics need the original Civilization II files, which the game's folder does not have. OpenCiv2 can copy them from your copy of Civilization II Multiplayer Gold Edition: the folder it is installed in, its CD, a .zip of that folder, or a disc image of the CD (its .cue and .bin). The files already in the game's folder are kept.
+@@openciv2.locate.find
+Find the original files...
+@@openciv2.locate.keep
+Keep HD graphics
+@@openciv2.locate.kept
+Without the original files Classic graphics stay off: the game goes on with HD graphics.
+@@openciv2.locate.cannot
+This build of the game cannot copy them: copy the original game's files into the game's folder, then tick Classic graphics again.
 @@openciv2.rules.title
 Rule Changes
 @@openciv2.rules.intro
@@ -248,6 +258,8 @@ Copying
 Unpacking the game from its CD
 @@openciv2.setup.unpacking_image
 Unpacking the game from its disc image
+@@openciv2.setup.unpacking_zip
+Unpacking the game from its .zip
 @@openciv2.setup.copying
 Copying the game
 @@openciv2.setup.copying_image
@@ -263,9 +275,22 @@ The game is set up, but without its music: it could not be read from the CD's dr
 @@openciv2.setup.no_folder
 There is no folder %s.
 @@openciv2.setup.not_game
-%s has neither an installed Civilization II Multiplayer Gold Edition nor its CD, nor a disc image of the CD.
+%s has neither an installed Civilization II Multiplayer Gold Edition nor its CD, nor a .zip of the installed game, nor a disc image of the CD.
 @@openciv2.setup.not_found
-Civilization II Multiplayer Gold Edition was found neither where it is usually installed, nor in a CD drive, nor as a disc image of its CD (a .cue file with its .bin) in the usual folders. Please show where it is: the folder it is installed in, its CD, or the disc image (or the folder it is in).
+Civilization II Multiplayer Gold Edition was found neither where it is usually installed, nor in a CD drive, nor as a disc image of its CD (a .cue file with its .bin) in the usual folders. Please show where it is: the folder it is installed in, its CD, a .zip of that folder, or the disc image (or the folder it is in).
+@@openciv2.setup.original_not_found
+Civilization II Multiplayer Gold Edition was found neither where it is usually installed, nor in a CD drive, nor as a disc image of its CD in the usual folders. Please show where it is: the folder it is installed in, its CD, a .zip of that folder, or the disc image (or the folder it is in).
+@@openciv2.setup.confirm_original
+OpenCiv2 copies the original Civilization II files the game lacks from %s into
+%s
+
+The files already there are kept.
+@@openciv2.setup.copy
+Copy
+@@openciv2.setup.cancel
+Cancel
+@@openciv2.setup.original_stopped
+The copying was stopped: the game goes on with HD graphics.
 @@openciv2.setup.music_image
 the disc image %s
 @@openciv2.setup.music_cd
@@ -303,9 +328,9 @@ This takes a few minutes; then the game starts.
 @@openciv2.setup.stopped
 The set-up was stopped; it starts again the next time.
 @@openciv2.setup.where
-Where is Civilization II Multiplayer Gold Edition? Choose the folder it is installed in, its CD, or a disc image of the CD (its .cue file, or the folder it is in).
+Where is Civilization II Multiplayer Gold Edition? Choose the folder it is installed in, its CD, a .zip of that folder, or a disc image of the CD (its .cue file, or the folder it is in).
 @@openciv2.setup.where_short
-Where is Civilization II Multiplayer Gold Edition? (the folder it is installed in, its CD, or the folder of a disc image of the CD)
+Where is Civilization II Multiplayer Gold Edition? (the folder it is installed in, its CD, or the folder of a .zip of the installed game or of a disc image of the CD)
 @@openciv2.setup.where_command
 Start OpenCiv2 with that folder (or the .cue file): OpenCiv2 --setup FOLDER
 @@openciv2.setup.set_up
@@ -317,7 +342,15 @@ Choose
 @@openciv2.web.loading
 Loading ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Standard or Classic, HD graphics, the rule changes and the interface additions) is chosen in the game: OpenCiv2 Options, in its main menu.
+Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes and the interface additions) is chosen in the game: OpenCiv2 Options, in its main menu.
+@@openciv2.web.add_original
+Classic graphics need the original Civilization II files, which the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the files the game has already are kept.
+@@openciv2.web.add_back
+Back to the game
+@@openciv2.web.added
+%s files of the original game added.
+@@openciv2.web.add_no_pictures
+These files do not have the original's pictures (TERRAIN1.GIF, Tiles.dll and the others): choose another copy of the game, or go back to the game.
 @@openciv2.web.choose
 Choose your game...
 @@openciv2.web.choose_folder

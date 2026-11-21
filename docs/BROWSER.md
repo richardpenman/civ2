@@ -113,22 +113,34 @@ so that a language changed in the game is the one the page is loaded again in.
 ## How to play: OpenCiv2 Options
 
 How to play is chosen in the game, as natively: *OpenCiv2 Options*, the main menu's last choice
-([EXTRAS.md](EXTRAS.md#openciv2-options)): the mode (Standard or Classic), sharp text and
-interface, HD graphics, the rule changes and limits, and the interface additions with the colour
-correction and the messages shown on the map.  They are kept in the game's `CIV.INI`
-(`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take effect when
-the game starts again (the mode, the graphics) offer *Restart now*: the page is loaded again,
+([EXTRAS.md](EXTRAS.md#openciv2-options)): the bug fixes, Classic graphics (unticked: HD
+graphics), sharp text and interface, the rule changes and limits, and the interface additions
+with the colour correction and the messages shown on the map.  They are kept in the game's
+`CIV.INI` (`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take
+effect when the game starts again (the graphics, the language) offer *Restart now*: the page is loaded again,
 into the game (without `?setup`, `?hd` or `?sharp`, which would win over them; `?lang=` as the
 game's language now).  Full screen is
 not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
 them, *Remove them*, *Play*, and the saved games' *Export* and *Import*.
+
+Where the game's files lack the original's pictures (a game set up from files without them),
+*Classic graphics* ticked opens the dialog that offers to find the original's files
+([EXTRAS.md](EXTRAS.md#classic-graphics-without-the-original-files)); its *Find the original
+files...* (the game's `host_add_original`, `src/web/main.js`: `addOriginal`) shows the set-up
+page over the game, with a note and *Back to the game*: the same *Choose your game...* (a folder,
+a `.zip` of it, the CD or a disc image, or dropped there) adds the files the game lacks (any
+case; a CD or disc image set up into memory first, as at a first visit) to its files and to this
+browser's storage, its own files (saved games, `CIV.INI`) kept.  When they then have the
+original's pictures the game comes back with *Restart now* offered (Classic graphics from the
+reload); otherwise the page says the files lack them, and *Back to the game* returns with HD
+graphics kept.
 
 ## HD graphics
 
 The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.md)) as the desktop
 version does: `make web` puts the art (`data/native/hd`, and OpenCiv2's own pictures,
 `data/native/hd-extra`) on the site as one file, `hd/art.bin` (30 MB, its files listed in
-`hd/index.json`; the art's licence beside it). Tick *HD graphics* in OpenCiv2 Options (Graphics and
+`hd/index.json`; the art's licence beside it). Untick *Classic graphics* in OpenCiv2 Options (Graphics and
 screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
 it) and puts the pictures into the game's files, where the game reads them. Art an earlier
 version downloaded and kept in the browser's storage (IndexedDB, 250 MB) is removed at a start.
@@ -138,8 +150,8 @@ as `--hd` does natively. The page has no density choice: it is *Auto* (unless `C
 `GraphicsDensity=` under `[OpenCiv2]`, or `?hd=N` asks), the device's own pixels: on a screen with a device
 pixel ratio of 2 the map is drawn at twice the desktop's pixels and shown pixel for pixel.
 
-*Sharp text and interface* ([EXTRAS.md](EXTRAS.md#sharp-text-and-interface); on by default in
-Standard mode, `SharpText=` in `CIV.INI`) works the same way without the art: on a screen with a
+*Sharp text and interface* ([EXTRAS.md](EXTRAS.md#sharp-text-and-interface); on by default,
+`SharpText=` in `CIV.INI`) works the same way without the art: on a screen with a
 device pixel ratio of 2 or more the canvas is the device's pixels, its text, menus and controls
 drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in the address
 switches it for that visit, as `--sharp=0` natively.

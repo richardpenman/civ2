@@ -83,12 +83,13 @@ async function importFiles(store, files, progress = null) {
 
 // The game set up from its CD or a disc image (disc: findDisc's), as the
 // desktop version's set-up does (setup_worker.js runs it): into the store
-// as its files come.
-function setupFromDisc(store, files, disc) {
+// as its files come; or (into: an array) its files into that, the store
+// left as it is (the original's files added to a game: addChosen).
+function setupFromDisc(store, files, disc, into = null) {
     return new Promise((resolve) => {
         const worker = new Worker('setup_worker.js', {type: 'module'});
         const stop = $('stop'), names = new Set(), messages = [];
-        let queue = store.clear(), batch = [], size = 0, ended = false;
+        let queue = into ? Promise.resolve() : store.clear(), batch = [], size = 0, ended = false;
         const flush = () => {
             const b = batch;
             batch = [];
@@ -102,6 +103,11 @@ function setupFromDisc(store, files, disc) {
             ended = true;
             worker.terminate();
             stop.hidden = true;
+            if (into) {
+                status(ok ? '' : text);
+                resolve(ok);
+                return;
+            }
             flush();
             queue.then(async () => {
                 if (ok && typeof findGame([...names].map((name) => ({name}))) !== 'string') {
@@ -120,7 +126,9 @@ function setupFromDisc(store, files, disc) {
         };
         worker.onmessage = (e) => {
             const m = e.data;
-            if (m.file !== undefined) {
+            if (m.file !== undefined && into) {
+                into.push({name: m.file, data: m.data});
+            } else if (m.file !== undefined) {
                 names.add(m.file);
                 batch.push([m.file, m.data, Date.now()]);
                 size += m.data.length;
@@ -146,6 +154,106 @@ function setupFromDisc(store, files, disc) {
             worker.postMessage({files: files.map((f) => ({name: f.name, file: f.file || new Blob([f.data])})),
                                 source: disc.source, lang}));
     });
+}
+
+// ---- the original's files, later: OpenCiv2 Options' Classic graphics ----
+
+// While the set-up page is shown for them (host_add_original: addOriginal):
+// {store, fs, resolve}; the files chosen go to addChosen then
+let adding = null;
+
+// The files of the player's copy ([{name, data|file}], under the game's
+// folder) the running game lacks (any case), put into its files and kept in
+// the store, -> how many
+async function mergeFiles(store, fs, files) {
+    const have = new Set([...fs.files.keys()].filter((k) => k.startsWith(GAME + '/'))
+        .map((k) => k.slice(GAME.length + 1).toUpperCase()));
+    const added = [];
+    let batch = [], size = 0;
+    for (const f of files) {
+        if (have.has(f.name.toUpperCase()) || /\.log$/i.test(f.name))
+            continue;
+        const data = f.data || new Uint8Array(await f.file.arrayBuffer());
+        fs.put(GAME + '/' + f.name, data);
+        batch.push([f.name, data, Date.now()]);
+        added.push(f.name);
+        size += data.length;
+        if (size > 16 << 20) {
+            status(t('web.copying', added.length, files.length));
+            await store.putMany(batch);
+            batch = [];
+            size = 0;
+        }
+    }
+    await store.putMany(batch);
+    const meta = await store.getMeta('game');
+    if (meta && meta.names)
+        await store.setMeta('game', {...meta, names: [...meta.names, ...added]});
+    return added.length;
+}
+
+// The player's choice on the set-up page while adding: an installed game's
+// folder or a .zip of it, its CD or a disc image (set up into memory, as
+// at a first visit); the game's own files kept.  Done when the game's
+// files then have the original's pictures (hasOriginalPictures).
+async function addChosen(files) {
+    const {store, fs} = adding;
+    try {
+        let found = findGame(files);
+        if (typeof found === 'string') {
+            const disc = findDisc(files);
+            if (!disc) {
+                status(found);
+                return;
+            }
+            const made = [];
+            if (!await setupFromDisc(store, files, disc, made))
+                return;
+            found = {files: made};
+        }
+        const n = await mergeFiles(store, fs, found.files);
+        const names = [...fs.files.keys()].filter((k) => k.startsWith(GAME + '/')).map((k) => k.slice(GAME.length + 1));
+        if (!hasOriginalPictures(names)) {
+            status(t('web.add_no_pictures'));
+            return;
+        }
+        status(t('web.added', n));
+        endAdding(1);
+    } catch (e) {
+        console.error(e);
+        status(t('web.copy_failed', e.message));
+    }
+}
+
+// host_add_original (the game's OpenCiv2 Options, Classic graphics ticked
+// without the original's files): the set-up page's choice shown over the
+// game, -> 1 the game's files have the original's pictures now, 0 not
+// (Back to the game)
+function addOriginal(store, fs) {
+    return new Promise((resolve) => {
+        adding = {store, fs, resolve};
+        $('game').hidden = true;
+        $('setup').hidden = false;
+        $('have').hidden = true;
+        $('chosen').hidden = true;
+        $('add-note').hidden = false;
+        $('add-back').hidden = false;
+        $('add-back').onclick = () => endAdding(0);
+        status('');
+        window.civ2Adding = true;       // (the tests)
+    });
+}
+
+function endAdding(r) {
+    const a = adding;
+    adding = null;
+    window.civ2Adding = false;
+    $('add-note').hidden = true;
+    $('add-back').hidden = true;
+    $('setup').hidden = true;
+    $('game').hidden = false;
+    $('screen').focus();
+    a.resolve(r);
 }
 
 // a dropped folder's files, through its entries
@@ -654,6 +762,7 @@ async function play(store) {
                               }, canvas, args, env, messageBox, codepage: gameLang.codepage,
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
+                              addOriginal: () => addOriginal(store, fs),
                               // (the game's OpenCiv2 Options' restart: the page loaded again, into the
                               // game, without what would override them; ?lang= the game's language now,
                               // where the game changed it)
@@ -754,6 +863,8 @@ async function main() {
     rd.addEventListener('close', () => $('screen').focus());
     window.civ2Relay = {address: relayAddress, unreachable: relayUnreachable};     // (the tests)
     const chosen = async (files) => {
+        if (adding)
+            return addChosen(files);
         try {
             if (await importFiles(store, files))
                 await showSetup(store, true);

@@ -1667,7 +1667,7 @@ static int wanted(const char *v)
 
 /* Sharp text and interface (docs/EXTRAS.md): the planes without the art.
    The command line's --sharp[=N] (CIV2_SHARP_ARG), else CIV2_SHARP=N, else
-   CIV.INI's SharpText= (by default on, but in Classic mode).  -1 off, 0 at
+   CIV.INI's SharpText= (by default on, but with CIV2_CLASSIC=1).  -1 off, 0 at
    the screen's density, N. */
 static int sharp_wanted(int classic)
 {
@@ -1713,7 +1713,7 @@ void hd_init(int classic, int unit_test, int scale)
     } else {
         /* the art: the command line's --hd[=N] (CIV2_HD_ARG), else
            CIV2_HD=N, else CIV.INI's Graphics= (plat_graphics_hd: the
-           default when unset); never in Classic mode */
+           default when unset); never with CIV2_CLASSIC=1 */
         const char *arg = getenv("CIV2_HD_ARG"), *env = getenv("CIV2_HD");
         const char *on = arg && *arg ? arg : env && *env ? env : NULL;
         if (classic)

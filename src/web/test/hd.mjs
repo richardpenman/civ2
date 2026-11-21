@@ -1,6 +1,7 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
 // headless shell (as smoke.mjs), the game's files given as a .zip, then in
-// the game's OpenCiv2 Options HD graphics ticked and the game restarted:
+// the game's OpenCiv2 Options Classic graphics unticked (HD graphics) and
+// the game restarted:
 // the page loaded again, the art (the site's hd/art.bin: data/native/hd and
 // OpenCiv2's own pictures, data/native/hd-extra) put into the game's files,
 // HD graphics on in CIV.INI; then the game at a
@@ -10,7 +11,12 @@
 // OpenCiv2's own background (a WebP); then a later visit's
 // start (said at once, its first frame within START_MS); then
 // ?hd=0: sharp text and interface (on by default) without the art; then
-// ?hd=0&sharp=0: the original graphics.  Screenshots in
+// ?hd=0&sharp=0: the original graphics; then the game without the
+// original's pictures (dropped from its files as it starts): Classic graphics
+// ticked in OpenCiv2 Options, Find the original files...: the set-up page
+// over the game, the .zip chosen there again, the files the game lacked
+// added, the restart offered, and after it Classic graphics (no art
+// loaded, Graphics=Classic in CIV.INI).  Screenshots in
 // run/web-hd (look at them).  Without the game it says so and passes.
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
@@ -192,15 +198,15 @@ async function main() {
         await settle(1000, 10000);
         await key('Escape', 27);
         await settle(1000, 10000);
-        // HD graphics ticked there (Tab, Space), OK, Restart now: the page
-        // loaded again, the art from the site, the game in HD
+        // Classic graphics unticked there (the first check box: Space), OK,
+        // Restart now: the page loaded again, the art from the site, the game
+        // in HD
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page again');
         await evaluate('document.getElementById("play").click()');
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start again');
         await toMenu();
         await toGraphics();
-        await key('Tab', 9);
         await key('Space', 32, ' ');
         await settle(500, 5000);
         await shot('00-graphics');
@@ -303,6 +309,47 @@ async function main() {
         // (the desktop at the device's 2 pixels each: its canvas half the shown size)
         if (st.w !== st.cssW || (await evaluate('window.civ2Stats')).hdFrames)
             throw new Error('?hd=0&sharp=0 is not the original graphics');
+        // Classic graphics without the original's pictures (docs/BROWSER.md
+        // "How to play"): the game's files without TERRAIN1.GIF and Tiles.dll
+        // as it starts (the store keeps them): HD graphics, whatever is chosen
+        const {identifier} = await send('Page.addScriptToEvaluateOnNewDocument', {source: `
+            window.civ2Test = async (fs) => {
+                for (const k of [...fs.files.keys()])
+                    if (/^\\/civ2\\/(terrain1\\.gif|tiles\\.dll)$/i.test(k))
+                        fs.files.delete(k);
+            };`});
+        await send('Page.navigate', {url});
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start without the pictures');
+        await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'an HD frame (forced)');
+        await toMenu();
+        await toGraphics();
+        await shot('06-no-pictures-graphics');
+        await key('Space', 32, ' ');        // Classic graphics ticked
+        await key('Enter', 13);             // OK: the original's files are needed
+        await settle(1000, 10000);
+        await shot('06-find-original');
+        await key('Enter', 13);             // Find the original files...
+        await waitFor('window.civ2Adding', 10000, 'the set-up page over the game');
+        await shot('07-add-page');
+        await input('files', [zip]);
+        await waitFor('window.civ2Adding === false', 300000, 'the files added');
+        log('added: ' + await evaluate('window.civ2Status'));
+        if (!await evaluate('[...window.civ2Fs.files.keys()].some((k) => /\\/terrain1\\.gif$/i.test(k))'))
+            throw new Error('TERRAIN1.GIF not added to the game\'s files');
+        await settle(1500, 10000);
+        await shot('08-restart');
+        await send('Page.removeScriptToEvaluateOnNewDocument', {identifier});
+        await evaluate('window.civ2Before = 1');
+        await key('Enter', 13);             // Restart now
+        await waitFor('!window.civ2Before && window.civ2Status', 60000, 'the page loaded again');
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start with Classic graphics');
+        await settle(3000, 60000);
+        await shot('09-classic');
+        if (await evaluate('window.civ2Hd'))
+            throw new Error('the art loaded with Classic graphics');
+        if (!/Graphics=Classic/.test(await evaluate('new TextDecoder("latin1").decode(window.civ2Fs.get(' +
+                                                     '[...window.civ2Fs.files.keys()].find((k) => /^\\/civ2\\/civ\\.ini$/i.test(k))))')))
+            throw new Error('CIV.INI does not have Graphics=Classic');
         if (errors.length)
             throw new Error('the page threw');
         log('ok: ' + OUT);

@@ -262,7 +262,7 @@ static int unit_move_dir_ai_holds_back(iptr unit,uptr dir,uptr civ,uptr civ2,ipt
    by what those locals hold (docs/BUGS.md). */
 static int unit_move_dir_local_view(const int *view)
 {
-  if (bugfix_state() && ((*(i8 *)&human_civ) <= 0)) {
+  if (bugfix_state(22) && ((*(i8 *)&human_civ) <= 0)) {
     return 0;
   }
   return view[(*(i8 *)&human_civ)];
@@ -864,7 +864,7 @@ static int unit_move_dir_expel(int &unit,iptr orig_unit,uptr dir,uptr civ,uptr c
         if (autoplay.active == 0) {
           answer = dlg_game_txt_with_unit((const char *)&str_expel,unit2);
         }
-        else if (bugfix_state()) {
+        else if (bugfix_state(25)) {
           answer = 0;  /* B25: not asked under autoplay: expelled, as for the AI (docs/BUGS.md) */
         }
       }
@@ -1401,7 +1401,7 @@ i32 __cdecl unit_move_dir(int unit,uptr dir,i32 move_flags)
   /* the Barbarians' entries (human_civ 0 after Reveal Map), which the
      original leaves as its stack held them (B22) */
   civ_sees[0] = civ_animates[0] = 0;
-  if (bugfix_ui()) {
+  if (bugfix_ui(14)) {
     /* B14: a unit that does not move pauses as if the player saw it (docs/BUGS.md) */
     memset(civ_sees,0,8 * sizeof civ_sees[0]);
   }

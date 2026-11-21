@@ -586,6 +586,10 @@ export async function runGame(opts) {
         // need one): the page loaded again (opts.restart, main.js); 2 says
         // so, and the game waits for it
         host_restart: (now) => (now ? opts.restart().then(() => new Promise(() => {})) : 2),
+        // The original's files the game lacks, for its Classic graphics: the
+        // set-up page's choice (opts.addOriginal, main.js), the game waiting
+        // for it; 1 added, 0 not, -1 not here
+        host_add_original: () => (opts.addOriginal ? opts.addOriginal().then((r) => () => r) : -1),
         host_message_box: (icon, title, text, n, labels, ids, enter, escape) => {
             const l = [], id = [];
             for (let i = 0; i < Math.min(n, 8); i++) {

@@ -36,23 +36,30 @@ graphics not asked for, so on at density 1, and an HD run at density 2 each) are
 pictures), the world made, a city founded, its window; the autosave's advisors, tax rates,
 Civilopedia, an announcement's picture, a city's view, the spaceship, the Hall of Fame, the map
 at its largest zoom and the throne room; `x-no-install-options.txt` shows OpenCiv2 Options
-without the pictures (below).
+without the pictures (below): Classic graphics unticked with the note, ticked the dialog that
+offers to find the original's files, *Keep HD graphics* and its note, HD graphics kept.
 
 ## Graphics without the install: HD only
 
-Two situations are supported, by design: the original's look (Classic mode, or Standard
-without HD graphics) **with** the install's pictures, pixel for pixel as the original; and HD
-graphics, with or without them.  Where the game folder lacks any of the original's pictures
-(a sheet, a picture library or `civ2.exe`: `synth_missing` in `src/platform/synth.c`, at the
-start, `src/platform/main.c`: `plat_hd_forced`):
+Two situations are supported, by design: the original's look (Classic graphics, or
+`CIV2_CLASSIC=1`) **with** the install's pictures, pixel for pixel as the original; and HD
+graphics, with or without them.  Only the graphics depend on the original's files: the bug
+fixes, the interface additions and the rule changes are chosen apart from them, so the
+original's rules (the fixes switched off, [BUGS.md](BUGS.md#switching-the-fixes)) can be played
+without the install too.  Where the game folder lacks any of the original's pictures (a sheet,
+a picture library or `civ2.exe`: `synth_missing` in `src/platform/synth.c`, at the start,
+`src/platform/main.c`: `plat_hd_forced`):
 
 * HD graphics are on whatever `Graphics=`, `--hd` / `CIV2_HD` or `GraphicsDensity=` say (the
-  density as asked, else the screen's; in a replay `CIV2_TEST_HD`'s, else 1), and Classic mode
-  (`Mode=Classic`, `CIV2_CLASSIC=1`) plays as Standard;
-* OpenCiv2 Options shows Classic (Mode) not offered and HD graphics (Graphics and screen)
-  ticked and not to be unticked, each page with the note "Classic graphics need the original
-  Civilization II files: without them HD graphics are always on." (`graphics.need_original`,
-  in every shipped language);
+  density as asked, else the screen's; in a replay `CIV2_TEST_HD`'s, else 1); `CIV2_CLASSIC=1`
+  keeps everything else original (its bugs, none of the additions, its caption and frame);
+* OpenCiv2 Options shows *Classic graphics* (Graphics and screen) unticked, with the note
+  "Classic graphics need the original Civilization II files: without them HD graphics are always
+  on." (`graphics.need_original`, in every shipped language); ticked, a dialog offers to find
+  the original's files and copy those the game folder lacks into it, as the set-up does (an
+  installed game, its CD, a `.zip` of the installed folder, a disc image; in the browser the set-up
+  page's choice): found, Classic graphics from the next start (the restart offered); not,
+  HD graphics stay, with a note ([EXTRAS.md](EXTRAS.md#classic-graphics-without-the-original-files));
 * without the HD art as well (it comes with OpenCiv2: the program's `data/hd`) the game stops at
   once with a message (`hd.err.no_graphics`, translated): the game's folder, where the
   original's files go, and where the art should be;
@@ -68,8 +75,8 @@ that is out of scope, as there is no original look without the original's files.
 
 Whether HD graphics are on where nothing chooses is decided in one place, `HD_BY_DEFAULT`
 in `src/platform/options.c` (its mirror for the browser in `src/web/options.js`): making HD
-the default later is that line; Classic would then be the step that needs the original's
-files.
+the default later is that line; Classic graphics, unticked by default then, would be the step
+that needs the original's files (the dialog above).
 
 ## Summary
 

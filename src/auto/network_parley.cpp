@@ -1898,7 +1898,7 @@ void __cdecl parley_response_popup(const char *section,int civ,WndNotifyFn idle)
 {
   int i;
 
-  if (!bugfix_ui()) {
+  if (!bugfix_ui(7)) {
     parley_response_popup_show(section,civ,idle);
     return;
   }
@@ -1936,7 +1936,7 @@ void __cdecl parley_response_popup(const char *section,int civ,WndNotifyFn idle)
    window when the last popup has closed: 1 then. */
 int __cdecl parley_response_popup_keeps_focus(void)
 {
-  if (!bugfix_ui() || !parley_popup_showing) {
+  if (!bugfix_ui(7) || !parley_popup_showing) {
     return 0;
   }
   parley_popup_refocus = 1;

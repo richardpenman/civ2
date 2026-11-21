@@ -12,8 +12,8 @@ a prototype: the map is done, and many of the other windows' pictures (below).
 The art comes with OpenCiv2: it is in the repository (`data/native/hd`, below) and in every build
 (beside the program's `data` on Linux and macOS, in the Windows program's resources, unpacked
 into its `data`, and on the browser version's site), so nothing is downloaded.  In the game's
-main menu choose *OpenCiv2 Options*, then *Graphics and screen*, tick *HD graphics* and OK
-(docs/EXTRAS.md, "OpenCiv2 Options"): the game offers to restart, which turns them on.
+main menu choose *OpenCiv2 Options*, then *Graphics and screen*, untick *Classic graphics* and
+OK (docs/EXTRAS.md, "OpenCiv2 Options"): the game offers to restart, which turns them on.
 Otherwise:
 
 1. The art is read from the program's data folder's `hd` (`data/native/hd`): its `pictures.txt`
@@ -474,7 +474,7 @@ some 20,000).
 
 The planes are the renderer; the art is one use of them.  `hd_on` says the planes are in use,
 `hd_art` that the art is: with sharp text and interface ([EXTRAS.md](EXTRAS.md#sharp-text-and-interface),
-`SharpText=`, on by default in Standard mode) the planes run without the art at the screen's own
+`SharpText=`, on by default) the planes run without the art at the screen's own
 density (as HD graphics' *Auto*), so that text and the platform's controls are drawn at the
 screen's resolution while every sprite keeps its original pixels, enlarged (the sprites' calls
 find no picture in an empty pack).  With HD graphics on, both: the art's density, the art, and
@@ -516,10 +516,11 @@ ones' model, prompt and references are in its `README`.
 
 ## Tests
 
-* The browser version: `make web-test` (`src/web/test/hd.mjs`: HD graphics ticked in the game's
+* The browser version: `make web-test` (`src/web/test/hd.mjs`: Classic graphics unticked in the game's
   OpenCiv2 Options and the game restarted, the art loaded from the site as the page is loaded
-  again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD;
-  screenshots in `run/web-hd`).
+  again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD; then
+  without the original's pictures, Classic graphics ticked: the set-up page over the game, the
+  original's files added, the restart, Classic graphics; screenshots in `run/web-hd`).
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (OpenCiv2 Options in the main menu: `x-options`).
 * Sharp text and interface: `make test-extras` runs `harness/extras/x-sharp.txt` (the main menu,

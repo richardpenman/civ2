@@ -23,6 +23,8 @@
 /* (setup.c) an installed game's folder; the game's CD */
 int setup_game_folder(const char *dir);
 int setup_game_cd(const char *root);
+/* (setup.c) a .zip of an installed game's folder */
+int setup_game_zip(const char *path);
 /* (setup.c) a disc image of the game's CD in the usual folders of the
    user's home (Downloads, Desktop, the home, Civ2*); 0: none */
 int setup_image_in_home(const char *home, char *out, size_t size);
@@ -100,6 +102,9 @@ void os_message(const char *text, int kind);
 int os_ask_folder(char *out, size_t size);
 /* the set-up about to start (text: what it does): 0: the user said no */
 int os_confirm(const char *text);
+/* a question with two answers (yes: the default; Windows: OK and Cancel):
+   1 yes, 0 no */
+int os_ask(const char *text, const char *yes, const char *no);
 void os_progress_open(void);
 /* what is being done (called often while it is long; the same text again
    shown once); 0: go on, 1: the user stopped it */

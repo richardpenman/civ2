@@ -1,13 +1,14 @@
 # Media test (make test-media): the High Council, which opens only with the
 # CD's videos (Video\COUNCILn.AVI, ANARCHYn.AVI).  The opening video is
-# skipped (Escape), the autosave loaded; the council of advisors (the
-# Romans' Despotism), the military advisor speaking (a few frames), then,
+# ended with a click (with HD graphics none is played: the click falls on
+# the main menu's backdrop), the autosave loaded; the council of advisors
+# (the Romans' Despotism), the military advisor speaking (a few frames), then,
 # the government made Anarchy (the Cheat menu's dialog), the council under
 # anarchy; the map after each.
 # test:
 # test hd: CIV2_TEST_HD=2
 wait 3000
-key Escape
+click 20 400                # ends the opening video (HD: none, a click on the menu's backdrop)
 wait 5000
 key Down Down Down Down     # "Load a Game"
 wait 500

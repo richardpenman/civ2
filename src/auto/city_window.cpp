@@ -692,7 +692,7 @@ void CityWindow::draw_citizens(int blit,i32 flag)
     pos = top + pos;
     offset = scale(5);
     pos = draw_citizen_row(x2 + offset,pos,row_width,value,unhappy,angry);
-    if (bugfix_ui()) {
+    if (bugfix_ui(10)) {
       /* B10: each hotspot centred on its citizen, not at its sprite's left edge,
          which later sprites cover when they are drawn closer (docs/BUGS.md) */
       offset = scale(5) + scale(0xe) - pos / 2 - 1;
@@ -2536,7 +2536,7 @@ void __cdecl city_window_supported_unit_menu(int unit)
           units[unit].goto_x = cities[city].x;
           city = ((CityWindow *)((i8 *)&city_wnd.window))->get_city();
           units[unit].goto_y = cities[city].y;
-          if (bugfix_state()) {
+          if (bugfix_state(9)) {
             units[unit].aux_timer = '\0';  /* B9: the long move count starts again (docs/BUGS.md) */
           }
         }
@@ -3685,7 +3685,7 @@ void CityWindow::open(int city)
     else {
       ((WndBase *)&window)->show_restored();
     }
-    if (bugfix_ui()) {
+    if (bugfix_ui(12)) {
       ((WndBase *)&window)->set_focus();  /* B12: the keys go to the city window, not an advisor that opened it (docs/BUGS.md) */
     }
     if (city_wnd_state.exit_btn_pending != '\0') {
@@ -3735,7 +3735,7 @@ i32 __cdecl city_window_close(void)
   city_wnd.closed = 1;
   ((WndBase *)((i8 *)&city_wnd.wnd))->hide();
   city_wnd.city = 0xffffffff;
-  if (bugfix_ui() && (-1 < (int)advisor_state.report_id)) {
+  if (bugfix_ui(12) && (-1 < (int)advisor_state.report_id)) {
     advisor_state.wnd.focus_and_raise();  /* B12: back to the advisor that opened the city (docs/BUGS.md) */
   }
   else {

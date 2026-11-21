@@ -349,11 +349,13 @@ builds do not use it.
   (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
   only the player's files), the saved game removed and imported from that `.zip` (on the set-up
   page, then again while the game runs), and loaded again from the menu;
-  screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: HD graphics ticked in the game's
-  OpenCiv2 Options and written to `CIV.INI`, the page loaded again with the site's art, the game
+  screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: Classic graphics unticked in the game's
+  OpenCiv2 Options and `Graphics=HD` written to `CIV.INI`, the page loaded again with the site's art, the game
   at a device pixel ratio of 2: the canvas twice the desktop, a saved game's map in HD (41% of its
   2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
-  graphics; screenshots in `run/web-hd`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
+  graphics; then the game's files without TERRAIN1.GIF and Tiles.dll (HD forced), Classic
+  graphics ticked, *Find the original files...*: the set-up page over the game, the `.zip`
+  chosen again, the missing files added, *Restart now*, Classic graphics; screenshots in `run/web-hd`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
 * **Network games, browser and native** (`tools/xdnet/webnet.py native-web|web-native [--turns N]

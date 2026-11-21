@@ -591,7 +591,7 @@ static void status_draw_tile_info(iptr x2,iptr y2,int text_x,int *text_y2,int li
   /* B11: between hot-seat players human_civ is -1: the original reads the
      knowledge map of civilization -1, past the table (docs/BUGS.md) */
   if ((game.reveal_map == '\0') &&
-      (bugfix_ui() ? 0 < (*(i8 *)&human_civ) : ((*(i8 *)&human_civ) != 0))) {
+      (bugfix_ui(11) ? 0 < (*(i8 *)&human_civ) : ((*(i8 *)&human_civ) != 0))) {
     tile_ptr = known_at(x2,y2,(*(i8 *)&human_civ));
     terrain = *tile_ptr;
   }

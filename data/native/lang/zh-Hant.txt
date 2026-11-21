@@ -25,8 +25,8 @@ OpenCiv2 選項
 OpenCiv2 選項
 @@openciv2.options.kept
 儲存在 CIV.INI 的 [OpenCiv2] 區段中。
-@@openciv2.options.mode
-模式
+@@openciv2.options.fixes
+錯誤修正
 @@openciv2.options.graphics
 圖形與螢幕
 @@openciv2.options.rules
@@ -47,32 +47,42 @@ OpenCiv2 選項
 已設定 %s：本次執行時以它們為準，不採用這些選擇。
 @@openciv2.options.list_and
  和 
-@@openciv2.mode.title
-模式
-@@openciv2.mode.standard_note
-標準：修正原版的錯誤，加上 OpenCiv2 的介面新增功能；規則變更依您的選擇。
-@@openciv2.mode.classic_note
-經典：原汁原味的原版遊戲：保留其錯誤與外觀，不含任何 OpenCiv2 的新增功能。
-@@openciv2.mode.standard
-標準
-@@openciv2.mode.classic
-經典
+@@openciv2.fixes.title
+錯誤修正
+@@openciv2.fixes.intro
+OpenCiv2 會修正原版遊戲的錯誤：包括其規則、電腦玩家與介面。未選取時，遊戲會保留原版的錯誤。在網路遊戲中，會改變遊戲的修正一律關閉，不論如何選擇。
+@@openciv2.fixes.each
+每項修正都可以在 CIV.INI 的 [OpenCiv2] 區段中單獨開啟或關閉：Fix.B<n>=1 或 0，n 為它在 OpenCiv2 原版錯誤清單中的編號；這會優先於此選擇。
+@@openciv2.fixes.fix
+修正原版遊戲的錯誤
 @@openciv2.graphics.title
 圖形與螢幕
+@@openciv2.graphics.classic_note
+經典圖形：原版的圖像。未選取時：HD 圖形，地圖的新美術圖像，以螢幕的完整解析度顯示。
 @@openciv2.graphics.sharp_note
 清晰的文字與介面：文字、選單與控制項以螢幕的完整解析度顯示（圖片則放大）。
-@@openciv2.graphics.hd_note
-HD 圖形：地圖的新美術圖像，以螢幕的完整解析度顯示。
 @@openciv2.graphics.fullscreen_note
 全螢幕：取代填滿螢幕的視窗。
 @@openciv2.graphics.need_original
 經典圖形需要原版 Civilization II 的檔案：沒有這些檔案時，HD 圖形會一直開啟。
+@@openciv2.graphics.classic
+經典圖形
 @@openciv2.graphics.sharp
 清晰的文字與介面
-@@openciv2.graphics.hd
-HD 圖形
 @@openciv2.graphics.fullscreen
 全螢幕
+@@openciv2.locate.title
+經典圖形
+@@openciv2.locate.intro
+經典圖形需要原版 Civilization II 的檔案，而遊戲資料夾中沒有這些檔案。OpenCiv2 可以從您的 Civilization II Multiplayer Gold Edition 複製它們：它的安裝資料夾、它的光碟、該資料夾的 .zip 檔，或光碟的映像檔（其 .cue 與 .bin 檔）。遊戲資料夾中已有的檔案會保留。
+@@openciv2.locate.find
+尋找原版檔案...
+@@openciv2.locate.keep
+保留 HD 圖形
+@@openciv2.locate.kept
+沒有原版檔案時，經典圖形維持關閉：遊戲繼續使用 HD 圖形。
+@@openciv2.locate.cannot
+此版本的遊戲無法複製這些檔案：請將原版遊戲的檔案複製到遊戲資料夾，然後再次選取經典圖形。
 @@openciv2.rules.title
 規則變更
 @@openciv2.rules.intro
@@ -249,6 +259,8 @@ OpenCiv2：設定遊戲
 正在從光碟解壓縮遊戲
 @@openciv2.setup.unpacking_image
 正在從光碟映像檔解壓縮遊戲
+@@openciv2.setup.unpacking_zip
+正在從 .zip 檔解壓縮遊戲
 @@openciv2.setup.copying
 正在複製遊戲
 @@openciv2.setup.copying_image
@@ -264,9 +276,22 @@ OpenCiv2：設定遊戲
 @@openciv2.setup.no_folder
 資料夾 %s 不存在。
 @@openciv2.setup.not_game
-%s 中既沒有已安裝的 Civilization II Multiplayer Gold Edition，也沒有它的光碟或光碟映像檔。
+%s 中既沒有已安裝的 Civilization II Multiplayer Gold Edition，也沒有它的光碟、已安裝遊戲的 .zip 檔或光碟映像檔。
 @@openciv2.setup.not_found
-在一般的安裝位置、光碟機中，以及常用資料夾中的光碟映像檔（.cue 檔及其 .bin 檔）裡，都找不到 Civilization II Multiplayer Gold Edition。請指出它的位置：它的安裝資料夾、它的光碟，或光碟映像檔（或其所在的資料夾）。
+在一般的安裝位置、光碟機中，以及常用資料夾中的光碟映像檔（.cue 檔及其 .bin 檔）裡，都找不到 Civilization II Multiplayer Gold Edition。請指出它的位置：它的安裝資料夾、它的光碟、該資料夾的 .zip 檔，或光碟映像檔（或其所在的資料夾）。
+@@openciv2.setup.original_not_found
+在一般的安裝位置、光碟機中，以及常用資料夾中的光碟映像檔裡，都找不到 Civilization II Multiplayer Gold Edition。請指出它的位置：它的安裝資料夾、它的光碟、該資料夾的 .zip 檔，或光碟映像檔（或其所在的資料夾）。
+@@openciv2.setup.confirm_original
+OpenCiv2 會從 %s 將遊戲缺少的原版 Civilization II 檔案複製到
+%s
+
+已在該處的檔案會保留。
+@@openciv2.setup.copy
+複製
+@@openciv2.setup.cancel
+取消
+@@openciv2.setup.original_stopped
+複製已中止：遊戲繼續使用 HD 圖形。
 @@openciv2.setup.music_image
 光碟映像檔 %s
 @@openciv2.setup.music_cd
@@ -304,9 +329,9 @@ OpenCiv2 會從 %s 設定遊戲，將它解壓縮到
 @@openciv2.setup.stopped
 設定已中止；下次會重新開始。
 @@openciv2.setup.where
-Civilization II Multiplayer Gold Edition 在哪裡？請選擇它的安裝資料夾、它的光碟，或光碟的映像檔（其 .cue 檔，或其所在的資料夾）。
+Civilization II Multiplayer Gold Edition 在哪裡？請選擇它的安裝資料夾、它的光碟、該資料夾的 .zip 檔，或光碟的映像檔（其 .cue 檔，或其所在的資料夾）。
 @@openciv2.setup.where_short
-Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、它的光碟，或光碟映像檔所在的資料夾）
+Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、它的光碟，或已安裝遊戲的 .zip 檔或光碟映像檔所在的資料夾）
 @@openciv2.setup.where_command
 以該資料夾（或 .cue 檔）啟動 OpenCiv2：OpenCiv2 --setup FOLDER
 @@openciv2.setup.set_up
@@ -318,7 +343,15 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 @@openciv2.web.loading
 載入中 ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它使用<em>您自己</em>的遊戲：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（標準或經典、HD 圖形、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
+Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它使用<em>您自己</em>的遊戲：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（經典或 HD 圖形、錯誤修正、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
+@@openciv2.web.add_original
+經典圖形需要原版 Civilization II 的檔案，而此瀏覽器中的遊戲沒有這些檔案。請選擇您的 Civilization II Multiplayer Gold Edition：遊戲已有的檔案會保留。
+@@openciv2.web.add_back
+返回遊戲
+@@openciv2.web.added
+已加入 %s 個原版遊戲的檔案。
+@@openciv2.web.add_no_pictures
+這些檔案中沒有原版的圖像（TERRAIN1.GIF、Tiles.dll 等）：請選擇另一份遊戲，或返回遊戲。
 @@openciv2.web.choose
 選擇您的遊戲...
 @@openciv2.web.choose_folder

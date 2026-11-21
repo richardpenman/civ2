@@ -16,7 +16,8 @@ fixes are in [BUGS.md](BUGS.md).
 
 The additions are on by default. They are off:
 
-- with `CIV2_CLASSIC=1` (the original game: its look, its bugs, and none of these);
+- with `CIV2_CLASSIC=1` (the original game: its look, its bugs, and none of these; for tests and
+  comparisons with the original);
 - in replays and unit tests, which are compared with the original game.
 
 They change only what this player sees and how the interface is used, never what the game
@@ -88,17 +89,20 @@ player chooses how to play; the choices are kept in `CIV.INI`'s `[OpenCiv2]` sec
 those changed are written).  It is the game's own dialogs, as the Game menu's options: a list of
 what can be chosen, each opening a dialog of its own (OK writes the choices, Cancel leaves them):
 
-- **Mode**: *Standard* (the original's bugs fixed, [BUGS.md](BUGS.md), and these additions) or
-  *Classic* (the original game: its look, its bugs, none of these; `Mode=Classic`, as
-  `CIV2_CLASSIC=1`).  In Classic the other choices but the graphics are not offered.  Classic
-  needs the original's pictures: where the game folder lacks them it is not offered (the page
-  says "Classic graphics need the original Civilization II files") and `Mode=Classic` /
-  `CIV2_CLASSIC=1` play in Standard.
-- **Graphics and screen**: [sharp text and interface](#sharp-text-and-interface) (`SharpText=`,
-  on by default in Standard, off in Classic); [HD graphics](#hd-graphics) (`Graphics=HD`, at the
-  screen's own density; the art comes with OpenCiv2: see [HD-GRAPHICS.md](HD-GRAPHICS.md)); full screen
-  (`FullScreen=`).  Where the game folder lacks the original's pictures, HD graphics are
-  ticked and cannot be unticked, with the same note ([NO-INSTALL.md](NO-INSTALL.md)).
+- **Bug fixes**: *Fix the original game's bugs* (`FixBugs=`, ticked by default): the fixes of
+  [BUGS.md](BUGS.md) that can be switched (the others are in every mode); unticked, the game
+  plays with the original's bugs.  Each fix can be switched by itself in `CIV.INI`,
+  `Fix.B<n>=1` or `=0` (its number in BUGS.md), which wins over the tick
+  ([BUGS.md](BUGS.md#switching-the-fixes)).  The fixes that change the game's state are off in
+  network games whatever is chosen.
+- **Graphics and screen**: *Classic graphics* (the original's pictures, `Graphics=Classic`;
+  unticked: [HD graphics](#hd-graphics), `Graphics=HD`, at the screen's own density, the art
+  that comes with OpenCiv2: see [HD-GRAPHICS.md](HD-GRAPHICS.md); where `Graphics=` is unset
+  the default is `HD_BY_DEFAULT`'s); [sharp text and interface](#sharp-text-and-interface)
+  (`SharpText=`, on by default); full screen (`FullScreen=`).  Where the game folder lacks the
+  original's pictures, Classic graphics are unticked with the note "Classic graphics need the
+  original Civilization II files"; ticking them then opens a dialog that offers to find those
+  files ([below](#classic-graphics-without-the-original-files)).
 - **Rule changes** and **Limits**: the [rule changes](#rule-changes) and the limits.
 - **Interface additions**: the additions above.
 - **Colours and messages**: the colour correction (`Gamma=`, `Brightness=`, `Contrast=`) and
@@ -111,16 +115,16 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   carry the game's own texts too (all of those that come with it do: the whole game); otherwise they are those
   of the installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
 
-The interface additions, the rule changes and the limits take effect at once (from the game
-started or loaded next).  The mode, the graphics, full screen and the language take effect when the game
-starts again: the dialog offers *Restart now*, which starts the program again with the same
+The bug fixes, the interface additions, the rule changes and the limits take effect at once
+(from the game started or loaded next).  The graphics, full screen and the language take effect
+when the game starts again: the dialog offers *Restart now*, which starts the program again with the same
 arguments but `--hd` and `--sharp` (in the browser version: the page is loaded again), or
 *Later*.  `CIV2_CLASSIC=1`, `--hd` / `CIV2_HD` and `--sharp` / `CIV2_SHARP` win over the
 choices made there, for the run they are set in (the dialog says so).
 
-It is in the main menu in Standard and in Classic mode alike (the only thing Classic shows that
-the original does not), and in the browser version (where HD graphics are offered only where
-the site has their art, [BROWSER.md](BROWSER.md#hd-graphics), and full screen is the browser's).
+It is in the main menu whatever is chosen (with `CIV2_CLASSIC=1` too: the only thing that shows
+which the original does not), and in the browser version (where full screen is the browser's,
+[BROWSER.md](BROWSER.md#how-to-play-openciv2-options)).
 It is not in replays and unit tests, which compare the main menu with the original's
 (`CIV2_TEST_OPTIONS=1` shows it in a replay, where nothing is written to `CIV.INI`, downloaded
 or restarted: `harness/extras/x-options.txt`).  Its texts are keyed (`src/host/texts.h`) and
@@ -129,6 +133,40 @@ shows it in Esperanto, `x-lang-de.txt` in German, `x-lang-la.txt` in Latin, `x-l
 
 These choices were made before in an opening window shown before the game started (and, before
 that, in Game > OpenCiv2 Options); OpenCiv2 Options in the main menu replaces both.
+
+### Classic graphics without the original files
+
+Where the game folder lacks the original's pictures ([NO-INSTALL.md](NO-INSTALL.md)), ticking
+Classic graphics and OK opens a dialog, *Classic Graphics*: the original's files are needed, and
+OpenCiv2 can copy them from the player's copy of the game.  *Find the original files...* runs
+the set-up's import ([README](../README.md), `src/host/setup.c`: `setup_add_original`): the
+game is looked for where it usually is (installed, its CD in a drive, a disc image in the usual
+folders), else the player is asked for the folder it is installed in, its CD, a `.zip` of the
+installed folder or a disc image of the CD (`.cue` and `.bin`); it is then copied, unpacked from
+the CD's cabinet, the `.zip` or the disc image into the game folder as the set-up does, the files
+already there kept (the player's saves and `CIV.INI` among them).  When the folder then has the
+original's pictures, `Graphics=Classic` is written and the restart is offered (*Restart now*,
+*Later*); the game starts again with Classic graphics.  *Keep HD graphics* (or Escape), a
+cancelled or failed copy, or a copy without the pictures leave HD graphics on, with the note
+"Without the original files Classic graphics stay off: the game goes on with HD graphics."
+In the browser version *Find the original files...* shows the set-up page's *Choose your
+game...* step over the game, with *Back to the game* ([BROWSER.md](BROWSER.md#how-to-play-openciv2-options)).
+In a test run (`CIV2_TEST_OPTIONS=1`) nothing is copied (the note says it cannot be done there:
+`harness/extras/x-no-install-options.txt`), and the native test build (`civ2-linux32`) has no
+set-up to run.
+
+### What Classic mode was
+
+Earlier versions had a *Mode* page instead of the bug fixes' page and the HD graphics' tick:
+*Standard* (the bugs fixed, the additions on) or *Classic* (`Mode=Classic`: the original game,
+its look, its bugs, none of the additions, and sharp text off).  The choices are separate now:
+graphics, bug fixes, interface additions, rule changes, limits and sharp text each keep their
+own setting.  A `CIV.INI` with `Mode=Classic` is turned into them at the next start
+(`extras_migrate_classic`, `src/game/extras.cpp`): `Graphics=Classic`, `FixBugs=0`, each
+interface addition, rule change and limit `=0`, `SharpText=0` unless it was set; `Mode=` is then
+removed (`Mode=Standard` too, which is the default).  `CIV2_CLASSIC=1` still means everything
+original, exactly as before (the replays and tests rely on it): the original's look, caption and
+frame, its bugs, none of the additions.
 
 ## Sharp text and interface
 
@@ -140,7 +178,7 @@ file dialog) is drawn at that resolution: its curves and diagonals (radio
 buttons, check marks, the scroll bars' arrows, the combo box's arrow, the close box) drawn smooth,
 its straight lines and edges as many screen pixels wide as the game's pixel is.  The game's own
 pictures (terrain, units, cities, portraits, backgrounds, the icons of its dialogs) stay the
-original bitmaps, enlarged as before.  It is on by default in Standard mode, off in Classic, and
+original bitmaps, enlarged as before.  It is on by default (off with `CIV2_CLASSIC=1`), and
 can be switched in OpenCiv2 Options (Graphics and screen) or with `SharpText=1` / `=0` in
 `[OpenCiv2]`; `--sharp` (or `--sharp=0`) on the command line, or `CIV2_SHARP=1` / `=0`, wins for
 that run (`--sharp=N`, N from 2 to 4, sets the density, for tests).  Where the screen scale is 1
@@ -155,13 +193,16 @@ in OpenCiv2 Options as natively, or `?sharp=0` in the address ([BROWSER.md](BROW
 ## HD graphics
 
 `Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in OpenCiv2 Options; or `--hd` on
-the command line, or `CIV2_HD=1`) draws the map (and wherever the same pictures appear) with
-the replacement art (openciv2-assets, which comes with OpenCiv2: `data/native/hd`), at the screen's
-full resolution (`GraphicsDensity=`).  Off by default, with `CIV2_CLASSIC=1`, in replays and
-unit tests; it changes only what is shown.  Always on where the game folder lacks the
-original's pictures, whatever is chosen.  The default (where `Graphics=` is unset) is decided
-in one place, `HD_BY_DEFAULT` in `src/platform/options.c` (mirrored in `src/web/options.js`),
-so that making HD the default is a one-line change.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
+the command line, or `CIV2_HD=1`; *Classic graphics* unticked in OpenCiv2 Options) draws the
+map (and wherever the same pictures appear) with the replacement art (openciv2-assets, which
+comes with OpenCiv2: `data/native/hd`), at the screen's full resolution (`GraphicsDensity=`).
+`Graphics=Classic` (or `Standard`, as earlier versions wrote it): the original's pictures.  Off
+by default (Classic graphics ticked), with `CIV2_CLASSIC=1`, in replays and unit tests; it
+changes only what is shown.  Always on where the game folder lacks the original's pictures,
+whatever is chosen (the bug fixes stay as chosen: the original's rules need no pictures).  The
+default (where `Graphics=` is unset) is decided in one place, `HD_BY_DEFAULT` in
+`src/platform/options.c` (mirrored in `src/web/options.js`), so that making HD the default is a
+one-line change: Classic graphics are then unticked by default.  See [HD-GRAPHICS.md](HD-GRAPHICS.md).
 
 ## Rule changes
 

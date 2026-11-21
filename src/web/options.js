@@ -80,7 +80,9 @@ export function hasOriginalPictures(names) {
 }
 
 // Whether the game will want HD graphics: ?hd=N (as --hd=N) wins, else
-// CIV.INI's choice; never in Classic mode, as natively; always where the
+// CIV.INI's choice (Graphics=HD; Classic graphics: Graphics=Classic, or an
+// earlier version's Mode=Classic, which the game turns into that at its
+// start); always where the
 // game folder lacks the original's pictures (pictures false), as natively
 // (the density as asked, else auto).  -> the density wanted (0: auto), or
 // -1 off

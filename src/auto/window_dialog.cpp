@@ -1732,7 +1732,7 @@ void Dialog::layout_buttons(int sprites_height,int content_height)
       button_width = tmp;
     }
   }
-  if (bugfix_ui()) {
+  if (bugfix_ui(20)) {
     /* B20: buttons wider than the window: it grows to hold them, instead of
        the leftmost going past its left edge (docs/BUGS.md) */
     value = (std_button_count + extra_button_count) * button_width +

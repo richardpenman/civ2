@@ -178,6 +178,61 @@ void extras_load(void)
     color_correction_load();
 }
 
+/* ---- the bug fixes (docs/BUGS.md) ---- */
+
+/* The fixes that can be switched off (the others are in every mode), by
+   their numbers in docs/BUGS.md. */
+const unsigned char fixes_switchable[] = {2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23,
+                                          24, 25, 28, 32, 33, 34, 35, 36, 37, 38, 0};
+
+/* plat_fixes: FixBugs= (OpenCiv2 Options' "Fix the original game's bugs",
+   on by default) for each, unless its own Fix.B<n>= says otherwise.  In a
+   replay with CIV2_TEST_FIXES: all, but those CIV2_TEST_SETTINGS or the
+   Options dialog switch (extras_setting). */
+void fixes_load(void)
+{
+    char key[16];
+    int all, on, i;
+    plat_fixes = 0;
+    if (!plat_fixes_allowed)
+        return;
+    all = extras_setting("FixBugs", 1) != 0;
+    for (i = 0; fixes_switchable[i]; i++) {
+        snprintf(key, sizeof key, "Fix.B%d", fixes_switchable[i]);
+        on = extras_setting(key, all) != 0;
+        if (on)
+            plat_fixes |= (uint64_t)1 << fixes_switchable[i];
+        if (on != all && !plat_replay)
+            plat_log("bug fixes %s, but B%d (%s=%d)\n", all ? "on" : "off", fixes_switchable[i], key, on);
+    }
+}
+
+/* CIV.INI's Mode=Classic of an earlier version (OpenCiv2 Options' Mode page,
+   the original game: its look, its bugs, none of the additions) as the
+   choices of now: Classic graphics, the bug fixes off, the interface
+   additions, the rule changes and the limits off, sharp text off where it
+   was not chosen; Mode= removed (docs/EXTRAS.md).  Mode=Standard is
+   removed too: it is the default. */
+void extras_migrate_classic(void)
+{
+    char mode[32] = "", sharp[8] = "";
+    unsigned i;
+    if (!plat_profile_string("CIV.INI", "OpenCiv2", "Mode", mode, sizeof mode))
+        return;
+    if (!__strcmpi(mode, "Classic")) {
+        WritePrivateProfileStringA("OpenCiv2", "Graphics", "Classic", "CIV.INI");
+        WritePrivateProfileStringA("OpenCiv2", "FixBugs", "0", "CIV.INI");
+        for (i = 0; i < sizeof extra_keys / sizeof extra_keys[0]; i++)
+            WritePrivateProfileStringA("OpenCiv2", extra_keys[i].key, "0", "CIV.INI");
+        for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)
+            WritePrivateProfileStringA("OpenCiv2", rule_keys[i].key, "0", "CIV.INI");
+        if (!plat_profile_string("CIV.INI", "OpenCiv2", "SharpText", sharp, sizeof sharp))
+            WritePrivateProfileStringA("OpenCiv2", "SharpText", "0", "CIV.INI");
+        plat_log("options: Mode=Classic of an earlier version: Classic graphics, the bug fixes and the additions off\n");
+    }
+    WritePrivateProfileStringA("OpenCiv2", "Mode", NULL, "CIV.INI");
+}
+
 int extras_retirement_year(void) { return extra_rule(X_RETIREMENT) ? retire_year : 2020; }
 /* X50: the game's year passed year this turn (0: never). */
 int extras_year_reached(int year)
@@ -1055,7 +1110,7 @@ void extras_city_status_draw(void)
     gfx_draw_text_centered((const char *)&textbuf.buf, advisor_state.client_x, top_y, advisor_state.client_width);
     top_y += line_height;
     text_clear();
-    text_append_label(int_clamp(civs[civ].government - 1, 0, bugfix_ui() ? 5 : 4) + 0x148);  /* B35 */
+    text_append_label(int_clamp(civs[civ].government - 1, 0, bugfix_ui(35) ? 5 : 4) + 0x148);  /* B35 */
     text_append_space();
     text_append_label(0x8c);
     text_append_space();

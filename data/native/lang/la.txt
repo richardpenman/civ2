@@ -24,8 +24,8 @@ Optiones OpenCiv2
 Optiones OpenCiv2
 @@openciv2.options.kept
 Servantur in CIV.INI, sub [OpenCiv2].
-@@openciv2.options.mode
-Modus
+@@openciv2.options.fixes
+Menda corrigenda
 @@openciv2.options.graphics
 Graphica et album
 @@openciv2.options.rules
@@ -46,32 +46,42 @@ A proximo ludi initio.
 %s posita: hoc cursu has electiones vincunt.
 @@openciv2.options.list_and
  et 
-@@openciv2.mode.title
-Modus
-@@openciv2.mode.standard_note
-Usitatus: menda archetypi correcta, cum additamentis interfaciei OpenCiv2; regulae mutatae ut electae.
-@@openciv2.mode.classic_note
-Classicus: ludus archetypus qualis erat: menda eius, species eius, nullum additamentum OpenCiv2.
-@@openciv2.mode.standard
-Usitatus
-@@openciv2.mode.classic
-Classicus
+@@openciv2.fixes.title
+Menda Corrigenda
+@@openciv2.fixes.intro
+OpenCiv2 menda ludi archetypi corrigit: in regulis eius, in lusoribus computatralibus, in interfacie. Sine nota ludus menda archetypi retinet. In ludis reticularibus correctiones quae ludum mutant semper absunt, quidquid eligitur.
+@@openciv2.fixes.each
+Quaeque correctio sola in CIV.INI, sub [OpenCiv2], adhiberi aut omitti potest: Fix.B<n>=1 aut 0, n numerus eius in indice mendorum archetypi OpenCiv2; id huic electioni praevalet.
+@@openciv2.fixes.fix
+Menda ludi archetypi corrigere
 @@openciv2.graphics.title
 Graphica et Album
+@@openciv2.graphics.classic_note
+Graphica classica: picturae archetypi. Sine nota: graphica HD, picturae novae mappae, plena albi resolutione.
 @@openciv2.graphics.sharp_note
 Textus et interfacies nitidi: textus, indices et moderamina plena albi resolutione (imagines auctae).
-@@openciv2.graphics.hd_note
-Graphica HD: picturae novae mappae, plena albi resolutione.
 @@openciv2.graphics.fullscreen_note
 Album plenum: pro fenestra quae album implet.
 @@openciv2.graphics.need_original
 Graphica classica fasciculis archetypis Civilization II egent: sine eis graphica HD semper adhibentur.
+@@openciv2.graphics.classic
+Graphica classica
 @@openciv2.graphics.sharp
 Textus et interfacies nitidi
-@@openciv2.graphics.hd
-Graphica HD
 @@openciv2.graphics.fullscreen
 Album plenum
+@@openciv2.locate.title
+Graphica Classica
+@@openciv2.locate.intro
+Graphica classica fasciculis archetypis Civilization II egent, quos capsa ludi non habet. OpenCiv2 eos ex tuo exemplari Civilization II Multiplayer Gold Edition exscribere potest: ex capsa in qua institutum est, ex CD eius, ex .zip eius capsae, aut ex imagine disci eius CD (.cue et .bin). Fasciculi iam in capsa ludi servantur.
+@@openciv2.locate.find
+Fasciculos archetypos quaere...
+@@openciv2.locate.keep
+Graphica HD retine
+@@openciv2.locate.kept
+Sine fasciculis archetypis graphica classica absunt: ludus cum graphicis HD pergit.
+@@openciv2.locate.cannot
+Haec ludi versio eos exscribere non potest: fasciculos ludi archetypi in capsam ludi exscribe, deinde graphica classica iterum nota.
 @@openciv2.rules.title
 Regulae Mutatae
 @@openciv2.rules.intro
@@ -248,6 +258,8 @@ Exscribitur
 Ludus ex CD suo explicatur
 @@openciv2.setup.unpacking_image
 Ludus ex imagine disci sui explicatur
+@@openciv2.setup.unpacking_zip
+Ludus ex .zip suo explicatur
 @@openciv2.setup.copying
 Ludus exscribitur
 @@openciv2.setup.copying_image
@@ -263,9 +275,22 @@ Ludus institutus est, sed sine musica: ex lectore CD legi non potuit.
 @@openciv2.setup.no_folder
 Nulla est capsa %s.
 @@openciv2.setup.not_game
-%s neque Civilization II Multiplayer Gold Edition institutum habet neque CD eius, neque imaginem disci eius.
+%s neque Civilization II Multiplayer Gold Edition institutum habet neque CD eius, neque .zip ludi instituti, neque imaginem disci eius.
 @@openciv2.setup.not_found
-Civilization II Multiplayer Gold Edition inventum non est neque ubi plerumque instituitur, neque in lectore CD, neque ut imago disci eius CD (fasciculus .cue cum suo .bin) in capsis usitatis. Quaeso, ostende ubi sit: capsam in qua institutum est, CD eius, aut imaginem disci (aut capsam in qua est).
+Civilization II Multiplayer Gold Edition inventum non est neque ubi plerumque instituitur, neque in lectore CD, neque ut imago disci eius CD (fasciculus .cue cum suo .bin) in capsis usitatis. Quaeso, ostende ubi sit: capsam in qua institutum est, CD eius, .zip eius capsae, aut imaginem disci (aut capsam in qua est).
+@@openciv2.setup.original_not_found
+Civilization II Multiplayer Gold Edition inventum non est neque ubi plerumque instituitur, neque in lectore CD, neque ut imago disci eius CD in capsis usitatis. Quaeso, ostende ubi sit: capsam in qua institutum est, CD eius, .zip eius capsae, aut imaginem disci (aut capsam in qua est).
+@@openciv2.setup.confirm_original
+OpenCiv2 fasciculos archetypos Civilization II quibus ludus caret ex %s exscribit in
+%s
+
+Fasciculi qui iam ibi sunt servantur.
+@@openciv2.setup.copy
+Exscribe
+@@openciv2.setup.cancel
+Omitte
+@@openciv2.setup.original_stopped
+Exscriptio intermissa est: ludus cum graphicis HD pergit.
 @@openciv2.setup.music_image
 imagine disci %s
 @@openciv2.setup.music_cd
@@ -303,9 +328,9 @@ Hoc paucas minutas durat; deinde ludus incipit.
 @@openciv2.setup.stopped
 Institutio intermissa est; proxima vice denuo incipit.
 @@openciv2.setup.where
-Ubi est Civilization II Multiplayer Gold Edition? Elige capsam in qua institutum est, CD eius, aut imaginem disci eius CD (fasciculum .cue, aut capsam in qua est).
+Ubi est Civilization II Multiplayer Gold Edition? Elige capsam in qua institutum est, CD eius, .zip eius capsae, aut imaginem disci eius CD (fasciculum .cue, aut capsam in qua est).
 @@openciv2.setup.where_short
-Ubi est Civilization II Multiplayer Gold Edition? (capsa in qua institutum est, CD eius, aut capsa imaginis disci eius CD)
+Ubi est Civilization II Multiplayer Gold Edition? (capsa in qua institutum est, CD eius, aut capsa .zip ludi instituti aut imaginis disci eius CD)
 @@openciv2.setup.where_command
 Incipe OpenCiv2 cum ea capsa (aut fasciculo .cue): OpenCiv2 --setup FOLDER
 @@openciv2.setup.set_up
@@ -317,7 +342,15 @@ Elige
 @@openciv2.web.loading
 Oneratur ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Ludit cum <em>tuo ipsius</em> exemplari ludi: capsa in qua Civilization II institutum est (ea cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imago disci eius CD. Quomodo ludas (Usitatus aut Classicus, Graphica HD, regulae mutatae et interfaciei additamenta) in ludo eligitur: Optiones OpenCiv2, in indice eius principali.
+Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Ludit cum <em>tuo ipsius</em> exemplari ludi: capsa in qua Civilization II institutum est (ea cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imago disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Optiones OpenCiv2, in indice eius principali.
+@@openciv2.web.add_original
+Graphica classica fasciculis archetypis Civilization II egent, quos ludus in hoc navigatro non habet. Elige exemplar tuum Civilization II Multiplayer Gold Edition: fasciculi quos ludus iam habet servantur.
+@@openciv2.web.add_back
+Redi ad ludum
+@@openciv2.web.added
+%s fasciculi ludi archetypi additi.
+@@openciv2.web.add_no_pictures
+Hi fasciculi picturas archetypi non habent (TERRAIN1.GIF, Tiles.dll et ceteras): elige aliud exemplar ludi, aut redi ad ludum.
 @@openciv2.web.choose
 Elige ludum tuum...
 @@openciv2.web.choose_folder

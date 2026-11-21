@@ -4039,7 +4039,7 @@ i32 __cdecl city_process_food(uptr city)
   }
   else {
     box_limit = (cities[city].size + 1) * city_calc.food_box_rows;
-    if (bugfix_state() && (0x7e < cities[city].size)) {
+    if (bugfix_state(16) && (0x7e < cities[city].size)) {
       /* B16: a city stops at 127, the most its size (a signed byte) holds;
          the original grows on to -128 (docs/BUGS.md) */
       if (box_limit < cities[city].food_box) {
@@ -4282,7 +4282,7 @@ void __cdecl city_process_disorder(int city)
                ((int)((int)cities[city].size * (uint)cosmic.food_per_citizen +
                      city_calc.settlers_supported * city_calc.settler_food_cost) < city_calc.yield_totals[0])) &&
               (happy_margin = city_needed_size_improvement(city), happy_margin == 0) &&
-              (!bugfix_state() || (cities[city].size < 0x7f))) {  /* B16 */
+              (!bugfix_state(16) || (cities[city].size < 0x7f))) {  /* B16 */
         cities[city].size++;
       }
     }

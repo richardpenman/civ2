@@ -1020,7 +1020,7 @@ void __cdecl trade_advisor_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,top_y,advisor_state.client_width);
   top_y += line_height;
   text_clear();
-  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(gov_index + 0x148);
   text_append_space();
   text_append_label(0x8c);
@@ -1238,7 +1238,7 @@ void __cdecl city_status_draw(void)
   gfx_draw_text_centered((const char *)&textbuf.buf,advisor_state.client_x,top_y,advisor_state.client_width);
   top_y += line_height;
   text_clear();
-  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui() ? 5 : 4);  /* B35 */
+  gov_index = int_clamp(civs[civ].government - 1,0,bugfix_ui(35) ? 5 : 4);  /* B35 */
   text_append_label(gov_index + 0x148);
   text_append_space();
   text_append_label(0x8c);

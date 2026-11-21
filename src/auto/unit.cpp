@@ -3151,7 +3151,7 @@ void __cdecl unit_cmd_goto_city(void)
         units[unit].orders = ORDER_GOTO;
         units[unit].goto_x = cities[city2].x;
         units[unit].goto_y = cities[city2].y;
-        if (bugfix_state()) {
+        if (bugfix_state(9)) {
           units[unit].aux_timer = '\0';  /* B9: the long move count starts again (docs/BUGS.md) */
         }
         return;
@@ -4760,7 +4760,7 @@ void __cdecl unit_delete_with_cargo(int unit,int send_update)
   }
   if (at_sea) {
     unit_gather_cargo(unit,0,0);
-    if (bugfix_state()) {  /* B36 */
+    if (bugfix_state(36)) {  /* B36 */
       unit_delete_ship_at_sea(unit);
     }
     else {

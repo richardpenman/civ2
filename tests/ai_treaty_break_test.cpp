@@ -44,8 +44,8 @@ static u8 ceasefire_icon_sprite[64];
 static char str_warends_2[8] = "WARENDS";
 static char str_cancelpeace_3[12] = "CANCELPEACE";
 
-static int plat_fix_bugs;
-static inline int bugfix_state(void) { return plat_fix_bugs && game.multiplayer < 3; }
+static uint64_t plat_fixes;
+static inline int bugfix_state(int n) { return (int)((plat_fixes >> n) & 1) && game.multiplayer < 3; }
 
 static int _rand() { return 0; }       // every roll hits
 static int int_clamp(int v, int lo, int hi) { return v < lo ? lo : v > hi ? hi : v; }
@@ -92,7 +92,7 @@ static void setup(uint treaty) {
 
 int main() {
     // The original: the AI's side drops peace, the player's still has it, no message.
-    plat_fix_bugs = 0;
+    plat_fixes = 0;
     setup(TREATY_PEACE);
     civ_turn_update_diplomacy(AI);
     assert((civs[AI].treaties[HUMAN] & (TREATY_PEACE | TREATY_HOSTILE_INTENT)) == 0);
@@ -101,7 +101,7 @@ int main() {
     assert(popups.empty());
 
     // Fixed: both sides drop peace and the player is told.
-    plat_fix_bugs = 1;
+    plat_fixes = (uint64_t)1 << 37;     // B37 (Fix.B37=1)
     setup(TREATY_PEACE);
     civ_turn_update_diplomacy(AI);
     assert((civs[AI].treaties[HUMAN] & (TREATY_PEACE | TREATY_HOSTILE_INTENT)) == 0);

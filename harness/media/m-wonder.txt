@@ -1,10 +1,12 @@
 # Media test (make test-media): a wonder's movie (Video\WONDERnn.AVI, the
 # Oracle's, 42 s) played to its end, and the map after its window closes;
-# then the next one (the Pyramids') closed early with Escape.
+# then the next one (the Pyramids') closed early with Escape.  (The opening
+# video ended with a click; with HD graphics none is played, and the click
+# falls on the main menu's backdrop.)
 # test:
 # test hd: CIV2_TEST_HD=2
 wait 3000
-key Escape
+click 20 400                # ends the opening video (HD: none, a click on the menu's backdrop)
 wait 5000
 key Down Down Down Down     # "Load a Game"
 wait 500

@@ -179,6 +179,12 @@ int os_confirm(const char *text)
     return 1;
 }
 
+int os_ask(const char *text, const char *yes, const char *no)
+{
+    (void)text, (void)yes, (void)no;
+    return 1;
+}
+
 void os_progress_open(void)
 {
 }

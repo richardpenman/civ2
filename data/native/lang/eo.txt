@@ -29,8 +29,8 @@ Agordoj de OpenCiv2
 Agordoj de OpenCiv2
 @@openciv2.options.kept
 Konservitaj en CIV.INI, sub [OpenCiv2].
-@@openciv2.options.mode
-Reøimo
+@@openciv2.options.fixes
+Korektoj de eraroj
 @@openciv2.options.graphics
 Grafiko kaj ekrano
 @@openciv2.options.rules
@@ -51,32 +51,42 @@ Ekde la venonta lanæo de la ludo.
 %s estas difinitaj: por æi tiu lanæo ili superas æi tiujn elektojn.
 @@openciv2.options.list_and
  kaj 
-@@openciv2.mode.title
-Reøimo
-@@openciv2.mode.standard_note
-Norma: la eraroj de la originalo korektitaj, kun la interfacaj aldonoj de OpenCiv2; regulþanøoj laý elekto.
-@@openciv2.mode.classic_note
-Klasika: la originala ludo kiel øi estis: øiaj eraroj, øia aspekto, neniu el la aldonoj de OpenCiv2.
-@@openciv2.mode.standard
-Norma
-@@openciv2.mode.classic
-Klasika
+@@openciv2.fixes.title
+Korektoj de eraroj
+@@openciv2.fixes.intro
+OpenCiv2 korektas erarojn de la originala ludo: en øiaj reguloj, øiaj komputilaj ludantoj kaj øia interfaco. Sen marko, la ludo konservas la erarojn de la originalo. En retaj ludoj la korektoj, kiuj þanøas la ludon, æiam estas malþaltitaj, kio ajn estas elektita.
+@@openciv2.fixes.each
+Æiu korekto þalteblas aý malþalteblas aparte en CIV.INI, sub [OpenCiv2]: Fix.B<n>=1 aý 0, n øia numero en la listo de OpenCiv2 de la eraroj de la originalo; tio superas æi tiun elekton.
+@@openciv2.fixes.fix
+Korekti la erarojn de la originala ludo
 @@openciv2.graphics.title
 Grafiko kaj ekrano
+@@openciv2.graphics.classic_note
+Klasika grafiko: la bildoj de la originalo. Sen marko: HD-grafiko, nova arto por la mapo, je la plena distingivo de la ekrano.
 @@openciv2.graphics.sharp_note
 Akra teksto kaj interfaco: teksto, menuoj kaj regiloj je la plena distingivo de la ekrano (la bildoj pligrandigitaj).
-@@openciv2.graphics.hd_note
-HD-grafiko: nova arto por la mapo, je la plena distingivo de la ekrano.
 @@openciv2.graphics.fullscreen_note
 Plena ekrano: anstataý fenestro, kiu plenigas la ekranon.
 @@openciv2.graphics.need_original
 Klasika grafiko bezonas la originalajn dosierojn de Civilization II: sen ili la HD-grafiko æiam estas þaltita.
+@@openciv2.graphics.classic
+Klasika grafiko
 @@openciv2.graphics.sharp
 Akra teksto kaj interfaco
-@@openciv2.graphics.hd
-HD-grafiko
 @@openciv2.graphics.fullscreen
 Plena ekrano
+@@openciv2.locate.title
+Klasika grafiko
+@@openciv2.locate.intro
+Klasika grafiko bezonas la originalajn dosierojn de Civilization II, kiujn la dosierujo de la ludo ne havas. OpenCiv2 povas kopii ilin el via kopio de Civilization II Multiplayer Gold Edition: la dosierujo, en kiu øi estas instalita, øia KD, .zip de tiu dosierujo aý diskobildo de la KD (øiaj .cue kaj .bin). La dosieroj jam en la dosierujo de la ludo restas.
+@@openciv2.locate.find
+Seræi la originalajn dosierojn...
+@@openciv2.locate.keep
+Konservi la HD-grafikon
+@@openciv2.locate.kept
+Sen la originalaj dosieroj la klasika grafiko restas malþaltita: la ludo daýras kun HD-grafiko.
+@@openciv2.locate.cannot
+Æi tiu versio de la ludo ne povas kopii ilin: kopiu la dosierojn de la originala ludo en la dosierujon de la ludo, poste denove marku Klasikan grafikon.
 @@openciv2.rules.title
 Regulþanøoj
 @@openciv2.rules.intro
@@ -253,6 +263,8 @@ Kopiante
 Malpakante la ludon el øia KD
 @@openciv2.setup.unpacking_image
 Malpakante la ludon el øia diskobildo
+@@openciv2.setup.unpacking_zip
+Malpakante la ludon el øia .zip
 @@openciv2.setup.copying
 Kopiante la ludon
 @@openciv2.setup.copying_image
@@ -268,9 +280,22 @@ La ludo estas instalita, sed sen sia muziko: øi ne legeblis el la KD-legilo.
 @@openciv2.setup.no_folder
 Ne ekzistas dosierujo %s.
 @@openciv2.setup.not_game
-%s havas nek instalitan Civilization II Multiplayer Gold Edition, nek øian KD, nek diskobildon de la KD.
+%s havas nek instalitan Civilization II Multiplayer Gold Edition, nek øian KD, nek .zip de la instalita ludo, nek diskobildon de la KD.
 @@openciv2.setup.not_found
-Civilization II Multiplayer Gold Edition troviøis nek kie øi kutime estas instalita, nek en KD-legilo, nek kiel diskobildo de øia KD (dosiero .cue kun sia .bin) en la kutimaj dosierujoj. Bonvolu montri, kie øi estas: la dosierujo, en kiu øi estas instalita, øia KD aý la diskobildo (aý øia dosierujo).
+Civilization II Multiplayer Gold Edition troviøis nek kie øi kutime estas instalita, nek en KD-legilo, nek kiel diskobildo de øia KD (dosiero .cue kun sia .bin) en la kutimaj dosierujoj. Bonvolu montri, kie øi estas: la dosierujo, en kiu øi estas instalita, øia KD, .zip de tiu dosierujo aý la diskobildo (aý øia dosierujo).
+@@openciv2.setup.original_not_found
+Civilization II Multiplayer Gold Edition troviøis nek kie øi kutime estas instalita, nek en KD-legilo, nek kiel diskobildo de øia KD en la kutimaj dosierujoj. Bonvolu montri, kie øi estas: la dosierujo, en kiu øi estas instalita, øia KD, .zip de tiu dosierujo aý la diskobildo (aý øia dosierujo).
+@@openciv2.setup.confirm_original
+OpenCiv2 kopias la originalajn dosierojn de Civilization II, kiujn la ludo ne havas, el %s en
+%s
+
+La dosieroj jam tie restas.
+@@openciv2.setup.copy
+Kopii
+@@openciv2.setup.cancel
+Nuligi
+@@openciv2.setup.original_stopped
+La kopiado estis haltigita: la ludo daýras kun HD-grafiko.
 @@openciv2.setup.music_image
 la diskobildo %s
 @@openciv2.setup.music_cd
@@ -308,9 +333,9 @@ Tio daýras kelkajn minutojn; poste la ludo komenciøas.
 @@openciv2.setup.stopped
 La instalado estis haltigita; øi rekomenciøos la venontan fojon.
 @@openciv2.setup.where
-Kie estas Civilization II Multiplayer Gold Edition? Elektu la dosierujon, en kiu øi estas instalita, øian KD aý diskobildon de la KD (øian dosieron .cue aý øian dosierujon).
+Kie estas Civilization II Multiplayer Gold Edition? Elektu la dosierujon, en kiu øi estas instalita, øian KD, .zip de tiu dosierujo aý diskobildon de la KD (øian dosieron .cue aý øian dosierujon).
 @@openciv2.setup.where_short
-Kie estas Civilization II Multiplayer Gold Edition? (la dosierujo, en kiu øi estas instalita, øia KD aý la dosierujo de diskobildo de la KD)
+Kie estas Civilization II Multiplayer Gold Edition? (la dosierujo, en kiu øi estas instalita, øia KD aý la dosierujo de .zip de la instalita ludo aý de diskobildo de la KD)
 @@openciv2.setup.where_command
 Lanæu OpenCiv2 kun tiu dosierujo (aý la dosiero .cue): OpenCiv2 --setup DOSIERUJO
 @@openciv2.setup.set_up
@@ -322,7 +347,15 @@ Elekti
 @@openciv2.web.loading
 Þargante ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (Norma aý Klasika, HD-grafiko, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj de OpenCiv2, en øia æefa menuo.
+Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (klasika aý HD-grafiko, la korektoj de eraroj, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj de OpenCiv2, en øia æefa menuo.
+@@openciv2.web.add_original
+Klasika grafiko bezonas la originalajn dosierojn de Civilization II, kiujn la ludo en æi tiu retumilo ne havas. Elektu vian kopion de Civilization II Multiplayer Gold Edition: la dosieroj, kiujn la ludo jam havas, restas.
+@@openciv2.web.add_back
+Reen al la ludo
+@@openciv2.web.added
+%s dosieroj de la originala ludo aldonitaj.
+@@openciv2.web.add_no_pictures
+Æi tiuj dosieroj ne havas la bildojn de la originalo (TERRAIN1.GIF, Tiles.dll kaj la aliaj): elektu alian kopion de la ludo, aý reiru al la ludo.
 @@openciv2.web.choose
 Elektu vian ludon...
 @@openciv2.web.choose_folder

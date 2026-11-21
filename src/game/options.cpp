@@ -1,19 +1,18 @@
 /*
  * (port) The OpenCiv2 Options dialog (docs/EXTRAS.md, "OpenCiv2 Options"):
- * the main menu's last choice, after View Credits, in Standard and Classic
- * mode alike, where the player chooses how to play.  The game's own
- * dialogs, built as it builds those of GAME.TXT: a list of what can be
- * chosen, each opening a dialog of its own with OK and Cancel (as the Game
- * menu's options):
+ * the main menu's last choice, after View Credits, where the player chooses
+ * how to play.  The game's own dialogs, built as it builds those of
+ * GAME.TXT: a list of what can be chosen, each opening a dialog of its own
+ * with OK and Cancel (as the Game menu's options):
  *
- *   Mode                 Standard (the original's bugs fixed, the interface
- *                        additions) or Classic (the original game, as
- *                        CIV2_CLASSIC=1);
- *   Graphics and screen  sharp text and interface (on by default but in
- *                        Classic), HD graphics (docs/HD-GRAPHICS.md: the
- *                        art downloaded from here where it is missing,
- *                        src/host/host_options.c; in the browser the page
- *                        gets it from its site), full screen;
+ *   Bug fixes            "Fix the original game's bugs" (docs/BUGS.md:
+ *                        FixBugs=, on by default; each fix's own Fix.B<n>=
+ *                        in CIV.INI wins over it);
+ *   Graphics and screen  "Classic graphics" (the original's pictures;
+ *                        unticked: HD graphics, docs/HD-GRAPHICS.md; the
+ *                        default HD_BY_DEFAULT's, src/platform/options.c),
+ *                        sharp text and interface (on by default), full
+ *                        screen;
  *   Rule changes, Limits (EXTRAS.md "Rule changes");
  *   Interface additions, Colours and messages (the colour correction, the
  *                        messages shown on the map).
@@ -22,16 +21,20 @@
  *                        directory's translations.
  *
  * Where the game folder lacks the original's pictures (docs/NO-INSTALL.md:
- * plat_graphics_forced) Classic is not offered and HD graphics stay ticked,
- * with a note saying why ("graphics.need_original").
+ * plat_graphics_forced) Classic graphics are unticked, with a note saying
+ * why ("graphics.need_original"); ticked, a dialog offers to find the
+ * original's files (plat_add_original: the set-up's, natively; the set-up
+ * page's in the browser): found, Classic graphics from the next start (the
+ * restart offered); else HD graphics stay, with a note.
  *
  * Its texts are keyed (src/host/texts.h: extras_text).
  *
- * OK writes what changed to CIV.INI's [OpenCiv2] section.  The rule changes
- * and the interface additions take effect at once (extras_load: they are
- * read again); the mode, the graphics, full screen and the language when the game starts
- * again, which it then offers to do (plat_restart: the program started
- * again natively, the page loaded again in the browser).
+ * OK writes what changed to CIV.INI's [OpenCiv2] section.  The bug fixes,
+ * the rule changes and the interface additions take effect at once
+ * (fixes_load, extras_load: they are read again); the graphics, full screen
+ * and the language when the game starts again, which it then offers to do
+ * (plat_restart: the program started again natively, the page loaded again
+ * in the browser).
  *
  * Not in replays or the unit tests (the main menu is compared with the
  * original's), but with CIV2_TEST_OPTIONS=1 in a replay
@@ -82,8 +85,9 @@ static const struct { const char *key; int def; } colours[NCOLOR] = {
 };
 
 typedef struct {
-    int classic, hd, fullscreen;
-    int sharp, sharp_set;           /* sharp text and interface; SharpText= set (else: not in Classic) */
+    int fix;                        /* FixBugs=: the original's bugs fixed */
+    int hd, fullscreen;             /* hd: Classic graphics unticked */
+    int sharp, sharp_set;           /* sharp text and interface; SharpText= set (else: on) */
     int rule[NRULES], extra[NEXTRAS];
     char limit[NLIMITS][16], colour[NCOLOR][256];
     char language[16];              /* Language=: a code, "" (or Auto) the system's */
@@ -150,15 +154,14 @@ static void read_choices(Choices *c)
     char v[64];
     int i, year;
     memset(c, 0, sizeof *c);
-    get("Mode", v, sizeof v);
-    /* (without the original's pictures: no Classic, HD graphics whatever is
-       chosen; plat_graphics_hd: the default where Graphics= is unset) */
-    c->classic = !plat_graphics_forced() && !__strcmpi(v, "Classic");
+    c->fix = get_int("FixBugs", 1) != 0;
+    /* (without the original's pictures HD graphics whatever is chosen;
+       plat_graphics_hd: the default where Graphics= is unset) */
     get("Graphics", v, sizeof v);
     c->hd = plat_graphics_forced() || plat_graphics_hd(v);
     get("SharpText", v, sizeof v);
     c->sharp_set = v[0] != 0;
-    c->sharp = c->sharp_set ? atoi(v) != 0 : !c->classic;
+    c->sharp = c->sharp_set ? atoi(v) != 0 : 1;
     c->fullscreen = get_int("FullScreen", 0) != 0;
     get("Language", c->language, sizeof c->language);
     if (!__strcmpi(c->language, "Auto"))
@@ -188,10 +191,10 @@ static void read_choices(Choices *c)
 static void write_choices(const Choices *c, const Choices *old)
 {
     int i;
-    if (c->classic != old->classic)
-        put("Mode", c->classic ? "Classic" : "Standard");
+    if (c->fix != old->fix)
+        put_int("FixBugs", c->fix);
     if (c->hd != old->hd)
-        put("Graphics", c->hd ? "HD" : "Standard");
+        put("Graphics", c->hd ? "HD" : "Classic");
     if (c->sharp_set && (c->sharp != old->sharp || !old->sharp_set))
         put_int("SharpText", c->sharp);
     if (c->fullscreen != old->fullscreen)
@@ -246,8 +249,8 @@ static Choices at_start;
 static int at_start_read;
 
 /* What the environment or the command line set wins over the choices
-   (src/platform/main.c, hd.c): a line saying so, for which (1 mode, 2 the
-   graphics), "" if none. */
+   (src/platform/main.c, hd.c): a line saying so, for which (1 the bug
+   fixes, 2 the graphics), "" if none. */
 static void overrides(int which, char *out, int n)
 {
     const char *c = getenv("CIV2_CLASSIC"), *a = getenv("CIV2_HD_ARG"), *e = getenv("CIV2_HD");
@@ -313,46 +316,55 @@ static void message(const char *title, const char *text)
     d.show_modal(0);
 }
 
-/* Mode: Standard or Classic.  1 if changed. */
-static int page_mode(Choices *c)
+/* Bug fixes: the original's bugs fixed or not.  1 if changed. */
+static int page_fixes(Choices *c)
 {
     char note[200];
-    int choice;
     Dialog d(0x4000);
-    dialog_begin(d, extras_text("mode.title"), 440);
-    paragraph(d, extras_text("mode.standard_note"), 1);
-    paragraph(d, extras_text("mode.classic_note"), 0);
-    paragraph(d, extras_text("options.next_start"), 0);
-    if (plat_graphics_forced())
-        paragraph(d, extras_text("graphics.need_original"), 0);
+    dialog_begin(d, extras_text("fixes.title"), 480);
+    paragraph(d, extras_text("fixes.intro"), 1);
+    paragraph(d, extras_text("fixes.each"), 0);
     overrides(1, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
-    d.add_option(extras_text("mode.standard"), 0, 0);
-    d.add_option(extras_text("mode.classic"), 1, 0);
-    if (plat_graphics_forced())
-        d.set_option_disabled(1, 1);    /* (the original's look needs its pictures) */
-    d.set_default_choice(c->classic);
-    choice = d.show_modal(0);
-    if (choice < 0 || choice == c->classic)
+    d.add_checkbox_option(extras_text("fixes.fix"), 0, c->fix);
+    if (d.show_modal(0) != 0 || (d.option_is_checked(0) != 0) == c->fix)
         return 0;
-    c->classic = choice;
-    if (!c->sharp_set)
-        c->sharp = !c->classic;     /* (by default: not in Classic) */
+    c->fix = d.option_is_checked(0) != 0;
     return 1;
 }
 
-/* Graphics and screen: sharp text and interface, HD graphics, full screen.
-   1 if changed. */
+/* Classic graphics ticked where the game folder lacks the original's
+   pictures: the original's files offered to be found (plat_add_original).
+   1: the folder has them now. */
+static int find_original(void)
+{
+    int choice, r;
+    {
+        Dialog d(0x4000);
+        dialog_begin(d, extras_text("locate.title"), 480);
+        paragraph(d, extras_text("locate.intro"), 1);
+        d.add_option(extras_text("locate.find"), 0, 0);
+        d.add_option(extras_text("locate.keep"), 1, 0);
+        choice = d.show_modal(0);
+    }
+    r = choice == 0 ? plat_add_original() : 0;
+    if (r <= 0)
+        message(extras_text("locate.title"), extras_text(r < 0 ? "locate.cannot" : "locate.kept"));
+    return r > 0;
+}
+
+/* Graphics and screen: Classic graphics, sharp text and interface, full
+   screen.  1 if changed. */
 static int page_graphics(Choices *c)
 {
     char note[200];
-    int browser = plat_restart(0) == 2, result, hd_offered;
+    int browser = plat_restart(0) == 2, result;
     Choices was = *c;
     Dialog d(0x4000);
     dialog_begin(d, extras_text("graphics.title"), 480);
-    paragraph(d, extras_text("graphics.sharp_note"), 1);
-    paragraph(d, extras_text("graphics.hd_note"), 0);
+    paragraph(d, extras_text("graphics.classic_note"), 1);
+    paragraph(d, extras_text("graphics.sharp_note"), 0);
     if (!browser)
         paragraph(d, extras_text("graphics.fullscreen_note"), 0);
     if (plat_graphics_forced())
@@ -361,29 +373,25 @@ static int page_graphics(Choices *c)
     overrides(2, note, sizeof note);
     if (note[0])
         paragraph(d, note, 0);
-    /* (without the original's pictures HD graphics are always on: ticked;
-       unticked, the note again and they stay on.  A disabled checkbox is
-       drawn without its tick, so it is left enabled.) */
-    hd_offered = !c->classic && !plat_graphics_forced();
-    d.add_checkbox_option(extras_text("graphics.sharp"), 0, c->sharp);
-    d.add_checkbox_option(extras_text("graphics.hd"), 1, plat_graphics_forced() || (c->hd && hd_offered));
+    d.add_checkbox_option(extras_text("graphics.classic"), 0, !c->hd);
+    d.add_checkbox_option(extras_text("graphics.sharp"), 1, c->sharp);
     if (!browser)
         d.add_checkbox_option(extras_text("graphics.fullscreen"), 2, c->fullscreen);
-    if (!hd_offered && !plat_graphics_forced())
-        d.set_option_disabled(1, 1);
     result = d.show_modal(0);
     if (result != 0)
         return 0;
-    if ((d.option_is_checked(0) != 0) != c->sharp) {
-        c->sharp = d.option_is_checked(0) != 0;
+    if ((d.option_is_checked(1) != 0) != c->sharp) {
+        c->sharp = d.option_is_checked(1) != 0;
         c->sharp_set = 1;
     }
-    if (plat_graphics_forced() && !d.option_is_checked(1))
-        message(extras_text("graphics.title"), extras_text("graphics.need_original"));
-    if (hd_offered)
-        c->hd = d.option_is_checked(1) != 0;
     if (!browser)
         c->fullscreen = d.option_is_checked(2) != 0;
+    /* (without the original's pictures: Classic graphics once they are
+       found; HD graphics until then) */
+    if (d.option_is_checked(0) && c->hd && (!plat_graphics_forced() || find_original()))
+        c->hd = 0;
+    else if (!d.option_is_checked(0))
+        c->hd = 1;
     return memcmp(&was, c, sizeof was) != 0;
 }
 
@@ -502,7 +510,7 @@ static int page_language(Choices *c)
 static void offer_restart(const Choices *c)
 {
     int how, choice;
-    if (c->classic == at_start.classic && c->hd == at_start.hd && c->sharp == at_start.sharp &&
+    if (c->hd == at_start.hd && c->sharp == at_start.sharp &&
         c->fullscreen == at_start.fullscreen && !strcmp(c->language, at_start.language))
         return;
     how = plat_restart(0);
@@ -522,11 +530,11 @@ static void offer_restart(const Choices *c)
         message(extras_text("restart.title"), extras_text("restart.failed"));
 }
 
-enum { P_MODE, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS, P_LANGUAGE };
+enum { P_FIXES, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS, P_LANGUAGE };
 
 void options_dialog(void)
 {
-    int choice = P_MODE;
+    int choice = P_FIXES;
     if (!at_start_read) {
         read_choices(&at_start);
         at_start_read = 1;
@@ -539,31 +547,23 @@ void options_dialog(void)
             Dialog d(0x4000);
             dialog_begin(d, extras_text("options.title"), 360);
             d.add_line(extras_text("options.kept"), -1, -1, -1, 0);
-            d.add_option(extras_text("options.mode"), P_MODE, 0);
+            d.add_option(extras_text("options.fixes"), P_FIXES, 0);
             d.add_option(extras_text("options.graphics"), P_GRAPHICS, 0);
             d.add_option(extras_text("options.rules"), P_RULES, 0);
             d.add_option(extras_text("options.limits"), P_LIMITS, 0);
             d.add_option(extras_text("options.interface"), P_INTERFACE, 0);
             d.add_option(extras_text("options.colours"), P_COLOURS, 0);
             d.add_option(extras_text("options.language"), P_LANGUAGE, 0);
-            if (now.classic) {
-                /* (the original game: none of these) */
-                int i;
-                for (i = P_RULES; i <= P_COLOURS; i++)
-                    d.set_option_disabled(i, 1);
-                if (choice >= P_RULES && choice <= P_COLOURS)
-                    choice = P_MODE;
-            }
             d.set_default_choice(choice);
             choice = d.show_modal(0);
         }
         if (choice < 0)
             return;
         switch (choice) {
-        case P_MODE:
-            if (page_mode(&now)) {
+        case P_FIXES:
+            if (page_fixes(&now)) {
                 write_choices(&now, &was);
-                offer_restart(&now);
+                fixes_load();       /* at once */
             }
             break;
         case P_GRAPHICS:

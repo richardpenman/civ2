@@ -5,7 +5,7 @@
  * description; each one keeps the number of its item in CIV2UIA's README.
  *
  * They are on unless the original game is wanted: CIV2_CLASSIC=1, replays
- * and unit tests (as bugfix_ui(), docs/BUGS.md), and each can be switched
+ * and unit tests (as the bug fixes, docs/BUGS.md), and each can be switched
  * off in the [OpenCiv2] section of CIV.INI (its key below, =0).  They change
  * only what this player sees and does with the interface, so they stay on in
  * network games.  CIV2_TEST_EXTRAS turns them on in a replay (tests only):
@@ -91,6 +91,19 @@ EXTRAS_C const char *plat_text_codepage_name(void);
 
 /* src/game/extras.cpp */
 EXTRAS_C void extras_load(void);                /* the settings: at start, and as the OpenCiv2 Options change them */
+/* the bug fixes (docs/BUGS.md): plat_fixes from [OpenCiv2] FixBugs= and
+   Fix.B<n>=, where plat_fixes_allowed (src/platform/main.c: not with
+   CIV2_CLASSIC=1, in replays but with CIV2_TEST_FIXES, in the unit tests);
+   at start, and as the OpenCiv2 Options change them */
+EXTRAS_C void fixes_load(void);
+EXTRAS_C int plat_fixes_allowed;
+EXTRAS_C uint64_t plat_fixes;
+/* the fixes that can be switched off, by number, ending with 0 */
+EXTRAS_C const unsigned char fixes_switchable[];
+/* an earlier version's Mode=Classic in CIV.INI as the choices of now (at
+   the start, src/platform/main.c) */
+EXTRAS_C void extras_migrate_classic(void);
+EXTRAS_C void plat_log(const char *fmt, ...);
 EXTRAS_C int extras_input(void *msg);           /* a mouse message (MSG *) before dispatch: 1 if used */
 EXTRAS_C int extras_setting(const char *key, int def);   /* [OpenCiv2] key=number */
 EXTRAS_C const char *extras_text(const char *key);   /* an addition's text (translatable) */
@@ -112,9 +125,15 @@ EXTRAS_C int plat_restart(int now);
 /* the graphics (src/platform/options.c, the one place that decides): whether
    CIV.INI's Graphics=value asks for HD ("": the default), whether HD
    graphics are forced on (the game folder lacks the original's pictures:
-   no Classic, no original look; docs/NO-INSTALL.md) */
+   no Classic graphics, no original look; docs/NO-INSTALL.md) */
 EXTRAS_C int plat_graphics_hd(const char *value);
 EXTRAS_C int plat_graphics_forced(void);
+/* the original's files the game folder lacks, from the player's copy (an
+   installed game, its CD, a .zip, a disc image: host_add_original, the
+   set-up's), for Classic graphics: 1 the folder has the original's pictures
+   now, 0 not (cancelled, failed: said), -1 it cannot be done here (a test
+   run, the native test build) */
+EXTRAS_C int plat_add_original(void);
 
 /* In a dialog list row's text (X30, X37): EXTRAS_ICON then 'g' (a gold coin),
    's' (a shield) or 'f' (food): that icon. */
@@ -124,7 +143,7 @@ EXTRAS_C int plat_graphics_forced(void);
 #ifdef __cplusplus
 /* A rule change (CIV2UIA's 17, 18, 19, 36, 42 and the limits): off by
    default, switched on in CIV.INI (its key =1, or the limit); as
-   bugfix_state(), also off in network games, where every player must
+   bugfix_state(n), also off in network games, where every player must
    compute the same game.  Each one: if (extra_rule(X_...)) <changed> else
    <original>, marked X<n>. */
 static inline int extra_rule(int item)
