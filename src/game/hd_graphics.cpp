@@ -744,3 +744,38 @@ void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3)
         civs[human_civ[0]].spaceship_flags |= SHIP_LAUNCHED;
     spaceship_wnd_run(human_civ[0]);
 }
+
+/* OpenCiv2's own heralds (docs/HD-GRAPHICS.md, "Your own heralds";
+   data/native/hd-extra/heralds.txt): DiploLeaderWindow::init_video asks
+   whether the tribe of this code (KINGS\HRLDxxx.AVI's xxx) has one, with
+   HD graphics.  If so (1), the video's window goes where it stands (x, y,
+   the game's pixels of the room) and the game's table of the herald's
+   segments for that tribe (leader_anim_frames: greeting, idle, pleased,
+   refusal, angry) takes its frames, so that the game plays it as it plays
+   the CD's video, from the same calls at the same moments; the CD's file
+   need not be there (src/platform/video.c opens the own herald in its
+   place).  Else (0) the tribe's segments are the original's again. */
+int hd_herald(const char *code, int tribe, i32 *x, i32 *y)
+{
+    static i32 original[26][5][2];
+    static int saved;
+    HdHerald h;
+    char path[1400];
+    if (tribe < 0 || tribe >= 26)
+        return 0;
+    if (!saved) {
+        memcpy(original, leader_anim_frame_starts_block.leader_anim_frames, sizeof original);
+        saved = 1;
+    }
+    if (!hd_herald_find(code, &h, path, sizeof path)) {
+        memcpy(leader_anim_frame_starts_block.leader_anim_frames[tribe], original[tribe], sizeof original[tribe]);
+        return 0;
+    }
+    for (int s = 0; s < 5; s++) {
+        leader_anim_frame_starts_block.leader_anim_frames[tribe][s][0] = h.seg[s][0];
+        leader_anim_frame_starts_block.leader_anim_frames[tribe][s][1] = h.seg[s][1];
+    }
+    *x = h.x;
+    *y = h.y;
+    return 1;
+}

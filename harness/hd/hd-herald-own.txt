@@ -1,0 +1,130 @@
+# HD graphics (docs/HD-GRAPHICS.md, "Your own heralds"): OpenCiv2's own
+# herald (data/native/hd-extra/heralds.txt: the Russians', herald-RUS.webp)
+# in the HD diplomacy room in place of the CD's KINGS\HRLDRUS.AVI, with the
+# CD's videos in the game folder or without them, and the Russian leader's
+# portrait (the pack's 235; the woman's, 256, with the GENDER line changed:
+# harness/hd/hd-herald-own.sh).  A new game as the Russians (the
+# player's civilization 1), the room opened for the player's leader, then
+# the Japanese meet the player and the AI is the Russians' emissary
+# (diplo_ai_meet_player 2 1).  Shots: the greeting (g*), the idle loop (i*),
+# then the talks: "We are not intimidated" (no reaction), "Yes, we welcome
+# peace" (the treaty signed: pleased, p*), a permanent alliance suggested
+# (refused politely: a*), the offer rejected, tribute demanded (refused:
+# e*), and, as no proposal of a first contact makes the AI angry (that
+# needs war, a vendetta or a broken treaty), the angry reaction asked for
+# directly while the herald idles (x*: diplo_leader_play_reaction 4, what
+# the game calls then).  (Without the install the man's new game differs
+# and the Russians make no threat first: hd-herald-own.sh leaves out the
+# lines marked THREAT there.)  Animated Heralds is on in the harness's CIV2.DAT.
+# run: CIV2_TEST_HD=2 (CIV2_KEEP_MEDIA=1: with the CD's KINGS; else without)
+wait 8000
+key Return              # Start a New Game
+wait 3000
+key Return              # world size
+wait 3000
+key Return              # difficulty
+wait 3000
+key Return              # competition
+wait 3000
+key Return              # aggression
+wait 3000
+key Return              # rules
+wait 3000
+key Return              # GENDER (male; female: key Down first)
+wait 3000
+key Down Down Down Down Down Down Down    # TRIBE (7: the Russians)
+wait 500
+shot tribe
+key Return
+wait 3000
+key Return              # the leader's name
+wait 5000
+key Return              # city style
+wait 600000             # world generation
+key Return
+wait 5000
+key Return
+wait 5000
+call diplo_leader_wnd_launch 493f0f 2 1
+wait 3000
+shot room
+call diplo_leader_wnd_close 494148
+wait 2000
+call diplo_ai_meet_player 460129 2 1 -1 -1 1
+wait 300
+shot g0
+wait 1000
+shot g1
+wait 1500
+shot g2
+wait 1500
+shot g3
+wait 5000
+shot i0
+wait 700
+shot i1
+wait 1300
+shot i2
+key Return                  # "I bring tidings" OK
+wait 3000
+shot d1
+key Return                  # "We are not intimidated by threats" THREAT
+wait 600
+shot d1a
+wait 1500
+shot d1b
+wait 6000
+shot d2
+key Return                  # "Yes, we welcome peace"
+wait 600
+shot p0
+wait 1200
+shot p1
+wait 1500
+shot p2
+wait 6000
+shot d3
+key Return
+wait 3000
+shot d4
+key Down                    # "Suggest a permanent strategic alliance"
+key Return
+wait 600
+shot a0
+wait 1200
+shot a1
+wait 1500
+shot a2
+wait 6000
+shot d5
+key Return
+wait 3000
+shot d6
+key Return
+wait 3000
+shot d7
+key Down Down               # "Demand tribute for our patience"
+key Return
+wait 600
+shot e0
+wait 1200
+shot e1
+wait 1500
+shot e2
+wait 6000
+shot d8
+call diplo_leader_play_reaction 4941ee 4
+wait 600
+shot x0
+wait 1200
+shot x1
+wait 1500
+shot x2
+wait 6000
+shot x3
+key Return
+wait 3000
+shot d9
+key Return
+wait 3000
+shot d10

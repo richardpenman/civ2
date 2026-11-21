@@ -113,7 +113,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
 | `Music\Track02`-`12.wav` (11) | the CD's music | out of scope (the user's own music is planned) |
-| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them |
+| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them; with HD graphics a tribe's herald of OpenCiv2's own plays without `KINGS` (the Russians': [HD-GRAPHICS.md](HD-GRAPHICS.md), *Your own heralds*) |
 | `SCENARIO\`, `*.SCN`, `*.MP`, `ROME.TXT`, `WWII.TXT`, `ALEXANDR.TXT` | scenarios and premade maps | out of scope |
 | `CIV2FANW.TXT`, `CIV2FAQ.TXT`, `PATCH.TXT`, `README.TXT`, `Readmev13.txt`, `LEADERS.TXT`, `MISC.TXT`, `SC.TXT`, `TUTORIAL.SAV`, `Civ2Map.exe`, `Uninst.isu`, `Vfwfix.reg`, `smeds.log`, `XDaemon.log`, `EReg\` (8 files) | read by no part of the game (documents, the installer, the map editor's program, logs, registration) | droppable |
 
@@ -210,7 +210,8 @@ are made the same way.)
 
 ### mk.dll's colour tables (21 `CTAB`)
 
-The heralds' videos' palettes (`KINGS\HRLDxxx.AVI`, `load_ctab_res`): out of scope with the videos.
+The heralds' videos' palettes (`KINGS\HRLDxxx.AVI`, `load_ctab_res`): out of scope with the videos.  (OpenCiv2's own heralds,
+with HD graphics, do not need them: their colours are their own, on the plane.)
 
 ## Sounds
 

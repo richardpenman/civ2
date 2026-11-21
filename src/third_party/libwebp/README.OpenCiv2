@@ -9,3 +9,6 @@ src/enc/histogram_enc.h, backward_references_enc.h).  src/webp/config.h is
 OpenCiv2's: compiled with HAVE_CONFIG_H (tools/build_native.py), it turns
 off the instruction-set variants and threads.  Licence: COPYING and PATENTS
 (THIRD-PARTY.txt, 14.).
+Also its demuxer (src/demux/demux.c, src/webp/demux.h, as released; not
+anim_decode.c) for OpenCiv2's own animated heralds (hd_anim_* in
+src/platform/hd_image.c composites the frames itself, from any key frame).

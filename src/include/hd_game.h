@@ -42,6 +42,10 @@ void hd_diplomacy_flag(DibSurface *room, int colour);
 /* The leader's portrait (its sprite, just taken; portrait: the
    civilization's leader_portrait) drawn with the pack's that fits its tribe. */
 void hd_diplomacy_portrait(Sprite *sprite, int portrait);
+/* OpenCiv2's own herald for the tribe of this code (HRLDxxx.AVI's xxx),
+   with HD graphics: 1, where it stands (x, y) and its segments in the
+   game's table; 0: none (the tribe's segments the original's). */
+int hd_herald(const char *code, int tribe, i32 *x, i32 *y);
 /* The spaceship drawn from the pack's pieces (after the game drew it:
    render_ship, init_starfield); the starfield's stars kept behind it. */
 void hd_spaceship(SpaceshipWindow *w);

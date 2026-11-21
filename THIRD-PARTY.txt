@@ -445,9 +445,10 @@ public domain (www.unlicense.org); the full text is at the end of the file.
 14. libwebp  https://chromium.googlesource.com/webm/libwebp  (src/third_party/libwebp)
 --------------------------------------------------------------------------------------
 
-The decoder of OpenCiv2's own HD pictures (data/native/hd-extra, WebP;
+The decoder of OpenCiv2's own HD pictures (data/native/hd-extra, where present, WebP;
 src/platform/hd_image.c): libwebp 1.5.0's decoder (its src/dec, and what it
-needs of src/dsp and src/utils, in plain C), as released.  Its AUTHORS and
+needs of src/dsp and src/utils, in plain C) and its demuxer (src/demux/demux.c:
+OpenCiv2's own animated heralds), as released.  Its AUTHORS and
 PATENTS (Google's additional grant of patent rights) are beside it.
 
 Copyright (c) 2010, Google Inc. All rights reserved.

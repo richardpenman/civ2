@@ -83,7 +83,12 @@ disallows all). By default over HTTPS at the machine's `sslip.io` name with a Le
 certificate (ports 80 and 443 reachable from outside); `REVIEW_HTTP=1`: plain HTTP on port 80
 (the password in clear text). Its files are outside the repository, in `~/civ2-review`: the site's
 copy, the `Caddyfile` and `config` (the user name and password; `REVIEW_USER=` and
-`REVIEW_PASSWORD=` set them). Other projects' routes on the same server go in
+`REVIEW_PASSWORD=` set them). The site also has the local staging folder `data/native/hd-extra`
+(OpenCiv2's own pictures and heralds being tried, not in the repository:
+[HD-GRAPHICS.md](HD-GRAPHICS.md#openciv2s-own-pictures-and-heralds-datanativehd-extra)) where the
+checkout built has it: the deploy after each commit on `main` (a local hook, not in the repository,
+running `~/civ2-review/autodeploy.sh`, which builds in the worktree `~/civ2-review/src`) copies
+the main checkout's folder into the worktree first. Other projects' routes on the same server go in
 `~/web-routes/*.caddy`. The page works over plain HTTP too: where the browser has no
 `crypto.subtle` (an `http://` page but localhost), the HD art's check computes SHA-256 itself.
 
@@ -138,8 +143,8 @@ graphics kept.
 ## HD graphics
 
 The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.md)) as the desktop
-version does: `make web` puts the art (`data/native/hd`, and OpenCiv2's own pictures,
-`data/native/hd-extra`) on the site as one file, `hd/art.bin` (30 MB, its files listed in
+version does: `make web` puts the art (`data/native/hd`, and, where present, the local staging
+folder `data/native/hd-extra`) on the site as one file, `hd/art.bin` (30 MB, its files listed in
 `hd/index.json`; the art's licence beside it). Untick *Classic graphics* in OpenCiv2 Options (Graphics and
 screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
 it) and puts the pictures into the game's files, where the game reads them. Art an earlier

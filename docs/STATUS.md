@@ -94,7 +94,11 @@ and copy them in, as the set-up does).  The sound effects are
 OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0; decoded
 into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
 music, scenarios.  The editors'
-backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).
+backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).  A tribe's
+herald of OpenCiv2's own (an animated WebP with alpha,
+`data/native/hd-extra/heralds.txt`, a local staging folder not in the repository; `tools/build_herald.py`) plays in HD in place of the CD's
+video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
+heralds*): the Russians' so far.
 The HD art comes with OpenCiv2, nothing downloaded: `data/native/hd` (30 MB in git), the
 pictures of openciv2-assets' pinned release the game draws or synth.c reads, as WebP, made by
 `tools/build_hd_pack.py` (`make hd-art`; [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every build and

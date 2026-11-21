@@ -5083,13 +5083,18 @@ i8 DiploLeaderWindow::init_video()
   str_append((char *)video_path,(const char *)file_stem);
   str_append((char *)video_path,(const char *)&str_avi);
   found = file_resolve_path((const char *)video_path);
+  /* (port) HD: OpenCiv2's own herald, with the CD's video or without it */
+  i32 video_x = leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][0];
+  i32 video_y = leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1];
+  if (hd_herald((const char *)file_stem + 4,leader_tribe,&video_x,&video_y)) {
+    found = 1;
+  }
   if (found == 0) {
     result = 0;
   }
   else {
     leader_video_wnd.create_child((const char*)&str_empty_108,0x200,
-               leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][0],
-               leader_video_x_table_block.leader_video_pos[(uint)leader_tribe][1],&leader_surface);
+               video_x,video_y,&leader_surface);
     open_err = leader_video_wnd.open((const char *)video_path);
     if (open_err == 0) {
       leader_video_wnd.set_end_callback(diplo_leader_video_end_cb);

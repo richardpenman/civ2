@@ -2,13 +2,13 @@
 // headless shell (as smoke.mjs), the game's files given as a .zip, then in
 // the game's OpenCiv2 Options Classic graphics unticked (HD graphics) and
 // the game restarted:
-// the page loaded again, the art (the site's hd/art.bin: data/native/hd and
-// OpenCiv2's own pictures, data/native/hd-extra) put into the game's files,
+// the page loaded again, the art (the site's hd/art.bin: data/native/hd and,
+// where present, the local data/native/hd-extra) put into the game's files,
 // HD graphics on in CIV.INI; then the game at a
 // device pixel ratio of 2 (density Auto: 2), the menu and a saved game's map
 // drawn in HD (the canvas twice the desktop's size, and not the desktop's
 // pixels enlarged), the first screen's text sharp, the Domestic Advisor on
-// OpenCiv2's own background (a WebP); then a later visit's
+// the art's background (a WebP); then a later visit's
 // start (said at once, its first frame within START_MS); then
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics; then the game without the
@@ -21,7 +21,7 @@
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
 
-import {writeFileSync, mkdirSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
+import {writeFileSync, readFileSync, mkdirSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
 import {ROOT, WEB, zipFolder, serve, browser} from './cdp.mjs';
@@ -223,8 +223,16 @@ async function main() {
         log(`the art (${Math.round(performance.now() - t0)} ms): ${JSON.stringify(hdArt)}`);
         if (!(hdArt.files > 100))
             throw new Error('the art not loaded from the site at the restart');
-        if (!await evaluate('!!window.civ2Fs.get("/data/hd-extra/pictures.txt") && !!window.civ2Fs.get("/data/hd/pictures.txt")'))
-            throw new Error("the art's or OpenCiv2's own pictures' list not in the game's files");
+        if (!await evaluate('!!window.civ2Fs.get("/data/hd/pictures.txt")'))
+            throw new Error("the art's pictures' list not in the game's files");
+        // (data/native/hd-extra, the local staging folder, not in the repository:
+        // whatever of it the site has must be in the game's files)
+        const extra = JSON.parse(readFileSync(join(WEB, 'hd', 'index.json'), 'utf8'))
+            .map((e) => e[0]).filter((n) => n.startsWith('hd-extra/'));
+        log(`OpenCiv2's own pictures and heralds on the site: ${extra.length ? extra.join(' ') : 'none (no data/native/hd-extra)'}`);
+        for (const n of extra)
+            if (!await evaluate(`!!window.civ2Fs.get(${JSON.stringify('/data/' + n)})`))
+                throw new Error(`${n} (data/native/hd-extra) not in the game's files`);
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));

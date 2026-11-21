@@ -23,3 +23,8 @@ __pycache__/
 # Downloaded toolchain (tools/fetch-toolchain.sh)
 /tools/toolchain
 /tools/docker-ext/*.tar.gz
+# OpenCiv2's own HD pictures and heralds (src/platform/hd.c: load_pictures,
+# hd_herald_find): a local staging folder for art being tried before it goes
+# to the art pack (docs/HD-GRAPHICS.md); the game, the packages, make web and
+# the tests do without it; the review site's deploy takes it when present
+/data/native/hd-extra/

@@ -10,6 +10,7 @@
  * the decoder's mask says where, and there the game's background stays.
  */
 #include <math.h>
+#include <time.h>
 #include "plat.h"
 #include "plat_files.h"
 #include "../third_party/indeo4/iv41.h"
@@ -66,6 +67,8 @@ typedef struct {
     long size;
     Stream streams[MAX_STREAMS];
     int nstreams;
+    HdAnim *own;                /* OpenCiv2's own herald (open_own_herald): data holds a
+                                   record per frame (OwnSample), the codec draws from this */
 } AviFile;
 
 typedef struct { AviFile *file; int index; } AviStreamRef;
@@ -125,6 +128,89 @@ static void parse_list(AviFile *a, long p, long end, int in_movi, long *movi)
     }
 }
 
+/* ---- OpenCiv2's own heralds (docs/HD-GRAPHICS.md, "Your own heralds") ----
+   With HD graphics, where data/native/hd-extra/heralds.txt has one for the
+   tribe, the game's KINGS\HRLDxxx.AVI opens it instead, whether the game
+   folder has the CD's video or not: an AVI of one video stream at the
+   herald's rate, its frames the animated WebP's ('OHRL', each a key frame:
+   the game seeks straight to it), which the codec below draws with their
+   alpha over the room, sampled at the plane's resolution.  The game plays
+   it as it plays the CD's (src/auto/diplomacy.cpp: its segments in the
+   game's table, hd_herald in src/game/hd_graphics.cpp). */
+#define OWN_FCC FCC('O', 'H', 'R', 'L')
+typedef struct { DWORD magic, frame; HdAnim *anim; } OwnSample;
+
+/* The herald's code (xxx) of a path ending in HRLDxxx.AVI, else 0. */
+static int herald_code(const char *name, char *code)
+{
+    const char *b = name, *p;
+    for (p = name; *p; p++)
+        if (*p == '\\' || *p == '/')
+            b = p + 1;
+    if (strlen(b) != 11 || (b[0] | 32) != 'h' || (b[1] | 32) != 'r' || (b[2] | 32) != 'l' || (b[3] | 32) != 'd' ||
+        b[7] != '.' || (b[8] | 32) != 'a' || (b[9] | 32) != 'v' || (b[10] | 32) != 'i')
+        return 0;
+    memcpy(code, b + 4, 3);
+    code[3] = 0;
+    return 1;
+}
+
+static void put32(unsigned char *p, DWORD v) { p[0] = (unsigned char)v; p[1] = (unsigned char)(v >> 8); p[2] = (unsigned char)(v >> 16); p[3] = (unsigned char)(v >> 24); }
+
+static HRESULT open_own_herald(PAVIFILE *pf, const char *name, const HdHerald *h, const char *path)
+{
+    FILE *f = fopen(path, "rb");
+    unsigned char *data = NULL;
+    long size = 0;
+    HdAnim *anim;
+    AviFile *a;
+    Stream *s;
+    BITMAPINFOHEADER *bi;
+    int i, n;
+    if (f && !fseek(f, 0, SEEK_END) && (size = ftell(f)) > 0 && !fseek(f, 0, SEEK_SET) &&
+        (data = malloc((size_t)size)) && fread(data, 1, (size_t)size, f) != (size_t)size) {
+        free(data);
+        data = NULL;
+    }
+    if (f)
+        fclose(f);
+    if (!(anim = hd_anim_open(data, (size_t)size))) {
+        plat_log("AVIFileOpen(%s): %s is not an animated WebP\n", name, path);
+        return AVIERR_FILEOPEN;
+    }
+    n = hd_anim_frames(anim);
+    a = calloc(1, sizeof *a);
+    a->own = anim;
+    a->nstreams = 1;
+    a->size = (long)(n * sizeof(OwnSample));
+    a->data = calloc((size_t)n, sizeof(OwnSample));
+    s = &a->streams[0];
+    put32(s->strh, FCC('v', 'i', 'd', 's'));
+    put32(s->strh + 4, OWN_FCC);
+    put32(s->strh + 20, 1);                         /* scale */
+    put32(s->strh + 24, (DWORD)h->fps);             /* rate */
+    put32(s->strh + 36, sizeof(OwnSample));         /* suggested buffer */
+    s->fmt_size = sizeof *bi;
+    s->fmt = calloc(1, sizeof *bi);
+    bi = (BITMAPINFOHEADER *)s->fmt;
+    bi->biSize = sizeof *bi;
+    bi->biWidth = h->w;
+    bi->biHeight = h->h;
+    bi->biPlanes = 1;
+    bi->biBitCount = 32;
+    bi->biCompression = OWN_FCC;
+    bi->biSizeImage = sizeof(OwnSample);
+    for (i = 0; i < n; i++) {
+        OwnSample r = {OWN_FCC, (DWORD)i, anim};
+        memcpy(a->data + (size_t)i * sizeof r, &r, sizeof r);
+        add_sample(s, (DWORD)(i * sizeof r), sizeof r);
+        s->samples[i].key = 1;
+    }
+    plat_log("AVIFileOpen(%s): OpenCiv2's own herald %s, %d frames at %d fps\n", name, path, n, h->fps);
+    *pf = (PAVIFILE)obj_new(OBJ_AVIFILE, a);
+    return AVIERR_OK;
+}
+
 void WINAPI AVIFileInit(void) { API_TRACE(); }
 void WINAPI AVIFileExit(void) { API_TRACE(); }
 
@@ -134,8 +220,12 @@ HRESULT WINAPI AVIFileOpenA(PAVIFILE *pf, LPCSTR name, UINT mode, LPCLSID handle
     FILE *f;
     AviFile *a;
     long movi = 0;
+    char code[4], own[1400];
+    HdHerald herald;
     (void)mode; (void)handler;
     *pf = 0;
+    if (herald_code(name, code) && hd_herald_find(code, &herald, own, sizeof own))
+        return open_own_herald(pf, name, &herald, own);
     plat_host_path(name, host, sizeof host, 0);
     f = fopen(host, "rb");
     if (!f) {
@@ -172,6 +262,7 @@ ULONG WINAPI AVIFileRelease(PAVIFILE pf)
         free(a->streams[i].fmt);
         free(a->streams[i].samples);
     }
+    hd_anim_close(a->own);
     free(a->data);
     free(a);
     obj_free((Handle)pf);
@@ -360,6 +451,7 @@ typedef struct {
     unsigned char lut[32768];   /* RGB 5:5:5 -> palette index */
     int lut_ok;
     int32_t *view;              /* where to report the area drawn: x, y, width, height */
+    int own;                    /* OpenCiv2's own herald's frames (OWN_FCC) */
 } Codec;
 
 /* The palette offered: the one Intel's decompressor (ir41_32.dll, from the
@@ -753,10 +845,219 @@ static void draw_frame(Codec *c, const Iv41Frame *fr, const ICDECOMPRESSEX *d)
     free(sm.cov);
 }
 
+/* An own herald's frame (premultiplied RGBA, 0..255) over the canvas's
+   area x0..x1, y0..y1: bilinear where it is at most a canvas pixel, else
+   the canvas pixels it covers averaged. */
+static void own_sample(const unsigned char *px, int cw, int ch, double x0, double y0, double x1, double y1, int *o)
+{
+    int x, y, n = 0, k;
+    long sum[4] = {0, 0, 0, 0};
+    if (x1 - x0 <= 1.0 && y1 - y0 <= 1.0) {
+        double u = (x0 + x1) / 2 - .5, v = (y0 + y1) / 2 - .5;
+        int ia = (int)floor(u), ja = (int)floor(v);
+        double fu = u - ia, fv = v - ja, acc[4] = {0, 0, 0, 0};
+        for (k = 0; k < 4; k++) {
+            int xx = ia + (k & 1), yy = ja + (k >> 1), c;
+            double w = ((k & 1) ? fu : 1 - fu) * ((k >> 1) ? fv : 1 - fv);
+            const unsigned char *p;
+            xx = xx < 0 ? 0 : xx >= cw ? cw - 1 : xx;
+            yy = yy < 0 ? 0 : yy >= ch ? ch - 1 : yy;
+            p = px + ((size_t)yy * cw + xx) * 4;
+            for (c = 0; c < 3; c++)
+                acc[c] += w * p[c] * p[3] / 255.0;
+            acc[3] += w * p[3];
+        }
+        for (k = 0; k < 4; k++)
+            o[k] = (int)(acc[k] + .5);
+        return;
+    }
+    {
+        int xa = (int)floor(x0), xb = (int)ceil(x1), ya = (int)floor(y0), yb = (int)ceil(y1);
+        if (xa < 0) xa = 0;
+        if (ya < 0) ya = 0;
+        if (xb > cw) xb = cw;
+        if (yb > ch) yb = ch;
+        for (y = ya; y < yb; y++)
+            for (x = xa; x < xb; x++) {
+                const unsigned char *p = px + ((size_t)y * cw + x) * 4;
+                sum[0] += p[0] * p[3];
+                sum[1] += p[1] * p[3];
+                sum[2] += p[2] * p[3];
+                sum[3] += p[3];
+                n++;
+            }
+        for (k = 0; k < 3; k++)
+            o[k] = n ? (int)((sum[k] + n * 255 / 2) / ((long)n * 255)) : 0;
+        o[3] = n ? (int)((sum[3] + n / 2) / n) : 0;
+    }
+}
+
+/* An own herald's frame into the destination (the game's 8-bit window over
+   the room, which it has put back there before): each game pixel at least
+   half covered by the figure takes the nearest palette colour of the
+   figure's there; on the plane (HD graphics) the frame is drawn over what
+   it shows at the plane's resolution, with its alpha (bilinear, from the
+   frame premultiplied, where the plane has as many pixels as the frame or
+   more; else each plane pixel the frame's it covers averaged), only round
+   the figure, and the game pixels it touched are taken as shown. */
+static void draw_own(Codec *c, HdAnim *anim, int frame, const ICDECOMPRESSEX *d)
+{
+    BITMAPINFOHEADER *bi = d->lpbiDst;
+    Bitmap *bm = bmp_of_bits(d->lpDst);
+    clock_t t0 = clock(), t1, t2;
+    const unsigned char *px = hd_anim_frame(anim, frame);
+    int cw, ch, W, H, x, y, i, j, dd = hd_density, up;
+    unsigned int *plane;
+    unsigned char *near = NULL, *pm = NULL;
+    int *cols = NULL, *rows = NULL, *rx, *ry;
+    double kx, ky;
+    if (!px || !bm || bm->bpp != 8 || bi->biBitCount != 8)
+        return;
+    hd_anim_size(anim, &cw, &ch);
+    W = d->dxDst ? d->dxDst : bi->biWidth;
+    H = d->dyDst ? d->dyDst : abs((int)bi->biHeight);
+    kx = (double)cw / W;
+    ky = (double)ch / H;
+    if (!c->lut_ok)
+        build_lut(c);
+    plane = hd_bitmap_want_plane(bm);
+    near = calloc((size_t)W * H, 1);
+    pm = malloc((size_t)cw * ch * 4);
+    rx = malloc((size_t)(W + 1) * sizeof *rx);
+    ry = malloc((size_t)(H + 1) * sizeof *ry);
+    if (!near || !pm || !rx || !ry) {
+        free(near); free(pm); free(rx); free(ry);
+        return;
+    }
+    /* the frame premultiplied */
+    for (i = 0; i < cw * ch; i++) {
+        const unsigned char *q = px + (size_t)i * 4;
+        unsigned char *o = pm + (size_t)i * 4;
+        o[0] = (unsigned char)((q[0] * q[3] + 127) / 255);
+        o[1] = (unsigned char)((q[1] * q[3] + 127) / 255);
+        o[2] = (unsigned char)((q[2] * q[3] + 127) / 255);
+        o[3] = q[3];
+    }
+    /* the frame's pixels each game pixel covers: columns rx[x] .. rx[x + 1] - 1 (at least one) */
+    for (x = 0; x <= W; x++)
+        rx[x] = x == W ? cw : (int)(x * kx + .5);
+    for (y = 0; y <= H; y++)
+        ry[y] = y == H ? ch : (int)(y * ky + .5);
+    /* the game's pixels, averaged; where the figure is (near: it or a neighbour has some of it) */
+    for (y = 0; y < H; y++) {
+        int ty = d->yDst + y, y0 = ry[y], y1 = ry[y + 1] > y0 ? ry[y + 1] : y0 + 1;
+        unsigned char *row = ty >= 0 && ty < bm->h ? bm->bits + (size_t)(bm->bottom_up ? bm->h - 1 - ty : ty) * bm->stride : NULL;
+        if (y1 > ch)
+            y0 = (y1 = ch) - 1;
+        for (x = 0; x < W; x++) {
+            int tx = d->xDst + x, x0 = rx[x], x1 = rx[x + 1] > x0 ? rx[x + 1] : x0 + 1, u, v, n;
+            unsigned sr = 0, sg = 0, sb = 0, sa = 0;
+            if (x1 > cw)
+                x0 = (x1 = cw) - 1;
+            for (v = y0; v < y1; v++) {
+                const unsigned char *q = pm + ((size_t)v * cw + x0) * 4;
+                for (u = x0; u < x1; u++, q += 4) {
+                    sr += q[0];
+                    sg += q[1];
+                    sb += q[2];
+                    sa += q[3];
+                }
+            }
+            if (!sa)
+                continue;
+            for (j = y > 0 ? y - 1 : 0; j <= y + 1 && j < H; j++)
+                for (i = x > 0 ? x - 1 : 0; i <= x + 1 && i < W; i++)
+                    near[(size_t)j * W + i] = 1;
+            n = (x1 - x0) * (y1 - y0);
+            if (row && tx >= 0 && tx < bm->w && sa >= 128u * n)
+                row[tx] = c->lut[(sr * 255 / sa) >> 3 << 10 | (sg * 255 / sa) >> 3 << 5 | (sb * 255 / sa) >> 3];
+        }
+    }
+    t1 = clock();
+    if (!plane) {
+        free(near); free(pm); free(rx); free(ry);
+        return;
+    }
+    /* enlarged (or as large): bilinear taps per plane column and row, the frame premultiplied */
+    up = kx <= dd + 1e-9 && ky <= dd + 1e-9;
+    if (up) {
+        int n;
+        cols = malloc((size_t)W * dd * 3 * sizeof *cols);
+        rows = malloc((size_t)H * dd * 3 * sizeof *rows);
+        if (!cols || !rows)
+            up = 0;
+        for (n = 0; up && n < W * dd; n++)
+            taps((n + .5) * kx / dd - .5, 0, cw - 1, &cols[3 * n], &cols[3 * n + 1], &cols[3 * n + 2]);
+        for (n = 0; up && n < H * dd; n++)
+            taps((n + .5) * ky / dd - .5, 0, ch - 1, &rows[3 * n], &rows[3 * n + 1], &rows[3 * n + 2]);
+    }
+    for (y = 0; y < H; y++) {
+        int ty = d->yDst + y, run = -1;
+        if (ty < 0 || ty >= bm->h)
+            continue;
+        for (x = 0; x <= W; x++) {
+            int tx = d->xDst + x, touched = 0;
+            if (x < W && tx >= 0 && tx < bm->w && near[(size_t)y * W + x])
+                for (j = 0; j < dd; j++) {
+                    uint32_t *out = plane + (size_t)(ty * dd + j) * bm->w * dd + (size_t)tx * dd;
+                    const int *rt = up ? rows + 3 * (y * dd + j) : NULL;
+                    for (i = 0; i < dd; i++) {
+                        int q[4];
+                        unsigned bg = out[i], r, g, b;
+                        if (up) {
+                            const int *ct = cols + 3 * (x * dd + i);
+                            const unsigned char *p00 = pm + ((size_t)rt[0] * cw + ct[0]) * 4,
+                                                *p01 = pm + ((size_t)rt[0] * cw + ct[1]) * 4,
+                                                *p10 = pm + ((size_t)rt[1] * cw + ct[0]) * 4,
+                                                *p11 = pm + ((size_t)rt[1] * cw + ct[1]) * 4;
+                            int wx = ct[2], wy = rt[2], k;
+                            for (k = 0; k < 4; k++)
+                                q[k] = (((p00[k] * (256 - wx) + p01[k] * wx) * (256 - wy) +
+                                         (p10[k] * (256 - wx) + p11[k] * wx) * wy) + 32768) >> 16;
+                        } else
+                            own_sample(px, cw, ch, (x + (double)i / dd) * kx, (y + (double)j / dd) * ky,
+                                       (x + (double)(i + 1) / dd) * kx, (y + (double)(j + 1) / dd) * ky, q);
+                        if (!q[3])
+                            continue;
+                        touched = 1;
+                        r = (unsigned)q[0] + ((bg >> 16 & 255) * (255 - q[3]) + 127) / 255;
+                        g = (unsigned)q[1] + ((bg >> 8 & 255) * (255 - q[3]) + 127) / 255;
+                        b = (unsigned)q[2] + ((bg & 255) * (255 - q[3]) + 127) / 255;
+                        out[i] = 0xff000000u | (r > 255 ? 255 : r) << 16 | (g > 255 ? 255 : g) << 8 |
+                                 (b > 255 ? 255 : b);
+                    }
+                }
+            if (touched && run < 0)
+                run = tx;
+            else if (!touched && run >= 0) {
+                hd_bitmap_commit(bm, run, ty, tx - run, 1);
+                run = -1;
+            }
+        }
+    }
+    t2 = clock();
+    if (getenv("CIV2_LOG_VIDEO"))
+        plat_log("video: own herald frame %d: decoded, the game's pixels %.1f ms, the plane (density %d) %.1f ms\n",
+                 frame, (t1 - t0) * 1000.0 / CLOCKS_PER_SEC, hd_density,
+                 (t2 - t1) * 1000.0 / CLOCKS_PER_SEC);
+    free(near);
+    free(pm);
+    free(rx);
+    free(ry);
+    free(cols);
+    free(rows);
+}
+
 HIC WINAPI ICLocate(DWORD type, DWORD handler, LPBITMAPINFOHEADER in, LPBITMAPINFOHEADER out, WORD mode)
 { API_TRACE();
     Codec *c;
     (void)type; (void)out; (void)mode;
+    if ((in && in->biCompression == OWN_FCC) || handler == OWN_FCC) {
+        c = calloc(1, sizeof *c);
+        c->own = 1;
+        video_palette(c->pal);
+        return (HIC)(uintptr_t)obj_new(OBJ_CODEC, c);
+    }
     if (!(in && (in->biCompression == FCC('I', 'V', '4', '1') || in->biCompression == FCC('i', 'v', '4', '1'))) &&
         handler != FCC('I', 'V', '4', '1') && handler != FCC('i', 'v', '4', '1')) {
         DWORD k = in ? in->biCompression : handler;
@@ -807,6 +1108,11 @@ LRESULT WINAPI ICSendMessage(HIC h, UINT msg, DWORD_PTR a, DWORD_PTR b)
     }
     case ICM_DECOMPRESSEX_BEGIN: {
         const ICDECOMPRESSEX *d = (const ICDECOMPRESSEX *)a;
+        if (c->own) {
+            if (d && d->lpbiDst && d->lpbiDst->biBitCount == 8 && !c->lut_ok)
+                memcpy(c->pal, (unsigned char *)d->lpbiDst + d->lpbiDst->biSize, sizeof c->pal);
+            return ICERR_OK;
+        }
         int w = d && d->lpbiSrc ? d->lpbiSrc->biWidth : c->width;
         int hh = d && d->lpbiSrc ? (d->lpbiSrc->biHeight < 0 ? -d->lpbiSrc->biHeight : d->lpbiSrc->biHeight) : c->height;
         if (!c->dec || w != c->width || hh != c->height) {
@@ -822,6 +1128,24 @@ LRESULT WINAPI ICSendMessage(HIC h, UINT msg, DWORD_PTR a, DWORD_PTR b)
     case ICM_DECOMPRESSEX: {
         const ICDECOMPRESSEX *d = (const ICDECOMPRESSEX *)a;
         Iv41Frame fr;
+        if (c->own) {
+            OwnSample r;
+            if (!d || !d->lpSrc || !d->lpbiDst)
+                return ICERR_ERROR;
+            memcpy(&r, d->lpSrc, sizeof r);
+            if (r.magic != OWN_FCC)
+                return ICERR_ERROR;
+            if (!(d->dwFlags & ICDECOMPRESS_PREROLL) && d->lpDst) {
+                draw_own(c, r.anim, (int)r.frame, d);
+                if (c->view) {
+                    c->view[0] = d->xDst;
+                    c->view[1] = d->yDst;
+                    c->view[2] = d->dxDst ? d->dxDst : d->lpbiDst->biWidth;
+                    c->view[3] = d->dyDst ? d->dyDst : abs((int)d->lpbiDst->biHeight);
+                }
+            }
+            return ICERR_OK;
+        }
         if (!c->dec || !d || !d->lpbiSrc || !d->lpSrc)
             return ICERR_ERROR;
         if (!iv41_decode(c->dec, d->lpSrc, (int)d->lpbiSrc->biSizeImage, &fr))

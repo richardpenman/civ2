@@ -68,7 +68,9 @@ export function serve() {
         const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
         // (a replay's files: /__test/NAME.txt, CIV2.DAT, CIV.INI from harness/)
         const base = path.startsWith('/__test/') ? join(ROOT, 'harness') : WEB;
-        const rel = path.startsWith('/__test/') ? (path.endsWith('.txt') ? 'scripts/' : '') + path.slice(8) : path;
+        // (NAME.txt: harness/scripts/NAME.txt; DIR/NAME.txt: harness/DIR/NAME.txt)
+        const rel = path.startsWith('/__test/') ?
+            (path.endsWith('.txt') && !path.slice(8).includes('/') ? 'scripts/' : '') + path.slice(8) : path;
         const p = join(base, rel.replace(/\/$/, '/index.html'));
         if (!p.startsWith(base) || !existsSync(p) || statSync(p).isDirectory()) {
             res.writeHead(404).end();

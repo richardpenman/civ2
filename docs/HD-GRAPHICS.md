@@ -142,21 +142,29 @@ The keys that matter here:
 | `palace-resource/ID` | the original's throne room pieces redrawn (`pv.dll`; not used here) |
 | `city/...`, `building/...`, `house/...`, `lot/...`, `advance/...`, `wonder/...` ... | pictures that PR #11's renderers of their own place themselves (not used here) |
 
-### OpenCiv2's own pictures (`data/native/hd-extra`)
+### OpenCiv2's own pictures and heralds (`data/native/hd-extra`)
 
-Where the pack has no fitting picture, OpenCiv2 can bring its own: `data/native/hd-extra`, in the
-repository and packaged with every build (beside the program's `data` on Linux and macOS, in the
-Windows program's resources, unpacked into its `data`; on the browser version's site in `hd/art.bin`
-with the art, put into the game's files with it).  Its `pictures.txt` lists them, a line
-each, `KEY W H FILE`: the pack's key, the picture's size in the game's pixels, the picture in that
-folder, WebP (libwebp's decoder, `src/third_party/libwebp`) or PNG (stb_image), told apart by its first bytes
-(`hd_decode_image`, `src/platform/hd_image.c`).  When the art is read, hd.c (`load_pictures`) adds them to its pictures, in place of the
-pack's of the same key: they are drawn exactly as the pack's would be (a sprite's crop, a sheet, a
-resource picture); a resource picture among them is painted whole, as `WHOLE`'s are, even where
-the pack's is not drawn and the original's kept, and so is a whole sheet of the game's folder
-(`file/SHEET` at the sheet's size: `hd_sheet_loaded`).  Without the art (`data/native/hd`) they are not drawn either.
-Their credits, licence (the repository's, MIT) and, for the AI-generated ones, the model and the
-exact prompt are in `data/native/hd-extra/README`.
+`data/native/hd-extra` is a local staging folder, not in the repository (`.gitignore`): art being
+tried before it is offered to the art pack (openciv2-assets), which is where OpenCiv2's art goes.
+Everything works without it (a fresh clone, the releases): the pack's pictures are drawn, and
+heralds are the CD's (`KINGS`) or, without them, none.  Where it is present it is packaged with
+the build as the art is (beside the program's `data` on Linux and macOS, in the Windows
+program's resources, unpacked into its `data`; on the browser version's site in `hd/art.bin`
+with the art, put into the game's files with it), and the review site's deploy takes the main
+checkout's copy ([BROWSER.md](BROWSER.md#a-site-with-the-game-on-it-game1)).
+
+Its `pictures.txt` lists pictures, a line each, `KEY W H FILE` (`#` a comment): the pack's key,
+the picture's size in the game's pixels, the picture in that folder, WebP (libwebp's decoder,
+`src/third_party/libwebp`) or PNG (stb_image), told apart by its first bytes (`hd_decode_image`,
+`src/platform/hd_image.c`).  When the art is read, hd.c (`load_pictures`) adds them to its
+pictures, in place of the pack's of the same key: they are drawn exactly as the pack's would be
+(a sprite's crop, a sheet, a resource picture); a resource picture among them is painted whole,
+as `WHOLE`'s are, even where the pack's is not drawn and the original's kept, and so is a whole
+sheet of the game's folder (`file/SHEET` at the sheet's size: `hd_sheet_loaded`).  Without the
+art (`data/native/hd`) they are not drawn either.  Its `heralds.txt` lists heralds (*Your own
+heralds*, below).  Art made for it: WebP by cwebp 1.5.0 (lossy `-q 90 -m 4 -sharp_yuv`, or
+`-lossless -exact` with alpha); an AI-generated picture's model, prompt and references are
+recorded with it (and go with it to the pack).
 
 | Key | Picture |
 | --- | --- |
@@ -184,6 +192,135 @@ the pack's all the same pale parchment), and OpenCiv2's own:
 | 66 | the tax rates, large screens, 1000 pixels wide or more (the dialog 1.5 times as large) | the same painting as 65 |
 
 (The credits, 95, are a 640x480 picture of their own.)
+
+#### Your own heralds
+
+With *Animated Heralds* on (Game > Graphic Options), the original shows, over the diplomacy
+room, the CD's video of the tribe's herald (`KINGS\HRLDxxx.AVI`, 10 frames a second, five
+segments of 30 frames: a greeting played once as the room opens, an idle loop, then a
+reaction when the AI is pleased, declines, or is angry, each followed by the idle loop again;
+`DiploLeaderWindow::init_video`, `diplo_leader_video_end_cb`, `diplo_leader_play_reaction` in
+`src/auto/diplomacy.cpp`, the segments in the game's table `leader_anim_frames[tribe][5][2]`).
+With HD graphics, a herald of OpenCiv2's own plays in its place where
+`data/native/hd-extra/heralds.txt` has one for the tribe, a line each:
+
+    CODE X Y W H FPS G0 G1 I0 I1 P0 P1 D0 D1 A0 A1 FILE
+    RUS 86 72 218 400 12 0 89 90 131 132 185 186 239 240 herald-RUS.webp
+
+* `CODE`: the three letters of the original's video (`ROM BAB GER EGY AME GRE IND RUS ZUL FRE
+  AZT CHI ENG MON CEL JAP VIK SPA PER CAR SIO`, `leader_video_tribe_codes`).
+* `X Y W H`: where the herald's window stands in the room and its size, in the game's pixels
+  (the room is 640x480; the original Russian's video is 296x416 at 92,64, its figure about 395
+  pixels tall, its feet near 185,470).
+* `FPS` and the first and last frame (inclusive) of each segment in the game's order: greeting,
+  idle loop, pleased, polite refusal, angry.
+* `FILE`: an animated WebP with alpha beside it, the segments' frames back to back; its canvas
+  is the window `W x H` at any scale (drawn scaled to the plane's resolution).
+
+How it plays: the game is unchanged but for one call in `init_video` (`hd_herald`,
+`src/game/hd_graphics.cpp`): for a tribe with its own herald it moves the video's window to `X
+Y` and puts the herald's segments into the game's table for that tribe (the original's are put
+back for a tribe without), and the video counts as found even where the game folder has no
+`KINGS`.  The game then opens `KINGS\HRLDxxx.AVI` as ever; `src/platform/video.c` (Video for
+Windows) opens the herald's WebP in its place: an AVI of one video stream at `FPS` whose frames
+(`OHRL`, every one a key frame) its decompressor draws.  So the game plays it with its own
+`play_range`/`loop_range`, timing (`timeGetTime`), end callback, reactions and their sounds,
+exactly as it plays the CD's video, and calls `rand()` as it does then.  Each frame
+(`hd_anim_frame` in `src/platform/hd_image.c`: libwebp's demuxer, `src/third_party/libwebp/src/demux`,
+the frames composited as libwebp's animation decoder does but from any frame: from the last key
+frame before it or on from the last shown) is drawn over the room the game has put back behind
+the window: on the plane at its resolution, each plane pixel the frame's pixels it covers
+averaged (or bilinear where enlarged), premultiplied, over the room with its alpha; and in the
+game's 8-bit pixels, those at least half covered, the nearest colour of the palette.  The game's
+pixels it touched are taken as shown (`draw_own` in `video.c`).  Its cost, measured on this
+machine (one slow core, `OpenCiv2`) with the Russians' herald: about 8 ms a frame to decode it
+and draw the game's pixels, and 3 ms on the plane at density 2, 12 at density 4 (12 frames a
+second; `CIV2_LOG_VIDEO=1` logs each).
+
+With the CD's `KINGS` or without it: the own herald plays wherever HD graphics are on and
+*Animated Heralds* is ticked (without the install's videos the option otherwise shows nothing;
+with them the own herald is preferred).  The option keeps its meaning: unticked, no herald.
+With HD graphics it is on by default: where the original would ask its one-time question
+(`HERALDWARNING`, 16 MB of memory; CIV.INI's `[Civilization Gold] Herald Warning Shown=` not
+yet 1) nothing is asked and the answer taken as yes (`app_startup_init`), so fresh settings
+have the heralds; unticked later, it stays off (CIV2.DAT, as ever).  Classic graphics ask as
+the original does.
+Classic graphics (and HD off, `CIV2_CLASSIC=1`, replays without `CIV2_TEST_HD`) play the CD's
+video as ever: the table and the window's place are the original's.
+
+The Russians' herald (`herald-RUS.webp`: 324 frames, 12 a second, 27 seconds; 327x600 for the
+window's 218x400, so 1.5 times the game's pixels, drawn enlarged smoothly at densities 2 to 4;
+lossy at quality 70, alpha lossless, every frame a key frame; 6.9 MB) is an 18th-century Russian court envoy in a
+crimson kaftan with a mace, made with Google's video model from a still (below); it is in the
+local staging folder only, not in the repository: without it the Russians' herald is the CD's
+(with `KINGS`; without them, none), as for every other tribe.
+`tools/build_herald.py CODE GREETING IDLE PLEASED DECLINE ANGRY` makes a herald and its line from
+five clips of the figure on a flat chroma-key green (Docker: ffmpeg, cwebp and webpmux 1.5.0 in a
+throwaway Debian 13 container): each clip resampled to 12 frames a second, keyed (ffmpeg's
+`chromakey`, then `despill`), its last half second blended into one pose shared by all five (the
+idle loop's first frame) and, but for the greeting's, its first half second out of it (so every
+join the game makes, greeting to idle, round the idle loop, idle to a reaction and back, is
+seamless; the clips, made apart, start in slightly different poses), cropped to the figure's bounds over every frame,
+scaled so it stands `--height` game pixels tall with its feet at `--foot`, and encoded; then
+`tools/check_herald.py CODE` (also on its own: `tools/dk python3 tools/check_herald.py RUS`) plays
+the segments in the game's order and fails if a join changes more than twice the median frame
+(`--video OUT.mp4`: that play, labelled, to look at).
+`harness/hd/hd-herald-own.sh` shows it, the man's and the woman's leader, with `KINGS`,
+without it, without the install, and with Classic graphics (contact sheets in
+`run/hd-herald-own`; it says SKIP without the herald); in the browser version, `tools/toolchain/node/bin/node
+src/web/test/smoke.mjs --replay hd/hd-herald-own --hd 2` (after `make web`; its shots in
+`run/web-hd-hd-herald-own`).
+
+How the Russians' herald was made (AI-generated; its provenance goes with it to the pack).  The
+still: Google's Gemini 3 Pro Image (`gemini-3-pro-image`, 2K: 1536x2752, 9:16), with two
+references, the pack's diplomacy rooms under Monarchy and Communism (for the palette's harmony
+only), the prompt:
+
+    A full-length figure of a Russian imperial court envoy (a herald) of the 18th century, painted
+    in the same painterly digital-illustration style as the reference images: a long crimson
+    kaftan with gold braid and brass buttons, a dark-blue sash, a brown sable fur hat with a red
+    crown, brown leather boots, a short gilded ceremonial staff held loosely in one hand. Costume
+    and props use only reds, golds, browns, blues, black and white; there is NO green anywhere on
+    the figure, his clothes or props. He stands facing the viewer at three-quarters, in a neutral
+    relaxed pose with his arms hanging at his sides. The whole figure is in frame, head to feet,
+    with a generous margin on all sides. The background is a perfectly flat, uniform chroma-key
+    green (#00B140), with no shadow, floor, gradient, texture or vignette on it, and no shadow
+    cast on it. No text, letters or logos. Portrait 9:16.
+
+The five clips: Google's Gemini Omni video model (`gemini-omni-1.2-flash`: 720x1280, 24 frames a
+second, silent), the still (on its green, scaled to 768x1376) given twice with the prompt; the
+greeting 8 seconds, the idle loop 4, each reaction 5.  Each prompt is "Animate this exact figure:
+the Russian court herald ..." with its action, then the same ending:
+
+* greeting: "bows respectfully and makes a slow welcoming gesture with his free hand, then
+  returns to exactly the starting neutral pose, so the clip loops seamlessly. Static camera, no
+  zoom or pan. The background stays a perfectly flat, uniform chroma-green with no shadows,
+  lighting changes or objects. Keep his face, costume and staff identical to the image. No text.
+  Silent: no music, no speech."
+* idle: "stands still, waiting attentively. Only subtle idle motion: he breathes calmly, shifts
+  his weight very slightly from one foot to the other, and makes a small adjustment of his grip
+  on the staff and of his sash. His arms stay close to his body; no gestures, no bow."
+* pleased (an offer accepted): "is pleased, an offer has been accepted. He smiles warmly, nods
+  approvingly twice and makes a small, contained approving gesture with his free hand held close
+  in front of his chest, like a gracious acknowledgement."
+* polite refusal: "politely declines. He frowns slightly, slowly shakes his head, and raises his
+  free hand a little in front of his chest, palm outward, in a calm, regretful 'no, thank you'
+  gesture; restrained and courteous."
+* angry: "is angry and offended. He scowls, stamps the end of his staff firmly on the ground
+  once, and jabs a finger of his free hand sharply toward the viewer in a stern warning, his arm
+  staying in front of his body rather than stretched to the side."
+* the ending (but the greeting's, which has its own): "Then he returns to exactly the starting
+  neutral pose, so the clip ends on the first frame and loops seamlessly. Static camera, no zoom
+  or pan. Keep the whole figure, his hands, fingertips, staff and hat well inside the frame at
+  all times, with a clear margin of green on every side; no part of him ever touches or leaves
+  the edge of the frame. The background stays a perfectly flat, uniform chroma-green with no
+  shadows, lighting changes or objects. Keep his face, costume and staff identical to the image.
+  No text. Silent: no music, no speech."
+
+Then `tools/build_herald.py RUS greeting.mp4 idle.mp4 pleased.mp4 decline.mp4 angry.mp4` (cropped
+to the figure, 400 game pixels tall at 1.5 times the game's pixels, 327x600, each frame lossy WebP
+at quality 70 with lossless alpha, put together whole by webpmux; 324 frames, 6.9 MB) and
+`tools/check_herald.py RUS`.
 
 ## How it is drawn
 
@@ -511,8 +648,9 @@ The art: openciv2-assets by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PA
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
-OpenCiv2's own pictures (`data/native/hd-extra`) are under its licence (MIT); the AI-generated
-ones' model, prompt and references are in its `README`.
+OpenCiv2's own pictures and heralds (`data/native/hd-extra`, the local staging folder) are under
+its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
+(the Russians' herald's under *Your own heralds*).
 
 ## Tests
 
@@ -540,7 +678,7 @@ ones' model, prompt and references are in its `README`.
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-talks-all.sh` (every tribe's
   leader, man and woman, from a new game: a contact sheet beside the original's), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-herald-own.sh` (OpenCiv2's own Russian herald and leaders: *Your own heralds*), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
   every zoom, each slide's plane compared with a full render: its results in `hook.log`, "0 of
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
   the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its
@@ -608,7 +746,8 @@ pictures; the whole pack holds 2,105, 250 MB):
   diplomats for a tribe of samurai and court ladies in the original), the Egyptians' and
   Carthaginians' (North Africans in headcloths, not pharaonic or Punic), and the tribes that
   share one (Babylonians and Persians, Russians and French, English and Spanish, Celts and
-  Vikings).  The heralds' videos are the original's, enlarged smoothly: the pack has none.
+  Vikings).  The heralds' videos are the original's, enlarged smoothly (the pack has none),
+  but where OpenCiv2 has one of its own (*Your own heralds*: the Russians').
 * The city view's houses but in the industrial era, its empty lots (woods), and its modern
   landscapes are the original's, enlarged, awaiting art of their eras.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the

@@ -8,7 +8,7 @@
 // browser's language); the game started in Esperanto by ?lang=eo.  Screenshots in run/web-smoke (the game's
 // images: never committed).
 //
-//   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME] [GAME_DIR]
+//   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME [--hd N]] [GAME_DIR]
 // (GAME_DIR: $CIV2_GAME or ~/Civ2; tools/fetch-toolchain.sh browser fetches
 // node and the browser; make web-test runs it)
 //
@@ -19,6 +19,9 @@
 //   tools/dk python3 harness/compare.py run/ref-NAME run/web-NAME
 // (after converting the .bmp screenshots to .png; make web-replay does both).
 // The run's time measures the module's speed (no real waiting in a replay).
+// NAME DIR/NAME: harness/DIR/NAME.txt (e.g. hd/hd-herald-own); --hd N: with
+// HD graphics at density N (the page's ?hd=N, the art from the site; the
+// replay's CIV2_TEST_HD=N), its -hd screenshots too.
 
 import {readFileSync, writeFileSync, mkdirSync, readdirSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
@@ -30,6 +33,7 @@ import {sampleDisc, makeImage, tone} from './disc.mjs';
 const OUT = join(ROOT, 'run', 'web-smoke');
 const argv = process.argv.slice(2);
 const REPLAY = argv[0] === '--replay' ? argv.splice(0, 2)[1] : null;
+const REPLAY_HD = REPLAY && argv[0] === '--hd' ? argv.splice(0, 2)[1] : null;
 const GAME = argv[0] || process.env.CIV2_GAME || join(homedir(), 'Civ2');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
@@ -38,7 +42,7 @@ const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}
 // starts (main.js: window.civ2Test), its output taken from the page's file
 // system once the game has ended.
 async function replay(send, evaluate, waitFor) {
-    const out = join(ROOT, 'run', 'web-' + REPLAY);
+    const out = join(ROOT, 'run', 'web-' + REPLAY.replace(/\//g, '-'));
     rmSync(out, {recursive: true, force: true});
     mkdirSync(out, {recursive: true});
     await send('Page.addScriptToEvaluateOnNewDocument', {source: `
@@ -52,10 +56,11 @@ async function replay(send, evaluate, waitFor) {
             fs.mkdirs('/replay/out');
             Object.assign(env, {CIV2_SCRIPT: '/replay/script.txt', CIV2_SHOT_DIR: '/replay/out', CIV2_SEED: '7',
                                 CIV2_RAND_LOG: '/replay/out/rand.log', CIV2_HOOK_LOG: '/replay/out/hook.log',
-                                CIV2_CALL_LOG: '/replay/out/calls.log', CIV2_WINDIR: '/civ2', CIV2_WINE_TEXT: '1'});
+                                CIV2_CALL_LOG: '/replay/out/calls.log', CIV2_WINDIR: '/civ2', CIV2_WINE_TEXT: '1'${
+                                REPLAY_HD ? `, CIV2_TEST_HD: '${REPLAY_HD}'` : ''}});
         };`});
     const t = performance.now();
-    await send('Page.navigate', {url: (await evaluate('location.origin')) + '/'});
+    await send('Page.navigate', {url: (await evaluate('location.origin')) + '/' + (REPLAY_HD ? '?hd=' + REPLAY_HD : '')});
     await waitFor('/ended|stopped/.test(window.civ2Status || "") && window.civ2Status', 3600000, 'the replay');
     const wall = performance.now() - t;
     const st = await evaluate('window.civ2Status');

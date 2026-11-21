@@ -28,6 +28,36 @@ extern int hd_density;      /* plane pixels per surface pixel, each way (1..4) *
    Freed with free(). */
 unsigned char *hd_decode_image(const unsigned char *data, size_t len, int *w, int *h);
 
+/* An animated WebP (hd_image.c): opened from its bytes (taken: freed with
+   it; NULL: not one), its frames and canvas size, frame i (0 on) as the
+   canvas shows it, RGBA not premultiplied, w x h (NULL: bad; valid until
+   the next call), from any frame in any order (decoded from the last key
+   frame before it, or on from the one asked last). */
+typedef struct HdAnim HdAnim;
+HdAnim *hd_anim_open(unsigned char *data, size_t len);
+void hd_anim_close(HdAnim *a);
+int hd_anim_frames(const HdAnim *a);
+void hd_anim_size(const HdAnim *a, int *w, int *h);
+const unsigned char *hd_anim_frame(HdAnim *a, int i);
+
+/* OpenCiv2's own heralds (data/native/hd-extra/heralds.txt, docs/HD-GRAPHICS.md
+   "Your own heralds"): a line each, CODE X Y W H FPS G0 G1 I0 I1 P0 P1 D0 D1
+   A0 A1 FILE: the three letters of the original's KINGS\HRLDCODE.AVI, where
+   it stands in the diplomacy room and its size (the game's pixels), its
+   frames per second, the first and last frame of its five segments (the
+   game's order: greeting, idle, pleased, refusal, angry), the animated WebP
+   beside it.  hd_herald_parse: one line (1: valid); hd_herald_find: with HD
+   graphics (hd_art), the tribe's of that code, its file's path in path (1:
+   there is one). */
+typedef struct {
+    char code[4];
+    int x, y, w, h, fps;
+    int seg[5][2];
+    char file[64];
+} HdHerald;
+int hd_herald_parse(const char *line, HdHerald *h);
+int hd_herald_find(const char *code, HdHerald *h, char *path, size_t n);
+
 /* The game's side (src/auto/graphics*.cpp).  Surfaces are named by their
    pixels (DibSurface::bits); rectangles are in surface pixels. */
 

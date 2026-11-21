@@ -282,7 +282,7 @@ builds do not use it.
   `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
   be persistent (`navigator.storage.persist`).
 * **HD graphics** (src/web/main.js, host.js's `host_present_hd`): `tools/build_web.py` puts the
-  art (data/native/hd) and OpenCiv2's own pictures (data/native/hd-extra) on the site as one
+  art (data/native/hd) and, where present, the local staging folder data/native/hd-extra on the site as one
   file, `hd/art.bin`, listed in `hd/index.json`.  At start, where HD graphics are wanted (`?hd=N`,
   passed as `--hd=N`, else `CIV.INI`), the page fetches it and puts its files at `/data/hd` and
   `/data/hd-extra`, where hd.c finds them as the program's data; hd.c reads each picture on

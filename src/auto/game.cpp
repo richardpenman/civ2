@@ -97,7 +97,13 @@ i32 __cdecl app_startup_init(void)
                     (str_civilization_gold,str_herald_warning_shown,0,
                      str_civ_ini);
   if (profile_val == 0) {
-    rc = popup_game((const char *)&str_heraldwarning);
+    /* (port) HD graphics: OpenCiv2's own heralds (data/native/hd-extra/heralds.txt)
+       on by default, the warning (16 MB of memory) not asked and taken as
+       answered yes; the Graphic Options' choice kept as the original keeps it */
+    if (hd_art)
+      rc = 1;
+    else
+      rc = popup_game((const char *)&str_heraldwarning);
     if (rc == 0) {
       prefs.game_options = prefs.game_options & 0xffdfffff;
     }

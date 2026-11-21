@@ -190,8 +190,9 @@ def write_sounds():
 
 def write_art():
     """hd/art.bin and hd/index.json: the HD art (data/native/hd) and
-    OpenCiv2's own pictures (data/native/hd-extra), the files one after
-    another; the art's notices beside them."""
+    OpenCiv2's own pictures and heralds (data/native/hd-extra, the local
+    staging folder, where present), the files one after another; the art's
+    notices beside them."""
     out = os.path.join(OUT, 'hd')
     if os.path.isdir(out):
         shutil.rmtree(out)
@@ -200,8 +201,10 @@ def write_art():
     index = []
     with open(os.path.join(out, 'art.bin'), 'wb') as f:
         for d in ('hd', 'hd-extra'):
+            if not os.path.isdir(os.path.join(native, d)):
+                continue        # (hd-extra: the local staging folder, not in the repository)
             for name in sorted(os.listdir(os.path.join(native, d))):
-                if name == 'pictures.txt' or name.endswith(('.webp', '.png')):
+                if name in ('pictures.txt', 'heralds.txt') or name.endswith(('.webp', '.png')):
                     data = open(os.path.join(native, d, name), 'rb').read()
                     f.write(data)
                     index.append([d + '/' + name, len(data)])
@@ -209,7 +212,8 @@ def write_art():
         json.dump(index, f)
     for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
         shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
-    shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))
+    if os.path.exists(os.path.join(native, 'hd-extra', 'README')):
+        shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))
 
 
 def run(cmd):
