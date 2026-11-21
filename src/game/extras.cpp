@@ -234,6 +234,17 @@ void extras_texts_each(void (*add)(const char *key, const char *english))
     }
 }
 
+/* B37: the notice's pictures (its placeholder's draw callback). */
+void treaty_notice_draw_emblems(i32 sprite, DibSurface *surface, i32 id, i32 data, i32 x, i32 y)
+{
+    (void)sprite;
+    (void)surface;
+    (void)id;
+    (void)data;
+    (void)x;
+    (void)y;
+}
+
 /* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
    that ai has ended their peace treaty (was_peace) or cease-fire.  One popup,
    titled as the game's emissary messages are (diplo_set_attitude_arg:
