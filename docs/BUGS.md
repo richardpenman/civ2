@@ -421,14 +421,26 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   consider ourselves bound by our peace treaty with you."; OpenCiv2's text, translatable). Then
   comes "You reply:", with the player's emblem beside it, and our reply as quoted text: GAME.TXT's
   `@CANCELOURPEACE` for a peace treaty, `@NOPEACE` for a cease-fire. It's not a choice, because a
-  choice is one line and widened the dialog to fit it. (A first version showed the
-  AI-vs-AI `CANCELPEACE` Diplomats Report, which reads as news about others, and nothing for
-  a cease-fire.) A cease-fire running out on its own (`@CEASEEXPIRE`, `diplomacy.cpp`
-  line 4102) is unchanged. How often the AI breaks a treaty is unchanged. **State.**
+  choice is one line and widened the dialog to fit it.
+
+  Who is told follows how the game tells of other treaties broken (`diplo_treaty_break_tell`):
+  - **The player who is the other party:** the emissary's notice, then for a peace treaty
+    the Diplomats Report `CANCELPEACE` ("French and Spanish cancel peace treaty."), as an
+    attack that breaks one shows them (`unit_combat.cpp`: `SNEAK`, then `CANCELPEACE`). A
+    cease-fire gets the notice only, as combat gives no report for a cease-fire.
+  - **A third party at the screen** (one AI breaking its peace with another): the Diplomats
+    Report, if they have an embassy with either civ, the United Nations or Marco Polo's, or the
+    map is revealed, as when two AIs cancel peace (`diplomacy.cpp`, `diplo_civs_meet_war`).
+  - **No one** in autoplay, or with no player at the screen (hot seat, during an AI's turn).
+  - **Network games:** the fix is off there. Combat sends its report to each human player who
+    saw it (0x3a), which would be the model.
+
+  A cease-fire running out on its own (`@CEASEEXPIRE`, `diplomacy.cpp` line 4102) is unchanged.
+  How often the AI breaks a treaty is unchanged. **State.**
 - **Saves:** none (the existing treaty flags).
 - **Status: fixed** (`bugfix_state()`). `tests/ai_treaty_break_test.cpp` and
-  `tests/spaceship_treaty_test.cpp` check both modes; `tests/treaty_notice_test.cpp` checks
-  the notice.
+  `tests/spaceship_treaty_test.cpp` check both modes; `tests/treaty_tell_test.cpp` checks
+  who is told and in what order, and `tests/treaty_notice_test.cpp` checks the notice.
 
 ## Scenario and events
 

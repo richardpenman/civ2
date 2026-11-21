@@ -318,12 +318,34 @@ void diplo_treaty_break_notice(int ai, int human, int was_peace)
 }
 
 /* B37: the AI civ ai has ended its peace treaty (was_peace) or cease-fire
-   with civ other: tells whom it should. */
+   with civ other: tells whom it should, as the game tells of other treaties
+   broken.  The player at the screen who is the other civ: the emissary's
+   notice, then for a peace treaty the Diplomats Report (CANCELPEACE), as an
+   attack that breaks one shows them (unit_combat.cpp: SNEAK, then
+   CANCELPEACE; a cease-fire has no report).  A third party at the screen:
+   that report for a peace treaty, with an embassy with either civ, the United
+   Nations, Marco Polo's or the map revealed, as when two AIs cancel peace
+   (diplomacy.cpp, diplo_civs_meet_war).  No one in autoplay, or with no
+   player at the screen (hot seat, an AI's turn: human_civ -1). */
 void diplo_treaty_break_tell(int ai, int other, int was_peace)
 {
-    (void)ai;
-    (void)other;
-    (void)was_peace;
+    int viewer = (int)human_civ[0];
+    if (autoplay.active != 0 || viewer < 1 || viewer > 7 || viewer == ai)
+        return;
+    if (viewer == other) {
+        diplo_treaty_break_notice(ai, other, was_peace);
+    } else if (!was_peace ||
+               ((*(byte *)&civs[viewer].treaties[ai] & TREATY_EMBASSY) == 0 &&
+                (*(byte *)&civs[viewer].treaties[other] & TREATY_EMBASSY) == 0 &&
+                civ_has_wonder(viewer, WONDER_UNITED_NATIONS) == 0 &&
+                civ_has_wonder(viewer, WONDER_MARCO_POLO) == 0 && game.reveal_map == 0)) {
+        return;
+    }
+    if (was_peace) {
+        text_set_string_arg(0, civ_name_plural(ai));
+        text_set_string_arg(1, civ_name_plural(other));
+        popup_game_with_sprite(str_cancelpeace_3, (Sprite *)&war_icon_sprite_block.war_icon_sprite, 0);
+    }
 }
 
 

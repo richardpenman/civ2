@@ -7113,13 +7113,13 @@ void __cdecl civ_turn_update_diplomacy(uptr civ)
               }
               civs[civ2].last_contact_turn[civ] = (short)value;
               if (bugfix_state()) {  /* B37 */
-                /* the treaty ends on both sides, and the AI's emissary tells
-                   the player at the screen (the original ended it on the AI's
-                   side only and said nothing: the player's side still read
-                   peace or cease-fire) */
-                if (((*(byte *)&civs[civ2].treaties[civ] & (TREATY_CEASEFIRE | TREATY_PEACE)) != 0) &&
-                    (human_civ[0] == civ2) && (autoplay.active == 0)) {
-                  diplo_treaty_break_notice(civ,civ2,(*(byte *)&civs[civ2].treaties[civ] & TREATY_PEACE) != 0);
+                /* the treaty ends on both sides, and whom it should is told:
+                   the other civ's player the AI's emissary, then the
+                   Diplomats Report; a third party with an embassy that report
+                   (the original ended it on the AI's side only and said
+                   nothing: the other side still read peace or cease-fire) */
+                if ((*(byte *)&civs[civ2].treaties[civ] & (TREATY_CEASEFIRE | TREATY_PEACE)) != 0) {
+                  diplo_treaty_break_tell(civ,civ2,(*(byte *)&civs[civ2].treaties[civ] & TREATY_PEACE) != 0);
                 }
                 diplo_clear_treaty_flags(civ,civ2,TREATY_CEASEFIRE | TREATY_PEACE);
               }
