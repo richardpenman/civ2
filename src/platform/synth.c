@@ -491,7 +491,8 @@ static void index_crops(unsigned char *idx, const Canvas *c, const Crops *cs, Sy
 
 /* ---- the sheets (TERRAIN1.GIF ...) ---- */
 
-/* (CITY.GIF, the credits' and the editors' backdrops are whole pictures) */
+/* (CITY.GIF, the credits' and the editors' backdrops are whole pictures: the
+   editors' are OpenCiv2's own, data/native/hd-extra) */
 
 static const struct Sheet {
     const char *file, *key;
@@ -681,7 +682,11 @@ static void make_sheets(void)
             }
         } else
             draw_crops(&cv[i], &cs[i]);
-        count_colours(&cv[i], hist);
+        /* (the editors' backdrops, OpenCiv2's own dark slate, are left out of
+           the palette's art colours: in its greys, the others' colours as
+           without them) */
+        if (strncasecmp(SHEETS[i].file, "EDITORS", 7) && strcasecmp(SHEETS[i].file, "EDITORAS.GIF"))
+            count_colours(&cv[i], hist);
     }
     shared_fixed(&shared);
     shared_art(&shared, hist);

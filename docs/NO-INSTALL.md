@@ -42,9 +42,8 @@ at its largest zoom and the throne room.
 | --- | --- | --- |
 | replaced: built in (OpenCiv2's text, rules, timerdll, XDaemon) | 22 | |
 | replaced: made by the game when missing (`CIV2.DAT`, `HALLFAME.DAT`) | 2 | |
-| replaced: made from the HD art (sheets, libraries, civ2.exe) | 18 | 243 GIF + 30 of civ2.exe's |
+| replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode draws it whole): needs code or art for the classic look | | 93 (pv.dll 55, ss.dll 400-499 38) |
-| missing art: a neutral placeholder | 3 (`EDITORAS`, `EDITORSA`, `EDITORSQ.GIF`) | 28 (wonder.dll's border tiles: the pack's are paintings) |
 | missing sound: the game plays nothing | 78 (`Sound\*.WAV`) | |
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
@@ -69,7 +68,7 @@ playable by eye.
 | `EDITORPT.GIF` | the sprite editor's tools and backdrops | replaced: made from the pack's sprites |
 | `CITY.GIF` | the city window's background | replaced: the pack's picture |
 | `SCREDITS.GIF` | the credits' picture | replaced: the pack's picture |
-| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops | missing art: a neutral dark grey |
+| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: made from OpenCiv2's own (`data/native/hd-extra`: dark slate reliefs, dithered into the shared palette's colours without changing it; the editors' white labels at a WCAG contrast of 8.1 to 13.0) |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sounds (below) | missing sound: silence |
@@ -125,7 +124,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | `TERRAIN2` | rivers, forests, hills, mountains, coasts, river mouths | 100 | replaced |
 | `UNITS` | the 63 units, the shield | 64 | replaced; the shields' places a fixed default (12, 8): the art gives none |
 | `CITIES` | cities by style and size, walled, flags, fortress, airbase | 68 | replaced; the flags' and size boxes' places a default |
-| `ICONS` | the map's cursor and grid, improvements', wonders' and advances' icons, the resource and tax icons, explosions, the windows' textures, the caption's buttons | 133 | replaced; 11 sprites have no picture in the pack, left empty: three 32 x 32 beside the pollution icon (y 223), three beside the map's cursor (y 256), the two tall ones at x 311, the pair at x 350 (y 255, 288), the unused tall one |
+| `ICONS` | the map's cursor and grid, improvements', wonders' and advances' icons, the resource and tax icons, explosions, the windows' textures, the caption's buttons | 133 | replaced; 11 sprites the game takes have no picture in the pack, left empty, but none is drawn and the original's are empty too (nothing missing): three 32 x 32 beside the pollution icon (y 223: at 34 and 100 the sheet's background, at 133 an empty cell; 34 is the second sprite the cities editor's Edit Misc > fortress opens in the sprite editor, empty in the original too), three beside the map's cursor (y 256: 232 the cursor's right half, 265 and 298 empty cells), the two tall ones at x 311 (y 1, 98: background), the pair at x 350 (y 255, 288: across the advances' icons, never drawn), the tall one at 265, 289 (an empty cell) |
 | `PEOPLE` | the citizens | 55 | replaced |
 | `EDITORPT` | the sprite editor's tools, the units' and tiles' backdrops | 17 | replaced |
 
@@ -152,7 +151,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | | 20000-20007 | the spaceship's launch and arrival frames | replaced |
 | `civ2art.dll` | 999 | the windows' frame texture | replaced |
 | | 1000, 2000, 4000, 30000 | the end of the game: the arrival, the defeat, Alpha Centauri beaten | replaced |
-| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | **missing art**: the pack's are each wonder's painting, tiled as a border |
+| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: the pack's painting, its border tile (1,1,64,32) OpenCiv2's own seamless grey marble (`data/native/hd-extra/wonder-border.webp`) |
 
 (Not every one was reached by the scripts: those of other governments, eras, leaders and levels
 are made the same way.)
@@ -188,8 +187,7 @@ scope here.
 
 ## What remains
 
-* **Art**: the wonders' movie border tile (one picture: the original's is a grey marble tile);
-  the editors' three backdrops; the icons the pack lacks (above); the sounds; music (planned).
+* **Art**: the sounds; music (planned).
 * **Code**: an 8-bit composition of the throne room and the spaceship from the pack's pieces,
   for the classic look (HD mode has them); the diplomacy room's leader medallion shows only in
   HD mode; the units' shields', the cities' flags' and size boxes' places from the art rather

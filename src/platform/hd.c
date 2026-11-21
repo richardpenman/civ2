@@ -985,12 +985,15 @@ void hd_sheet_clear(void *bits)
         reloaded(b);
 }
 
+static void paint_whole(Bitmap *b, int pid, int whole);
+
 void hd_sheet_loaded(void *bits, const char *filename)
 {
     Bitmap *b;
     char cwd[1024];
     const char *base = filename, *s;
     size_t i;
+    int id;
     if (!hd_on || !(b = bmp_of_bits(bits)))
         return;
     reloaded(b);
@@ -1004,8 +1007,12 @@ void hd_sheet_loaded(void *bits, const char *filename)
     for (i = 0; base[i] && base[i] != '.' && i < sizeof b->hd_sheet - 6; i++)
         b->hd_sheet[5 + i] = (char)tolower((unsigned char)base[i]);
     b->hd_sheet[5 + i] = 0;
-    if (!find(b->hd_sheet))
+    if (!(id = find(b->hd_sheet)))
         b->hd_sheet[0] = 0;
+    /* OpenCiv2's own picture of a whole sheet (the editors' backdrops):
+       painted on the plane, as a resource picture's (paint_whole) */
+    else if (entries[id - 1].file)
+        paint_whole(b, id, 0);
 }
 
 /* ---- the pictures of the game's resource libraries ----
@@ -1102,31 +1109,18 @@ static uint32_t *scaled_inside(Entry *a, int inset, int w, int h)
     return px;
 }
 
-void hd_resource_loaded(void *bits, int id)
+/* The picture pid painted whole on the surface's plane (inset: its border
+   left out, in 1/1000ths), where it is the surface's size. */
+static void paint_whole(Bitmap *b, int pid, int whole)
 {
-    Bitmap *b;
-    Entry *a;
+    Entry *a = entries + pid - 1;
     const uint32_t *px;
     uint32_t *own = NULL;
-    int pid, d = hd_density, y, whole = -1;
+    int d = hd_density, y;
     size_t i, n;
-    if (!hd_on || !(b = bmp_of_bits(bits)))
-        return;
-    reloaded(b);
-    if (!hd_art)
-        return;
-    snprintf(b->hd_sheet, sizeof b->hd_sheet, "resource/%s/gifs/%d", plat_res_module, id);
-    for (i = 0; i < sizeof WHOLE / sizeof *WHOLE; i++)
-        if (!strcmp(WHOLE[i].module, plat_res_module) && id >= WHOLE[i].lo && id <= WHOLE[i].hi)
-            whole = WHOLE[i].inset;
-    /* (OpenCiv2's own picture of it: whole, the original's not kept) */
-    if (whole < 0 && (pid = find(b->hd_sheet)) && entries[pid - 1].file)
-        whole = 0;
     /* (the surface's rows are whole dwords: up to 3 pixels wider) */
-    if (whole < 0 || !(pid = find(b->hd_sheet)) || (int)entries[pid - 1].h != b->h || (int)entries[pid - 1].w > b->w ||
-        b->w - (int)entries[pid - 1].w > 3 || b->bpp != 8 || !plane(b))
+    if ((int)a->h != b->h || (int)a->w > b->w || b->w - (int)a->w > 3 || b->bpp != 8 || !plane(b))
         return;
-    a = entries + pid - 1;
     /* (scaled once and kept, as the pictures drawn are: the city view
        loads its landscape each time it is opened, 3840 x 1440 at density 3) */
     if (whole)
@@ -1142,6 +1136,27 @@ void hd_resource_loaded(void *bits, int id)
         b->hd_alpha = px[i] >> 24 != 255;
     free(own);
     commit_rect(b, 0, 0, b->w, b->h);
+}
+
+void hd_resource_loaded(void *bits, int id)
+{
+    Bitmap *b;
+    int pid, whole = -1;
+    size_t i;
+    if (!hd_on || !(b = bmp_of_bits(bits)))
+        return;
+    reloaded(b);
+    if (!hd_art)
+        return;
+    snprintf(b->hd_sheet, sizeof b->hd_sheet, "resource/%s/gifs/%d", plat_res_module, id);
+    for (i = 0; i < sizeof WHOLE / sizeof *WHOLE; i++)
+        if (!strcmp(WHOLE[i].module, plat_res_module) && id >= WHOLE[i].lo && id <= WHOLE[i].hi)
+            whole = WHOLE[i].inset;
+    /* (OpenCiv2's own picture of it: whole, the original's not kept) */
+    if (whole < 0 && (pid = find(b->hd_sheet)) && entries[pid - 1].file)
+        whole = 0;
+    if (whole >= 0 && (pid = find(b->hd_sheet)))
+        paint_whole(b, pid, whole);
 }
 
 typedef struct Spr {

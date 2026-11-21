@@ -86,8 +86,8 @@ fresh install; `timerdll.dll` and `XDaemon.dll` are built in.  `harness/extras/x
 and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text, rules and sounds
 (`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), with and
 without HD graphics.  Still from the game: its sounds, videos and music, scenarios; without HD
-graphics the throne room and the spaceship are the pack's pieces misplaced, the wonders' movie
-border a painting.
+graphics the throne room and the spaceship are the pack's pieces misplaced.  The editors'
+backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
