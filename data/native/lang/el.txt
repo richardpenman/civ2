@@ -22,6 +22,12 @@ utf-8
 Τακτοποίηση Παραθύρων L
 @@openciv2.mainmenu.options
 Επιλογές OpenCiv2
+@@openciv2.diplo.emissary
+%s Αντιπροσωπεία
+@@openciv2.diplo.cancel_peace
+«Ακούστε: οι %s δεν θεωρούν πλέον ότι δεσμεύονται από τη συνθήκη ειρήνης μαζί σας.»
+@@openciv2.diplo.cancel_ceasefire
+«Ακούστε: οι %s δεν θεωρούν πλέον ότι δεσμεύονται από την ανακωχή μαζί σας.»
 @@openciv2.options.title
 Επιλογές OpenCiv2
 @@openciv2.options.kept

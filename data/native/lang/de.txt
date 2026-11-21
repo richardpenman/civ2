@@ -19,6 +19,12 @@ Fenster anordnen S
 Fenster anordnen L
 @@openciv2.mainmenu.options
 OpenCiv2-Optionen
+@@openciv2.diplo.emissary
+Gesandtschaft (%s)
+@@openciv2.diplo.cancel_peace
+"Vernehmt unsere Botschaft: Die %s betrachten sich nicht länger an ihren Friedensvertrag mit Ihnen gebunden."
+@@openciv2.diplo.cancel_ceasefire
+"Vernehmt unsere Botschaft: Die %s betrachten sich nicht länger an ihren Waffenstillstand mit Ihnen gebunden."
 @@openciv2.options.title
 OpenCiv2-Optionen
 @@openciv2.options.kept

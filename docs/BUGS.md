@@ -388,16 +388,23 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   turn, as the original, and keeps the player when no turn saved one (the original's stack).
 
 ### B37. An AI breaks its treaty with the player on its own side only, and says nothing
-- **Where:** `src/auto/civ.cpp`, `civ_turn_update_diplomacy` (00560084), lines 7076-7096.
-  When the AIs gang up on the leading civilization (`GAME_AI_GANG_UP`, line 3154), an AI at
-  cease-fire or peace with it may be given `TREATY_HOSTILE_INTENT` (0x20). At the start of
-  that AI's turn, a roll that hits more often the worse the leader's reputation ends the treaty:
-  ```cpp
-  *treaty_ptr = *treaty_ptr & 0xffffffd9;   /* no cease-fire, peace or hostile intent */
-  *treaty_ptr = *treaty_ptr | 0x80840;      /* broken, aggressor */
-  ```
-  only in `civs[ai].treaties[leader]`. Every other change of a treaty is made on both sides
-  (`diplo_set_treaty_flags`, `diplo_clear_treaty_flags`).
+- **Where:** two places.
+  - `src/auto/civ.cpp`, `civ_turn_update_diplomacy` (00560084), line 7104. An AI at cease-fire
+    or peace with a civilization is given `TREATY_HOSTILE_INTENT` (0x20) when it decides on war
+    in a meeting but has a treaty (`src/auto/diplomacy.cpp`, line 4090), or when the AIs gang up
+    on the leading civilization (`GAME_AI_GANG_UP`, line 3154). At the start of that AI's turn,
+    a roll that hits more often the worse the other's reputation ends the treaty:
+    ```cpp
+    *treaty_ptr = *treaty_ptr & 0xffffffd9;   /* no cease-fire, peace or hostile intent */
+    *treaty_ptr = *treaty_ptr | 0x80840;      /* broken, aggressor */
+    ```
+    only in `civs[ai].treaties[other]`.
+  - `src/auto/spaceship.cpp`, `spaceship_launch` (line 1616): at Emperor and Deity, when a
+    human launches a spaceship that arrives before an AI's, the same two lines end the AI's
+    treaty with the human, again on the AI's side only.
+
+  Every other change of a treaty is made on both sides (`diplo_set_treaty_flags`,
+  `diplo_clear_treaty_flags`).
 - **What goes wrong:** the player's side still records peace, and nothing is shown: the
   Foreign Minister says peace while the AI has only contact. The AI's attack then comes with no
   warning, and costs it no reputation (`diplo_declare_war` looks at its side and finds no
@@ -406,12 +413,20 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   status showing contact where the player's showed peace, then a sudden attack); his patch also
   changes when the AI breaks the treaty (vendetta, reputation, relative power), a rule change
   not made here.
-- **Fix:** end the treaty on both sides, and when it was peace and the civilization is the
-  player at the screen, show `CANCELPEACE` ("%STRING0 and %STRING1 cancel peace treaty."), as
-  an AI's war on another AI does (`diplomacy.cpp`, line 6099). How often the AI breaks a treaty
-  is unchanged. **State.**
+- **Fix:** in both places, end the treaty on both sides. When the other civilization is the
+  player at the screen, the AI's emissary tells them, for a peace treaty and for a cease-fire
+  (`diplo_treaty_break_notice`, `src/game/extras.cpp`). It's one popup titled as the game's
+  emissary messages are ("Enraged French Emissary"), with the AI's emblem in its colour and the
+  emissary's words ("Hear now the words of the French: we no longer consider ourselves bound by
+  our peace treaty with you."; OpenCiv2's text, translatable). Our reply is the one choice: GAME.TXT's
+  `@CANCELOURPEACE` for a peace treaty, `@NOPEACE` for a cease-fire. (A first version showed the
+  AI-vs-AI `CANCELPEACE` Diplomats Report, which reads as news about others, and nothing for
+  a cease-fire.) A cease-fire running out on its own (`@CEASEEXPIRE`, `diplomacy.cpp`
+  line 4102) is unchanged. How often the AI breaks a treaty is unchanged. **State.**
 - **Saves:** none (the existing treaty flags).
-- **Status: fixed** (`bugfix_state()`); `tests/ai_treaty_break_test.cpp` checks both modes.
+- **Status: fixed** (`bugfix_state()`). `tests/ai_treaty_break_test.cpp` and
+  `tests/spaceship_treaty_test.cpp` check both modes; `tests/treaty_notice_test.cpp` checks
+  the notice.
 
 ## Scenario and events
 

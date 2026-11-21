@@ -235,12 +235,43 @@ void extras_texts_each(void (*add)(const char *key, const char *english))
 }
 
 /* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
-   that ai has ended their peace treaty (was_peace) or cease-fire. */
+   that ai has ended their peace treaty (was_peace) or cease-fire.  One popup,
+   titled as the game's emissary messages are (diplo_set_attitude_arg:
+   "<attitude> <adjective> Emissary"), with ai's emblem in its colour, the
+   emissary's words (diplo.cancel_peace or diplo.cancel_ceasefire) and our
+   reply as the one choice: GAME.TXT's @CANCELOURPEACE (what an emissary says
+   when the player cancels a peace treaty) or @NOPEACE (when the player turns
+   down its peace), their lines joined; none if the section is missing. */
 void diplo_treaty_break_notice(int ai, int human, int was_peace)
 {
-    (void)ai;
-    (void)human;
-    (void)was_peace;
+    char who[96], title[128], body[256], reply[512];
+    char *line;
+    int level = diplo_attitude_level(civs[ai].attitude[human]);
+    snprintf(who, sizeof who, "%s%s %s", label_string(attitude_names[level]),
+             game_language == 2 ? (const char *)str_er : "", (const char *)(iptr)civ_get_adjective(ai));
+    snprintf(title, sizeof title, extras_text("diplo.emissary"), who);
+    snprintf(body, sizeof body, extras_text(was_peace ? "diplo.cancel_peace" : "diplo.cancel_ceasefire"),
+             civ_name_plural(ai));
+    reply[0] = 0;
+    if (text_open_section(str_game_7, was_peace ? "CANCELOURPEACE" : "NOPEACE") == 0) {
+        while ((line = (char *)text_read_line(1)) != 0 && line[0] != 0) {
+            if (line[0] == '@')
+                continue;
+            if (reply[0])
+                strncat(reply, " ", sizeof reply - strlen(reply) - 1);
+            strncat(reply, line, sizeof reply - strlen(reply) - 1);
+        }
+        text_close_file();
+    }
+    Dialog d(0x4000);
+    d.init(0, 0, 0, 0);
+    d.set_width(320);
+    d.set_title(title);
+    d.add_line(body, -1, -1, -1, 0);
+    if (reply[0])
+        d.add_option(reply, 0, 0);
+    d.add_sprite(&road_sprites_block.civ_portrait_sprites[ai], 0, 0);
+    d.show_modal(0);
 }
 
 

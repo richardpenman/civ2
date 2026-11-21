@@ -25,6 +25,12 @@ Aranøi fenestrojn S
 Aranøi fenestrojn L
 @@openciv2.mainmenu.options
 Agordoj de OpenCiv2
+@@openciv2.diplo.emissary
+%s sendito
+@@openciv2.diplo.cancel_peace
+"Aýskultu: la %s ne plu konsideras sin ligitaj de sia pactraktato kun vi."
+@@openciv2.diplo.cancel_ceasefire
+"Aýskultu: la %s ne plu konsideras sin ligitaj de sia batalhalto kun vi."
 @@openciv2.options.title
 Agordoj de OpenCiv2
 @@openciv2.options.kept
