@@ -168,6 +168,10 @@ int extras_map_tiles_limit(void);
 /* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
    that ai has ended their peace treaty (was_peace) or cease-fire */
 void diplo_treaty_break_notice(int ai, int human, int was_peace);
+/* B37: the AI civ ai has ended its peace treaty (was_peace) or cease-fire
+   with civ other: tells whom it should, as the game tells of other treaties
+   broken (the emissary's notice, the Diplomats Report) */
+void diplo_treaty_break_tell(int ai, int other, int was_peace);
 #endif
 
 #endif

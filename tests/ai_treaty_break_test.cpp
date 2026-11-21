@@ -53,7 +53,7 @@ static int int_clamp(int v, int lo, int hi) { return v < lo ? lo : v > hi ? hi :
 static int civ_has_wonder(int, int) { return 0; }
 static void civ_change_government(int, int) {}
 static void civ_adjust_attitude(int, int, int) {}
-static const char *names[8] = {"Barbarians", "Romans", "Greeks", "", "", "", "", ""};
+static const char *names[8] = {"Barbarians", "Romans", "Greeks", "Persians", "", "", "", ""};
 static char *civ_name_plural(int civ) { return (char *)names[civ]; }
 static std::string args[2];
 static void text_set_string_arg(int n, const char *s) { args[n] = s; }
@@ -66,6 +66,13 @@ static void diplo_treaty_break_notice(int ai, int human, int was_peace) {
     char s[64];
     std::snprintf(s, sizeof s, "%d %d %s", ai, human, was_peace ? "peace" : "ceasefire");
     notices.push_back(s);
+}
+// Who is told, and how, is diplo_treaty_break_tell's (tests/treaty_tell_test.cpp).
+static std::vector<std::string> tells;      // ai, other, peace or cease-fire
+static void diplo_treaty_break_tell(int ai, int other, int was_peace) {
+    char s[64];
+    std::snprintf(s, sizeof s, "%d %d %s", ai, other, was_peace ? "peace" : "ceasefire");
+    tells.push_back(s);
 }
 static void diplo_civs_meet(int, int, int, int) {}
 static void diplo_ai_swap_advances(int, int) {}
@@ -96,6 +103,7 @@ static void setup(uint treaty) {
     civs[AI].treaties[HUMAN] |= TREATY_HOSTILE_INTENT;
     popups.clear();
     notices.clear();
+    tells.clear();
 }
 
 int main() {
@@ -106,10 +114,10 @@ int main() {
     assert((civs[AI].treaties[HUMAN] & (TREATY_PEACE | TREATY_HOSTILE_INTENT)) == 0);
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
     assert(civs[HUMAN].treaties[AI] & TREATY_PEACE);
-    assert(popups.empty() && notices.empty());
+    assert(popups.empty() && notices.empty() && tells.empty());
 
-    // Fixed: both sides drop peace and the AI's emissary tells the player
-    // (not the AI-vs-AI Diplomats Report, CANCELPEACE).
+    // Fixed: both sides drop peace, and diplo_treaty_break_tell tells whom it
+    // should (the emissary's notice, then the Diplomats Report).
     plat_fix_bugs = 1;
     setup(TREATY_PEACE);
     civ_turn_update_diplomacy(AI);
@@ -117,23 +125,34 @@ int main() {
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
     assert((civs[HUMAN].treaties[AI] & (TREATY_CEASEFIRE | TREATY_PEACE)) == 0);
     assert(civs[HUMAN].treaties[AI] & TREATY_CONTACT);
-    std::printf("peace: %zu popups, notice %s\n", popups.size(), notices.empty() ? "none" : notices[0].c_str());
-    assert(popups.empty());
-    assert(notices.size() == 1 && notices[0] == "2 1 peace");
+    std::printf("peace: tell %s\n", tells.empty() ? "none" : tells[0].c_str());
+    assert(popups.empty() && notices.empty());
+    assert(tells.size() == 1 && tells[0] == "2 1 peace");
 
-    // Fixed, a cease-fire: dropped on both sides, and the player is told too.
+    // Fixed, a cease-fire: dropped on both sides, and told too.
     setup(TREATY_CEASEFIRE);
     civ_turn_update_diplomacy(AI);
     assert((civs[AI].treaties[HUMAN] & TREATY_CEASEFIRE) == 0);
     assert((civs[HUMAN].treaties[AI] & TREATY_CEASEFIRE) == 0);
-    assert(popups.empty());
-    assert(notices.size() == 1 && notices[0] == "2 1 ceasefire");
+    assert(tells.size() == 1 && tells[0] == "2 1 ceasefire");
+
+    // Fixed, one AI dropping its peace with another (civ 3): told as well
+    // (a third party may see the Diplomats Report).
+    setup(0);
+    game.civs_alive |= 1 << 3;
+    civs[3].government = GOV_MONARCHY;
+    civs[AI].treaties[3] = civs[3].treaties[AI] = TREATY_CONTACT | TREATY_PEACE | TREATY_EMBASSY;
+    civs[AI].treaties[3] |= TREATY_HOSTILE_INTENT;
+    civs[AI].treaties[HUMAN] &= ~TREATY_HOSTILE_INTENT;
+    civ_turn_update_diplomacy(AI);
+    assert((civs[3].treaties[AI] & TREATY_PEACE) == 0);
+    assert(tells.size() == 1 && tells[0] == "2 3 peace");
 
     // Fixed, in a network game: the original (every player must compute the same game).
     setup(TREATY_PEACE);
     game.multiplayer = 3;
     civ_turn_update_diplomacy(AI);
     assert(civs[HUMAN].treaties[AI] & TREATY_PEACE);
-    assert(notices.empty());
+    assert(notices.empty() && tells.empty());
     return 0;
 }

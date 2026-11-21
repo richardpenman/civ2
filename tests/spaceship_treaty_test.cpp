@@ -49,6 +49,13 @@ static void diplo_treaty_break_notice(int ai, int human, int was_peace) {
     std::snprintf(s, sizeof s, "%d %d %s", ai, human, was_peace ? "peace" : "ceasefire");
     notices.push_back(s);
 }
+// Who is told, and how, is diplo_treaty_break_tell's (tests/treaty_tell_test.cpp).
+static std::vector<std::string> tells;      // ai, other, peace or cease-fire
+static void diplo_treaty_break_tell(int ai, int other, int was_peace) {
+    char s[64];
+    std::snprintf(s, sizeof s, "%d %d %s", ai, other, was_peace ? "peace" : "ceasefire");
+    tells.push_back(s);
+}
 
 #include "production.inc"
 
@@ -68,6 +75,7 @@ static void setup(uint treaty) {
     civs[AI].spaceship_arrival_year = 2110;
     civs[HUMAN].treaties[AI] = civs[AI].treaties[HUMAN] = TREATY_CONTACT | treaty;
     notices.clear();
+    tells.clear();
 }
 
 int main() {
@@ -78,29 +86,30 @@ int main() {
     assert((civs[AI].treaties[HUMAN] & TREATY_PEACE) == 0);
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
     assert(civs[HUMAN].treaties[AI] & TREATY_PEACE);
-    assert(notices.empty());
+    assert(notices.empty() && tells.empty());
 
-    // Fixed: both sides, and the player is told.
+    // Fixed: both sides, and diplo_treaty_break_tell tells whom it should.
     plat_fix_bugs = 1;
     setup(TREATY_PEACE);
     spaceship_launch(HUMAN);
     assert((civs[AI].treaties[HUMAN] & TREATY_PEACE) == 0);
     assert(civs[AI].treaties[HUMAN] & TREATY_BROKEN);
-    std::printf("peace: player's side %#x, notice %s\n", civs[HUMAN].treaties[AI],
-                notices.empty() ? "none" : notices[0].c_str());
+    std::printf("peace: player's side %#x, tell %s\n", civs[HUMAN].treaties[AI],
+                tells.empty() ? "none" : tells[0].c_str());
     assert((civs[HUMAN].treaties[AI] & (TREATY_CEASEFIRE | TREATY_PEACE)) == 0);
     assert(civs[HUMAN].treaties[AI] & TREATY_CONTACT);
-    assert(notices.size() == 1 && notices[0] == "2 1 peace");
+    assert(notices.empty());
+    assert(tells.size() == 1 && tells[0] == "2 1 peace");
 
     // Fixed, a cease-fire.
     setup(TREATY_CEASEFIRE);
     spaceship_launch(HUMAN);
     assert((civs[HUMAN].treaties[AI] & TREATY_CEASEFIRE) == 0);
-    assert(notices.size() == 1 && notices[0] == "2 1 ceasefire");
+    assert(tells.size() == 1 && tells[0] == "2 1 ceasefire");
 
     // Fixed, no treaty: nothing to tell.
     setup(0);
     spaceship_launch(HUMAN);
-    assert(notices.empty());
+    assert(tells.empty());
     return 0;
 }

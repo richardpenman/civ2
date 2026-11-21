@@ -317,6 +317,15 @@ void diplo_treaty_break_notice(int ai, int human, int was_peace)
     sprite_destroy(&holder);
 }
 
+/* B37: the AI civ ai has ended its peace treaty (was_peace) or cease-fire
+   with civ other: tells whom it should. */
+void diplo_treaty_break_tell(int ai, int other, int was_peace)
+{
+    (void)ai;
+    (void)other;
+    (void)was_peace;
+}
+
 
 /* ---- X22, X23: attitude colours ---- */
 
