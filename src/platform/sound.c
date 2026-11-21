@@ -5,9 +5,12 @@
  * (an X server in a container, without sound): the game then runs without
  * sound, identically in both.
  */
+#include <sys/stat.h>
 #include "plat.h"
 #include "../host/host.h"
 #include "plat_files.h"
+#define STB_VORBIS_HEADER_ONLY
+#include "../third_party/stb_vorbis/stb_vorbis.c"
 
 static int audio_ok;
 static int cd_virtual;          /* CIV2_TEST_MUSIC in a replay: the drive plays on the virtual clock */
@@ -286,6 +289,103 @@ WINBOOL WINAPI sndPlaySoundA(LPCSTR name, UINT flags)
         while (host_audio_queued(snd_dev))
             host_delay_ms(10);
     return TRUE;
+}
+
+/* ---- the sound effects without the install (docs/NO-INSTALL.md) ----
+ *
+ * Where the game folder lacks one of the game's sound effects
+ * (Sound\NAME.WAV), OpenCiv2's own stands in for it: data/native/sound/
+ * name.ogg (CC0: data/native/sound/SOURCES.md), decoded (stb_vorbis) into a
+ * WAV as the game reads them (snd_wave_load_file: 22050 Hz, 8 bits; mono),
+ * written once a run into the folder "OpenCiv2Sounds" of the Windows
+ * directory, where plat_host_path finds it (files.c: synth_path).  Only
+ * with sound: a replay without it finds no file, as before (the game then
+ * plays nothing, and so takes the same steps). */
+
+#define FALLBACK_RATE 22050
+
+/* the WAV made from the samples (16-bit, interleaved), 0 if not written */
+static int write_wav8(const char *path, const short *pcm, int frames, int chans, int rate)
+{
+    long out = rate == FALLBACK_RATE ? frames : (long)((long long)frames * FALLBACK_RATE / rate), i;
+    unsigned char h[44], *data;
+    FILE *f;
+    int ok;
+    if (out <= 0 || !(data = malloc((size_t)out)))
+        return 0;
+    for (i = 0; i < out; i++) {
+        /* linear interpolation to 22050 Hz, the channels mixed */
+        double pos = (double)i * rate / FALLBACK_RATE, v = 0;
+        long a = (long)pos, b = a + 1 < frames ? a + 1 : a;
+        double t = pos - (double)a;
+        int c, q;
+        for (c = 0; c < chans; c++)
+            v += pcm[(size_t)a * chans + c] * (1 - t) + pcm[(size_t)b * chans + c] * t;
+        q = (int)(v / chans / 256.0 + 128.5);     /* (positive: truncation rounds) */
+        data[i] = (unsigned char)(q < 0 ? 0 : q > 255 ? 255 : q);
+    }
+    memcpy(h, "RIFF", 4);
+    h[4] = (unsigned char)(36 + out), h[5] = (unsigned char)((36 + out) >> 8);
+    h[6] = (unsigned char)((36 + out) >> 16), h[7] = (unsigned char)((36 + out) >> 24);
+    memcpy(h + 8, "WAVEfmt ", 8);
+    memcpy(h + 16, "\x10\0\0\0\1\0\1\0", 8);          /* 16 bytes, PCM, mono */
+    h[24] = FALLBACK_RATE & 0xff, h[25] = FALLBACK_RATE >> 8, h[26] = h[27] = 0;
+    h[28] = FALLBACK_RATE & 0xff, h[29] = FALLBACK_RATE >> 8, h[30] = h[31] = 0;   /* bytes a second */
+    memcpy(h + 32, "\1\0\x08\0data", 8);                /* block 1, 8 bits */
+    h[40] = (unsigned char)out, h[41] = (unsigned char)(out >> 8);
+    h[42] = (unsigned char)(out >> 16), h[43] = (unsigned char)(out >> 24);
+    ok = (f = fopen(path, "wb")) && fwrite(h, 1, 44, f) == 44 && fwrite(data, 1, (size_t)out, f) == (size_t)out;
+    if (f && fclose(f))
+        ok = 0;
+    free(data);
+    return ok;
+}
+
+int sound_fallback(const char *name, char *host, size_t n)
+{
+    static char made[128][16];
+    static int nmade;
+    char ogg[1200], dir[1100], lower[16];
+    const char *dot = strrchr(name, '.');
+    unsigned char *file;
+    short *pcm = NULL;
+    int i, chans, rate, frames;
+    long len;
+    FILE *f;
+    if (!audio_ok || !dot || strcasecmp(dot, ".wav") || dot - name > 12 || strchr(name, '/'))
+        return 0;
+    snprintf(dir, sizeof dir, "%s/OpenCiv2Sounds", plat_win_dir);
+    snprintf(host, n, "%s/%.*s.WAV", dir, (int)(dot - name), name);
+    for (i = 0; i < (int)(dot - name); i++)
+        lower[i] = (char)tolower((unsigned char)name[i]);
+    lower[i] = 0;
+    for (i = 0; i < nmade; i++)
+        if (!strcmp(made[i], lower))
+            return 1;
+    snprintf(ogg, sizeof ogg, "%s/sound/%s.ogg", plat_data_dir, lower);
+    if (!(f = fopen(ogg, "rb")))
+        return 0;
+    file = fseek(f, 0, SEEK_END) == 0 && (len = ftell(f)) > 0 && fseek(f, 0, SEEK_SET) == 0 ? malloc((size_t)len) : NULL;
+    if (file && fread(file, 1, (size_t)len, f) != (size_t)len) {
+        free(file);
+        file = NULL;
+    }
+    fclose(f);
+    if (!file)
+        return 0;
+    frames = stb_vorbis_decode_memory(file, (int)len, &chans, &rate, &pcm);
+    free(file);
+    mkdir(dir, 0777);
+    if (frames <= 0 || chans <= 0 || rate <= 0 || !write_wav8(host, pcm, frames, chans, rate)) {
+        plat_log("sound: cannot make %s from %s\n", host, ogg);
+        free(pcm);
+        return 0;
+    }
+    free(pcm);
+    if (nmade < 128)
+        snprintf(made[nmade++], sizeof made[0], "%s", lower);
+    plat_log("sound: %s made from %s\n", name, ogg);
+    return 1;
 }
 
 /* ---- mmio: a file read into memory, with RIFF chunk navigation ---- */

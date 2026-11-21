@@ -586,6 +586,21 @@ async function play(store) {
     } catch (e) {
         console.warn('OpenCiv2 texts:', e);
     }
+    // OpenCiv2's own sound effects for those the player's game lacks
+    // (data/sound: sound.c plays one where the game has no Sound/NAME.WAV)
+    try {
+        const have = new Set(entries.map(([k]) => k.toUpperCase()));
+        const names = await fetch('data/sound/index.json').then((r) => (r.ok ? r.json() : []));
+        const missing = names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV'));
+        const files = await Promise.all(missing.map((n) => fetch('data/sound/' + n).then((r) => {
+            if (!r.ok)
+                throw new Error(n + ': ' + r.status);
+            return r.arrayBuffer();
+        })));
+        missing.forEach((n, i) => fs.put(DATA + '/sound/' + n, new Uint8Array(files[i])));
+    } catch (e) {
+        console.warn('OpenCiv2 sounds:', e);
+    }
     fs.put(DATA + '/fonts_win.bin', fonts);
     fs.put(DATA + '/fonts_win_aa.bin', fontsAa);
     // the translations (the game's Language choice lists them; Auto is

@@ -157,7 +157,7 @@ jobs:
           mkdir -p pkg/OpenCiv2/data
           cp build/OpenCiv2 pkg/OpenCiv2/OpenCiv2
           cp data/native/fonts_*.bin pkg/OpenCiv2/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd-extra pkg/OpenCiv2/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd-extra data/native/sound pkg/OpenCiv2/data/
           cp LICENSE pkg/OpenCiv2/LICENSE.txt
           cp THIRD-PARTY.txt src/third_party/indeo4/COPYING.LGPLv2.1 src/third_party/wasm2c/LICENSE-Apache-2.0.txt pkg/OpenCiv2/
           cat > pkg/OpenCiv2/README.txt <<'TXT'
@@ -230,7 +230,7 @@ jobs:
           mkdir -p $app/MacOS $app/Resources/data
           cp build/OpenCiv2 $app/MacOS/OpenCiv2
           cp data/native/fonts_*.bin $app/Resources/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd-extra $app/Resources/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd-extra data/native/sound $app/Resources/data/
           cat > $app/Info.plist <<'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

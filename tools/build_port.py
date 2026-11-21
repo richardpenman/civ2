@@ -107,7 +107,8 @@ def windows_resources(cc, obj):
     """src/host/setup.rc compiled: the program's own files the set-up puts
     beside it (src/host/setup_win.c), the fonts (data/native), the font
     files of characters beyond Windows-1252 (fonts/*), the translations (lang/*.txt),
-    OpenCiv2's English of the game's texts (text/*.TXT) and its own HD pictures (hd-extra/*), each 8 bytes of size
+    OpenCiv2's English of the game's texts (text/*.TXT), its own HD pictures (hd-extra/*) and sound effects
+    (sound/*), each 8 bytes of size
     and the file deflated."""
     import zlib
     res = os.path.join(obj, 'res')
@@ -119,12 +120,12 @@ def windows_resources(cc, obj):
             print('compressing %s' % os.path.relpath(src, ROOT), flush=True)
             data = open(src, 'rb').read()
             open(out, 'wb').write(len(data).to_bytes(8, 'little') + zlib.compress(data, 9))
-    # the other files (the font files, the translations, the texts, the HD pictures), numbered
+    # the other files (the font files, the translations, the texts, the HD pictures, the sounds), numbered
     # from 100, listed in resource 99 (setup.h SETUP_RES_FILES)
     native = os.path.join(ROOT, 'data', 'native')
     others = sorted(glob.glob(os.path.join(native, 'fonts', '*'))) + \
         sorted(glob.glob(os.path.join(native, 'lang', '*.txt'))) + sorted(glob.glob(os.path.join(native, 'text', '*.TXT'))) + \
-        sorted(glob.glob(os.path.join(native, 'hd-extra', '*')))
+        sorted(glob.glob(os.path.join(native, 'hd-extra', '*'))) + sorted(glob.glob(os.path.join(native, 'sound', '*')))
     index, lines = [], []
     for i, src in enumerate(others):
         rel = os.path.relpath(src, native).replace(os.sep, '/')

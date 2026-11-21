@@ -328,10 +328,11 @@ def main():
                     for f in ('iv41', 'ivi', 'ivi_dsp', 'vlc', 'reverse', 'zigzag')]
         # The WebP decoder (libwebp's, BSD): OpenCiv2's own HD pictures (src/platform/hd.c).
         sources += sorted(glob.glob(os.path.join(ROOT, 'src', 'third_party', 'libwebp', 'src', '*', '*.c')))
+        # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays,
+        # and OpenCiv2's own sound effects (src/platform/sound.c: sound_fallback).
+        sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     if args.target.startswith('linux'):
         sources += [os.path.join(ROOT, 'src', 'host', f) for f in ('host_sdl.c', 'host_net.c', 'host_options.c', 'host_lang.c')]
-        # The Ogg Vorbis decoder (stb_vorbis, public domain / MIT): the music, which the host plays.
-        sources.append(os.path.join(ROOT, 'src', 'third_party', 'stb_vorbis', 'stb_vorbis.c'))
     sources += [os.path.join(ROOT, f) for f in t.get('extra', [])]
     # (the state headers too: src/data/state/*.h)
     headers = max(os.path.getmtime(h) for h in glob.glob(os.path.join(ROOT, 'src', '*', '*.h')) +

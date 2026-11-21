@@ -87,8 +87,10 @@ and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text,
 (`CIV2_NO_GRAPHICS`, `CIV2_NO_DAT`, `CIV2_NO_TEXT`, `CIV2_NO_RULES`, `CIV2_NO_SOUND`), in HD
 graphics, which are always on without the original's pictures (no Classic mode, no original
 look: by design only the original's look with its install, or HD with or without it;
-`x-no-install-options.txt` shows OpenCiv2 Options saying so).  Still from the game: its
-sounds, videos and music, scenarios.  The editors'
+`x-no-install-options.txt` shows OpenCiv2 Options saying so).  The sound effects are
+OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0; decoded
+into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
+music, scenarios.  The editors'
 backdrops and the wonders' movie border are OpenCiv2's own (`data/native/hd-extra`).
 
 Reads of locals the 1997 code never initialises are the main source of

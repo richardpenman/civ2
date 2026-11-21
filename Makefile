@@ -11,7 +11,7 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 
 PORT ?= 8000
 
-.PHONY: all build run windows web serve deploy-review web-test web-replay hd images hook ref native port native-suite test test-extras extras-bless test-media media-bless unit-record clean
+.PHONY: all build run windows web serve deploy-review web-test web-replay hd images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -102,6 +102,9 @@ test:                         ## the unit tests: the recorded cases in tests/uni
 # The additions' regression tests (harness/extras_suite.py): our own output,
 # checked by eye and recorded (extras-bless), replayed and compared.  Needs
 # the game files; NAMES limits them to some scripts.
+test-sound: native           ## OpenCiv2's own sound effects: without the game's Sound folder the start menu's is made from data/native/sound and played (tests/sound_fallback_test.sh)
+	$(DK) sh tests/sound_fallback_test.sh
+
 test-extras: native          ## replay harness/extras on build/civ2-linux32 and compare with harness/extras/expected
 	$(DK) python3 harness/extras_suite.py $(NAMES)
 

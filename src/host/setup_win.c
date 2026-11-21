@@ -393,7 +393,7 @@ static long long file_size_of(const char *path)
 }
 
 /* The other files (setup.h SETUP_RES_FILES: a code page's glyphs, the
-   translations, OpenCiv2's English texts, its own HD pictures) in data, where missing or of another
+   translations, OpenCiv2's English texts, its own HD pictures and sounds) in data, where missing or of another
    size (an update's). */
 static int other_files(const char *data)
 {

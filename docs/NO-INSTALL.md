@@ -18,7 +18,8 @@ are out of scope; music is listed only.
 * `audit res found|missing MODULE TYPE NAME`: each resource looked up (`FindResource`,
   `LoadBitmap`, the cursors and icons), in each module the game searches (civ2.exe first, then its
   libraries in turn: `res_load_impl`);
-* `audit synth NAME`: a file made from the art (below).
+* `audit synth NAME`: a file made from the art, or `audit synth Sound\NAME` a sound effect made
+  from OpenCiv2's own (below).
 
 It was run on every recorded scenario (`harness/scripts`, 44), every extras, HD and media script
 (`harness/extras`, `harness/hd`, `harness/media`): the new game's set-up, the map at every zoom,
@@ -78,12 +79,11 @@ files.
 | replaced: made by the game when missing (`CIV2.DAT`, `HALLFAME.DAT`) | 2 | |
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
-| missing sound: the game plays nothing | 78 (`Sound\*.WAV`) | |
+| replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain) | 78 (`Sound\*.WAV`) | |
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
-So a game can be set up and played with none of the install's files but its sounds, music and
-videos, given the HD art (`make hd`, or OpenCiv2 Options; `data/native/hd/atlas-hd.pack`), in HD
+So a game can be set up and played with none of the install's files but its music and videos, given the HD art (`make hd`, or OpenCiv2 Options; `data/native/hd/atlas-hd.pack`), in HD
 graphics (above).  Without the art too the game does not start: it says what is missing.
 
 ## The game folder's files
@@ -104,7 +104,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: made from OpenCiv2's own (`data/native/hd-extra`: dark slate reliefs, dithered into the shared palette's colours without changing it; the editors' white labels at a WCAG contrast of 8.1 to 13.0) |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
-| `Sound\*.WAV` (78) | the sounds (below) | missing sound: silence |
+| `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
 | `Music\Track02`-`12.wav` (11) | the CD's music | out of scope (the user's own music is planned) |
 | `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them |
 | `SCENARIO\`, `*.SCN`, `*.MP`, `ROME.TXT`, `WWII.TXT`, `ALEXANDR.TXT` | scenarios and premade maps | out of scope |
@@ -204,14 +204,32 @@ The heralds' videos' palettes (`KINGS\HRLDxxx.AVI`, `load_ctab_res`): out of sco
 
 ## Sounds
 
-`Sound\*.WAV`, 78 files, the game's sound effects: missing sound (without them the game runs
-silently; `CIV2_NO_SOUND`): `AIRCOMBT AQUEDUCT BARRACKS BIGGUN BLDCITY BLDSPCSH BOATSINK CATAPULT
-CATHEDRL CAVALRY CHEERS1-3 CIVDISOR CRWDBUGL DIESEL DIVCRASH DIVEBOMB DRUMA0 DRUMAL DRUMAN DRUMAY
-DRUMB0 DRUMBL DRUMBN DRUMBY DRUMC0 DRUMCL DRUMCN DRUMCY ELEPHANT ENDOTURN ENGNSPUT FANFARE1-8
-FEEDBK03 FEEDBK04 FEEDBKXX FIRE--- GUILLOTN HELISHOT INFANTRY JETBOMB JETCOMBT JETCRASH JETSPUTR
-LARGEXPL LETTER MCHNGUNS MEDEXPL MEDGUN MENUEND MENULOOP MENUOK MISSILE MOVPIECE MRKTPLCE NAVBTTLE
-NEG1 NEWBANK NEWGOVT NEWONDER NUKEXPLO POMPCIRC POS1 SELL SMALLEXP SPYSOUND STKMARKT SWORDFGT
-SWRDHORS TORPEDOS`.
+`Sound\*.WAV`, 78 files, the game's sound effects: `AIRCOMBT AQUEDUCT BARRACKS BIGGUN BLDCITY
+BLDSPCSH BOATSINK CATAPULT CATHEDRL CAVALRY CHEERS1-3 CIVDISOR CRWDBUGL DIESEL DIVCRASH DIVEBOMB
+DRUMA0 DRUMAL DRUMAN DRUMAY DRUMB0 DRUMBL DRUMBN DRUMBY DRUMC0 DRUMCL DRUMCN DRUMCY ELEPHANT ENDOTURN
+ENGNSPUT FANFARE1-8 FEEDBK03 FEEDBK04 FEEDBKXX FIRE--- GUILLOTN HELISHOT INFANTRY JETBOMB JETCOMBT
+JETCRASH JETSPUTR LARGEXPL LETTER MCHNGUNS MEDEXPL MEDGUN MENUEND MENULOOP MENUOK MISSILE MOVPIECE
+MRKTPLCE NAVBTTLE NEG1 NEWBANK NEWGOVT NEWONDER NUKEXPLO POMPCIRC POS1 SELL SMALLEXP SPYSOUND
+STKMARKT SWORDFGT SWRDHORS TORPEDOS`.  (The game's table names 25 more, `AIRPLANE`, `RIFLE`,
+`CUSTOM1` ...: no file has them, and the game plays nothing for them, with or without the install;
+`FEEDBKXX` and `POMPCIRC` are not in it: only a scenario's events, which play any file, may.)
+
+Replaced: OpenCiv2's own, `data/native/sound/name.ogg` for each (78 files, 1.98 MB, Ogg Vorbis,
+22050 Hz mono), made from sounds in the public domain (CC0: Freesound, OpenGameArt and Kenney;
+`data/native/sound/SOURCES.md` has each one's sources, authors and how it was made from them:
+mixed where several, trimmed to about the original's length, its level matched to the
+original's).  Where the game asks for `Sound\NAME.WAV` in the game folder and there is none
+(`src/platform/sound.c`: `sound_fallback`, from `plat_host_path`), the Ogg is decoded
+(stb_vorbis) into a WAV as the game reads its own (22050 Hz, 8 bits, mono; `snd_wave_load_file`
+plays nothing else), written once a run into the folder `OpenCiv2Sounds` of the Windows
+directory, and the game is given that file: the game's code plays it unchanged.  Only with
+sound: a replay without it (the recorded scenarios) finds no file, as before, so the game takes
+the same steps.  The install's own sounds are always played where they are; a scenario's
+`SOUND` folder first, as ever.  They are packaged with the programs (`data/sound`; the Windows
+program's resources) and on the browser version's site (`data/sound`: the page fetches those the
+player's game lacks).  `make test-sound` (`tests/sound_fallback_test.sh`): without the `Sound`
+folder (`CIV2_NO_SOUND=1`) and with audio (`CIV2_TEST_AUDIO=1`, SDL's dummy driver) the start
+menu's `MENULOOP.WAV` is made and the game opens it; with the folder nothing is made.
 
 ## Music
 
@@ -220,7 +238,7 @@ scope here.
 
 ## What remains
 
-* **Art**: the sounds; music (planned).
+* **Art**: music (planned).
 * (Out of scope by design: the original's look without its files, so an 8-bit composition of
   the throne room and the spaceship, the diplomacy room's medallion in 8 bits, and the units'
   shields', the cities' flags' and size boxes' places from the art; HD graphics, always on

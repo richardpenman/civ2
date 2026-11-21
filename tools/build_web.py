@@ -27,6 +27,10 @@ texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
 OpenCiv2's English of the game's text files (data/native/text/*.TXT, used
 where the game has none of its own) into data/text/, gzipped, listed in
 data/text/index.json: the page fetches those the player's game lacks.
+OpenCiv2's own sound effects (data/native/sound/*.ogg, CC0, played where
+the game has none of its own: src/platform/sound.c) into data/sound/, as
+they are, listed in data/sound/index.json: the page fetches those the
+player's game lacks.
 
 The HD graphics' pin (data/hd-pack.json) is copied as hd-pack.json; with
 HD=1 in the environment (make web HD=1) the installed art
@@ -163,6 +167,23 @@ def write_texts():
                 shutil.copyfileobj(i, o)
     for f in os.listdir(out):
         if f != 'index.json' and f[:-3] not in names:
+            os.remove(os.path.join(out, f))
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump(names, f)
+
+
+def write_sounds():
+    """data/sound/<name>.ogg and data/sound/index.json (their names)."""
+    src = os.path.join(ROOT, 'data', 'native', 'sound')
+    out = os.path.join(OUT, 'data', 'sound')
+    os.makedirs(out, exist_ok=True)
+    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(src, '*.ogg')))
+    for name in names:
+        s, d = os.path.join(src, name), os.path.join(out, name)
+        if newer(s, d):
+            shutil.copy(s, d)
+    for f in os.listdir(out):
+        if f != 'index.json' and f not in names:
             os.remove(os.path.join(out, f))
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump(names, f)
@@ -368,6 +389,7 @@ def main():
     elif os.path.isdir(os.path.join(OUT, 'game')):
         shutil.rmtree(os.path.join(OUT, 'game'))
     write_texts()
+    write_sounds()
     for f in glob.glob(os.path.join(OUT, 'data', 'fonts_*.bin.gz')):
         if os.path.basename(f)[:-3] not in FONTS:
             os.remove(f)        # (the code pages' glyphs of before: text.c makes them)

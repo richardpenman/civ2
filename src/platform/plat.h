@@ -337,6 +337,9 @@ void replay_run_script(void);
 extern int replay_hold;         /* > 0: the replay's script waits */
 int replay_file_dialog(OPENFILENAMEA *ofn, const char *kind);
 void sound_init(void);
+/* A sound effect the game folder lacks (NAME.WAV): OpenCiv2's own made
+   (data/native/sound), 1 and its host path; 0 if none or no sound. */
+int sound_fallback(const char *name, char *host, size_t n);
 HMODULE plat_exe_module(void);
 
 #endif
