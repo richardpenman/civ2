@@ -15,6 +15,11 @@ hook/XDaemon.dll
 __pycache__/
 *.pyc
 
+# OpenCiv2's own sound effects (src/platform/sound.c: sound_fallback): still
+# being chosen, kept out of the repository until they are; the game, the
+# packages and make test-sound do without them
+/data/native/sound/
+
 # Ghidra project and logs (re/ keeps the exported tables and decomp.c)
 /re/gproj/
 /re/*.tgz

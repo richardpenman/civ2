@@ -91,7 +91,8 @@ the bug fixes, additions and rule changes are chosen apart from the graphics, so
 rules play without the install too; `x-no-install-options.txt` shows OpenCiv2 Options saying so,
 and ticking Classic graphics there opening the dialog that offers to find the original's files
 and copy them in, as the set-up does).  The sound effects are
-OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0; decoded
+OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0, still being chosen and not yet in the
+repository; decoded
 into the WAV the game reads, `src/platform/sound.c`).  Still from the game: its videos and
 music, scenarios.  The editors'
 backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's

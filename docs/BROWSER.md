@@ -78,7 +78,8 @@ and never publish it.**
   `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).
 
-`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`) and serves it
+`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`), with the HD art (made
+by `make hd-art`, from its cache once made), and serves it
 on this machine with Caddy in Docker (container `civ2-review`, restarted with the machine; down:
 `docker rm -f civ2-review`) at `/civ2/`, behind a user name and password (HTTP Basic Auth; the
 root and anything else is a plain 404, with `X-Robots-Tag: noindex` and a `robots.txt` that

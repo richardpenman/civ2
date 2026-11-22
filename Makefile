@@ -55,13 +55,13 @@ windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
 # x86-64; they need the game files, $$CIV2_GAME or ~/Civ2).
 web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; GAME=1: with the installed game, for private use only)
 	$(HD_ART_MAKE)
-	GAME=$(GAME) python3 tools/build_web.py
+	HD_ART=$(HD_ART) GAME=$(GAME) python3 tools/build_web.py
 
 serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000); Ctrl+C stops it
 	@echo "OpenCiv2: http://localhost:$(PORT)"
 	python3 -m http.server -d build/web $(PORT)
 
-deploy-review:                ## the browser version with the game (GAME=1: for private use only) served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
+deploy-review:                ## the browser version with the game (GAME=1: for private use only) and the HD art, served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
 	tools/deploy_review.sh
 
 web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the smoke test (menu, new game, save, saves exported and imported, load; run/web-smoke), then HD graphics (run/web-hd)
@@ -119,7 +119,7 @@ test:                         ## the unit tests: the recorded cases in tests/uni
 # The additions' regression tests (harness/extras_suite.py): our own output,
 # checked by eye and recorded (extras-bless), replayed and compared.  Needs
 # the game files; NAMES limits them to some scripts.
-test-sound: native           ## OpenCiv2's own sound effects: without the game's Sound folder the start menu's is made from data/native/sound and played (tests/sound_fallback_test.sh)
+test-sound: native           ## OpenCiv2's own sound effects: without the game's Sound folder the start menu's is made from data/native/sound and played (tests/sound_fallback_test.sh; skipped without that folder)
 	$(DK) sh tests/sound_fallback_test.sh
 
 test-extras: native          ## replay harness/extras on build/civ2-linux32 and compare with harness/extras/expected

@@ -86,7 +86,7 @@ that needs the original's files (the dialog above).
 | replaced: made by the game when missing (`CIV2.DAT`, `HALLFAME.DAT`) | 2 | |
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
-| replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain) | 78 (`Sound\*.WAV`) | |
+| replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; still being chosen, not yet in the repository) | 78 (`Sound\*.WAV`) | |
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
@@ -226,7 +226,9 @@ STKMARKT SWORDFGT SWRDHORS TORPEDOS`.  (The game's table names 25 more, `AIRPLAN
 `CUSTOM1` ...: no file has them, and the game plays nothing for them, with or without the install;
 `FEEDBKXX` and `POMPCIRC` are not in it: only a scenario's events, which play any file, may.)
 
-Replaced: OpenCiv2's own, `data/native/sound/name.ogg` for each (78 files, 1.98 MB, Ogg Vorbis,
+Replaced: OpenCiv2's own (still being chosen: not yet in the repository, so a fresh clone,
+its builds and packages have none, and the game plays nothing for a sound the game folder lacks,
+as before; `make test-sound` is then skipped), `data/native/sound/name.ogg` for each (78 files, 1.98 MB, Ogg Vorbis,
 22050 Hz mono), made from sounds in the public domain (CC0: Freesound, OpenGameArt and Kenney;
 `data/native/sound/SOURCES.md` has each one's sources, authors and how it was made from them:
 mixed where several, trimmed to about the original's length, its level matched to the

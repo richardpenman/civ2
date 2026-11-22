@@ -26,8 +26,9 @@ tools/build_hd_pack.py from the release; docs/HD-GRAPHICS.md):
 
  15. openciv2-assets          MIT licence: the HD graphics' art
 
-and, with the programs, OpenCiv2's own sound effects (data/native/sound),
-played where the game folder lacks the original's:
+and, with the programs once chosen (not yet in the repository), OpenCiv2's own
+sound effects (data/native/sound), played where the game folder lacks the
+original's:
 
  16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt, Kenney
 
@@ -520,7 +521,8 @@ SOFTWARE.
 16. OpenCiv2's sound effects  (data/native/sound)
 -------------------------------------------------
 
-78 sound effects, played where the game folder lacks the original's
+78 sound effects (still being chosen: not yet in the repository, nor in the
+programs built from it), played where the game folder lacks the original's
 Sound\NAME.WAV (src/platform/sound.c, docs/NO-INSTALL.md), made from sounds
 in the public domain: the Creative Commons CC0 1.0 Universal Public Domain
 Dedication (https://creativecommons.org/publicdomain/zero/1.0/), from

@@ -9,6 +9,12 @@
 # Inside the container (make test-sound): sh tests/sound_fallback_test.sh
 # (EXE: the build to run, default civ2-linux32)
 cd "$(dirname "$0")/.." || exit 1
+# (the sound effects are still being chosen and not in the repository: without
+# the folder there is nothing to make, and the game plays nothing, as before)
+if [ ! -f data/native/sound/menuloop.ogg ]; then
+    echo "SKIP sound fallback: no data/native/sound/menuloop.ogg (OpenCiv2's own sound effects are not yet in the repository)"
+    exit 0
+fi
 export EXE=${EXE:-civ2-linux32}
 script=/tmp/sound_fallback.txt
 printf 'wait 8000\nquit\n' > $script

@@ -1,6 +1,7 @@
 #!/bin/sh
-# make deploy-review: the browser version with the game (make web GAME=1: it
-# distributes the game's files, so for a private site only: docs/BROWSER.md)
+# make deploy-review: the browser version with the game and the HD art
+# (make web GAME=1: it distributes the game's files, so for a private site
+# only: docs/BROWSER.md)
 # served by Caddy in Docker (container
 # civ2-review, restarted with the machine) at https://HOST/civ2/, behind a
 # user name and password (HTTP Basic Auth), the root and everything else a
@@ -51,6 +52,9 @@ if [ -n "$HTTP_ASKED" ]; then
 	mv "$CONFIG.new" "$CONFIG"
 fi
 
+# (with the HD art, so that HD changes can be checked there: make web runs
+# make hd-art's tools/build_hd_pack.py, which copies it from the cache,
+# ~/.cache/openciv2, without the network once made)
 make web GAME=1
 rsync -a --delete build/web/ "$DIR/site/civ2/"
 

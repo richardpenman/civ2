@@ -38,8 +38,9 @@ OpenCiv2's own HD pictures (data/native/hd-extra) as one file, hd/art.bin,
 the files one after another as hd/index.json lists them ([path, size]:
 hd/..., hd-extra/...): the page fetches it when the game wants HD graphics
 and puts the files where hd.c looks for them; the art's licence and
-notices beside it.  Without the art (make web HD_ART=) only OpenCiv2's
-own pictures: the game then has no HD art (Classic graphics).
+notices beside it.  Without the art (make web HD_ART=: left out even where
+data/native/hd is made) only OpenCiv2's own pictures: the game then has no
+HD art (Classic graphics).
 
 With GAME=1 (make web GAME=1) the site carries the game too, for a
 private site of people who have no copy of their own (docs/BROWSER.md:
@@ -201,7 +202,11 @@ def write_art():
     os.makedirs(out)
     native = os.path.join(ROOT, 'data', 'native')
     art = os.path.exists(os.path.join(native, 'hd', 'pictures.txt'))
-    if not art:
+    if os.environ.get('HD_ART', '1') in ('', '0'):
+        art = False             # (make web HD_ART=: without it, even where data/native/hd is made)
+        print('(no HD art: HD_ART=%s) the site has only OpenCiv2\'s own pictures (hd-extra)'
+              % os.environ.get('HD_ART'), flush=True)
+    elif not art:
         print('warning: no HD art in data/native/hd (make hd-art): the site is without it', flush=True)
     index = []
     with open(os.path.join(out, 'art.bin'), 'wb') as f:
