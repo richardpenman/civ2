@@ -4,9 +4,9 @@
 # the main menu's backdrop), the autosave loaded; the council of advisors
 # (the Romans' Despotism), the military advisor speaking (a few frames), then,
 # the government made Anarchy (the Cheat menu's dialog), the council under
-# anarchy; the map after each.
+# anarchy; the map after each.  Classic graphics only: with HD graphics there
+# is no High Council (council_show does nothing; docs/HD-GRAPHICS.md).
 # test:
-# test hd: CIV2_TEST_HD=2
 wait 3000
 click 20 400                # ends the opening video (HD: none, a click on the menu's backdrop)
 wait 5000

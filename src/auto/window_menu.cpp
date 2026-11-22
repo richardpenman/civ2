@@ -2,6 +2,7 @@
  * (tools/gen_c.py, now edited directly), in address order. */
 #include "auto_common.h"
 #include "lang.h"
+#include "../platform/hd.h"
 
 /* 004e01b0 auto */
 void __cdecl menu_wonder_movies(void)
@@ -1183,6 +1184,10 @@ void __cdecl menu_build_main(void)
     }
     else if (menu_rows[row].cmd == 0) {
       ((GameMenu *)((i8 *)&main_menu_block.main_menu))->add_item(menu_rows[row].menu,0,0,0);
+    }
+    else if (menu_rows[row].cmd == CMD_HIGH_COUNCIL && hd_art) {
+      /* (port) HD graphics: no High Council (without the CD's videos it
+         would not open; council_show does nothing) */
     }
     else if (lang_has(menu_rows[row].key) != 0) {
       ((GameMenu *)((i8 *)&main_menu_block.main_menu))->add_item(menu_rows[row].menu,menu_rows[row].cmd,

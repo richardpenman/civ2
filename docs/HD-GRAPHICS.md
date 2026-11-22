@@ -69,6 +69,12 @@ opening the video makes (the player's palette, `avi_open_file`) is still made, s
 random numbers are those of a start with the video.  With HD graphics off the video plays as
 ever (a click, or Escape, Space or Enter, ends it).
 
+With HD graphics on there is no High Council: the Advisors menu has no *Consult High Council*
+(`menu_build_main`, src/auto/window_menu.cpp), `council_show` does nothing (the menu's command, the
+map's key for it), and the game option's offer every 50 turns (`COUNCILTIME`) is not made, its
+`rand()` calls still made.  The council is made of the CD's videos (`Video\COUNCILn.AVI`), which
+OpenCiv2 does not replace; with Classic graphics it is the original's as ever.
+
 In the browser version: *HD graphics* in the game's OpenCiv2 Options (the page loads the art from
 its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 

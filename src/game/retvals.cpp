@@ -4,6 +4,7 @@
  */
 #include "game.h"
 #include "lang.h"
+#include "../platform/hd.h"
 
 /* 0x00452315 */
 /* _strrchr is declared __thiscall without parameters in protos.h; it is the
@@ -1331,7 +1332,8 @@ uint __cdecl game_turn_start_popups(void)
                          (int)cities[best_city].y);
     }
     text_set_string_arg(1,(const char *)&textbuf.buf);
-    ret = popup_game_with_sprite((const char *)str_counciltime,(Sprite *)&popup_info_icon_sprite,0);
+    /* (port) HD graphics: no High Council, so no offer of it */
+    ret = hd_art ? 1 : popup_game_with_sprite((const char *)str_counciltime,(Sprite *)&popup_info_icon_sprite,0);
     if (ret == 0) {
       council_show(human_civ[0],0);   /* void; result left in EAX is garbage */
     }

@@ -6358,6 +6358,7 @@ void __cdecl council_show(int civ,i32 cheat_mode)
   int ok;
   i32 ret_addr;
   
+  if (hd_art) return;     /* (port) HD graphics: no High Council (docs/HD-GRAPHICS.md) */
   council_state.active = 1;
   CouncilWindow council;
   snd_cd_stop();
