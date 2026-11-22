@@ -47,7 +47,10 @@ the page's `window.civ2Timing` has each step's time). The page asks the browser 
 disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up page again: to
 replace the game files or remove them.
 
-Music plays where the game's folder has it (`Music/TrackNN.ogg`).
+Music plays where the game's folder has it (`Music/TrackNN.ogg`). Browsers let a page make no sound
+until it is first clicked or typed at: until then the sound effects are silent but still take their
+time (`host.js`, `host_audio_queue`), so a looping one, the main menu's theme, does not hold the
+game up; the main menu comes at once where there is no opening video.
 
 ## A site with the game on it (GAME=1)
 

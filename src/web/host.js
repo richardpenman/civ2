@@ -420,16 +420,26 @@ export async function runGame(opts) {
         host_audio_open: (freq, ch, bits) => {
             if (!audio)
                 return 0;
-            return devices.push({freq, ch, bits, sources: new Set(), end: 0}) - 1;
+            return devices.push({freq, ch, bits, sources: new Set(), end: 0, silentEnd: 0}) - 1;
         },
         host_audio_queue: (dev, data, len) => {
             const d = devices[dev];
-            // (without a running context nothing would play, nor ever be done)
-            if (!d || !audioOk())
+            if (!d)
                 return;
             const bps = d.bits === 8 ? 1 : 2, frames = Math.floor(len / (bps * d.ch));
             if (!frames)
                 return;
+            // Without a running context (the browser's autoplay policy: none
+            // until the page is first clicked or typed at) the sound is not
+            // heard but takes its time all the same: were it done at once, a
+            // looping sound (the main menu's theme, with no opening video to
+            // click away first) would be queued again and again for ever and
+            // the game never get on
+            if (!audioOk()) {
+                const now = performance.now() / 1000;
+                d.silentEnd = Math.max(now, d.silentEnd) + frames / d.freq;
+                return;
+            }
             const buf = audio.createBuffer(d.ch, frames, d.freq);
             const bytes = new Uint8Array(memory.buffer, data, frames * bps * d.ch);
             const words = bps === 2 ? new Int16Array(bytes.slice().buffer) : null;
@@ -449,9 +459,9 @@ export async function runGame(opts) {
         },
         host_audio_queued: (dev) => {
             const d = devices[dev];
-            if (!d || !audioOk())
+            if (!d)
                 return 0;
-            const left = d.end - audio.currentTime;
+            const left = Math.max(d.silentEnd - performance.now() / 1000, audioOk() ? d.end - audio.currentTime : 0);
             return left > 0 ? Math.ceil(left * d.freq) * d.ch * (d.bits === 8 ? 1 : 2) : 0;
         },
         host_audio_clear: (dev) => {
@@ -462,6 +472,7 @@ export async function runGame(opts) {
                 try { s.stop(); } catch (e) { /* not started */ }
             d.sources.clear();
             d.end = 0;
+            d.silentEnd = 0;
         },
         host_audio_close: (dev) => {
             host.host_audio_clear(dev);
