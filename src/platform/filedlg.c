@@ -8,7 +8,9 @@
  * Two conveniences, kept in CIV.INI [OpenCiv2] (not in replays): the files
  * can be sorted newest first (FileSort=Date), and the dialog opens in the
  * folder of the last file loaded or saved (FileFolder=), as Windows' own
- * dialog does.
+ * dialog does.  As Windows' dialog in the original game, it opens with the
+ * proposed file name selected, so typing replaces it; FilePreselect=0 leaves
+ * it unselected (read in every mode, as the other two).
  */
 #include "plat.h"
 #include <time.h>
@@ -119,10 +121,14 @@ static void setting_set(const char *key, const char *value)
         WritePrivateProfileStringA("OpenCiv2", key, value, "CIV.INI");
 }
 
-/* Whether the proposed file name is selected when the dialog opens. */
+/* Whether the proposed file name is selected when the dialog opens, so that
+   typing replaces it, as in the original game's (Windows' own) dialog:
+   FilePreselect=, 1 when not set; 0 leaves it unselected. */
 static int file_preselect(void)
 {
-    return 0;
+    char value[16];
+    setting_get("FilePreselect", value, sizeof value);
+    return !value[0] || atoi(value) != 0;
 }
 
 /* A label's new text, drawn now (our controls don't repaint on WM_SETTEXT). */
@@ -381,6 +387,9 @@ WINBOOL plat_file_dialog(OPENFILENAMEA *ofn, int save)
         EnableWindow(owner, FALSE);
     ShowWindow(fd.dlg, SW_SHOW);
     SetFocus(fd.name);
+    /* the proposed name selected: typing replaces it, as in the original's */
+    if (file_preselect() && SendMessageA(fd.name, WM_GETTEXTLENGTH, 0, 0) > 0)
+        SendMessageA(fd.name, EM_SETSEL, 0, -1);
     while (!fd.done) {
         if (!GetMessageA(&msg, NULL, 0, 0)) {
             PostQuitMessage((int)msg.wParam);
