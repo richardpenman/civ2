@@ -1,15 +1,35 @@
 #!/usr/bin/env python3
-"""HD graphics (docs/HD-GRAPHICS.md): build the repository's art,
-data/native/hd, from Peter Johnson's runtime art pack (openciv2-assets, MIT)
-at the release pinned in data/hd-pack.json.
+"""HD graphics (docs/HD-GRAPHICS.md): make the game's art, data/native/hd,
+from Peter Johnson's runtime art pack (openciv2-assets, MIT) at the release
+pinned in data/hd-pack.json, with the pictures added to it since, from its
+repository at the commit pinned there.  The art is not part of this
+repository (.gitignore): make hd-art runs this, and the builds that need
+the art (make, make port, make native, make windows, make web; the
+release's jobs) run it first.
 
-    python3 tools/build_hd_pack.py [--zip FILE] [--dest DIR] [--keep-work]
+    python3 tools/build_hd_pack.py [--force] [--local] [--zip FILE] [--checkout DIR] [--dest DIR] [--keep-work]
+
+0. Nothing is done when the destination already holds the art of this pin
+   and this tool (its .built: a digest of data/hd-pack.json and this file
+   but its docstring); else the art made earlier from them is copied from
+   the cache (hd-DIGEST: kept there after each make below), without the
+   network; else it is made (1 to 5) and kept in the cache.  --force makes
+   it again whatever is there.
 
 1. The release's archive is downloaded (url) into the cache
    (${XDG_CACHE_HOME:-~/.cache}/openciv2, %LOCALAPPDATA%\\openciv2 on Windows;
    CIV2_DEPENDENCY_CACHE overrides; named by its SHA-256, so fetched once) or
    taken from --zip, and checked: the pinned SHA-256 and size, then each file
    used against the SHA-256 and size its package.json lists.
+1b. The pictures added since the release (data/hd-pack.json's "commit": the
+   city view's houses of the other eras, its medieval and modern
+   landscapes) are each downloaded from the repository at the pinned commit
+   (raw.githubusercontent.com, into the cache, named by its SHA-256) or
+   taken from a clone (--checkout: git show SHA:PATH), and checked against
+   the SHA-256 and size pinned for it; each is a picture of the pack (its
+   key, its size in the game's pixels, the PNG unchanged, as the pack's
+   builder adds a binding), in place of the release's of that key if any;
+   the commit's notices in place of the release's of those names.
 2. Of its data/atlas-hd.pack (C2ATLAS1: a count, a palette, 180-byte entries:
    key, size in the game's pixels, offset and length of a PNG), the pictures
    the game uses are kept: those it draws, the keys beginning with one of
@@ -40,7 +60,15 @@ at the release pinned in data/hd-pack.json.
    release's LICENSE, THIRD-PARTY.txt and ATLAS-PROVENANCE.md.
 
 The same input gives the same files (cwebp is deterministic at one thread).
-Upgrading the art: tag, url, sha256 and size in data/hd-pack.json, then this.
+Upgrading the art: tag, url, sha256 and size in data/hd-pack.json (and its
+"commit": the sha and each picture's path, w, h, sha256 and size from the
+repository's assets/atlas-hd/compatibility/bindings.json there; removed
+when a release has them all), then this.
+
+Without Docker (or with --local) the pictures are encoded by this machine's
+cwebp, with Python's PIL and numpy (step 4 as in the container): the same
+pictures, not always the same bytes (another cwebp), so not kept in the
+cache.
 """
 import argparse, hashlib, io, json, os, shutil, struct, subprocess, sys, tempfile, urllib.request, zipfile
 
@@ -135,6 +163,21 @@ def read_pack(path, wanted):
     return out
 
 
+def fetch_commit(pin, checkout, item):
+    """the bytes of a file of the pinned commit (item: path, sha256, size), checked."""
+    c = pin['commit']
+    if checkout:
+        data = subprocess.run(['git', '-C', checkout, 'show', '%s:%s' % (c['sha'], item['path'])],
+                              capture_output=True, check=True).stdout
+    else:
+        path = os.path.join(cache_dir(), item['sha256'] + os.path.splitext(item['path'])[1])
+        download(c['raw'].format(sha=c['sha'], path=item['path']), item['sha256'], path)
+        data = open(path, 'rb').read()
+    if hashlib.sha256(data).hexdigest() != item['sha256'] or len(data) != item['size']:
+        sys.exit('build_hd_pack: %s at %s is not the pinned file' % (item['path'], c['sha']))
+    return data
+
+
 def drawn(key, pin):
     return key.startswith(tuple(pin['keep'])) and not key.startswith(tuple(pin['drop']))
 
@@ -147,7 +190,57 @@ def file_name(key):
     return key.replace('/', '_') + '.webp'
 
 
-def build(args):
+def art_digest():
+    """the digest naming the art made from this pin with this tool."""
+    h = hashlib.sha256(open(PIN, 'rb').read())
+    code = open(os.path.abspath(__file__), 'rb').read()
+    h.update(code[code.index(b'\nimport '):])        # (not the docstring)
+    return h.hexdigest()[:16]
+
+
+def copy_art(src, dest):
+    """the art files of src into dest, those of an earlier art removed."""
+    os.makedirs(dest, exist_ok=True)
+    for name in os.listdir(dest):
+        if name.endswith('.webp') or name in ('pictures.txt', 'atlas-hd.pack', 'installed.json', '.built'):
+            os.remove(os.path.join(dest, name))
+    for name in os.listdir(src):
+        if name != '.built':
+            shutil.copy(os.path.join(src, name), os.path.join(dest, name))
+
+
+def ensure(args):
+    """0.: the art in args.dest, from what is there, the cache or made."""
+    digest = art_digest()
+    stamp = os.path.join(args.dest, '.built')
+    rel = os.path.relpath(args.dest, ROOT)
+    if not args.force and os.path.exists(os.path.join(args.dest, 'pictures.txt')) and \
+            os.path.exists(stamp) and open(stamp).read().strip() == digest:
+        print('%s: the HD art up to date (%s)' % (rel, digest), flush=True)
+        return
+    cached = os.path.join(cache_dir(), 'hd-' + digest)
+    if not args.force and os.path.exists(os.path.join(cached, 'pictures.txt')):
+        copy_art(cached, args.dest)
+        print('%s: the HD art copied from %s' % (rel, cached), flush=True)
+    else:
+        local = args.local or not shutil.which('docker')
+        if local:
+            print('build_hd_pack: no Docker (or --local): this machine\'s cwebp encodes the art', flush=True)
+        build(args, local)
+        if not local:
+            tmp = cached + '.part'
+            shutil.rmtree(tmp, ignore_errors=True)
+            shutil.copytree(args.dest, tmp, ignore=shutil.ignore_patterns('.built'))
+            shutil.rmtree(cached, ignore_errors=True)
+            os.replace(tmp, cached)
+            for old in os.listdir(cache_dir()):          # (the art of other pins: not kept)
+                if old.startswith('hd-') and old != 'hd-' + digest:
+                    shutil.rmtree(os.path.join(cache_dir(), old), ignore_errors=True)
+    with open(stamp, 'w') as f:
+        f.write(digest + '\n')
+
+
+def build(args, local=False):
     dest = args.dest
     pin = json.load(open(PIN))
     archive = args.zip or os.path.join(cache_dir(), pin['sha256'] + '.zip')
@@ -171,6 +264,13 @@ def build(args):
             extract(z, manifest, PACK, os.path.join(work, 'atlas-hd.pack'))
         entries = read_pack(os.path.join(work, 'atlas-hd.pack'), lambda k: used(k, pin))
         os.remove(os.path.join(work, 'atlas-hd.pack'))
+        # the pictures added since the release, from the pinned commit
+        if pin.get('commit'):
+            added = {k: p for k, p in pin['commit']['pictures'].items() if used(k, pin)}
+            entries = [e for e in entries if e[0] not in added]
+            entries += [(k, p['w'], p['h'], fetch_commit(pin, args.checkout, p)) for k, p in added.items()]
+            for name, item in pin['commit'].get('notices', {}).items():
+                open(os.path.join(work, 'notices', name), 'wb').write(fetch_commit(pin, args.checkout, item))
         # the distinct pictures, each with its keys
         pictures, by_png = [], {}
         for key, w, h, png in sorted(entries):
@@ -194,16 +294,23 @@ def build(args):
         print('%d keys, %d distinct pictures: encoding (cwebp %s in %s)' % (len(entries), len(pictures),
                                                                           CWEBP_VERSION, IMAGE), flush=True)
         script = os.path.abspath(__file__)
-        subprocess.run(['docker', 'run', '--rm', '-v', work + ':/w', '-v', script + ':/build_hd_pack.py:ro',
-                        '-e', 'HOST_IDS=%d:%d' % (os.getuid(), os.getgid()), IMAGE, 'sh', '-c',
-                        'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends webp=%s '
-                        'python3-pil python3-numpy >/dev/null && python3 -I /build_hd_pack.py --encode /w; '
-                        'r=$?; chown -R "$HOST_IDS" /w; exit $r' % CWEBP_VERSION], check=True)
+        if local:
+            if not shutil.which('cwebp'):
+                sys.exit('build_hd_pack: neither Docker nor cwebp: install one (cwebp: the webp package, '
+                         'with Python\'s PIL and numpy), or build without the HD art (make HD_ART=)')
+            encode(work)
+        else:
+            subprocess.run(['docker', 'run', '--rm', '-v', work + ':/w', '-v', script + ':/build_hd_pack.py:ro',
+                            '-e', 'HOST_IDS=%d:%d' % (os.getuid(), os.getgid()), IMAGE, 'sh', '-c',
+                            'apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq '
+                            '--no-install-recommends webp=%s python3-pil python3-numpy >/dev/null && '
+                            'python3 -I /build_hd_pack.py --encode /w; r=$?; chown -R "$HOST_IDS" /w; exit $r'
+                            % CWEBP_VERSION], check=True)
         done = json.load(open(os.path.join(work, 'done.json')))
         # data/native/hd written again
         os.makedirs(dest, exist_ok=True)
         for name in os.listdir(dest):
-            if name.endswith('.webp') or name in ('pictures.txt', 'atlas-hd.pack', 'installed.json'):
+            if name.endswith('.webp') or name in ('pictures.txt', 'atlas-hd.pack', 'installed.json', '.built'):
                 os.remove(os.path.join(dest, name))
         for name in NOTICES.values():
             shutil.copy(os.path.join(work, 'notices', name), os.path.join(dest, name))
@@ -212,9 +319,10 @@ def build(args):
             shutil.copy(os.path.join(work, '%d.webp' % p['id']), os.path.join(dest, p['file']))
             lines += ['%s %d %d %s\n' % (k, w, h, p['file']) for k, w, h in p['keys']]
         with open(os.path.join(dest, 'pictures.txt'), 'w', newline='\n') as f:
-            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2-assets %s by Peter Johnson (MIT: LICENSE),\n'
+            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2-assets %s%s by Peter Johnson (MIT: LICENSE),\n'
                     '# its pictures the game draws, made by tools/build_hd_pack.py (WebP).  A line per key:\n'
-                    '# KEY W H FILE (the picture\'s size in the game\'s pixels).\n' % pin['tag'])
+                    '# KEY W H FILE (the picture\'s size in the game\'s pixels).\n'
+                    % (pin['tag'], ' and commit %s' % pin['commit']['sha'][:7] if pin.get('commit') else ''))
             f.writelines(sorted(lines))
         total = sum(d['bytes'] for d in done.values())
         kinds = {}
@@ -284,10 +392,14 @@ def main():
         encode(sys.argv[2])
         return
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
+    ap.add_argument('--force', action='store_true', help='make the art again, whatever the destination and the cache hold')
+    ap.add_argument('--local', action='store_true', help='encode with this machine\'s cwebp, not in Docker')
     ap.add_argument('--zip', help='the release\'s archive already downloaded (still checked against the pin)')
+    ap.add_argument('--checkout', help='a clone of openciv2-assets to take the pinned commit\'s files from '
+                    '(instead of downloading them; still checked against the pin)')
     ap.add_argument('--dest', default=DEST, help='where to write (default data/native/hd)')
     ap.add_argument('--keep-work', action='store_true', help='keep the work folder (build/hd-pack-*)')
-    build(ap.parse_args())
+    ensure(ap.parse_args())
 
 
 if __name__ == '__main__':

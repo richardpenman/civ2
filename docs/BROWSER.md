@@ -146,8 +146,9 @@ graphics kept.
 ## HD graphics
 
 The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.md)) as the desktop
-version does: `make web` puts the art (`data/native/hd`, and, where present, the local staging
-folder `data/native/hd-extra`) on the site as one file, `hd/art.bin` (30 MB, its files listed in
+version does: `make web` makes the art first (`make hd-art`: `data/native/hd`, not in the
+repository) and puts it (and, where present, the local staging folder `data/native/hd-extra`) on the site as one
+file, `hd/art.bin` (about 50 MB, its files listed in
 `hd/index.json`; the art's licence beside it). Untick *Classic graphics* in OpenCiv2 Options (Graphics and
 screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
 it) and puts the pictures into the game's files, where the game reads them. Art an earlier

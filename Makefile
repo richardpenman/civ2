@@ -11,6 +11,16 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 
 PORT ?= 8000
 
+# The HD graphics' art (docs/HD-GRAPHICS.md), data/native/hd: not in the
+# repository, made from the release of Peter Johnson's art pinned in
+# data/hd-pack.json (tools/build_hd_pack.py: downloaded once into
+# ~/.cache/openciv2, encoded in Docker or by this machine's cwebp, the result
+# kept there too) before each build that packs or runs with it; at once when
+# it is up to date.  HD_ART= (or 0): builds without it (the game then has
+# Classic graphics only).
+HD_ART ?= 1
+HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@echo "(no HD art: HD_ART=$(HD_ART))")
+
 .PHONY: all build run windows web serve deploy-review web-test web-replay hd-art images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
@@ -25,22 +35,26 @@ endif
 
 all: build
 
-build:                        ## build/OpenCiv2 (first time: downloads its toolchain into tools/toolchain)
+build:                        ## build/OpenCiv2 and the HD art (first time: downloads its toolchain into tools/toolchain and the art's release into ~/.cache/openciv2)
+	$(HD_ART_MAKE)
 	python3 tools/build_port.py
 
 run: | build/OpenCiv2$(EXE)   ## play the game in GAME (default $$CIV2_GAME or ~/Civ2; Windows: %USERPROFILE%\Civ2); builds first if there is no build
 	$(PLAY)
 
 build/OpenCiv2$(EXE):
+	$(HD_ART_MAKE)
 	python3 tools/build_port.py
 
 windows:                      ## build/OpenCiv2.exe, cross-compiled from Linux
+	$(HD_ART_MAKE)
 	python3 tools/build_port.py module c exe-windows
 
 # The browser version (README "Browser version", docs/DEVELOPMENT.md): a
 # static site in build/web; its tests in Chrome's headless shell (Linux
 # x86-64; they need the game files, $$CIV2_GAME or ~/Civ2).
 web:                          ## build/web: the browser version (first time: downloads Binaryen into tools/toolchain; GAME=1: with the installed game, for private use only)
+	$(HD_ART_MAKE)
 	GAME=$(GAME) python3 tools/build_web.py
 
 serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000); Ctrl+C stops it
@@ -63,10 +77,11 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs --replay $(NAME)
 	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; [Image.open(f).save(f[:-4] + '.png') for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
 
-# HD graphics (docs/HD-GRAPHICS.md): data/native/hd made again from the
-# release of Peter Johnson's art pinned in data/hd-pack.json (Docker).
-hd-art:                       ## make the HD graphics' art in data/native/hd again from the pinned release (tools/build_hd_pack.py)
-	python3 tools/build_hd_pack.py
+# HD graphics (docs/HD-GRAPHICS.md): data/native/hd from the release of
+# Peter Johnson's art pinned in data/hd-pack.json (HD_ART above; FORCE=1:
+# made again, whatever is there or in the cache).
+hd-art:                       ## the HD graphics' art in data/native/hd from the pinned release (tools/build_hd_pack.py; at once when up to date)
+	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)
 	docker build -t civ2-dev-base tools/docker
@@ -74,9 +89,11 @@ images:                       ## build the Docker images (wine/mingw/python/SDL2
 	docker build -t civ2-ghidra tools/ghidra-docker
 
 native:                       ## build/civ2-linux32: the native SDL2 build (32-bit Linux, in Docker)
+	$(HD_ART_MAKE)
 	$(DK) python3 tools/build_native.py --target linux32
 
 port:                         ## build/OpenCiv2 in Docker (`make build` builds it on this machine)
+	$(HD_ART_MAKE)
 	$(DK) python3 tools/build_port.py
 
 native-suite:                 ## run every scenario on a native build (EXE=OpenCiv2 or civ2-linux32) against the Wine recordings

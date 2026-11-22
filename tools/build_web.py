@@ -32,12 +32,14 @@ the game has none of its own: src/platform/sound.c) into data/sound/, as
 they are, listed in data/sound/index.json: the page fetches those the
 player's game lacks.
 
-The HD graphics' art (data/native/hd, tools/build_hd_pack.py) and
+The HD graphics' art (data/native/hd: made by make hd-art,
+tools/build_hd_pack.py, which make web runs first; not in the repository) and
 OpenCiv2's own HD pictures (data/native/hd-extra) as one file, hd/art.bin,
 the files one after another as hd/index.json lists them ([path, size]:
 hd/..., hd-extra/...): the page fetches it when the game wants HD graphics
 and puts the files where hd.c looks for them; the art's licence and
-notices beside it.
+notices beside it.  Without the art (make web HD_ART=) only OpenCiv2's
+own pictures: the game then has no HD art (Classic graphics).
 
 With GAME=1 (make web GAME=1) the site carries the game too, for a
 private site of people who have no copy of their own (docs/BROWSER.md:
@@ -198,9 +200,12 @@ def write_art():
         shutil.rmtree(out)
     os.makedirs(out)
     native = os.path.join(ROOT, 'data', 'native')
+    art = os.path.exists(os.path.join(native, 'hd', 'pictures.txt'))
+    if not art:
+        print('warning: no HD art in data/native/hd (make hd-art): the site is without it', flush=True)
     index = []
     with open(os.path.join(out, 'art.bin'), 'wb') as f:
-        for d in ('hd', 'hd-extra'):
+        for d in ('hd', 'hd-extra') if art else ('hd-extra',):
             if not os.path.isdir(os.path.join(native, d)):
                 continue        # (hd-extra: the local staging folder, not in the repository)
             for name in sorted(os.listdir(os.path.join(native, d))):
@@ -210,7 +215,7 @@ def write_art():
                     index.append([d + '/' + name, len(data)])
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump(index, f)
-    for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md'):
+    for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md') if art else ():
         shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
     if os.path.exists(os.path.join(native, 'hd-extra', 'README')):
         shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))

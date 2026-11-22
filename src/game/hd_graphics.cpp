@@ -4,7 +4,7 @@
  * where they were taken from; the terrain's blends, which the game makes
  * itself from a mask, are given theirs here.  Called at the end of
  * gfx_load_terrain_sprites, only with HD graphics on.  The city view's
- * houses keep the pack's pictures only in the era they show (below).
+ * houses are the pack's set of the owner's era (below).
  */
 #include "auto_common.h"
 #include "../platform/hd.h"
@@ -43,23 +43,30 @@ void hd_bind_terrain(void)
 }
 
 /* The city view's houses and empty lots (CityViewWindow::load, cv.dll 310),
-   once taken.  The pack's houses are all 19th-century buildings (terraced
-   houses, a tenement, a clapboard house, a shop row), the same pictures for
-   both of the original's rows (y 116 and 429: the cottages of ancient and
-   renaissance cities; 231 and 512: the towns from Industrialization on), so
-   they are drawn only in the industrial era (civ_city_style_era 2, the
-   owner's, the same for the whole view); in the others, and for the empty
-   lots (woods in the original, nothing in the pack: its renderer drew its
-   own lot pictures), the original's sprites, enlarged. */
+   once taken.  The original has two rows of houses (y 116 and 429: the
+   cottages of ancient and renaissance cities; 231 and 512: the towns from
+   Industrialization on), the pack a set for each era the owner's cities are
+   drawn in (civ_city_style_era, the same for the whole view), each in both
+   sizes: ancient (0) house/ancient, renaissance (1) house/medieval,
+   industrial (2) the 19th-century buildings the release's crops of both
+   rows are (terraced houses, a tenement, a clapboard house, a shop row),
+   modern (3) house/modern.  The empty lots (woods in the original, nothing
+   in the pack: its renderer drew its own lot pictures) are the original's
+   sprites, enlarged, in every era. */
 void hd_bind_cityview(CityViewWindow *w)
 {
+    static const char *const set[4] = {"ancient", "medieval", NULL, "modern"};
     int era = civ_city_style_era(cities[w->city_id].owner), i;
+    char key[40];
     for (i = 0; i < 4; i++) {
         hd_sprite_forget(&w->large_building_sprites_a[i]);
         hd_sprite_forget(&w->small_building_sprites_a[i]);
-        if (era != 2) {
-            hd_sprite_forget(&w->large_building_sprites_b[i]);
-            hd_sprite_forget(&w->small_building_sprites_b[i]);
+        if (hd_art_open() && era >= 0 && era < 4 && set[era]) {
+            /* (none in the pack: the original's, enlarged) */
+            snprintf(key, sizeof key, "house/%s/large/%d", set[era], i);
+            hd_sprite_bind(&w->large_building_sprites_b[i], w->large_building_sprites_b[i].data_handle, key, 0);
+            snprintf(key, sizeof key, "house/%s/small/%d", set[era], i);
+            hd_sprite_bind(&w->small_building_sprites_b[i], w->small_building_sprites_b[i].data_handle, key, 0);
         }
     }
 }

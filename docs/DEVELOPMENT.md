@@ -148,8 +148,8 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
 compares them, like the additions' tests, with our own output, checked by eye and blessed
 (`make media-bless NAMES=...`, the expected results in `harness/media/expected`, each run in
 `run/media-NAME`; `harness/extras_suite.py --media`).  Where the game folder lacks those folders
-it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the pack in
-`data/native/hd`) are skipped without the pack.  Besides the screenshots and the `rand()` trace,
+it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the art in
+`data/native/hd`, made by `make hd-art`) are skipped without it.  Besides the screenshots and the `rand()` trace,
 `calls.log` must match (`NAME.calls`): the sounds played, the videos looked for, and the music.
 
 * The music: in these runs the CD drive is on (`CIV2_TEST_MUSIC=1`, `src/platform/sound.c`), its
@@ -282,7 +282,7 @@ builds do not use it.
   `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
   be persistent (`navigator.storage.persist`).
 * **HD graphics** (src/web/main.js, host.js's `host_present_hd`): `tools/build_web.py` puts the
-  art (data/native/hd) and, where present, the local staging folder data/native/hd-extra on the site as one
+  art (data/native/hd, which make web makes first: make hd-art) and, where present, the local staging folder data/native/hd-extra on the site as one
   file, `hd/art.bin`, listed in `hd/index.json`.  At start, where HD graphics are wanted (`?hd=N`,
   passed as `--hd=N`, else `CIV.INI`), the page fetches it and puts its files at `/data/hd` and
   `/data/hd-extra`, where hd.c finds them as the program's data; hd.c reads each picture on

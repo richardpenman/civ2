@@ -195,7 +195,7 @@ in OpenCiv2 Options as natively, or `?sharp=0` in the address ([BROWSER.md](BROW
 `Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in OpenCiv2 Options; or `--hd` on
 the command line, or `CIV2_HD=1`; *Classic graphics* unticked in OpenCiv2 Options) draws the
 map (and wherever the same pictures appear) with the replacement art (openciv2-assets, which
-comes with OpenCiv2: `data/native/hd`), at the screen's full resolution (`GraphicsDensity=`).
+comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`), at the screen's full resolution (`GraphicsDensity=`).
 `Graphics=Classic` (or `Standard`, as earlier versions wrote it): the original's pictures.  Off
 by default (Classic graphics ticked), with `CIV2_CLASSIC=1`, in replays and unit tests; it
 changes only what is shown.  Always on where the game folder lacks the original's pictures,

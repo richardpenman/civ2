@@ -14,7 +14,8 @@ Steps (each can run on its own):
   exe-windows  build/OpenCiv2.exe         cross-compiled with MinGW-w64 (e.g. on
                                            Linux; tools/fetch-toolchain.sh windows)
   pack     dist/OpenCiv2-src.tar.gz       what the exe step needs on another
-                                           machine, plus the data and run script
+                                           machine, plus the data (with the HD art
+                                           make hd-art made) and run script
 
 The c step's output is plain C: copy build/wasm/c and src/host to another
 machine and run only the exe step there (the pack step bundles it).
@@ -260,6 +261,8 @@ def pack():
     import tarfile
     out = os.path.join(ROOT, 'dist', 'OpenCiv2-src.tar.gz')
     os.makedirs(os.path.dirname(out), exist_ok=True)
+    if not os.path.exists(os.path.join(ROOT, 'data', 'native', 'hd', 'pictures.txt')):
+        print('warning: no HD art in data/native/hd (make hd-art): the tarball is without it', flush=True)
     with tarfile.open(out, 'w:gz') as t:
         for rel in ('build/wasm/c', 'src/host', 'src/platform/win32_vk.h', 'tools/build_port.py',
                     'tools/paths.py', 'tools/run-civ2.sh', 'tools/toolchain/unshield', 'tools/toolchain/zlib',

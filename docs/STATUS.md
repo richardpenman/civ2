@@ -99,10 +99,12 @@ herald of OpenCiv2's own (an animated WebP with alpha,
 `data/native/hd-extra/heralds.txt`, a local staging folder not in the repository; `tools/build_herald.py`) plays in HD in place of the CD's
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
 heralds*): the Russians' so far.
-The HD art comes with OpenCiv2, nothing downloaded: `data/native/hd` (30 MB in git), the
-pictures of openciv2-assets' pinned release the game draws or synth.c reads, as WebP, made by
-`tools/build_hd_pack.py` (`make hd-art`; [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every build and
-on the browser version's site; the native and browser downloads of the release are gone.
+The HD art comes with OpenCiv2's builds, the game downloads nothing: `data/native/hd` (about
+30 MB, not in the repository), the pictures of openciv2-assets' pinned release (and commit) the
+game draws or synth.c reads, as WebP, made at build time by `tools/build_hd_pack.py` (`make
+hd-art`, which the builds run first; the download and the result cached in `~/.cache/openciv2`;
+[HD-GRAPHICS.md](HD-GRAPHICS.md)), in every release and on the browser version's site; the
+native and browser downloads of the release at run time are gone.
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
@@ -748,8 +750,8 @@ message by message and clock event by clock event.
   game's own dialogs; it replaced the opening window shown before the game
   started, which had replaced Game > OpenCiv2 Options, November 2026), switches
   them, the bug fixes, the rule changes and the limits (at once: extras_load,
-  fixes_load again), Classic graphics (unticked: HD graphics, the art in the
-  repository, data/native/hd; without the original's pictures, ticked, the
+  fixes_load again), Classic graphics (unticked: HD graphics, the art made
+  at build time, data/native/hd; without the original's pictures, ticked, the
   set-up's import offered: an installed game, its CD, a .zip of it, a disc
   image, the files the game folder lacks copied in; the browser's set-up page),
   sharp text and full screen, those offering a restart (host_restart: the program executed again, the page loaded again in

@@ -3,7 +3,10 @@
 # game up from the user's installed copy, CD or disc image of the CD
 # (src/host/setup.c).  The
 # game's C (tools/build_port.py module c) is made once, then compiled for
-# each system.
+# each system.  The HD graphics' art (data/native/hd: not in the repository)
+# is made once from the release of Peter Johnson's art pinned in
+# data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its download
+# and its result cached) and packed with each.
 name: Build and release
 
 on:
@@ -39,6 +42,28 @@ jobs:
           path: build/wasm/c
           retention-days: 1
 
+  # The HD graphics' art (docs/HD-GRAPHICS.md): data/native/hd, made by
+  # tools/build_hd_pack.py (the pinned release downloaded and checked, the
+  # pictures encoded in Docker); ~/.cache/openciv2 kept between runs (the
+  # release's archive and the art made from it: the same pin and tool, no
+  # download nor encoding).
+  hd-art:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: hd-art-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
+          restore-keys: hd-art-
+      - name: The art
+        run: python3 tools/build_hd_pack.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hd-art
+          path: data/native/hd
+          retention-days: 1
+
   # The unit tests (tests/unit: recorded calls of the game's functions, run
   # again and compared; no game files needed).  The runner is the 32-bit
   # Linux build (gcc -m32).  Not needed by the release.
@@ -60,7 +85,7 @@ jobs:
         run: cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz
 
   windows:
-    needs: game
+    needs: [game, hd-art]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -68,6 +93,10 @@ jobs:
         with:
           name: game-c
           path: build/wasm/c
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
       - name: Toolchain (MinGW, SDL2 for MinGW, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -120,7 +149,7 @@ jobs:
           retention-days: 1
 
   linux:
-    needs: game
+    needs: [game, hd-art]
     # (the oldest supported runner: the program runs on systems at least as new)
     runs-on: ubuntu-22.04
     steps:
@@ -129,6 +158,10 @@ jobs:
         with:
           name: game-c
           path: build/wasm/c
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
       - name: Toolchain (SDL2 linked in, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -196,7 +229,7 @@ jobs:
           retention-days: 1
 
   macos:
-    needs: game
+    needs: [game, hd-art]
     runs-on: macos-15
     env:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
@@ -206,6 +239,10 @@ jobs:
         with:
           name: game-c
           path: build/wasm/c
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
       - name: Toolchain (SDL2 linked in, for Apple silicon and Intel; unshield, zlib, libogg, libvorbis)
         run: |
           curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz

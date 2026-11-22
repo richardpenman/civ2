@@ -1,10 +1,10 @@
-# HD graphics (docs/HD-GRAPHICS.md): Kyoto's city view in three eras.  The
-# pack's houses are 19th-century buildings, drawn only in the industrial era
-# (civ_city_style_era 2); its landscapes (dirt tracks) only before the paved
-# roads (civ_city_art_era 0, 1).  Ancient: the original's houses and woods,
-# enlarged, on the pack's landscape; industrial (Industrialization given to the Japanese):
-# the pack's houses on it; modern (Electronics and Automobile given): the
-# original's houses and landscape, enlarged.
+# HD graphics (docs/HD-GRAPHICS.md): Kyoto's city view in three eras, each
+# with the pack's houses of its era (civ_city_style_era: house/ancient,
+# the release's 19th-century buildings, house/modern) and its landscape
+# (civ_city_art_era: the release's dirt tracks, city/landscape/SITE/medieval,
+# .../modern); the empty lots' woods the original's, enlarged.  Ancient;
+# industrial (Industrialization given to the Japanese); modern (Electronics
+# and Automobile given).
 # run: CIV2_TEST_HD=2 CIV2_TEST_FULL=640x480
 wait 8000
 key Down Down Down Down     # "Load a Game"

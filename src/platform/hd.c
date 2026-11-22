@@ -4,7 +4,8 @@
  * there are no pictures: every sprite keeps its own pixels, enlarged.
  *
  * The art: Peter Johnson's runtime pack (openciv2-assets, MIT), the
- * pictures of it the game draws, in data/native/hd (tools/build_hd_pack.py:
+ * pictures of it the game draws, in data/native/hd (not in the repository:
+ * made by make hd-art, tools/build_hd_pack.py:
  * WebP, no larger than drawn): its pictures.txt, a line "KEY W H FILE" per
  * picture (its key, its size in the game's pixels, its file there).  A
  * sprite the game takes from one of its sheets at x,y,w,h has the picture
@@ -1019,15 +1020,35 @@ static const struct {
     {"tiles.dll", 76, 76, 0},
     {"tiles.dll", 90, 90, 0},   /* the new game's backdrop */
     {"intro.dll", 901, 913, 0}, /* the new game's pictures */
-    /* the city view's landscapes (340 + 5 x the site + civ_city_art_era):
-       the pack's are grass with dirt tracks in every era, so only those of
-       the eras before the paved roads (0, 1); the modern ones (2, and 3
-       with Superhighways) are the original's, enlarged */
+    /* the city view's landscapes (340 + 5 x the site + civ_city_art_era,
+       3 with Superhighways): the release's are grass with dirt tracks in
+       every era, so only those of the eras before the paved roads (0, 1),
+       where the pack has none of its own of the era (landscape_key,
+       below) */
     {"cv.dll", 340, 341, 0},
     {"cv.dll", 345, 346, 0},
     {"cv.dll", 350, 351, 0},
     {"ss.dll", 498, 499, 0},    /* the spaceship's window */
 };
+
+/* The city view's landscapes of the later eras (cv.dll 340 + 5 x the site +
+   the era, the sites coastal, river, inland): the pack's
+   city/landscape/SITE/ERA, the same place with stone-paved roads
+   (medieval: era 1, Philosophy and Invention) or with divided highways
+   (modern: era 2, Automobile and Electronics, and 3, a city with
+   Superhighways: the pack has no landscape of its own for it); painted
+   whole, as WHOLE's are.  Without them, as WHOLE says. */
+extern char plat_res_module[];
+
+static const char *landscape_key(int id, char *key, size_t n)
+{
+    static const char *const site[3] = {"coastal", "river", "inland"};
+    static const char *const era[4] = {NULL, "medieval", "modern", "modern"};
+    if (strcmp(plat_res_module, "cv.dll") || id < 340 || id >= 355 || (id - 340) % 5 > 3 || !era[(id - 340) % 5])
+        return NULL;
+    snprintf(key, n, "city/landscape/%s/%s", site[(id - 340) / 5], era[(id - 340) % 5]);
+    return key;
+}
 
 /* The crops of the pack's pictures that are not the original's sprite:
    the leaders' portraits (mk.dll 220 + the tribe, + 21 for a woman, at
@@ -1114,6 +1135,7 @@ void hd_resource_loaded(void *bits, int id)
     Bitmap *b;
     int pid, whole = -1;
     size_t i;
+    char key[40];
     if (!hd_on || !(b = bmp_of_bits(bits)))
         return;
     reloaded(b);
@@ -1123,9 +1145,14 @@ void hd_resource_loaded(void *bits, int id)
     for (i = 0; i < sizeof WHOLE / sizeof *WHOLE; i++)
         if (!strcmp(WHOLE[i].module, plat_res_module) && id >= WHOLE[i].lo && id <= WHOLE[i].hi)
             whole = WHOLE[i].inset;
-    /* (OpenCiv2's own picture of it: whole, the original's not kept) */
-    if (whole < 0 && (pid = find(b->hd_sheet)) && entries[pid - 1].own)
+    /* (OpenCiv2's own picture of it: whole, the original's not kept; else
+       the pack's landscape of a later era) */
+    if ((pid = find(b->hd_sheet)) && entries[pid - 1].own)
         whole = 0;
+    else if (landscape_key(id, key, sizeof key) && (pid = find(key))) {
+        paint_whole(b, pid, 0);
+        return;
+    }
     if (whole >= 0 && (pid = find(b->hd_sheet)))
         paint_whole(b, pid, whole);
 }
@@ -1760,7 +1787,7 @@ void hd_init(int classic, int unit_test, int scale)
             load_pictures(dir, 1);
         } else {
             close_art();
-            plat_log("hd: no art (%s/pictures.txt)\n", dir);
+            plat_log("hd: no art (%s/pictures.txt; from the source: make hd-art)\n", dir);
         }
     }
     if (!hd_art && plat_hd_forced)

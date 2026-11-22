@@ -90,7 +90,7 @@ that needs the original's files (the dialog above).
 | out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
-So a game can be set up and played with none of the install's files but its music and videos, given the HD art (which comes with OpenCiv2: `data/native/hd`), in HD
+So a game can be set up and played with none of the install's files but its music and videos, given the HD art (which comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`, not in the repository), in HD
 graphics (above).  Without the art too the game does not start: it says what is missing.
 
 ## The game folder's files

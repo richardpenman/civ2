@@ -40,7 +40,8 @@ copy lacks one of the game's text files, OpenCiv2 uses its own English of it, wr
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 Optionally, the map can be drawn with new high-resolution art
-([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2):
+([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2's
+releases):
 untick Classic graphics in OpenCiv2 Options (Graphics and screen), or start it with `--hd`
 ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
@@ -59,7 +60,8 @@ To build it yourself, install your copy of Civilization II in `~/Civ2` (the dire
 ```sh
 git clone https://github.com/richardpenman/civ2 && cd civ2
 make            # -> build/OpenCiv2 (several minutes; the first time it downloads wasi-sdk,
-                #    wabt and the libraries' sources into tools/toolchain)
+                #    wabt and the libraries' sources into tools/toolchain, and the HD art's
+                #    release into ~/.cache/openciv2, from which it makes data/native/hd)
 make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
 ```
 
@@ -67,6 +69,13 @@ make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
 Docker. `make native` is the separate 32-bit Linux development build; it needs
 working Docker and the development images built with `make images`. See
 [DEVELOPMENT.md](docs/DEVELOPMENT.md#tooling) for those development targets.
+
+The HD graphics' art is not in the repository: the builds make it first (`make hd-art`,
+[HD-GRAPHICS.md](docs/HD-GRAPHICS.md#what-the-art-is)), downloading the pinned release of
+openciv2-assets once and encoding its pictures as WebP in Docker, or, without Docker, with
+`cwebp` (the `webp` package; `brew install webp`) and Python's Pillow and numpy. Later builds
+take it from `~/.cache/openciv2`, offline. `make HD_ART=` builds without it (Classic graphics
+only).
 
 What to install first:
 
