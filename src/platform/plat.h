@@ -32,6 +32,7 @@ typedef enum {
 
 typedef uint32_t Handle;                        /* any handle: (type << 16) | slot */
 void *obj_get(Handle h, ObjType t);             /* NULL if h is not a live object of type t */
+int obj_slots(void);                            /* 1 + the highest slot ever used */
 ObjType obj_type(Handle h);
 Handle obj_new(ObjType t, void *obj);           /* returns the new handle */
 void obj_free(Handle h);

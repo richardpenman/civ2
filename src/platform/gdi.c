@@ -653,14 +653,31 @@ HBITMAP WINAPI CreateCompatibleBitmap(HDC h, int w, int hgt)
     return obj_new(OBJ_BITMAP, bmp_create(w, hgt, 32, 0));
 }
 
-/* The bitmap whose pixels p points to (start of its rows), or NULL. */
+/* The bitmap whose pixels p points to (start of its rows), or NULL.  Each
+   bitmap's pixels are its own, so at most one has them; the slots of the
+   last few found are tried first (HD graphics asks for each sprite drawn:
+   a search of every slot each time made a unit's move several times
+   slower). */
 Bitmap *bmp_of_bits(const void *p)
 {
-    int i;
-    for (i = 1; i < 8192; i++) {
+    enum { RECENT = 8 };
+    static int recent[RECENT];
+    static unsigned next;
+    int i, n;
+    if (!p)
+        return NULL;
+    for (i = 0; i < RECENT; i++)
+        if (recent[i]) {
+            Bitmap *b = obj_get(((Handle)OBJ_BITMAP << 16) | (Handle)recent[i], OBJ_BITMAP);
+            if (b && (const unsigned char *)p == b->bits)
+                return b;
+        }
+    for (i = 1, n = obj_slots(); i < n; i++) {
         Bitmap *b = obj_get(((Handle)OBJ_BITMAP << 16) | (Handle)i, OBJ_BITMAP);
-        if (b && b->bits && (const unsigned char *)p == b->bits)
+        if (b && b->bits && (const unsigned char *)p == b->bits) {
+            recent[next++ % RECENT] = i;
             return b;
+        }
     }
     return NULL;
 }

@@ -13,6 +13,7 @@
 
 static struct { ObjType type; void *obj; int stock; } objs[MAX_OBJ];
 static int next_free = 1;
+static int high = 1;            /* 1 + the highest slot ever used */
 
 Handle obj_new(ObjType t, void *obj)
 {
@@ -24,6 +25,8 @@ Handle obj_new(ObjType t, void *obj)
             objs[i].obj = obj;
             objs[i].stock = 0;
             next_free = i + 1;
+            if (high <= i)
+                high = i + 1;
             return ((Handle)t << 16) | (Handle)i;
         }
     }
@@ -46,6 +49,12 @@ void *obj_get(Handle h, ObjType t)
     ObjType have;
     int i = slot_of(h, &have);
     return i && have == t ? objs[i].obj : NULL;
+}
+
+/* The slots below this one are all those ever used. */
+int obj_slots(void)
+{
+    return high;
 }
 
 ObjType obj_type(Handle h)

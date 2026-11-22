@@ -553,6 +553,22 @@ static void paint(Bitmap *b, const uint32_t *px, int pw, int ph, int x, int y, i
     for (j = t; j < bot; j++) {
         uint32_t *out = b->hd + (size_t)j * pitch;
         const uint32_t *in = px + (size_t)(pw == w && ph == h ? j - y : (int64_t)(j - y) * ph / h) * pw;
+        if (pw == w && tint < 0) {
+            /* (the usual case, a picture at its size: the same, faster) */
+            for (i = l; i < r; i++) {
+                uint32_t s = in[i - x], a = s >> 24, dst, ia;
+                if (a == 255)
+                    out[i] = s;
+                else if (a) {
+                    dst = out[i];
+                    ia = 255 - a;
+                    out[i] = 0xff000000u | (((s >> 16) & 255) + ((dst >> 16) & 255) * ia / 255) << 16 |
+                             (((s >> 8) & 255) + ((dst >> 8) & 255) * ia / 255) << 8 |
+                             ((s & 255) + (dst & 255) * ia / 255);
+                }
+            }
+            continue;
+        }
         for (i = l; i < r; i++) {
             uint32_t s = in[pw == w ? i - x : (int)((int64_t)(i - x) * pw / w)], dst, a = s >> 24, ia;
             if (!a)
