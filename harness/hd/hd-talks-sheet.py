@@ -11,21 +11,29 @@ BOX = (330, 140, 560, 440)          # the portrait in the 1024x768 frame
 PIC = (365, 160, 535, 420)          # inside it: the picture alone
 ORIGINAL = {8}                      # the Zulus
 W, H = BOX[2] - BOX[0], BOX[3] - BOX[1]
+
+
+def shot(d, name):
+    """A shot's file: PNG (tools/native-run.sh), or BMP (CIV2_KEEP_BMP=1, older runs)."""
+    p = os.path.join(d, name + ".png")
+    return p if os.path.exists(p) else os.path.join(d, name + ".bmp")
+
+
 cells = []
 for t in range(21):
     for g in "mf":
         d = os.path.join(out, "%d-%s" % (t, g))
-        if os.path.exists(os.path.join(d, "room-hd.bmp")):
+        if os.path.exists(shot(d, "room-hd")):
             cells.append((t, g, d))
 cols = 4                            # two tribes a row: (HD, original) x (m, f)
 sheet = Image.new("RGB", (cols * (W + 8), ((len(cells) + 1) // 2) * (H + 24)), "white")
 draw = ImageDraw.Draw(sheet)
 for i, (t, g, d) in enumerate(cells):
-    hd = Image.open(os.path.join(d, "room-hd.bmp")).convert("RGB").resize((1024, 768), Image.LANCZOS).crop(BOX)
-    orig = Image.open(os.path.join(d, "room.bmp")).convert("RGB").crop(BOX)
+    hd = Image.open(shot(d, "room-hd")).convert("RGB").resize((1024, 768), Image.LANCZOS).crop(BOX)
+    orig = Image.open(shot(d, "room")).convert("RGB").crop(BOX)
     # the original's kept: the HD picture should be it enlarged, their mean difference small
-    a = Image.open(os.path.join(d, "room-hd.bmp")).convert("L").resize((1024, 768), Image.BOX).crop(PIC)
-    b = Image.open(os.path.join(d, "room.bmp")).convert("L").crop(PIC)
+    a = Image.open(shot(d, "room-hd")).convert("L").resize((1024, 768), Image.BOX).crop(PIC)
+    b = Image.open(shot(d, "room")).convert("L").crop(PIC)
     diff = sum(ImageStat.Stat(ImageChops.difference(a, b)).mean)
     if t in ORIGINAL:
         print("%-14s %s  the original's: difference %5.1f%s" % (TRIBES[t], g, diff, "  CHECK" if diff > 20 else ""))

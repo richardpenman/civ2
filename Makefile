@@ -21,7 +21,7 @@ PORT ?= 8000
 HD_ART ?= 1
 HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@echo "(no HD art: HD_ART=$(HD_ART))")
 
-.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean
+.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art images hook ref native port native-suite test test-sound test-extras extras-bless test-media media-bless unit-record clean clean-run
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -75,7 +75,7 @@ web-test: web                 ## the browser version's tests: its host's logic, 
 web-replay: web               ## SCRIPT replayed in the browser version, compared with the original's recording
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs --replay $(NAME)
-	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; [Image.open(f).save(f[:-4] + '.png') for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
+	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; import os; [(Image.open(f).save(f[:-4] + '.png'), os.remove(f)) for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
 
 # HD graphics (docs/HD-GRAPHICS.md): data/native/hd from the release of
 # Peter Johnson's art pinned in data/hd-pack.json (HD_ART above; FORCE=1:
@@ -157,6 +157,9 @@ ref:                          ## record the original game on SCRIPT (determinist
 
 
 
+
+clean-run:                    ## remove run/ outputs unchanged for DAYS days (default 3; DRY=1: only say what); keeps .keep, ref-*
+	python3 tools/clean_run.py --days $(or $(DAYS),3) $(if $(filter-out 0,$(DRY)),--dry-run)
 
 clean:
 	rm -rf build run

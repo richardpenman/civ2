@@ -407,7 +407,8 @@ The rest is in the platform layer (`src/platform/hd.c`):
   windows' planes (or their pixels enlarged), the desktop's background (with a plane of its own,
   enlarged once) only where no window covers it, with the colour correction; the host shows that
   frame (`host_present_hd`) in the same place, at its density.  A replay's `shot NAME` also
-  saves `NAME-hd.bmp` (the frame).
+  saves `NAME-hd.bmp` (the frame; `tools/native-run.sh` makes it `NAME-hd.png` when the game
+  has ended, as it does `NAME.bmp`).
 
 * **The other windows' pictures**: when the game loads a picture from one of its libraries' GIF
   resources (`DibSurface::load_gif_resource`), the surface remembers it as

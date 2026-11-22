@@ -6,6 +6,10 @@
 # TIMEOUT (seconds, default 600) ends a run that hangs: the game ignores
 # SIGTERM (SDL makes it a quit event, which a replay does not read), so it is
 # killed TIMEOUT_KILL seconds (default 10) after.
+# The screenshots (`shot NAME`: NAME.bmp, NAME-hd.bmp) are made PNG when the
+# game has ended, the BMPs removed (a tenth of the disk: an HD frame is 21 MB
+# as BMP, some 2 MB as PNG; the same pixels, which the suites compare as PNG);
+# CIV2_KEEP_BMP=1 keeps the BMPs as well.
 script=$1; out=$2
 rm -rf /tmp/g && cp -r "${CIV2_GAME:-/civ2}" /tmp/g && chmod -R u+w /tmp/g
 # CIV2_NO_DAT=1: the game's .DAT files left out (CIV2.DAT, HALLFAME.DAT: the
@@ -33,6 +37,19 @@ done
 mkdir -p "$out"
 cd /tmp/g
 exe=${EXE:-civ2}
+shots_png() {
+    [ -n "$CIV2_KEEP_BMP" ] || python3 - "$out" <<'PY'
+import glob, os, sys
+from PIL import Image
+for f in glob.glob(os.path.join(sys.argv[1], '*.bmp')):
+    try:
+        Image.open(f).save(f[:-4] + '.png')
+    except Exception as e:   # (a shot cut short: kept as it is)
+        print('native-run.sh: %s not made PNG: %s' % (f, e), file=sys.stderr)
+        continue
+    os.remove(f)
+PY
+}
 # Text measured as Wine measures it (src/platform/text.c: wine_text), as in
 # the original's recordings; CIV2_PLAY_TEXT=1 (the translations' tests, which
 # have no recording of the original) measures it as in play, as drawn.
@@ -44,7 +61,8 @@ case "$exe" in
            CIV2_SEED=${SEED:-7} CIV2_RAND_LOG=$(w "$out/rand.log") CIV2_HOOK_LOG=$(w "$out/hook.log") \
            CIV2_CALL_LOG=$(w "$out/calls.log") \
            CIV2_WINDIR=$(w /tmp/g) WINEDEBUG=-all WINEARCH=win64 WINEPREFIX=$HOME/wine64
-    exec timeout -k ${TIMEOUT_KILL:-10} ${TIMEOUT:-600} /usr/lib/wine/wine64 /work/build/$exe ;;
+    timeout -k ${TIMEOUT_KILL:-10} ${TIMEOUT:-600} /usr/lib/wine/wine64 /work/build/$exe
+    status=$?; shots_png; exit $status ;;
 esac
 export CIV2_DATA=/work/data/native CIV2_SCRIPT=$script CIV2_SHOT_DIR=$out CIV2_SEED=${SEED:-7} \
        CIV2_RAND_LOG=$out/rand.log CIV2_HOOK_LOG=$out/hook.log CIV2_CALL_LOG=$out/calls.log \
@@ -56,4 +74,5 @@ if [ "$3" = valgrind ]; then
     exec timeout -k ${TIMEOUT_KILL:-10} ${TIMEOUT:-600} valgrind --error-limit=no --num-callers=12 --track-origins=yes \
         --log-file="$out/valgrind.txt" /work/build/$exe
 fi
-exec timeout -k ${TIMEOUT_KILL:-10} ${TIMEOUT:-600} /work/build/$exe
+timeout -k ${TIMEOUT_KILL:-10} ${TIMEOUT:-600} /work/build/$exe
+status=$?; shots_png; exit $status

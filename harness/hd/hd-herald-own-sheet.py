@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A contact sheet of a run's shots (harness/hd/hd-herald-own.sh): the
 diplomacy room (640x480 at 128,96 of the 1024x768 screen) of each shot,
-its HD plane (NAME-hd.bmp) where there is one, else the game's pixels
+its HD plane (NAME-hd.png, or .bmp) where there is one, else the game's pixels
 enlarged, labelled.
 
     hd-herald-own-sheet.py DIR NAME,NAME,... OUT.png [WIDTH] [COLUMNS]
@@ -14,10 +14,10 @@ width = int(sys.argv[4]) if len(sys.argv) > 4 else 384
 cols = int(sys.argv[5]) if len(sys.argv) > 5 else 5
 ims = []
 for n in names:
-    p = os.path.join(d, n + '-hd.bmp')
-    if not os.path.exists(p):
-        p = os.path.join(d, n + '.bmp')
-    if not os.path.exists(p):
+    # (tools/native-run.sh makes the shots PNG; .bmp: CIV2_KEEP_BMP=1 or older runs)
+    p = next((p for p in (os.path.join(d, n + s) for s in ('-hd.png', '-hd.bmp', '.png', '.bmp'))
+              if os.path.exists(p)), None)
+    if not p:
         continue
     im = Image.open(p).convert('RGB')
     k = im.width / 1024

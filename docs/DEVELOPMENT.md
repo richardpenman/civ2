@@ -96,6 +96,24 @@ Both `native_suite.sh` and `diff_suite.sh` fail a scenario if its runner or BMP
 conversion fails, then continue with the remaining scenarios and return failure
 for the suite. A failed run is not subsequently reported as `PASS` or `SAME`.
 
+Disk space: every run writes to `run/`, and nothing removes it but you. `tools/native-run.sh`
+makes a run's screenshots PNG when the game has ended and removes the BMPs the game wrote (a
+1024x768 shot is 2.3 MB as BMP, 0.1 to 0.4 MB as PNG; an HD frame 21 MB, some 2 MB; the same
+pixels, which the suites compare as PNG); `CIV2_KEEP_BMP=1` keeps the BMPs too. The browser
+tests' work folders (`run/web-tmp-*`, a copy of the game and Chrome's profile) are removed at the
+end, on Ctrl-C or SIGTERM, and by the next test when their test was killed; they warn when the
+disk has under 2.5 GB free. To remove old outputs:
+
+```sh
+make clean-run DRY=1     # what would go, and how much it would free
+make clean-run           # remove the entries of run/ unchanged for 3 days (DAYS=N)
+touch run/NAME/.keep     # keep run/NAME whatever its age
+```
+
+`make clean-run` never removes `run/ref-*` (the original's recordings, which `make ref` makes
+under Wine), `run/extras-blessed`, an entry with a `.keep` file anywhere in it, or a running
+browser test's work folder; `make clean` removes all of `run/` (and `build/`).
+
 Checker regression tests use synthetic images and a stub game runner. They need
 Python 3, Pillow and a POSIX `sh` for the suite tests, but no game assets, native
 build or Wine. Without `sh`, only the suite tests are skipped.
