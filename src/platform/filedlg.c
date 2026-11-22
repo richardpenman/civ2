@@ -119,6 +119,12 @@ static void setting_set(const char *key, const char *value)
         WritePrivateProfileStringA("OpenCiv2", key, value, "CIV.INI");
 }
 
+/* Whether the proposed file name is selected when the dialog opens. */
+static int file_preselect(void)
+{
+    return 0;
+}
+
 /* A label's new text, drawn now (our controls don't repaint on WM_SETTEXT). */
 static void set_text(HWND h, const char *text)
 {
