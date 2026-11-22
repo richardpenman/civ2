@@ -981,9 +981,12 @@ void hd_sheet_loaded(void *bits, const char *filename)
     b->hd_sheet[5 + i] = 0;
     if (!(id = find(b->hd_sheet)))
         b->hd_sheet[0] = 0;
-    /* OpenCiv2's own picture of a whole sheet (the editors' backdrops):
+    /* a picture of a whole sheet, OpenCiv2's own or the scenario editors'
+       backdrops (file/editoras, editorsa, editorsq: offered to the art pack,
+       openciv2-assets pull request 7; until it has them, the original's):
        painted on the plane, as a resource picture's (paint_whole) */
-    else if (entries[id - 1].own)
+    else if (entries[id - 1].own || !strcmp(b->hd_sheet, "file/editoras") ||
+             !strcmp(b->hd_sheet, "file/editorsa") || !strcmp(b->hd_sheet, "file/editorsq"))
         paint_whole(b, id, 0);
 }
 

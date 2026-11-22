@@ -108,7 +108,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `EDITORPT.GIF` | the sprite editor's tools and backdrops | replaced: made from the pack's sprites |
 | `CITY.GIF` | the city window's background | replaced: the pack's picture |
 | `SCREDITS.GIF` | the credits' picture | replaced: the pack's picture |
-| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: made from OpenCiv2's own (`data/native/hd-extra`: dark slate reliefs, dithered into the shared palette's colours without changing it; the editors' white labels at a WCAG contrast of 8.1 to 13.0) |
+| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: plain dark grey (the pack has no backdrops yet; OpenCiv2's dark slate reliefs are offered to it, [openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7), and once it has them they are made from them, dithered into the shared palette's colours without changing it) |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
@@ -194,7 +194,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | | 20000-20007 | the spaceship's launch and arrival frames | replaced |
 | `civ2art.dll` | 999 | the windows' frame texture | replaced |
 | | 1000, 2000, 4000, 30000 | the end of the game: the arrival, the defeat, Alpha Centauri beaten | replaced |
-| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: the pack's painting, its border tile (1,1,64,32) OpenCiv2's own seamless grey marble (`data/native/hd-extra/wonder-border.webp`) |
+| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: plain grey (the pack's pictures are each wonder's painting, whose corner would be no border: not used; once the pack has a border tile, `crop/.../1,1,64,32`, offered in openciv2-assets pull request 7, made from it); seen only in a wonder's movie, which needs the CD's `Video` |
 
 (Not every one was reached by the scripts: those of other governments, eras, leaders and levels
 are made the same way.)

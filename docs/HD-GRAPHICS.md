@@ -188,8 +188,21 @@ recorded with it (and go with it to the pack).
 | Key | Picture |
 | --- | --- |
 | `resource/tiles.dll/gifs/50` to `59`, `65`, `66` | the advisors' backgrounds (`tiles-ID.webp`, below; each 1280x960: density 2, as the pack's backgrounds; lossy WebP at quality 90, 40 to 121 KB, 0.7 MB in all): dark painted still lifes and scenes, each fitting its report, made with Gemini 3 Pro Image from two of the pack's backgrounds as references (`tools/gen_hd_backgrounds.py`).  The advisors' windows show the top left 600x400 of their 640x480 picture, so the painting fills that area (1200x800) and the rest is it mirrored; the tax rates' dialog shows its top left 400x256 on small screens (65: the painting fills 800x512) and 600x384 on large ones (66: the same painting, prepared as the advisors'). |
-| `file/editoras`, `file/editorsa`, `file/editorsq` | the scenario editors' backdrops (`EDITORAS.GIF`: the improvements editor; `EDITORSA.GIF`: the units editor; `EDITORSQ.GIF`: the cities editor; the original's are grey embossed reliefs, an astronaut, a warrior with a spear, a sea monster, which the pack lacks): the same subjects as faint bas-reliefs in dark slate, made with Gemini 3 Pro Image (`tools/gen_hd_missing_art.py`); each 1280x960, the 560x380 the editors' window shows (1120x760) painted and the rest mirrored; the editors' white labels at a WCAG contrast of 7.7 to 13.2 on them (3.2 to 4.2 on the original's).  Painted whole on the sheet when it is loaded, and the sheet made from them without the install (`src/platform/synth.c`). |
-| `crop/resource/wonder.dll/gifs/20000/1,1,64,32` to `20027` | the wonders' movie window's border tile (`wonder-border.webp`, one picture for all 28: the original's is the same grey marble in each; the pack's pictures are each wonder's painting, whose corner would be no border): a seamless grey marble, 256x128 (density 4, as the pack's sprites of `ICONS`), made with Gemini 3 Pro Image and made to tile (its margins cross-faded into its edges). |
+
+The scenario editors' backdrops (`file/editoras`: `EDITORAS.GIF`, the improvements editor;
+`file/editorsa`: `EDITORSA.GIF`, the units and tribe editors; `file/editorsq`: `EDITORSQ.GIF`, the
+cities editor; the original's are grey embossed reliefs, an astronaut, a warrior with a spear, a sea
+monster) and the wonders' movie window's border tile (`crop/resource/wonder.dll/gifs/20000/1,1,64,32`
+to `20027`: the original's is the same grey marble in each; the pack's pictures are each wonder's
+painting, whose corner would be no border) are not in the pack; OpenCiv2's own (faint bas-reliefs
+in dark slate and a seamless grey marble, made with Gemini 3 Pro Image) were once here and are
+offered to the pack instead ([openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7)).
+Once the pack has them (and `data/hd-pack.json` pins it), the backdrops are painted whole on the
+sheet when it is loaded (`hd_sheet_loaded`) and the tile is drawn as any crop, and without the
+install the sheets and the tile are made from them (`src/platform/synth.c`).  Until then, with the
+install the original's are drawn, enlarged; without it the editors' backdrop is plain dark grey and
+the movie window's border plain grey (`synth.c` takes nothing from the pack's wonder paintings),
+which a wonder's movie shows only where the CD's `Video` is in the game folder.
 
 The advisors' backgrounds, by `tiles.dll` id (`PictureWindow::open`'s first argument + 49, at
 600x400 of the 640x480 picture; the original's are dark grey photographs and engravings on a map,
@@ -416,9 +429,9 @@ The rest is in the platform layer (`src/platform/hd.c`):
   (`harness/hd/hd-pictures.txt`, `hd_test_city_picture`).  `wonder.dll`'s pictures (20000 +
   the wonder) are, in the original, all the same grey marble from which the wonder's movie
   window takes its 64 x 32 border tile; the pack's are each wonder's own painted picture, 74 x 74,
-  which as a border tile would be absurd, so the window's tile is OpenCiv2's own grey marble
-  (`data/native/hd-extra/wonder-border.webp`, above; `harness/media/m-wonder.txt`, HD run: the
-  Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
+  which as a border tile would be absurd, so the window's tile is the original's marble, enlarged
+  (without the install plain grey), until the pack has a tile of its own (above: pull request 7;
+  `harness/media/m-wonder.txt`, HD run: the Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
   graph, the Hall of Fame ...; 65 and 66: the tax rates) are not the pack's: the pack's
   are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
   original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
@@ -752,8 +765,9 @@ pictures; the whole pack holds 2,105, 250 MB):
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`);
-* OpenCiv2's own (`data/native/hd-extra`), not from the pack: `resource/tiles.dll/gifs/50` to `59`, `65`, `66`,
-  `file/editoras`, `file/editorsa`, `file/editorsq`, `crop/resource/wonder.dll/gifs/20000` to `20027` (`1,1,64,32`);
+* OpenCiv2's own (`data/native/hd-extra`), not from the pack: `resource/tiles.dll/gifs/50` to `59`, `65`, `66`;
+* `file/editoras`, `file/editorsa`, `file/editorsq`, `crop/resource/wonder.dll/gifs/20000` to `20027` (`1,1,64,32`):
+  when the pack has them (openciv2-assets pull request 7, above);
 * `ship/propulsion`, `engine-active`, `fuel`, `structural-spine`, `structural-dock`,
   `habitation`, `life-support`, `solar`: the spaceship (`hd_spaceship`).
 

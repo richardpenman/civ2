@@ -497,7 +497,8 @@ static void index_crops(unsigned char *idx, const Canvas *c, const Crops *cs, Sy
 /* ---- the sheets (TERRAIN1.GIF ...) ---- */
 
 /* (CITY.GIF, the credits' and the editors' backdrops are whole pictures: the
-   editors' are OpenCiv2's own, data/native/hd-extra) */
+   editors' are the art's file/editoras ... where it has them, else left
+   dark) */
 
 static const struct Sheet {
     const char *file, *key;
@@ -687,9 +688,8 @@ static void make_sheets(void)
             }
         } else
             draw_crops(&cv[i], &cs[i]);
-        /* (the editors' backdrops, OpenCiv2's own dark slate, are left out of
-           the palette's art colours: in its greys, the others' colours as
-           without them) */
+        /* (the editors' backdrops, dark slate, are left out of the palette's
+           art colours: in its greys, the others' colours as without them) */
         if (strncasecmp(SHEETS[i].file, "EDITORS", 7) && strcasecmp(SHEETS[i].file, "EDITORAS.GIF"))
             count_colours(&cv[i], hist);
     }
@@ -856,7 +856,12 @@ const unsigned char *synth_resource(const char *module, int id, unsigned *len)
     art = hd_art_open();
     snprintf(key, sizeof key, "resource/%s/gifs/%d", r->module, id);
     if (art) {
-        whole = put_art(&c, key, 0, 0, r->w, r->h);
+        /* (not wonder.dll's: the game takes only the movie window's border
+           tile from them, 1,1,64,32, and the pack's are each wonder's
+           painting, whose corner is no border: the tile is the art's crop
+           of that key where it has one, else plain grey) */
+        if (strcasecmp(r->module, "wonder.dll"))
+            whole = put_art(&c, key, 0, 0, r->w, r->h);
         cs = crops_of(key);
         draw_crops(&c, &cs);
     }
