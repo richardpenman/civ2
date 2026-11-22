@@ -5,7 +5,7 @@
 
 import {createServer} from 'node:http';
 import {spawn} from 'node:child_process';
-import {readFileSync, writeFileSync, readdirSync, statSync, existsSync} from 'node:fs';
+import {readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, mkdtempSync, rmSync, statfsSync} from 'node:fs';
 import {join, relative, extname, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -82,9 +82,100 @@ export function serve() {
     return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)));
 }
 
+// ---- the test's work folder: run/web-tmp-* ----
+
+// A work folder for a test (its .zip of the game, the browser's profile) in
+// run/ (not /tmp: often a small tmpfs), with a .pid file naming the test's
+// process: a later test removes the folders whose process has ended (a test
+// killed before its finally), never one a running test uses.  Removed on
+// SIGINT and SIGTERM too (the browsers killed first), as well as by the
+// test's own finally (tmp.remove()).  Warns when the disk is nearly full:
+// Chrome then evicts a page's storage (IndexedDB: the game's copy) unless it
+// is persistent (browser(..., origin) grants that).
+const LOW_DISK = 2.5e9;
+const browsers = new Set();
+
+function alive(pid) {
+    try {
+        process.kill(pid, 0);
+    } catch (e) {
+        if (e.code === 'ESRCH')
+            return false;
+    }
+    try {   // (a pid reused by another program: not a test's)
+        return /node/.test(readFileSync(`/proc/${pid}/cmdline`, 'latin1'));
+    } catch {
+        return true;   // (no /proc: trust kill)
+    }
+}
+
+export function sweepTmp() {
+    const run = join(ROOT, 'run');
+    let removed = 0;
+    for (const name of existsSync(run) ? readdirSync(run) : []) {
+        if (!/^web-(tmp|player)-/.test(name))
+            continue;
+        const d = join(run, name);
+        let pid = 0;
+        try {
+            pid = parseInt(readFileSync(join(d, '.pid'), 'latin1'), 10);
+        } catch {
+            // (no .pid: made before there were any, or by a test just
+            // starting: left alone for a minute)
+            try {
+                if (Date.now() - statSync(d).mtimeMs < 60000)
+                    continue;
+            } catch {
+                continue;
+            }
+        }
+        if (pid && (pid === process.pid || alive(pid)))
+            continue;
+        rmSync(d, {recursive: true, force: true, maxRetries: 3, retryDelay: 100});
+        removed++;
+    }
+    if (removed)
+        console.log(`removed ${removed} work folder${removed > 1 ? 's' : ''} left by earlier tests (run/web-tmp-*)`);
+}
+
+export function diskWarning(dir = ROOT) {
+    try {
+        const s = statfsSync(dir);
+        const free = s.bavail * s.bsize;
+        if (free < LOW_DISK)
+            console.log(`WARNING: only ${(free / 1e9).toFixed(1)} GB free on the disk of ${dir} (under ${LOW_DISK / 1e9} GB):` +
+                        ' the browser may run out of space; make clean-run frees old run/ outputs');
+        return free;
+    } catch {
+        return -1;
+    }
+}
+
+export function tmpDir(prefix = 'web-tmp-') {
+    diskWarning();
+    sweepTmp();
+    mkdirSync(join(ROOT, 'run'), {recursive: true});
+    const path = mkdtempSync(join(ROOT, 'run', prefix));
+    writeFileSync(join(path, '.pid'), String(process.pid));
+    const remove = () => rmSync(path, {recursive: true, force: true, maxRetries: 10, retryDelay: 200});
+    const onSignal = async (sig) => {
+        const exits = [...browsers].map((p) => new Promise((r) => { p.once('exit', r); p.kill('SIGKILL'); }));
+        // (the killed browsers' files closed first: at most a second)
+        await Promise.race([Promise.all(exits), new Promise((r) => setTimeout(r, 1000))]);
+        try { remove(); } catch {}
+        process.exit(sig === 'SIGINT' ? 130 : 143);
+    };
+    process.once('SIGINT', onSignal);
+    process.once('SIGTERM', onSignal);
+    return {path, remove};
+}
+
 // ---- the browser, over the DevTools protocol ----
 
-export async function browser(profile, size = [1280, 800]) {
+// origin (the served site's, e.g. http://127.0.0.1:PORT): its storage made
+// persistent (durableStorage, as navigator.storage.persist() asks), so that
+// Chrome does not evict the game's copy in IndexedDB when the disk is low.
+export async function browser(profile, size = [1280, 800], origin = null) {
     const proc = spawn(CHROME, ['--headless', '--no-sandbox', '--disable-gpu', '--remote-debugging-port=0',
                                 '--user-data-dir=' + profile, '--window-size=' + size.join(','), '--autoplay-policy=no-user-gesture-required',
                                 'about:blank'], {stdio: ['ignore', 'ignore', 'pipe']});
@@ -117,5 +208,9 @@ export async function browser(profile, size = [1280, 800]) {
         ws.send(JSON.stringify({id, method, params}));
     });
     const exited = new Promise((r) => proc.on('exit', r));
+    browsers.add(proc);
+    proc.on('exit', () => browsers.delete(proc));
+    if (origin)
+        await send('Browser.grantPermissions', {permissions: ['durableStorage'], origin: origin.replace(/\/$/, '')});
     return {proc, send, on: (l) => listeners.push(l), close: async () => { ws.close(); proc.kill(); await exited; }};
 }

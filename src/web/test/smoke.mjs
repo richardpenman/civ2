@@ -23,10 +23,10 @@
 // HD graphics at density N (the page's ?hd=N, the art from the site; the
 // replay's CIV2_TEST_HD=N), its -hd screenshots too.
 
-import {readFileSync, writeFileSync, mkdirSync, readdirSync, mkdtempSync, rmSync, existsSync} from 'node:fs';
+import {readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
-import {ROOT, WEB, zipFolder, serve, browser} from './cdp.mjs';
+import {ROOT, WEB, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
 import {unzip} from '../zip.js';
 import {sampleDisc, makeImage, tone} from './disc.mjs';
 
@@ -83,12 +83,12 @@ async function main() {
         throw new Error('no build/web: make web first');
     mkdirSync(OUT, {recursive: true});
     mkdirSync(join(ROOT, 'run'), {recursive: true});
-    const tmp = mkdtempSync(join(ROOT, 'run', 'web-tmp-'));   // (not /tmp: often a small tmpfs)
+    const work = tmpDir(), tmp = work.path;   // (run/web-tmp-*: cdp.mjs)
     const zip = join(tmp, 'Civ2.zip');
     log(`zipping ${GAME}: ${zipFolder(GAME, zip)} files`);
     const server = await serve();
     const url = `http://127.0.0.1:${server.address().port}/`;
-    const b = await browser(join(tmp, 'profile'));
+    const b = await browser(join(tmp, 'profile'), undefined, url);
     const errors = [];
     b.on((m) => {
         if (m.method === 'Runtime.consoleAPICalled')
@@ -218,6 +218,8 @@ async function main() {
         }
         await send('Page.navigate', {url: url + '?setup'});
         await waitFor('window.civ2Setup', 10000, 'the page');
+        if (!await evaluate('navigator.storage.persisted()'))
+            throw new Error('the page\'s storage is not persistent (cdp.mjs: durableStorage)');
         if (!REPLAY) {
             const en = await evaluate(`({choose: document.getElementById('choose').textContent,
                 chosen: document.getElementById('language').value, browser: navigator.languages.join(),
@@ -471,7 +473,7 @@ async function main() {
         await b.close();
         server.close();
         await sleep(500);
-        rmSync(tmp, {recursive: true, force: true, maxRetries: 10, retryDelay: 200});
+        work.remove();
     }
 }
 

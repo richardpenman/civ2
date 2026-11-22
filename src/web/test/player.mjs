@@ -14,11 +14,11 @@
 //   {"cmd": "status"} -> {"alive": bool, "status": text}
 //   {"cmd": "quit"}
 //   tools/toolchain/node/bin/node src/web/test/player.mjs OUT ROLE RELAY [GAME_DIR]
-import {writeFileSync, appendFileSync, mkdirSync, mkdtempSync, rmSync} from 'node:fs';
+import {writeFileSync, appendFileSync, mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
 import {createInterface} from 'node:readline';
-import {ROOT, zipFolder, serve, browser} from './cdp.mjs';
+import {ROOT, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
 
 const [OUT, ROLE, RELAY, GAME = process.env.CIV2_GAME || join(homedir(), 'Civ2')] = process.argv.slice(2);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -31,12 +31,12 @@ const KEYS = {Return: ['Enter', 13, '\r'], Escape: ['Escape', 27], Down: ['Arrow
 
 async function main() {
     mkdirSync(OUT, {recursive: true});
-    const tmp = mkdtempSync(join(ROOT, 'run', 'web-player-'));
+    const work = tmpDir('web-player-'), tmp = work.path;   // (run/web-player-*: cdp.mjs)
     const zip = join(tmp, 'Civ2.zip');
     zipFolder(GAME, zip);
     const server = await serve();
     const url = `http://127.0.0.1:${server.address().port}/`;
-    const b = await browser(join(tmp, 'profile'), [1024, 768]);
+    const b = await browser(join(tmp, 'profile'), [1024, 768], url);
     const {send} = b;
     b.on((m) => {
         if (m.method === 'Runtime.exceptionThrown')
@@ -126,6 +126,8 @@ async function main() {
     await send('Emulation.setDeviceMetricsOverride', {width: 1024, height: 768, deviceScaleFactor: 1, mobile: false});
     await send('Page.navigate', {url: url + '?setup'});
     await waitFor('window.civ2Setup', 10000, 'the page');
+    if (!await evaluate('navigator.storage.persisted()'))
+        throw new Error('the page\'s storage is not persistent (cdp.mjs: durableStorage)');
     const {result} = await send('Runtime.evaluate', {expression: 'document.getElementById("files")'});
     await send('DOM.setFileInputFiles', {objectId: result.objectId, files: [zip]});
     await waitFor('/kept in this browser/.test(window.civ2Status)', 300000, 'the copy');
@@ -203,7 +205,7 @@ async function main() {
         clearInterval(timer);
         await b.close();
         server.close();
-        rmSync(tmp, {recursive: true, force: true, maxRetries: 10, retryDelay: 200});
+        work.remove();
     }
 }
 
