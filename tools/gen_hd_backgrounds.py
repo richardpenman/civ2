@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""OpenCiv2's own advisor backgrounds (data/native/hd-extra/README): generate
+"""The advisors' backgrounds (tiles.dll 50 to 59, 65, 66) OpenCiv2 made and
+gave the art pack (openciv2-assets pull request 6; docs/HD-GRAPHICS.md): generate
 candidates with Gemini 3 Pro Image, and prepare a chosen one for the game.
+(Kept for their record, the prompts below, and to make others; the game
+draws the pack's now, made by make hd-art.)
 
     GK=KEY gen_hd_backgrounds.py generate OUTDIR ID [ID...] [--n 2] [--tag a]
     gen_hd_backgrounds.py prepare ID IMAGE OUT.png
@@ -18,7 +21,8 @@ the 640x480 picture at density 2 (the advisors' 600x400: 1200x800; the tax
 rates' 400x256 on small screens, 65: 800x512; their 600x384 on large ones,
 66, prepared as the advisors' from 65's painting),
 cropped about its middle, and the rest of the 1280x960 mirrored from it;
-then encoded as the game has it, OUT.webp (cwebp: data/native/hd-extra/README).
+(OpenCiv2's were then encoded as lossy WebP, cwebp 1.5.0 -q 90 -m 4
+-sharp_yuv -metadata none; the pack has them as PNG.)
 """
 import argparse, base64, json, os, sys, threading, time, urllib.error, urllib.request
 

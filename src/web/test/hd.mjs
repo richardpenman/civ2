@@ -270,8 +270,8 @@ async function main() {
         await shot('02-map');
         if (st.mixed < 0.05)
             throw new Error('the map is not drawn in HD (the desktop\'s pixels enlarged)');
-        // the Domestic Advisor (F1): OpenCiv2's own background (hd/extra's
-        // tiles-50.webp), decoded by the module (src/platform/hd_image.c)
+        // the Domestic Advisor (F1): the pack's background (its painting of a
+        // steward's table, WebP), decoded by the module (src/platform/hd_image.c)
         // (look at it: a steward's table, not the original's picture)
         await key('F1', 112);
         await settle(2000, 15000);

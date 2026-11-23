@@ -206,10 +206,6 @@ heralds*, below).  Art made for it: WebP by cwebp 1.5.0 (lossy `-q 90 -m 4 -shar
 `-lossless -exact` with alpha); an AI-generated picture's model, prompt and references are
 recorded with it (and go with it to the pack).
 
-| Key | Picture |
-| --- | --- |
-| `resource/tiles.dll/gifs/50` to `59`, `65`, `66` | the advisors' backgrounds (`tiles-ID.webp`, below; each 1280x960: density 2, as the pack's backgrounds; lossy WebP at quality 90, 40 to 121 KB, 0.7 MB in all): dark painted still lifes and scenes, each fitting its report, made with Gemini 3 Pro Image from two of the pack's backgrounds as references (`tools/gen_hd_backgrounds.py`).  The advisors' windows show the top left 600x400 of their 640x480 picture, so the painting fills that area (1200x800) and the rest is it mirrored; the tax rates' dialog shows its top left 400x256 on small screens (65: the painting fills 800x512) and 600x384 on large ones (66: the same painting, prepared as the advisors'). |
-
 The scenario editors' backdrops (`file/editoras`: `EDITORAS.GIF`, the improvements editor;
 `file/editorsa`: `EDITORSA.GIF`, the units and tribe editors; `file/editorsq`: `EDITORSQ.GIF`, the
 cities editor; the original's are grey embossed reliefs, an astronaut, a warrior with a spear, a sea
@@ -227,10 +223,16 @@ which a wonder's movie shows only where the CD's `Video` is in the game folder.
 
 The advisors' backgrounds, by `tiles.dll` id (`PictureWindow::open`'s first argument + 49, at
 600x400 of the 640x480 picture; the original's are dark grey photographs and engravings on a map,
-the pack's the same pale parchment until its commit ad6791d, since OpenCiv2's own below, given to
-it: [pull request 6](https://github.com/PeterJohnson/openciv2-assets/pull/6)), and OpenCiv2's own:
+the pack's the same pale parchment until its commit ad6791d, since dark paintings, each fitting its
+report, that OpenCiv2 made and gave it: [pull request 6](https://github.com/PeterJohnson/openciv2-assets/pull/6),
+made with Gemini 3 Pro Image from two of the pack's backgrounds as references, `tools/gen_hd_backgrounds.py`;
+once OpenCiv2's own in `data/native/hd-extra`).  They are painted whole (hd.c's `WHOLE`), 1280x960
+(density 2, as the pack's other backgrounds).  The advisors' windows show the top left 600x400 of
+the picture, so the painting fills that area and the rest is it mirrored; the tax rates' dialog
+shows its top left 400x256 on small screens (65: the painting fills 800x512) and 600x384 on large
+ones (66: the same painting, prepared as the advisors').
 
-| Id | Screen | OpenCiv2's own |
+| Id | Screen | The pack's painting |
 | --- | --- | --- |
 | 50 | Domestic Advisor, city status (F1) | a steward's table: a ledger, grain sacks, an oil lamp, keys |
 | 51 | Defense Minister (F2), its statistics and casualties; the casualty timeline; the power graph (World > Civilization Score with the map revealed) | a war-room table with a world map |
@@ -455,12 +457,12 @@ The rest is in the platform layer (`src/platform/hd.c`):
   which as a border tile would be absurd, so the window's tile is the pack's marble tile (above:
   pull request 7; with art without it the original's marble, enlarged, without the install plain grey;
   `harness/media/m-wonder.txt`, HD run: the Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
-  graph, the Hall of Fame ...; 65 and 66: the tax rates) were not the release's: the release's
-  are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
+  graph, the Hall of Fame ...; 65 and 66: the tax rates) were, until the pack's commit ad6791d,
+  a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
   original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
   is 1.0 to 1.4 on the parchment (its average colour under the text, 229,220,198) against 4.0 to
   7.5 on the original's (about 90,90,90); a dark overlay bringing light grey text to 4.5 would
-  leave the parchment nearly black.  They are OpenCiv2's own (above), each chosen for the
+  leave the parchment nearly black.  They are now the paintings OpenCiv2 gave the pack (above), each chosen for the
   contrast of the text on it, measured the same way in the World War I scenario's screens (at
   800x600; the tax rates also at 1280x1024): the white and light grey text 7.4 to 16.3 against
   3.5 to 7.9 on the original's, the yellow 7.2 to 10.3 against 3.7 to 5.5, the cyan 4.8 to 7.2
@@ -753,9 +755,9 @@ its licence (MIT); the AI-generated ones' model, prompt and references are recor
   of HD off), `harness/hd/hd-units.txt` (the shields, a stack, an
   occupied airbase, at several zooms), `harness/hd/hd-advances.txt` (the
   advances' pictures in the Science Advisor, a discovery's announcement, the Civilopedia's page,
-  tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds, OpenCiv2's own),
+  tree and list, the choice of research), `advisors.txt` (the advisors' backgrounds),
   `harness/hd/hd-advisors.txt` (with `CIV2_TEST_FULL=800x600`, in the World War I scenario: every
-  screen with OpenCiv2's own background once, F1 to F9, F11, the Foreign Minister's intelligence
+  screen with its background (the pack's painting) once, F1 to F9, F11, the Foreign Minister's intelligence
   report, the Defense Minister's casualties and the tax rates; with `CIV2_TEST_FULL=1280x1024`,
   `harness/hd/hd-advisors-large.txt`, the tax rates on a large screen), `reports.txt` (the
   throne room), `harness/hd/hd-throne.txt` (the throne room at several levels, improved 34
@@ -775,7 +777,7 @@ pixels; without the install's pictures too (*Without the install*, NO-INSTALL.md
 
 ## The pictures drawn
 
-The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop` and `exclude`: 1,355 keys, 833 distinct
+The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop` and `exclude`: 1,367 keys, 845 distinct
 pictures; the whole pack holds 2,166, 309 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
@@ -791,11 +793,8 @@ pictures; the whole pack holds 2,166, 309 MB):
 * `shield`: the units' shields;
 * `palace/` (the furnishings and bonus pieces, 39, but not `palace/decor-`) and
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
-* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
+* `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/50` to `59`, `65`, `66` (the advisors' backgrounds: pull request 6, above), `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`);
-* OpenCiv2's own (`data/native/hd-extra`): `resource/tiles.dll/gifs/50` to `59`, `65`, `66` (the
-  pack has the same paintings since pull request 6, kept by the tool for synth.c only, at the
-  original's size);
 * `file/editoras`, `file/editorsa`, `file/editorsq`, `crop/resource/wonder.dll/gifs/20000` to `20027` (`1,1,64,32`):
   the pack's since openciv2-assets pull request 7 (above);
 * `ship/propulsion`, `engine-active`, `fuel`, `structural-spine`, `structural-dock`,

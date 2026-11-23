@@ -1,5 +1,5 @@
 # HD graphics (docs/HD-GRAPHICS.md): the tax rates on a large screen (the
-# dialog 1.5 times as large) with OpenCiv2's own background (data/native/hd-extra:
+# dialog 1.5 times as large) with its background (the art pack's painting:
 # tiles.dll 66), in the World War I scenario; the other screens: hd-advisors.txt.
 # run: CIV2_TEST_HD=2 CIV2_TEST_FULL=1280x1024
 wait 8000

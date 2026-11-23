@@ -1,5 +1,5 @@
-# HD graphics (docs/HD-GRAPHICS.md): every screen with OpenCiv2's own background
-# (data/native/hd-extra: tiles.dll 50 to 59, 65), once, in the World War I
+# HD graphics (docs/HD-GRAPHICS.md): every screen with one of the advisors'
+# backgrounds (the art pack's paintings: tiles.dll 50 to 59, 65), once, in the World War I
 # scenario: the Domestic Advisor (F1, 50), the Defense Minister (F2, 51) and
 # its casualties, the Foreign Minister's intelligence report (F3, 52), the
 # Attitude (F4, 53), Trade (F5, 54) and Science (F6, 55) Advisors, the Wonders

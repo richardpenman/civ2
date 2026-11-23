@@ -175,7 +175,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 
 | Module | Ids | Where the game uses them | Status |
 | --- | --- | --- | --- |
-| `tiles.dll` | 50-59, 65, 66 | the advisors' backgrounds, the tax rates | replaced: OpenCiv2's own paintings (`data/native/hd-extra`) |
+| `tiles.dll` | 50-59, 65, 66 | the advisors' backgrounds, the tax rates | replaced: the pack's paintings (OpenCiv2's, given to it: openciv2-assets pull request 6) |
 | | 70-77 | the announcements' pictures (city captured, disorder, celebration, founded) | replaced: the pack's |
 | | 85, 86 | the diplomacy's and the icons' sheets (crops) | replaced |
 | | 90 | the new game's and main menu's backdrop | replaced |

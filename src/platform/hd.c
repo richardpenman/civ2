@@ -1007,10 +1007,11 @@ static const struct {
     int inset;                  /* the picture's border left out, in 1/1000ths */
 } WHOLE[] = {
     {"mk.dll", 200, 206, 0},    /* diplomacy: the rooms, by government */
-    /* (not the advisors' backgrounds, tiles.dll 50 to 59, 65 and 66: the
-       pack's are a pale parchment, and the game's text on them, coloured
-       for the original's dark photographs, could not be read: docs/HD-GRAPHICS.md;
-       OpenCiv2's own are drawn in their place: load_pictures) */
+    /* the advisors' backgrounds and the tax rates' (tiles.dll 50 to 59, 65,
+       66): dark paintings, the game's text readable on them (OpenCiv2's,
+       given to the pack: openciv2-assets pull request 6) */
+    {"tiles.dll", 50, 59, 0},
+    {"tiles.dll", 65, 66, 0},
     /* the announcements' pictures (tiles.dll 70 to 77: a city captured, in
        disorder, celebrating, founded; + 1 the modern one): the pack's are
        vignettes on a transparent ground, at the original's size; the wide
