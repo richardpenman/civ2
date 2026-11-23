@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """HD graphics (docs/HD-GRAPHICS.md): make the game's art, data/native/hd,
-from Peter Johnson's runtime art pack (openciv2-assets, MIT) at the release
-pinned in data/hd-pack.json, with the pictures added to it since, from its
-repository at the commit pinned there.  The art is not part of this
-repository (.gitignore): make hd-art runs this, and the builds that need
-the art (make, make port, make native, make windows, make web; the
-release's jobs) run it first.
+from Peter Johnson's runtime art pack (openciv2-assets, MIT) as built from
+his repository at the commit pinned in data/hd-pack.json (repo, sha), so
+what is merged there can be used without waiting for a release.  The art
+is not part of this repository (.gitignore): make hd-art runs this, and the
+builds that need the art (make, make port, make native, make windows, make
+web; the release's jobs) run it first.
 
-    python3 tools/build_hd_pack.py [--force] [--local] [--zip FILE] [--checkout DIR] [--dest DIR] [--keep-work]
+    python3 tools/build_hd_pack.py [--force] [--local] [--dest DIR] [--keep-work]
 
 0. Nothing is done when the destination already holds the art of this pin
    and this tool (its .built: a digest of data/hd-pack.json and this file
@@ -16,40 +16,49 @@ release's jobs) run it first.
    network; else it is made (1 to 5) and kept in the cache.  --force makes
    it again whatever is there.
 
-1. The release's archive is downloaded (url) into the cache
-   (${XDG_CACHE_HOME:-~/.cache}/openciv2, %LOCALAPPDATA%\\openciv2 on Windows;
-   CIV2_DEPENDENCY_CACHE overrides; named by its SHA-256, so fetched once) or
-   taken from --zip, and checked: the pinned SHA-256 and size, then each file
-   used against the SHA-256 and size its package.json lists.
-1b. The pictures added since the release (data/hd-pack.json's "commit": the
-   city view's houses of the other eras, its medieval and modern
-   landscapes) are each downloaded from the repository at the pinned commit
-   (raw.githubusercontent.com, into the cache, named by its SHA-256) or
-   taken from a clone (--checkout: git show SHA:PATH), and checked against
-   the SHA-256 and size pinned for it; each is a picture of the pack (its
-   key, its size in the game's pixels, the PNG unchanged, as the pack's
-   builder adds a binding), in place of the release's of that key if any;
-   the commit's notices in place of the release's of those names.
-2. Of its data/atlas-hd.pack (C2ATLAS1: a count, a palette, 180-byte entries:
-   key, size in the game's pixels, offset and length of a PNG), the pictures
-   the game uses are kept: those it draws, the keys beginning with one of
-   data/hd-pack.json's "keep" and with none of its "drop" (src/platform/hd.c
-   and src/game/hd_graphics.cpp draw no others), and those
-   src/platform/synth.c reads to make the original's pictures where the game
-   folder lacks them, the keys beginning with one of its "synth"; never
-   those beginning with one of its "exclude" (if it has one).  Pictures with the same PNG are kept once.
+1. The files of the pinned commit the pack is built from are fetched into
+   a partial clone in the cache (${XDG_CACHE_HOME:-~/.cache}/openciv2/
+   openciv2-assets.git, %LOCALAPPDATA%\\openciv2 on Windows;
+   CIV2_DEPENDENCY_CACHE overrides): the commit and its trees only (git
+   fetch --filter=blob:none --depth=1 SHA), then in one fetch the blobs not
+   yet there of its runtime-inputs.json's pictures and data
+   (assets/atlas-hd/NAME), of its builder (tools/build_atlas.py,
+   runtime_selection.py, dependency.py), contracts/cityview-rects.json,
+   requirements.txt and the notices (LICENSE, THIRD-PARTY.txt,
+   assets/atlas-hd/PROVENANCE.md); never its authoring and review material
+   nor the rest of its history.  Git checks each object against its id, so
+   the commit's id pins every file; the blobs are kept (a later commit
+   fetches only those it changed).  They are written to a work folder
+   (build/hd-pack-*).
+1b. The pack is built from them as the repository's release does
+   (tools/build.py runs tools/build_atlas.py): its tools/build_atlas.py, in
+   a throwaway container of the pinned Python image (BUILD_IMAGE) with the
+   Pillow its requirements.txt names, installed from PyPI checked against
+   the SHA-256s pinned here (PILLOW; a commit asking for another Pillow
+   stops this until they are updated); it writes build/data/atlas-hd.pack.
+   (Fonts, layout header and package.json, which the release adds, are not
+   used here.)
+2. Of that data/atlas-hd.pack (C2ATLAS1: a count, a palette, 180-byte
+   entries: key, size in the game's pixels, offset and length of a PNG),
+   the pictures the game uses are kept: those it draws, the keys beginning
+   with one of data/hd-pack.json's "keep" and with none of its "drop"
+   (src/platform/hd.c and src/game/hd_graphics.cpp draw no others), and
+   those src/platform/synth.c reads to make the original's pictures where
+   the game folder lacks them, the keys beginning with one of its "synth";
+   never those beginning with one of its "exclude" (if it has one).
+   Pictures with the same PNG are kept once.
 3. Each is made no larger than the largest size the game uses it at: one
    drawn, its size in the game's pixels times MAX_DENSITY (hd.c's hd_density
    is at most 4) times MAP_ZOOM for the map's pictures (the map's zoom goes
    up to twice the size); one only read by synth.c, its size in the game's
    pixels (synth.c shrinks it to that); a larger one is shrunk (Lanczos,
-   premultiplied alpha).  (With release v2026.11.08.1 no picture drawn is:
-   its sprites are 4 times the game's size, the map's blends, fog and
-   shields 8, its backgrounds 2.)
+   premultiplied alpha).  (The pack's sprites are 4 times the game's size,
+   the map's blends, fog and shields 8, its backgrounds 2: no picture drawn
+   is.)
 4. Each is encoded as WebP by cwebp, pinned (CWEBP_VERSION, Debian's
-   package, in a throwaway container of the pinned Debian image; Docker
-   needed): pictures with transparent pixels of at most SMALL game pixels
-   each way lossless; the others lossy at quality 90 (Q95: 95), -m 4
+   package, in a throwaway container of the pinned Debian image: IMAGE;
+   Docker needed): pictures with transparent pixels of at most SMALL game
+   pixels each way lossless; the others lossy at quality 90 (Q95: 95), -m 4
    -sharp_yuv, alpha lossless, unless the lossless file is at most
    LOSSLESS_MARGIN times as large (flat interface pictures, whole sheets).
    The choices come from a comparison of encoders on these pictures
@@ -57,29 +66,38 @@ release's jobs) run it first.
 5. data/native/hd is written again: a WebP per distinct picture (named by
    its first key, "/" as "_"), pictures.txt (a line "KEY W H FILE" per key,
    the format of data/native/hd-extra's, which hd.c reads), and the
-   release's LICENSE, THIRD-PARTY.txt and ATLAS-PROVENANCE.md.
+   commit's LICENSE, THIRD-PARTY.txt and assets/atlas-hd/PROVENANCE.md (as
+   ATLAS-PROVENANCE.md, the release's name).
 
-The same input gives the same files (cwebp is deterministic at one thread).
-Upgrading the art: tag, url, sha256 and size in data/hd-pack.json (and its
-"commit": the sha and each picture's path, w, h, sha256 and size from the
-repository's assets/atlas-hd/compatibility/bindings.json there; removed
-when a release has them all), then this.
+The same input gives the same files (Pillow and cwebp pinned, cwebp at one
+thread).  Upgrading the art: the sha in data/hd-pack.json (git ls-remote
+REPO main), then this.
 
-Without Docker (or with --local) the pictures are encoded by this machine's
-cwebp, with Python's PIL and numpy (step 4 as in the container): the same
-pictures, not always the same bytes (another cwebp), so not kept in the
-cache.
+Without Docker (or with --local) the pack is built with this machine's
+Python and Pillow and the pictures encoded by its cwebp, with Pillow and
+numpy (steps 1b and 4 as in the containers): the same pictures (another
+Pillow than requirements.txt's: perhaps not to the pixel), not always the
+same bytes, so not kept in the cache.
 """
-import argparse, hashlib, io, json, os, shutil, struct, subprocess, sys, tempfile, urllib.request, zipfile
+import argparse, hashlib, json, os, shutil, struct, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PIN = os.path.join(ROOT, 'data', 'hd-pack.json')
 DEST = os.path.join(ROOT, 'data', 'native', 'hd')
-# the release's notices, installed beside the pictures (archive member -> name)
+# the commit's notices, installed beside the pictures (path -> name)
 NOTICES = {'LICENSE': 'LICENSE', 'THIRD-PARTY.txt': 'THIRD-PARTY.txt',
-           'data/ATLAS-PROVENANCE.md': 'ATLAS-PROVENANCE.md'}
-PACK = 'data/atlas-hd.pack'
+           'assets/atlas-hd/PROVENANCE.md': 'ATLAS-PROVENANCE.md'}
+# what the pack's builder reads besides runtime-inputs.json's assets/atlas-hd/NAME
+BUILDER = ('runtime-inputs.json', 'requirements.txt', 'tools/build_atlas.py', 'tools/runtime_selection.py',
+           'tools/dependency.py', 'contracts/cityview-rects.json')
+PACK = 'build/data/atlas-hd.pack'
 
+# the pack's builder, pinned: Python 3.13 (as the repository's release job) and the Pillow its
+# requirements.txt names, the wheels' SHA-256s (x86-64, arm64) from PyPI
+BUILD_IMAGE = 'python:3.13-slim-trixie@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d350d98134cf1070bc106ee9ed90'
+PILLOW = 'Pillow==13.0.0'
+PILLOW_SHA256 = ('5f56499c1a74d2b862beb0c33b8016f99d095858455df9d21583bbbc1c15b582',
+                 '19b66ca0a4d25cc0200b381ce824c7ea090db61427315e73cfb05dbf1b35c369')
 # the encoder, pinned: Debian 13's image and its webp package
 IMAGE = 'debian:trixie@sha256:9c6e381421d0f48d1b8133e573f33c185ee16cbf505eda9c4a8a4791b25ea8a6'
 CWEBP_VERSION = '1.5.0-0.1'
@@ -109,40 +127,6 @@ def cache_dir():
     return d
 
 
-def sha256_file(path):
-    h = hashlib.sha256()
-    with open(path, 'rb') as f:
-        for block in iter(lambda: f.read(1 << 20), b''):
-            h.update(block)
-    return h.hexdigest()
-
-
-def download(url, sha, path):
-    if os.path.exists(path) and sha256_file(path) == sha:
-        return
-    print('downloading %s' % url, flush=True)
-    tmp = path + '.part'
-    with urllib.request.urlopen(url) as r, open(tmp, 'wb') as f:
-        shutil.copyfileobj(r, f, 1 << 20)
-    got = sha256_file(tmp)
-    if got != sha:
-        os.remove(tmp)
-        sys.exit('build_hd_pack: %s has SHA-256 %s, not the pinned %s' % (url, got, sha))
-    os.replace(tmp, path)
-
-
-def extract(z, manifest, member, out):
-    """member of the archive into out, checked against package.json."""
-    want = manifest['files'][member]
-    h = hashlib.sha256()
-    with z.open(member) as src, open(out, 'wb') as dst:
-        for block in iter(lambda: src.read(1 << 20), b''):
-            h.update(block)
-            dst.write(block)
-    if h.hexdigest() != want['sha256'] or os.path.getsize(out) != want['size']:
-        sys.exit('build_hd_pack: %s does not match its package.json' % member)
-
-
 def read_pack(path, wanted):
     """[(key, w, h, png bytes)] of a C2ATLAS1 pack, of the keys wanted(key)."""
     out = []
@@ -163,19 +147,92 @@ def read_pack(path, wanted):
     return out
 
 
-def fetch_commit(pin, checkout, item):
-    """the bytes of a file of the pinned commit (item: path, sha256, size), checked."""
-    c = pin['commit']
-    if checkout:
-        data = subprocess.run(['git', '-C', checkout, 'show', '%s:%s' % (c['sha'], item['path'])],
-                              capture_output=True, check=True).stdout
+def git(repo, *args, **kw):
+    """git in the cache's partial clone, never fetching a missing object on its own (one at a time)."""
+    env = dict(os.environ, GIT_NO_LAZY_FETCH='1', GIT_TERMINAL_PROMPT='0')
+    return subprocess.run(['git', '--git-dir', repo] + list(args), env=env, check=True,
+                          stdout=subprocess.PIPE, **kw).stdout
+
+
+def fetch_source(pin, out):
+    """1.: the files of the pinned commit the pack is built from, into out (fetched only where not yet in the cache)."""
+    if not shutil.which('git'):
+        sys.exit('build_hd_pack: git is needed to fetch the art\'s source (or build without the HD art: make HD_ART=)')
+    sha = pin['sha']
+    if len(sha) != 40 or any(c not in '0123456789abcdef' for c in sha):
+        sys.exit('build_hd_pack: data/hd-pack.json\'s sha is not a full commit id')
+    repo = os.path.join(cache_dir(), 'openciv2-assets.git')
+    if not os.path.exists(os.path.join(repo, 'HEAD')):
+        subprocess.run(['git', 'init', '-q', '--bare', repo], check=True)
+        for k, v in (('remote.origin.url', pin['repo']), ('remote.origin.promisor', 'true'),
+                     ('remote.origin.partialclonefilter', 'blob:none')):
+            git(repo, 'config', k, v)
+    git(repo, 'config', 'remote.origin.url', pin['repo'])
+    have = lambda: subprocess.run(['git', '--git-dir', repo, 'cat-file', '-e', sha + '^{commit}'],
+                                  env=dict(os.environ, GIT_NO_LAZY_FETCH='1'), stderr=subprocess.DEVNULL).returncode == 0
+    if not have():
+        print('fetching openciv2-assets %s (the commit and its trees)' % sha[:7], flush=True)
+        git(repo, 'fetch', '-q', '--no-write-fetch-head', '--filter=blob:none', '--depth=1', 'origin', sha)
+        if not have():
+            sys.exit('build_hd_pack: %s has no commit %s' % (pin['repo'], sha))
+
+    tree = git(repo, 'ls-tree', '-r', '-z', '--format=%(objecttype) %(objectname)\t%(path)', sha).decode()
+
+    def blobs(paths):
+        """{path: blob id} of the commit, the missing blobs fetched in one go."""
+        wanted, ids = set(paths), {}
+        for line in filter(None, tree.split('\0')):
+            meta, path = line.split('\t', 1)
+            kind, oid = meta.split()
+            if kind == 'blob' and path in wanted:
+                ids[path] = oid
+        if set(paths) - set(ids):
+            sys.exit('build_hd_pack: not in %s: %s' % (sha[:7], ', '.join(sorted(set(paths) - set(ids)))))
+        check = git(repo, 'cat-file', '--batch-check', input='\n'.join(sorted(set(ids.values()))).encode())
+        missing = [l.split()[0] for l in check.decode().splitlines() if l.endswith(' missing')]
+        if missing:
+            print('fetching %d files of openciv2-assets %s' % (len(missing), sha[:7]), flush=True)
+            git(repo, 'fetch', '-q', '--no-write-fetch-head', 'origin', '--stdin', input='\n'.join(missing).encode())
+        return ids
+
+    def write(ids):
+        for path, oid in ids.items():
+            dst = os.path.join(out, *path.split('/'))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            with open(dst, 'wb') as f:
+                f.write(git(repo, 'cat-file', 'blob', oid))
+
+    write(blobs(list(BUILDER) + list(NOTICES)))
+    names = json.load(open(os.path.join(out, 'runtime-inputs.json'), encoding='utf-8'))
+    if not isinstance(names, list) or any(not isinstance(n, str) or '..' in n.split('/') for n in names):
+        sys.exit('build_hd_pack: %s\'s runtime-inputs.json is not a list of paths' % sha[:7])
+    write(blobs(['assets/atlas-hd/' + n for n in names]))
+    return len(names)
+
+
+def build_pack(src, local):
+    """1b.: src/build/data/atlas-hd.pack, built by the commit's tools/build_atlas.py with the pinned Pillow."""
+    req = [l.split('#')[0].strip() for l in open(os.path.join(src, 'requirements.txt'), encoding='utf-8')]
+    if [l for l in req if l] != [PILLOW]:
+        sys.exit('build_hd_pack: the commit\'s requirements.txt asks for %s, not %s: update PILLOW, '
+                 'PILLOW_SHA256 and BUILD_IMAGE in this tool' % (', '.join(l for l in req if l), PILLOW))
+    print('building the pack (its tools/build_atlas.py, %s)' % PILLOW, flush=True)
+    if local:
+        import PIL
+        if 'Pillow==' + PIL.__version__ != PILLOW:
+            print('build_hd_pack: this machine\'s Pillow is %s, not %s: the pictures may differ slightly'
+                  % (PIL.__version__, PILLOW), flush=True)
+        subprocess.run([sys.executable, os.path.join(src, 'tools', 'build_atlas.py')], check=True,
+                       stdout=subprocess.DEVNULL)
     else:
-        path = os.path.join(cache_dir(), item['sha256'] + os.path.splitext(item['path'])[1])
-        download(c['raw'].format(sha=c['sha'], path=item['path']), item['sha256'], path)
-        data = open(path, 'rb').read()
-    if hashlib.sha256(data).hexdigest() != item['sha256'] or len(data) != item['size']:
-        sys.exit('build_hd_pack: %s at %s is not the pinned file' % (item['path'], c['sha']))
-    return data
+        with open(os.path.join(src, 'pinned-requirements.txt'), 'w') as f:
+            f.write(PILLOW + ''.join(' --hash=sha256:' + h for h in PILLOW_SHA256) + '\n')
+        subprocess.run(['docker', 'run', '--rm', '-v', src + ':/w', '-e', 'HOST_IDS=%d:%d' % (os.getuid(), os.getgid()),
+                        '-e', 'PYTHONWARNINGS=ignore::DeprecationWarning', BUILD_IMAGE, 'sh', '-c',
+                        'pip install -q --root-user-action=ignore --disable-pip-version-check --no-deps '
+                        '--require-hashes -r /w/pinned-requirements.txt && python /w/tools/build_atlas.py >/dev/null; '
+                        'r=$?; chown -R "$HOST_IDS" /w; exit $r'], check=True)
+    return os.path.join(src, *PACK.split('/'))
 
 
 def drawn(key, pin):
@@ -227,7 +284,7 @@ def ensure(args):
     else:
         local = args.local or not shutil.which('docker')
         if local:
-            print('build_hd_pack: no Docker (or --local): this machine\'s cwebp encodes the art', flush=True)
+            print('build_hd_pack: no Docker (or --local): this machine\'s Python, Pillow and cwebp make the art', flush=True)
         build(args, local)
         if not local:
             tmp = cached + '.part'
@@ -238,6 +295,8 @@ def ensure(args):
             for old in os.listdir(cache_dir()):          # (the art of other pins: not kept)
                 if old.startswith('hd-') and old != 'hd-' + digest:
                     shutil.rmtree(os.path.join(cache_dir(), old), ignore_errors=True)
+                elif len(old.split('.')[0]) == 64 and old.endswith(('.zip', '.png', '.md')):
+                    os.remove(os.path.join(cache_dir(), old))    # (the downloads of releases, before commits were pinned)
     with open(stamp, 'w') as f:
         f.write(digest + '\n')
 
@@ -245,34 +304,18 @@ def ensure(args):
 def build(args, local=False):
     dest = args.dest
     pin = json.load(open(PIN))
-    archive = args.zip or os.path.join(cache_dir(), pin['sha256'] + '.zip')
-    if args.zip:
-        if sha256_file(args.zip) != pin['sha256']:
-            sys.exit('build_hd_pack: %s is not the pinned archive (%s)' % (args.zip, pin['tag']))
-    else:
-        download(pin['url'], pin['sha256'], archive)
-    if os.path.getsize(archive) != pin['size']:
-        sys.exit('build_hd_pack: %s is not %d bytes' % (archive, pin['size']))
     os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
     work = tempfile.mkdtemp(prefix='hd-pack-', dir=os.path.join(ROOT, 'build'))
     try:
-        with zipfile.ZipFile(archive) as z:
-            manifest = json.loads(z.read('package.json'))
-            if manifest.get('kind') != 'openciv2-assets' or manifest.get('schema') != 1:
-                sys.exit('build_hd_pack: not an openciv2-assets runtime pack (schema 1)')
-            os.makedirs(os.path.join(work, 'notices'))
-            for member, name in NOTICES.items():
-                extract(z, manifest, member, os.path.join(work, 'notices', name))
-            extract(z, manifest, PACK, os.path.join(work, 'atlas-hd.pack'))
-        entries = read_pack(os.path.join(work, 'atlas-hd.pack'), lambda k: used(k, pin))
-        os.remove(os.path.join(work, 'atlas-hd.pack'))
-        # the pictures added since the release, from the pinned commit
-        if pin.get('commit'):
-            added = {k: p for k, p in pin['commit']['pictures'].items() if used(k, pin)}
-            entries = [e for e in entries if e[0] not in added]
-            entries += [(k, p['w'], p['h'], fetch_commit(pin, args.checkout, p)) for k, p in added.items()]
-            for name, item in pin['commit'].get('notices', {}).items():
-                open(os.path.join(work, 'notices', name), 'wb').write(fetch_commit(pin, args.checkout, item))
+        src = os.path.join(work, 'src')
+        n = fetch_source(pin, src)
+        print('openciv2-assets %s: %d inputs' % (pin['sha'][:7], n), flush=True)
+        pack = build_pack(src, local)
+        entries = read_pack(pack, lambda k: used(k, pin))
+        os.makedirs(os.path.join(work, 'notices'))
+        for path, name in NOTICES.items():
+            shutil.copy(os.path.join(src, *path.split('/')), os.path.join(work, 'notices', name))
+        shutil.rmtree(src)
         # the distinct pictures, each with its keys
         pictures, by_png = [], {}
         for key, w, h, png in sorted(entries):
@@ -321,10 +364,9 @@ def build(args, local=False):
             shutil.copy(os.path.join(work, '%d.webp' % p['id']), os.path.join(dest, p['file']))
             lines += ['%s %d %d %s\n' % (k, w, h, p['file']) for k, w, h in p['keys']]
         with open(os.path.join(dest, 'pictures.txt'), 'w', newline='\n') as f:
-            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2-assets %s%s by Peter Johnson (MIT: LICENSE),\n'
-                    '# its pictures the game draws, made by tools/build_hd_pack.py (WebP).  A line per key:\n'
-                    '# KEY W H FILE (the picture\'s size in the game\'s pixels).\n'
-                    % (pin['tag'], ' and commit %s' % pin['commit']['sha'][:7] if pin.get('commit') else ''))
+            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2-assets by Peter Johnson (MIT: LICENSE)\n'
+                    '# at commit %s, its pictures the game draws, made by tools/build_hd_pack.py (WebP).\n'
+                    '# A line per key: KEY W H FILE (the picture\'s size in the game\'s pixels).\n' % pin['sha'])
             f.writelines(sorted(lines))
         total = sum(d['bytes'] for d in done.values())
         kinds = {}
@@ -395,10 +437,7 @@ def main():
         return
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--force', action='store_true', help='make the art again, whatever the destination and the cache hold')
-    ap.add_argument('--local', action='store_true', help='encode with this machine\'s cwebp, not in Docker')
-    ap.add_argument('--zip', help='the release\'s archive already downloaded (still checked against the pin)')
-    ap.add_argument('--checkout', help='a clone of openciv2-assets to take the pinned commit\'s files from '
-                    '(instead of downloading them; still checked against the pin)')
+    ap.add_argument('--local', action='store_true', help='build the pack and encode with this machine\'s Python, Pillow and cwebp, not in Docker')
     ap.add_argument('--dest', default=DEST, help='where to write (default data/native/hd)')
     ap.add_argument('--keep-work', action='store_true', help='keep the work folder (build/hd-pack-*)')
     ensure(ap.parse_args())

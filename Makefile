@@ -12,10 +12,11 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 PORT ?= 8000
 
 # The HD graphics' art (docs/HD-GRAPHICS.md), data/native/hd: not in the
-# repository, made from the release of Peter Johnson's art pinned in
-# data/hd-pack.json (tools/build_hd_pack.py: downloaded once into
-# ~/.cache/openciv2, encoded in Docker or by this machine's cwebp, the result
-# kept there too) before each build that packs or runs with it; at once when
+# repository, made from Peter Johnson's art at the commit of his repository
+# pinned in data/hd-pack.json (tools/build_hd_pack.py: the files it is built
+# from fetched once into ~/.cache/openciv2, the pack built and the pictures
+# encoded in Docker or by this machine's Python and cwebp, the result kept
+# there too) before each build that packs or runs with it; at once when
 # it is up to date.  HD_ART= (or 0): builds without it (the game then has
 # Classic graphics only).
 HD_ART ?= 1
@@ -35,7 +36,7 @@ endif
 
 all: build
 
-build:                        ## build/OpenCiv2 and the HD art (first time: downloads its toolchain into tools/toolchain and the art's release into ~/.cache/openciv2)
+build:                        ## build/OpenCiv2 and the HD art (first time: downloads its toolchain into tools/toolchain and the art's source into ~/.cache/openciv2)
 	$(HD_ART_MAKE)
 	python3 tools/build_port.py
 
@@ -77,10 +78,10 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs --replay $(NAME)
 	$(DK) sh -c "python3 -c \"import glob,sys; from PIL import Image; import os; [(Image.open(f).save(f[:-4] + '.png'), os.remove(f)) for f in glob.glob('run/web-$(NAME)/*.bmp')]\" && python3 harness/compare.py run/ref-$(NAME) run/web-$(NAME)"
 
-# HD graphics (docs/HD-GRAPHICS.md): data/native/hd from the release of
-# Peter Johnson's art pinned in data/hd-pack.json (HD_ART above; FORCE=1:
+# HD graphics (docs/HD-GRAPHICS.md): data/native/hd from Peter Johnson's
+# art at the commit pinned in data/hd-pack.json (HD_ART above; FORCE=1:
 # made again, whatever is there or in the cache).
-hd-art:                       ## the HD graphics' art in data/native/hd from the pinned release (tools/build_hd_pack.py; at once when up to date)
+hd-art:                       ## the HD graphics' art in data/native/hd from the pinned commit of openciv2-assets (tools/build_hd_pack.py; at once when up to date)
 	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)

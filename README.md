@@ -61,7 +61,7 @@ To build it yourself, install your copy of Civilization II in `~/Civ2` (the dire
 git clone https://github.com/richardpenman/civ2 && cd civ2
 make            # -> build/OpenCiv2 (several minutes; the first time it downloads wasi-sdk,
                 #    wabt and the libraries' sources into tools/toolchain, and the HD art's
-                #    release into ~/.cache/openciv2, from which it makes data/native/hd)
+                #    source into ~/.cache/openciv2, from which it makes data/native/hd)
 make run        # plays the game in ~/Civ2 (or: make run GAME=/path/to/Civ2)
 ```
 
@@ -71,9 +71,10 @@ working Docker and the development images built with `make images`. See
 [DEVELOPMENT.md](docs/DEVELOPMENT.md#tooling) for those development targets.
 
 The HD graphics' art is not in the repository: the builds make it first (`make hd-art`,
-[HD-GRAPHICS.md](docs/HD-GRAPHICS.md#what-the-art-is)), downloading the pinned release of
-openciv2-assets once and encoding its pictures as WebP in Docker, or, without Docker, with
-`cwebp` (the `webp` package; `brew install webp`) and Python's Pillow and numpy. Later builds
+[HD-GRAPHICS.md](docs/HD-GRAPHICS.md#what-the-art-is)), fetching the files of openciv2-assets
+at its pinned commit once (git; 316 MB), building its pack and encoding its pictures as WebP in
+Docker, or, without Docker, with Python's Pillow and numpy and `cwebp` (the `webp` package;
+`brew install webp`). Later builds
 take it from `~/.cache/openciv2`, offline. `make HD_ART=` builds without it (Classic graphics
 only).
 

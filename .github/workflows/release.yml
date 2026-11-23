@@ -4,9 +4,9 @@
 # (src/host/setup.c).  The
 # game's C (tools/build_port.py module c) is made once, then compiled for
 # each system.  The HD graphics' art (data/native/hd: not in the repository)
-# is made once from the release of Peter Johnson's art pinned in
-# data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its download
-# and its result cached) and packed with each.
+# is made once from Peter Johnson's art at the commit of his repository
+# pinned in data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its
+# download and its result cached) and packed with each.
 name: Build and release
 
 on:
@@ -43,10 +43,11 @@ jobs:
           retention-days: 1
 
   # The HD graphics' art (docs/HD-GRAPHICS.md): data/native/hd, made by
-  # tools/build_hd_pack.py (the pinned release downloaded and checked, the
-  # pictures encoded in Docker); ~/.cache/openciv2 kept between runs (the
-  # release's archive and the art made from it: the same pin and tool, no
-  # download nor encoding).
+  # tools/build_hd_pack.py (the pinned commit's files fetched into a partial
+  # clone, the pack built and the pictures encoded in Docker);
+  # ~/.cache/openciv2 kept between runs (the clone's objects and the art made
+  # from them: the same pin and tool, no download nor build; a new pin
+  # fetches only the files its commit changed).
   hd-art:
     runs-on: ubuntu-24.04
     steps:
@@ -54,8 +55,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ~/.cache/openciv2
-          key: hd-art-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
-          restore-keys: hd-art-
+          key: hd-art-git-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
+          restore-keys: hd-art-git-
       - name: The art
         run: python3 tools/build_hd_pack.py
       - uses: actions/upload-artifact@v7

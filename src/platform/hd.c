@@ -982,8 +982,8 @@ void hd_sheet_loaded(void *bits, const char *filename)
     if (!(id = find(b->hd_sheet)))
         b->hd_sheet[0] = 0;
     /* a picture of a whole sheet, OpenCiv2's own or the scenario editors'
-       backdrops (file/editoras, editorsa, editorsq: offered to the art pack,
-       openciv2-assets pull request 7; until it has them, the original's):
+       backdrops (file/editoras, editorsa, editorsq: the art pack's since
+       openciv2-assets pull request 7; where the art lacks them, the original's):
        painted on the plane, as a resource picture's (paint_whole) */
     else if (entries[id - 1].own || !strcmp(b->hd_sheet, "file/editoras") ||
              !strcmp(b->hd_sheet, "file/editorsa") || !strcmp(b->hd_sheet, "file/editorsq"))

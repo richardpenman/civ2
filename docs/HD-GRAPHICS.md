@@ -83,50 +83,65 @@ its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 ## What the art is
 
 The art is Peter Johnson's runtime art pack, [openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)
-(MIT licence), at the release pinned in `data/hd-pack.json` (v2026.11.08.1): the part of it the
-game uses, in `data/native/hd`, made by `tools/build_hd_pack.py` (`make hd-art`) and not in the
-repository (`.gitignore`: OpenCiv2's builds and releases carry it, git does not).  The release
-(`openciv2-assets-2026.11.08.1.zip`, 234 MB) holds `data/atlas-hd.pack` (250 MB), two bitmap
-font caches of DejaVu glyphs (`fonts.bin`, `fonts_aa.bin`, not used here: OpenCiv2 has its own
-fonts), a generated layout header and a layout contract for PR #11's renderer
-(`include/hd_layouts.h`, `data/cityview-rects.json`, not used here), `package.json` (each file's
-SHA-256), `LICENSE` (MIT), `THIRD-PARTY.txt` and `data/ATLAS-PROVENANCE.md`.  The provenance
-says the paintings were made with an image generator from written descriptions and the rest drawn
-as vector geometry, with no pixels of the original game's or Freeciv's art.
+(MIT licence), as built from his repository at the commit pinned in `data/hd-pack.json` (`repo`,
+`sha`; not a release, so that what is merged there can be used without waiting for one): the
+part of it the game uses, in `data/native/hd`, made by `tools/build_hd_pack.py` (`make hd-art`)
+and not in the repository (`.gitignore`: OpenCiv2's builds and releases carry it, git does not).
+The repository (some 4 GB of history: the authoring and review material, the pictures' earlier
+versions) builds its pack with `tools/build.py`, which runs `tools/build_atlas.py` on the files
+its `runtime-inputs.json` lists (about 890 under `assets/atlas-hd`: the paintings, sprites,
+their bindings and layout data, 316 MB) and `contracts/cityview-rects.json`: it crops, fits,
+recolours and arranges them into `data/atlas-hd.pack`, and its releases add two bitmap font
+caches, a layout header and contract for PR #11's renderer and `package.json` (none used here).
+Built at the commit of release v2026.11.08.1 as below, the pack is that release's, byte for
+byte.  Its `LICENSE` (MIT), `THIRD-PARTY.txt` and `assets/atlas-hd/PROVENANCE.md` come with the
+art.  The provenance says the paintings were made with an image generator from written
+descriptions and the rest drawn as vector geometry, with no pixels of the original game's or
+Freeciv's art.
 
-`atlas-hd.pack`: `C2ATLAS1`, a count, a 256-colour palette, then 2,105 entries of 180 bytes
+`atlas-hd.pack`: `C2ATLAS1`, a count, a 256-colour palette, then 2,166 entries of 180 bytes (at d770b0b; release v2026.11.08.1's 2,105)
 (a key, the picture's size in the game's pixels, the offset and length of its PNG, and for
 whole sheets an indexed copy), keys in ascending order, then the PNGs.
 
-`data/native/hd` (about 30 MB; not in git): `pictures.txt`, a line per key, `KEY W H FILE`
+`data/native/hd` (about 32 MB; not in git): `pictures.txt`, a line per key, `KEY W H FILE`
 (the pack's key, the picture's size in the game's pixels, its file there; the format of
 `data/native/hd-extra`'s, below), a WebP file per distinct picture (named by its first key, `/`
-as `_`; keys with the same picture share it), and the release's `LICENSE`, `THIRD-PARTY.txt` and
+as `_`; keys with the same picture share it), and the commit's `LICENSE`, `THIRD-PARTY.txt` and
 `ATLAS-PROVENANCE.md`, and `.built` (the digest of the pin and the tool it was made with).
 The tool does nothing when `data/native/hd` is already the art of this pin and tool, copies
 it from the cache (`~/.cache/openciv2/hd-DIGEST`, kept there after each time it is made: no
 network needed) when it was made before, and otherwise (or with `--force`, `make hd-art
 FORCE=1`):
 
-1. downloads the pinned release (into `~/.cache/openciv2`, once) and checks its SHA-256 and
-   size, then each file it uses against the SHA-256 and size of its `package.json`;
+1. fetches the files the pack is built from, at the pinned commit, into a partial clone in the
+   cache (`~/.cache/openciv2/openciv2-assets.git`): the commit and its trees only (`git fetch
+   --filter=blob:none --depth=1 SHA`, under 1 MB), then in one fetch the blobs not yet there of
+   its `runtime-inputs.json`'s files, its builder (`tools/build_atlas.py`, `runtime_selection.py`,
+   `dependency.py`), `contracts/cityview-rects.json`, `requirements.txt` and the notices: 316 MB
+   the first time (about 25 seconds), afterwards only the files a newer commit changed; never
+   the rest of the repository or its history.  Git checks each object against its id, so the
+   commit's id pins every file;
+1b. builds the pack as the repository's release does: its `tools/build_atlas.py`, in a throwaway
+   container of the pinned Python 3.13 image with the Pillow its `requirements.txt` names
+   (13.0.0), installed from PyPI and checked against the SHA-256s pinned in the tool (a commit
+   asking for another Pillow stops the tool until the pins are updated); about 2.5 minutes;
 2. keeps of the pack the pictures the game uses: those hd.c and `src/game/hd_graphics.cpp`
    draw (the keys beginning with one of `data/hd-pack.json`'s `keep` and none of its `drop`:
    *The pictures drawn*, below) and those `src/platform/synth.c` reads to make the original's
    pictures where the game folder lacks them (its `synth`: [NO-INSTALL.md](NO-INSTALL.md)),
    but never those beginning with one of its `exclude` (the pack's leaders' portraits whole and
    its sheets of small faces, `mk.dll` 210, 211, 220 to 261, and the portraits' crops no tribe is
-   given: not used), 1,538 keys, 958 distinct
-   pictures (the release has 2,105);
+   given: not used), 1,569 keys, 973 distinct
+   pictures (the pack has 2,166);
 3. makes each no larger than the largest size the game uses it at: a picture drawn, its size in
    the game's pixels times 4 (the largest density, `hd_density`) and times 2 more for the map's
    (its largest zoom, +8: twice the size); one only read by synth.c, its size in the game's
    pixels (synth.c shrinks it to that, into the 8-bit picture HD mode then shows enlarged).  A
-   larger one is shrunk (Lanczos, premultiplied alpha).  None drawn is, in this release: its
+   larger one is shrunk (Lanczos, premultiplied alpha).  None drawn is: the pack's
    sprites are 4 times the game's size, the map's blends, fog and shields 8 and its backgrounds
    2, so at density 4 (a 5K screen, or `--hd=4`) none is drawn larger than it is stored; the
    synth-only ones (the libraries' pictures hd.c does not paint, the crops it does not draw)
-   are shrunk to the original's size (218 pictures);
+   are shrunk to the original's size (157 pictures);
 4. encodes each as WebP with cwebp 1.5.0 (Debian 13's package, in a throwaway container of the
    pinned Debian image: Docker; without Docker, or with `--local`, this machine's `cwebp`,
    with Python's PIL and numpy: the same pictures, not always the same bytes, so not kept in
@@ -137,16 +152,19 @@ FORCE=1`):
    backgrounds below 85 at 90 (the throne room's hall `pv.dll` 100, the spaceship's window
    `ss.dll` 499, the diplomacy rooms `mk.dll` 200 to 206, the credits `tiles.dll` 90), unless
    the lossless file is at most 1.15 times as large (flat pictures);
-5. writes `data/native/hd` again (and the cache's copy).  The same release gives the same files.
+5. writes `data/native/hd` again (and the cache's copy).  The same commit gives the same files.
+   Without Docker (or with `--local`) this machine's Python and Pillow build the pack (another
+   Pillow: perhaps not to the pixel) and its `cwebp` encodes, not kept in the cache.
 
 `make HD_ART=` (or `HD_ART=0`) builds without making the art.  The release's build
 (`.github/workflows/release.yml`) makes it once (its job `hd-art`, `~/.cache/openciv2` cached
 between runs) and packs it with each system's program.
 
-Upgrading the art (a new release of openciv2-assets, e.g. once its PR #1 lands): change `tag`,
-`url`, `sha256` and `size` in `data/hd-pack.json`, run `make hd-art` (`python3
-tools/build_hd_pack.py`; `--zip FILE` takes a release already downloaded), look at the HD
-scripts' screenshots (*Tests*, below), and commit `data/hd-pack.json` (never `data/native/hd`).  A picture of a kind not yet
+Upgrading the art (what is merged into openciv2-assets' `main`): put the commit's id (`git
+ls-remote https://github.com/PeterJohnson/openciv2-assets main`) as `sha` in
+`data/hd-pack.json`, run `make hd-art` (`python3 tools/build_hd_pack.py`), look at the HD
+scripts' screenshots (*Tests*, below), and commit `data/hd-pack.json` (never `data/native/hd`).
+A picture of a kind not yet
 used is added to `keep` (drawn) or `synth` (read by synth.c) first.  The game reads PNG too
 (stb_image), so a picture can also be put there by hand.
 
@@ -197,19 +215,20 @@ The scenario editors' backdrops (`file/editoras`: `EDITORAS.GIF`, the improvemen
 cities editor; the original's are grey embossed reliefs, an astronaut, a warrior with a spear, a sea
 monster) and the wonders' movie window's border tile (`crop/resource/wonder.dll/gifs/20000/1,1,64,32`
 to `20027`: the original's is the same grey marble in each; the pack's pictures are each wonder's
-painting, whose corner would be no border) are not in the pack; OpenCiv2's own (faint bas-reliefs
-in dark slate and a seamless grey marble, made with Gemini 3 Pro Image) were once here and are
-offered to the pack instead ([openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7)).
-Once the pack has them (and `data/hd-pack.json` pins it), the backdrops are painted whole on the
-sheet when it is loaded (`hd_sheet_loaded`) and the tile is drawn as any crop, and without the
-install the sheets and the tile are made from them (`src/platform/synth.c`).  Until then, with the
-install the original's are drawn, enlarged; without it the editors' backdrop is plain dark grey and
-the movie window's border plain grey (`synth.c` takes nothing from the pack's wonder paintings),
+painting, whose corner would be no border) are the pack's since its commit d770b0b
+([openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7):
+OpenCiv2's own, once here, faint bas-reliefs in dark slate and a seamless grey marble, made with
+Gemini 3 Pro Image): the backdrops are painted whole on the sheet when it is loaded
+(`hd_sheet_loaded`) and the tile is drawn as any crop, and without the install the sheets and
+the tile are made from them (`src/platform/synth.c`, which takes nothing else from the pack's
+wonder paintings).  With art without them, with the install the original's are drawn, enlarged;
+without it the editors' backdrop is plain dark grey and the movie window's border plain grey,
 which a wonder's movie shows only where the CD's `Video` is in the game folder.
 
 The advisors' backgrounds, by `tiles.dll` id (`PictureWindow::open`'s first argument + 49, at
 600x400 of the 640x480 picture; the original's are dark grey photographs and engravings on a map,
-the pack's all the same pale parchment), and OpenCiv2's own:
+the pack's the same pale parchment until its commit ad6791d, since OpenCiv2's own below, given to
+it: [pull request 6](https://github.com/PeterJohnson/openciv2-assets/pull/6)), and OpenCiv2's own:
 
 | Id | Screen | OpenCiv2's own |
 | --- | --- | --- |
@@ -433,10 +452,10 @@ The rest is in the platform layer (`src/platform/hd.c`):
   (`harness/hd/hd-pictures.txt`, `hd_test_city_picture`).  `wonder.dll`'s pictures (20000 +
   the wonder) are, in the original, all the same grey marble from which the wonder's movie
   window takes its 64 x 32 border tile; the pack's are each wonder's own painted picture, 74 x 74,
-  which as a border tile would be absurd, so the window's tile is the original's marble, enlarged
-  (without the install plain grey), until the pack has a tile of its own (above: pull request 7;
+  which as a border tile would be absurd, so the window's tile is the pack's marble tile (above:
+  pull request 7; with art without it the original's marble, enlarged, without the install plain grey;
   `harness/media/m-wonder.txt`, HD run: the Oracle's and the Pyramids' windows).  The advisors' backgrounds (`tiles.dll` 50 to 59: the advisors, the power
-  graph, the Hall of Fame ...; 65 and 66: the tax rates) are not the pack's: the pack's
+  graph, the Hall of Fame ...; 65 and 66: the tax rates) were not the release's: the release's
   are a pale parchment, and the game's text on them (white, light grey, yellow, coloured for the
   original's dark grey photographs) could not be read: measured, the WCAG contrast of that text
   is 1.0 to 1.4 on the parchment (its average colour under the text, 229,220,198) against 4.0 to
@@ -514,10 +533,9 @@ The rest is in the platform layer (`src/platform/hd.c`):
   original's cottages for ancient and renaissance cities, a row of towns from Industrialization
   on, by `civ_city_style_era` of the owner, the same for the whole view) are the pack's set of
   that era, in both sizes: ancient `house/ancient/large|small/N`, renaissance
-  `house/medieval/...`, industrial the release's crops of both rows (19th-century buildings:
+  `house/medieval/...`, industrial the pack's crops of both rows (19th-century buildings:
   terraced houses, a tenement with a fire escape, a clapboard house, a shop row), modern
-  `house/modern/...` (the era sets from openciv2-assets' repository at the commit pinned in
-  `data/hd-pack.json`, not yet in a release; `hd_bind_cityview` in `src/game/hd_graphics.cpp`,
+  `house/modern/...` (the era sets; `hd_bind_cityview` in `src/game/hd_graphics.cpp`,
   called once the view has taken its sprites; a set the art lacks: the original's, enlarged).
   The empty lots stay the original's woods, which the pack leaves empty (its renderer drew lot pictures of its
   own).  All of such a picture's pixels are shown over the pack's landscape, also those the
@@ -526,11 +544,11 @@ The rest is in the platform layer (`src/platform/hd.c`):
   draw in `CityViewWindow::draw_buildings`, as for the city's disorder marker; the pixels put on
   the plane in one call, `hd_bits_redrawn_mask`: one call per pixel, each looking the surface up
   among the bitmaps, took 5 seconds to open the view).  Its landscapes (`cv.dll` 340 + 5 x the site + `civ_city_art_era`) are grass with dirt
-  tracks in every era in the release, so only those of era 0 (340, 345, 350) are the
-  release's; the later eras' are the pack's `city/landscape/SITE/medieval` (era 1:
-  stone-paved roads) and `.../modern` (eras 2 and 3, Superhighways: divided highways), from the
-  pinned commit (hd.c's `landscape_key`; without them, era 1 the release's and the others the
-  original's, enlarged).  Its improvements and wonders are one picture each in every era, the original's as
+  tracks in every era in the pack, so only those of era 0 (340, 345, 350) are the
+  pack's; the later eras' are the pack's `city/landscape/SITE/medieval` (era 1:
+  stone-paved roads) and `.../modern` (eras 2 and 3, Superhighways: divided highways) (hd.c's
+  `landscape_key`; without them, era 1 the pack's grass and the others the original's,
+  enlarged).  Its improvements and wonders are one picture each in every era, the original's as
   the pack's.  A picture with transparent parts (the new game's pictures) is drawn, where the
   game copies it, over what the destination's plane showed; a sprite taken from such a picture
   keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
@@ -757,8 +775,8 @@ pixels; without the install's pictures too (*Without the install*, NO-INSTALL.md
 
 ## The pictures drawn
 
-The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop` and `exclude`: 1,324 keys, 829 distinct
-pictures; the whole pack holds 2,105, 250 MB):
+The keys hd.c draws (`data/hd-pack.json`'s `keep` but its `drop` and `exclude`: 1,355 keys, 833 distinct
+pictures; the whole pack holds 2,166, 309 MB):
 
 * `crop/file/...`, `tint/crop/...`, `dither/...`, `fog/...`, `file/...`: the map's sheets, but
   the city's disorder marker (`crop/file/icons/166,223,30,30`: `NOT_CROPPED_KEYS`);
@@ -775,9 +793,11 @@ pictures; the whole pack holds 2,105, 250 MB):
   `resource/pv.dll/gifs/100` (the empty hall): the throne room;
 * `resource/mk.dll/gifs/200` to `206`, `resource/tiles.dll/gifs/70`, `72`, `73`, `74`, `76`, `90`, `resource/intro.dll/gifs/901` to `913`, `resource/cv.dll/gifs/340`, `341`, `345`, `346`, `350`, `351`,
   `resource/ss.dll/gifs/498`, `499` (hd.c's `WHOLE`);
-* OpenCiv2's own (`data/native/hd-extra`), not from the pack: `resource/tiles.dll/gifs/50` to `59`, `65`, `66`;
+* OpenCiv2's own (`data/native/hd-extra`): `resource/tiles.dll/gifs/50` to `59`, `65`, `66` (the
+  pack has the same paintings since pull request 6, kept by the tool for synth.c only, at the
+  original's size);
 * `file/editoras`, `file/editorsa`, `file/editorsq`, `crop/resource/wonder.dll/gifs/20000` to `20027` (`1,1,64,32`):
-  when the pack has them (openciv2-assets pull request 7, above);
+  the pack's since openciv2-assets pull request 7 (above);
 * `ship/propulsion`, `engine-active`, `fuel`, `structural-spine`, `structural-dock`,
   `habitation`, `life-support`, `solar`: the spaceship (`hd_spaceship`).
 
@@ -798,7 +818,7 @@ pictures; the whole pack holds 2,105, 250 MB):
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
   the announcements' tall pictures (`tiles.dll` 71, 75, 77: wide vignettes in a tall frame)
-  and the wonders' (`wonder.dll`: the original's are the movie window's border tile); the advisors' parchments (`tiles.dll` 50 to 59, 65, 66: above; OpenCiv2's own drawn instead) and
+  and the wonders' (`wonder.dll`: the original's are the movie window's border tile); and
   the framed parchments of `mk.dll` 10000 to 10002 and
   `civ2art.dll` (the credits' text is drawn for a black background); the spaceship's pieces not
   drawn (below); the city view's

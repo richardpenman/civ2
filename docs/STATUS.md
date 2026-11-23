@@ -106,9 +106,9 @@ install a plain dark frame).  A tribe's herald of OpenCiv2's own
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
 heralds*): the Russians' so far.
 The HD art comes with OpenCiv2's builds, the game downloads nothing: `data/native/hd` (about
-30 MB, not in the repository), the pictures of openciv2-assets' pinned release (and commit) the
+30 MB, not in the repository), the pictures of openciv2-assets at its pinned commit the
 game draws or synth.c reads, as WebP, made at build time by `tools/build_hd_pack.py` (`make
-hd-art`, which the builds run first; the download and the result cached in `~/.cache/openciv2`;
+hd-art`, which the builds run first; the files it is built from and the result cached in `~/.cache/openciv2`;
 [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every release and on the browser version's site; the
 native and browser downloads of the release at run time are gone.
 
