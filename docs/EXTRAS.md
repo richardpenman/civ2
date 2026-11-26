@@ -63,6 +63,8 @@ game starts.
 
 The Open and Save dialogs can list files newest first (the Sort button), and they open in the folder of the last file loaded or saved. Both are remembered in CIV.INI under `[OpenCiv2]` as `FileSort=` and `FileFolder=`.
 
+As in the original game, where Windows' own dialog does it, the proposed file name is selected when the dialog opens, so that typing replaces it. `FilePreselect=0` in the same section leaves the name unselected, with the cursor at its start, for those who prefer that. It is read in every mode, Classic included, as `FileSort=` and `FileFolder=` are; when it isn't set, the name is selected.
+
 ## Screen scale
 
 The game opens in a window, maximized to fill the screen. To play full screen instead, tick Full
