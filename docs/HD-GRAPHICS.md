@@ -261,7 +261,7 @@ With HD graphics, a herald of OpenCiv2's own plays in its place where
 `data/native/hd-extra/heralds.txt` has one for the tribe, a line each:
 
     CODE X Y W H FPS G0 G1 I0 I1 P0 P1 D0 D1 A0 A1 FILE
-    RUS 86 72 218 400 12 0 89 90 131 132 185 186 239 240 herald-RUS.webp
+    RUS 64 73 237 399 12 0 35 36 71 72 107 108 143 144 179 herald-RUS.webp
 
 * `CODE`: the three letters of the original's video (`ROM BAB GER EGY AME GRE IND RUS ZUL FRE
   AZT CHI ENG MON CEL JAP VIK SPA PER CAR SIO`, `leader_video_tribe_codes`).
@@ -304,19 +304,31 @@ the original does.
 Classic graphics (and HD off, `CIV2_CLASSIC=1`, replays without `CIV2_TEST_HD`) play the CD's
 video as ever: the table and the window's place are the original's.
 
-The Russians' herald (`herald-RUS.webp`: 324 frames, 12 a second, 27 seconds; 327x600 for the
-window's 218x400, so 1.5 times the game's pixels, drawn enlarged smoothly at densities 2 to 4;
-lossy at quality 70, alpha lossless, every frame a key frame; 6.9 MB) is an 18th-century Russian court envoy in a
+The Russians' herald (`herald-RUS.webp`: 180 frames, 12 a second, 15 seconds, five segments of
+36; 356x598 for the window's 237x399, so 1.5 times the game's pixels, drawn enlarged smoothly at
+densities 2 to 4; lossy at quality 70, alpha lossless, every frame a key frame; 3.8 MB) is an 18th-century Russian court envoy in a
 crimson kaftan with a mace, made with Google's video model from a still (below); it is in the
 local staging folder only, not in the repository: without it the Russians' herald is the CD's
 (with `KINGS`; without them, none), as for every other tribe.
 `tools/build_herald.py CODE GREETING IDLE PLEASED DECLINE ANGRY` makes a herald and its line from
 five clips of the figure on a flat chroma-key green (Docker: ffmpeg, cwebp and webpmux 1.5.0 in a
-throwaway Debian 13 container): each clip resampled to 12 frames a second, keyed (ffmpeg's
-`chromakey`, then `despill`), its last half second blended into one pose shared by all five (the
+throwaway Debian 13 container, with OpenCV's `opencv-python-headless` 4.12.0.88 from PyPI, checked
+against its wheel's SHA-256): each clip resampled to 12 frames a second, keyed (ffmpeg's
+`chromakey`, then `despill`), its last half second morphed into one pose shared by all five (the
 idle loop's first frame) and, but for the greeting's, its first half second out of it (so every
 join the game makes, greeting to idle, round the idle loop, idle to a reaction and back, is
-seamless; the clips, made apart, start in slightly different poses), cropped to the figure's bounds over every frame,
+seamless; the clips, made apart, may start and end in slightly different poses).  The morph (`--blend morph`, the default): dense optical flow (OpenCV's DIS, preset
+medium) both ways between the frame and the pose, each warped part of the way towards the other
+(the flow at the in-between time approximated from the two, as Super SloMo does), keyed alpha
+too, and the two then blended, the pose's weight 6/7 at the clip's end, falling by 1/7 a frame:
+the figure moves into the pose instead of showing both at once.  (`--blend dissolve`, the
+earlier way, cross-dissolves the frame and the pose, premultiplied: where the poses differ, two
+overlapping figures, a ghost, for half a second at each join.)  With the still given to the video
+model as each clip's first and last frame (below) the clips now nearly meet as made: their first
+and last frames, keyed, differ from one another by 0.9 to 1.3 (mean difference of premultiplied
+RGBA at 720x1280; a frame's usual change at 24 a second about 1.2), so the morph mostly has
+nothing to hide; it takes up the drift that remains (the pleased clip's end, about 4: a
+smile and a slight zoom).  Then cropped to the figure's bounds over every frame,
 scaled so it stands `--height` game pixels tall with its feet at `--foot`, and encoded; then
 `tools/check_herald.py CODE` (also on its own: `tools/dk python3 tools/check_herald.py RUS`) plays
 the segments in the game's order and fails if a join changes more than twice the median frame
@@ -343,40 +355,71 @@ only), the prompt:
     green (#00B140), with no shadow, floor, gradient, texture or vignette on it, and no shadow
     cast on it. No text, letters or logos. Portrait 9:16.
 
-The five clips: Google's Gemini Omni video model (`gemini-omni-1.2-flash`: 720x1280, 24 frames a
-second, silent), the still (on its green, scaled to 768x1376) given twice with the prompt; the
-greeting 8 seconds, the idle loop 4, each reaction 5.  Each prompt is "Animate this exact figure:
-the Russian court herald ..." with its action, then the same ending:
+The five clips: Google's Gemini Omni video model (`gemini-omni-1.2-flash`, through the Gemini
+API's interactions endpoint; 720x1280, 9:16, 24 frames a second, silent), each 3 seconds (72
+frames, 36 at 12 a second), the still (on its green, 768x1376) given as both the first and the
+last frame, with the prompt; about $0.22 a clip.  Each clip was keyed as the tool keys it and
+measured before it was used: its first and last frames against the still (aligned) and against
+the other clips' (aimed at no more than about 1.5), and looked at frame by frame: nothing cut off
+at the frame's edge, no text, and the staff rule: the prop is a short gilded mace, held low and
+slanting in his right hand (on the viewer's left) throughout, never passed to the other hand,
+never a long staff (told "staff", the model sometimes made one); he gestures only with his free
+left hand.  Each prompt is the action, then a shared ending.  The greeting, pleased and refusal
+(the first wording):
 
-* greeting: "bows respectfully and makes a slow welcoming gesture with his free hand, then
-  returns to exactly the starting neutral pose, so the clip loops seamlessly. Static camera, no
-  zoom or pan. The background stays a perfectly flat, uniform chroma-green with no shadows,
-  lighting changes or objects. Keep his face, costume and staff identical to the image. No text.
-  Silent: no music, no speech."
-* idle: "stands still, waiting attentively. Only subtle idle motion: he breathes calmly, shifts
-  his weight very slightly from one foot to the other, and makes a small adjustment of his grip
-  on the staff and of his sash. His arms stay close to his body; no gestures, no bow."
-* pleased (an offer accepted): "is pleased, an offer has been accepted. He smiles warmly, nods
-  approvingly twice and makes a small, contained approving gesture with his free hand held close
-  in front of his chest, like a gracious acknowledgement."
-* polite refusal: "politely declines. He frowns slightly, slowly shakes his head, and raises his
-  free hand a little in front of his chest, palm outward, in a calm, regretful 'no, thank you'
-  gesture; restrained and courteous."
-* angry: "is angry and offended. He scowls, stamps the end of his staff firmly on the ground
-  once, and jabs a finger of his free hand sharply toward the viewer in a stern warning, his arm
-  staying in front of his body rather than stretched to the side."
-* the ending (but the greeting's, which has its own): "Then he returns to exactly the starting
-  neutral pose, so the clip ends on the first frame and loops seamlessly. Static camera, no zoom
-  or pan. Keep the whole figure, his hands, fingertips, staff and hat well inside the frame at
-  all times, with a clear margin of green on every side; no part of him ever touches or leaves
-  the edge of the frame. The background stays a perfectly flat, uniform chroma-green with no
-  shadows, lighting changes or objects. Keep his face, costume and staff identical to the image.
-  No text. Silent: no music, no speech."
+* greeting: "Animate this exact figure: the Russian court herald greets the viewer. Holding the
+  staff in his right hand, he sweeps it out towards the viewer in a slow, grand arc in greeting,
+  with a slight bow of the head, then brings the staff back to exactly the angle it has in the
+  image."
+* pleased (an offer accepted): "Animate this exact figure: the Russian court herald is pleased.
+  He raises his free left hand to his chin as if considering, then breaks into a broad, warm
+  wave of that left hand outward with a pleased tilt of the head, then lowers the hand back to
+  his side as in the image."
+* polite refusal: "Animate this exact figure: the Russian court herald snubs the viewer. He
+  turns his head sharply away from the viewer to his side, holds it there disdainfully, then
+  turns his head back to face as in the image. His body and arms stay still."
+* their ending: "The clip starts and ends in exactly the pose of the image: the first and the
+  last frame are this image. He holds the gilded staff in his RIGHT hand (on the viewer's left)
+  the whole time, and never passes it to the other hand or lets go of it; he gestures only with
+  his free LEFT hand (on the viewer's right). Static camera, no zoom or pan. Keep the whole
+  figure, his hat, both hands, fingertips and the staff well inside the frame at all times, with
+  a clear margin of green on every side. The background stays a perfectly flat, uniform
+  chroma-green with no shadows, lighting changes or objects. Keep his face, costume and staff
+  identical to the image. No text. Silent: no music, no speech."
 
-Then `tools/build_herald.py RUS greeting.mp4 idle.mp4 pleased.mp4 decline.mp4 angry.mp4` (cropped
-to the figure, 400 game pixels tall at 1.5 times the game's pixels, 327x600, each frame lossy WebP
-at quality 70 with lossless alpha, put together whole by webpmux; 324 frames, 6.9 MB) and
-`tools/check_herald.py RUS`.
+The idle loop and angry, at the first wording, came out with a long staff, or the figure zoomed;
+tightened (the mace, the frame), they were made again:
+
+* idle: "Animate this exact figure, beginning from exactly this image: the Russian court herald
+  stands almost still, waiting attentively. Only calm breathing and a very slight sway of the
+  body. His right hand keeps holding the short gilded mace exactly as in the image, and his free
+  left hand hangs relaxed at his side the whole time: no gestures, no reaching, no bow, no
+  steps. Keep the figure the same size and in the same place in the frame as in the image."
+* angry: "Animate this exact figure, beginning from exactly this image: the Russian court
+  herald is exasperated. He raises his free left hand to his brow and rubs it in exasperation,
+  shaking his head, then drops the left hand back to his side as in the image. His right hand
+  keeps holding the short gilded mace low and slanting across his body exactly as in the image
+  the whole time. Keep the figure the same size and in the same place in the frame as in the
+  image."
+* their ending: the first, but "the short gilded mace in his RIGHT hand, low and slanting as in
+  the image," for "the gilded staff in his RIGHT hand", "mace" for "staff" after, "The background
+  stays, from the first frame to the last, a perfectly flat ...", and at the end "The mace is
+  short (about the length of his forearm); never a long staff or cane."
+
+The pleased clip's first frame came out about 2.3% wider than the still (the others' match it),
+so its frames were set back to the others' framing by an affine transform (OpenCV's ECC, found
+at its first and last frames and interpolated between them); its end, a smile and a slight
+zoom, is left to the morph.  Two more tries at it with the tightened wording ("beginning from
+exactly this image", "the figure keeps its exact size and place in the frame, no zoom", "the
+short gilded mace held low and slanting in his right hand as in the image, never a long staff",
+"ends exactly in the image's pose with a neutral face") were not used: in one the waving hand
+left the frame, in the other the end smiled and zoomed as before.
+
+Then `tools/build_herald.py RUS greeting.mp4 idle.mp4 pleased.mp4 decline.mp4 angry.mp4`
+(resampled to 12 frames a second, the joins morphed, cropped to the figure, 395 game pixels
+tall at 1.5 times the game's pixels, 356x598, each frame lossy WebP at quality 70 with lossless
+alpha, put together whole by webpmux; 180 frames, 3.8 MB) and `tools/check_herald.py RUS` (every
+join within 0.71 to 1.15 times the median frame's change).
 
 ## How it is drawn
 

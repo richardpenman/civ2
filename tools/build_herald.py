@@ -6,6 +6,7 @@ flat chroma-key green, in the game's order:
 
     python3 tools/build_herald.py CODE GREETING IDLE PLEASED DECLINE ANGRY
         [--fps 12] [--foot X,Y] [--height H] [--density D] [--quality Q] [--video OUT.mp4]
+        [--blend morph|dissolve]
 
 CODE is the three letters of the original's video, KINGS\\HRLDCODE.AVI (ROM
 BAB GER EGY AME GRE IND RUS ZUL FRE AZT CHI ENG MON CEL JAP VIK SPA PER CAR
@@ -15,27 +16,33 @@ room opens; 1 the idle loop; 2 pleased (an offer accepted); 3 a polite
 refusal; 4 angry.  Each should start and end in about the same pose.
 
 In a throwaway container of Debian 13's pinned image (Docker needed: ffmpeg,
-cwebp and webpmux 1.5.0), each clip is:
+cwebp and webpmux 1.5.0, and for the morph OpenCV from PyPI, its wheel's
+SHA-256 pinned), each clip is:
 1. cut into frames at its own rate, resampled to --fps (12: the game shows
    a herald at the stream's rate);
 2. keyed: ffmpeg's chromakey at the green of the first frame's borders
    (similarity 0.12, blend 0.06), then despill (green, mix 0.6, expand 0.1);
-3. blended over its last 0.5 s into one pose shared by every clip, the
+3. morphed over its last 0.5 s into one pose shared by every clip, the
    idle loop's first frame (keyed), and over its first 0.5 s out of it,
-   but for the greeting, which nothing comes before (premultiplied, the
-   pose's weight 6/7 at the clip's end, falling by 1/7 a frame): the game
-   goes from the greeting to the idle loop, round the loop, from the loop
-   to a reaction and back to the loop, at any of these joins from the end
-   of one clip to the start of another, and the clips, made apart, do not
-   quite meet (the sash, the staff's angle); now each join changes no more
-   than a frame within a clip;
+   but for the greeting, which nothing comes before (the pose's weight 6/7
+   at the clip's end, falling by 1/7 a frame): the game goes from the
+   greeting to the idle loop, round the loop, from the loop to a reaction
+   and back to the loop, at any of these joins from the end of one clip to
+   the start of another, and the clips, made apart, do not quite meet (the
+   sash, the staff's angle); now each join changes no more than a frame
+   within a clip.  --blend morph (the default): dense optical flow (OpenCV's
+   DIS) both ways between the frame and the pose, each warped part of the
+   way to the other, then the two blended (premultiplied, alpha warped
+   too), so the figure moves into the pose; --blend dissolve
+   cross-dissolves the two as they are (premultiplied), which where the
+   poses differ shows both, a ghost, for the half second;
 4. cropped to the figure: the union of every frame's opaque pixels, all
    clips together (the figure never moves between segments), with a margin.
 The figure is then scaled so that it stands --height game pixels tall (the
 original's heralds: about 395), its feet's centre at --foot (in the
 diplomacy room's 640x480 game pixels; the original Russian's: 185,470), and
 stored at --density times the game's pixels (1.5: drawn smoothly enlarged
-at the game's HD densities 2 to 4, the file about 7 MB for 27 seconds),
+at the game's HD densities 2 to 4, the file about 4 MB for 15 seconds),
 every frame of the five clips back to back in one animated WebP (each a
 whole canvas, lossy at --quality, 70, alpha lossless, by cwebp, put
 together by webpmux without blending: every frame a key frame, so the game
@@ -48,10 +55,18 @@ jumps.  The clips' sources and prompts belong in docs/HD-GRAPHICS.md (Your own h
 """
 import argparse, glob, json, os, shutil, subprocess, sys, tempfile
 
+try:
+    import numpy as np          # (in the container; the host needs only Python)
+except ImportError:
+    np = None
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEST = os.path.join(ROOT, 'data', 'native', 'hd-extra')
 IMAGE = 'debian:trixie@sha256:9c6e381421d0f48d1b8133e573f33c185ee16cbf505eda9c4a8a4791b25ea8a6'
 WEBP_VERSION = '1.5.0-0.1'
+# OpenCV for the morph's optical flow: from PyPI, checked against its wheel's SHA-256
+OPENCV = ('opencv-python-headless==4.12.0.88 --hash=sha256:'
+          '236c8df54a90f4d02076e6f9c1cc763d794542e886c576a6fee46ec8ff75a7a9')
 NAMES = ('greeting', 'idle', 'pleased', 'decline', 'angry')
 CROSSFADE = 0.5         # seconds
 KEY = '0.12:0.06'       # chromakey similarity:blend
@@ -60,10 +75,17 @@ MARGIN = 2              # game pixels round the figure
 
 
 def inside(work):
-    """In the container: the frames, keyed, cropped, scaled and encoded."""
+    """In the container: the frames, keyed, joined, cropped, scaled and encoded."""
+    job = json.load(open(os.path.join(work, 'job.json')))
+    segs = key(work, job)
+    join(segs, job['fps'], job.get('blend', 'morph'))
+    finish(work, job, segs)
+
+
+def key(work, job):
+    """Each clip cut into frames at job['fps'] and keyed: the frames' paths, clip by clip."""
     import numpy as np
     from PIL import Image
-    job = json.load(open(os.path.join(work, 'job.json')))
     fps = job['fps']
     segs = []
     for i, name in enumerate(NAMES):
@@ -102,22 +124,98 @@ def inside(work):
         segs.append(sorted(glob.glob(d + '/k/*.png')))
         print('%s: %d frames at %g fps, %.2f s -> %d frames at %d fps (key %s)' %
               (name, n, src_fps, n / src_fps, len(segs[-1]), fps, key), flush=True)
-    # every clip into and out of one pose, the idle loop's first frame (premultiplied)
-    def load(p):
-        a = np.asarray(Image.open(p).convert('RGBA')).astype(np.float32) / 255
-        return np.concatenate([a[..., :3] * a[..., 3:], a[..., 3:]], -1)
-    def save(a, p):
-        al = a[..., 3:]
-        rgb = np.where(al > 1e-4, a[..., :3] / np.maximum(al, 1e-4), 0)
-        Image.fromarray(np.clip(np.concatenate([rgb, al], -1) * 255 + 0.5, 0, 255).astype(np.uint8),
-                        'RGBA').save(p, compress_level=1)
-    pose = load(segs[1][0])
+    return segs
+
+
+def load(p):
+    """A keyed frame, premultiplied RGBA floats in 0..1."""
+    import numpy as np
+    from PIL import Image
+    a = np.asarray(Image.open(p).convert('RGBA')).astype(np.float32) / 255
+    return np.concatenate([a[..., :3] * a[..., 3:], a[..., 3:]], -1)
+
+
+def save(a, p):
+    import numpy as np
+    from PIL import Image
+    al = a[..., 3:]
+    rgb = np.where(al > 1e-4, a[..., :3] / np.maximum(al, 1e-4), 0)
+    Image.fromarray(np.clip(np.concatenate([rgb, al], -1) * 255 + 0.5, 0, 255).astype(np.uint8),
+                    'RGBA').save(p, compress_level=1)
+
+
+def blends(segs, fps):
+    """The frames blended with the shared pose: (path, the clip's own weight), for each clip its
+    last CROSSFADE seconds and, but for the greeting's, its first."""
     k = int(round(CROSSFADE * fps))
+    out = []
     for i, seg in enumerate(segs):
-        ends = [(seg[-1 - o], o) for o in range(k)] + ([(seg[o], o) for o in range(k)] if i else [])
-        for p, o in ends:
-            w = (o + 1) / (k + 1)                       # the clip's own weight
-            save(pose * (1 - w) + load(p) * w, p)
+        for o in range(k):
+            w = (o + 1) / (k + 1)
+            out.append((seg[-1 - o], w))
+            if i:
+                out.append((seg[o], w))
+    return out
+
+
+class Morph:
+    """A flow-based morph between a keyed frame and the shared pose (premultiplied RGBA): dense
+    optical flow both ways (OpenCV's DIS, on the frames over grey), each image warped part of
+    the way towards the other (the flow at the in-between time approximated from the two, as in
+    Super SloMo), the two warped images then cross-dissolved: the figure moves from one pose to
+    the other instead of showing both at once."""
+
+    def __init__(self, pose, method='dis'):
+        import cv2
+        self.cv2 = cv2
+        self.pose = pose
+        self.method = method
+        self.gp = self.gray(pose)
+        h, w = pose.shape[:2]
+        self.grid = np.stack(np.meshgrid(np.arange(w, dtype=np.float32), np.arange(h, dtype=np.float32)), -1)
+
+    def gray(self, a):
+        rgb = a[..., :3] + (1 - a[..., 3:]) * 0.5            # over mid grey
+        return self.cv2.cvtColor(np.clip(rgb * 255 + 0.5, 0, 255).astype(np.uint8), self.cv2.COLOR_RGB2GRAY)
+
+    def flow(self, g0, g1):
+        cv2 = self.cv2
+        if self.method == 'fb':
+            return cv2.calcOpticalFlowFarneback(g0, g1, None, 0.5, 6, 31, 5, 7, 1.5, 0)
+        dis = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_MEDIUM)
+        return dis.calc(g0, g1, None)
+
+    def warp(self, a, f):
+        m = self.grid + f
+        return self.cv2.remap(a, m[..., 0], m[..., 1], self.cv2.INTER_LINEAR,
+                              borderMode=self.cv2.BORDER_CONSTANT, borderValue=0)
+
+    def morph(self, a, t):
+        """a moved t of the way to the pose (0: a, 1: the pose): the image, and the two warped
+        images it blends."""
+        ga = self.gray(a)
+        fab = self.flow(ga, self.gp)        # a -> pose
+        fba = self.flow(self.gp, ga)        # pose -> a
+        ft0 = -(1 - t) * t * fab + t * t * fba
+        ft1 = (1 - t) * (1 - t) * fab - t * (1 - t) * fba
+        wa, wb = self.warp(a, ft0), self.warp(self.pose, ft1)
+        return (1 - t) * wa + t * wb, wa, wb
+
+
+def join(segs, fps, how):
+    """Every clip into and out of one pose, the idle loop's first frame."""
+    pose = load(segs[1][0])
+    if how == 'morph':
+        m = Morph(pose)
+    for p, w in blends(segs, fps):
+        a = load(p)
+        save(m.morph(a, 1 - w)[0] if how == 'morph' else pose * (1 - w) + a * w, p)
+
+
+def finish(work, job, segs):
+    import numpy as np
+    from PIL import Image
+    fps = job['fps']
     # the figure's bounds over every frame
     union = None
     for seg in segs:
@@ -196,9 +294,12 @@ def main():
     ap.add_argument('--height', type=float, default=395)
     ap.add_argument('--density', type=float, default=1.5)
     ap.add_argument('--quality', type=float, default=70)
+    ap.add_argument('--blend', choices=('morph', 'dissolve'), default='morph',
+                    help='how each clip goes into and out of the shared pose (default morph)')
     ap.add_argument('--dest', default=DEST)
     ap.add_argument('--video', help="tools/check_herald.py's video of the segments in the game's order, written here")
-    ap.add_argument('--image', help='a Docker image that already has ffmpeg, webp, python3-pil and python3-numpy')
+    ap.add_argument('--image', help='a Docker image that already has ffmpeg, webp, python3-pil and python3-numpy '
+                    '(and, for the morph, opencv-python-headless)')
     a = ap.parse_args()
     code = a.code.upper()
     if len(code) != 3 or not code.isalpha():
@@ -213,10 +314,14 @@ def main():
             shutil.copy(c, dst)
             clips.append('/w/' + os.path.basename(dst))
         json.dump({'clips': clips, 'fps': a.fps, 'foot': [int(v) for v in a.foot.split(',')], 'height': a.height,
-                   'density': a.density, 'quality': a.quality, 'video': bool(a.video)}, open(os.path.join(work, 'job.json'), 'w'))
+                   'density': a.density, 'quality': a.quality, 'video': bool(a.video),
+                   'blend': a.blend}, open(os.path.join(work, 'job.json'), 'w'))
         setup = '' if a.image else ('apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq '
-                                    '--no-install-recommends webp=%s ffmpeg python3-pil python3-numpy >/dev/null && '
-                                    % WEBP_VERSION)
+                                    '--no-install-recommends webp=%s ffmpeg python3-pil python3-numpy%s >/dev/null && '
+                                    % (WEBP_VERSION, ' python3-pip' if a.blend == 'morph' else ''))
+        if not a.image and a.blend == 'morph':
+            setup += ("echo '%s' > /tmp/req.txt && pip install -q --break-system-packages --root-user-action=ignore "
+                      '--no-deps --require-hashes -r /tmp/req.txt && ' % OPENCV)
         subprocess.run(['docker', 'run', '--rm', '-v', work + ':/w', '-v', os.path.abspath(__file__) + ':/b.py:ro',
                         '-v', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_herald.py') +
                         ':/check_herald.py:ro',
