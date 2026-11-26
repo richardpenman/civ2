@@ -183,7 +183,7 @@ void extras_load(void)
 /* The fixes that can be switched off (the others are in every mode), by
    their numbers in docs/BUGS.md. */
 const unsigned char fixes_switchable[] = {2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23,
-                                          24, 25, 28, 32, 33, 34, 35, 36, 37, 38, 0};
+                                          24, 25, 28, 32, 33, 34, 35, 36, 37, 38, 40, 0};
 
 /* plat_fixes: FixBugs= (OpenCiv2 Options' "Fix the original game's bugs",
    on by default) for each, unless its own Fix.B<n>= says otherwise.  In a
