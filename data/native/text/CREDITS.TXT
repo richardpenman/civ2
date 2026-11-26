@@ -63,7 +63,7 @@ to everyone who reports bugs,
 tests builds and plays
 
 
-^github.com/richardpenman/civ2
+^github.com/openciv2/openciv2
 
 
 @END

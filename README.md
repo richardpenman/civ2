@@ -8,10 +8,10 @@ Goal: reconstruct the source of *Sid Meier's Civilization II: Multiplayer Gold E
 You need your own copy of Civilization II Multiplayer Gold Edition: installed (or a `.zip` of
 the installed folder), on CD, or a disc image (`.cue`/`.bin`). Download the program for your system:
 
-- **Windows:** [OpenCiv2-windows.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-windows.zip): unzip and run `OpenCiv2.exe`.
-- **macOS** 11+: [OpenCiv2-macos.zip](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-macos.zip): unzip and open `OpenCiv2.app`. The first time macOS
+- **Windows:** [OpenCiv2-windows.zip](https://github.com/openciv2/openciv2/releases/download/latest/OpenCiv2-windows.zip): unzip and run `OpenCiv2.exe`.
+- **macOS** 11+: [OpenCiv2-macos.zip](https://github.com/openciv2/openciv2/releases/download/latest/OpenCiv2-macos.zip): unzip and open `OpenCiv2.app`. The first time macOS
   blocks it: System Settings > Privacy & Security > "Open Anyway".
-- **Linux** x86-64: [OpenCiv2-linux-x86_64.tar.gz](https://github.com/richardpenman/civ2/releases/download/latest/OpenCiv2-linux-x86_64.tar.gz): unpack and run `OpenCiv2/OpenCiv2`.
+- **Linux** x86-64: [OpenCiv2-linux-x86_64.tar.gz](https://github.com/openciv2/openciv2/releases/download/latest/OpenCiv2-linux-x86_64.tar.gz): unpack and run `OpenCiv2/OpenCiv2`.
 
 The first time, it finds your copy of the game (or asks where it is) and sets it up, music
 included when it comes from the CD or a disc image. `--setup [FOLDER, GAME.zip or IMAGE.cue]`
@@ -58,7 +58,7 @@ To build it yourself, install your copy of Civilization II in `~/Civ2` (the dire
 `civ2.exe`, `Tiles.dll`, the `.TXT` files …), or point `CIV2_GAME` at it.
 
 ```sh
-git clone https://github.com/richardpenman/civ2 && cd civ2
+git clone https://github.com/openciv2/openciv2 && cd openciv2
 make            # -> build/OpenCiv2 (several minutes; the first time it downloads wasi-sdk,
                 #    wabt and the libraries' sources into tools/toolchain, and the HD art's
                 #    source into ~/.cache/openciv2, from which it makes data/native/hd)

@@ -119,7 +119,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   has started it at 0 since then (the line was lost when the function was split into parts, and
   is back), which is the fix. With the fix off the game does not reproduce the original's occasional stale
   address (it depends on what ran before, and differs under Windows, where the community saw
-  the bug often); no replay shows a difference. Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) traced the
+  the bug often); no replay shows a difference. Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/openciv2/openciv2/pull/2), from his independent reconstruction) traced the
   value when it is not 0: the saved frame pointer of an earlier call (pushed at 005ae3bf), a
   stack address, so the count of roads starts from millions.
 
@@ -214,7 +214,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
 - **Saves:** none.
 - **Status: fixed** (`bugfix_state(3)`). With the fix off the game keeps the preset `0x6715d7a0`. With the fix
   on, the WWII replay diverges where expected (the AI keeps calling `rand()` past the point
-  where the original's recording ends). In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) the stale value was
+  where the original's recording ends). In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/openciv2/openciv2/pull/2), from his independent reconstruction) the stale value was
   0x00453e93 instead (a return address left by an earlier call at 00453e8e): different, but
   also large and positive, so the attitude goes to the same extreme. His comparison of the
   original with the value started at 0, the game's random numbers the same: an attitude change
@@ -285,7 +285,7 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
   not only those headed for this landmass.
 - **Source:** our code (stale-stack reads found by the reconstruction).
 - **Fix:** start `goal_match` at 0. **State** (AI). Its effect on play is small and not measured.
-  In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction) the value was 0x013fde70 on two calls: not 4, but
+  In Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/openciv2/openciv2/pull/2), from his independent reconstruction) the value was 0x013fde70 on two calls: not 4, but
   non-zero too, so the test passes there as well.
 - **Saves:** none.
 - **Status: fixed** (`bugfix_state(13)`).
@@ -303,13 +303,13 @@ games: the state fixes are on there (MGE has no play by e-mail: docs/STATUS.md).
     units[unit].orders = ORDER_FORTIFYING;
   ```
 - **What goes wrong:** the stale value is huge (0x64a8c19c in our recordings, 0x013fde70 in
-  Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction)), so away from its own city every defender aboard is fortified
+  Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/openciv2/openciv2/pull/2), from his independent reconstruction)), so away from its own city every defender aboard is fortified
   instead of being woken. A fortified defender adds nothing to the roles the ship carries
   (`tasks_mask`), which choose where it sails: a city to stage at, or an enemy city to attack.
   A ship carrying only defenders has no destination for them, and they stay aboard until it
   returns to its own city.
 - **Source:** our code (stale-stack reads found by the reconstruction); the varying value from
-  Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/richardpenman/civ2/pull/2), from his independent reconstruction).
+  Peter Johnson's runs of the original under Windows ([PR #2](https://github.com/openciv2/openciv2/pull/2), from his independent reconstruction).
 - **Fix:** start `needed_defenders` at 0: away from its own city no city needs the defenders, so
   they are woken and count toward the ship's destination, like the other units aboard.
   **State** (AI). No replay reaches this path (counted over long50, scenario, ww1, napoleon and

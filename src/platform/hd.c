@@ -26,7 +26,7 @@
  * are copied into it, enlarged (sync).  An HD sprite or a copy from a
  * plane draws into the plane, then takes the game's pixels it covered as
  * shown (commit).  The idea of the second plane kept by the differences is
- * Peter Johnson's (PR #11 of richardpenman/civ2, src/platform/hd.c); this
+ * Peter Johnson's (PR #11 of openciv2/openciv2, src/platform/hd.c); this
  * is a smaller implementation of it.
  */
 #include <math.h>
