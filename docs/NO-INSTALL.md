@@ -3,7 +3,7 @@
 What OpenCiv2 still takes from an installed Civilization II (MGE), file by file and resource by
 resource, and what stands in for it.  Videos (`Video\`, `KINGS\`, `LOSER.AVI`: the game runs
 without them, as the recorded scenarios always have) and scenarios (`SCENARIO\`, `*.SCN`, `*.MP`)
-are out of scope; music is listed only.
+are out of scope; music is replaced by OpenCiv2's own (below).
 
 ## How it was measured
 
@@ -87,10 +87,11 @@ that needs the original's files (the dialog above).
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
 | replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; still being chosen, not yet in the repository) | 78 (`Sound\*.WAV`) | |
-| out of scope: videos, music | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`), 11 music tracks | 21 (mk.dll `CTAB`, the heralds' video palettes) |
+| replaced: OpenCiv2's own music (`data/native/music`, MIT; made by `make own-assets`, not in the repository) | 11 music tracks (`Music\Track02`-`12`) | |
+| out of scope: videos | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`) | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
-So a game can be set up and played with none of the install's files but its music and videos, given the HD art (which comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`, not in the repository), in HD
+So a game can be set up and played with none of the install's files but its videos, given the HD art (which comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`, not in the repository), in HD
 graphics (above).  Without the art too the game does not start: it says what is missing.
 
 ## The game folder's files
@@ -112,8 +113,8 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
-| `Music\Track02`-`12.wav` (11) | the CD's music | out of scope (the user's own music is planned) |
-| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them; with HD graphics a tribe's herald of OpenCiv2's own plays without `KINGS` (the Russians': [HD-GRAPHICS.md](HD-GRAPHICS.md), *Your own heralds*) |
+| `Music\Track02`-`12.wav` (11) | the CD's music | replaced: OpenCiv2's own (`data/native/music`, below) |
+| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them; with HD graphics a tribe's herald of OpenCiv2's own plays without `KINGS` (the Russians': `data/native/heralds`, made by `make own-assets`; [HD-GRAPHICS.md](HD-GRAPHICS.md), *Your own heralds*) |
 | `SCENARIO\`, `*.SCN`, `*.MP`, `ROME.TXT`, `WWII.TXT`, `ALEXANDR.TXT` | scenarios and premade maps | out of scope |
 | `CIV2FANW.TXT`, `CIV2FAQ.TXT`, `PATCH.TXT`, `README.TXT`, `Readmev13.txt`, `LEADERS.TXT`, `MISC.TXT`, `SC.TXT`, `TUTORIAL.SAV`, `Civ2Map.exe`, `Uninst.isu`, `Vfwfix.reg`, `smeds.log`, `XDaemon.log`, `EReg\` (8 files) | read by no part of the game (documents, the installer, the map editor's program, logs, registration) | droppable |
 
@@ -247,12 +248,44 @@ menu's `MENULOOP.WAV` is made and the game opens it; with the folder nothing is 
 
 ## Music
 
-`Music\Track02.wav` to `Track12.wav` (the CD's audio tracks: the theme and ten pieces), out of
-scope here.
+`Music\Track02.wav` to `Track12.wav` (the CD's audio tracks: the theme and ten pieces; the game
+plays them as CD tracks 2 to 12, through MCI's `cdaudio`, `src/platform/sound.c`), or
+`Music\TrackNN.ogg` (as the set-up encodes them from a disc image).
+
+Replaced: OpenCiv2's own music, eleven tracks of the same order and about the same length,
+`data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's own repository
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`music/02 - Funeral
+March.ogg` to `12 - World of Jules Verne.ogg`; its `01 - Dorian Pastoral` is not used: no CD
+track; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's).  Not
+in this repository: the builds make it first (`make own-assets`, `tools/build_own_assets.py`),
+at the commit pinned in `data/own-assets.json` (each file checked against its SHA-256 and size
+there), once, into `~/.cache/openciv2`; later builds take it from there, offline.  The source is
+Ogg Opus (48 kHz stereo), which stb_vorbis, the game's decoder, cannot read, so each track is
+decoded and encoded again as Ogg Vorbis (`opusdec` and `oggenc`, pinned, in a Debian container;
+without Docker running, this machine's `opusdec` and `oggenc` or `ffmpeg`: `brew install
+opus-tools vorbis-tools` or `brew install ffmpeg`), at libvorbis's quality 5 and the tracks' own
+48 kHz (nothing resampled): 26.4 MB for the eleven, 25 minutes, about 140 kbit/s; quality 4, the
+set-up's for the CD's music, would be 21.5 MB, but the source is itself lossy (Opus at 256
+kbit/s), and the second encoding is kept a step higher.  `make OWN_ASSETS=` builds without it
+(nor the heralds).
+
+Where the game folder has neither `Music\TrackNN.ogg` nor `.wav` for a track, the drive plays
+`data/native/music/trackNN.ogg` (`cd_open_track`), as it plays an install's `.ogg`: read whole
+(2 to 5 MB) and decoded as it plays, on the music's own thread (no WAV is made: a track as a
+44.1 kHz 16-bit WAV would be 6 to 36 MB).  The tracks are counted from 2 to the first that
+none of these has, so a game without music has a drive of 12 tracks, as the CD's.  Only with
+sound: a replay without it finds no drive, as before, so the recorded scenarios take the same
+steps.  The install's own music is always played where it is.  It is packaged with the
+programs (`data/music`; the Windows program's resources) and on the browser version's site
+(`data/music`: the page fetches the tracks the player's game lacks while the game starts, without
+waiting for them, and gives them to the game together once all have come).  `make test-music`
+(`tests/music_fallback_test.sh`): each track decodes whole with stb_vorbis (stereo, 48 kHz, its
+length); without the `Music` folder and with audio (`CIV2_TEST_AUDIO=1`, SDL's dummy driver)
+CD track 2 is played from `data/native/music/track02.ogg` and still plays 5 seconds later (the
+player fed); with the folder, from the game's `Music\Track02`.
 
 ## What remains
 
-* **Art**: music (planned).
 * (Out of scope by design: the original's look without its files, so an 8-bit composition of
   the throne room and the spaceship, the diplomacy room's medallion in 8 bits, and the units'
   shields', the cities' flags' and size boxes' places from the art; HD graphics, always on

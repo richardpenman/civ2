@@ -129,7 +129,7 @@ static void parse_list(AviFile *a, long p, long end, int in_movi, long *movi)
 }
 
 /* ---- OpenCiv2's own heralds (docs/HD-GRAPHICS.md, "Your own heralds") ----
-   With HD graphics, where data/native/hd-extra/heralds.txt has one for the
+   With HD graphics, where data/native/heralds/heralds.txt (or hd-extra's) has one for the
    tribe, the game's KINGS\HRLDxxx.AVI opens it instead, whether the game
    folder has the CD's video or not: an AVI of one video stream at the
    herald's rate, its frames the animated WebP's ('OHRL', each a key frame:

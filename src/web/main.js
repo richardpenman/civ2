@@ -448,11 +448,12 @@ function savesControls(store) {
 
 // ---- the HD graphics' art, as CIV.INI asks for it (options.js) ----
 
-// The art (data/native/hd: hd/pictures.txt and its pictures) and OpenCiv2's
-// own HD pictures (data/native/hd-extra: hd-extra/...), on the site as one
-// file, hd/art.bin, its files one after another as hd/index.json lists them
-// ([path, size] each) -> [[path, bytes]], put where hd.c looks for them
-// (CIV2_DATA/hd, CIV2_DATA/hd-extra)
+// The art (data/native/hd: hd/pictures.txt and its pictures), OpenCiv2's
+// own heralds (data/native/heralds: heralds/...) and HD pictures
+// (data/native/hd-extra: hd-extra/...), on the site as one file, hd/art.bin,
+// its files one after another as hd/index.json lists them ([path, size]
+// each) -> [[path, bytes]], put where hd.c looks for them (CIV2_DATA/hd,
+// CIV2_DATA/heralds, CIV2_DATA/hd-extra)
 async function fetchArt() {
     const index = await fetch('hd/index.json').then((r) => {
         if (!r.ok)
@@ -752,6 +753,28 @@ async function play(store) {
     // (tests, src/web/test/smoke.mjs: files and settings of a replay)
     if (window.civ2Test)
         await window.civ2Test(fs, env);
+    // OpenCiv2's own music for the CD tracks the player's game lacks
+    // (data/music, some 26 MB: sound.c plays data/music/trackNN.ogg as track
+    // NN where the game has no Music/TrackNN.ogg nor .wav), fetched while the
+    // game starts and plays, not waited for; put in all at once when all
+    // have come, so that the game, which counts the tracks when it opens the
+    // CD drive, finds all of them or none (until then it plays as without
+    // music); window.civ2OwnMusic: the tracks put in (tests)
+    (async () => {
+        const have = new Set([...fs.files.keys()].map((k) => k.toUpperCase()));
+        const names = await fetch('data/music/index.json').then((r) => (r.ok ? r.json() : []));
+        const missing = names.filter((n) => {
+            const track = (GAME + '/MUSIC/' + n.slice(0, -4)).toUpperCase();
+            return !have.has(track + '.OGG') && !have.has(track + '.WAV');
+        });
+        const files = await Promise.all(missing.map((n) => fetch('data/music/' + n).then((r) => {
+            if (!r.ok)
+                throw new Error(n + ': ' + r.status);
+            return r.arrayBuffer();
+        })));
+        missing.forEach((n, i) => fs.put(DATA + '/music/' + n, new Uint8Array(files[i])));
+        window.civ2OwnMusic = missing;
+    })().catch((e) => console.warn('OpenCiv2 music:', e));
     let code;
     try {
         window.civ2Stats = {};

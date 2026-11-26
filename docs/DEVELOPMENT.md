@@ -67,6 +67,8 @@ make test            # the unit tests: recorded cases of the game's functions, i
                      # then the source probes (tests/*_test.cpp: memory-error fixes, g++ -m32)
 make test-extras     # the additions' tests: harness/extras replayed and compared with our recorded output
 make test-media      # opt-in: the CD's videos and music (harness/media), where the game folder has them
+make test-sound      # OpenCiv2's own sound effects without the game's Sound folder (skipped without data/native/sound)
+make test-music      # OpenCiv2's own music without the game's Music folder, and the game's own with it
 make unit-record     # record those cases again from the replays (needs the game and run/ref-*)
 ```
 

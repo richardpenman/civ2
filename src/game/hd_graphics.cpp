@@ -753,7 +753,7 @@ void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3)
 }
 
 /* OpenCiv2's own heralds (docs/HD-GRAPHICS.md, "Your own heralds";
-   data/native/hd-extra/heralds.txt): DiploLeaderWindow::init_video asks
+   data/native/heralds/heralds.txt, hd-extra's): DiploLeaderWindow::init_video asks
    whether the tribe of this code (KINGS\HRLDxxx.AVI's xxx) has one, with
    HD graphics.  If so (1), the video's window goes where it stands (x, y,
    the game's pixels of the room) and the game's table of the herald's

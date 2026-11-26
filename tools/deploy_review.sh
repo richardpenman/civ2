@@ -54,7 +54,9 @@ fi
 
 # (with the HD art, so that HD changes can be checked there: make web runs
 # make hd-art's tools/build_hd_pack.py, which copies it from the cache,
-# ~/.cache/openciv2, without the network once made)
+# ~/.cache/openciv2, without the network once made; and OpenCiv2's own music
+# and heralds, made by make own-assets's tools/build_own_assets.py, from the
+# cache too)
 make web GAME=1
 rsync -a --delete build/web/ "$DIR/site/civ2/"
 

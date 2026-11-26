@@ -31,14 +31,23 @@ OpenCiv2's own sound effects (data/native/sound/*.ogg, CC0, played where
 the game has none of its own: src/platform/sound.c) into data/sound/, as
 they are, listed in data/sound/index.json: the page fetches those the
 player's game lacks.
+OpenCiv2's own music (data/native/music/trackNN.ogg: made by make
+own-assets, tools/build_own_assets.py, which make web runs first; not in the repository;
+played as the CD's track NN where the game has no Music/TrackNN.ogg nor
+.wav: src/platform/sound.c) into data/music/, as they are, listed in
+data/music/index.json: the page fetches those the player's game lacks
+while the game starts, without waiting for them.  Without it (make web
+OWN_ASSETS=: left out even where data/native/music is made) none.
 
 The HD graphics' art (data/native/hd: made by make hd-art,
 tools/build_hd_pack.py, which make web runs first; not in the repository) and
-OpenCiv2's own HD pictures (data/native/hd-extra) as one file, hd/art.bin,
-the files one after another as hd/index.json lists them ([path, size]:
-hd/..., hd-extra/...): the page fetches it when the game wants HD graphics
-and puts the files where hd.c looks for them; the art's licence and
-notices beside it.  Without the art (make web HD_ART=: left out even where
+OpenCiv2's own heralds (data/native/heralds: made by make own-assets, which
+make web runs first; not in the repository; none with OWN_ASSETS=) and HD
+pictures (data/native/hd-extra, the local staging folder) as one file,
+hd/art.bin, the files one after another as hd/index.json lists them
+([path, size]: hd/..., heralds/..., hd-extra/...): the page fetches it when
+the game wants HD graphics and puts the files where hd.c looks for them;
+the art's licence and notices beside it.  Without the art (make web HD_ART=: left out even where
 data/native/hd is made) only OpenCiv2's own pictures: the game then has no
 HD art (Classic graphics).
 
@@ -191,10 +200,42 @@ def write_sounds():
         json.dump(names, f)
 
 
+def own_assets():
+    """OpenCiv2's own music and heralds wanted (not make web OWN_ASSETS= or 0)."""
+    return os.environ.get('OWN_ASSETS', '1') not in ('', '0')
+
+
+def write_music():
+    """data/music/trackNN.ogg and data/music/index.json (their names; none with OWN_ASSETS= or 0)."""
+    src = os.path.join(ROOT, 'data', 'native', 'music')
+    out = os.path.join(OUT, 'data', 'music')
+    os.makedirs(out, exist_ok=True)
+    names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(src, 'track*.ogg')))
+    if not own_assets():
+        names = []              # (make web OWN_ASSETS=: without it, even where data/native/music is made)
+        print('(no music of OpenCiv2\'s own: OWN_ASSETS=%s)' % os.environ.get('OWN_ASSETS'), flush=True)
+    elif not names:
+        print('warning: no music in data/native/music (make own-assets): the site is without it', flush=True)
+    for name in names:
+        s, d = os.path.join(src, name), os.path.join(out, name)
+        if newer(s, d):
+            shutil.copy(s, d)
+    notices = ('README.txt', 'LICENSE') if names else ()
+    for name in notices:
+        shutil.copy(os.path.join(src, name), os.path.join(out, name))
+    keep = set(names) | set(notices) | {'index.json'}
+    for f in os.listdir(out):
+        if f not in keep:
+            os.remove(os.path.join(out, f))
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump(names, f)
+
+
 def write_art():
-    """hd/art.bin and hd/index.json: the HD art (data/native/hd) and
-    OpenCiv2's own pictures and heralds (data/native/hd-extra, the local
-    staging folder, where present), the files one after another; the art's
+    """hd/art.bin and hd/index.json: the HD art (data/native/hd),
+    OpenCiv2's own heralds (data/native/heralds: make own-assets) and its
+    own pictures and heralds being tried (data/native/hd-extra, the local
+    staging folder, where present), the files one after another; the
     notices beside them."""
     out = os.path.join(OUT, 'hd')
     if os.path.isdir(out):
@@ -210,9 +251,10 @@ def write_art():
         print('warning: no HD art in data/native/hd (make hd-art): the site is without it', flush=True)
     index = []
     with open(os.path.join(out, 'art.bin'), 'wb') as f:
-        for d in ('hd', 'hd-extra') if art else ('hd-extra',):
+        own = ('heralds',) if own_assets() else ()
+        for d in (('hd',) if art else ()) + own + ('hd-extra',):
             if not os.path.isdir(os.path.join(native, d)):
-                continue        # (hd-extra: the local staging folder, not in the repository)
+                continue        # (hd-extra: the local staging folder; heralds: make own-assets; not in the repository)
             for name in sorted(os.listdir(os.path.join(native, d))):
                 if name in ('pictures.txt', 'heralds.txt') or name.endswith(('.webp', '.png')):
                     data = open(os.path.join(native, d, name), 'rb').read()
@@ -222,6 +264,8 @@ def write_art():
         json.dump(index, f)
     for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md') if art else ():
         shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
+    if own_assets() and os.path.exists(os.path.join(native, 'heralds', 'LICENSE')):
+        shutil.copy(os.path.join(native, 'heralds', 'LICENSE'), os.path.join(out, 'LICENSE-heralds'))
     if os.path.exists(os.path.join(native, 'hd-extra', 'README')):
         shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))
 
@@ -405,6 +449,7 @@ def main():
         shutil.rmtree(os.path.join(OUT, 'game'))
     write_texts()
     write_sounds()
+    write_music()
     for f in glob.glob(os.path.join(OUT, 'data', 'fonts_*.bin.gz')):
         if os.path.basename(f)[:-3] not in FONTS:
             os.remove(f)        # (the code pages' glyphs of before: text.c makes them)

@@ -40,7 +40,7 @@ int hd_anim_frames(const HdAnim *a);
 void hd_anim_size(const HdAnim *a, int *w, int *h);
 const unsigned char *hd_anim_frame(HdAnim *a, int i);
 
-/* OpenCiv2's own heralds (data/native/hd-extra/heralds.txt, docs/HD-GRAPHICS.md
+/* OpenCiv2's own heralds (data/native/heralds/heralds.txt and hd-extra's, docs/HD-GRAPHICS.md
    "Your own heralds"): a line each, CODE X Y W H FPS G0 G1 I0 I1 P0 P1 D0 D1
    A0 A1 FILE: the three letters of the original's KINGS\HRLDCODE.AVI, where
    it stands in the diplomacy room and its size (the game's pixels), its

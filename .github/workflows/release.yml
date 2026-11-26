@@ -6,7 +6,11 @@
 # each system.  The HD graphics' art (data/native/hd: not in the repository)
 # is made once from Peter Johnson's art at the commit of his repository
 # pinned in data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its
-# download and its result cached) and packed with each.
+# download and its result cached) and packed with each; so are OpenCiv2's
+# own music and heralds (data/native/music, data/native/heralds: not in the
+# repository either), made from OpenCiv2's own openciv2/openciv2-assets at
+# the commit pinned in data/own-assets.json (tools/build_own_assets.py, the
+# job own-assets, its download and result cached).
 name: Build and release
 
 on:
@@ -65,6 +69,30 @@ jobs:
           path: data/native/hd
           retention-days: 1
 
+  # OpenCiv2's own music and heralds: data/native/music and
+  # data/native/heralds, made by tools/build_own_assets.py (the pinned
+  # commit's files fetched and checked, the music made Ogg Vorbis in Docker);
+  # ~/.cache/openciv2 kept between runs (the files fetched and what was made
+  # from them).
+  own-assets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
+          restore-keys: own-assets-
+      - name: The music and heralds
+        run: python3 tools/build_own_assets.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: own-assets
+          path: |
+            data/native/music
+            data/native/heralds
+          retention-days: 1
+
   # The unit tests (tests/unit: recorded calls of the game's functions, run
   # again and compared; no game files needed).  The runner is the 32-bit
   # Linux build (gcc -m32).  Not needed by the release.
@@ -86,7 +114,7 @@ jobs:
         run: cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz
 
   windows:
-    needs: [game, hd-art]
+    needs: [game, hd-art, own-assets]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -98,6 +126,10 @@ jobs:
         with:
           name: hd-art
           path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
       - name: Toolchain (MinGW, SDL2 for MinGW, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -129,8 +161,9 @@ jobs:
              (else it asks where it is), and copies it into a GameData
              folder beside OpenCiv2.exe; then the game starts. Afterwards it
              starts the game directly.
-          3. The music (the CD's audio tracks) comes only from a disc image:
-             found, it is encoded into GameData\Music (a few minutes).
+          3. The music: the CD's audio tracks come only from a disc image:
+             found, they are encoded into GameData\Music (a few minutes).
+             Without them the game plays OpenCiv2's own music instead.
 
           OpenCiv2.exe --setup [FOLDER]   set the game up again (from FOLDER:
                                           the installed game, the CD, or a
@@ -150,7 +183,7 @@ jobs:
           retention-days: 1
 
   linux:
-    needs: [game, hd-art]
+    needs: [game, hd-art, own-assets]
     # (the oldest supported runner: the program runs on systems at least as new)
     runs-on: ubuntu-22.04
     steps:
@@ -163,6 +196,10 @@ jobs:
         with:
           name: hd-art
           path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
       - name: Toolchain (SDL2 linked in, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -191,7 +228,7 @@ jobs:
           mkdir -p pkg/OpenCiv2/data
           cp build/OpenCiv2 pkg/OpenCiv2/OpenCiv2
           cp data/native/fonts_*.bin pkg/OpenCiv2/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd pkg/OpenCiv2/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/heralds pkg/OpenCiv2/data/
           if [ -d data/native/hd-extra ]; then cp -r data/native/hd-extra pkg/OpenCiv2/data/; fi
           if [ -d data/native/sound ]; then cp -r data/native/sound pkg/OpenCiv2/data/; fi
           cp LICENSE pkg/OpenCiv2/LICENSE.txt
@@ -210,8 +247,9 @@ jobs:
              it asks where it is, with zenity or kdialog), and copies it
              into ~/.local/share/OpenCiv2/GameData; then the game starts.
              Afterwards it starts the game directly.
-          3. The music (the CD's audio tracks) comes only from a disc image:
-             found, it is encoded into GameData/Music (a few minutes).
+          3. The music: the CD's audio tracks come only from a disc image:
+             found, they are encoded into GameData/Music (a few minutes).
+             Without them the game plays OpenCiv2's own music instead.
 
           ./OpenCiv2 --setup [FOLDER]   set the game up again (from FOLDER:
                                         the installed game, the CD, or a
@@ -231,7 +269,7 @@ jobs:
           retention-days: 1
 
   macos:
-    needs: [game, hd-art]
+    needs: [game, hd-art, own-assets]
     runs-on: macos-15
     env:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
@@ -245,6 +283,10 @@ jobs:
         with:
           name: hd-art
           path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
       - name: Toolchain (SDL2 linked in, for Apple silicon and Intel; unshield, zlib, libogg, libvorbis)
         run: |
           curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
@@ -270,7 +312,7 @@ jobs:
           mkdir -p $app/MacOS $app/Resources/data
           cp build/OpenCiv2 $app/MacOS/OpenCiv2
           cp data/native/fonts_*.bin $app/Resources/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd $app/Resources/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/heralds $app/Resources/data/
           if [ -d data/native/hd-extra ]; then cp -r data/native/hd-extra $app/Resources/data/; fi
           if [ -d data/native/sound ]; then cp -r data/native/sound $app/Resources/data/; fi
           cat > $app/Info.plist <<'PLIST'
@@ -312,8 +354,9 @@ jobs:
              (else it asks where it is), and copies it into
              ~/Library/Application Support/OpenCiv2/GameData; then the game
              starts. Afterwards it starts the game directly.
-          4. The music (the CD's audio tracks) comes only from a disc image:
-             found, it is encoded into GameData/Music (a few minutes).
+          4. The music: the CD's audio tracks come only from a disc image:
+             found, they are encoded into GameData/Music (a few minutes).
+             Without them the game plays OpenCiv2's own music instead.
 
           From Terminal, OpenCiv2.app/Contents/MacOS/OpenCiv2:
             --setup [FOLDER]   set the game up again (from FOLDER: the
@@ -346,7 +389,7 @@ jobs:
         run: |
           git tag -f latest
           git push -f origin latest
-          notes="Build of ${GITHUB_SHA::7} for Windows, Linux (x86-64) and macOS (Apple silicon and Intel): one program that sets the game up from your copy of Civilization II Multiplayer Gold Edition, with the music from a disc image of its CD (see README.txt in each)."
+          notes="Build of ${GITHUB_SHA::7} for Windows, Linux (x86-64) and macOS (Apple silicon and Intel): one program that sets the game up from your copy of Civilization II Multiplayer Gold Edition, with the music from a disc image of its CD, else OpenCiv2's own (see README.txt in each)."
           if gh release view latest >/dev/null 2>&1; then
             gh release edit latest --title "Latest build" --notes "$notes" --prerelease=false --latest
           else

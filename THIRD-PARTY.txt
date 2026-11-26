@@ -32,6 +32,13 @@ original's:
 
  16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt, Kenney
 
+The programs also carry OpenCiv2's own music and heralds (data/native/music,
+data/native/heralds, made by tools/build_own_assets.py from OpenCiv2's own
+repository openciv2/openciv2-assets at its pinned commit), played where the
+game folder lacks the CD's music and heralds: not third-party, but under
+OpenCiv2's own licence (MIT, Copyright (c) 2026 Richard Penman: LICENSE),
+credited at the end.
+
 unshield, zlib (the set-up's reader of the CD's InstallShield cabinet),
 libogg and libvorbis (its Ogg Vorbis encoder of the CD's music) are in the
 program as their authors released them (tools/fetch-toolchain.sh); the
@@ -530,3 +537,21 @@ Freesound (https://freesound.org), OpenGameArt (https://opengameart.org) and
 Kenney (https://kenney.nl).  No notice is required; data/native/sound/SOURCES.md
 credits each source and its author all the same, and says how each file was
 made from them.
+
+
+
+OpenCiv2's own music and heralds  https://github.com/openciv2/openciv2-assets
+-----------------------------------------------------------------------------
+
+Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-assets
+(not Peter Johnson's PeterJohnson/openciv2-assets above), at the commit
+pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
+2026 Richard Penman; the repository's LICENSE, beside the files in
+data/native/music and data/native/heralds).  The music: eleven tracks
+(music/02 - Funeral March to 12 - World of Jules Verne), played as the CD's
+audio tracks 2 to 12 where the game folder has no Music\TrackNN
+(docs/NO-INSTALL.md, Music), made Ogg Vorbis from the repository's Ogg Opus by
+tools/build_own_assets.py.  The heralds: the Russians' animated herald
+(heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
+heralds), AI-generated (Google's Gemini models; the prompts are in
+docs/HD-GRAPHICS.md), copied as it is.

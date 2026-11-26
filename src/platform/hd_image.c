@@ -34,7 +34,7 @@ unsigned char *hd_decode_image(const unsigned char *data, size_t len, int *w, in
     return NULL;
 }
 
-/* ---- animated WebP (OpenCiv2's own heralds: data/native/hd-extra/heralds.txt) ----
+/* ---- animated WebP (OpenCiv2's own heralds: data/native/heralds/heralds.txt) ----
    The frames composited on the canvas as the WebP container says (each
    frame a rectangle of it, blended or not, its rectangle cleared after it
    or not), as libwebp's WebPAnimDecoder does, but from any frame: from the

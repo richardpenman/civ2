@@ -227,14 +227,24 @@ async function main() {
             throw new Error('the art not loaded from the site at the restart');
         if (!await evaluate('!!window.civ2Fs.get("/data/hd/pictures.txt")'))
             throw new Error("the art's pictures' list not in the game's files");
-        // (data/native/hd-extra, the local staging folder, not in the repository:
-        // whatever of it the site has must be in the game's files)
+        // (data/native/heralds, made by make own-assets, and data/native/hd-extra,
+        // the local staging folder, neither in the repository: whatever of them
+        // the site has must be in the game's files)
         const extra = JSON.parse(readFileSync(join(WEB, 'hd', 'index.json'), 'utf8'))
-            .map((e) => e[0]).filter((n) => n.startsWith('hd-extra/'));
-        log(`OpenCiv2's own pictures and heralds on the site: ${extra.length ? extra.join(' ') : 'none (no data/native/hd-extra)'}`);
+            .map((e) => e[0]).filter((n) => n.startsWith('hd-extra/') || n.startsWith('heralds/'));
+        log(`OpenCiv2's own pictures and heralds on the site: ${extra.length ? extra.join(' ') : 'none (no data/native/heralds nor hd-extra)'}`);
         for (const n of extra)
             if (!await evaluate(`!!window.civ2Fs.get(${JSON.stringify('/data/' + n)})`))
-                throw new Error(`${n} (data/native/hd-extra) not in the game's files`);
+                throw new Error(`${n} (data/native/heralds, hd-extra) not in the game's files`);
+        // OpenCiv2's own music (the site's data/music: make own-assets): none
+        // fetched where the game has its own (Music/TrackNN)
+        const siteMusic = JSON.parse(readFileSync(join(WEB, 'data', 'music', 'index.json'), 'utf8'));
+        const gameMusic = existsSync(join(GAME, 'Music')) || existsSync(join(GAME, 'MUSIC'));
+        await waitFor('window.civ2OwnMusic', 60000, 'the music looked at');
+        const own = await evaluate('window.civ2OwnMusic');
+        log(`OpenCiv2's own music: ${siteMusic.length} tracks on the site, ${own.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
+        if (gameMusic && own.length)
+            throw new Error('OpenCiv2\'s own music fetched where the game has its own');
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -321,15 +331,22 @@ async function main() {
             throw new Error('?hd=0&sharp=0 is not the original graphics');
         // Classic graphics without the original's pictures (docs/BROWSER.md
         // "How to play"): the game's files without TERRAIN1.GIF and Tiles.dll
-        // as it starts (the store keeps them): HD graphics, whatever is chosen
+        // as it starts (the store keeps them): HD graphics, whatever is chosen;
+        // and without its music (Music/): OpenCiv2's own fetched, all its tracks
         const {identifier} = await send('Page.addScriptToEvaluateOnNewDocument', {source: `
             window.civ2Test = async (fs) => {
                 for (const k of [...fs.files.keys()])
-                    if (/^\\/civ2\\/(terrain1\\.gif|tiles\\.dll)$/i.test(k))
+                    if (/^\\/civ2\\/(terrain1\\.gif|tiles\\.dll|music\\/.*)$/i.test(k))
                         fs.files.delete(k);
             };`});
         await send('Page.navigate', {url});
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start without the pictures');
+        await waitFor('window.civ2OwnMusic', 120000, 'OpenCiv2\'s own music');
+        const ownNow = await evaluate('window.civ2OwnMusic');
+        const ownSizes = await evaluate(`window.civ2OwnMusic.map((n) => (window.civ2Fs.get('/data/music/' + n) || []).length)`);
+        log(`without the game's Music: OpenCiv2's own fetched, ${ownNow.join(' ')} (${(ownSizes.reduce((a, b) => a + b, 0) / 1e6).toFixed(1)} MB)`);
+        if (ownNow.length !== siteMusic.length || ownSizes.some((n) => !n))
+            throw new Error('OpenCiv2\'s own music not all in the game\'s files without its Music');
         await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'an HD frame (forced)');
         await toMenu();
         await toGraphics();

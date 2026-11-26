@@ -1919,31 +1919,37 @@ void hd_debug_dump(const char *path, const unsigned int *px, int w, int h)
     fclose(f);
 }
 
-/* OpenCiv2's own heralds (hd.h; data/native/hd-extra/heralds.txt): with HD
-   graphics only (Classic graphics keep the CD's videos). */
+/* OpenCiv2's own heralds (hd.h): data/native/hd-extra/heralds.txt's (the
+   local staging folder, where it has the tribe), else data/native/heralds/
+   heralds.txt's (made by make own-assets: tools/build_own_assets.py, from
+   OpenCiv2's openciv2/openciv2-assets); with HD graphics only (Classic
+   graphics keep the CD's videos). */
 int hd_herald_find(const char *code, HdHerald *h, char *path, size_t n)
 {
+    static const char *const dirs[] = {"hd-extra", "heralds"};
     char file[1400], line[400];
     FILE *f;
-    int found = 0, i;
+    int found = 0, i, d;
     char want[4];
     if (!hd_art || !code || strlen(code) < 3)
         return 0;
     for (i = 0; i < 3; i++)
         want[i] = (char)(code[i] >= 'a' && code[i] <= 'z' ? code[i] - 32 : code[i]);
     want[3] = 0;
-    snprintf(file, sizeof file, "%s/hd-extra/heralds.txt", plat_data_dir);
-    if (!(f = fopen(file, "r")))
-        return 0;
-    while (!found && fgets(line, sizeof line, f))
-        if (line[0] != '#' && hd_herald_parse(line, h) && !strcmp(h->code, want)) {
-            FILE *g;
-            snprintf(path, n, "%s/hd-extra/%s", plat_data_dir, h->file);
-            if ((g = fopen(path, "rb"))) {
-                fclose(g);
-                found = 1;
+    for (d = 0; !found && d < 2; d++) {
+        snprintf(file, sizeof file, "%s/%s/heralds.txt", plat_data_dir, dirs[d]);
+        if (!(f = fopen(file, "r")))
+            continue;
+        while (!found && fgets(line, sizeof line, f))
+            if (line[0] != '#' && hd_herald_parse(line, h) && !strcmp(h->code, want)) {
+                FILE *g;
+                snprintf(path, n, "%s/%s/%s", plat_data_dir, dirs[d], h->file);
+                if ((g = fopen(path, "rb"))) {
+                    fclose(g);
+                    found = 1;
+                }
             }
-        }
-    fclose(f);
+        fclose(f);
+    }
     return found;
 }

@@ -1,5 +1,5 @@
 # HD graphics (docs/HD-GRAPHICS.md, "Your own heralds"): OpenCiv2's own
-# herald (data/native/hd-extra/heralds.txt: the Russians', herald-RUS.webp)
+# herald (data/native/heralds/heralds.txt: the Russians', herald-RUS.webp)
 # in the HD diplomacy room in place of the CD's KINGS\HRLDRUS.AVI, with the
 # CD's videos in the game folder or without them, and the Russian leader's
 # portrait (the pack's 235; the woman's, 256, with the GENDER line changed:

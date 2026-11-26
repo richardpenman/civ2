@@ -576,8 +576,13 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * from track 2).  Here track N is Music\TrackNN.ogg in the game directory
  * (the set-up encodes them from a disc image, src/host/setup_disc.c),
  * decoded as it plays (stb_vorbis), else Music\TrackNN.wav
- * (tools/extract_disc.py writes them from a disc image); without those
- * files there is no drive, as before.  Replays have no drive either (as the
+ * (tools/extract_disc.py writes them from a disc image), else OpenCiv2's
+ * own music (docs/NO-INSTALL.md): data/native/music/trackNN.ogg (made by
+ * tools/build_own_assets.py from openciv2/openciv2-assets; read and played
+ * as an install's .ogg, so only its 2 to 5 MB are in memory, never a WAV),
+ * only with sound, as the sound effects' (sound_fallback); without any of
+ * those there is no drive, as before.  The tracks are counted from 2 to the
+ * first that none of them has.  Replays have no drive either (as the
  * reference environment), but with CIV2_TEST_MUSIC=1 (the media tests,
  * harness/media): a drive whose tracks play silently on the virtual clock,
  * each as long as its file says (a .wav's data over its byte rate), so that
@@ -629,14 +634,36 @@ static FILE *cd_track_file(int n, const char *ext)
     return fopen(host, "rb");
 }
 
+/* Track n's file: the game folder's Music\TrackNN.ogg, else .wav, else
+   OpenCiv2's own (data/native/music/trackNN.ogg; only with sound); *ext
+   its kind, from (if given) where it is. */
+static FILE *cd_open_track(int n, const char **ext, char *from, size_t size)
+{
+    char own[1100];
+    FILE *f = cd_track_file(n, *ext = "ogg");
+    if (f || (f = cd_track_file(n, *ext = "wav"))) {
+        if (from)
+            snprintf(from, size, "Music\\Track%02d.%s", n, *ext);
+        return f;
+    }
+    *ext = "ogg";
+    if (!audio_ok)
+        return NULL;
+    snprintf(own, sizeof own, "%s/music/track%02d.ogg", plat_data_dir, n);
+    if (from)
+        snprintf(from, size, "%s", own);
+    return fopen(own, "rb");
+}
+
 static int cd_count_tracks(void)
 {
     int n, last = 0;
     if (!cd_virtual && ((plat_replay && !getenv("CIV2_TEST_AUDIO")) || !audio_ok))
         return 0;
     for (n = 2; n < 100; n++) {
-        FILE *f = cd_track_file(n, "ogg");
-        if (!f && !(f = cd_track_file(n, "wav")))
+        const char *ext;
+        FILE *f = cd_open_track(n, &ext, NULL, 0);
+        if (!f)
             break;
         fclose(f);
         last = n;
@@ -665,17 +692,16 @@ static void cd_stop(UINT code)
     cd_notify(code);
 }
 
-/* Track n (Music\TrackNN.ogg, else .wav) read whole and handed to the host,
-   which decodes it as it plays (on a thread of its own: also while a system
-   menu holds the message loop); its size, 0 if it did not start. */
-static long cd_play(int n, const char **ext)
+/* Track n (Music\TrackNN.ogg, else .wav, else OpenCiv2's own: cd_open_track)
+   read whole and handed to the host, which decodes it as it plays (on a
+   thread of its own: also while a system menu holds the message loop); its
+   size, 0 if it did not start; from: where it is. */
+static long cd_play(int n, const char **ext, char *from, size_t size)
 {
-    FILE *f = cd_track_file(n, *ext = "ogg");
+    FILE *f = cd_open_track(n, ext, from, size);
     long len = -1;
     void *data = NULL;
     int ok = 0;
-    if (!f)
-        f = cd_track_file(n, *ext = "wav");
     if (!f)
         return 0;
     if (cd_virtual) {
@@ -751,16 +777,17 @@ static MCIERROR cd_command(UINT msg, DWORD_PTR flags, DWORD_PTR param)
         MCI_PLAY_PARMS *p = (MCI_PLAY_PARMS *)param;
         int n = (flags & MCI_FROM) ? (int)(p->dwFrom & 0xff) : (cd.current ? cd.current : 2);
         const char *ext;
+        char from[1100];
         long len;
         cd_stop(MCI_NOTIFY_SUPERSEDED);
-        if (n < 2 || n > cd.tracks || !(len = cd_play(n, &ext))) {
+        if (n < 2 || n > cd.tracks || !(len = cd_play(n, &ext, from, sizeof from))) {
             plat_log("cdaudio: cannot play track %d (of %d)\n", n, cd.tracks);
             return MCIERR_OUTOFRANGE;
         }
         if (flags & MCI_NOTIFY)
             cd.notify = (HWND)p->dwCallback;
-        plat_log("cdaudio: playing track %d%s from Music\\Track%02d.%s (%ld bytes)\n", n,
-                 (flags & MCI_NOTIFY) ? " (notify)" : "", n, ext, len);
+        plat_log("cdaudio: playing track %d%s from %s (%ld bytes)\n", n,
+                 (flags & MCI_NOTIFY) ? " (notify)" : "", from, len);
         return 0;
     }
     }

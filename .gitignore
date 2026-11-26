@@ -20,6 +20,13 @@ __pycache__/
 # packages and make test-sound do without them
 /data/native/sound/
 
+# OpenCiv2's own music and heralds (src/platform/sound.c: cd_open_track;
+# hd.c: hd_herald_find), made by make own-assets (tools/build_own_assets.py:
+# OpenCiv2's openciv2/openciv2-assets at the commit pinned in
+# data/own-assets.json)
+/data/native/music/
+/data/native/heralds/
+
 # Ghidra project and logs (re/ keeps the exported tables and decomp.c)
 /re/gproj/
 /re/*.tgz

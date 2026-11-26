@@ -1,6 +1,6 @@
 #!/bin/sh
 # HD graphics (docs/HD-GRAPHICS.md, "Your own heralds"): harness/hd/hd-herald-own.txt
-# (OpenCiv2's own Russian herald, where the local data/native/hd-extra has it) run for the man and the woman,
+# (OpenCiv2's own Russian herald: data/native/heralds, or the local data/native/hd-extra) run for the man and the woman,
 # with the CD's KINGS videos in the game folder (CIV2_KEEP_MEDIA=1) and
 # without them, without the install's pictures (CIV2_NO_GRAPHICS=1, no
 # KINGS), and with Classic graphics (no CIV2_TEST_HD: the original's herald
@@ -9,10 +9,11 @@
 # run/hd-herald-own/G-V.png.
 # Usage (on the host): sh harness/hd/hd-herald-own.sh [GENDERS] [VARIANTS]
 cd "$(dirname "$0")/../.." || exit 1
-# (the Russians' herald is in the local staging folder data/native/hd-extra,
-# not in the repository: without it there is nothing to show)
-if ! grep -q '^RUS ' data/native/hd-extra/heralds.txt 2>/dev/null || [ ! -f data/native/hd-extra/herald-RUS.webp ]; then
-    echo "SKIP: no own Russian herald (data/native/hd-extra/heralds.txt, herald-RUS.webp: the local staging folder, not in the repository)"
+# (the Russians' herald is in data/native/heralds, made by make own-assets,
+# or the local staging folder data/native/hd-extra; neither in the
+# repository: without them there is nothing to show)
+if ! grep -qs '^RUS ' data/native/heralds/heralds.txt data/native/hd-extra/heralds.txt; then
+    echo "SKIP: no own Russian herald (data/native/heralds: make own-assets; or data/native/hd-extra, the local staging folder)"
     exit 0
 fi
 genders=${1:-"m f"}

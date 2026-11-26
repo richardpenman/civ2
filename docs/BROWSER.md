@@ -47,7 +47,12 @@ the page's `window.civ2Timing` has each step's time). The page asks the browser 
 disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up page again: to
 replace the game files or remove them.
 
-Music plays where the game's folder has it (`Music/TrackNN.ogg`). Browsers let a page make no sound
+Music plays where the game's folder has it (`Music/TrackNN.ogg`), else OpenCiv2's own
+(`data/music/trackNN.ogg` on the site, 26 MB, made by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)):
+the page fetches the tracks the game lacks while the game starts, without waiting for them, and
+gives them to the game together once all have come (the browser keeps them in its cache for later
+visits); until then, on a first visit, the game plays as without music.  OpenCiv2's own heralds
+(`data/native/heralds`) are in `hd/art.bin` with the HD art. Browsers let a page make no sound
 until it is first clicked or typed at: until then the sound effects are silent but still take their
 time (`host.js`, `host_audio_queue`), so a looping one, the main menu's theme, does not hold the
 game up; the main menu comes at once where there is no opening video.

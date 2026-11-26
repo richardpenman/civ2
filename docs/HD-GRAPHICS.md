@@ -258,7 +258,17 @@ reaction when the AI is pleased, declines, or is angry, each followed by the idl
 `DiploLeaderWindow::init_video`, `diplo_leader_video_end_cb`, `diplo_leader_play_reaction` in
 `src/auto/diplomacy.cpp`, the segments in the game's table `leader_anim_frames[tribe][5][2]`).
 With HD graphics, a herald of OpenCiv2's own plays in its place where
-`data/native/hd-extra/heralds.txt` has one for the tribe, a line each:
+`data/native/heralds/heralds.txt` has one for the tribe (or the local staging folder's
+`data/native/hd-extra/heralds.txt`, which wins where it has the tribe: `hd_herald_find`).
+`data/native/heralds` is not in the repository: the builds fetch it, as it is, from OpenCiv2's
+own repository [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets)
+(`heralds/`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's)
+at the commit pinned in `data/own-assets.json`, with the music (`make own-assets`,
+`tools/build_own_assets.py`: once, into `~/.cache/openciv2`, each file checked against its
+SHA-256; `make OWN_ASSETS=` builds without them), and package it as the art (beside the
+program's `data`, the Windows program's resources, the browser version's `hd/art.bin`).  A
+herald made here is tried in `data/native/hd-extra`, then committed to that repository and its
+pin moved.  `heralds.txt` has a line each:
 
     CODE X Y W H FPS G0 G1 I0 I1 P0 P1 D0 D1 A0 A1 FILE
     RUS 64 73 237 399 12 0 35 36 71 72 107 108 143 144 179 herald-RUS.webp
@@ -757,8 +767,8 @@ The art: openciv2-assets by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PA
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
-OpenCiv2's own pictures and heralds (`data/native/hd-extra`, the local staging folder) are under
-its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
+OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-assets, and
+`data/native/hd-extra`, the local staging folder) are under its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
 (the Russians' herald's under *Your own heralds*).
 
 ## Tests

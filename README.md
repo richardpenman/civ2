@@ -78,6 +78,14 @@ Docker, or, without Docker, with Python's Pillow and numpy and `cwebp` (the `web
 take it from `~/.cache/openciv2`, offline. `make HD_ART=` builds without it (Classic graphics
 only).
 
+OpenCiv2's own music and heralds (played where the game folder lacks the CD's music and
+heralds) are not in the repository either: the builds fetch them from
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) at its pinned commit
+once (`make own-assets`; 46 MB) and make the music Ogg Vorbis in Docker, or, without Docker,
+with `opusdec` and `oggenc` (`brew install opus-tools vorbis-tools`) or `ffmpeg`
+(`brew install ffmpeg`). Later builds take them from `~/.cache/openciv2`, offline.
+`make OWN_ASSETS=` builds without them.
+
 What to install first:
 
 - **macOS:** `xcode-select --install` (compiler and make) and `brew install sdl2`.

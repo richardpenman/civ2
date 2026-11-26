@@ -1,0 +1,81 @@
+{
+  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music and data/native/heralds (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-assets (repo; MIT, as OpenCiv2: its LICENSE; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2; music: CD track number -> the track, Ogg Opus, made Ogg Vorbis (stb_vorbis, which plays the music, has no Opus decoder) as data/native/music/trackNN.ogg, which the game plays as CD track NN where its folder has no Music\\TrackNN (src/platform/sound.c; the repository's 01 - Dorian Pastoral is not used: no CD track, not yet chosen); heralds: the diplomacy room's animated heralds, copied as they are into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); notices: beside both. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
+  "repo": "https://github.com/openciv2/openciv2-assets",
+  "sha": "724771866eea1b2031c39802fb00d4285c3eb783",
+  "music": {
+    "02": {
+      "path": "music/02 - Funeral March.ogg",
+      "sha256": "a9cb3cb8cce95604da19655ec3765782d27e73715864557923ced6c951590969",
+      "size": 1124514
+    },
+    "03": {
+      "path": "music/03 - Ode to Joy.ogg",
+      "sha256": "2cfcda15d17b4b2120e1e4e78e51749fc67024e38a22d1aa4e04ad7ac3d46739",
+      "size": 1346305
+    },
+    "04": {
+      "path": "music/04 - The Crusades.ogg",
+      "sha256": "94eab777b0a4eb5fa202b44666b441025f432082e3b86e0646a25a76d4d84322",
+      "size": 2848655
+    },
+    "05": {
+      "path": "music/05 - Alien Invasion.ogg",
+      "sha256": "1591709795581dd3bd40508f48459eaf32268755dc184208fa099a8285e851b7",
+      "size": 3523674
+    },
+    "06": {
+      "path": "music/06 - Mongol Horde.ogg",
+      "sha256": "78de4f1a0308ec2b447867fef719799ff29e08df3c4eb3b04d718c7fe52794e3",
+      "size": 5159118
+    },
+    "07": {
+      "path": "music/07 - Apocalypse.ogg",
+      "sha256": "2bf44508b0b6e46dbca7fe61a468155751c630281cbbfdc56b3533a1e9e5aa92",
+      "size": 6574695
+    },
+    "08": {
+      "path": "music/08 - Primeval World.ogg",
+      "sha256": "5c9d34eadfbd90334467376714037ba9933c790aa178df966410921fcc22ddbf",
+      "size": 5288337
+    },
+    "09": {
+      "path": "music/09 - New World.ogg",
+      "sha256": "6f4ff649e00ff0d8e309fe2ff84bbe1f30c0496250a826897d551f6ab7308aff",
+      "size": 4815812
+    },
+    "10": {
+      "path": "music/10 - Fantasy.ogg",
+      "sha256": "ddbe1258aa055cbf68da81ea368717520c29a382a9694fd90ef90ddea67848ff",
+      "size": 5301819
+    },
+    "11": {
+      "path": "music/11 - Mars.ogg",
+      "sha256": "7b1fbe160f7b54b815f8305d191f2f124d286bd9b0cb20ca5262f1add75894e1",
+      "size": 4651877
+    },
+    "12": {
+      "path": "music/12 - World of Jules Verne.ogg",
+      "sha256": "080247dba917130a51213a042e349b991138fcaba3bb4d6b7f208b1ff5f047e6",
+      "size": 4810042
+    }
+  },
+  "heralds": {
+    "heralds.txt": {
+      "path": "heralds/heralds.txt",
+      "sha256": "47d4f583523c739ef71c078849a8ff5275dd4ddb4605b4aabec399e6a75e4c3a",
+      "size": 495
+    },
+    "herald-RUS.webp": {
+      "path": "heralds/herald-RUS.webp",
+      "sha256": "0df0735eba83b69b1ccd0bb6956fb7dd59b086da9eaea7a6f1e58e578f58734f",
+      "size": 3846636
+    }
+  },
+  "notices": {
+    "LICENSE": {
+      "path": "LICENSE",
+      "sha256": "a0c2c6a53ce243adae44630071231011725b4019292e7fb33a900d1ca7a3461d",
+      "size": 1071
+    }
+  }
+}
