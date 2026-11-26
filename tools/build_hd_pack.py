@@ -73,7 +73,7 @@ The same input gives the same files (Pillow and cwebp pinned, cwebp at one
 thread).  Upgrading the art: the sha in data/hd-pack.json (git ls-remote
 REPO main), then this.
 
-Without Docker (or with --local) the pack is built with this machine's
+Without Docker running (or with --local) the pack is built with this machine's
 Python and Pillow and the pictures encoded by its cwebp, with Pillow and
 numpy (steps 1b and 4 as in the containers): the same pictures (another
 Pillow than requirements.txt's: perhaps not to the pixel), not always the
@@ -210,6 +210,33 @@ def fetch_source(pin, out):
     return len(names)
 
 
+
+def docker_ready():
+    """Docker installed and its daemon answering (Docker Desktop may be installed but not started)."""
+    if not shutil.which('docker'):
+        return False
+    try:
+        return subprocess.run(['docker', 'info'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                              timeout=20).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def check_local_tools():
+    """Without Docker the art is made with this machine's tools: say what is missing, and how to get it."""
+    missing = []
+    if not shutil.which('cwebp'):
+        missing.append('cwebp (macOS: brew install webp; Debian/Ubuntu: apt install webp)')
+    for mod, pkg in (('PIL', 'Pillow'), ('numpy', 'numpy')):
+        try:
+            __import__(mod)
+        except ImportError:
+            missing.append('%s (python3 -m pip install %s)' % (pkg, pkg))
+    if missing:
+        sys.exit('build_hd_pack: without Docker the HD art needs ' + '; '.join(missing) +
+                 '. Or start Docker (Docker Desktop on macOS) and run make again, '
+                 'or build without the HD art: make HD_ART=')
+
 def build_pack(src, local):
     """1b.: src/build/data/atlas-hd.pack, built by the commit's tools/build_atlas.py with the pinned Pillow."""
     req = [l.split('#')[0].strip() for l in open(os.path.join(src, 'requirements.txt'), encoding='utf-8')]
@@ -282,9 +309,10 @@ def ensure(args):
         copy_art(cached, args.dest)
         print('%s: the HD art copied from %s' % (rel, cached), flush=True)
     else:
-        local = args.local or not shutil.which('docker')
+        local = args.local or not docker_ready()
         if local:
-            print('build_hd_pack: no Docker (or --local): this machine\'s Python, Pillow and cwebp make the art', flush=True)
+            print('build_hd_pack: no Docker running (or --local): this machine\'s Python, Pillow and cwebp make the art', flush=True)
+            check_local_tools()
         build(args, local)
         if not local:
             tmp = cached + '.part'
