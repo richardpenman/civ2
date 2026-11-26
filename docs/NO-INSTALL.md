@@ -254,20 +254,16 @@ plays them as CD tracks 2 to 12, through MCI's `cdaudio`, `src/platform/sound.c`
 
 Replaced: OpenCiv2's own music, eleven tracks of the same order and about the same length,
 `data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's own repository
-[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`music/02 - Funeral
-March.ogg` to `12 - World of Jules Verne.ogg`; its `01 - Dorian Pastoral` is not used: no CD
-track; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's).  Not
-in this repository: the builds make it first (`make own-assets`, `tools/build_own_assets.py`),
-at the commit pinned in `data/own-assets.json` (each file checked against its SHA-256 and size
-there), once, into `~/.cache/openciv2`; later builds take it from there, offline.  The source is
-Ogg Opus (48 kHz stereo), which stb_vorbis, the game's decoder, cannot read, so each track is
-decoded and encoded again as Ogg Vorbis (`opusdec` and `oggenc`, pinned, in a Debian container;
-without Docker running, this machine's `opusdec` and `oggenc` or `ffmpeg`: `brew install
-opus-tools vorbis-tools` or `brew install ffmpeg`), at libvorbis's quality 5 and the tracks' own
-48 kHz (nothing resampled): 26.4 MB for the eleven, 25 minutes, about 140 kbit/s; quality 4, the
-set-up's for the CD's music, would be 21.5 MB, but the source is itself lossy (Opus at 256
-kbit/s), and the second encoding is kept a step higher.  `make OWN_ASSETS=` builds without it
-(nor the heralds).
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`game/music/track02.ogg`
+to `track12.ogg`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD
+art's).  The repository holds them as the game plays them: Ogg Vorbis (which stb_vorbis, the
+game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.4 MB for the eleven, 25
+minutes, about 140 kbit/s.  Not in this repository: the builds fetch it first (`make
+own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
+file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 30 MB
+with the heralds), and copy it as it is: nothing is converted, so nothing is needed but Python
+3; later builds take it from there, offline.  `make OWN_ASSETS=` builds without it (nor the
+heralds).
 
 Where the game folder has neither `Music\TrackNN.ogg` nor `.wav` for a track, the drive plays
 `data/native/music/trackNN.ogg` (`cd_open_track`), as it plays an install's `.ogg`: read whole

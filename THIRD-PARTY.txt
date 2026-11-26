@@ -548,9 +548,9 @@ Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-assets
 pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
 2026 Richard Penman; the repository's LICENSE, beside the files in
 data/native/music and data/native/heralds).  The music: eleven tracks
-(music/02 - Funeral March to 12 - World of Jules Verne), played as the CD's
-audio tracks 2 to 12 where the game folder has no Music\TrackNN
-(docs/NO-INSTALL.md, Music), made Ogg Vorbis from the repository's Ogg Opus by
+(game/music/track02.ogg, Funeral March, to track12.ogg, World of Jules Verne,
+Ogg Vorbis), played as the CD's audio tracks 2 to 12 where the game folder
+has no Music\TrackNN (docs/NO-INSTALL.md, Music), copied as they are by
 tools/build_own_assets.py.  The heralds: the Russians' animated herald
 (heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
 heralds), AI-generated (Google's Gemini models; the prompts are in

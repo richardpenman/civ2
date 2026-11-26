@@ -81,10 +81,9 @@ only).
 OpenCiv2's own music and heralds (played where the game folder lacks the CD's music and
 heralds) are not in the repository either: the builds fetch them from
 [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) at its pinned commit
-once (`make own-assets`; 46 MB) and make the music Ogg Vorbis in Docker, or, without Docker,
-with `opusdec` and `oggenc` (`brew install opus-tools vorbis-tools`) or `ffmpeg`
-(`brew install ffmpeg`). Later builds take them from `~/.cache/openciv2`, offline.
-`make OWN_ASSETS=` builds without them.
+once (`make own-assets`; about 30 MB, the music already Ogg Vorbis as the game plays it, so
+nothing is converted and nothing needs installing but Python 3). Later builds take them from
+`~/.cache/openciv2`, offline. `make OWN_ASSETS=` builds without them.
 
 What to install first:
 

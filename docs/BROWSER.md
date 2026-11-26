@@ -48,7 +48,7 @@ disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up 
 replace the game files or remove them.
 
 Music plays where the game's folder has it (`Music/TrackNN.ogg`), else OpenCiv2's own
-(`data/music/trackNN.ogg` on the site, 26 MB, made by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)):
+(`data/music/trackNN.ogg` on the site, 26 MB, fetched by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)):
 the page fetches the tracks the game lacks while the game starts, without waiting for them, and
 gives them to the game together once all have come (the browser keeps them in its cache for later
 visits); until then, on a first visit, the game plays as without music.  OpenCiv2's own heralds

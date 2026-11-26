@@ -1,62 +1,73 @@
 {
-  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music and data/native/heralds (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-assets (repo; MIT, as OpenCiv2: its LICENSE; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2; music: CD track number -> the track, Ogg Opus, made Ogg Vorbis (stb_vorbis, which plays the music, has no Opus decoder) as data/native/music/trackNN.ogg, which the game plays as CD track NN where its folder has no Music\\TrackNN (src/platform/sound.c; the repository's 01 - Dorian Pastoral is not used: no CD track, not yet chosen); heralds: the diplomacy room's animated heralds, copied as they are into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); notices: beside both. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
+  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music and data/native/heralds (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-assets (repo; MIT, as OpenCiv2: its LICENSE; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN where its folder has no Music\\TrackNN (src/platform/sound.c); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); notices: beside both. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
   "repo": "https://github.com/openciv2/openciv2-assets",
-  "sha": "724771866eea1b2031c39802fb00d4285c3eb783",
+  "sha": "3824ea16192d4a6888ff80e21377eb3984efcc31",
   "music": {
     "02": {
-      "path": "music/02 - Funeral March.ogg",
-      "sha256": "a9cb3cb8cce95604da19655ec3765782d27e73715864557923ced6c951590969",
-      "size": 1124514
+      "path": "game/music/track02.ogg",
+      "title": "Funeral March",
+      "sha256": "c07607bb2c658cb646fa8674b39efdd982b5a454c610f16846b094e11ea32afb",
+      "size": 560561
     },
     "03": {
-      "path": "music/03 - Ode to Joy.ogg",
-      "sha256": "2cfcda15d17b4b2120e1e4e78e51749fc67024e38a22d1aa4e04ad7ac3d46739",
-      "size": 1346305
+      "path": "game/music/track03.ogg",
+      "title": "Ode to Joy",
+      "sha256": "ce9acf4d2a25dae019583cc696010e896aba763a915a631cfcf66b6d35eb2a50",
+      "size": 801313
     },
     "04": {
-      "path": "music/04 - The Crusades.ogg",
-      "sha256": "94eab777b0a4eb5fa202b44666b441025f432082e3b86e0646a25a76d4d84322",
-      "size": 2848655
+      "path": "game/music/track04.ogg",
+      "title": "The Crusades",
+      "sha256": "67da11129760a043e9e1d7ec274a0d4d27ba330bf7d842242f66b088e854e7b2",
+      "size": 1647722
     },
     "05": {
-      "path": "music/05 - Alien Invasion.ogg",
-      "sha256": "1591709795581dd3bd40508f48459eaf32268755dc184208fa099a8285e851b7",
-      "size": 3523674
+      "path": "game/music/track05.ogg",
+      "title": "Alien Invasion",
+      "sha256": "5ee1d7d0ce7d89d80a6e00e9b3d2f8be4c3c764c5d8f56e034b374889ed28014",
+      "size": 1883968
     },
     "06": {
-      "path": "music/06 - Mongol Horde.ogg",
-      "sha256": "78de4f1a0308ec2b447867fef719799ff29e08df3c4eb3b04d718c7fe52794e3",
-      "size": 5159118
+      "path": "game/music/track06.ogg",
+      "title": "Mongol Horde",
+      "sha256": "9df4e82773e7a84f20cee790d9c5ad1ffb97bc4c43a586d127049198f30f6dde",
+      "size": 2991850
     },
     "07": {
-      "path": "music/07 - Apocalypse.ogg",
-      "sha256": "2bf44508b0b6e46dbca7fe61a468155751c630281cbbfdc56b3533a1e9e5aa92",
-      "size": 6574695
+      "path": "game/music/track07.ogg",
+      "title": "Apocalypse",
+      "sha256": "66f3ebb8cfb643df29b979a0d2b9ceaefc7ff2205d9d11f1cc03b3cc01d345c3",
+      "size": 3941302
     },
     "08": {
-      "path": "music/08 - Primeval World.ogg",
-      "sha256": "5c9d34eadfbd90334467376714037ba9933c790aa178df966410921fcc22ddbf",
-      "size": 5288337
+      "path": "game/music/track08.ogg",
+      "title": "Primeval World",
+      "sha256": "279a98a1781b8362be8df180925a8cf9300c0d25830ae4ee42664cdcc104c74a",
+      "size": 3071396
     },
     "09": {
-      "path": "music/09 - New World.ogg",
-      "sha256": "6f4ff649e00ff0d8e309fe2ff84bbe1f30c0496250a826897d551f6ab7308aff",
-      "size": 4815812
+      "path": "game/music/track09.ogg",
+      "title": "New World",
+      "sha256": "1c1ce3f8ab339367989052a14f256fb10e9f05b7fdaececcd3afa5debf85adee",
+      "size": 2779112
     },
     "10": {
-      "path": "music/10 - Fantasy.ogg",
-      "sha256": "ddbe1258aa055cbf68da81ea368717520c29a382a9694fd90ef90ddea67848ff",
-      "size": 5301819
+      "path": "game/music/track10.ogg",
+      "title": "Fantasy",
+      "sha256": "fd3f1cafb72585833df239c66d961aa57d3bf08c9ea9f33bfe1583496f50b901",
+      "size": 3234580
     },
     "11": {
-      "path": "music/11 - Mars.ogg",
-      "sha256": "7b1fbe160f7b54b815f8305d191f2f124d286bd9b0cb20ca5262f1add75894e1",
-      "size": 4651877
+      "path": "game/music/track11.ogg",
+      "title": "Mars",
+      "sha256": "f518a61e49b18967f29a173b87f7807c6334e19dce76073b6ab97080803177ae",
+      "size": 2695119
     },
     "12": {
-      "path": "music/12 - World of Jules Verne.ogg",
-      "sha256": "080247dba917130a51213a042e349b991138fcaba3bb4d6b7f208b1ff5f047e6",
-      "size": 4810042
+      "path": "game/music/track12.ogg",
+      "title": "World of Jules Verne",
+      "sha256": "1d7e7572551d753f9977eee795604f396670aa5be74c7df638e4d8e01e73d2c5",
+      "size": 2832769
     }
   },
   "heralds": {

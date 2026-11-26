@@ -71,9 +71,9 @@ jobs:
 
   # OpenCiv2's own music and heralds: data/native/music and
   # data/native/heralds, made by tools/build_own_assets.py (the pinned
-  # commit's files fetched and checked, the music made Ogg Vorbis in Docker);
-  # ~/.cache/openciv2 kept between runs (the files fetched and what was made
-  # from them).
+  # commit's files fetched, checked and copied as they are: the music is
+  # already Ogg Vorbis, nothing converted, no Docker); ~/.cache/openciv2 kept
+  # between runs (the files fetched and what was made from them).
   own-assets:
     runs-on: ubuntu-24.04
     steps:
