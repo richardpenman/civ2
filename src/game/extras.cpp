@@ -289,6 +289,120 @@ void extras_texts_each(void (*add)(const char *key, const char *english))
     }
 }
 
+/* B37: the notice's emblems: the AI's beside its emissary's words, at the
+   top, and the player's beside "You reply:", notice_reply_y lower (-1: no
+   reply).  The dialog stacks its pictures in one column and its text in
+   another, so one placeholder picture as tall as both holds the place and
+   this, its draw callback, puts each emblem where the text has its line. */
+static int notice_ai, notice_human, notice_reply_y = -1;
+
+void treaty_notice_draw_emblems(i32 sprite, DibSurface *surface, i32 id, i32 data, i32 x, i32 y)
+{
+    RECT r;
+    (void)sprite;
+    (void)id;
+    (void)data;
+    road_sprites_block.civ_portrait_sprites[notice_ai].draw(&r, surface, x, y);
+    if (notice_reply_y >= 0)
+        road_sprites_block.civ_portrait_sprites[notice_human].draw(&r, surface, x, y + notice_reply_y);
+}
+
+/* B37 (docs/BUGS.md): the AI civ ai's emissary tells the player (civ human)
+   that ai has ended their peace treaty (was_peace) or cease-fire.  One popup
+   of the game's usual width, titled as the game's emissary messages are
+   (diplo_set_attitude_arg: "<attitude> <adjective> Emissary"): the
+   emissary's words (diplo.cancel_peace or diplo.cancel_ceasefire), a blank
+   line, "You reply:" (diplo.you_reply) and our reply as quoted text:
+   GAME.TXT's @CANCELOURPEACE (what an emissary says when the player cancels
+   a peace treaty) or @NOPEACE (when the player turns down its peace), their
+   lines joined (none if the section is missing).  Not a choice: a choice is
+   one line, which widened the dialog to fit it.  The emblems: see above;
+   where "You reply:" starts is measured with the dialog's own wrapping. */
+void diplo_treaty_break_notice(int ai, int human, int was_peace)
+{
+    char who[96], title[128], body[256], reply[512], label[96];
+    char *line;
+    Sprite holder;
+    Sprite *emblem = &road_sprites_block.civ_portrait_sprites[ai];
+    int level = diplo_attitude_level(civs[ai].attitude[human]);
+    snprintf(who, sizeof who, "%s%s %s", label_string(attitude_names[level]),
+             game_language == 2 ? (const char *)str_er : "", (const char *)(iptr)civ_get_adjective(ai));
+    snprintf(title, sizeof title, extras_text("diplo.emissary"), who);
+    snprintf(body, sizeof body, extras_text(was_peace ? "diplo.cancel_peace" : "diplo.cancel_ceasefire"),
+             civ_name_plural(ai));
+    reply[0] = 0;
+    if (text_open_section(str_game_7, was_peace ? "CANCELOURPEACE" : "NOPEACE") == 0) {
+        while ((line = (char *)text_read_line(1)) != 0 && line[0] != 0) {
+            if (line[0] == '@')
+                continue;
+            if (reply[0])
+                strncat(reply, " ", sizeof reply - strlen(reply) - 1);
+            strncat(reply, line, sizeof reply - strlen(reply) - 1);
+        }
+        text_close_file();
+    }
+    sprite_init(&holder);
+    {
+        Dialog d(0x4000);
+        int width = emblem->width(), height = emblem->height();
+        d.init(0, 0, 0, 0);
+        d.set_width(320);
+        d.set_title(title);
+        holder.create_solid(width, height, 0);
+        d.add_sprite(&holder, 0, 0);
+        d.set_sprite_draw_fn(treaty_notice_draw_emblems);
+        notice_ai = ai;
+        notice_human = human;
+        notice_reply_y = -1;
+        d.add_line(body, -1, -1, -1, 0);
+        if (reply[0]) {
+            d.add_line("^", -1, -1, -1, 0);
+            notice_reply_y = d.draw_wrapped_text(0);
+            snprintf(label, sizeof label, "^%s", extras_text("diplo.you_reply"));
+            d.add_line(label, -1, -1, -1, 0);
+            d.add_line(reply, -1, -1, -1, 0);
+            height = d.draw_wrapped_text(0);
+            if (height < notice_reply_y + road_sprites_block.civ_portrait_sprites[human].height())
+                height = notice_reply_y + road_sprites_block.civ_portrait_sprites[human].height();
+            holder.free();
+            holder.create_solid(width, height, 0);
+        }
+        d.show_modal(0);
+    }
+    sprite_destroy(&holder);
+}
+
+/* B37: the AI civ ai has ended its peace treaty (was_peace) or cease-fire
+   with civ other: tells whom it should, as the game tells of other treaties
+   broken.  The player at the screen who is the other civ: the emissary's
+   notice, then for a peace treaty the Diplomats Report (CANCELPEACE), as an
+   attack that breaks one shows them (unit_combat.cpp: SNEAK, then
+   CANCELPEACE; a cease-fire has no report).  A third party at the screen:
+   that report for a peace treaty, with an embassy with either civ, the United
+   Nations, Marco Polo's or the map revealed, as when two AIs cancel peace
+   (diplomacy.cpp, diplo_civs_meet_war).  No one in autoplay, or with no
+   player at the screen (hot seat, an AI's turn: human_civ -1). */
+void diplo_treaty_break_tell(int ai, int other, int was_peace)
+{
+    int viewer = (int)human_civ[0];
+    if (autoplay.active != 0 || viewer < 1 || viewer > 7 || viewer == ai)
+        return;
+    if (viewer == other) {
+        diplo_treaty_break_notice(ai, other, was_peace);
+    } else if (!was_peace ||
+               ((*(byte *)&civs[viewer].treaties[ai] & TREATY_EMBASSY) == 0 &&
+                (*(byte *)&civs[viewer].treaties[other] & TREATY_EMBASSY) == 0 &&
+                civ_has_wonder(viewer, WONDER_UNITED_NATIONS) == 0 &&
+                civ_has_wonder(viewer, WONDER_MARCO_POLO) == 0 && game.reveal_map == 0)) {
+        return;
+    }
+    if (was_peace) {
+        text_set_string_arg(0, civ_name_plural(ai));
+        text_set_string_arg(1, civ_name_plural(other));
+        popup_game_with_sprite(str_cancelpeace_3, (Sprite *)&war_icon_sprite_block.war_icon_sprite, 0);
+    }
+}
+
 
 /* ---- X22, X23: attitude colours ---- */
 

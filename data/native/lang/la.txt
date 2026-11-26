@@ -20,6 +20,14 @@ Fenestras disponere S
 Fenestras disponere L
 @@openciv2.mainmenu.options
 Optiones OpenCiv2
+@@openciv2.diplo.emissary
+Nuntius (%s)
+@@openciv2.diplo.cancel_peace
+"Audi: %s foedere pacis tecum non iam se teneri ducunt."
+@@openciv2.diplo.cancel_ceasefire
+"Audi: %s indutiis tecum non iam se teneri ducunt."
+@@openciv2.diplo.you_reply
+Respondes:
 @@openciv2.options.title
 Optiones OpenCiv2
 @@openciv2.options.kept

@@ -1622,6 +1622,16 @@ void __cdecl spaceship_launch(int civ)
           *treaty = *treaty & 0xffffffd9;
           treaty = (uint *)(civ * 4 + (iptr)((u8 *)&civs + 32) + civ2 * 0x594);
           *treaty = *treaty | 0x80840;
+          if (bugfix_state(37)) {  /* B37 */
+            /* the AI's treaty with the launching player ends on both sides,
+               and whom it should is told: the player its emissary, then the
+               Diplomats Report (the original ended it on the AI's side only
+               and said nothing) */
+            if ((*(byte *)&civs[civ].treaties[civ2] & (TREATY_CEASEFIRE | TREATY_PEACE)) != 0) {
+              diplo_treaty_break_tell(civ2,civ,(*(byte *)&civs[civ].treaties[civ2] & TREATY_PEACE) != 0);
+            }
+            diplo_clear_treaty_flags(civ,civ2,TREATY_CEASEFIRE | TREATY_PEACE);
+          }
         }
         else {
           treaty = (uint *)(civ * 4 + (iptr)((u8 *)&civs + 32) + civ2 * 0x594);

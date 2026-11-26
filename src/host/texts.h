@@ -27,6 +27,15 @@ T("menu.arrange_s", "Arrange Windows S")            /* X38 (default: the game's 
 T("menu.arrange_l", "Arrange Windows L")
 T("mainmenu.options", "OpenCiv2 Options")           /* the main menu's last choice */
 
+/* B37 (docs/BUGS.md): an AI's emissary ends its treaty with the player
+   (src/game/extras.cpp, diplo_treaty_break_notice); %s: the AI's attitude
+   and adjective ("Enraged French"), then its people ("French").  Our reply,
+   after diplo.you_reply, is GAME.TXT's @CANCELOURPEACE or @NOPEACE. */
+T("diplo.emissary", "%s Emissary")
+T("diplo.cancel_peace", "\"Hear now the words of the %s: we no longer consider ourselves bound by our peace treaty with you.\"")
+T("diplo.cancel_ceasefire", "\"Hear now the words of the %s: we no longer consider ourselves bound by our cease fire with you.\"")
+T("diplo.you_reply", "You reply:")
+
 /* The OpenCiv2 Options dialog (src/game/options.cpp) */
 T("options.title", "OpenCiv2 Options")
 T("options.kept", "Kept in CIV.INI, under [OpenCiv2].")

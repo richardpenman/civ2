@@ -20,6 +20,14 @@ Arrange Windows S
 Arrange Windows L
 @@openciv2.mainmenu.options
 OpenCiv2 Options
+@@openciv2.diplo.emissary
+%s Emissary
+@@openciv2.diplo.cancel_peace
+"Hear now the words of the %s: we no longer consider ourselves bound by our peace treaty with you."
+@@openciv2.diplo.cancel_ceasefire
+"Hear now the words of the %s: we no longer consider ourselves bound by our cease fire with you."
+@@openciv2.diplo.you_reply
+You reply:
 @@openciv2.options.title
 OpenCiv2 Options
 @@openciv2.options.kept
