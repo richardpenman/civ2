@@ -5,6 +5,10 @@ Goal: reconstruct the source of *Sid Meier's Civilization II: Multiplayer Gold E
 
 ## Download and play
 
+**In your browser:** play at https://openciv2.github.io/openciv2/: no download and no copy of the
+original needed (HD graphics and OpenCiv2's own music, sounds and texts; built from `main` by
+`.github/workflows/pages.yml`).
+
 You need your own copy of Civilization II Multiplayer Gold Edition: installed (or a `.zip` of
 the installed folder), on CD, or a disc image (`.cue`/`.bin`). Download the program for your system:
 
