@@ -44,8 +44,9 @@ makes from the art again at each start (`OpenCiv2Pictures/`, `OpenCiv2Sounds/`) 
 visits start at once from what was kept, the art from the browser's cache, without the bar.
 
 Everything else is on the set-up page, `?setup` (`http://localhost:8000/?setup`), which the small
-*Saves* button at the top right of the game leads to (its dialog: *Export saves*, *Import saves*,
-and *the set-up page*): choosing your copy of the original, *Play*, *Export saves* and *Import
+*Saves* button at the top right of the game's opening menus leads to (its dialog: *Export saves*,
+*Import saves*, and *the set-up page*; the button is not shown during a game, and comes back when
+the game returns to its main menu): choosing your copy of the original, *Play*, *Export saves* and *Import
 saves*, removing the files from this browser (*Remove the saved games and settings* without a
 copy, *Remove them* with one), and the page's *Language*. The game's Settings lead to the same
 choice when Classic graphics are ticked (*Find the original files...*, below).
@@ -231,11 +232,12 @@ Saved games, `CIV.INI`, `CIV2.DAT` and the Hall of Fame are kept in the browser'
 game. A save is stored as soon as the game has written it, so closing the tab right after saving
 keeps it.
 
-- **Export saves** (on the `?setup` page, or under the small *Saves* button at the top right while
-  playing, whose dialog also leads to the set-up page) downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
+- **Export saves** (on the `?setup` page, or under the small *Saves* button at the top right of the
+  game's main menu and its set-up screens, not during a game (the game tells the page where it is:
+  `host_set_phase`), whose dialog also leads to the set-up page) downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
   `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT`. The game's own files are left out.
-- **Import saves** puts `.SAV` files, or such a `.zip`, back. During a game they go straight into
-  it too, so *Load a Game* finds them at once.
+- **Import saves** puts `.SAV` files, or such a `.zip`, back. From the game's menus they go
+  straight into it too, so *Load a Game* finds them at once.
 
 Use them to keep your saves safe, or to move them to another browser or computer, or to and from
 the desktop version.

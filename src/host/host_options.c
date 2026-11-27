@@ -115,6 +115,12 @@ static void quote_arg(char *out, size_t size, const char *a)
 }
 #endif
 
+/* (natively nothing: the browser's page shows its Saves button by it) */
+void host_set_phase(int phase)
+{
+    (void)phase;
+}
+
 int host_restart(int now)
 {
     char *args[64], block[8192];

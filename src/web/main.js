@@ -449,6 +449,23 @@ async function importChosen(store, list) {
     }
 }
 
+// The Saves button only in the game's opening menus (the main menu, a new
+// game's set-up, a game chosen to load: phase 0), not in a game (1:
+// host_set_phase, from game_main); its dialog closed if a game starts with
+// it open, the keys back with the game
+function savesPhase(phase) {
+    const b = $('saves-open'), d = $('saves-dialog');
+    window.civ2Phase = phase;
+    b.hidden = phase !== 0;
+    if (phase === 0)
+        return;
+    const focused = document.activeElement === b || d.open;
+    if (d.open)
+        d.close();
+    if (focused)
+        $('screen').focus();
+}
+
 function savesControls(store) {
     for (const b of document.querySelectorAll('.export-saves'))
         b.onclick = () => exportClicked(store);
@@ -943,6 +960,7 @@ async function play(store) {
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               addOriginal: () => addOriginal(store, fs),
+                              setPhase: savesPhase,
                               // (the game's Settings' restart: the page loaded again, into the
                               // game, without what would override them; ?lang= the game's language now,
                               // where the game changed it)

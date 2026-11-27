@@ -110,6 +110,7 @@ void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density, u32 top, u32
 { (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density, (int)top, (int)bottom); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
 u32 HOST(restart)(Host *h, u32 now) { (void)h; return (u32)host_restart((int)now); }
+void HOST(set_phase)(Host *h, u32 phase) { (void)h; host_set_phase((int)phase); }
 /* (the game's folder, as the system names it: setup_choose_game's) */
 static char game_folder[4096];
 u32 HOST(add_original)(Host *h) { (void)h; return (u32)setup_add_original(game_folder); }

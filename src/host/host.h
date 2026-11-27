@@ -124,6 +124,11 @@ int HOST_API(host_restart)(int now);
  * are kept.  1 done, 0 cancelled or failed (the player told), -1 it cannot
  * be done here (the native test build). */
 int HOST_API(host_add_original)(void);
+/* Where the game is: 0 its opening menus (the main menu, a new game's
+ * set-up, a game being chosen to load), 1 a game being played (from its
+ * first turn until it returns to the main menu).  The browser's page shows
+ * its Saves button only in the menus; natively nothing. */
+void HOST_API(host_set_phase)(int phase);
 /* (port_main.c: the program's arguments, for host_restart; not an import) */
 void host_save_args(int argc, char **argv);
 

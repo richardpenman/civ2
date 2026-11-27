@@ -12,7 +12,9 @@
 // visit starts at once from what was kept (no bar); then, where a copy of the
 // game is at hand, a few of its files chosen on the set-up page: added to the
 // game, what the game wrote kept; at the later visit, a menu's click heard
-// at once (its sound mixed in ahead of the menu's queued theme).
+// at once (its sound mixed in ahead of the menu's queued theme); the Saves
+// button shown at the main menu and the new game's set-up, not once the
+// new game (the default choices) has started.
 // Needs no copy of the game.  Screenshots in run/web-start (look at them).
 //
 //   tools/toolchain/node/bin/node src/web/test/start.mjs [GAME_DIR]
@@ -83,6 +85,14 @@ async function main() {
         return -1;
     };
     // the main menu: its backdrop fills the screen (its right edge not black)
+    const key = async (code, vk, k = code) => {
+        for (const type of ['rawKeyDown', 'keyUp'])
+            await send('Input.dispatchKeyEvent', {type, code, key: k, windowsVirtualKeyCode: vk});
+    };
+    // the Saves button: shown (laid out: fixed, it has no offsetParent), the game's phase (host_set_phase), its dialog open
+    const savesButton = () => evaluate('({shown: document.getElementById("saves-open").getClientRects().length > 0,' +
+        ' phase: window.civ2Phase, open: document.getElementById("saves-dialog").open,' +
+        ' focus: document.activeElement && document.activeElement.id})');
     const menuShown = () => evaluate('(() => { const c = document.getElementById("screen");' +
         ' const d = c.getContext("2d").getImageData(c.width - 4, c.height >> 1, 1, 1).data; return d[0] + d[1] + d[2] > 0; })()');
     const storeKeys = () => evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
@@ -129,6 +139,10 @@ async function main() {
         if (!await menuShown())
             throw new Error('no main menu');
         await shot('02-menu');
+        const atMenu = await savesButton();
+        log('the Saves button at the main menu: ' + JSON.stringify(atMenu));
+        if (!atMenu.shown || atMenu.phase !== 0)
+            throw new Error('no Saves button at the main menu');
         // OpenCiv2's own music, sound effects, wonder movies, texts: all of them
         await waitFor('window.civ2OwnMusic && window.civ2OwnWonders', 120000, 'the music and wonder movies');
         const got = await evaluate('({music: window.civ2OwnMusic, sounds: window.civ2OwnSounds, wonders: window.civ2OwnWonders,' +
@@ -230,6 +244,30 @@ async function main() {
             if (ms < 0 || heard.ahead > 50 || ms > 500)
                 throw new Error('a menu click\'s sound not heard at once');
         }
+        // the new game's set-up screens after the world's size, the default
+        // choices (Enter on each, as perf.mjs): the Saves button still there
+        // while the game sets up; once the game has started (host_set_phase)
+        // the button gone, its dialog not open, the keys with the game
+        for (let i = 0; i < 3; i++) {
+            await key('Enter', 13);
+            await settle(1000, 15000);
+        }
+        await shot('05-later-setup');
+        const inSetup = await savesButton();
+        log('the Saves button in the new game\'s set-up: ' + JSON.stringify(inSetup));
+        if (!inSetup.shown || inSetup.phase !== 0)
+            throw new Error('no Saves button in the new game\'s set-up');
+        for (let i = 0; i < 12 && (await savesButton()).phase !== 1; i++) {
+            await key('Enter', 13);
+            await settle(2000, 600000);     // (the world built after the city style)
+        }
+        await waitFor('window.civ2Phase === 1', 60000, 'the new game');
+        await settle(3000, 60000);
+        const inGame = await savesButton();
+        log('the Saves button in the game: ' + JSON.stringify(inGame));
+        await shot('05-later-game');
+        if (inGame.shown || inGame.open)
+            throw new Error('the Saves button or its dialog shown in a game');
         // a copy of the original chosen later on the set-up page (a few of
         // its files, from GAME_DIR, else ~/Civ2, if there): added to the
         // game, its CIV.INI and saved games kept, the page then saying the

@@ -126,6 +126,9 @@ EXTRAS_C int options_test_setting(const char *key, char *out, int n);
 /* src/platform/options.c: the restart (now 0: how it can be, 1 restarted;
    host_restart's) */
 EXTRAS_C int plat_restart(int now);
+/* where the game is, for the host (host_set_phase): 0 the opening menus, 1
+   a game being played (src/auto/game.cpp: game_main) */
+EXTRAS_C void plat_set_phase(int phase);
 /* src/platform/sound.c: the music's volume, Settings' Music volume
    (MusicVolume=, percent: 100 as it is, 0 none), also of the track playing */
 EXTRAS_C void plat_music_volume(int percent);

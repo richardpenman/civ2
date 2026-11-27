@@ -416,6 +416,8 @@ export async function runGame(opts) {
                 setDesktop(w, h);
         },
         host_minimize: () => {},
+        // where the game is: 0 its opening menus, 1 a game (opts.setPhase, main.js)
+        host_set_phase: (phase) => opts.setPhase?.(phase),
         host_time_us: () => BigInt(Math.round(performance.now() * 1000)),
         host_cursor_system: (kind) => cursorSlot({css: SYSTEM_CURSORS[kind] || 'default'}),
         host_cursor_image: (argb, w, h, x, y) => {
