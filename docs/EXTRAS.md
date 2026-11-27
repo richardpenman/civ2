@@ -118,11 +118,6 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   the game starts again (*Restart now*); `CIV2_LANG=<code>` wins over it.  A translation may
   carry the game's own texts too (all of those that come with it do: the whole game); otherwise they are those
   of the installed game.  How to translate: [TRANSLATING.md](TRANSLATING.md).
-- **Music volume**: 100% (the default), 75%, 50%, 25% or *Off*, of all the music, OpenCiv2's
-  own and the original's (`MusicVolume=`, a percentage).  It takes effect at once, also for the
-  track playing.  The original game has no volume control of its own, only the Game menu's
-  *Music* on or off and *Choose Music*; this is beside them.  OpenCiv2's own tracks are played
-  5 dB quieter besides ([NO-INSTALL.md](NO-INSTALL.md#music)).
 
 The bug fixes, the interface additions, the rule changes and the limits take effect at once
 (from the game started or loaded next).  The graphics, full screen and the language take effect

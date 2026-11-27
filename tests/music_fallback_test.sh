@@ -18,12 +18,10 @@
 #    it plays the game's own Music\Track02;
 # 4. with HD graphics (CIV2_TEST_HD=1) it plays data/native/music/track02.ogg
 #    first, with the game's Music folder and without it (as 2);
-# 5. the volume (src/platform/sound.c: OWN_MUSIC_GAIN, plat_music_volume):
-#    the music's thread (src/host/host_sdl.c: music_scale) reports with
-#    CIV2_TEST_AUDIO the largest sample decoded and the largest played; their
-#    ratio is 0.562 (-5 dB) for OpenCiv2's own track, 1 for the game's own,
-#    and with Settings' Music volume at 50% (CIV2_TEST_SETTINGS=MusicVolume=50)
-#    0.281 and 0.5.
+# 5. the volume (src/platform/sound.c: OWN_MUSIC_GAIN): the music's thread
+#    (src/host/host_sdl.c: music_scale) reports with CIV2_TEST_AUDIO the
+#    largest sample decoded and the largest played; their ratio is 0.562
+#    (-5 dB) for OpenCiv2's own track, 1 for the game's own.
 # Inside the container (make test-music): sh tests/music_fallback_test.sh
 # (EXE: the build to run, default civ2-linux32)
 cd "$(dirname "$0")/.." || exit 1
@@ -103,11 +101,6 @@ if ! grep -q 'cdaudio: playing track 2 (notify) from Music\\Track02\.' run/music
     echo "FAIL: Classic graphics with the Music folder, track 2 not played from it (run/music-fallback-install/hook.log)"; fail=1
 fi
 volume music-fallback-install 1000 "Classic graphics with the Music folder (the game's track: as it is)"
-# Settings' Music volume at 50%: the game's track at half, OpenCiv2's at half of -5 dB
-run music-fallback-install-half CIV2_TEST_HD= CIV2_KEEP_MEDIA=1 CIV2_TEST_SETTINGS=MusicVolume=50
-volume music-fallback-install-half 500 "Music volume 50% with the Music folder"
-run music-fallback-half CIV2_TEST_HD= CIV2_TEST_SETTINGS=MusicVolume=50
-volume music-fallback-half 281 "Music volume 50% without the Music folder"
 # HD graphics (CIV2_TEST_HD=1; the art, data/native/hd, must be there):
 # OpenCiv2's first, with the Music folder and without it
 if [ -f data/native/hd/pictures.txt ]; then
@@ -121,5 +114,5 @@ else
     echo "SKIP music with HD graphics: no data/native/hd (make hd-art)"
     hd=
 fi
-[ $fail = 0 ] && echo "PASS music fallback ($(wc -l < run/music-decode.txt) tracks decoded; with Classic graphics track 2 from data/native/music without the Music folder, from the game's Music folder with it$hd; OpenCiv2's at -5 dB, the game's as it is, Music volume 50% half)"
+[ $fail = 0 ] && echo "PASS music fallback ($(wc -l < run/music-decode.txt) tracks decoded; with Classic graphics track 2 from data/native/music without the Music folder, from the game's Music folder with it$hd; OpenCiv2's at -5 dB, the game's as it is)"
 exit $fail

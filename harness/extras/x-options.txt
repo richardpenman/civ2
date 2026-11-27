@@ -8,8 +8,7 @@
 # which hold at once: a saved game loaded without the turn after the year,
 # brighter; the Language page (each language by its own name: Greek and
 # Chinese escaped in the Windows-1252 interface, src/include/utf8.h), Greek
-# and Chinese selected, the page cancelled; the Music volume page, 50%
-# chosen and the page again.
+# and Chinese selected, the page cancelled.
 # test: CIV2_TEST_OPTIONS=1 CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480
 # (sharp: the same with sharp text and interface at density 2: the dialogs'
 # text and controls drawn sharp, the -hd shots)
@@ -95,18 +94,6 @@ shot xo-p3-language-greek
 key Down Down Down          # 繁體中文
 wait 500
 shot xo-p4-language-chinese
-key Escape
-wait 1000
-key Down                    # Music volume
-key Return
-wait 1000
-shot xo-p5-music
-key Down Down               # 50%
-key Return
-wait 1000
-key Return                  # Music volume again: 50% chosen
-wait 1000
-shot xo-p6-music-50
 key Escape
 wait 1000
 key Escape

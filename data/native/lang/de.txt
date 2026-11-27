@@ -45,8 +45,6 @@ Erweiterungen der Oberfläche
 Farben und Meldungen
 @@openciv2.options.language
 Sprache
-@@openciv2.options.music
-Musiklautstärke
 @@openciv2.options.next_start
 Ab dem nächsten Start des Spiels.
 @@openciv2.options.override_one
@@ -193,12 +191,6 @@ Die Sprache der eigenen Texte von OpenCiv2 und der Texte des Spiels, soweit die 
 Automatisch (Sprache des Systems)
 @@openciv2.language.override
 CIV2_LANG gesetzt: Für diesen Lauf hat es Vorrang vor dieser Einstellung.
-@@openciv2.music.title
-Musiklautstärke
-@@openciv2.music.intro
-Wie laut die Musik spielt, die von OpenCiv2 oder die des Originals. Die Änderung gilt sofort.
-@@openciv2.music.off
-Aus
 @@openciv2.restart.title
 Neustart
 @@openciv2.restart.next_time

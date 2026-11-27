@@ -730,10 +730,8 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * run; each play, stop and end is logged in calls.log ("music ...").
  * Other MCI devices (avivideo) are not available.
  *
- * Their loudness (host_music_volume): Settings' Music volume (CIV.INI's
- * [OpenCiv2] MusicVolume=, percent, 100 by default: plat_music_volume, from
- * extras_load), for every track; OpenCiv2's own besides OWN_MUSIC_GAIN
- * (louder than the original's, which stay as they are). */
+ * Their loudness (host_music_volume): OpenCiv2's own at OWN_MUSIC_GAIN
+ * (louder than the original's, which play as they are). */
 
 /* OpenCiv2's own tracks (data/native/music) played 5 dB quieter:
    10^(-5/20). */
@@ -748,22 +746,13 @@ static struct {
     HWND notify;                /* MCI_NOTIFY on the play: told when it ends */
     DWORD end_ms;               /* cd_virtual: when the track ends (plat_now) */
     int own;                    /* the track cd_open_track found last is OpenCiv2's own */
-    int volume;                 /* Settings' Music volume, percent, less 100 (0: 100) */
 } cd;
 
-/* The host's music at the volume (Settings', and OWN_MUSIC_GAIN for
-   OpenCiv2's own tracks): per mille of the file's samples. */
+/* The host's music at OWN_MUSIC_GAIN for OpenCiv2's own tracks, as they
+   are for the original's: per mille of the file's samples. */
 static int cd_per_mille(void)
 {
-    double v = (100 - cd.volume) * 10.0 * (cd.own ? OWN_MUSIC_GAIN : 1.0);
-    return (int)(v + 0.5);
-}
-
-void plat_music_volume(int percent)
-{
-    cd.volume = 100 - (percent < 0 ? 0 : percent > 100 ? 100 : percent);
-    if (cd.playing && !cd_virtual && audio_ok)
-        host_music_volume(cd_per_mille());
+    return cd.own ? (int)(OWN_MUSIC_GAIN * 1000 + 0.5) : 1000;
 }
 
 /* cd_virtual: the length of a track's file in ms (a .wav's data over its

@@ -46,8 +46,6 @@ Interface additions
 Colours and messages
 @@openciv2.options.language
 Language
-@@openciv2.options.music
-Music volume
 @@openciv2.options.next_start
 From the next start of the game.
 @@openciv2.options.override_one
@@ -194,12 +192,6 @@ The language of OpenCiv2's own texts, and of the game's where the translation ha
 Automatic (the system's language)
 @@openciv2.language.override
 CIV2_LANG set: for this run it wins over this choice.
-@@openciv2.music.title
-Music Volume
-@@openciv2.music.intro
-How loud the music plays, OpenCiv2's own or the original's. It changes at once.
-@@openciv2.music.off
-Off
 @@openciv2.restart.title
 Restart
 @@openciv2.restart.next_time

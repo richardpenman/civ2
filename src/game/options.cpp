@@ -19,9 +19,6 @@
  *   Language             of OpenCiv2's own texts (src/include/lang.h,
  *                        docs/TRANSLATING.md): Auto, English, the data
  *                        directory's translations.
- *   Music volume         100%, 75%, 50%, 25% or off, of all the music
- *                        (src/platform/sound.c: plat_music_volume; the
- *                        original has only the Game menu's Music on or off).
  *
  * Where the game folder lacks the original's pictures (docs/NO-INSTALL.md:
  * plat_graphics_forced) Classic graphics are unticked, with a note saying
@@ -94,7 +91,6 @@ typedef struct {
     int rule[NRULES], extra[NEXTRAS];
     char limit[NLIMITS][16], colour[NCOLOR][256];
     char language[16];              /* Language=: a code, "" (or Auto) the system's */
-    int music;                      /* MusicVolume=: percent (100 by default) */
 } Choices;
 
 /* The choices made in a test run (a replay): the game reads them instead of
@@ -170,7 +166,6 @@ static void read_choices(Choices *c)
     get("Language", c->language, sizeof c->language);
     if (!__strcmpi(c->language, "Auto"))
         c->language[0] = 0;
-    c->music = get_int("MusicVolume", 100);
     for (i = 0; i < NRULES; i++)
         c->rule[i] = get_int(rules[i].key, 0) != 0;
     for (i = 0; i < NEXTRAS; i++)
@@ -206,8 +201,6 @@ static void write_choices(const Choices *c, const Choices *old)
         put_int("FullScreen", c->fullscreen);
     if (strcmp(c->language, old->language))
         put("Language", c->language[0] ? c->language : "Auto");
-    if (c->music != old->music)
-        put_int("MusicVolume", c->music);
     for (i = 0; i < NRULES; i++)
         if (c->rule[i] != old->rule[i])
             put_int(rules[i].key, c->rule[i]);
@@ -511,31 +504,6 @@ static int page_language(Choices *c)
     return 1;
 }
 
-/* Music volume: of all the music, OpenCiv2's own and the original's; at
-   once, also of the track playing.  1 if changed. */
-static int page_music(Choices *c)
-{
-    static const int levels[] = {100, 75, 50, 25, 0};
-    char text[16];
-    int i, choice, current = 0;
-    Dialog d(0x4000);
-    dialog_begin(d, extras_text("music.title"), 400);
-    paragraph(d, extras_text("music.intro"), 1);
-    for (i = 0; i < 5; i++) {
-        snprintf(text, sizeof text, "%d%%", levels[i]);
-        d.add_option(levels[i] ? text : extras_text("music.off"), i, 0);
-        /* (another value in CIV.INI: the nearest) */
-        if (abs(c->music - levels[i]) < abs(c->music - levels[current]))
-            current = i;
-    }
-    d.set_default_choice(current);
-    choice = d.show_modal(0);
-    if (choice < 0 || levels[choice] == c->music)
-        return 0;
-    c->music = levels[choice];
-    return 1;
-}
-
 /* Whether a choice that needs a restart differs from what the game started
    with: then the restart offered (natively the program started again, in
    the browser the page loaded again). */
@@ -562,7 +530,7 @@ static void offer_restart(const Choices *c)
         message(extras_text("restart.title"), extras_text("restart.failed"));
 }
 
-enum { P_FIXES, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS, P_LANGUAGE, P_MUSIC };
+enum { P_FIXES, P_GRAPHICS, P_RULES, P_LIMITS, P_INTERFACE, P_COLOURS, P_LANGUAGE };
 
 void options_dialog(void)
 {
@@ -586,7 +554,6 @@ void options_dialog(void)
             d.add_option(extras_text("options.interface"), P_INTERFACE, 0);
             d.add_option(extras_text("options.colours"), P_COLOURS, 0);
             d.add_option(extras_text("options.language"), P_LANGUAGE, 0);
-            d.add_option(extras_text("options.music"), P_MUSIC, 0);
             d.set_default_choice(choice);
             choice = d.show_modal(0);
         }
@@ -621,12 +588,6 @@ void options_dialog(void)
             if (page_language(&now)) {
                 write_choices(&now, &was);
                 offer_restart(&now);
-            }
-            break;
-        case P_MUSIC:
-            if (page_music(&now)) {
-                write_choices(&now, &was);
-                plat_music_volume(now.music);   /* at once */
             }
             break;
         }
