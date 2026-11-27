@@ -9,14 +9,14 @@
 @width=200
 @title=OpenCiv2
 @options
-Begin a New Game
+Start a New Game
 Play a Premade World
-Shape the World
-Play a Scenario
-Open a Game
+Customize World
+Begin Scenario
+Load Game
 Multiplayer Game
-See Hall of Fame
-See Credits
+View Hall of Fame
+View Credits
 
 @HOTSEAT1
 @width=220
@@ -24,8 +24,8 @@ See Credits
 @options
 Begin a New Hot Seat Game
 Play a Premade World
-Shape the World
-Play a Scenario
+Customize World
+Begin Scenario
 Load Saved Hot Seat Game
 
 @HOTSEAT2
@@ -134,8 +134,8 @@ Password:
 @options
 Begin a New EMAIL Game
 Play a Premade World
-Shape the World
-Play a Scenario
+Customize World
+Begin Scenario
 Take Your EMAIL Turn
 
 @EMAILNOT
@@ -180,8 +180,8 @@ EMAIL:
 @options
 Begin a New Multiplayer Game
 Play a Premade World
-Shape the World
-Play a Scenario
+Customize World
+Begin Scenario
 Load Saved Multiplayer Game
 Join a Network Game
 
@@ -624,7 +624,7 @@ Sire, our might is %STRING0; our standing is %STRING1.
 
 @NEWCREDITS
 @width=200
-@title=See Credits
+@title=View Credits
 @options
 Civilization II
 OpenCiv2
@@ -633,7 +633,7 @@ Conflicts in Civilization
 
 @NEWCREDITSHORT
 @width=200
-@title=See Credits
+@title=View Credits
 @options
 Civilization II
 OpenCiv2
