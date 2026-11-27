@@ -104,10 +104,12 @@ its window sized for 16:9: [NO-INSTALL.md](NO-INSTALL.md#wonder-movies)).
 Still from the game: its other videos, scenarios.  The editors'
 backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's
 own offered to it, openciv2-assets pull request 7).  The
-leaders' portraits in HD are the art pack's, each tribe given the one that fits it (its 42 are
-people of its own, not the tribes' leaders: [HD-GRAPHICS.md](HD-GRAPHICS.md), the diplomacy
-room), with the install or without it, but the Zulus' (the original's, enlarged, or without the
-install a plain dark frame).  A tribe's herald of OpenCiv2's own
+leaders' portraits in HD are each tribe's own leader, man or woman, historical portraits of
+OpenCiv2's (`data/native/portraits`: openciv2/openciv2-assets' `assets/portraits-historical`,
+fetched by `make own-assets`; 36 from works in the public domain or under CC0, 6 AI-generated:
+[HD-GRAPHICS.md](HD-GRAPHICS.md), the diplomacy room), with the install or without it, in the
+diplomacy room, the destroyed civilizations' report and the custom tribe's portrait chooser;
+where a file is missing, the art pack's that fits the tribe.  A tribe's herald of OpenCiv2's own
 (an animated WebP with alpha,
 `data/native/hd-extra/heralds.txt`, a local staging folder not in the repository; `tools/build_herald.py`) plays in HD in place of the CD's
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own

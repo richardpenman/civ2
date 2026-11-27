@@ -40,8 +40,14 @@ void hd_test_spaceship(int s, int c1, int c2, int m1, int m2, int m3);
 /* The diplomacy room's flag in the civilization's colour. */
 void hd_diplomacy_flag(DibSurface *room, int colour);
 /* The leader's portrait (its sprite, just taken; portrait: the
-   civilization's leader_portrait) drawn with the pack's that fits its tribe. */
+   civilization's leader_portrait) drawn with the tribe's own historical
+   portrait, else the pack's that fits its tribe; hd_portrait_key: the
+   picture's key (NULL: the original's, enlarged). */
 void hd_diplomacy_portrait(Sprite *sprite, int portrait);
+const char *hd_portrait_key(int portrait, char *key, size_t n);
+/* The custom tribe's portrait chooser's sheet of faces (mk.dll 210, men;
+   211, women), just loaded: each face the slot's historical portrait. */
+void hd_portrait_faces(DibSurface *sheet, int female);
 /* OpenCiv2's own herald for the tribe of this code (HRLDxxx.AVI's xxx),
    with HD graphics: 1, where it stands (x, y) and its segments in the
    game's table; 0: none (the tribe's segments the original's). */

@@ -900,9 +900,11 @@ static const struct { const char *module; int lo, hi, first, count; } OWN[] = {
    portraits are people of its own, not the tribes' leaders in the
    original's order (data/hd-pack.json leaves out those no tribe is given
    and the sheets), so each frame is a plain dark panel, in the diplomacy
-   room's slate; with HD graphics the room draws the pack's portrait that
-   fits the tribe over it (src/game/hd_graphics.cpp, hd_diplomacy_portrait;
-   the Zulus' none: the frame).  1: a portrait's. */
+   room's slate; with HD graphics the room draws the tribe's own historical
+   portrait over it (data/native/portraits; where it is missing the pack's
+   that fits the tribe, the Zulus' none: the frame), and the chooser's
+   faces are those portraits (src/game/hd_graphics.cpp, hd_diplomacy_portrait,
+   hd_portrait_faces).  1: a portrait's. */
 static int portrait_frames(Canvas *c, const char *module, int id)
 {
     static const unsigned char panel[4] = {38, 41, 48, 255}, edge[4] = {84, 88, 98, 255};

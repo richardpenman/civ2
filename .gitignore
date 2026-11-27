@@ -24,6 +24,7 @@ __pycache__/
 /data/native/sound/
 /data/native/heralds/
 /data/native/wonders/
+/data/native/portraits/
 
 # Ghidra project and logs (re/ keeps the exported tables and decomp.c)
 /re/gproj/

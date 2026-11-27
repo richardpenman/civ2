@@ -11,10 +11,15 @@ room's animated heralds, src/platform/hd.c: hd_herald_find) and
 data/native/wonders (docs/NO-INSTALL.md, Wonder movies: wonderNN.webp, the
 picture, and wonderNN.ogg, the sound, played together as the game's
 Video\\WONDERNN.AVI, with HD graphics first, with Classic graphics where its
-folder lacks it: src/platform/video.c: open_own_wonder) from OpenCiv2's
+folder lacks it: src/platform/video.c: open_own_wonder) and
+data/native/portraits (docs/HD-GRAPHICS.md, Leaders: the historical
+leaders' portraits, leader-ID.webp for the original's mk.dll ID, drawn
+with HD graphics for the tribe's leader: src/platform/hd.c:
+load_portraits; their credits README.md) from OpenCiv2's
 repository of assets openciv2/openciv2-assets, its assets/music,
-assets/sound, assets/heralds and assets/wonders (MIT, as OpenCiv2: its
-LICENSE-media; the same repository's assets/atlas-hd is the HD art, Peter
+assets/sound, assets/heralds, assets/wonders and assets/portraits-historical
+(MIT, as OpenCiv2: its LICENSE-media; the portraits' sources public domain
+or CC0, six AI-generated: their README.md; the same repository's assets/atlas-hd is the HD art, Peter
 Johnson's: tools/build_hd_pack.py) at the commit pinned in data/own-assets.json (repo, sha, and each file's
 path, SHA-256 and size).  They are not part of this repository
 (.gitignore): make own-assets runs this, and the builds that pack or run
@@ -22,9 +27,9 @@ with them (make, make port, make native, make windows, make web; the
 release's jobs) run it first.
 
     python3 tools/build_own_assets.py [--force] [--music DIR] [--heralds DIR] [--sound DIR]
-        [--wonders DIR]
+        [--wonders DIR] [--portraits DIR]
 
-0. Nothing is done when the four destinations already hold what this pin and
+0. Nothing is done when the five destinations already hold what this pin and
    this tool make (their .built: a digest of data/own-assets.json and this
    file but its docstring); else what was made earlier from them is copied
    from the cache (own-DIGEST: kept there after each make below), without
@@ -35,11 +40,12 @@ release's jobs) run it first.
    openciv2/own-assets/SHA256, %LOCALAPPDATA%\\openciv2 on Windows;
    CIV2_DEPENDENCY_CACHE overrides) and checked against the SHA-256 and size
    pinned for it: a file that is not is not used; one already in the cache
-   is not fetched again.  Only the files listed (about 35 MB): the music's
+   is not fetched again.  Only the files listed (about 51 MB): the music's
    tracks 02 to 12 (the CD's audio tracks 2 to 12), the heralds' heralds.txt
    and the WebPs it names (not the clips they were made from), the 78 sound
    effects and their SOURCES.md, the wonder movies' WebPs and Oggs (not
-   their sources), the LICENSE-media (copied as LICENSE).
+   their sources), the 42 historical portraits (WebP, 900x1100, about
+   16 MB) and their README.md, the LICENSE-media (copied as LICENSE).
 2. They are copied as they are, nothing converted: the repository holds the
    music as the game plays it (Ogg Vorbis, 48 kHz stereo, which stb_vorbis,
    the game's decoder, reads; each track's header checked; the sound
@@ -49,7 +55,8 @@ release's jobs) run it first.
    data/native/heralds (heralds.txt, its WebPs, LICENSE),
    data/native/sound (name.ogg, SOURCES.md) and data/native/wonders
    (wonderNN.webp, wonderNN.ogg, LICENSE; each WebP's and Ogg's header
-   checked) are written again.
+   checked) and data/native/portraits (leader-ID.webp, README.md, LICENSE;
+   each WebP's header checked) are written again.
 """
 import argparse, hashlib, json, os, shutil, sys, urllib.parse, urllib.request
 
@@ -59,6 +66,7 @@ MUSIC = os.path.join(ROOT, 'data', 'native', 'music')
 HERALDS = os.path.join(ROOT, 'data', 'native', 'heralds')
 SOUND = os.path.join(ROOT, 'data', 'native', 'sound')
 WONDERS = os.path.join(ROOT, 'data', 'native', 'wonders')
+PORTRAITS = os.path.join(ROOT, 'data', 'native', 'portraits')
 
 SKIP = 'or build without them: make OWN_ASSETS='
 
@@ -104,7 +112,11 @@ def load_pin():
     for name in pin['wonders']:
         if not (len(name) in (12, 13) and name.startswith('wonder') and name[6:8].isdigit() and name[8:] in ('.webp', '.ogg')):
             sys.exit('build_own_assets: data/own-assets.json\'s wonders has a file %s' % name)
-    for group in ('music', 'heralds', 'sound', 'wonders', 'notices'):
+    for name in pin['portraits']:
+        if not (name == 'README.md' or (len(name) == 15 and name.startswith('leader-') and name[7:10].isdigit() and
+                                        220 <= int(name[7:10]) <= 261 and name.endswith('.webp'))):
+            sys.exit('build_own_assets: data/own-assets.json\'s portraits has a file %s' % name)
+    for group in ('music', 'heralds', 'sound', 'wonders', 'portraits', 'notices'):
         for name, f in pin[group].items():
             if '..' in f['path'].split('/') or len(f['sha256']) != 64 or '/' in name or name.startswith('.'):
                 sys.exit('build_own_assets: data/own-assets.json\'s %s %s is not as it should be' % (group, name))
@@ -169,13 +181,21 @@ def is_webp_anim(path):
     return head[:4] == b'RIFF' and head[8:16] == b'WEBPVP8X' and bool(head[20] & 2)
 
 
-def build(music, heralds, sound, wonders):
-    """1. and 2.: fetched (or from the cache's own-assets) and copied into music, heralds, sound and wonders."""
+def is_webp(path):
+    """whether the file is a WebP (RIFF WEBP)."""
+    with open(path, 'rb') as f:
+        head = f.read(12)
+    return head[:4] == b'RIFF' and head[8:12] == b'WEBP'
+
+
+def build(music, heralds, sound, wonders, portraits):
+    """1. and 2.: fetched (or from the cache's own-assets) and copied into music, heralds, sound, wonders and portraits."""
     pin = load_pin()
     tracks = {n: fetch(pin, t) for n, t in sorted(pin['music'].items())}
     herald_files = {name: fetch(pin, f) for name, f in pin['heralds'].items()}
     sound_files = {name: fetch(pin, f) for name, f in sorted(pin['sound'].items())}
     wonder_files = {name: fetch(pin, f) for name, f in sorted(pin['wonders'].items())}
+    portrait_files = {name: fetch(pin, f) for name, f in sorted(pin['portraits'].items())}
     notices = {name: fetch(pin, f) for name, f in pin['notices'].items()}
     # (every WebP heralds.txt names pinned too)
     named = [l.split()[-1] for l in open(herald_files['heralds.txt'], encoding='utf-8')
@@ -195,6 +215,9 @@ def build(music, heralds, sound, wonders):
     for name, path in wonder_files.items():
         if not (is_webp_anim(path) if name.endswith('.webp') else vorbis_info(path)):
             sys.exit('build_own_assets: wonders %s (%s) is not an animated WebP or Ogg Vorbis' % (name, pin['wonders'][name]['path']))
+    for name, path in portrait_files.items():
+        if name.endswith('.webp') and not is_webp(path):
+            sys.exit('build_own_assets: portraits %s (%s) is not a WebP' % (name, pin['portraits'][name]['path']))
     clear(music)
     for n, path in tracks.items():
         shutil.copy(path, os.path.join(music, 'track%s.ogg' % n))
@@ -207,7 +230,10 @@ def build(music, heralds, sound, wonders):
     clear(wonders)
     for name, path in wonder_files.items():
         shutil.copy(path, os.path.join(wonders, name))
-    for dest in (music, heralds, wonders):
+    clear(portraits)
+    for name, path in portrait_files.items():
+        shutil.copy(path, os.path.join(portraits, name))
+    for dest in (music, heralds, wonders, portraits):
         for name, path in notices.items():
             shutil.copy(path, os.path.join(dest, name))
     clear(sound)
@@ -216,12 +242,14 @@ def build(music, heralds, sound, wonders):
     rate = sorted({info[1] for info in infos.values()})
     movies = [name for name in wonder_files if name.endswith('.webp')]
     print('wrote %s: %d tracks, %.1f MB (Ogg Vorbis, stereo, %s Hz); %s: %d heralds, %.1f MB; %s: %d sound effects, %.1f MB; '
-          '%s: %d wonder movies, %.1f MB' % (
+          '%s: %d wonder movies, %.1f MB; %s: %d portraits, %.1f MB' % (
         os.path.relpath(music, ROOT), len(tracks), sum(os.path.getsize(p) for p in tracks.values()) / 1e6,
         '/'.join(map(str, rate)), os.path.relpath(heralds, ROOT), len(named),
         sum(os.path.getsize(p) for p in herald_files.values()) / 1e6, os.path.relpath(sound, ROOT), len(effects),
         sum(os.path.getsize(sound_files[n]) for n in effects) / 1e6, os.path.relpath(wonders, ROOT), len(movies),
-        sum(os.path.getsize(p) for p in wonder_files.values()) / 1e6), flush=True)
+        sum(os.path.getsize(p) for p in wonder_files.values()) / 1e6, os.path.relpath(portraits, ROOT),
+        len([n for n in portrait_files if n.endswith('.webp')]),
+        sum(os.path.getsize(p) for p in portrait_files.values()) / 1e6), flush=True)
 
 
 def digest_of():
@@ -233,29 +261,34 @@ def digest_of():
 
 
 def ensure(args):
-    """0.: the music, the heralds, the sound effects and the wonder movies in their destinations, from what is there, the cache or made."""
+    """0.: the music, the heralds, the sound effects, the wonder movies and the portraits in their destinations, from what is there, the cache or made."""
     digest = digest_of()
-    dests = {'music': args.music, 'heralds': args.heralds, 'sound': args.sound, 'wonders': args.wonders}
+    dests = {'music': args.music, 'heralds': args.heralds, 'sound': args.sound, 'wonders': args.wonders,
+             'portraits': args.portraits}
     stamps = [os.path.join(d, '.built') for d in dests.values()]
     if not args.force and all(os.path.exists(s) and open(s).read().strip() == digest for s in stamps) and \
             os.path.exists(os.path.join(args.music, 'README.txt')) and \
             os.path.exists(os.path.join(args.heralds, 'heralds.txt')) and \
             os.path.exists(os.path.join(args.sound, 'SOURCES.md')) and \
-            os.path.exists(os.path.join(args.wonders, 'LICENSE')):
-        print('data/native/music, heralds, sound, wonders: OpenCiv2\'s own assets up to date (%s)' % digest, flush=True)
+            os.path.exists(os.path.join(args.wonders, 'LICENSE')) and \
+            os.path.exists(os.path.join(args.portraits, 'README.md')):
+        print('data/native/music, heralds, sound, wonders, portraits: OpenCiv2\'s own assets up to date (%s)' % digest,
+              flush=True)
         return
     cached = os.path.join(cache_dir(), 'own-' + digest)
     if not args.force and os.path.exists(os.path.join(cached, 'music', 'README.txt')) and \
             os.path.exists(os.path.join(cached, 'heralds', 'heralds.txt')) and \
             os.path.exists(os.path.join(cached, 'sound', 'SOURCES.md')) and \
-            os.path.exists(os.path.join(cached, 'wonders', 'LICENSE')):
+            os.path.exists(os.path.join(cached, 'wonders', 'LICENSE')) and \
+            os.path.exists(os.path.join(cached, 'portraits', 'README.md')):
         for sub, dest in dests.items():
             clear(dest)
             for name in os.listdir(os.path.join(cached, sub)):
                 shutil.copy(os.path.join(cached, sub, name), os.path.join(dest, name))
-        print('data/native/music, heralds, sound, wonders: OpenCiv2\'s own assets copied from %s' % cached, flush=True)
+        print('data/native/music, heralds, sound, wonders, portraits: OpenCiv2\'s own assets copied from %s' % cached,
+              flush=True)
     else:
-        build(args.music, args.heralds, args.sound, args.wonders)
+        build(args.music, args.heralds, args.sound, args.wonders, args.portraits)
         tmp = cached + '.part'
         shutil.rmtree(tmp, ignore_errors=True)
         for sub, dest in dests.items():
@@ -277,6 +310,8 @@ def main():
     ap.add_argument('--heralds', default=HERALDS, help='where to write the heralds (default data/native/heralds)')
     ap.add_argument('--sound', default=SOUND, help='where to write the sound effects (default data/native/sound)')
     ap.add_argument('--wonders', default=WONDERS, help='where to write the wonder movies (default data/native/wonders)')
+    ap.add_argument('--portraits', default=PORTRAITS,
+                    help='where to write the historical leaders\' portraits (default data/native/portraits)')
     ensure(ap.parse_args())
 
 

@@ -1,0 +1,52 @@
+# HD graphics (docs/HD-GRAPHICS.md, Historical leaders' portraits): the
+# diplomacy room of a new game's leader, here the Babylonians' (male), as
+# harness/hd/hd-talks-new.txt (the player's civilization the tribe's colour,
+# tribe % 7 + 1: here 2), then the custom tribe's portrait chooser for the
+# player's civilization (portrait_dlg_show), cancelled.
+# harness/hd/hd-portraits.sh makes this script for other tribes and genders
+# (the lines marked GENDER, TRIBE, VIEWER, LEADER and PLAYER) and checks the
+# portraits drawn.
+# run: CIV2_TEST_HD=2
+wait 8000
+key Return              # Start a New Game
+wait 3000
+key Return              # world size
+wait 3000
+key Return              # difficulty
+wait 3000
+key Return              # competition
+wait 3000
+key Return              # aggression
+wait 3000
+key Return              # rules
+wait 3000
+key Return              # GENDER (male; female: key Down first)
+wait 3000
+key Down    # TRIBE (1: the Babylonians)
+wait 500
+shot tribe
+key Return
+wait 3000
+key Return              # the leader's name
+wait 5000
+key Return              # city style
+wait 600000             # world generation
+key Return
+wait 5000
+key Return
+wait 5000
+call diplo_leader_wnd_launch 493f0f 3 2     # VIEWER LEADER
+wait 3000
+shot room
+call diplo_leader_wnd_close 494148
+wait 2000
+call diplo_ai_meet_player 460129 3 2 -1 -1 1    # VIEWER LEADER
+wait 5000
+shot talk
+key Escape
+wait 3000
+call portrait_dlg_show 493e83 2     # PLAYER
+wait 3000
+shot faces
+key Escape
+wait 2000

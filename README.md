@@ -78,12 +78,14 @@ Docker, or, without Docker, with Python's Pillow and numpy and `cwebp` (the `web
 take it from `~/.cache/openciv2`, offline. `make HD_ART=` builds without it (Classic graphics
 only).
 
-OpenCiv2's own music, sound effects, heralds and wonder movies (the music, sound effects and
+OpenCiv2's own music, sound effects, heralds, wonder movies and historical leaders' portraits
+(the music, sound effects and
 wonder movies played first with HD graphics, with Classic graphics where the game folder lacks
-the CD's music or videos or the game's sounds; the heralds where it lacks the CD's) are not in
+the CD's music or videos or the game's sounds; the heralds where it lacks the CD's; the
+portraits, each tribe's own leader, with HD graphics) are not in
 the repository either: the builds (`make` too) fetch them from
-[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music`, `sound`, `heralds`, `wonders`) at its pinned commit
-once (`make own-assets`; about 35 MB, the music and sounds already Ogg Vorbis and the movies animated WebP as the game plays them, so
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music`, `sound`, `heralds`, `wonders`, `portraits-historical`) at its pinned commit
+once (`make own-assets`; about 51 MB, the music and sounds already Ogg Vorbis and the movies animated WebP as the game plays them, so
 nothing is converted and nothing needs installing but Python 3). Later builds take them from
 `~/.cache/openciv2`, offline. `make OWN_ASSETS=` builds without them.
 

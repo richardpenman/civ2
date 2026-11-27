@@ -406,15 +406,23 @@ void hd_diplomacy_flag(DibSurface *room, int colour)
 
 /* The leader's portrait in the diplomacy room (DiploLeaderWindow::
    init_portrait: mk.dll 220 + the civilization's leader_portrait, the tribe's
-   slot, + 21 for a woman).  The pack's 42 portraits at those ids are regional
-   archetypes of its own (its manifest's leaders.leader-00 to -41: mk.dll 220 +
-   N), not the tribes' leaders in the original's order, so each tribe and
-   gender is given the one that fits it best by region, then era; several
-   tribes share one.  0: the original's portrait, enlarged.  The portrait's
-   number, not the tribe's name, chooses, as the game's own: the tribe's slot
-   (a scenario's tribe in a slot keeps the slot's portrait) or the face a
-   custom tribe chose (PortraitDialog).  The pack's crop by its own id is
-   never drawn (hd.c's NOT_CROPPED). */
+   slot, + 21 for a woman) and in the destroyed civilizations' report
+   (DestroyedCivsWindow::draw_portrait, the same picture).  With HD graphics,
+   with and without the original's files: the tribe's own historical
+   portrait, OpenCiv2's (data/native/portraits/leader-ID.webp, the key
+   "portrait/ID", ID the original's picture: hd.c, load_portraits; from
+   openciv2-assets' assets/portraits-historical, its README the credits);
+   one of OpenCiv2's own pictures (data/native/hd-extra) by the original's
+   crop's key first.  Where neither is there, the art pack's: its 42
+   portraits at those ids are regional archetypes of its own (its
+   manifest's leaders.leader-00 to -41: mk.dll 220 + N), not the tribes'
+   leaders in the original's order, so each tribe and gender is given the
+   one that fits it best by region, then era; several tribes share one.
+   0: the original's portrait, enlarged.  The portrait's number, not the
+   tribe's name, chooses, as the game's own: the tribe's slot (a scenario's
+   tribe in a slot keeps the slot's portrait) or the face a custom tribe
+   chose (PortraitDialog: the same 21 faces, hd_portrait_faces).  The
+   pack's crop by its own id is never drawn (hd.c's NOT_CROPPED). */
 static const struct {
     const char *tribe;
     short male, female;         /* mk.dll id of the pack's portrait (0: none) */
@@ -442,15 +450,55 @@ static const struct {
     {"Sioux", 239, 260},         /* Indigenous North American, braids, blue wool */
 };
 
+/* The key of the picture drawn for the portrait (leader_portrait, 0 to
+   41) in key (n bytes), or NULL: the original's, enlarged. */
+const char *hd_portrait_key(int portrait, char *key, size_t n)
+{
+    int id;
+    if (!hd_art || portrait < 0 || portrait >= 42)
+        return NULL;
+    snprintf(key, n, "crop/resource/mk.dll/gifs/%d/1,1,225,275", 220 + portrait);
+    if (hd_picture_own(key))
+        return key;             /* (hd-extra's, by the original's crop's key) */
+    snprintf(key, n, "portrait/%d", 220 + portrait);
+    if (hd_picture_own(key))
+        return key;             /* the tribe's own historical portrait */
+    id = portrait < 21 ? hd_portraits[portrait].male : hd_portraits[portrait - 21].female;
+    if (!id)
+        return NULL;
+    snprintf(key, n, "crop/resource/mk.dll/gifs/%d/1,1,225,275", id);
+    return key;
+}
+
 void hd_diplomacy_portrait(Sprite *sprite, int portrait)
 {
     char key[48];
-    int id = portrait >= 0 && portrait < 42 ?
-                 (portrait < 21 ? hd_portraits[portrait].male : hd_portraits[portrait - 21].female) : 0;
-    if (!hd_art || !id)
+    if (!hd_art)
         return;
-    snprintf(key, sizeof key, "crop/resource/mk.dll/gifs/%d/1,1,225,275", id);
-    hd_sprite_bind(sprite, sprite->data_handle, key, 0);
+    if (hd_portrait_key(portrait, key, sizeof key))
+        hd_sprite_bind(sprite, sprite->data_handle, key, 0);
+    /* (harness/hd/hd-portraits.sh reads it) */
+    plat_log("hd: leader's portrait %d: %s\n", portrait, hd_portrait_key(portrait, key, sizeof key) ? key : "the original's");
+}
+
+/* The custom tribe's portrait chooser (PortraitDialog::paint: mk.dll 210,
+   the men's 21 faces, or 211, the women's, 7 x 3 of 90x110 at 1 + 91 x
+   col, 1 + 111 x row, slot row x 7 + col, copied whole): with HD graphics
+   each face the historical portrait of that slot (portrait/ID, as the
+   diplomacy room draws it), on the sheet's plane; where there is none the
+   original's face, enlarged (without the original's files a dark frame). */
+void hd_portrait_faces(DibSurface *sheet, int female)
+{
+    char key[24];
+    int slot, n = 0;
+    if (!hd_art)
+        return;
+    for (slot = 0; slot < 21; slot++) {
+        snprintf(key, sizeof key, "portrait/%d", 220 + slot + (female ? 21 : 0));
+        if (hd_picture_own(key))
+            n += hd_picture((void *)sheet->bits, key, 1 + slot % 7 * 91, 1 + slot / 7 * 111, 90, 110, 0);
+    }
+    plat_log("hd: portrait chooser: %d historical portraits (%s)\n", n, female ? "women" : "men");
 }
 
 /* A test (harness/hd/hd-redraw.txt, after Peter Johnson's map redraw

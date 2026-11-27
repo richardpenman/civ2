@@ -1,7 +1,7 @@
 {
-  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds and data/native/wonders (made by make own-assets, not in the repository), OpenCiv2's repository of assets openciv2/openciv2-assets (repo), its assets/music, assets/sound, assets/heralds and assets/wonders (MIT, as OpenCiv2: its LICENSE-media, copied as LICENSE; the sound effects' sources CC0: assets/sound/SOURCES.md; the same repository's assets/atlas-hd is the HD art, Peter Johnson's, pinned in data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); notices: the repository's LICENSE-media, copied as LICENSE beside music, heralds and wonders (its LICENSE is the HD art's). Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
+  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds, data/native/wonders and data/native/portraits (made by make own-assets, not in the repository), OpenCiv2's repository of assets openciv2/openciv2-assets (repo), its assets/music, assets/sound, assets/heralds, assets/wonders and assets/portraits-historical (MIT, as OpenCiv2: its LICENSE-media, copied as LICENSE; the sound effects' sources CC0: assets/sound/SOURCES.md; the historical portraits' sources public domain or CC0, six AI-generated (MIT): assets/portraits-historical/README.md; the same repository's assets/atlas-hd is the HD art, Peter Johnson's, pinned in data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); portraits: the historical leaders' portraits, leader-ID.webp (900x1100) for the original's mk.dll ID (220 + the tribe's slot, a man; 241 + the slot, a woman), and their credits README.md, copied into data/native/portraits, which with HD graphics the diplomacy room, the destroyed civilizations' report and the custom tribe's portrait chooser draw for the tribe's leader (src/platform/hd.c: load_portraits; src/game/hd_graphics.cpp: hd_diplomacy_portrait, hd_portrait_faces); notices: the repository's LICENSE-media, copied as LICENSE beside music, heralds, wonders and portraits (its LICENSE is the HD art's). Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
   "repo": "https://github.com/openciv2/openciv2-assets",
-  "sha": "16e9ac18094bdaceb0027cdbcf23e8c204b4db84",
+  "sha": "c6ed7a0cc00fea08ea174d0848c2d3e508916596",
   "music": {
     "02": {
       "path": "assets/music/track02.ogg",
@@ -85,8 +85,8 @@
   "sound": {
     "SOURCES.md": {
       "path": "assets/sound/SOURCES.md",
-      "sha256": "1f873ce6efa0f60c9d04b80ddad68b94405f21116337e5686f35621c8665d580",
-      "size": 40183
+      "sha256": "a2fcd27346afb99205f3fe5181d4f2bc164435a9e6db044cc19d7ade1131f40f",
+      "size": 40312
     },
     "aircombt.ogg": {
       "path": "assets/sound/aircombt.ogg",
@@ -380,8 +380,8 @@
     },
     "menuloop.ogg": {
       "path": "assets/sound/menuloop.ogg",
-      "sha256": "1d934e3dc49016cc079aab17971aedfdc5995619961e59cdefea64c43faf2a9d",
-      "size": 48263
+      "sha256": "6c09b7ad146cd30378bcbdc348e48d84a9bfcad4e181b91dcb41a07eac2caffb",
+      "size": 44181
     },
     "menuok.ogg": {
       "path": "assets/sound/menuok.ogg",
@@ -491,6 +491,223 @@
       "title": "The Pyramids: the sound",
       "sha256": "896153b5c6e35c25aa3f2383f774584833288e0e6651ba1547ea52a5d8dbe71a",
       "size": 120937
+    }
+  },
+  "portraits": {
+    "README.md": {
+      "path": "assets/portraits-historical/README.md",
+      "sha256": "eb618822080d859d539fe9d70238c844a5dec0acd7fb912ec937746f20777034",
+      "size": 38147
+    },
+    "leader-220.webp": {
+      "path": "assets/portraits-historical/leader-220.webp",
+      "sha256": "75995d6676d27bc3405433f340cff37ad399363a6322a836c6858d2e82c35c4d",
+      "size": 440408
+    },
+    "leader-221.webp": {
+      "path": "assets/portraits-historical/leader-221.webp",
+      "sha256": "635f0bf7149d787914bb195982ca31771135a08cf252e14984f98dd745f8bac2",
+      "size": 394504
+    },
+    "leader-222.webp": {
+      "path": "assets/portraits-historical/leader-222.webp",
+      "sha256": "96fd34abfeda94a348584a9e12f20a35efbe3067a0eb26205cb95c19a7c6e5ca",
+      "size": 389632
+    },
+    "leader-223.webp": {
+      "path": "assets/portraits-historical/leader-223.webp",
+      "sha256": "dabcaac8fc68a4efd4b8876aa5a87a5afb7521a8a842f22030dbcbd39bb75d3f",
+      "size": 365890
+    },
+    "leader-224.webp": {
+      "path": "assets/portraits-historical/leader-224.webp",
+      "sha256": "1c2bdb9d8d3a0157f3a4e4d502fea7cd8a29b50dbd20506156a17e5cc1c6f09d",
+      "size": 340138
+    },
+    "leader-225.webp": {
+      "path": "assets/portraits-historical/leader-225.webp",
+      "sha256": "bc654ec9dbfa3c20e5e68ccce5b5b5d72adebc3d869dcb6682992a4439de2aae",
+      "size": 501728
+    },
+    "leader-226.webp": {
+      "path": "assets/portraits-historical/leader-226.webp",
+      "sha256": "44c3fdbb9c9822b3220a04516e42b5c95b9b98076ce5906838c9b9a595cc7666",
+      "size": 372150
+    },
+    "leader-227.webp": {
+      "path": "assets/portraits-historical/leader-227.webp",
+      "sha256": "06671bf4beabb78a4b74d377e02323d74b2ad22a5d1300de91bc0ad8e0a423c4",
+      "size": 329314
+    },
+    "leader-228.webp": {
+      "path": "assets/portraits-historical/leader-228.webp",
+      "sha256": "9a591a6870d414e696e9e90e5c677d90efb23b6594f26fd3f7c541f638a5e24c",
+      "size": 358860
+    },
+    "leader-229.webp": {
+      "path": "assets/portraits-historical/leader-229.webp",
+      "sha256": "55dde85ece9b3e03df60b05eccf2cadb8b388ad7daf1113e96d593f3a2c2d281",
+      "size": 358378
+    },
+    "leader-230.webp": {
+      "path": "assets/portraits-historical/leader-230.webp",
+      "sha256": "59d40d796d3b88874afd64efe091caae7f6c9c94455174880df3775699615184",
+      "size": 369364
+    },
+    "leader-231.webp": {
+      "path": "assets/portraits-historical/leader-231.webp",
+      "sha256": "d2225ff7f6291e99dd488e5925df8d10018a02b968caeed1ce09a1048e303868",
+      "size": 332026
+    },
+    "leader-232.webp": {
+      "path": "assets/portraits-historical/leader-232.webp",
+      "sha256": "6f7b78203a867a2f6108a50c928272b01a43b2b65d2b66d16864c76881729916",
+      "size": 462786
+    },
+    "leader-233.webp": {
+      "path": "assets/portraits-historical/leader-233.webp",
+      "sha256": "824d4b2680e504adfee49094138545dca63e54961342a172579e475f752d888d",
+      "size": 418000
+    },
+    "leader-234.webp": {
+      "path": "assets/portraits-historical/leader-234.webp",
+      "sha256": "4cecb404412196630b2366af201f36ac62da5ae2e173eda3c288c3c57485c891",
+      "size": 402422
+    },
+    "leader-235.webp": {
+      "path": "assets/portraits-historical/leader-235.webp",
+      "sha256": "d970c7ed808445b8bca339689a36ce6a89af10323e7b999ccc238351bbe2a06a",
+      "size": 440802
+    },
+    "leader-236.webp": {
+      "path": "assets/portraits-historical/leader-236.webp",
+      "sha256": "bc1fcf86251f14f9a9a2ac8f7b272e1262f0f7faf37e0b80377c028871186a52",
+      "size": 479482
+    },
+    "leader-237.webp": {
+      "path": "assets/portraits-historical/leader-237.webp",
+      "sha256": "e49126b0a331c4a47da460968f7a32acaca2ad8c9b4ce017f7e6154367d94353",
+      "size": 379292
+    },
+    "leader-238.webp": {
+      "path": "assets/portraits-historical/leader-238.webp",
+      "sha256": "c137ef101157f09c1e3a25ac4963c53533db23fc7d830f8a0cfbc530adc61f62",
+      "size": 414364
+    },
+    "leader-239.webp": {
+      "path": "assets/portraits-historical/leader-239.webp",
+      "sha256": "a7f2b747589d64c4cc99a20e4d2e5d99c88b5438a69dd034fedba5d0bf44296b",
+      "size": 385930
+    },
+    "leader-240.webp": {
+      "path": "assets/portraits-historical/leader-240.webp",
+      "sha256": "5f0d0ccdc744afc05793826917607071b1e3c0f405a97d82e1885005404edf7f",
+      "size": 357950
+    },
+    "leader-241.webp": {
+      "path": "assets/portraits-historical/leader-241.webp",
+      "sha256": "93bca35c4e9a28ba7860f061b553dc967ae0555fd3a186b57e14b91c27c4c45a",
+      "size": 392944
+    },
+    "leader-242.webp": {
+      "path": "assets/portraits-historical/leader-242.webp",
+      "sha256": "d868559e7ec343a9d3002b5ea4d34330fe809676159851b4caa5d6e0e44b14b1",
+      "size": 380554
+    },
+    "leader-243.webp": {
+      "path": "assets/portraits-historical/leader-243.webp",
+      "sha256": "68481811b119cd92d2129d742edfb744a4155a3f281097bd5017854c30b8b03b",
+      "size": 423568
+    },
+    "leader-244.webp": {
+      "path": "assets/portraits-historical/leader-244.webp",
+      "sha256": "641b6f812caf635f2f60ce425857ff32f98c13c0c42b36cfaa63300d9bf40d94",
+      "size": 363484
+    },
+    "leader-245.webp": {
+      "path": "assets/portraits-historical/leader-245.webp",
+      "sha256": "370746d010e9838b3d07f113817afc44878e1bc9ab2dbefec2b860cb33983732",
+      "size": 347580
+    },
+    "leader-246.webp": {
+      "path": "assets/portraits-historical/leader-246.webp",
+      "sha256": "a70faee3e616ae1b2eb807a232aa02fe2cb09bb4fef40a73ed0e61ac3e1a1020",
+      "size": 486744
+    },
+    "leader-247.webp": {
+      "path": "assets/portraits-historical/leader-247.webp",
+      "sha256": "9afedf6d45f3189274cd7f5be5bfb2274994cd0db9ccfe6adc9489feeebf9ce2",
+      "size": 356262
+    },
+    "leader-248.webp": {
+      "path": "assets/portraits-historical/leader-248.webp",
+      "sha256": "35e56be415ca3ea32b1a350216607b108de3e7c8018f8db0e5bd4d223006f6da",
+      "size": 314588
+    },
+    "leader-249.webp": {
+      "path": "assets/portraits-historical/leader-249.webp",
+      "sha256": "f0bfa337755574e0a0046f5235323422207bc0aacc6298e1029c1a0bcc74711a",
+      "size": 377984
+    },
+    "leader-250.webp": {
+      "path": "assets/portraits-historical/leader-250.webp",
+      "sha256": "2e858d088a62c5cb1ea5bdf110ac16f4230cb62e127cb755812ebb5ee67e81f4",
+      "size": 489102
+    },
+    "leader-251.webp": {
+      "path": "assets/portraits-historical/leader-251.webp",
+      "sha256": "a5301184e01c83a9f28d1d63cefe09ec9dfecf0d65db26807401ffe8c5e781e0",
+      "size": 348742
+    },
+    "leader-252.webp": {
+      "path": "assets/portraits-historical/leader-252.webp",
+      "sha256": "639e1016e7dcf92b847cf5e6e37af442030685f3b5af1e4f195840a8531d8e28",
+      "size": 382540
+    },
+    "leader-253.webp": {
+      "path": "assets/portraits-historical/leader-253.webp",
+      "sha256": "6e2ffabe6666e7df4bd1a5f37beebd70f9a257f5585a2237fd9730c23e93d9ce",
+      "size": 404458
+    },
+    "leader-254.webp": {
+      "path": "assets/portraits-historical/leader-254.webp",
+      "sha256": "23c0a5081d7b190801dfbf60a828b26e5aa8e14c472fdb14b094a9ce9b51b9fa",
+      "size": 374620
+    },
+    "leader-255.webp": {
+      "path": "assets/portraits-historical/leader-255.webp",
+      "sha256": "34d7f95bc55806ad7451fcf21c535ae69df2111050ecd1b9f252737e1b7dedd0",
+      "size": 423856
+    },
+    "leader-256.webp": {
+      "path": "assets/portraits-historical/leader-256.webp",
+      "sha256": "0dd30fb131f74679e289eba67306422462e1cd3ddc06b46ccca10815b7815027",
+      "size": 363402
+    },
+    "leader-257.webp": {
+      "path": "assets/portraits-historical/leader-257.webp",
+      "sha256": "d73ab4483a91b95507c01f4c964eb60cbaaf69b87a72c98f1a0b6aebce112a58",
+      "size": 374672
+    },
+    "leader-258.webp": {
+      "path": "assets/portraits-historical/leader-258.webp",
+      "sha256": "5cf2253d6f528fb582a7838e6112cca81584a2e48f8a01d06fc16c9775404354",
+      "size": 359114
+    },
+    "leader-259.webp": {
+      "path": "assets/portraits-historical/leader-259.webp",
+      "sha256": "e7e9a7f5a576293d3b29da65ef839f1bca2c2172baad7648614ead589da91e23",
+      "size": 389154
+    },
+    "leader-260.webp": {
+      "path": "assets/portraits-historical/leader-260.webp",
+      "sha256": "e735e6890827510c97d00a0b163c1fc7d2368667b46bbe6d8680ae279462031e",
+      "size": 360844
+    },
+    "leader-261.webp": {
+      "path": "assets/portraits-historical/leader-261.webp",
+      "sha256": "ebcc06f5943085edb6447f3dcac75caaa349fc8fffb2f6e1f1b1d0e9bf669765",
+      "size": 352418
     }
   },
   "notices": {

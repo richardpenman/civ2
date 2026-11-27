@@ -57,7 +57,7 @@ jobs:
           path: ~/.cache/openciv2
           key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
           restore-keys: own-assets-
-      - name: The music, sound effects, heralds and wonder movies
+      - name: The music, sound effects, heralds, wonder movies and portraits
         run: python3 tools/build_own_assets.py
       - uses: actions/upload-artifact@v7
         with:
@@ -67,6 +67,7 @@ jobs:
             data/native/sound
             data/native/heralds
             data/native/wonders
+            data/native/portraits
           retention-days: 1
 
   site:
@@ -103,9 +104,10 @@ jobs:
       # repository, byte for byte), every other .txt a translation
       # (data/native/lang's, byte for byte) or a licence's notice; the
       # site's sounds only OpenCiv2's (data/music, sound, wonders) and its
-      # pictures only those hd/index.json lists from the art pack and
-      # OpenCiv2's heralds (and its wonder movies'); the art and the own
-      # assets there.
+      # pictures only those hd/index.json lists from the art pack,
+      # OpenCiv2's heralds and its historical leaders' portraits
+      # (portraits/leader-ID.webp; and its wonder movies'); the art and the
+      # own assets there.
       - name: No original game files on the site
         run: |
           python3 - <<'PY'
@@ -152,8 +154,13 @@ jobs:
           art = json.load(open(os.path.join(web, 'hd', 'index.json')))
           for path, _ in art:
               top, name = path.split('/', 1)
-              if top not in ('hd', 'heralds') or not (name in ('pictures.txt', 'heralds.txt') or
-                                                      name.endswith(('.webp', '.png'))):
+              if top == 'portraits':
+                  ok = name.startswith('leader-') and name.endswith('.webp') and name[7:-5].isdigit() and \
+                      220 <= int(name[7:-5]) <= 261
+              else:
+                  ok = top in ('hd', 'heralds') and (name in ('pictures.txt', 'heralds.txt') or
+                                                     name.endswith(('.webp', '.png')))
+              if not ok:
                   bad.append('hd/art.bin: ' + path)
           if not any(p == 'hd/pictures.txt' for p, _ in art):
               bad.append('hd/art.bin: no HD art (data/native/hd)')

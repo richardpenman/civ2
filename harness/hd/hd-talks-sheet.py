@@ -1,5 +1,7 @@
 # The contact sheet of harness/hd/hd-talks-all.sh: for each tribe (rows) and
-# gender, the HD room's portrait panel beside the original's, labelled.  The
+# gender, the HD room's portrait panel beside the original's, labelled.  With
+# OpenCiv2's historical portraits (data/native/portraits: make own-assets) each
+# tribe's own is drawn (its run's hook.log names it: checked); without them the
 # tribes src/game/hd_graphics.cpp's hd_portraits gives no pack portrait
 # (ORIGINAL) must show the original's enlarged: checked.
 import os, sys
@@ -35,7 +37,11 @@ for i, (t, g, d) in enumerate(cells):
     a = Image.open(shot(d, "room-hd")).convert("L").resize((1024, 768), Image.BOX).crop(PIC)
     b = Image.open(shot(d, "room")).convert("L").crop(PIC)
     diff = sum(ImageStat.Stat(ImageChops.difference(a, b)).mean)
-    if t in ORIGINAL:
+    want = "portrait/%d" % (220 + t + (21 if g == "f" else 0))
+    log = open(os.path.join(d, "hook.log"), errors="replace").read() if os.path.exists(os.path.join(d, "hook.log")) else ""
+    if os.path.exists(os.path.join("data", "native", "portraits", want[9:].join(("leader-", ".webp")))):
+        print("%-14s %s  historical %s%s" % (TRIBES[t], g, want, "" if ": " + want + "\n" in log else "  CHECK: not drawn"))
+    elif t in ORIGINAL:
         print("%-14s %s  the original's: difference %5.1f%s" % (TRIBES[t], g, diff, "  CHECK" if diff > 20 else ""))
     else:
         print("%-14s %s  the pack's (look)" % (TRIBES[t], g))

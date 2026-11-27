@@ -485,11 +485,12 @@ function savesControls(store) {
 // ---- the HD graphics' art, as CIV.INI asks for it (options.js) ----
 
 // The art (data/native/hd: hd/pictures.txt and its pictures), OpenCiv2's
-// own heralds (data/native/heralds: heralds/...) and HD pictures
+// own heralds (data/native/heralds: heralds/...), historical leaders'
+// portraits (data/native/portraits: portraits/leader-ID.webp) and HD pictures
 // (data/native/hd-extra: hd-extra/...), on the site as one file, hd/art.bin,
 // its files one after another as hd/index.json lists them ([path, size]
 // each) -> [[path, bytes]], put where hd.c looks for them (CIV2_DATA/hd,
-// CIV2_DATA/heralds, CIV2_DATA/hd-extra)
+// CIV2_DATA/heralds, CIV2_DATA/portraits, CIV2_DATA/hd-extra)
 // (onProgress(done, total): its bytes as they come)
 async function fetchArt(onProgress = null) {
     const index = await fetch('hd/index.json').then((r) => {

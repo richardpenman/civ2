@@ -35,6 +35,15 @@ folder lacks them), made from sounds in the public domain:
  16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt,
                               Kenney, VSCO-2 Community Edition
 
+and, with the programs, the historical leaders' portraits drawn with HD
+graphics (data/native/portraits, made by tools/build_own_assets.py from the
+same repository at its pinned commit), made from works in the public domain
+or under CC0 (six of the 42 AI-generated, OpenCiv2's own: MIT), credited at
+the end:
+
+ 17. leaders' portraits       public domain (34), CC0 1.0 (2): Wikimedia
+                              Commons, the Internet Archive
+
 The programs also carry OpenCiv2's own music, heralds and wonder movies
 (data/native/music, data/native/heralds, data/native/wonders, made by
 tools/build_own_assets.py from OpenCiv2's repository of assets
@@ -574,3 +583,29 @@ with Reserved Font Names "Uncial Antiqua"), licensed under the SIL Open Font
 License 1.1 (https://openfontlicense.org; its text beside the movie's
 sources, assets/wonders/00/OFL.txt).  The font itself is not in the programs: only
 the movie's picture, drawn with it, which the licence leaves free.
+
+
+
+OpenCiv2's historical leaders' portraits  https://github.com/openciv2/openciv2-assets/tree/main/assets/portraits-historical
+-------------------------------------------------------------------------------------------------------------------------
+
+The 42 leaders' portraits drawn with HD graphics in the diplomacy room (one
+for each tribe's man and woman, leader-220.webp to leader-261.webp, for the
+original's mk.dll pictures 220 to 261: docs/HD-GRAPHICS.md, Historical
+leaders' portraits), in openciv2/openciv2-assets' assets/portraits-historical
+at the commit pinned in data/own-assets.json, copied as they are into
+data/native/portraits by tools/build_own_assets.py.  34 are made (cropped,
+scaled, toned) from paintings, mosaics, prints, manuscripts, a stamp,
+stained glass, vase paintings and photographs in the public domain, and 2
+from works under the Creative Commons CC0 1.0 Universal Public Domain
+Dedication (https://creativecommons.org/publicdomain/zero/1.0/), found on
+Wikimedia Commons (https://commons.wikimedia.org; each licence checked on
+the file's page there) but one, a plate of 1849 (George French Angas, The
+Kafirs Illustrated) from the Internet Archive; no notice is required.  6 are
+AI-generated (Google's Gemini 3 Pro Image: the Babylonians' man and woman,
+Mao, the Egyptians', Zulus' and Vikings' women), made for OpenCiv2 and under
+its licence (MIT, Copyright (c) 2026 Richard Penman; the repository's
+LICENSE-media, as LICENSE beside them).  Their README.md, copied beside them
+(data/native/portraits/README.md; on the browser version's site
+hd/README-portraits.md), credits each one's work, artist, date, source page
+and licence, and the prompts of the generated ones.

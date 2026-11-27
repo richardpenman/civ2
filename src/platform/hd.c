@@ -146,6 +146,44 @@ static unsigned load_pictures(const char *dir, int own)
     return n;
 }
 
+/* OpenCiv2's historical leaders' portraits (data/native/portraits, made by
+   make own-assets: tools/build_own_assets.py, from openciv2-assets'
+   assets/portraits-historical): leader-ID.webp, 900x1100, for the
+   original's mk.dll ID (220 + the tribe's slot, a man; 241 + the slot, a
+   woman), the key "portrait/ID" at the original's 225x275 (src/game/
+   hd_graphics.cpp, hd_diplomacy_portrait, draws the tribe's own; a
+   missing file: the art pack's that fits the tribe).  Before hd-extra's:
+   a "portrait/ID" there wins.  How many. */
+static unsigned load_portraits(const char *dir)
+{
+    char path[1400];
+    unsigned n = 0;
+    int id;
+    for (id = 220; id <= 261; id++) {
+        Entry *more, *a;
+        FILE *f;
+        snprintf(path, sizeof path, "%s/leader-%d.webp", dir, id);
+        if (!(f = fopen(path, "rb")))
+            continue;
+        fclose(f);
+        if (!(more = realloc(entries, (nentries + 1) * sizeof *entries)))
+            break;
+        entries = more;
+        a = entries + nentries++;
+        memset(a, 0, sizeof *a);
+        snprintf(a->key, sizeof a->key, "portrait/%d", id);
+        a->file = strdup(path);
+        a->own = 1;
+        a->w = 225;
+        a->h = 275;
+        n++;
+    }
+    qsort(entries, nentries, sizeof *entries, by_key);
+    if (n)
+        plat_log("HD graphics: %s, %u historical leaders' portraits\n", dir, n);
+    return n;
+}
+
 static Entry *decode(int id)
 {
     Entry *a = entries + id - 1;
@@ -1101,10 +1139,12 @@ static const char *landscape_key(int id, char *key, size_t n)
    1,1,225,275 in the diplomacy room) are 42 people of their own, not the
    tribes' leaders in the original's order (the Vikings' is a man in a
    19th-century frock coat), so a portrait's own crop is never drawn: the
-   game's side gives each tribe the pack's portrait that fits it
-   (hd_diplomacy_portrait in src/game/hd_graphics.cpp), or the original's,
-   enlarged; 210 and 211 (the sheets of small faces, which the custom
-   tribe's portrait chooser copies whole) are the original's.  A picture of
+   game's side gives each tribe its own historical portrait (load_portraits,
+   above), else the pack's portrait that fits it (hd_diplomacy_portrait in
+   src/game/hd_graphics.cpp), or the original's, enlarged; 210 and 211
+   (the sheets of small faces, which the custom tribe's portrait chooser
+   copies whole) are the original's, the historical portraits painted over
+   them (hd_portrait_faces).  A picture of
    OpenCiv2's own (data/native/hd-extra) of one of those keys would be drawn. */
 static const struct {
     const char *module;
@@ -1580,6 +1620,12 @@ void hd_sprite_end(const void *s, unsigned handle, void *bits, int x, int y, int
 
 /* ---- pictures the game's side composes (hd.h: hd_picture) ---- */
 
+int hd_picture_own(const char *key)
+{
+    int id = hd_art ? find(key) : 0;
+    return id && entries[id - 1].own;
+}
+
 int hd_picture_size(const char *key, int *w, int *h)
 {
     int id;
@@ -1994,6 +2040,8 @@ void hd_init(int classic, int unit_test, int scale)
     if (art >= 1) {
         hd_density = art > 4 ? 4 : art;
         if ((hd_art = load_pictures(dir, 0) > 0)) {
+            snprintf(dir, sizeof dir, "%s/portraits", plat_data_dir);
+            load_portraits(dir);
             snprintf(dir, sizeof dir, "%s/hd-extra", plat_data_dir);
             load_pictures(dir, 1);
         } else {

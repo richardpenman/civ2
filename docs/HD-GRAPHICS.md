@@ -533,19 +533,50 @@ The rest is in the platform layer (`src/platform/hd.c`):
   and a flat shield on nothing.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
   government: anarchy to democracy) is the pack's, an empty hall with the panels where the game
   draws the military icons, the portrait and the advances.  The leader's portrait drawn in it
-  (`mk.dll` 220 + the tribe's slot, + 21 for a woman: the 225x275 sprite at 1,1) is one of the
-  pack's 42 portraits, but not the one at its own id: those are regional archetypes of the
+  (`mk.dll` 220 + the tribe's slot, + 21 for a woman: the 225x275 sprite at 1,1) is the tribe's
+  own historical portrait, OpenCiv2's (*Historical leaders' portraits*, below), with and without
+  the install; where its file is missing, one of the pack's 42 portraits, but not the one at its
+  own id: those are regional archetypes of the
   pack's own (its manifest's `leaders.leader-00` to `-41`, at `mk.dll` 220 + N), not the
   tribes' leaders in the original's order (at the Vikings' id a 19th-century man in a frock
   coat, at the Babylonians' a red-bearded Celt), so a portrait's own crop is never drawn
   (`NOT_CROPPED` in hd.c, with the sheets of small faces, 210 and 211, of which the game takes
-  no sprites: the custom tribe's portrait chooser copies them whole, the original's) and each
+  no sprites: the custom tribe's portrait chooser copies them whole) and each
   tribe and gender is given the portrait that fits it best, by region, then era, several tribes
   sharing one (`hd_portraits` in `src/game/hd_graphics.cpp`, bound by `hd_diplomacy_portrait`
   in `DiploLeaderWindow::init_portrait`).  The portrait's number chooses, as in the game: the
   tribe's slot (a scenario's tribe in a slot has the slot's portrait), or the face a custom
   tribe chose in the portrait chooser.  The pack's bust is drawn in the sprite's frame, centred
   on the panel, as its art is laid out.
+
+  *Historical leaders' portraits* (`data/native/portraits`, made by `make own-assets` from
+  openciv2-assets' `assets/portraits-historical`, pinned in `data/own-assets.json`; not in the
+  repository): `leader-ID.webp`, 900x1100 (four times the original's 225x275), for the
+  original's `mk.dll` picture ID, 220 + the tribe's slot for its man (220 Caesar, 221
+  Hammurabi, ... 227 Lenin, ... 235 Tokugawa, ... 240 Sitting Bull) and 241 + the slot for its
+  woman (241 Livia, 242 Ishtari, ... 248 Catherine the Great, ... 256 Amaterasu, ... 261
+  Sacagawea), in the original's order, so each tribe's leader is its own, as the original's
+  portraits are: made from paintings, mosaics, prints, manuscripts, a stamp, stained glass,
+  vase paintings and photographs in the public domain (34) or under CC0 (2), and 6 generated with AI (Gemini 3 Pro
+  Image: the Babylonians' man and woman, Mao, the Egyptians', Zulus' and Vikings' women), each
+  given the same muted, aged finish; the credits, sources and licences are in their
+  `README.md` (copied beside them), where several are marked stand-ins (another figure of the
+  culture where the leader has no likeness) or legendary.  hd.c (`load_portraits`) adds each
+  as the picture `portrait/ID` (225x275); `hd_diplomacy_portrait` (`hd_portrait_key`) draws
+  for a portrait number N: a picture of OpenCiv2's own by the original's crop's key
+  (`crop/resource/mk.dll/gifs/(220+N)/1,1,225,275` in `data/native/hd-extra`) if there is one,
+  else `portrait/(220+N)`, else the pack's that fits the tribe (the table below), else the
+  original's, enlarged.  The same portrait is drawn in the destroyed civilizations' report
+  (`DestroyedCivsWindow::draw_portrait`, the same picture and sprite), and the custom tribe's
+  portrait chooser (`PortraitDialog::paint`: the 21 faces of `mk.dll` 210, the men, or 211,
+  the women, 90x110 each) shows the 21 historical portraits of that gender in its cells
+  (`hd_portrait_faces`, painted on the sheet's plane as it is loaded): the face chosen is the
+  portrait the room then draws.  A custom tribe has no portrait of its own: it is given the
+  face its leader chose there, slot N's, as in the original.  Classic graphics draw the
+  original's portraits, as ever.  The other screens show no leader's portrait (the Foreign
+  Minister and the intelligence report have the advisors' backgrounds).
+
+  Where a historical portrait's file is missing, the pack's:
 
   | Tribe | Man | Woman |
   |---|---|---|
@@ -573,7 +604,8 @@ The rest is in the platform layer (`src/platform/hd.c`):
   Southeast Asian (230, 251), Pacific (231, 252), modern South Asian (238, 259) and modern
   Mediterranean (240, 261) portraits.  Without the install the game's own pictures of the
   portraits and the small faces are a plain dark frame in the room's slate (`portrait_frames` in
-  `src/platform/synth.c`), under the pack's portrait as above: the Zulus' leader is that frame.
+  `src/platform/synth.c`), under the historical portrait as above (where a file is missing,
+  the pack's: the Zulus' leader is then that frame).
   `harness/hd/hd-talks-all.sh` shows every tribe's leader, man and woman, beside the
   original's.  The leader's animation (*Animated
   Heralds*: the video `KINGS\HRLDxxx.AVI` from the CD, over the portrait) is the video's frames
@@ -788,6 +820,12 @@ The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-assets' `assets/heralds`, and
 `data/native/hd-extra`, the local staging folder) are under its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
 (the Russians' herald's under *Your own heralds*).
+The historical leaders' portraits (`data/native/portraits`, from openciv2/openciv2-assets'
+`assets/portraits-historical`): 34 made from works in the public domain and 2 under CC0, from
+Wikimedia Commons and the Internet Archive, and 6 AI-generated (Gemini 3 Pro Image), those under
+OpenCiv2's licence (MIT, the assets' `LICENSE-media`, copied as `LICENSE` beside them); each
+one's work, artist, date, source page and licence are in their `README.md` (copied beside them,
+and on the browser version's site as `hd/README-portraits.md`); `THIRD-PARTY.txt` lists them.
 
 ## Tests
 
@@ -816,7 +854,7 @@ OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openci
   leader's portrait, the icons), `harness/hd/hd-talks.txt` (six civilizations' leaders, and the
   room under each of the seven governments), `harness/hd/hd-talks-all.sh` (every tribe's
   leader, man and woman, from a new game: a contact sheet beside the original's), `harness/hd/hd-cityview-eras.txt` (a city view
-  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-herald-own.sh` (OpenCiv2's own Russian herald and leaders: *Your own heralds*), `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
+  ancient, industrial and modern, on a 640x480 desktop), `harness/hd/hd-herald.txt` (an animated herald in the room), `harness/hd/hd-herald-own.sh` (OpenCiv2's own Russian herald and leaders: *Your own heralds*), `harness/hd/hd-portraits.txt` (the historical portraits: the Babylonians', Japanese and Russians' leaders, man and woman, in the room, and the custom tribe's portrait chooser, `hd_portrait_key` logged for each),  `harness/hd/hd-redraw.txt` (the map's redraws under a moving unit, at
   every zoom, each slide's plane compared with a full render: its results in `hook.log`, "0 of
   16 slides left pixels" at every zoom; the script waits for the probe, `replay_hold`; near
   the game's own pixels that a partial redraw leaves otherwise, at zooms 4, 6 and 8 where its

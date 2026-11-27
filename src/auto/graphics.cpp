@@ -2166,6 +2166,7 @@ void PortraitDialog::paint()
                      0xd3 - (uint)(leaders[civs[civ].tribe].female == '\0'),10,0xec,
                      (GamePalette *)&game_palette_block.game_palette);
   if (loaded != 0) {
+    hd_portrait_faces(&surface,leaders[civs[civ].tribe].female != '\0');   /* (port) HD: the historical portraits */
     dll.dll_handle_free();
     loaded = ui_metrics.caption_height + ui_metrics.bevel_width * -2;
     height = get_width();

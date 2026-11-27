@@ -6249,6 +6249,7 @@ void DestroyedCivsWindow::draw_portrait(int entry)
   this->palette.set_rgb(0x2a,0x40,(u8 *)rgb_buf);
   portrait_surface.set_palette(&this->palette);
   portrait_sprite.grab_from_surface(&portrait_surface,9,1,1,0xe1,0x113);
+  hd_diplomacy_portrait(&portrait_sprite,(byte)destroyed_civs.portraits[entry]);   /* (port) HD: the tribe's historical portrait */
   portrait_sprite.draw((RECT *)draw_tmp,&surface_wnd,
              0xd0,0x39);
   SetRect((LPRECT)&panel_clip_rect,0xd0,0x39,0x1b1,0x14c);

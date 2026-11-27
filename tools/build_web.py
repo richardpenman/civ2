@@ -56,11 +56,12 @@ them (make web OWN_ASSETS=) none.
 
 The HD graphics' art (data/native/hd: made by make hd-art,
 tools/build_hd_pack.py, which make web runs first; not in the repository) and
-OpenCiv2's own heralds (data/native/heralds: made by make own-assets, which
+OpenCiv2's own heralds and historical leaders' portraits
+(data/native/heralds, data/native/portraits: made by make own-assets, which
 make web runs first; not in the repository; none with OWN_ASSETS=) and HD
 pictures (data/native/hd-extra, the local staging folder) as one file,
 hd/art.bin, the files one after another as hd/index.json lists them
-([path, size]: hd/..., heralds/..., hd-extra/...): the page fetches it when
+([path, size]: hd/..., heralds/..., portraits/..., hd-extra/...): the page fetches it when
 the game wants HD graphics and puts the files where hd.c looks for them;
 the art's licence and notices beside it.  Without the art (make web HD_ART=: left out even where
 data/native/hd is made) only OpenCiv2's own pictures: the game then has no
@@ -225,7 +226,7 @@ def write_sounds():
 
 
 def own_assets():
-    """OpenCiv2's own music, sound effects, heralds and wonder movies wanted (not make web OWN_ASSETS= or 0)."""
+    """OpenCiv2's own music, sound effects, heralds, wonder movies and portraits wanted (not make web OWN_ASSETS= or 0)."""
     return os.environ.get('OWN_ASSETS', '1') not in ('', '0')
 
 
@@ -286,7 +287,8 @@ def write_wonders():
 
 def write_art():
     """hd/art.bin and hd/index.json: the HD art (data/native/hd),
-    OpenCiv2's own heralds (data/native/heralds: make own-assets) and its
+    OpenCiv2's own heralds and historical leaders' portraits
+    (data/native/heralds, data/native/portraits: make own-assets) and its
     own pictures and heralds being tried (data/native/hd-extra, the local
     staging folder, where present), the files one after another; the
     notices beside them."""
@@ -304,10 +306,10 @@ def write_art():
         print('warning: no HD art in data/native/hd (make hd-art): the site is without it', flush=True)
     index = []
     with open(os.path.join(out, 'art.bin'), 'wb') as f:
-        own = ('heralds',) if own_assets() else ()
+        own = ('heralds', 'portraits') if own_assets() else ()
         for d in (('hd',) if art else ()) + own + ('hd-extra',):
             if not os.path.isdir(os.path.join(native, d)):
-                continue        # (hd-extra: the local staging folder; heralds: make own-assets; not in the repository)
+                continue        # (hd-extra: the local staging folder; heralds, portraits: make own-assets; not in the repository)
             for name in sorted(os.listdir(os.path.join(native, d))):
                 if name in ('pictures.txt', 'heralds.txt') or name.endswith(('.webp', '.png')):
                     data = open(os.path.join(native, d, name), 'rb').read()
@@ -319,6 +321,9 @@ def write_art():
         shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
     if own_assets() and os.path.exists(os.path.join(native, 'heralds', 'LICENSE')):
         shutil.copy(os.path.join(native, 'heralds', 'LICENSE'), os.path.join(out, 'LICENSE-heralds'))
+    if own_assets() and os.path.exists(os.path.join(native, 'portraits', 'README.md')):
+        # (the portraits' credits and licences)
+        shutil.copy(os.path.join(native, 'portraits', 'README.md'), os.path.join(out, 'README-portraits.md'))
     if os.path.exists(os.path.join(native, 'hd-extra', 'README')):
         shutil.copy(os.path.join(native, 'hd-extra', 'README'), os.path.join(out, 'README-hd-extra'))
 
