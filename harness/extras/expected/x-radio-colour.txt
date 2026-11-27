@@ -1,3 +1,3 @@
 # harness/extras_suite.py --bless: CIV2_TEST_EXTRAS=1 CIV2_TEST_FULL=640x480 CIV2_TEST_SETTINGS=Gamma=150,Brightness=10,Contrast=20
-x24-menu 640x480 b10dd5685efbf8cd8a136601e54b01810f18bfc06852fbbdda99127abaf1ff0e
+x24-menu 640x480 166fce97ea6e0aaa8c9f41f81431b8d7b90fd18a8bdfa5f4c0d7dea176d46037
 rand 772 fc9ed93afe8821356bba698e911c9031b4a2753a9181f3e7380fce5e5d542432
