@@ -657,7 +657,12 @@ int host_audio_open(int freq, int channels, int bits)
     want.freq = freq;
     want.channels = (Uint8)channels;
     want.format = bits == 8 ? AUDIO_U8 : AUDIO_S16LSB;
-    want.samples = 1024;
+    /* the device's buffer: some 23 ms (512 frames at the sound effects'
+       22050 Hz, 1024 at the music's 44100), what a sound waits for once
+       the game has queued it (1024 frames were 46 ms at 22050) */
+    want.samples = 256;
+    while (want.samples * 2 <= freq / 40)
+        want.samples *= 2;
     {
         SDL_AudioDeviceID dev = SDL_OpenAudioDevice(NULL, 0, &want, &have, 0);
         if (dev)

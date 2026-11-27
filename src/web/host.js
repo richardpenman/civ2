@@ -306,11 +306,20 @@ export async function runGame(opts) {
     // -- sound: PCM queued on WebAudio sources, one after the other
     let audio = null;
     const devices = [null];
+    // (resumed at the page's first click or key, the browser's autoplay
+    // policy allowing it then: the sounds queued while resume() is on its
+    // way, as that click's own, are scheduled on the context, which plays
+    // them once running, not taken as unheard)
+    let resuming = false;
     function resumeAudio() {
-        if (audio && audio.state === 'suspended')
-            audio.resume();
+        if (audio && audio.state === 'suspended' && !resuming) {
+            resuming = true;
+            const done = () => { resuming = false; };
+            audio.resume().then(done, done);
+            setTimeout(done, 1000);     // (one the browser holds back: unheard again)
+        }
     }
-    const audioOk = () => audio && audio.state === 'running';
+    const audioOk = () => audio && (audio.state === 'running' || (resuming && audio.state === 'suspended'));
     const music = {source: null, playing: false, token: 0};
 
     // -- network play: through the relay (opts.relay: 'ws://host:port')

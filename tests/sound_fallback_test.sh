@@ -9,7 +9,9 @@
 #    as the game reads them (22050 Hz, 8 bits, mono), where the game opens it;
 # 2. with Classic graphics and the folder nothing is made (the game's own);
 # 3. with HD graphics (CIV2_TEST_HD=1) it is made from data/native/sound
-#    first, with the game's Sound folder and without it.
+#    first, with the game's Sound folder and without it;
+# 4. the main menu's OK clicked while its theme keeps the output's buffers
+#    queued: its sound mixed into them, not queued after them.
 # Inside the container (make test-sound): sh tests/sound_fallback_test.sh
 # (EXE: the build to run, default civ2-linux32)
 cd "$(dirname "$0")/.." || exit 1
@@ -65,5 +67,22 @@ else
     echo "SKIP sound effects with HD graphics: no data/native/hd (make hd-art)"
     hd=
 fi
-[ $fail = 0 ] && echo "PASS sound fallback (with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder, none with it$hd)"
+# A menu's click heard at once (src/auto/sound.cpp: snd_wave_mix_queued):
+# the main menu's OK (Return) while its theme (MENULOOP) keeps the output's
+# buffers queued: its sound (MENUOK) mixed into what of them is not yet
+# heard, not after them (some 0.5 s of the theme), with the game's own
+# sounds (Classic graphics) and OpenCiv2's (HD graphics)
+printf 'wait 8000\nkey Return\nwait 3000\nquit\n' > $script
+click() {
+    run "$1" "$2"
+    if ! grep -q "sound: mixed in ahead of [0-9]* ms queued" "run/$1/hook.log"; then
+        echo "FAIL: $3, the menu's click not mixed in ahead of the queued theme (run/$1/hook.log)"; fail=1
+    else
+        ahead="$ahead, $3 $(grep -o 'ahead of [0-9]* ms' "run/$1/hook.log" | head -1 | grep -o '[0-9]*') ms"
+    fi
+}
+ahead=
+click sound-click CIV2_TEST_HD= "Classic graphics"
+[ -n "$hd" ] && click sound-click-hd CIV2_TEST_HD=1 "HD graphics"
+[ $fail = 0 ] && echo "PASS sound fallback (with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder, none with it$hd; the menu's click mixed in ahead of the queued theme$ahead)"
 exit $fail

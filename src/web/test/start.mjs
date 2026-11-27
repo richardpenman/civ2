@@ -11,8 +11,9 @@
 // saves, Remove, the language), whose Play is there without a copy; a later
 // visit starts at once from what was kept (no bar); then, where a copy of the
 // game is at hand, a few of its files chosen on the set-up page: added to the
-// game, what the game wrote kept.  Needs no copy of the game.  Screenshots in
-// run/web-start (look at them).
+// game, what the game wrote kept; at the later visit, a menu's click heard
+// at once (its sound mixed in ahead of the menu's queued theme).
+// Needs no copy of the game.  Screenshots in run/web-start (look at them).
 //
 //   tools/toolchain/node/bin/node src/web/test/start.mjs [GAME_DIR]
 
@@ -178,6 +179,57 @@ async function main() {
         if (!await menuShown())
             throw new Error('no main menu at the later start');
         await shot('05-later');
+        // a menu's click heard at once: its sound (MENUOK) mixed into what
+        // of the output is not yet heard, though the main menu's looping
+        // theme keeps half a second queued (snd_wave_mix_queued): the main
+        // menu's OK, then the world size's (at 1280x800); the audio buffers
+        // scheduled after each click: one that differs from what was
+        // scheduled for that time before (the click's sound in it), to start
+        // at once when scheduled (at most 50 ms of the theme ahead of it;
+        // before, 550 ms and more, and nothing scheduled again) and within
+        // 500 ms of the click (the game's own time to it: some 20-100 ms on
+        // an idle machine, more on a busy one)
+        await evaluate(`(() => {
+            const P = window.civ2SoundProbe = {clicks: [], starts: [], tl: []};
+            window.addEventListener('pointerdown', () => P.clicks.push(performance.now()), true);
+            const start = AudioBufferSourceNode.prototype.start;
+            AudioBufferSourceNode.prototype.start = function (when = 0, ...rest) {
+                const b = this.buffer, c = this.context, at = Math.max(when, c.currentTime);
+                let diff = 0;
+                if (b) {
+                    const d = b.getChannelData(0), sr = b.sampleRate;
+                    for (const o of P.tl) {
+                        const lo = Math.max(at, o.at), hi = Math.min(at + b.duration, o.at + o.d.length / sr);
+                        for (let x = lo; x < hi; x += 1 / sr) {
+                            const v = Math.abs((d[Math.round((x - at) * sr)] || 0) - (o.d[Math.round((x - o.at) * sr)] || 0));
+                            if (v > diff)
+                                diff = v;
+                        }
+                    }
+                    P.tl.push({at, d: d.slice()});
+                    if (P.tl.length > 32)
+                        P.tl.shift();
+                }
+                P.starts.push({t: performance.now(), ahead: (at - c.currentTime) * 1000, diff, state: c.state});
+                return start.call(this, when, ...rest);
+            };
+        })()`);
+        await sleep(1500);
+        for (const [i, [x, y]] of [[963, 739], [642, 739]].entries()) {
+            await evaluate('window.civ2SoundProbe.clicks = []; window.civ2SoundProbe.starts = []');
+            for (const type of ['mousePressed', 'mouseReleased'])
+                await send('Input.dispatchMouseEvent', {type, x, y, button: 'left', clickCount: 1});
+            await sleep(1500);
+            const p = await evaluate('({clicks: civ2SoundProbe.clicks, starts: civ2SoundProbe.starts.map(({t, ahead, diff, state}) => ({t, ahead, diff, state}))})');
+            const heard = p.starts.find((b) => b.diff > 0.01);
+            const ms = heard && p.clicks.length ? Math.round(heard.t - p.clicks[0] + Math.max(0, heard.ahead)) : -1;
+            log(`a menu click's sound (${i ? 'the world size\'s' : 'the main menu\'s'} OK): ` +
+                (ms < 0 ? 'none heard' : `starts ${ms} ms after the click (scheduled ${Math.round(heard.t - p.clicks[0])} ms after it,` +
+                 ` ${Math.round(Math.max(0, heard.ahead))} ms ahead)`) + `; ${p.starts.length} buffers`);
+            await shot(`05-later-click${i + 1}`);
+            if (ms < 0 || heard.ahead > 50 || ms > 500)
+                throw new Error('a menu click\'s sound not heard at once');
+        }
         // a copy of the original chosen later on the set-up page (a few of
         // its files, from GAME_DIR, else ~/Civ2, if there): added to the
         // game, its CIV.INI and saved games kept, the page then saying the

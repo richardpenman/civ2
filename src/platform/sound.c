@@ -234,6 +234,56 @@ MMRESULT WINAPI waveOutGetPosition(HWAVEOUT h, LPMMTIME t, UINT n)
     return MMSYSERR_NOERROR;
 }
 
+/* (port) What of the written buffers is not yet heard, taken back from the
+   output (the game's mixer then mixes a sound just started into it:
+   snd_wave_mix_queued, src/auto/sound.cpp): the output's queue cleared from
+   the play position on, and the pending buffers from there, in the order
+   they play, each with the offset of that position in it (0: the whole
+   buffer).  plat_wave_requeue queues them again, from there to the end of
+   the last written; the stream's positions (end_bytes) are unchanged, as
+   the same bytes follow from the same place. */
+int plat_wave_unplayed(HWAVEOUT h, LPWAVEHDR *hdrs, DWORD *offsets, int max)
+{
+    WaveOut *w = wave_get(h);
+    uint64_t played;
+    int i, n = 0;
+    if (!w || !w->npending)
+        return 0;
+    played = played_bytes(w);
+    if (plat_replay)            /* (CIV2_TEST_AUDIO: tests/sound_fallback_test.sh) */
+        plat_log("sound: mixed in ahead of %u ms queued\n",
+                 (unsigned)((w->queued_total - played) * 1000 / (w->fmt.nAvgBytesPerSec ? w->fmt.nAvgBytesPerSec : 1)));
+    host_audio_clear(w->dev);
+    w->queued_total = played;
+    for (i = 0; i < w->npending && n < max; i++) {
+        uint64_t start = w->end_bytes[i] - w->pending[i]->dwBufferLength;
+        if (w->end_bytes[i] <= played)
+            continue;
+        hdrs[n] = w->pending[i];
+        offsets[n++] = (DWORD)(played > start ? played - start : 0);
+    }
+    return n;
+}
+
+void plat_wave_requeue(HWAVEOUT h)
+{
+    WaveOut *w = wave_get(h);
+    int i;
+    if (!w)
+        return;
+    for (i = 0; i < w->npending; i++) {
+        LPWAVEHDR hdr = w->pending[i];
+        uint64_t start = w->end_bytes[i] - hdr->dwBufferLength;
+        if (w->end_bytes[i] <= w->queued_total)
+            continue;
+        if (w->queued_total > start)
+            start = w->queued_total;
+        host_audio_queue(w->dev, hdr->lpData + (start - (w->end_bytes[i] - hdr->dwBufferLength)),
+                         (uint32_t)(w->end_bytes[i] - start));
+        w->queued_total = w->end_bytes[i];
+    }
+}
+
 /* ---- sndPlaySound: whole WAV files ---- */
 
 static int snd_dev;

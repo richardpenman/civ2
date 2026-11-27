@@ -88,6 +88,10 @@ static inline void editor_copy_pool_name(char *dest, const char *src, size_t wid
  * comparison with the original (CIV2_CALL_LOG, src/platform/replay.c). */
 EXTERN_C void replay_log_sound(int effect, int mode, int loop);
 EXTERN_C void replay_log_video(const char *path);
+/* (port) The written wave buffers' part not yet heard, taken back from the
+ * output, and queued again (src/platform/sound.c; snd_wave_mix_queued). */
+EXTERN_C int plat_wave_unplayed(HWAVEOUT h, LPWAVEHDR *hdrs, DWORD *offsets, int max);
+EXTERN_C void plat_wave_requeue(HWAVEOUT h);
 /* rand() calls name their caller for the rand trace (src/native/crt.cpp). */
 int crt_rand_at(const char *caller);
 #define _rand() crt_rand_at(__func__)

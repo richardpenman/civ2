@@ -1041,6 +1041,48 @@ i16 __cdecl snd_avi_stream_start(void)
   return (short)ring;
 }
 
+/* (port) A sound started while the output's buffers are all queued was mixed
+   only into each buffer as the device gave it back, so heard after all that
+   was queued before it: in the start menu, behind its looping theme, four
+   buffers of 186 ms (a click's sound some 0.6 s late), in the game eight.
+   Mixed instead into what of the queued buffers is not yet heard
+   (plat_wave_unplayed: taken back from the output at the play position) and
+   queued again, so heard at once; its source then goes on in the next buffers
+   as before.  Not with an AVI's sound playing (the wonder movies: their
+   buffers' timing kept). */
+static void snd_wave_mix_queued(WaveSource *source)
+{
+  LPWAVEHDR hdrs[64];
+  DWORD offsets[64];
+  WaveSource *other;
+  int i, n;
+  uint j, length;
+  byte *data;
+
+  for (other = snd_wave.sources; other != 0; other = other->next) {
+    if (other->kind == 4) return;
+  }
+  n = plat_wave_unplayed((*(HWAVEOUT *)&snd_wave.out_handle),hdrs,offsets,64);
+  for (i = 0; (i < n) && (((u8)source->flags & 1) == 0); i++) {
+    data = (byte *)hdrs[i]->lpData + offsets[i];
+    length = hdrs[i]->dwBufferLength - offsets[i];
+    /* (written with its samples' top bit flipped: snd_wave_write_pending) */
+    for (j = 0; j < length; j++) data[j] ^= 0x80;
+    snd_wave_mix_source(source,(i32)(iptr)data,length);
+    for (j = 0; j < length; j++) data[j] ^= 0x80;
+    /* its next samples read in, as snd_wave_mix_buffer does */
+    if ((((u8)source->flags & 1) == 0) && ((source->flags >> 3 & 1) != 0)) {
+      if ((source->flags >> 2 & 1) == 0) {
+        mmioAdvance(source->mmio,(LPMMIOINFO)&source->io_flags,0);
+      }
+      else {
+        snd_wave_stream_refill(source);
+      }
+    }
+  }
+  plat_wave_requeue((*(HWAVEOUT *)&snd_wave.out_handle));
+}
+
 /* 005d6038 auto */
 short __cdecl snd_wave_play(const char *filename,uint flags,i32 sound_id,SoundDoneFn done_callback)
 
@@ -1073,6 +1115,12 @@ short __cdecl snd_wave_play(const char *filename,uint flags,i32 sound_id,SoundDo
         i++;
       }
       snd_wave_write_pending(snd_wave.cur_buffer);
+    }
+    else if (result == 0) {
+      /* (port) */
+      WaveSource *added = snd_wave.sources;
+      while (added->next != 0) added = added->next;
+      snd_wave_mix_queued(added);
     }
   }
   else {

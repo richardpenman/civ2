@@ -276,7 +276,8 @@ builds do not use it.
   `host_menu_*`).  Keys by `KeyboardEvent` (letters by `key`, the rest by `code`, the keypad by Num
   Lock as SDL does), the wheel's fractions added up as host_sdl.c does, cursors as CSS cursors
   (the game's images scaled to the desktop), sound effects as WebAudio buffers queued one after
-  another, music decoded by the browser (`decodeAudioData`: Ogg Vorbis or WAV), message boxes as
+  another (the context resumed at the page's first click or key, that click's sound scheduled while
+  it resumes), music decoded by the browser (`decodeAudioData`: Ogg Vorbis or WAV), message boxes as
   an in-page `<dialog>`.  The `host_net_*` imports: network play through a relay (below).
 * **Network play** (src/web/net.js, tools/webrelay.py): the relay bridges WebSockets to TCP, one
   WebSocket per connection made (`/connect?host=&port=`: then the connection's bytes as binary
