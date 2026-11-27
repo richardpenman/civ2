@@ -30,7 +30,18 @@ relay there: network games need `?relay=` pointing at one of your own (Network g
 
 ## The start: no copy of the game needed
 
-A visit goes straight into the game, as the desktop game starts. The first time (nothing in the
+A visit opens on the start screen: the game's main window backdrop (`hd/title.webp`, the HD art's
+picture the main menu shows) with a small dialog over it: *Click to play* (Enter or Space too),
+*Export saves* and *Import saves* (below: [Saved games](#saved-games)), and, once the browser keeps
+anything, *Remove from this browser* (the game files, a copy of the original among them, the saved
+games and settings: the next visit starts again without a copy). Browsers let a page make no
+sound until it is clicked or typed at; the start screen's click starts the page's audio
+(`main.js`: `startAudio`, its context handed to `host.js`), so the opening menu's music is heard
+from the start. *Import saves* goes straight into the game too (its click starts the sound). The
+start screen is all of the page that is not the game: an old link's `?setup` opens it too, and
+the game's Settings' *Restart now* reloads the page straight into the game, without it.
+
+After the click, the first time (nothing in the
 browser's storage) the game starts from an empty game folder, which OpenCiv2's own files fill in
 exactly as they do natively for a folder that lacks them: HD graphics (always, without the
 original's pictures), OpenCiv2's English of the game's texts, the built-in rules, its own sound
@@ -43,19 +54,14 @@ files (the store's `meta` `game` with no names: `src/web/main.js`, `play`); what
 makes from the art again at each start (`OpenCiv2Pictures/`, `OpenCiv2Sounds/`) are not. Later
 visits start at once from what was kept, the art from the browser's cache, without the bar.
 
-Everything else is on the set-up page, `?setup` (`http://localhost:8000/?setup`), which the small
-*Saves* button at the top right of the game's opening menus leads to (its dialog: *Export saves*,
-*Import saves*, and *the set-up page*; the button is not shown during a game, and comes back when
-the game returns to its main menu): choosing your copy of the original, *Play*, *Export saves* and *Import
-saves*, removing the files from this browser (*Remove the saved games and settings* without a
-copy, *Remove them* with one), and the page's *Language*. The game's Settings lead to the same
-choice when Classic graphics are ticked (*Find the original files...*, below).
+Your copy of the original is chosen in the game: Settings, Classic graphics ticked, *Find the
+original files...* (below).
 
 ## Your copy of the game
 
 For Classic graphics, the original's look, the game needs your copy of Civilization II
-Multiplayer Gold Edition. On the set-up page (`?setup`, or Settings > Classic graphics: below),
-*Choose your game...* offers *A folder* (the installed game, or the CD) or *A file* (a `.zip` of the folder,
+Multiplayer Gold Edition. In the game's Settings, Classic graphics ticked, *Find the original
+files...* (below) shows the page's panel for it over the game: *Choose your game...* offers *A folder* (the installed game, or the CD) or *A file* (a `.zip` of the folder,
 or a disc image's `.cue` and `.bin`); any of them can be dropped on the page too. The page then says
 what was chosen (e.g. *Folder: Civ2 (412 files)*, *Disc image: CIV2.cue + CIV2.bin*) and how the
 copy is going. Any of these works:
@@ -72,17 +78,14 @@ progress line and a Stop button. A mounted CD gives no music: browsers cannot re
 tracks, but a disc image has them.
 
 The game is copied into the browser's storage (IndexedDB), and never leaves your computer; your
-saved games are kept there too. Chosen after the game has been played with OpenCiv2's own files,
-the copy is added to the game's files (those it lacks, any case), the saved games and `CIV.INI`
-kept, as Settings' *Find the original files...* does; chosen in place of an earlier copy, it
-replaces it. Later visits start the game at
-once: the stored files, the fonts and the game's module (compiled as it downloads) are read side by
+saved games are kept there too. The copy is added to the game's files (those it lacks, any
+case), the saved games and `CIV.INI` kept. Later visits start the game at
+once from the start screen's click: the stored files, the fonts and the game's module (compiled as it downloads) are read side by
 side, with a line over the screen saying what it is doing until the game's first frame (about 2.5 s
 here with the HD art, 2 s without; `src/web/test/hd.mjs` fails a later visit's start over 15 s, and
 the page's `window.civ2Timing` has each step's time). The page asks the browser to keep that storage for good, so that it is not cleared when
-disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up page again: to
-replace the game files or remove them; with *Remove them* the next visit starts again without a
-copy.
+disk space runs low. The start screen's *Remove from this browser* removes the game files; the
+next visit starts again without a copy.
 
 Music: with HD graphics OpenCiv2's own (`data/music/trackNN.ogg` on the site, 26 MB, fetched
 by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)), the game folder's
@@ -101,10 +104,11 @@ starts.  Wonder movies likewise: with HD graphics OpenCiv2's own (the Pyramids' 
 the game folder's (`Video/WONDERNN.AVI`), else OpenCiv2's (the site's own copy of the game, `make
 web GAME=1`, has no `Video`); the page fetches them (all with HD graphics, with Classic graphics
 those the game lacks) while the game starts, without waiting for them.  OpenCiv2's own heralds
-(`data/native/heralds`) are in `hd/art.bin` with the HD art. Browsers let a page make no sound
-until it is first clicked or typed at: until then the sound effects are silent but still take their
+(`data/native/heralds`) are in `hd/art.bin` with the HD art. The start screen's click starts the
+sound; where a browser still holds it back (the reload of Settings' *Restart now*, without a
+click) the sound effects are silent until the page is clicked or typed at, but still take their
 time (`host.js`, `host_audio_queue`), so a looping one, the main menu's theme, does not hold the
-game up; the main menu comes at once where there is no opening video.
+game up.
 
 ## A site with the game on it (GAME=1)
 
@@ -119,9 +123,9 @@ and never publish it.**
   tracks encoded to Ogg Vorbis, 20 MB rather than 233; `tools/wav2ogg.c`), listed in
   `game/index.json`. On a first visit (no game in the browser's storage) the page downloads all
   of it, 109 MB (at 20 Mbit/s about 45 s, the game's main menu after about a minute), and keeps
-  it in the browser without asking (the set-up page's choice of a game is not shown), on one
-  progress bar (the download in MB, then the files unpacked and kept), and starts the game: an address such as `.../?lang=de` opens straight into the game in
-  German. `?setup` still offers to choose another copy. Nothing is read from the site while the
+  it in the browser without asking, on one
+  progress bar (the download in MB, then the files unpacked and kept), then shows the start
+  screen: an address such as `.../?lang=de` opens it and then the game in German. Nothing is read from the site while the
   game plays, so the game never waits for it. A browser that kept the game before the site had
   those files (or kept a copy of its own without them) downloads them, on the same bar, on its
   next visit.
@@ -152,18 +156,19 @@ the main checkout's folder into the worktree first. Other projects' routes on th
 
 ## Language
 
-The page is in English unless its address asks for a language: `?lang=CODE`, for the set-up
-page and the game alike, e.g. `http://localhost:8000/?lang=de` (German), `?lang=la` (Latin), `?lang=el` (Greek), `?lang=eo` (Esperanto) or
-`http://localhost:8000/?setup&lang=zh-TW`.  The code is matched loosely against the site's
+The page is in the game's language: its address's `?lang=CODE`, for the start screen and the
+game alike, e.g. `http://localhost:8000/?lang=de` (German), `?lang=la` (Latin), `?lang=el` (Greek), `?lang=eo` (Esperanto) or
+`?lang=zh-TW`; without it, the language chosen in the game's Settings (`CIV.INI`'s
+`Language=`, as this browser keeps it), else English.  The code is matched loosely against the site's
 translations (those of `data/native/lang`, listed in `lang/index.json` by `make web`): `de-AT`
 finds `de`, a `zh-TW`, `zh-HK` or `zh-Hant` the Traditional Chinese, and one the site has no
-translation of is English.  The browser's own language is not looked at.  The set-up page's
-*Language* choice (English, or a translation) sets or removes `lang=` in the address and loads the
-page again in it, so that a reload or a bookmark keeps it.  The page's texts are OpenCiv2's own,
+translation of is English.  The browser's own language is not looked at; the page has no
+language choice of its own (the game's Settings > Language is it).  The page's texts are OpenCiv2's own,
 keyed as the game's (`web.*` keys of `src/host/texts.h`, read by `src/web/i18n.js` from the same
 translation files, in their code page: Esperanto's letters as Unicode, Greek and Chinese in the system's
 fonts that have its characters, else in the game's own Noto Serif files from the site, loaded
-before the texts are put in); the set-up from a CD or disc image shows its progress in it too.
+before the texts are put in); the panel choosing the original's files, and the set-up from a CD
+or disc image, show their progress in it too.
 
 The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts
 (Settings > Language shows it), for that visit only: what this browser keeps of `CIV.INI` keeps the
@@ -181,16 +186,15 @@ default: HD graphics, the art fetched from the site; ticked: the original's pict
 with the colour correction and the messages shown on the map.  They are kept in the game's
 `CIV.INI` (`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take
 effect when the game starts again (the graphics, the language) offer *Restart now*: the page is loaded again,
-into the game (without `?setup`, `?hd` or `?sharp`, which would win over them; `?lang=` as the
-game's language now).  Full screen is
-not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
-them, *Remove them*, *Play*, the saved games' *Export* and *Import*, and the page's language.
+straight into the game, not stopping at the start screen (without `?hd` or `?sharp`, which would
+win over them; `?lang=` as the game's language now).  Full screen is
+not there: the browser has its own (F11).
 
 Where the game's files lack the original's pictures (the start without a copy, or a game set up from files without them),
 *Classic graphics* ticked opens the dialog that offers to find the original's files
 ([EXTRAS.md](EXTRAS.md#classic-graphics-without-the-original-files)); its *Find the original
-files...* (the game's `host_add_original`, `src/web/main.js`: `addOriginal`) shows the set-up
-page over the game, with a note and *Back to the game*: the same *Choose your game...* (a folder,
+files...* (the game's `host_add_original`, `src/web/main.js`: `addOriginal`) shows the page's
+panel for it over the game, with a note and *Back to the game*: the same *Choose your game...* (a folder,
 a `.zip` of it, the CD or a disc image, or dropped there) adds the files the game lacks (any
 case; a CD or disc image set up into memory first, as at a first visit) to its files and to this
 browser's storage, its own files (saved games, `CIV.INI`) kept.  When they then have the
@@ -232,12 +236,13 @@ Saved games, `CIV.INI`, `CIV2.DAT` and the Hall of Fame are kept in the browser'
 game. A save is stored as soon as the game has written it, so closing the tab right after saving
 keeps it.
 
-- **Export saves** (on the `?setup` page, or under the small *Saves* button at the top right of the
-  game's main menu and its set-up screens, not during a game (the game tells the page where it is:
-  `host_set_phase`), whose dialog also leads to the set-up page) downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
+Both are on the start screen (reload the page to reach it from a game: what the game wrote is
+kept first).
+
+- **Export saves** downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
   `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT`. The game's own files are left out.
-- **Import saves** puts `.SAV` files, or such a `.zip`, back. From the game's menus they go
-  straight into it too, so *Load a Game* finds them at once.
+- **Import saves** puts `.SAV` files, or such a `.zip`, back, and starts the game, whose *Load a
+  Game* finds them.
 
 Use them to keep your saves safe, or to move them to another browser or computer, or to and from
 the desktop version.

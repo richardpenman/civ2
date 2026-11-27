@@ -285,6 +285,9 @@ def write_wonders():
         json.dump(movies, f)
 
 
+TITLE = 'resource_tiles.dll_gifs_90.webp'
+
+
 def write_art():
     """hd/art.bin and hd/index.json: the HD art (data/native/hd),
     OpenCiv2's own heralds and historical leaders' portraits
@@ -317,6 +320,10 @@ def write_art():
                     index.append([d + '/' + name, len(data)])
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump(index, f)
+    if art and os.path.exists(os.path.join(native, 'hd', TITLE)):
+        # (the start screen's backdrop, before the art is fetched: the main
+        # window's, tiles.dll 90's picture, as it is in art.bin)
+        shutil.copy(os.path.join(native, 'hd', TITLE), os.path.join(out, 'title.webp'))
     for name in ('LICENSE', 'THIRD-PARTY.txt', 'ATLAS-PROVENANCE.md') if art else ():
         shutil.copy(os.path.join(native, 'hd', name), os.path.join(out, name))
     if own_assets() and os.path.exists(os.path.join(native, 'heralds', 'LICENSE')):

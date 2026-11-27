@@ -67,7 +67,7 @@ a picture library or `civ2.exe`: `synth_missing` in `src/platform/synth.c`, at t
   it loads the art where the game's files lack the original's pictures; and it starts this way
   by default: a first visit, with no copy of the game in the browser's storage, plays from an
   empty game folder that OpenCiv2's own files fill in as here, HD graphics, to the main menu, the
-  original's files added later on its set-up page for Classic graphics
+  original's files added later in Settings for Classic graphics
   ([BROWSER.md](BROWSER.md#the-start-no-copy-of-the-game-needed); `src/web/test/start.mjs`).
 
 The 8-bit pictures made from the art (below) stay: the game's code takes its sprites from

@@ -56,8 +56,8 @@ without its text files.
   Language=eo`; `Auto` or none: automatic) and takes effect when the game starts again.
 - `CIV2_LANG=<code>` in the environment wins over that choice (and is the only one test runs
   read).
-- In the browser version: the address's `?lang=CODE` (English without it), for the set-up page
-  and the game, which the set-up page's *Language* choice sets; the game's *Automatic* is English
+- In the browser version: the address's `?lang=CODE`, for the start screen and the game (without
+  it the language chosen in Settings, else English); the game's *Automatic* is English
   ([BROWSER.md](BROWSER.md#language)).
 
 A code is a file's name: `eo` reads `lang/eo.txt`; a system's `pt_BR` reads `lang/pt-BR.txt`,

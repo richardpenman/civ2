@@ -320,8 +320,10 @@ export async function runGame(opts) {
         canvas.style.cursor = !cursorShown ? 'none' : c ? cursorCss(c) : 'default';
     }
 
-    // -- sound: PCM queued on WebAudio sources, one after the other
-    let audio = null;
+    // -- sound: PCM queued on WebAudio sources, one after the other (on the
+    // page's context where it made one, opts.audio: at the start screen's
+    // click, so that the browser lets it play from the opening menu's music)
+    let audio = opts.audio || null;
     const devices = [null];
     // (resumed at the page's first click or key, the browser's autoplay
     // policy allowing it then: the sounds queued while resume() is on its
@@ -416,8 +418,6 @@ export async function runGame(opts) {
                 setDesktop(w, h);
         },
         host_minimize: () => {},
-        // where the game is: 0 its opening menus, 1 a game (opts.setPhase, main.js)
-        host_set_phase: (phase) => opts.setPhase?.(phase),
         host_time_us: () => BigInt(Math.round(performance.now() * 1000)),
         host_cursor_system: (kind) => cursorSlot({css: SYSTEM_CURSORS[kind] || 'default'}),
         host_cursor_image: (argb, w, h, x, y) => {

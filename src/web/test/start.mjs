@@ -1,31 +1,30 @@
 // The browser version's start without the original game (docs/BROWSER.md),
 // as the desktop game starts without its files (docs/NO-INSTALL.md): build/web
 // served, opened in Chrome's headless shell with a fresh profile (nothing in
-// its storage) and no copy of the game given: the game starts at once from an
-// empty game folder, the HD graphics' art and OpenCiv2's own texts and sounds
-// fetched on the page's progress bar, then the regular main menu in HD;
-// OpenCiv2's own music, sound effects and wonder movies all fetched; the
-// game's folder noted as one without the original's files (store.js's meta
-// 'game': no names), none of the original's files in it; the saves' dialog
-// over the game leads to the set-up page (?setup: the original's files, the
-// saves, Remove, the language), whose Play is there without a copy; a later
-// visit starts at once from what was kept (no bar); then, where a copy of the
-// game is at hand, a few of its files chosen on the set-up page: added to the
-// game, what the game wrote kept; at the later visit, a menu's click heard
-// at once (its sound mixed in ahead of the menu's queued theme); the Saves
-// button shown at the main menu and the new game's set-up, not once the
-// new game (the default choices) has started.
+// its storage), the browser's own autoplay policy (sound only after a click
+// or a key), and no copy of the game given: the start screen first (Click to
+// play, Export saves, Import saves; nothing else of a set-up: looked at at a
+// desktop's width and a phone's, no sideways scrolling), its button clicked
+// with the mouse: the sound started by that click (the page's audio context
+// running at the main menu, its theme queued, before any other click), the
+// HD graphics' art and OpenCiv2's own texts and sounds fetched on the page's
+// progress bar, then the regular main menu in HD; OpenCiv2's own music, sound
+// effects and wonder movies all fetched; the game's folder noted as one
+// without the original's files (store.js's meta 'game': no names), none of
+// the original's files in it; a later visit (an old link's ?setup: the start
+// screen) started with Enter, at once from what was kept (no bar); a
+// menu's click heard at once (its sound mixed in ahead of the menu's queued
+// theme).  (The original's files added over the game, its Settings' Classic
+// graphics: hd.mjs; the saves exported and imported: smoke.mjs.)
 // Needs no copy of the game.  Screenshots in run/web-start (look at them).
 //
-//   tools/toolchain/node/bin/node src/web/test/start.mjs [GAME_DIR]
+//   tools/toolchain/node/bin/node src/web/test/start.mjs
 
-import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync, copyFileSync} from 'node:fs';
-import {join, basename} from 'node:path';
-import {homedir} from 'node:os';
-import {ROOT, WEB, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
+import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync} from 'node:fs';
+import {join} from 'node:path';
+import {ROOT, WEB, serve, browser, tmpDir} from './cdp.mjs';
 
 const OUT = join(ROOT, 'run', 'web-start');
-const GAME = process.argv[2] || process.env.CIV2_GAME || join(homedir(), 'Civ2');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
@@ -39,7 +38,7 @@ async function main() {
     const work = tmpDir();
     const server = await serve();
     const url = `http://127.0.0.1:${server.address().port}/`;
-    const b = await browser(join(work.path, 'profile'), undefined, url);
+    const b = await browser(join(work.path, 'profile'), undefined, url, true);
     const errors = [];
     b.on((m) => {
         if (m.method === 'Runtime.consoleAPICalled')
@@ -89,10 +88,16 @@ async function main() {
         for (const type of ['rawKeyDown', 'keyUp'])
             await send('Input.dispatchKeyEvent', {type, code, key: k, windowsVirtualKeyCode: vk});
     };
-    // the Saves button: shown (laid out: fixed, it has no offsetParent), the game's phase (host_set_phase), its dialog open
-    const savesButton = () => evaluate('({shown: document.getElementById("saves-open").getClientRects().length > 0,' +
-        ' phase: window.civ2Phase, open: document.getElementById("saves-dialog").open,' +
-        ' focus: document.activeElement && document.activeElement.id})');
+    // the start screen as shown: its controls laid out, no sideways scrolling
+    const startScreen = () => evaluate(`(() => { const on = (id) => { const e = document.getElementById(id);
+            return !!e && e.getClientRects().length > 0; };
+        return {start: !!window.civ2Start, play: on('play'), exp: on('export-saves'), imp: on('import-label'),
+                add: on('add'), choose: on('choose'), language: !!document.getElementById('language'),
+                saves: !!document.getElementById('saves-open'), backdrop: getComputedStyle(document.getElementById('front')).backgroundImage,
+                wide: document.documentElement.scrollWidth > innerWidth,
+                text: document.getElementById('play').textContent, focus: document.activeElement && document.activeElement.id}; })()`);
+    const startOk = (st) => st.start && st.play && st.exp && st.imp && !st.add && !st.choose && !st.language && !st.saves &&
+        !st.wide && st.text === 'Click to play' && /title\.webp/.test(st.backdrop);
     const menuShown = () => evaluate('(() => { const c = document.getElementById("screen");' +
         ' const d = c.getContext("2d").getImageData(c.width - 4, c.height >> 1, 1, 1).data; return d[0] + d[1] + d[2] > 0; })()');
     const storeKeys = () => evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
@@ -107,14 +112,41 @@ async function main() {
         await send('Runtime.enable');
         await send('Page.enable');
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
-        // the first visit: no set-up page, the bar at once
-        const t0 = performance.now();
+        // the first visit: the start screen, at a desktop's width and a phone's
         await send('Page.navigate', {url});
+        await waitFor('window.civ2Start', 10000, 'the start screen');
+        await evaluate('document.fonts.ready.then(() => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = "hd/title.webp"; }))');
+        let st = await startScreen();
+        log('the start screen: ' + JSON.stringify(st));
+        await shot('00-start');
+        if (!startOk(st) || st.focus !== 'play')
+            throw new Error('the start screen is not as it should be');
+        await send('Emulation.setDeviceMetricsOverride', {width: 390, height: 844, deviceScaleFactor: 1, mobile: true});
+        await sleep(300);
+        st = await startScreen();
+        log('the start screen on a phone: ' + JSON.stringify(st));
+        await shot('00-start-phone');
+        if (!startOk(st))
+            throw new Error('the start screen is not as it should be on a phone');
+        await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
+        await sleep(300);
+        // (the page's audio contexts and what is played on them, from here)
+        await evaluate(`(() => {
+            const P = window.civ2AudioProbe = {contexts: [], started: 0};
+            const AC = window.AudioContext;
+            window.AudioContext = class extends AC { constructor(...a) { super(...a); P.contexts.push(this); } };
+            const start = AudioBufferSourceNode.prototype.start;
+            AudioBufferSourceNode.prototype.start = function (...a) { P.started++; return start.apply(this, a); };
+        })()`);
+        // Click to play, with the mouse: the bar at once
+        const at = await evaluate('(() => { const r = document.getElementById("play").getBoundingClientRect();' +
+                                  ' return [r.x + r.width / 2, r.y + r.height / 2]; })()');
+        const t0 = performance.now();
+        for (const type of ['mousePressed', 'mouseReleased'])
+            await send('Input.dispatchMouseEvent', {type, x: at[0], y: at[1], button: 'left', clickCount: 1});
         await waitFor('window.civ2FirstStart && !document.getElementById("install").hidden', 10000, 'the progress bar');
         log('the bar: ' + JSON.stringify(await evaluate('window.civ2FirstStart')) + ', title: ' +
             await evaluate('document.getElementById("install-title").textContent'));
-        if (!await evaluate('document.getElementById("setup").hidden'))
-            throw new Error('the set-up page shown at a first visit');
         await waitFor('window.civ2FirstStart && parseInt(window.civ2FirstStart.pct) >= 20 || /Starting/.test(window.civ2Status || "")',
                       120000, 'the art on its way');
         await shot('01-bar');
@@ -139,10 +171,12 @@ async function main() {
         if (!await menuShown())
             throw new Error('no main menu');
         await shot('02-menu');
-        const atMenu = await savesButton();
-        log('the Saves button at the main menu: ' + JSON.stringify(atMenu));
-        if (!atMenu.shown || atMenu.phase !== 0)
-            throw new Error('no Saves button at the main menu');
+        // the sound, from the start screen's click: running at the main
+        // menu, its theme queued, no other click yet
+        const sound = await evaluate('({contexts: civ2AudioProbe.contexts.map((c) => c.state), started: civ2AudioProbe.started})');
+        log('the sound at the main menu: ' + JSON.stringify(sound));
+        if (sound.contexts.length !== 1 || sound.contexts[0] !== 'running' || !sound.started)
+            throw new Error('the sound not playing at the main menu after the start screen\'s click');
         // OpenCiv2's own music, sound effects, wonder movies, texts: all of them
         await waitFor('window.civ2OwnMusic && window.civ2OwnWonders', 120000, 'the music and wonder movies');
         const got = await evaluate('({music: window.civ2OwnMusic, sounds: window.civ2OwnSounds, wonders: window.civ2OwnWonders,' +
@@ -162,26 +196,16 @@ async function main() {
             throw new Error('the pictures made from the art kept: ' + meta.keys.join(' '));
         if (!meta.game || meta.game.names.length)
             throw new Error('the game not noted as one of OpenCiv2\'s own files');
-        // the saves' dialog over the game: Export, Import, and the set-up page
-        await evaluate('document.getElementById("saves-open").click()');
-        await sleep(300);
-        await shot('03-saves');
-        if (!await evaluate('document.getElementById("saves-dialog").open && !!document.getElementById("setup-open").offsetParent'))
-            throw new Error('no way to the set-up page from the saves\' dialog');
-        await evaluate('document.getElementById("setup-open").click()');
-        await waitFor('window.civ2Setup && /[?&]setup\\b/.test(location.search)', 30000, 'the set-up page');
-        const page = await evaluate(`({intro: document.querySelector('[data-t="web.intro"]').textContent,
-            own: !document.getElementById('have-own').hidden, game: !document.getElementById('have-game').hidden,
-            play: !!document.getElementById('play').offsetParent, choose: !!document.getElementById('choose').offsetParent,
-            exp: !!document.querySelector('#have .export-saves').offsetParent, lang: !!document.getElementById('language').offsetParent})`);
-        log('the set-up page: ' + JSON.stringify(page).slice(0, 400));
-        await shot('04-setup');
-        if (!page.own || page.game || !page.play || !page.choose || !page.exp || !page.lang ||
-            /It plays with your own/.test(page.intro) || !/no copy of the original game is needed/.test(page.intro))
-            throw new Error('the set-up page is not as it should be without a copy');
-        // a later visit: at once, no bar
+        // a later visit (an old link's ?setup: the start screen), started
+        // with Enter: at once, no bar
+        await send('Page.navigate', {url: url + '?setup'});
+        await waitFor('window.civ2Start', 10000, 'the start screen (?setup)');
+        st = await startScreen();
+        await shot('04-start-later');
+        if (!startOk(st) || !await evaluate('document.getElementById("forget").getClientRects().length > 0'))
+            throw new Error('?setup does not open the start screen (with Remove from this browser): ' + JSON.stringify(st));
         const t1 = performance.now();
-        await send('Page.navigate', {url});
+        await key('Enter', 13);
         await waitFor('/Starting/.test(window.civ2Status || "")', 60000, 'the later start');
         await waitFor('window.civ2Timing && window.civ2Timing.frame', 60000, 'the later start\'s first frame');
         log(`a later start: its first frame in ${Math.round(performance.now() - t1)} ms; ${JSON.stringify(await evaluate('window.civ2Timing'))}`);
@@ -243,62 +267,6 @@ async function main() {
             await shot(`05-later-click${i + 1}`);
             if (ms < 0 || heard.ahead > 50 || ms > 500)
                 throw new Error('a menu click\'s sound not heard at once');
-        }
-        // the new game's set-up screens after the world's size, the default
-        // choices (Enter on each, as perf.mjs): the Saves button still there
-        // while the game sets up; once the game has started (host_set_phase)
-        // the button gone, its dialog not open, the keys with the game
-        for (let i = 0; i < 3; i++) {
-            await key('Enter', 13);
-            await settle(1000, 15000);
-        }
-        await shot('05-later-setup');
-        const inSetup = await savesButton();
-        log('the Saves button in the new game\'s set-up: ' + JSON.stringify(inSetup));
-        if (!inSetup.shown || inSetup.phase !== 0)
-            throw new Error('no Saves button in the new game\'s set-up');
-        for (let i = 0; i < 12 && (await savesButton()).phase !== 1; i++) {
-            await key('Enter', 13);
-            await settle(2000, 600000);     // (the world built after the city style)
-        }
-        await waitFor('window.civ2Phase === 1', 60000, 'the new game');
-        await settle(3000, 60000);
-        const inGame = await savesButton();
-        log('the Saves button in the game: ' + JSON.stringify(inGame));
-        await shot('05-later-game');
-        if (inGame.shown || inGame.open)
-            throw new Error('the Saves button or its dialog shown in a game');
-        // a copy of the original chosen later on the set-up page (a few of
-        // its files, from GAME_DIR, else ~/Civ2, if there): added to the
-        // game, its CIV.INI and saved games kept, the page then saying the
-        // game files are here
-        const src = ['Civ2Art.dll', 'RULES.TXT', 'TERRAIN1.GIF'].map((n) => join(GAME, n));
-        if (src.every((f) => existsSync(f))) {
-            const dir = join(work.path, 'Civ2'), zip = join(work.path, 'Civ2.zip');
-            mkdirSync(dir);
-            for (const f of src)
-                copyFileSync(f, join(dir, basename(f)));
-            writeFileSync(join(dir, 'CIV.INI'), '[OpenCiv2]\r\nGraphics=Classic\r\n');
-            zipFolder(dir, zip);
-            await evaluate('window.civ2Flush()');
-            const ini0 = await storeIni();
-            await send('Page.navigate', {url: url + '?setup'});
-            await waitFor('window.civ2Setup', 30000, 'the set-up page');
-            const {result} = await send('Runtime.evaluate', {expression: 'document.getElementById("files")'});
-            await send('DOM.setFileInputFiles', {objectId: result.objectId, files: [zip]});
-            await waitFor('/added|kept in this browser|not|Could/.test(window.civ2Status) && window.civ2Status', 60000, 'the copy');
-            const said = await evaluate('window.civ2Status');
-            await sleep(300);
-            const after = await evaluate(`({game: !document.getElementById('have-game').hidden,
-                own: !document.getElementById('have-own').hidden})`);
-            const kept = await storeKeys();
-            log(`a copy chosen later: ${said} ${JSON.stringify(after)}; kept: ${kept.keys.join(' ')}; names ${JSON.stringify(kept.game.names)}`);
-            await shot('06-copy-added');
-            if (!/files of the original game added/.test(said) || !after.game || after.own || !kept.keys.includes('TERRAIN1.GIF') ||
-                !kept.game.names.includes('Civ2Art.dll') || kept.game.names.includes('CIV.INI') || await storeIni() !== ini0)
-                throw new Error('the copy not added to the game, its files kept');
-        } else {
-            log('a copy chosen later: skipped (no ' + src[0] + ')');
         }
         if (errors.length)
             throw new Error('the page threw');

@@ -153,8 +153,8 @@ original's pictures, `Graphics=Classic` is written and the restart is offered (*
 *Later*); the game starts again with Classic graphics.  *Keep HD graphics* (or Escape), a
 cancelled or failed copy, or a copy without the pictures leave HD graphics on, with the note
 "Without the original files Classic graphics stay off: the game goes on with HD graphics."
-In the browser version *Find the original files...* shows the set-up page's *Choose your
-game...* step over the game, with *Back to the game* ([BROWSER.md](BROWSER.md#how-to-play-settings)).
+In the browser version *Find the original files...* shows the page's *Choose your
+game...* panel over the game, with *Back to the game* ([BROWSER.md](BROWSER.md#how-to-play-settings)).
 In a test run (`CIV2_TEST_OPTIONS=1`) nothing is copied (the note says it cannot be done there:
 `harness/extras/x-no-install-options.txt`), and the native test build (`civ2-linux32`) has no
 set-up to run.

@@ -14,7 +14,7 @@
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics; then the game without the
 // original's pictures (dropped from its files as it starts): Classic graphics
-// ticked in Settings, Find the original files...: the set-up page
+// ticked in Settings, Find the original files...: the page's panel
 // over the game, the .zip chosen there again, the files the game lacked
 // added, the restart offered, and after it Classic graphics (no art
 // loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music, sound
@@ -27,7 +27,7 @@
 import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync, readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
-import {ROOT, WEB, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
+import {ROOT, WEB, zipFolder, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 
 const OUT = join(ROOT, 'run', 'web-hd');
 const GAME = process.argv[2] || process.env.CIV2_GAME || join(homedir(), 'Civ2');
@@ -162,8 +162,8 @@ async function main() {
         await send('Runtime.enable');
         await send('Page.enable');
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 2, mobile: false});
-        await send('Page.navigate', {url: url + '?setup'});
-        await waitFor('window.civ2Setup', 10000, 'the page');
+        await send('Page.navigate', {url});
+        await waitFor('window.civ2Start', 10000, 'the start screen');
         if (!await evaluate('navigator.storage.persisted()'))
             throw new Error('the page\'s storage is not persistent (cdp.mjs: durableStorage)');
         const input = async (id, files) => {
@@ -327,7 +327,9 @@ async function main() {
         await settle(1000, 10000);
         // a later visit (the page opened again): what it does said at once,
         // the game's first frame within START_MS
+        // (from its start screen's click)
         await send('Page.navigate', {url});
+        await clickPlay(send);
         const opened = performance.now();
         const said0 = await waitFor('(() => { const l = document.getElementById("loading");' +
                                     ' return l && !l.hidden && l.textContent || window.civ2Timing && window.civ2Timing.frame; })()',
@@ -341,6 +343,7 @@ async function main() {
         // ?hd=0: the original graphics, as natively --hd=0, with sharp
         // text and interface (on by default): the planes without the art
         await send('Page.navigate', {url: url + '?hd=0'});
+        await clickPlay(send);
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start without HD');
         await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'a sharp frame');
         await settle(3000, 60000);
@@ -357,6 +360,7 @@ async function main() {
         await shot('04-sharp-map');
         // ?hd=0&sharp=0: the original's look, the desktop's pixels enlarged
         await send('Page.navigate', {url: url + '?hd=0&sharp=0'});
+        await clickPlay(send);
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start without HD');
         await settle(3000, 60000);
         await loadMap();
@@ -377,6 +381,7 @@ async function main() {
                         fs.files.delete(k);
             };`});
         await send('Page.navigate', {url});
+        await clickPlay(send);
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start without the pictures');
         await waitFor('window.civ2OwnMusic', 120000, 'OpenCiv2\'s own music');
         const ownNow = await evaluate('window.civ2OwnMusic');
@@ -393,7 +398,7 @@ async function main() {
         await settle(1000, 10000);
         await shot('06-find-original');
         await key('Enter', 13);             // Find the original files...
-        await waitFor('window.civ2Adding', 10000, 'the set-up page over the game');
+        await waitFor('window.civ2Adding', 10000, 'the panel over the game');
         await shot('07-add-page');
         await input('files', [zip]);
         await waitFor('window.civ2Adding === false', 300000, 'the files added');

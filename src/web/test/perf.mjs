@@ -26,7 +26,7 @@
 
 import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
-import {ROOT, WEB, serve, browser, tmpDir} from './cdp.mjs';
+import {ROOT, WEB, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 
 const OUT = join(ROOT, 'run', 'web-perf');
 const SAVE = process.env.PERF_SAVE, DPR = +(process.env.PERF_DPR || 2), PROFILE = !!process.env.PERF_PROFILE;
@@ -103,6 +103,7 @@ async function main() {
         await send('Page.enable');
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: DPR, mobile: false});
         await send('Page.navigate', {url});
+        await clickPlay(send);
         await waitFor('/Starting/.test(window.civ2Status || "")', 300000, 'the start');
         await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'an HD frame');
         await settle(3000, 60000);

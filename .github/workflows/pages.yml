@@ -104,7 +104,8 @@ jobs:
       # repository, byte for byte), every other .txt a translation
       # (data/native/lang's, byte for byte) or a licence's notice; the
       # site's sounds only OpenCiv2's (data/music, sound, wonders) and its
-      # pictures only those hd/index.json lists from the art pack,
+      # pictures only those hd/index.json lists from the art pack (and
+      # hd/title.webp, the start screen's backdrop: its tiles.dll 90),
       # OpenCiv2's heralds and its historical leaders' portraits
       # (portraits/leader-ID.webp; and its wonder movies'); the art and the
       # own assets there.
@@ -149,6 +150,10 @@ jobs:
                           bad.append(rel)
                   elif plain.endswith(('.ogg', '.mp3', '.flac', '.opus')) and not rel.startswith(sounds):
                       bad.append(rel)
+                  elif rel == 'hd/title.webp':
+                      if open(os.path.join(d, f), 'rb').read() != \
+                              open(os.path.join(native, 'hd', 'resource_tiles.dll_gifs_90.webp'), 'rb').read():
+                          bad.append(rel + ' (not the art pack\'s tiles.dll 90)')
                   elif plain.endswith(('.webp', '.png', '.jpg', '.jpeg')) and not rel.startswith('data/wonders/'):
                       bad.append(rel + ' (pictures belong in hd/art.bin)')
           art = json.load(open(os.path.join(web, 'hd', 'index.json')))

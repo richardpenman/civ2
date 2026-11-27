@@ -1,5 +1,7 @@
-// The page: the player's game files (chosen once, kept in IndexedDB), then
-// the game (host.js) on the canvas.
+// The page: its start screen (the click that lets the browser play the
+// game's sound; the saved games exported and imported), then the game
+// (host.js) on the canvas; the player's copy of the original, chosen over
+// the game from its Settings, kept in IndexedDB.
 
 import {MemFS} from './wasi.js';
 import {runGame} from './host.js';
@@ -13,9 +15,11 @@ import {t, languages, pageLanguage, urlLanguage, withLanguage, useLanguage, lang
 const GAME = '/civ2', DATA = '/data';
 let pageLang = 'en';        // the page's language (i18n.js: ?lang=CODE, else English)
 const $ = (id) => document.getElementById(id);
-// (on the set-up page, and over the screen until the game's first frame)
+// (on the start screen, its panel choosing the original's files, and over
+// the screen until the game's first frame)
 const status = (s) => {
     $('status').textContent = s;
+    $('add-status').textContent = s;
     $('loading').textContent = s;
     window.civ2Status = s;
 };
@@ -174,8 +178,9 @@ function setupFromDisc(store, files, disc, into = null) {
 
 // ---- the original's files, later: Settings' Classic graphics ----
 
-// While the set-up page is shown for them (host_add_original: addOriginal):
-// {store, fs, resolve}; the files chosen go to addChosen then
+// While the page's panel is shown for them over a running game
+// (host_add_original: addOriginal): {store, fs, resolve}; the files chosen
+// go to addChosen then
 let adding = null;
 
 // A game of OpenCiv2's own files, without a copy of the original (the
@@ -217,7 +222,7 @@ async function mergeFiles(store, fs, files) {
     return added.length;
 }
 
-// The player's choice on the set-up page while adding: an installed game's
+// The player's choice on the panel while adding: an installed game's
 // folder or a .zip of it, its CD or a disc image (set up into memory, as
 // at a first visit); the game's own files kept.  Done when the game's
 // files then have the original's pictures (hasOriginalPictures).
@@ -250,21 +255,30 @@ async function addChosen(files) {
     }
 }
 
+// The front (the backdrop) with one of its panels: 'start' (the start
+// screen), 'add' (the original's files chosen), 'install' (a progress bar);
+// null: none, the front hidden
+function front(panel) {
+    $('front').hidden = !panel;
+    for (const id of ['start', 'add', 'install'])
+        $(id).hidden = id !== panel;
+    if (panel)
+        $('loading').hidden = true;
+}
+
 // host_add_original (the game's Settings, Classic graphics ticked
-// without the original's files): the set-up page's choice shown over the
-// game, -> 1 the game's files have the original's pictures now, 0 not
-// (Back to the game)
+// without the original's files: Find the original files...): the panel
+// choosing them shown over the game, the game's own files kept, -> 1 the
+// game's files have the original's pictures now, 0 not (Back to the game)
 function addOriginal(store, fs) {
     return new Promise((resolve) => {
         adding = {store, fs, resolve};
         $('game').hidden = true;
-        $('setup').hidden = false;
-        $('have').hidden = true;
+        front('add');
         $('chosen').hidden = true;
-        $('add-note').hidden = false;
-        $('add-back').hidden = false;
         $('add-back').onclick = () => endAdding(0);
         status('');
+        $('choose').focus();
         window.civ2Adding = true;       // (the tests)
     });
 }
@@ -273,9 +287,7 @@ function endAdding(r) {
     const a = adding;
     adding = null;
     window.civ2Adding = false;
-    $('add-note').hidden = true;
-    $('add-back').hidden = true;
-    $('setup').hidden = true;
+    front(null);
     $('game').hidden = false;
     $('screen').focus();
     a.resolve(r);
@@ -406,18 +418,14 @@ function relayUnreachable(relay) {
 
 let running = null;         // the game's files while it runs (MemFS)
 
-function savesStatus(s) {
-    $('saves-status').textContent = s;
-    status(s);
-}
-
+// The start screen's Export saves: a .zip of them downloaded
 async function exportClicked(store) {
     try {
         if (running)
             await window.civ2Flush();
         const {data, names} = await exportSaves(store);
         if (!names.length) {
-            savesStatus(t('web.no_saves'));
+            status(t('web.no_saves'));
             return;
         }
         const a = document.createElement('a');
@@ -428,75 +436,64 @@ async function exportClicked(store) {
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-        savesStatus(names.length > 1 ? t('web.exported', names.length, names.join(', ')) : t('web.exported_one', names[0]));
+        status(names.length > 1 ? t('web.exported', names.length, names.join(', ')) : t('web.exported_one', names[0]));
     } catch (e) {
         console.error(e);
-        savesStatus(t('web.export_failed', e.message));
+        status(t('web.export_failed', e.message));
     }
 }
 
+// Its Import saves: the files chosen put into the game's folder -> how many
 async function importChosen(store, list) {
     try {
         const files = [];
         for (const f of list)
             files.push({name: f.name, data: new Uint8Array(await f.arrayBuffer())});
         const names = await importSaves(store, files, running, GAME);
-        savesStatus(names.length > 1 ? t('web.imported', names.length, names.join(', '))
+        window.civ2Imported = names;    // (the tests)
+        status(names.length > 1 ? t('web.imported', names.length, names.join(', '))
             : names.length ? t('web.imported_one', names[0]) : t('web.nothing_to_import'));
+        return names.length;
     } catch (e) {
         console.error(e);
-        savesStatus(t('web.import_failed', e.message));
+        status(t('web.import_failed', e.message));
+        return 0;
     }
 }
 
-// The Saves button only in the game's opening menus (the main menu, a new
-// game's set-up, a game chosen to load: phase 0), not in a game (1:
-// host_set_phase, from game_main); its dialog closed if a game starts with
-// it open, the keys back with the game
-function savesPhase(phase) {
-    const b = $('saves-open'), d = $('saves-dialog');
-    window.civ2Phase = phase;
-    b.hidden = phase !== 0;
-    if (phase === 0)
-        return;
-    const focused = document.activeElement === b || d.open;
-    if (d.open)
-        d.close();
-    if (focused)
-        $('screen').focus();
+// The sound, started at the start screen's click (or key): the browser
+// lets a page's audio play only from a user's gesture, so the context is
+// made and resumed in its handler, and the game plays on it (host.js: the
+// opening menu's music heard from the start)
+let audioCtx = null;
+function startAudio() {
+    try {
+        audioCtx = audioCtx || new AudioContext();
+        audioCtx.resume().catch(() => {});
+    } catch (e) {
+        audioCtx = null;
+    }
 }
 
 function savesControls(store) {
-    for (const b of document.querySelectorAll('.export-saves'))
-        b.onclick = () => exportClicked(store);
+    $('export-saves').onclick = () => exportClicked(store);
+    // (the click that opens the file chooser starts the sound: the saves
+    // imported go straight into the game)
+    const label = $('import-label');
+    label.addEventListener('click', startAudio);
+    label.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            startAudio();
+            $('import-saves').click();
+        }
+    };
     $('import-saves').onchange = async (e) => {
         const list = [...e.target.files];
         e.target.value = '';
-        if (list.length)
-            await importChosen(store, list);
+        if (list.length && await importChosen(store, list) && !running)
+            play(store);
     };
-    // while playing: a small button over the screen's corner, its dialog
-    // keeping the keys from the game
-    const d = $('saves-dialog');
-    $('saves-open').onclick = () => {
-        $('saves-status').textContent = '';
-        d.showModal();
-    };
-    $('saves-close').onclick = () => d.close();
-    // (the set-up page: the original's files, Remove, the page's language;
-    // what the game wrote kept first)
-    $('setup-open').onclick = async () => {
-        if (running)
-            await window.civ2Flush();
-        const u = new URL(location.href);
-        for (const k of ['hd', 'sharp'])
-            u.searchParams.delete(k);
-        u.searchParams.set('setup', '');
-        location.assign(u.href.replace(/([?&]setup)=(?=&|$)/, '$1'));
-    };
-    d.addEventListener('keydown', (e) => e.stopPropagation());
-    d.addEventListener('keyup', (e) => e.stopPropagation());
-    d.addEventListener('close', () => $('screen').focus());
 }
 
 // ---- the HD graphics' art, as CIV.INI asks for it (options.js) ----
@@ -591,7 +588,7 @@ const siteGame = () => siteGameP || (siteGameP = fetch('game/index.json', {cache
     .then((r) => (r.ok ? r.json() : null)).catch(() => null));
 
 // A first visit to such a site: its copy kept in this browser, without
-// asking (the set-up page's choice is not shown: ?setup shows it), on one
+// asking (before the start screen, whose panel offers another copy), on one
 // progress bar: game/core.zip and the files beside it (game/files: the
 // music, the animated advisors), downloaded, then unpacked and kept.  On
 // later visits, those files the kept game lacks (a site that has added
@@ -612,8 +609,7 @@ async function installFromSite(store, g, first) {
     const extra = (g.files || []).filter(([path]) => !have.has(path.toUpperCase()));
     if (!first && !extra.length)
         return;
-    $('loading').hidden = true;
-    $('install').hidden = false;
+    front('install');
     // ("the first visit only": not on a later one's top-up)
     $('install').querySelector('[data-t="web.install_note"]').hidden = !first;
     const total = (first ? g.core.size : 0) + extra.reduce((n, [, size]) => n + size, 0) || 1;
@@ -675,8 +671,7 @@ async function installFromSite(store, g, first) {
 // files(n), end()}; window.civ2FirstStart (tests): the bar's last words and
 // how many times it moved
 function firstStartBar() {
-    $('loading').hidden = true;
-    $('install').hidden = false;
+    front('install');
     $('install-title').textContent = t('web.starting_title');
     $('install').querySelector('[data-t="web.install_note"]').textContent = t('web.start_note');
     let artDone = 0, artTotal = 0, filesDone = 0, filesTotal = 0, bytes = 0, moves = 0, frac = 0;
@@ -704,7 +699,7 @@ function firstStartBar() {
             shown();
         },
         end() {
-            $('install').hidden = true;
+            front(null);
         },
     };
 }
@@ -714,8 +709,8 @@ async function play(store) {
     // may clear them when disk space runs low, Safari after a week unused)
     if (navigator.storage && navigator.storage.persist)
         navigator.storage.persist().catch(() => {});
-    $('setup').hidden = true;
-    $('install').hidden = true;
+    front(null);
+    window.civ2Start = false;
     const t0 = performance.now();
     const site = fromSite();
     const fs = new MemFS();
@@ -960,12 +955,16 @@ async function play(store) {
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               addOriginal: () => addOriginal(store, fs),
-                              setPhase: savesPhase,
+                              audio: audioCtx,
                               // (the game's Settings' restart: the page loaded again, into the
-                              // game, without what would override them; ?lang= the game's language now,
-                              // where the game changed it)
+                              // game, without what would override them, not stopping at the
+                              // start screen; ?lang= the game's language now, where the game
+                              // changed it)
                               restart: async () => {
                                   await window.civ2Flush();
+                                  try {
+                                      sessionStorage.setItem('civ2.restart', '1');
+                                  } catch (e) { /* the start screen again */ }
                                   const u = new URL(location.href);
                                   for (const k of ['setup', 'hd', 'sharp'])
                                       u.searchParams.delete(k);
@@ -982,7 +981,7 @@ async function play(store) {
     await window.civ2Flush();
     running = null;
     $('game').hidden = true;
-    showSetup(store, true);
+    showStart(store, true);
 }
 
 // The game's language (as src/game/lang.cpp chooses it: CIV.INI's
@@ -998,66 +997,68 @@ async function gameLanguage(ini) {
     return {files, codepage: own ? parseLang(own[1]).codepage : 'windows-1252'};
 }
 
-// The page's Language choice: English, the site's translations; the
-// URL's ?lang= (kept by a reload or a bookmark), the page loaded again in it
-async function languageChoice() {
-    const list = await languages();
-    const sel = $('language');
-    $('language-row').hidden = !list.length;
-    sel.textContent = '';
-    const add = (value, label) => {
-        const o = document.createElement('option');
-        o.value = value;
-        o.textContent = label;
-        sel.append(o);
+// The start screen: Click to play (Enter or Space too), the saves exported
+// and imported, and what this browser keeps removed (the game's own files,
+// a copy of the original, the saves and settings)
+async function showStart(store, ended = false) {
+    front('start');
+    $('more-row').hidden = !(await store.count() > 0);
+    const go = () => {
+        if ($('front').hidden || $('start').hidden || $('play').disabled)
+            return;
+        $('play').disabled = true;
+        startAudio();
+        play(store);
     };
-    add('en', 'English');
-    for (const l of list)
-        add(l.code, l.name);
-    sel.value = pageLang;
-    sel.onchange = () => {
-        history.replaceState(null, '', withLanguage(new URL(location.href), sel.value).href);
-        location.reload();
+    $('play').onclick = go;
+    // (Enter or Space anywhere on it but its other controls)
+    document.onkeydown = (e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !$('front').hidden && !$('start').hidden &&
+            (e.target.id === 'play' || !e.target.closest('button, label, select, input, a'))) {
+            e.preventDefault();
+            go();
+        }
     };
-}
-
-async function showSetup(store, ended = false) {
-    $('loading').hidden = true;
-    $('setup').hidden = false;
-    // (Play: the copy of the original kept here, else OpenCiv2's own files)
-    const kept = await store.count() > 0, own = await ownGame(store);
-    $('have').hidden = false;
-    $('have-game').hidden = own;
-    $('have-own').hidden = !own;
-    $('forget-saves').hidden = !kept;
-    $('play').onclick = () => play(store);
-    for (const b of document.querySelectorAll('.forget'))
-        b.onclick = async () => {
-            if (confirm(t('web.forget_confirm'))) {
-                await store.clear();
-                await store.hdClear();
-                showSetup(store);
-            }
-        };
+    $('play').disabled = false;
+    $('forget').onclick = async () => {
+        if (confirm(t('web.forget_confirm'))) {
+            await store.clear();
+            await store.hdClear();
+            showStart(store);
+        }
+    };
     if (!ended)
         status('');
-    window.civ2Setup = true;
+    $('play').focus();
+    window.civ2Start = true;    // (the tests)
 }
 
 async function main() {
     pageLang = await pageLanguage();
     await useLanguage(pageLang);
-    await languageChoice();
     if (!window.WebAssembly || !window.indexedDB || !window.DecompressionStream) {
+        front('start');
+        $('play').disabled = true;
+        $('saves-row').hidden = true;
+        $('more-row').hidden = true;
         status(t('web.no_browser'));
         return;
     }
-    // (a later visit: what the game needs from the site, at once)
-    const setup = new URLSearchParams(location.search).has('setup');
-    if (!setup)
-        fromSite();
+    // (what the game needs from the site, at once, while the start screen waits)
+    fromSite();
     const store = await mark('store', openStore(() =>
         status(t('web.other_tab'))));
+    // (without ?lang=: the page in the game's language, as its Settings
+    // chose it, CIV.INI's Language=; the page has no choice of its own)
+    if (!urlLanguage()) {
+        const name = (await store.keys()).find((k) => /^civ\.ini$/i.test(k));
+        const set = name ? iniLanguage(((await store.get(name)) || {}).data) : '';
+        const code = set && !/^(auto$|en\b)/i.test(set) ? match(set, await languages()) : 'en';
+        if (code && code !== pageLang) {
+            pageLang = code;
+            await useLanguage(code);
+        }
+    }
     savesControls(store);
     // (the relay's dialog keeps the keys from the game)
     const rd = $('relay-dialog');
@@ -1065,12 +1066,16 @@ async function main() {
     rd.addEventListener('keyup', (e) => e.stopPropagation());
     rd.addEventListener('close', () => $('screen').focus());
     window.civ2Relay = {address: relayAddress, unreachable: relayUnreachable};     // (the tests)
+    // (the panel is shown only while adding: addOriginal; its inputs given
+    // files before a start, as the tests give a copy of the game, smoke.mjs,
+    // hd.mjs, player.mjs: the copy kept, as the site's own copy of the game
+    // is, importFiles, then the start screen again)
     const chosen = async (files) => {
         if (adding)
             return addChosen(files);
         try {
             if (await importFiles(store, files))
-                await showSetup(store, true);
+                await showStart(store, true);
         } catch (e) {
             console.error(e);
             status(t('web.copy_failed', e.message));
@@ -1140,10 +1145,6 @@ async function main() {
         showChosen(files);
         chosen(files);
     };
-    // straight into the game, as the desktop game starts (?setup: this
-    // page first)
-    if (setup)
-        return showSetup(store);
     const kept = await store.count() > 0, g = await siteGame();
     // a later visit to a site with the game (make web GAME=1): the site's
     // music and animated advisors this browser does not have yet kept now,
@@ -1156,15 +1157,23 @@ async function main() {
             await installFromSite(store, g, true);
         } catch (e) {
             console.error(e);
-            $('install').hidden = true;
             status(t('web.copy_failed', e.message));
-            return showSetup(store);
+            return showStart(store, true);
         }
     }
-    // (else, a first visit: the game from OpenCiv2's own files, HD graphics,
-    // the original's files added later for Classic graphics; a later visit:
-    // what was kept)
-    return play(store);
+    // the game's Settings' restart: straight into the game again (its
+    // sound, without a click now, heard from the next one: host.js)
+    let restart = false;
+    try {
+        restart = sessionStorage.getItem('civ2.restart') === '1';
+        sessionStorage.removeItem('civ2.restart');
+    } catch (e) { /* the start screen */ }
+    if (restart)
+        return play(store);
+    // (else the start screen; then, at a first visit, the game from
+    // OpenCiv2's own files, HD graphics, the original's files added later
+    // for Classic graphics; at a later visit, what was kept)
+    return showStart(store);
 }
 
 main();

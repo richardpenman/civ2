@@ -349,8 +349,12 @@ Exi
 Elige
 @@openciv2.web.loading
 Oneratur ...
-@@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Statim ludit, cum graphicis HD et textibus, regulis, musica sonisque OpenCiv2 propriis: exemplar ludi originalis non requiritur. Graphica classica, species originalis, <em>tuum ipsius</em> exemplar ludi requirunt, hic electum: capsam in qua Civilization II institutum est (eam cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imaginem disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Configuratio, in indice eius principali.
+@@openciv2.web.tagline
+Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat: exemplar ludi originalis non requiritur.
+@@openciv2.web.click_play
+Preme ut ludas
+@@openciv2.web.remove
+Dele ex hoc navigatro
 @@openciv2.web.add_original
 Graphica classica fasciculis archetypis Civilization II egent, quos ludus in hoc navigatro non habet. Elige exemplar tuum Civilization II Multiplayer Gold Edition: fasciculi quos ludus iam habet servantur.
 @@openciv2.web.add_back
@@ -373,36 +377,16 @@ Fasciculum
 aut huc demitte
 @@openciv2.web.stop
 Siste
-@@openciv2.web.have
-Fasciculi ludi in hoc navigatro sunt.
-@@openciv2.web.forget
-Dele eos
-@@openciv2.web.have_own
-Sine exemplari ludi originalis, ludus cum graphicis HD et fasciculis OpenCiv2 propriis ludit.
-@@openciv2.web.forget_saves
-Dele ludos servatos et configurationem
-@@openciv2.web.play
-Lude
 @@openciv2.web.export
 Exporta servata
 @@openciv2.web.export_title
 Ludi tui servati, scaenaria a te facta, CIV.INI, CIV2.DAT et HALLFAME.DAT, ut .zip
 @@openciv2.web.import
 Importa servata
-@@openciv2.web.saves
-Servata
-@@openciv2.web.saves_title
-Exporta aut importa ludos servatos
 @@openciv2.web.saves_heading
 Ludi servati
-@@openciv2.web.saves_note
-Ludi tui servati, scaenaria a te facta, <code>CIV.INI</code>, <code>CIV2.DAT</code> et <code>HALLFAME.DAT</code> ut .zip; aut ludi servati (.SAV, aut talis .zip) in ludum inditi.
 @@openciv2.web.close
 Claude
-@@openciv2.web.setup_note
-Exemplar tuum Civilization II (pro graphicis classicis), lingua paginae, fasciculi ex hoc navigatro removendi:
-@@openciv2.web.setup_open
-pagina institutionis
 @@openciv2.web.relay_title
 Ludi reticulares
 @@openciv2.web.relay_label
@@ -413,8 +397,6 @@ Eo utere
 Ludi reticulares per translatorem eunt, et nullus respondit ad %s: exsequere tools/webrelay.py in %s, aut inscriptionem eius hic da (aut paginam aperi cum ?relay=ws://HOST:PORT).
 @@openciv2.web.relay_bad
 Inscriptio translatoris incipit a ws:// (aut wss://).
-@@openciv2.web.language
-Lingua:
 @@openciv2.web.not_game
 Hi fasciculi non sunt neque Civilization II Multiplayer Gold Edition institutum (cuius capsa Civ2Art.dll et RULES.TXT continet), neque CD eius (DATA1.CAB et CIV2), neque imago disci eius CD (.cue cum suo .bin).
 @@openciv2.web.copying

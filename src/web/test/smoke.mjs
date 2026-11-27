@@ -1,12 +1,15 @@
 // The browser version's smoke test: build/web served on a local port, opened
 // in Chrome's headless shell (driven over the DevTools protocol, no other
 // dependency), given the player's game files as a .zip through the page's
-// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its Settings), a new game with the default
-// choices, its first turn, a save; the saves exported and imported again
-// (from the set-up page, and while playing), the saved game loaded; first the set-up page in
-// Esperanto (?lang=eo) and Chinese (?lang=zh-TW), and in English without ?lang (whatever the
-// browser's language); the game started in Esperanto by ?lang=eo.  Screenshots in run/web-smoke (the game's
-// images: never committed).
+// own file input (after a set-up from a made-up disc image: disc.mjs), then
+// the game from the start screen's Click to play: the main menu (its
+// Settings), a new game with the default choices, its first turn, a save;
+// the saves exported from the start screen (a download) and imported there
+// again, which goes straight into the game, the saved game loaded; first the
+// start screen in Esperanto (?lang=eo) and Chinese (?lang=zh-TW), and in
+// English without ?lang (whatever the browser's language; an old link's
+// ?setup: the start screen); the game started in Esperanto by ?lang=eo.
+// Screenshots in run/web-smoke (the game's images: never committed).
 //
 //   tools/toolchain/node/bin/node src/web/test/smoke.mjs [--replay NAME [--hd N]] [GAME_DIR]
 // (GAME_DIR: $CIV2_GAME or ~/Civ2; tools/fetch-toolchain.sh browser fetches
@@ -26,7 +29,7 @@
 import {readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
-import {ROOT, WEB, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
+import {ROOT, WEB, zipFolder, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 import {unzip} from '../zip.js';
 import {sampleDisc, makeImage, tone} from './disc.mjs';
 
@@ -63,6 +66,7 @@ async function replay(send, evaluate, waitFor) {
     // (without --hd ?hd=0: the replay has the original's look, CIV2_TEST_HD
     // unset, so the page need not fetch the art HD graphics by default would)
     await send('Page.navigate', {url: (await evaluate('location.origin')) + '/?hd=' + (REPLAY_HD || '0')});
+    await clickPlay(send);
     await waitFor('/ended|stopped/.test(window.civ2Status || "") && window.civ2Status', 3600000, 'the replay');
     const wall = performance.now() - t;
     const st = await evaluate('window.civ2Status');
@@ -185,49 +189,47 @@ async function main() {
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
         if (!REPLAY) {
             // the page in Esperanto (?lang=eo: src/web/i18n.js, data/native/lang/eo.txt in
-            // ISO-8859-3): its texts, its Language choice, the letters as Unicode
-            await send('Page.navigate', {url: url + '?setup&lang=eo'});
-            await waitFor('window.civ2Setup', 10000, 'the page in Esperanto');
+            // ISO-8859-3): its texts (the start screen's, its panel's over the
+            // game for the original's files), the letters as Unicode
+            await send('Page.navigate', {url: url + '?lang=eo'});
+            await waitFor('window.civ2Start', 10000, 'the page in Esperanto');
             const eo = await evaluate(`({choose: document.getElementById('choose').textContent,
-                intro: document.querySelector('[data-t="web.intro"]').innerHTML,
+                play: document.getElementById('play').textContent,
+                tagline: document.querySelector('[data-t="web.tagline"]').textContent,
                 folder: document.getElementById('choose-folder').textContent,
-                language: [...document.getElementById('language').options].map((o) => o.textContent),
-                chosen: document.getElementById('language').value,
                 lang: document.documentElement.lang})`);
             log('page in Esperanto: ' + JSON.stringify(eo).slice(0, 300));
-            if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/<em>vian propran<\/em>/.test(eo.intro) || !/ludas tuj/.test(eo.intro) ||
-                !/^Dosierujo/.test(eo.folder) || !eo.language.includes('Esperanto') ||
-                eo.language[0] !== 'English' || eo.chosen !== 'eo')
+            if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/Alklaku por ludi/.test(eo.play) ||
+                !/ne necesas/.test(eo.tagline) || !/^Dosierujo/.test(eo.folder))
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
-            await shot('00-setup-eo');
+            await shot('00-start-screen-eo');
             // in Chinese (traditional characters: ?lang=zh-TW finds zh-Hant.txt, in UTF-8;
             // the page's fonts: the system's that have the characters, else the site's)
-            await send('Page.navigate', {url: url + '?setup&lang=zh-TW'});
-            await waitFor('window.civ2Setup', 10000, 'the page in Chinese');
+            await send('Page.navigate', {url: url + '?lang=zh-TW'});
+            await waitFor('window.civ2Start', 10000, 'the page in Chinese');
             const zh = await evaluate(`({choose: document.getElementById('choose').textContent,
                 folder: document.getElementById('choose-folder').textContent,
-                language: [...document.getElementById('language').options].map((o) => o.textContent),
-                chosen: document.getElementById('language').value,
+                play: document.getElementById('play').textContent,
                 lang: document.documentElement.lang})`);
             log('page in Chinese: ' + JSON.stringify(zh).slice(0, 300));
-            if (zh.lang !== 'zh-Hant' || !/選擇您的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) ||
-                !zh.language.includes('繁體中文') || zh.chosen !== 'zh-Hant')
+            if (zh.lang !== 'zh-Hant' || !/選擇您的遊戲/.test(zh.choose) || !/^資料夾/.test(zh.folder) || !/開始遊戲/.test(zh.play))
                 throw new Error('the page is not in Chinese: ' + JSON.stringify(zh));
-            await shot('00-setup-zh-Hant');
+            await shot('00-start-screen-zh-Hant');
             // without ?lang: English, though the browser's language is Esperanto
             const {userAgent} = await send('Browser.getVersion');
             await send('Emulation.setUserAgentOverride', {userAgent, acceptLanguage: 'eo'});
         }
+        // (an old link's ?setup: the start screen)
         await send('Page.navigate', {url: url + '?setup'});
-        await waitFor('window.civ2Setup', 10000, 'the page');
+        await waitFor('window.civ2Start', 10000, 'the page');
         if (!await evaluate('navigator.storage.persisted()'))
             throw new Error('the page\'s storage is not persistent (cdp.mjs: durableStorage)');
         if (!REPLAY) {
             const en = await evaluate(`({choose: document.getElementById('choose').textContent,
-                chosen: document.getElementById('language').value, browser: navigator.languages.join(),
+                play: document.getElementById('play').textContent, browser: navigator.languages.join(),
                 lang: document.documentElement.lang})`);
             log('page without ?lang: ' + JSON.stringify(en));
-            if (en.lang !== 'en' || !/^Choose your game/.test(en.choose) || en.chosen !== 'en' || en.browser !== 'eo')
+            if (en.lang !== 'en' || !/^Choose your game/.test(en.choose) || en.play !== 'Click to play' || en.browser !== 'eo')
                 throw new Error('the page without ?lang is not in English: ' + JSON.stringify(en));
         }
         if (!REPLAY) {
@@ -283,6 +285,7 @@ async function main() {
         // Options' choice), which this browser does not keep for later
         // visits (the first run's question answered: the game writes CIV.INI)
         await send('Page.navigate', {url: url + '?lang=eo'});
+        await clickPlay(send);
         await waitFor('window.civ2Fs', 60000, 'the start in Esperanto');
         await waitFor(pictured, 60000, 'the first picture in Esperanto');
         const gameIni = () => evaluate(`new TextDecoder().decode(window.civ2Fs.get('/civ2/CIV.INI') || new Uint8Array(0))`);
@@ -302,9 +305,10 @@ async function main() {
             q.onsuccess = () => { r.result.close(); resolve(q.result ? new TextDecoder().decode(q.result.data) : ''); }; }; })`);
         if (/Language=eo/.test(keptIni))
             throw new Error('?lang=eo kept in this browser: ' + JSON.stringify(keptIni));
-        // a later visit: straight into the game
+        // a later visit: the start screen, its Click to play
         const t1 = performance.now();
         await send('Page.navigate', {url});
+        await clickPlay(send);
         await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
         log('started: ' + await evaluate('window.civ2Status'));
         await waitFor(pictured, 60000, 'the first picture');
@@ -366,15 +370,18 @@ async function main() {
         log('saved games in IndexedDB: ' + after.join(' ') + (added.length ? ' (new: ' + added.join(' ') + ')' : ''));
         if (!added.length)
             throw new Error('the saved game is not in IndexedDB');
-        // the saves exported from the set-up page (a download: the player's
+        // the saves exported from the start screen (a download: the player's
         // files only), the saved game removed, imported again from the .zip
+        // there: straight into the game, the saved game then loaded
         const downloads = join(tmp, 'downloads');
         mkdirSync(downloads, {recursive: true});
         await send('Browser.setDownloadBehavior', {behavior: 'allow', downloadPath: downloads}).catch(
             () => send('Page.setDownloadBehavior', {behavior: 'allow', downloadPath: downloads}));
-        await send('Page.navigate', {url: url + '?setup'});
-        await waitFor('window.civ2Setup', 30000, 'the set-up page');
-        await evaluate('document.querySelector("#have .export-saves").click()');
+        await evaluate('window.civ2Flush()');
+        await send('Page.navigate', {url});
+        await waitFor('window.civ2Start', 30000, 'the start screen');
+        await shot('16-start-screen');
+        await evaluate('document.getElementById("export-saves").click()');
         const t3 = performance.now();
         let exported = null;
         while (!exported && performance.now() - t3 < 30000) {
@@ -386,41 +393,26 @@ async function main() {
         const zipped = join(downloads, exported);
         const zb = readFileSync(zipped);
         const inZip = (await unzip(zb.buffer.slice(zb.byteOffset, zb.byteOffset + zb.length))).map((f) => f.name);
-        log(`exported ${exported}: ${inZip.join(' ')}`);
+        log(`exported ${exported}: ${inZip.join(' ')}; said: ${await evaluate('window.civ2Status')}`);
         if (!inZip.includes(added[0]) || inZip.some((n) => !/\.(sav|scn|mp)$|^(civ\.ini|civ2\.dat|hallfame\.dat)$/i.test(n)))
             throw new Error('the export is not the player\'s files');
         const removeSave = (k) => evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const t = r.result.transaction("files", "readwrite"); t.objectStore("files").delete(${JSON.stringify(k)});
             t.oncomplete = () => { r.result.close(); resolve(true); }; }; })`);
-        const importFile = async (path) => {
-            const {result: input} = await send('Runtime.evaluate', {expression: 'document.getElementById("import-saves")'});
-            await send('DOM.setFileInputFiles', {objectId: input.objectId, files: [path]});
-        };
         await removeSave(added[0]);
         if ((await savedGames()).includes(added[0]))
             throw new Error('the saved game was not removed');
-        await importFile(zipped);
-        await waitFor('/Imported|Could not|Nothing/.test(window.civ2Status) && window.civ2Status', 30000, 'the import');
-        log('set-up page: ' + await evaluate('window.civ2Status'));
-        if (!(await savedGames()).includes(added[0]))
-            throw new Error('the saved game was not imported');
-        // a later visit again (the saved game removed once more): imported
-        // while the game runs (into its files too), then loaded from the menu
-        await removeSave(added[0]);
-        await send('Page.navigate', {url});
-        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the second start');
-        await waitFor(pictured, 60000, 'the second start\'s first picture');
+        const {result: importInput} = await send('Runtime.evaluate', {expression: 'document.getElementById("import-saves")'});
+        await send('DOM.setFileInputFiles', {objectId: importInput.objectId, files: [zipped]});
+        await waitFor('window.civ2Imported || /Could not|Nothing/.test(window.civ2Status) && window.civ2Status', 30000, 'the import');
+        log('imported: ' + JSON.stringify(await evaluate('window.civ2Imported')));
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the game, straight after the import');
+        await waitFor(pictured, 60000, 'the game\'s first picture after the import');
+        if (!(await savedGames()).includes(added[0]) || !await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`))
+            throw new Error('the saved game was not imported into the game');
         await settle(3000, 15000);
         await skipOpening();
         await shot('17-again');
-        if (await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`))
-            throw new Error('the saved game is still there');
-        await importFile(zipped);
-        await waitFor('/Imported|Could not|Nothing/.test(document.getElementById("saves-status").textContent)', 30000,
-                      'the import while playing');
-        if (!await evaluate(`!!window.civ2Fs.get('/civ2/${added[0]}')`) || !(await savedGames()).includes(added[0]))
-            throw new Error('the saved game imported while playing is not in the game\'s files');
-        log('while playing: ' + await evaluate('document.getElementById("saves-status").textContent'));
         await evaluate('document.getElementById("screen").focus()');
         await key('KeyL', 76, 'l');     // Load a Game
         await key('Enter', 13);

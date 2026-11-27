@@ -535,13 +535,11 @@ void __cdecl game_main(void)
         cities[city].id = 0;
       }
       game.num_cities = 0;
-      plat_set_phase(0);  /* (port) the opening menus (the browser's Saves button) */
       result = game_main_menu_loop();
       if (result != 0) {
         app_shutdown_cleanup();
         return;
       }
-      plat_set_phase(1);  /* (port) a game, until it returns here */
       minimap_window_create();
       status_wnd_open();
       mapviews_create_all();

@@ -122,10 +122,10 @@ hd-art`, which the builds run first; the files it is built from and the result c
 native and browser downloads of the release at run time are gone.
 The browser version starts as the desktop game does without the original's files: a first
 visit plays at once from an empty game folder, HD graphics and OpenCiv2's own files, to the main
-menu (the downloads on the page's progress bar); the player's copy, for Classic graphics, the
-saves' export and import, removing the files and the page's language are on its set-up page
-(`?setup`, reached from the game's *Saves* button, and from Settings > Classic graphics:
-[BROWSER.md](BROWSER.md#the-start-no-copy-of-the-game-needed)).
+menu (the downloads on the page's progress bar), after its start screen (*Click to play*, which
+starts the sound, the saves' export and import, removing the files); the player's copy, for
+Classic graphics, is chosen in Settings > Classic graphics
+([BROWSER.md](BROWSER.md#the-start-no-copy-of-the-game-needed)).
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
@@ -774,7 +774,7 @@ message by message and clock event by clock event.
   fixes_load again), Classic graphics (unticked, the default since
   November 2026: HD graphics, the art made at build time, data/native/hd; without the original's pictures, ticked, the
   set-up's import offered: an installed game, its CD, a .zip of it, a disc
-  image, the files the game folder lacks copied in; the browser's set-up page),
+  image, the files the game folder lacks copied in; the browser's panel for it over the game),
   sharp text and full screen, those offering a restart (host_restart: the program executed again, the page loaded again in
   the browser); in a test run (CIV2_TEST_OPTIONS) its choices hold for the run
   instead (options_test_setting).  The Mode page (Standard or Classic) of

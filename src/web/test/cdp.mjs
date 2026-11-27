@@ -175,9 +175,12 @@ export function tmpDir(prefix = 'web-tmp-') {
 // origin (the served site's, e.g. http://127.0.0.1:PORT): its storage made
 // persistent (durableStorage, as navigator.storage.persist() asks), so that
 // Chrome does not evict the game's copy in IndexedDB when the disk is low.
-export async function browser(profile, size = [1280, 800], origin = null) {
+// (gesture: the browser's own autoplay policy, sound only after a click or
+// a key, as start.mjs checks the start screen's click; else sound at once)
+export async function browser(profile, size = [1280, 800], origin = null, gesture = false) {
     const proc = spawn(CHROME, ['--headless', '--no-sandbox', '--disable-gpu', '--remote-debugging-port=0',
-                                '--user-data-dir=' + profile, '--window-size=' + size.join(','), '--autoplay-policy=no-user-gesture-required',
+                                '--user-data-dir=' + profile, '--window-size=' + size.join(','),
+                                ...(gesture ? [] : ['--autoplay-policy=no-user-gesture-required']),
                                 'about:blank'], {stdio: ['ignore', 'ignore', 'pipe']});
     const port = await new Promise((resolve, reject) => {
         let err = '';
@@ -213,4 +216,19 @@ export async function browser(profile, size = [1280, 800], origin = null) {
     if (origin)
         await send('Browser.grantPermissions', {permissions: ['durableStorage'], origin: origin.replace(/\/$/, '')});
     return {proc, send, on: (l) => listeners.push(l), close: async () => { ws.close(); proc.kill(); await exited; }};
+}
+
+// The page's start screen (main.js: showStart) waited for, then its Click to
+// play clicked: the game starts (send: browser()'s; ms: how long to wait)
+export async function clickPlay(send, ms = 60000) {
+    const end = performance.now() + ms;
+    while (performance.now() < end) {
+        const r = await send('Runtime.evaluate', {returnByValue: true, expression:
+            '(() => { const b = document.getElementById("play"); if (!window.civ2Start || !b || b.disabled) return false;' +
+            ' b.click(); return true; })()'}).catch(() => null);
+        if (r && r.result && r.result.value)
+            return;
+        await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error('no start screen (its Click to play)');
 }

@@ -833,7 +833,7 @@ and on the browser version's site as `hd/README-portraits.md`); `THIRD-PARTY.txt
   default, the art loaded from the site; Classic graphics ticked in the game's Settings and the
   game restarted without the art; unticked again and restarted, the art loaded as the page is
   loaded again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD; then
-  without the original's pictures, Classic graphics ticked: the set-up page over the game, the
+  without the original's pictures, Classic graphics ticked: the page's panel over the game, the
   original's files added, the restart, Classic graphics; screenshots in `run/web-hd`).
 * HD off (replays and unit tests): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (Settings in the main menu: `x-options`).

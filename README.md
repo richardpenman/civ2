@@ -114,10 +114,10 @@ make serve        # builds build/web (first time: downloads Binaryen into tools/
                   # and serves it: open http://localhost:8000 (PORT=8080 for another port)
 ```
 
-A visit starts the game at once, as the desktop game does without the original's files: HD
-graphics and OpenCiv2's own texts, rules, music and sounds, no copy of Civilization II needed. Your
-copy, for Classic graphics, is chosen on the set-up page (`?setup`, also reached from the game's
-*Saves* button, or from Settings > Classic graphics), with the saved games' export and import.
+A visit opens on a start screen (*Click to play*, which also starts the sound, and the saved
+games' export and import), then the game, as the desktop game starts without the original's
+files: HD graphics and OpenCiv2's own texts, rules, music and sounds, no copy of Civilization II
+needed. Your copy, for Classic graphics, is chosen in the game: Settings > Classic graphics.
 More details in [BROWSER.md](docs/BROWSER.md).
 
 ## Status

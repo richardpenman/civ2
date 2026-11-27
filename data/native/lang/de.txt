@@ -348,8 +348,12 @@ Beenden
 Wählen
 @@openciv2.web.loading
 Wird geladen ...
-@@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser. Es startet sofort, mit HD-Grafik und den eigenen Texten, Regeln, Musikstücken und Klängen von OpenCiv2: Eine Kopie des Originalspiels ist nicht nötig. Die klassische Grafik, das Aussehen des Originals, braucht <em>Ihre eigene</em> Kopie des Spiels, hier gewählt: den Ordner, in dem Civilization II installiert ist (den mit <code>Civ2Art.dll</code> und <code>RULES.TXT</code>), die CD des Spiels oder ein Abbild der CD. Wie gespielt wird (klassische oder HD-Grafik, die Fehlerbehebungen, die Regeländerungen und die Erweiterungen der Oberfläche), wählen Sie im Spiel: Einstellungen, in seinem Hauptmenü.
+@@openciv2.web.tagline
+Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser: Eine Kopie des Originalspiels ist nicht nötig.
+@@openciv2.web.click_play
+Zum Spielen klicken
+@@openciv2.web.remove
+Aus diesem Browser entfernen
 @@openciv2.web.add_original
 Klassische Grafik braucht die Originaldateien von Civilization II, die das Spiel in diesem Browser nicht hat. Wählen Sie Ihre Kopie von Civilization II Multiplayer Gold Edition: Die Dateien, die das Spiel schon hat, bleiben erhalten.
 @@openciv2.web.add_back
@@ -372,36 +376,16 @@ eine .zip-Datei des Ordners oder ein CD-Abbild (.cue und .bin)
 oder hier ablegen
 @@openciv2.web.stop
 Stopp
-@@openciv2.web.have
-Die Spieldateien sind in diesem Browser.
-@@openciv2.web.forget
-Entfernen
-@@openciv2.web.have_own
-Ohne eine Kopie des Originalspiels spielt das Spiel mit HD-Grafik und den eigenen Dateien von OpenCiv2.
-@@openciv2.web.forget_saves
-Spielstände und Einstellungen entfernen
-@@openciv2.web.play
-Spielen
 @@openciv2.web.export
 Spielstände exportieren
 @@openciv2.web.export_title
 Ihre Spielstände, Ihre selbst erstellten Szenarien, CIV.INI, CIV2.DAT und HALLFAME.DAT als .zip
 @@openciv2.web.import
 Spielstände importieren
-@@openciv2.web.saves
-Spielstände
-@@openciv2.web.saves_title
-Spielstände exportieren oder importieren
 @@openciv2.web.saves_heading
 Spielstände
-@@openciv2.web.saves_note
-Ihre Spielstände, Ihre selbst erstellten Szenarien, <code>CIV.INI</code>, <code>CIV2.DAT</code> und <code>HALLFAME.DAT</code> als .zip; oder Spielstände (.SAV oder eine solche .zip-Datei) ins Spiel übernehmen.
 @@openciv2.web.close
 Schließen
-@@openciv2.web.setup_note
-Ihre Kopie von Civilization II (für die klassische Grafik), die Sprache der Seite, die Dateien aus diesem Browser entfernen:
-@@openciv2.web.setup_open
-die Einrichtungsseite
 @@openciv2.web.relay_title
 Netzwerkspiele
 @@openciv2.web.relay_label
@@ -412,8 +396,6 @@ Verwenden
 Netzwerkspiele laufen über ein Relay, und unter %s hat keines geantwortet: Starten Sie tools/webrelay.py auf %s oder geben Sie hier seine Adresse an (oder öffnen Sie die Seite mit ?relay=ws://HOST:PORT).
 @@openciv2.web.relay_bad
 Die Adresse des Relays beginnt mit ws:// (oder wss://).
-@@openciv2.web.language
-Sprache:
 @@openciv2.web.not_game
 Diese Dateien sind weder eine installierte Civilization II Multiplayer Gold Edition (ihr Ordner enthält Civ2Art.dll und RULES.TXT) noch deren CD (DATA1.CAB und CIV2) noch ein Abbild der CD (eine .cue mit ihrer .bin).
 @@openciv2.web.copying

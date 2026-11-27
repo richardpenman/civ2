@@ -18,7 +18,7 @@ import {writeFileSync, appendFileSync, mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
 import {createInterface} from 'node:readline';
-import {ROOT, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
+import {ROOT, zipFolder, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 
 const [OUT, ROLE, RELAY, GAME = process.env.CIV2_GAME || join(homedir(), 'Civ2')] = process.argv.slice(2);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -124,8 +124,8 @@ async function main() {
     await send('Runtime.enable');
     await send('Page.enable');
     await send('Emulation.setDeviceMetricsOverride', {width: 1024, height: 768, deviceScaleFactor: 1, mobile: false});
-    await send('Page.navigate', {url: url + '?setup'});
-    await waitFor('window.civ2Setup', 10000, 'the page');
+    await send('Page.navigate', {url});
+    await waitFor('window.civ2Start', 10000, 'the start screen');
     if (!await evaluate('navigator.storage.persisted()'))
         throw new Error('the page\'s storage is not persistent (cdp.mjs: durableStorage)');
     const {result} = await send('Runtime.evaluate', {expression: 'document.getElementById("files")'});
@@ -140,6 +140,7 @@ async function main() {
             Object.assign(env, {CIV2_XDLOG: '/out/xdlog.txt', CIV2_HOOK_LOG: '/out/hook.log', CIV2_WINDIR: '/civ2'});
         };`});
     await send('Page.navigate', {url: url + '?relay=' + encodeURIComponent(RELAY)});
+    await clickPlay(send);
     await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
     // the logs, copied out as they grow
     const logs = [['/out/xdlog.txt', join(OUT, `xdlog-${ROLE}.txt`)], ['/out/hook.log', join(OUT, `ours-${ROLE}.log`)]];

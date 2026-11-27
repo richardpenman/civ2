@@ -64,8 +64,3 @@ int plat_restart(int now)
     }
     return host_restart(now);
 }
-
-void plat_set_phase(int phase)
-{
-    host_set_phase(phase);
-}

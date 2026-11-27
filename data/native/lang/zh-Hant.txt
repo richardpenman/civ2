@@ -350,8 +350,12 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 選擇
 @@openciv2.web.loading
 載入中 ...
-@@openciv2.web.intro
-Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它會立即開始，使用 HD 圖形與 OpenCiv2 自己的文字、規則、音樂與音效：不需要原版遊戲。經典圖形（原版的外觀）需要<em>您自己</em>的遊戲，在此選擇：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（經典或 HD 圖形、錯誤修正、規則變更與介面新增功能）在遊戲中選擇：主選單中的「設定」。
+@@openciv2.web.tagline
+Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行：不需要原版遊戲。
+@@openciv2.web.click_play
+按一下開始遊戲
+@@openciv2.web.remove
+從此瀏覽器移除
 @@openciv2.web.add_original
 經典圖形需要原版 Civilization II 的檔案，而此瀏覽器中的遊戲沒有這些檔案。請選擇您的 Civilization II Multiplayer Gold Edition：遊戲已有的檔案會保留。
 @@openciv2.web.add_back
@@ -374,36 +378,16 @@ Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執�
 或拖放到這裡
 @@openciv2.web.stop
 停止
-@@openciv2.web.have
-遊戲檔案已在此瀏覽器中。
-@@openciv2.web.forget
-移除檔案
-@@openciv2.web.have_own
-沒有原版遊戲時，遊戲使用 HD 圖形與 OpenCiv2 自己的檔案。
-@@openciv2.web.forget_saves
-移除存檔與設定
-@@openciv2.web.play
-開始遊戲
 @@openciv2.web.export
 匯出存檔
 @@openciv2.web.export_title
 您的存檔、您製作的劇本、CIV.INI、CIV2.DAT 與 HALLFAME.DAT，打包為 .zip
 @@openciv2.web.import
 匯入存檔
-@@openciv2.web.saves
-存檔
-@@openciv2.web.saves_title
-匯出或匯入存檔
 @@openciv2.web.saves_heading
 存檔
-@@openciv2.web.saves_note
-將您的存檔、您製作的劇本、<code>CIV.INI</code>、<code>CIV2.DAT</code> 與 <code>HALLFAME.DAT</code> 匯出為 .zip；或將存檔（.SAV，或這類 .zip）匯入遊戲。
 @@openciv2.web.close
 關閉
-@@openciv2.web.setup_note
-您的文明帝國II（用於經典圖形）、頁面的語言、從此瀏覽器移除檔案：
-@@openciv2.web.setup_open
-設定頁面
 @@openciv2.web.relay_title
 網路遊戲
 @@openciv2.web.relay_label
@@ -414,8 +398,6 @@ Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執�
 網路遊戲須透過中繼伺服器，但 %s 沒有任何回應：請在 %s 上執行 tools/webrelay.py，或在此輸入其位址（或以 ?relay=ws://HOST:PORT 開啟此頁面）。
 @@openciv2.web.relay_bad
 中繼伺服器的位址以 ws://（或 wss://）開頭。
-@@openciv2.web.language
-語言：
 @@openciv2.web.not_game
 這些檔案既不是已安裝的 Civilization II Multiplayer Gold Edition（其資料夾內有 Civ2Art.dll 與 RULES.TXT），也不是它的光碟（DATA1.CAB 與 CIV2），也不是光碟的映像檔（.cue 及其 .bin）。
 @@openciv2.web.copying

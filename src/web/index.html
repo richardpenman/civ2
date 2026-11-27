@@ -23,7 +23,20 @@
                unicode-range: U+2E80-9FFF, U+F900-FAFF, U+FE10-FE1F, U+FE30-FE4F, U+FF00-FFEF; }
   html, body { margin: 0; min-height: 100%; background: var(--desk); color: var(--ink);
                font: 18px/1.45 var(--serif); }
-  #setup, #install { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  /* the start screen: the main window's backdrop (the HD art's; the desk's colour without it), a
+     dialog over it */
+  #front { position: fixed; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center;
+           padding: 1rem; box-sizing: border-box; background: #3b3224 url("hd/title.webp") center / cover no-repeat; }
+  #front > .panel { width: 100%; max-width: 30rem; margin: auto; }
+  #front > #add, #front > #install { max-width: 40rem; }
+  #start .body { text-align: center; }
+  .tagline { margin: 0 0 1rem; }
+  #play { font-size: 1.35rem; padding: 0.55rem 2.2rem; margin: 0 0 0.6rem; }
+  #play:active { padding: 0.6rem 2.15rem 0.5rem 2.25rem; }
+  #saves-row { margin: 0.4rem 0 0.2rem; padding-top: 0.7rem; border-top: 2px groove #eee; }
+  #saves-row .dim { font-size: 0.85rem; }
+  #more-row { margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 2px groove #eee; font-size: 0.85rem; line-height: 1.9; }
+  #more-row button.plain { font-size: inherit; }
   /* the site's copy of the game being installed (make web GAME=1): a progress bar as the
      game's own set-up draws one, blue blocks in a sunken box, the percentage over it */
   #install .body { text-align: center; }
@@ -63,8 +76,8 @@
   button.plain:active { padding: 0; }
   button.plain:focus-visible { outline-offset: 2px; }
   input[type=file] { display: none; }
-  #status { color: var(--dim); }
-  #status:empty { display: none; }
+  #status, #add-status { color: var(--dim); margin: 0.2rem 0 0.6rem; }
+  #status:empty, #add-status:empty { display: none; }
   #chosen { margin: 0.5rem 0 0; }
   #choose-wrap { position: relative; display: inline-block; }
   #choose { font-size: 1.15rem; padding: 0.4rem 1.4rem; }
@@ -76,34 +89,25 @@
   #choose-menu button:hover, #choose-menu button:focus { background: #00007a; color: #fff; outline: none; }
   #choose-menu button:hover span, #choose-menu button:focus span { color: #ddd; }
   #choose-menu span { display: block; color: var(--dim); font-size: 0.85rem; }
-  #have { margin: 1rem 0 0; padding-top: 0.8rem; border-top: 2px groove #eee; }
-  #have p { margin: 0 0 0.4rem; }
-  #language-row { margin: 1rem 0 0; }
-  #language { font: inherit; font-size: 0.92rem; }
   #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
              font: 1.2rem var(--serif); color: #f4f0e6; text-shadow: 1px 1px 0 #000; pointer-events: none; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
   [hidden] { display: none !important; }
-  #saves-open { position: fixed; top: 2px; right: 2px; z-index: 1; margin: 0; padding: 0 0.4rem; min-width: 0; font: 12px/16px var(--serif);
-                opacity: 0.35; }
-  #saves-open:hover, #saves-open:focus { opacity: 1; }
   #screen { image-rendering: pixelated; image-rendering: crisp-edges; outline: none; touch-action: none; }
   /* the in-game dialogs: as the game's own message boxes */
   dialog { background: var(--face) var(--marble); color: #000; border: 3px solid; border-color: var(--hi) var(--lo) var(--lo) var(--hi);
            box-shadow: 1px 1px 0 var(--dark); padding: 0; min-width: 18rem; max-width: min(34rem, calc(100vw - 2rem));
            font: 16px/1.4 var(--serif); }
   dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
-  #dialog-title, .dialog-title, #saves-dialog h2 { font: bold 1.25rem/1.2 var(--serif); text-align: center; color: #f4f4f4;
+  #dialog-title, .dialog-title { font: bold 1.25rem/1.2 var(--serif); text-align: center; color: #f4f4f4;
       text-shadow: 1px 1px 0 #000, 2px 2px 1px #555; padding: 0.35rem 0.5rem 0.2rem; margin: 0; }
   #dialog-text, .dialog-text { padding: 0.6rem 1rem; white-space: pre-wrap; }
   .dialog-text input { font: inherit; width: auto; background: #fff; color: #000; border: 2px solid;
                        border-color: var(--lo) var(--hi) var(--hi) var(--lo); padding: 0 0.3rem; }
   #dialog-buttons, .dialog-buttons { padding: 0.2rem 1rem 0.8rem; text-align: center; }
-  #saves-dialog p, #saves-dialog > button, #saves-dialog > label { margin-left: 1rem; }
-  #saves-dialog { padding-bottom: 0.5rem; }
   @media (max-width: 480px) {
     html, body { font-size: 16px; }
-    #setup { padding: 0.75rem 0.5rem 2rem; }
+    #front { padding: 0.5rem; }
     .body { padding: 0.7rem 0.6rem; }
     .title { font-size: 1.35rem; }
   }
@@ -111,17 +115,29 @@
 </head>
 <body>
 <p id="loading" role="status" data-t="web.loading">Loading ...</p>
-<div id="setup" hidden>
- <section class="panel" aria-labelledby="title-main">
+<!-- the start screen, over the game's own backdrop (hd/title.webp, the HD art's tiles.dll 90): its
+     click starts the sound (the browser lets a page play only after a click or a key) and then the
+     game; the saved games exported and imported.  Its panel #add: the original's files chosen over the
+     game (its Settings, Classic graphics: host_add_original) -->
+<div id="front" hidden>
+ <section class="panel" id="start" aria-labelledby="title-main">
   <h1 class="title" id="title-main">OpenCiv2</h1>
   <div class="body">
-  <p data-t="web.intro">Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays at once,
-     with HD graphics and OpenCiv2's own texts, rules, music and sounds: no copy of the original game is needed.
-     Classic graphics, the original's look, need <em>your own</em> copy of the game, chosen here: the folder
-     Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the
-     game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes
-     and the interface additions) is chosen in the game: Settings, in its main menu.</p>
-  <p id="add-note" hidden data-t="web.add_original">Classic graphics need the original Civilization II files, which
+  <p class="tagline" data-t="web.tagline">Civilization II Multiplayer Gold Edition, rebuilt to run in your browser: no copy of the original game is needed.</p>
+  <button id="play" data-t="web.click_play">Click to play</button>
+  <p id="status" role="status"></p>
+  <div id="saves-row">
+    <span class="dim" data-t="web.saves_heading">Saved games</span><br>
+    <button class="export-saves" id="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip" data-t="web.export" data-t-title="web.export_title">Export saves</button>
+    <label class="button" for="import-saves" id="import-label" tabindex="0" data-t="web.import">Import saves</label>
+  </div>
+  <p class="dim" id="more-row"><button id="forget" class="plain" data-t="web.remove">Remove from this browser</button></p>
+  </div>
+ </section>
+ <section class="panel" id="add" hidden aria-labelledby="add-title">
+  <h1 class="title" id="add-title">Civilization II</h1>
+  <div class="body">
+  <p data-t="web.add_original">Classic graphics need the original Civilization II files, which
      the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the
      files the game has already are kept.</p>
   <div id="drop">
@@ -137,23 +153,12 @@
     <input id="folder" type="file" webkitdirectory multiple>
     <input id="files" type="file" multiple accept=".zip,.cue,.bin,application/zip">
   </div>
-  <p id="status"></p>
+  <p id="add-status" role="status"></p>
   <button id="stop" hidden data-t="web.stop">Stop</button>
-  <button id="add-back" hidden data-t="web.add_back">Back to the game</button>
-  <div id="have" hidden>
-    <p id="have-game" data-t-node="web.have">The game files are in this browser. <button id="forget" class="plain forget" data-t="web.forget">Remove them</button></p>
-    <p id="have-own"><span data-t="web.have_own">Without a copy of the original game, the game plays with HD graphics and OpenCiv2's own files.</span>
-       <button id="forget-saves" class="plain forget" data-t="web.forget_saves">Remove the saved games and settings</button></p>
-    <button id="play" data-t="web.play">Play</button>
-    <button class="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip" data-t="web.export" data-t-title="web.export_title">Export saves</button>
-    <label class="button" for="import-saves" data-t="web.import">Import saves</label>
-  </div>
-  <p class="dim" id="language-row"><label><span data-t="web.language">Language:</span> <select id="language"></select></label></p>
+  <button id="add-back" data-t="web.add_back">Back to the game</button>
   </div>
  </section>
-</div>
-<div id="install" hidden>
- <section class="panel" aria-labelledby="install-title">
+ <section class="panel" id="install" hidden aria-labelledby="install-title">
   <h1 class="title" id="install-title" data-t="web.installing">Installing the game ...</h1>
   <div class="body">
    <p id="install-step" role="status"></p>
@@ -163,20 +168,8 @@
   </div>
  </section>
 </div>
-<div id="game" hidden><canvas id="screen" tabindex="0"></canvas>
-  <button id="saves-open" title="Export or import saved games" data-t="web.saves" data-t-title="web.saves_title">Saves</button></div>
+<div id="game" hidden><canvas id="screen" tabindex="0"></canvas></div>
 <input id="import-saves" type="file" multiple accept=".sav,.zip,.scn,.mp,.ini,.dat">
-<dialog id="saves-dialog">
-  <h2 data-t="web.saves_heading">Saved games</h2>
-  <p class="dim" data-t="web.saves_note">Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and
-     <code>HALLFAME.DAT</code> as a .zip; or saved games (.SAV, or such a .zip) put into the game.</p>
-  <button class="export-saves" data-t="web.export">Export saves</button>
-  <label class="button" for="import-saves" data-t="web.import">Import saves</label>
-  <button id="saves-close" class="plain" data-t="web.close">Close</button>
-  <p id="saves-status" class="dim"></p>
-  <p class="dim" data-t-node="web.setup_note">Your copy of Civilization II (for Classic graphics), the page's language,
-     removing the files from this browser: <button id="setup-open" class="plain" data-t="web.setup_open">the set-up page</button></p>
-</dialog>
 <dialog id="relay-dialog"><div class="dialog-title" data-t="web.relay_title">Network games</div>
   <div class="dialog-text" id="relay-text"></div>
   <div class="dialog-text"><label data-t-node="web.relay_label">The relay: <input id="relay-address" type="text" size="30" spellcheck="false"></label></div>

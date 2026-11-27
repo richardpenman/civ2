@@ -126,9 +126,6 @@ EXTRAS_C int options_test_setting(const char *key, char *out, int n);
 /* src/platform/options.c: the restart (now 0: how it can be, 1 restarted;
    host_restart's) */
 EXTRAS_C int plat_restart(int now);
-/* where the game is, for the host (host_set_phase): 0 the opening menus, 1
-   a game being played (src/auto/game.cpp: game_main) */
-EXTRAS_C void plat_set_phase(int phase);
 /* the graphics (src/platform/options.c, the one place that decides): whether
    CIV.INI's Graphics=value asks for HD ("": the default), whether HD
    graphics are forced on (the game folder lacks the original's pictures:

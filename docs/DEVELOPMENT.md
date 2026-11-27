@@ -306,8 +306,11 @@ builds do not use it.
   be persistent (`navigator.storage.persist`).  With nothing stored the page starts the game at
   once from the empty folder (`play`: OpenCiv2's own files fill it in, HD graphics; the store's
   `meta` `game` set to `{names: []}`, a game without the original's files; the downloads on the
-  install's bar, `firstStartBar`); a copy chosen later on the set-up page is merged into it as
-  Settings' *Find the original files...* merges one (`mergeFiles`), the player's files kept.
+  install's bar, `firstStartBar`); a copy chosen later in Settings' *Find the original files...*
+  is merged into it (`mergeFiles`), the player's files kept.  Before it, the start screen
+  (`showStart`: *Click to play*, whose click makes and resumes the page's `AudioContext`,
+  handed to `host.js` as `opts.audio`; *Export saves*, *Import saves*, *Remove from this
+  browser*); Settings' *Restart now* skips it (`sessionStorage` `civ2.restart`).
 * **HD graphics** (src/web/main.js, host.js's `host_present_hd`): `tools/build_web.py` puts the
   art (data/native/hd, which make web makes first: make hd-art) and, where present, the local staging folder data/native/hd-extra on the site as one
   file, `hd/art.bin`, listed in `hd/index.json`.  At start, where HD graphics are wanted (`?hd=N`,
@@ -368,14 +371,13 @@ builds do not use it.
   `src/web/test/net.mjs` (net.js under node with the relay: joining a TCP server, partial
   reads, the peer closing, refused ports, addresses and connections; hosting with two TCP
   clients, the listener closed while they stay), then
-  `src/web/test/start.mjs` (a fresh profile, no copy of the game: the page goes straight into
-  the game, its progress bar following the HD art's and OpenCiv2's own files' downloads, the
+  `src/web/test/start.mjs` (a fresh profile, no copy of the game, the browser's own autoplay
+  policy: the start screen, at a desktop's and a phone's width, its button clicked with the
+  mouse, the sound running at the main menu; the game's progress bar following the HD art's and OpenCiv2's own files' downloads, the
   main menu in HD, OpenCiv2's music, sound effects, wonder movies and texts all fetched, nothing
   of the original's in the game's folder, the store's `meta` noting a game without the
-  original's files; the *Saves* dialog's way to the set-up page, which has *Play*, the choice of
-  a copy, the saves and the language without one; a later visit at once, without the bar; then,
-  where `~/Civ2` is, a few of its files chosen on the set-up page: added, `CIV.INI` kept;
-  screenshots in `run/web-start`), then
+  original's files; a later visit (`?setup`: the start screen) started with Enter, at once,
+  without the bar; screenshots in `run/web-start`), then
   `src/web/test/perf.mjs` (a fresh profile, no copy of the game, a device pixel ratio of 2: a
   new game on a small world, its first units moved with the keypad until four moves slid, each
   timed from its key: the slide's frames at most 25 ms apart and the move's last frame within
