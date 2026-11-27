@@ -29,6 +29,7 @@
  * Peter Johnson's (PR #11 of openciv2/openciv2, src/platform/hd.c); this
  * is a smaller implementation of it.
  */
+#include <limits.h>
 #include <math.h>
 #include <unistd.h>
 #include "plat.h"
@@ -409,6 +410,33 @@ static int clip_rect(const Bitmap *b, int *l, int *t, int *r, int *bot)
     return *l < *r && *t < *bot;
 }
 
+/* n bytes alike: memcmp's answer, a word at a time (wasi-libc's memcmp
+   goes byte by byte, and the frame's rows are compared at each present) */
+static int same_bytes(const void *a, const void *b, size_t n)
+{
+    const unsigned char *p = a, *q = b;
+    uint64_t u, v;
+    for (; n >= 8; n -= 8, p += 8, q += 8) {
+        memcpy(&u, p, 8);
+        memcpy(&v, q, 8);
+        if (u != v)
+            return 0;
+    }
+    return !n || !memcmp(p, q, n);
+}
+
+/* The frame's rows changed since the host was last given it (HD rows,
+   [frame_top, frame_bottom)): hd_frame_changed. */
+static int frame_top = INT_MAX, frame_bottom;
+
+static void frame_rows(int top, int bottom)
+{
+    if (top < frame_top)
+        frame_top = top;
+    if (bottom > frame_bottom)
+        frame_bottom = bottom;
+}
+
 /* The game's own drawing in the rectangle, into the plane. */
 static void sync_rect(Bitmap *b, int l, int t, int r, int bot)
 {
@@ -419,8 +447,10 @@ static void sync_rect(Bitmap *b, int l, int t, int r, int bot)
     for (y = t; y < bot; y++) {
         const unsigned char *row = bmp_row(b, y);
         unsigned char *prev = b->hd_prev + (size_t)y * b->w * n;
-        if (!memcmp(prev + l * n, row + l * n, (size_t)(r - l) * n))
+        if (same_bytes(prev + l * n, row + l * n, (size_t)(r - l) * n))
             continue;
+        if (b == screen)
+            frame_rows(y * hd_density, (y + 1) * hd_density);
         for (x = l; x < r; x++)
             if (memcmp(prev + x * n, row + x * n, (size_t)n)) {
                 memcpy(prev + x * n, row + x * n, (size_t)n);
@@ -1671,6 +1701,15 @@ void hd_picture_done(void *bits)
 
 static Bitmap *frame_of;        /* the screen, whose plane is the frame */
 static Region bare;             /* what no window covers: the background */
+/* The windows' pieces, from the bottom up (hd_compose_piece), drawn from
+   the top down where nothing above covers them (hd_compose_end): each pixel
+   of the frame written once, by the window that shows there, as the
+   bottom-up drawing left it, and a row compared with the last frame's only
+   where it shows (a window under another would otherwise change the rows
+   they share at each compose, and back) */
+typedef struct { Bitmap *s; int dx, dy; RECT r; } Piece;
+static Piece *pieces;
+static int pieces_n, pieces_cap;
 
 void hd_compose_begin(void)
 {
@@ -1678,6 +1717,7 @@ void hd_compose_begin(void)
     if (!hd_on || !plane(screen))
         return;
     frame_of = screen;
+    pieces_n = 0;
     all.right = screen->w;
     all.bottom = screen->h;
     rgn_set(&bare, &all);
@@ -1686,8 +1726,6 @@ void hd_compose_begin(void)
 /* Surface s shows at dx, dy; this piece is screen rectangle l, t, r, b. */
 void hd_compose_piece(Bitmap *s, int dx, int dy, int l, int t, int r, int b)
 {
-    int d = hd_density, x, y, i;
-    RECT piece;
     if (!hd_on || !valid(screen))
         return;
     if (l < dx) l = dx;
@@ -1696,34 +1734,79 @@ void hd_compose_piece(Bitmap *s, int dx, int dy, int l, int t, int r, int b)
     if (b > dy + s->h) b = dy + s->h;
     if (!clip_rect(screen, &l, &t, &r, &b))
         return;
-    SetRect(&piece, l, t, r, b);
-    rgn_subtract_rect(&bare, &piece);
+    if (pieces_n == pieces_cap) {
+        Piece *more = realloc(pieces, (size_t)(pieces_cap + 64) * sizeof *pieces);
+        if (!more)
+            return;
+        pieces = more;
+        pieces_cap += 64;
+    }
+    pieces[pieces_n].s = s;
+    pieces[pieces_n].dx = dx;
+    pieces[pieces_n].dy = dy;
+    SetRect(&pieces[pieces_n].r, l, t, r, b);
+    pieces_n++;
     /* every window shown gets a plane: what it draws next (text) is drawn
        there sharp */
-    if (plane(s)) {
+    if (plane(s))
         sync_rect(s, l - dx, t - dy, r - dx, b - dy);
+}
+
+/* What of piece p shows: rectangle l, t, r, b. */
+static void draw_piece(const Piece *p, int l, int t, int r, int b)
+{
+    int d = hd_density, dx = p->dx, dy = p->dy, x, y, i;
+    Bitmap *s = p->s;
+    if (valid(s)) {
         for (y = t * d; y < b * d; y++) {
             uint32_t *o = screen->hd + (size_t)y * screen->w * d + l * d;
-            memcpy(o, s->hd + (size_t)(y - dy * d) * s->w * d + (l - dx) * d, (size_t)(r - l) * d * 4);
-            if (s->hd_alpha)
-                for (x = 0; x < (r - l) * d; x++)
-                    o[x] |= 0xff000000u;
+            const uint32_t *in = s->hd + (size_t)(y - dy * d) * s->w * d + (l - dx) * d;
+            /* (a row as the frame has it already: not uploaded again) */
+            if (s->hd_alpha) {
+                for (x = 0; x < (r - l) * d && o[x] == (in[x] | 0xff000000u); x++)
+                    ;
+                if (x == (r - l) * d)
+                    continue;
+                for (; x < (r - l) * d; x++)
+                    o[x] = in[x] | 0xff000000u;
+            } else {
+                if (same_bytes(o, in, (size_t)(r - l) * d * 4))
+                    continue;
+                memcpy(o, in, (size_t)(r - l) * d * 4);
+            }
+            frame_rows(y, y + 1);
         }
         return;
     }
     if (!pixel_bytes(s))
         return;
+    frame_rows(t * d, b * d);
     for (y = t; y < b; y++) {
         const unsigned char *row = bmp_row(s, y - dy);
         for (x = l; x < r; x++) {
-            uint32_t c = logical(s, row, x - dx), *p = screen->hd + (size_t)y * d * screen->w * d + (size_t)x * d;
-            for (i = 0; i < d; i++, p += screen->w * d) {
+            uint32_t c = logical(s, row, x - dx), *q = screen->hd + (size_t)y * d * screen->w * d + (size_t)x * d;
+            for (i = 0; i < d; i++, q += screen->w * d) {
                 int k;
                 for (k = 0; k < d; k++)
-                    p[k] = c;
+                    q[k] = c;
             }
         }
     }
+}
+
+static void draw_pieces(void)
+{
+    static Region shows;
+    int i, k;
+    for (i = pieces_n - 1; i >= 0; i--) {
+        const Piece *p = &pieces[i];
+        rgn_copy(&shows, &bare);
+        rgn_intersect_rect(&shows, &p->r);
+        for (k = 0; k < shows.n; k++)
+            draw_piece(p, shows.r[k].left, shows.r[k].top, shows.r[k].right, shows.r[k].bottom);
+        rgn_subtract_rect(&bare, &p->r);
+    }
+    pieces_n = 0;
 }
 
 /* The background (the desktop's own surface, with a plane of its own, so
@@ -1740,9 +1823,14 @@ static void compose_background(void)
         if (l >= r || t >= b)
             continue;
         sync_rect(root, l, t, r, b);
-        for (y = t * d; y < b * d; y++)
-            memcpy(screen->hd + (size_t)y * screen->w * d + l * d, root->hd + (size_t)y * root->w * d + l * d,
-                   (size_t)(r - l) * d * 4);
+        for (y = t * d; y < b * d; y++) {
+            uint32_t *o = screen->hd + (size_t)y * screen->w * d + l * d;
+            const uint32_t *in = root->hd + (size_t)y * root->w * d + l * d;
+            if (same_bytes(o, in, (size_t)(r - l) * d * 4))
+                continue;
+            memcpy(o, in, (size_t)(r - l) * d * 4);
+            frame_rows(y, y + 1);
+        }
     }
 }
 
@@ -1751,9 +1839,11 @@ void hd_compose_end(const unsigned char *lut)
     size_t i, n;
     if (!hd_on || !valid(screen))
         return;
+    draw_pieces();
     compose_background();
     rgn_clear(&bare);
     if (lut) {
+        frame_rows(0, screen->h * hd_density);
         n = (size_t)screen->w * screen->h * hd_density * hd_density;
         for (i = 0; i < n; i++) {
             uint32_t c = screen->hd[i];
@@ -1772,6 +1862,19 @@ const unsigned int *hd_frame(void)
         return NULL;
     sync_rect(screen, 0, 0, screen->w, screen->h);
     return screen->hd;
+}
+
+void hd_frame_changed(int *top, int *bottom, int all)
+{
+    int h = valid(screen) ? screen->h * hd_density : 0;
+    if (all)
+        frame_rows(0, h);
+    *top = frame_top < 0 ? 0 : frame_top > h ? h : frame_top;
+    *bottom = frame_bottom > h ? h : frame_bottom;
+    if (*bottom < *top)
+        *bottom = *top;
+    frame_top = INT_MAX;
+    frame_bottom = 0;
 }
 
 /* The frame as a 24-bit BMP (replays' `shot`, CIV2_TEST_HD). */

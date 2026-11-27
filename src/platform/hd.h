@@ -226,6 +226,9 @@ void hd_compose_piece(struct Bitmap *s, int dx, int dy, int l, int t, int r, int
 void hd_compose_end(const unsigned char *lut);
 /* The HD frame to present (screen_w*d x screen_h*d), or NULL. */
 const unsigned int *hd_frame(void);
+/* The frame's rows that changed since this was last asked, [*top, *bottom)
+   (empty: none): what the host need upload again.  all: every row. */
+void hd_frame_changed(int *top, int *bottom, int all);
 void hd_screenshot(const char *path);
 
 #ifdef __cplusplus

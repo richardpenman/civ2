@@ -10,7 +10,7 @@ import {join, relative, extname, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
-export const WEB = join(ROOT, 'build', 'web');
+export const WEB = process.env.CIV2_WEB || join(ROOT, 'build', 'web');
 const CHROME = process.env.CHROME || join(ROOT, 'tools', 'toolchain', 'chrome-headless-shell', 'chrome-headless-shell');
 
 // ---- a stored (uncompressed) .zip of the game's folder ----

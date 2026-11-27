@@ -75,9 +75,14 @@ static void fit_desktop(void)
         SDL_RenderSetIntegerScale(renderer, w >= screen_w && h >= screen_h ? SDL_TRUE : SDL_FALSE);
 }
 
+/* The texture holds no HD frame yet (made anew, or the classic picture
+   put in it): host_present_hd uploads all of the next one. */
+static int texture_stale = 1;
+
 /* The w x h desktop shown in the window (fit_desktop). */
 static int make_texture(int w, int h)
 {
+    texture_stale = 1;
     SDL_RenderSetLogicalSize(renderer, w, h);
     fit_desktop();
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, w * texture_density,
@@ -322,12 +327,22 @@ static void texture_at(int density)
     }
 }
 
-void host_present_hd(const void *pixels, int stride, int density)
+void host_present_hd(const void *pixels, int stride, int density, int top, int bottom)
 {
     texture_at(density < 1 ? 1 : density);
     if (!texture)
         return;
-    SDL_UpdateTexture(texture, NULL, pixels, stride);
+    if (texture_stale) {
+        texture_stale = 0;
+        SDL_UpdateTexture(texture, NULL, pixels, stride);
+    } else if (bottom > top) {
+        SDL_Rect r;
+        r.x = 0;
+        r.y = top;
+        r.w = stride / 4;
+        r.h = bottom - top;
+        SDL_UpdateTexture(texture, &r, (const char *)pixels + (size_t)top * stride, stride);
+    }
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
@@ -338,6 +353,7 @@ void host_present(const void *pixels, int stride)
     texture_at(1);
     if (!texture)
         return;
+    texture_stale = 1;
     SDL_UpdateTexture(texture, NULL, pixels, stride);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -507,6 +523,10 @@ static int convert(const SDL_Event *s, HostEvent *e)
         e->button = n;
         return 1;
     }
+    case SDL_RENDER_TARGETS_RESET:
+    case SDL_RENDER_DEVICE_RESET:
+        texture_stale = 1;          /* (the texture's pixels lost: all of the next frame) */
+        return 0;
     case SDL_WINDOWEVENT:
         if (s->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
             int w, h;

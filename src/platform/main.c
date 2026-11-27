@@ -78,8 +78,13 @@ void plat_present(void)
     {
         /* HD graphics (hd.c): its frame, density times larger */
         const unsigned int *frame = hd_on ? hd_frame() : NULL;
-        if (frame)
-            host_present_hd(frame, screen_w * hd_density * 4, hd_density);
+        if (frame) {
+            /* (only the rows that changed uploaded again; all of them
+               after a popup menu drawn on the screen itself) */
+            int top, bottom;
+            hd_frame_changed(&top, &bottom, plat_overlay);
+            host_present_hd(frame, screen_w * hd_density * 4, hd_density, top, bottom);
+        }
         else
             host_present(screen->bits, screen->stride);
     }

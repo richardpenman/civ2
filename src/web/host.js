@@ -135,6 +135,9 @@ export async function runGame(opts) {
     //    number of device pixels each where it fits, else shrunk
     //    HD graphics: the canvas density times larger (host_present_hd)
     let screenW = 640, screenH = 480, follows = false, image = null, density = 1, shown = 1;
+    // (the canvas holds no HD frame: the next one put there whole, not
+    // only its rows that changed)
+    let stale = true;
     const dpr = () => window.devicePixelRatio || 1;
     const viewport = () => [Math.floor(window.innerWidth * dpr()), Math.floor(window.innerHeight * dpr())];
     // (whole device pixels for each of the canvas's: crisp; else smoothed)
@@ -158,8 +161,13 @@ export async function runGame(opts) {
         canvas.width = screenW * d;
         canvas.height = screenH * d;
         image = ctx.createImageData(canvas.width, canvas.height);
+        stale = true;
         rendering();
     };
+    // (the canvas's pixels lost by the browser and given back blank)
+    canvas.addEventListener('contextrestored', () => {
+        stale = true;
+    });
     const setDesktop = (w, h) => {
         screenW = w;
         screenH = h;
@@ -242,17 +250,26 @@ export async function runGame(opts) {
         held.clear();
     });
 
-    // ARGB rows (the game's) onto the canvas, w x h
-    function present(pixels, stride, w, h) {
+    // ARGB rows (the game's) onto the canvas, w x h; only rows [top,
+    // bottom) where those are all that changed (HD graphics: a unit's move
+    // is a few rows of a frame of millions of pixels, which would take
+    // longer to convert and put on the canvas than the move's frame lasts)
+    function present(pixels, stride, w, h, top = 0, bottom = h) {
         if (!image)
             return;
+        top = Math.max(0, Math.min(top, h));
+        bottom = Math.max(top, Math.min(bottom, h));
         const dst = new Uint32Array(image.data.buffer);
         if (stride === w * 4)
-            argbToRgba(new Uint32Array(memory.buffer, pixels, w * h), dst, w * h);
+            argbToRgba(new Uint32Array(memory.buffer, pixels + top * stride, w * (bottom - top)),
+                       dst.subarray(top * w), w * (bottom - top));
         else
-            for (let y = 0; y < h; y++)
+            for (let y = top; y < bottom; y++)
                 argbToRgba(new Uint32Array(memory.buffer, pixels + y * stride, w), dst.subarray(y * w), w);
-        ctx.putImageData(image, 0, 0);
+        if (top === 0 && bottom === h)
+            ctx.putImageData(image, 0, 0);
+        else if (bottom > top)
+            ctx.putImageData(image, 0, 0, 0, top, w, bottom - top);
         if (opts.stats)
             opts.stats.memoryBytes = memory.buffer.byteLength;
         if (opts.onFrame) {
@@ -370,12 +387,19 @@ export async function runGame(opts) {
         // desktop's size each way, on a canvas of that size shown where the
         // desktop is (at the device's pixels where the density is the
         // desktop's scale: Auto)
-        host_present_hd: (pixels, stride, d) => {
+        host_present_hd: (pixels, stride, d, top, bottom) => {
             const t = performance.now();
             if (d !== density || canvas.width !== screenW * d || canvas.height !== screenH * d)
                 setDensity(d);
-            present(pixels, stride, canvas.width, canvas.height);
+            if (stale) {
+                top = 0;
+                bottom = canvas.height;
+            }
+            present(pixels, stride, canvas.width, canvas.height, top, bottom);
+            stale = false;
             if (opts.stats) {
+                // (hdRows: the rows put on the canvas, those that changed)
+                opts.stats.hdRows = (opts.stats.hdRows || 0) + Math.max(0, bottom - top);
                 opts.stats.hdFrames = (opts.stats.hdFrames || 0) + 1;
                 opts.stats.hdMs = (opts.stats.hdMs || 0) + performance.now() - t;
             }
@@ -384,6 +408,7 @@ export async function runGame(opts) {
             if (density !== 1)
                 setDensity(1);
             present(pixels, stride, screenW, screenH);
+            stale = true;
         },
         host_resize_desktop: (w, h) => {
             if (w !== screenW || h !== screenH)

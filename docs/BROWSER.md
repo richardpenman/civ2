@@ -220,8 +220,10 @@ drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in 
 switches it for that visit, as `--sharp=0` natively.
 
 What it takes: 25 MB from the site (the pictures the game uses, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
-without, 179 MB with sharp text alone); showing a 2560x1600 frame takes about 10 ms (Chrome, this
-machine).
+without, 179 MB with sharp text alone); showing a whole 2560x1600 frame takes about 10 ms (Chrome, this
+machine), so only the frame's rows that changed since the last one are put on the canvas (`hd_frame_changed`,
+`host_present_hd`'s `top` and `bottom`): a unit's slide, 17 frames 15 ms apart in the original, changes a band of
+some 100 rows of each, and moves at the original's speed rather than half of it (`src/web/test/perf.mjs`).
 
 ## Saved games
 

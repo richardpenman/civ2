@@ -106,8 +106,8 @@ void HOST(menu_add)(Host *h, u32 level, u32 flags, u32 id, u32 text)
 }
 void HOST(menu_end)(Host *h) { (void)h; host_menu_end(); }
 void HOST(present)(Host *h, u32 pixels, u32 stride) { (void)h; host_present(MEM(pixels), (int)stride); }
-void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density)
-{ (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density); }
+void HOST(present_hd)(Host *h, u32 pixels, u32 stride, u32 density, u32 top, u32 bottom)
+{ (void)h; host_present_hd(MEM(pixels), (int)stride, (int)density, (int)top, (int)bottom); }
 void HOST(minimize)(Host *h) { (void)h; host_minimize(); }
 u32 HOST(restart)(Host *h, u32 now) { (void)h; return (u32)host_restart((int)now); }
 /* (the game's folder, as the system names it: setup_choose_game's) */

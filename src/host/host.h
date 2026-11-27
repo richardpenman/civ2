@@ -101,8 +101,10 @@ void HOST_API(host_menu_end)(void);
  * messages posted meanwhile (the sound's). */
 void host_modal_tick(void);
 void HOST_API(host_present)(const void *pixels, int stride);
-/* HD graphics: the same desktop in density x density pixels each. */
-void HOST_API(host_present_hd)(const void *pixels, int stride, int density);
+/* HD graphics: the same desktop in density x density pixels each; only its
+ * rows [top, bottom) changed since the last frame (where the host keeps
+ * it: the rest as shown then). */
+void HOST_API(host_present_hd)(const void *pixels, int stride, int density, int top, int bottom);
 /* The desktop shown in the window is now w x h (HOST_EV_RESIZE). */
 void HOST_API(host_resize_desktop)(int w, int h);
 /* Minimize the window (the desktop's main window was minimized). */

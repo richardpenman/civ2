@@ -376,6 +376,11 @@ builds do not use it.
   a copy, the saves and the language without one; a later visit at once, without the bar; then,
   where `~/Civ2` is, a few of its files chosen on the set-up page: added, `CIV.INI` kept;
   screenshots in `run/web-start`), then
+  `src/web/test/perf.mjs` (a fresh profile, no copy of the game, a device pixel ratio of 2: a
+  new game on a small world, its first units moved with the keypad until four moves slid, each
+  timed from its key: the slide's frames at most 25 ms apart and the move's last frame within
+  500 ms (medians; the original's slide is 17 frames 15 ms apart, 240 ms, at the default zoom); `PERF_SAVE=FILE` opens
+  a saved game instead, `PERF_PROFILE=1` adds a CPU profile; screenshots in `run/web-perf`), then
   `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
   from `tools/fetch-toolchain.sh browser`; Linux x86-64) first sets the game up from the made-up
   disc image through the page (its file input, the worker, IndexedDB; the music decoded by the
