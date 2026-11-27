@@ -11,7 +11,10 @@
 # 3. with HD graphics (CIV2_TEST_HD=1) it is made from data/native/sound
 #    first, with the game's Sound folder and without it;
 # 4. the main menu's OK clicked while its theme keeps the output's buffers
-#    queued: its sound mixed into them, not queued after them.
+#    queued: its sound mixed into them, not queued after them;
+# 5. a new game set up to its map: the theme (MENULOOP) stopped when the
+#    menus close, taken out of the queued buffers (MENUEND is mixed into
+#    them), and not mixed again by the time the map is shown.
 # Inside the container (make test-sound): sh tests/sound_fallback_test.sh
 # (EXE: the build to run, default civ2-linux32)
 cd "$(dirname "$0")/.." || exit 1
@@ -84,5 +87,24 @@ click() {
 ahead=
 click sound-click CIV2_TEST_HD= "Classic graphics"
 [ -n "$hd" ] && click sound-click-hd CIV2_TEST_HD=1 "HD graphics"
-[ $fail = 0 ] && echo "PASS sound fallback (with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder, none with it$hd; the menu's click mixed in ahead of the queued theme$ahead)"
+# The start menus' theme stopped when they close (src/auto/sound.cpp:
+# snd_menu_end, snd_wave_strip_queued): a new game set up (the main menu's
+# Start a New Game, the set-up's screens) to its map; MENULOOP (107) taken
+# out of the queued buffers when it stops, MENUEND (108) mixed in after
+# that, and 107 not mixed again before the map is shown
+sed -n '1,/^shot 12-map/p' harness/scripts/newgame.txt > $script
+printf 'wait 5000\nquit\n' >> $script
+theme() {
+    run "$1" "$2"
+    if ! awk '/sound: 107 stopped, taken out of the queued buffers/ { s = 1; next }
+              s && /sound: mixing.* 108/ { e = 1 }
+              s && /sound: mixing.* 107( |$)/ { bad = 1 }
+              s && /^shot 12-map at/ { m = 1 }
+              END { exit !(s && e && m && !bad) }' "run/$1/hook.log"; then
+        echo "FAIL: $3, the menus' theme not stopped when they close, or mixed again before the map (run/$1/hook.log)"; fail=1
+    fi
+}
+theme sound-theme CIV2_TEST_HD= "Classic graphics"
+[ -n "$hd" ] && theme sound-theme-hd CIV2_TEST_HD=1 "HD graphics"
+[ $fail = 0 ] && echo "PASS sound fallback (with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder, none with it$hd; the menu's click mixed in ahead of the queued theme$ahead; the theme stopped when the menus close, taken out of the queued buffers, not mixed again before the map)"
 exit $fail

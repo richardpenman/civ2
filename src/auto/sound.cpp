@@ -1041,6 +1041,136 @@ i16 __cdecl snd_avi_stream_start(void)
   return (short)ring;
 }
 
+EXTERN_C int plat_replay;
+EXTERN_C void plat_log(const char *fmt, ...);
+
+/* (port) What each sound has put in the output's buffers, as the change it
+   made to their samples (snd_wave_copy_source, snd_wave_mix_source), kept
+   until the buffer is filled again or the sound freed: a sound stopped
+   (snd_wave_free_by_id: the start menus' theme, MENULOOP, when the menus
+   close) is taken out of what of the queued buffers is not yet heard
+   (snd_wave_strip_queued), since snd_wave_mix_queued has a sound started
+   meanwhile (MENUEND) mixed in there, over it, not after it. */
+typedef struct {
+  byte *start;
+  uint length;
+  WaveSource *source;
+  signed char *delta;
+} SndContrib;
+static SndContrib *snd_contribs;
+static int snd_contrib_count, snd_contrib_room;
+
+static void snd_contrib_drop(int i)
+{
+  free(snd_contribs[i].delta);
+  snd_contribs[i] = snd_contribs[--snd_contrib_count];
+}
+
+/* [start, start + length) filled anew: what was noted there forgotten */
+static void snd_contrib_forget(byte *start, uint length)
+{
+  int i;
+  for (i = snd_contrib_count - 1; i >= 0; i--) {
+    if ((snd_contribs[i].start < start + length) &&
+        (start < snd_contribs[i].start + snd_contribs[i].length))
+      snd_contrib_drop(i);
+  }
+}
+
+/* the source freed: what it put in the buffers forgotten */
+static void snd_contrib_forget_source(WaveSource *source)
+{
+  int i;
+  for (i = snd_contrib_count - 1; i >= 0; i--) {
+    if (snd_contribs[i].source == source) snd_contrib_drop(i);
+  }
+}
+
+/* the source's change to [start, start + length): after - before */
+static void snd_contrib_note(WaveSource *source, byte *start, const byte *before, uint length)
+{
+  SndContrib *c;
+  uint j;
+  if ((source == 0) || (length == 0)) return;
+  if (snd_contrib_count == snd_contrib_room) {
+    snd_contrib_room = snd_contrib_room ? snd_contrib_room * 2 : 32;
+    snd_contribs = (SndContrib *)realloc(snd_contribs, snd_contrib_room * sizeof *snd_contribs);
+  }
+  c = &snd_contribs[snd_contrib_count++];
+  c->start = start;
+  c->length = length;
+  c->source = source;
+  c->delta = (signed char *)malloc(length);
+  for (j = 0; j < length; j++)
+    c->delta[j] = (signed char)((signed char)start[j] - (before ? (signed char)before[j] : 0));
+}
+
+/* The source stopped: its part of the queued buffers not yet heard taken
+   out of them (written with their samples' top bit flipped:
+   snd_wave_write_pending), and they queued again.  Not with an AVI's sound
+   playing (as snd_wave_mix_queued). */
+static void snd_wave_strip_queued(WaveSource *source)
+{
+  LPWAVEHDR hdrs[64];
+  DWORD offsets[64];
+  WaveSource *other;
+  int i, k, n, found = 0;
+  byte *from, *to, *p;
+  int v;
+
+  for (k = 0; k < snd_contrib_count; k++) {
+    if (snd_contribs[k].source == source) found = 1;
+  }
+  if (!found || (snd_wave.out_handle == 0)) return;
+  for (other = snd_wave.sources; other != 0; other = other->next) {
+    if (other->kind == 4) return;
+  }
+  n = plat_wave_unplayed((*(HWAVEOUT *)&snd_wave.out_handle),hdrs,offsets,64);
+  for (i = 0; i < n; i++) {
+    from = (byte *)hdrs[i]->lpData + offsets[i];
+    to = (byte *)hdrs[i]->lpData + hdrs[i]->dwBufferLength;
+    for (k = 0; k < snd_contrib_count; k++) {
+      SndContrib *c = &snd_contribs[k];
+      if ((c->source != source) || (c->start >= to) || (c->start + c->length <= from)) continue;
+      for (p = (c->start > from) ? c->start : from; (p < to) && (p < c->start + c->length); p++) {
+        v = (int)(signed char)(*p ^ 0x80) - c->delta[p - c->start];
+        if (v > 0x7f) v = 0x7f;
+        else if (v < -0x80) v = -0x80;
+        *p = (byte)((signed char)v) ^ 0x80;
+      }
+    }
+  }
+  if (plat_replay && (n != 0))
+    plat_log("sound: %d stopped, taken out of the queued buffers\n", (int)source->sound_id);
+  plat_wave_requeue((*(HWAVEOUT *)&snd_wave.out_handle));
+}
+
+/* (port) In a replay with audio (CIV2_TEST_AUDIO), the sounds being mixed
+   into the output's buffers, logged when they change (hook.log: "sound:
+   mixing 107 108"; tests/sound_fallback_test.sh), and with CIV2_LOG_SOUND
+   set (the browser's: ?log, in the console). */
+static void snd_log_mixing(void)
+{
+  static char last[64] = "-";
+  char ids[64];
+  int n = 0;
+  WaveSource *source;
+
+  static int wanted = -1;
+
+  if (wanted < 0) wanted = plat_replay || (getenv("CIV2_LOG_SOUND") != 0);
+  if (!wanted) return;
+  ids[0] = 0;
+  for (source = snd_wave.sources; (source != 0) && (n < 50); source = source->next) {
+    if ((source->flags & 3) == 0)
+      n += snprintf(ids + n, sizeof ids - n, " %d", (int)source->sound_id);
+  }
+  if (strcmp(ids, last) != 0) {
+    strcpy(last, ids);
+    plat_log("sound: mixing%s\n", n ? ids : " nothing");
+  }
+}
+
 /* (port) A sound started while the output's buffers are all queued was mixed
    only into each buffer as the device gave it back, so heard after all that
    was queued before it: in the start menu, behind its looping theme, four
@@ -1062,6 +1192,7 @@ static void snd_wave_mix_queued(WaveSource *source)
   for (other = snd_wave.sources; other != 0; other = other->next) {
     if (other->kind == 4) return;
   }
+  snd_log_mixing();
   n = plat_wave_unplayed((*(HWAVEOUT *)&snd_wave.out_handle),hdrs,offsets,64);
   for (i = 0; (i < n) && (((u8)source->flags & 1) == 0); i++) {
     data = (byte *)hdrs[i]->lpData + offsets[i];
@@ -1140,6 +1271,7 @@ void __cdecl snd_wave_free_by_id(i32 sound_id)
   source = snd_wave.sources;
   while (source != 0) {
     if (source->sound_id == (short)sound_id) {
+      snd_wave_strip_queued(source);  /* (port) */
       source = snd_wave_free(prev,source);
     }
     else {
@@ -1572,6 +1704,7 @@ i32 __cdecl snd_wave_on_buffer_done(HWAVEOUT wave_out,WaveHeader *wave_hdr)
         {
           source = source->next;
         }
+        snd_log_mixing();  /* (port) */
         if (source == (WaveSource *)0x0) {
           snd_fill_silence_u8((u8 *)buffer->hdr->data,buffer->hdr->length);
           buffer->flags = buffer->flags & 0xffffffdf;
@@ -1585,6 +1718,7 @@ i32 __cdecl snd_wave_on_buffer_done(HWAVEOUT wave_out,WaveHeader *wave_hdr)
               }
               src = (buffer->flags >> 7 & 0xff) * source->buffer_bytes +
                       source->buf_start;
+              snd_contrib_forget((byte *)buffer->data,buffer->length);  /* (port) */
               snd_resample_8bit((byte *)buffer->data,(byte *)src,buffer->length / (int)(uint)(ushort)snd_wave.block_align,
                            (ushort)source->block_align,(ushort)snd_wave.block_align);
               if ((buffer->flags >> 1 & 1) != 0) {
@@ -1683,6 +1817,7 @@ i32 __cdecl snd_wave_mix_buffer(WaveHeader *hdr)
     while ((source != (WaveSource *)0x0 && ((source->flags >> 1 & 1) != 0))) {
       source = source->next;
     }
+    snd_log_mixing();  /* (port) */
     if (source == (WaveSource *)0x0) {
       buffer->flags = buffer->flags & 0xffffffdf;
     }
@@ -1691,6 +1826,7 @@ i32 __cdecl snd_wave_mix_buffer(WaveHeader *hdr)
         if (source->kind == 4) {
           src = (buffer->flags >> 7 & 0xff) * source->buffer_bytes +
                   source->buf_start;
+          snd_contrib_forget((byte *)buffer->data,buffer->length);  /* (port) */
           snd_resample_8bit((byte *)buffer->data,(byte *)src,
                        buffer->length / (int)(uint)(ushort)snd_wave.block_align,
                        (ushort)source->block_align,(ushort)snd_wave.block_align);
@@ -1770,6 +1906,7 @@ WaveSource * __cdecl snd_wave_free(WaveSource *prev,WaveSource *source)
       new_head = snd_wave.sources;
     }
     snd_wave.sources = new_head;
+    snd_contrib_forget_source(source);  /* (port) */
     mmioClose(source->mmio,0);
     if ((source->flags >> 2 & 1) != 0) {
       mmioClose(source->file_mmio,0);
@@ -1794,6 +1931,7 @@ i32 __cdecl snd_wave_copy_source(WaveSource *source,int dst,uint length)
   uint count;
   uint remaining;
   
+  snd_contrib_forget((byte *)(iptr)dst,length);  /* (port) the buffer filled anew */
   want = length / (ushort)snd_wave.block_align;
   if ((source == 0) || (((u8)source->flags & 1) != 0)) {
     count = 0;
@@ -1846,6 +1984,7 @@ i32 __cdecl snd_wave_copy_source(WaveSource *source,int dst,uint length)
     }
     result = 1;
   }
+  snd_contrib_note(source,(byte *)(iptr)dst,0,length);  /* (port) */
   return result;
 }
 
@@ -1885,10 +2024,19 @@ i32 __cdecl snd_wave_mix_source(WaveSource *source,i32 dst,uint length)
     flags = (uptr)source;
   }
   if (count != 0) {
+    /* (port) the samples before, for what the source adds to them */
+    static byte *before;
+    static uint before_room;
+    if (before_room < length) {
+      before_room = length;
+      before = (byte *)realloc(before,length);
+    }
+    crt_memmove(before,(void *)(iptr)dst,length);
     consumed = snd_mix_8bit_resample((char *)dst,(byte *)source->buf_next,count,
                          (ushort)source->block_align,(ushort)snd_wave.block_align);
     advance = (uint)consumed;
     source->buf_next = source->buf_next + advance;
+    snd_contrib_note(source,(byte *)(iptr)dst,before,length);  /* (port) */
   }
   if ((source->flags >> 2 & 1) == 0) {
     source->play_pos = source->play_pos + source->block_align * count;
