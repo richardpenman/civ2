@@ -8,7 +8,7 @@
 # pinned in data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its
 # download and its result cached) and packed with each; so are OpenCiv2's
 # own music and heralds (data/native/music, data/native/heralds: not in the
-# repository either), made from OpenCiv2's own openciv2/openciv2-assets at
+# repository either), made from OpenCiv2's own openciv2/openciv2-media at
 # the commit pinned in data/own-assets.json (tools/build_own_assets.py, the
 # job own-assets, its download and result cached).
 name: Build and release

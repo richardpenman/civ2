@@ -4,7 +4,7 @@
 # docs/NO-INSTALL.md, Music):
 # 1. every track decodes whole with stb_vorbis, as the music player decodes
 #    it (tests/music_decode.c): stereo, 48 kHz, as long as the source says
-#    (data/own-assets.json's tracks: openciv2/openciv2-assets' README, to a
+#    (data/own-assets.json's tracks: openciv2/openciv2-media' README, to a
 #    second);
 # 2. with Classic graphics (a replay's), without the game's Music folder
 #    (the replays leave it out) and with

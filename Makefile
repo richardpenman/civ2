@@ -24,7 +24,7 @@ HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@ech
 
 # OpenCiv2's own assets, data/native/music (docs/NO-INSTALL.md, Music) and
 # data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds): not in the
-# repository, made from OpenCiv2's own openciv2/openciv2-assets (not Peter
+# repository, made from OpenCiv2's own openciv2/openciv2-media (not Peter
 # Johnson's, the HD art's) at the commit pinned in data/own-assets.json
 # (tools/build_own_assets.py: the files, the music already Ogg Vorbis as the
 # game plays it, fetched once into ~/.cache/openciv2 and copied as they are,
@@ -102,10 +102,10 @@ hd-art:                       ## the HD graphics' art in data/native/hd from the
 	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
 # OpenCiv2's own music and heralds: data/native/music and data/native/heralds
-# from the commit of openciv2/openciv2-assets pinned in data/own-assets.json
+# from the commit of openciv2/openciv2-media pinned in data/own-assets.json
 # (OWN_ASSETS above; fetched once, about 30 MB, and copied; FORCE=1: made
 # again, whatever is there or in the cache).
-own-assets:                   ## OpenCiv2's own music and heralds in data/native/music, heralds, fetched from the pinned commit of openciv2/openciv2-assets and copied (tools/build_own_assets.py; at once when up to date)
+own-assets:                   ## OpenCiv2's own music and heralds in data/native/music, heralds, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
 	python3 tools/build_own_assets.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)

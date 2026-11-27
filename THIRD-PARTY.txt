@@ -34,7 +34,7 @@ original's:
 
 The programs also carry OpenCiv2's own music and heralds (data/native/music,
 data/native/heralds, made by tools/build_own_assets.py from OpenCiv2's own
-repository openciv2/openciv2-assets at its pinned commit), played where the
+repository openciv2/openciv2-media at its pinned commit), played where the
 game folder lacks the CD's music and heralds: not third-party, but under
 OpenCiv2's own licence (MIT, Copyright (c) 2026 Richard Penman: LICENSE),
 credited at the end.
@@ -540,10 +540,10 @@ made from them.
 
 
 
-OpenCiv2's own music and heralds  https://github.com/openciv2/openciv2-assets
+OpenCiv2's own music and heralds  https://github.com/openciv2/openciv2-media
 -----------------------------------------------------------------------------
 
-Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-assets
+Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-media
 (not Peter Johnson's PeterJohnson/openciv2-assets above), at the commit
 pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
 2026 Richard Penman; the repository's LICENSE, beside the files in

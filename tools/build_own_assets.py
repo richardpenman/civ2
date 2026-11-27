@@ -4,7 +4,7 @@ the tracks the game plays where its folder lacks Civilization II's CD
 music, Music\\TrackNN.ogg or .wav: src/platform/sound.c) and
 data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds: the diplomacy
 room's animated heralds, src/platform/hd.c: hd_herald_find) from OpenCiv2's
-own repository openciv2/openciv2-assets (MIT, as OpenCiv2; not Peter
+own repository openciv2/openciv2-media (MIT, as OpenCiv2; not Peter
 Johnson's PeterJohnson/openciv2-assets, the HD art's: tools/build_hd_pack.py)
 at the commit pinned in data/own-assets.json (repo, sha, and each file's
 path, SHA-256 and size).  They are not part of this repository
@@ -49,7 +49,7 @@ README = """OpenCiv2's own music (docs/NO-INSTALL.md, Music)
 The game plays trackNN.ogg as the CD's audio track NN where its folder has
 no Music\\TrackNN.ogg or Music\\TrackNN.wav (src/platform/sound.c).
 
-From OpenCiv2's own repository openciv2/openciv2-assets
+From OpenCiv2's own repository openciv2/openciv2-media
 ({repo}) at commit {sha}:
 {tracks}
 copied as they are by tools/build_own_assets.py.

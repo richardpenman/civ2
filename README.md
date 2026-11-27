@@ -79,7 +79,7 @@ only).
 
 OpenCiv2's own music and heralds (the music played first with HD graphics, with Classic
 graphics where the game folder lacks the CD's music; the heralds where it lacks the CD's) are not in the repository either: the builds fetch them from
-[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) at its pinned commit
+[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) at its pinned commit
 once (`make own-assets`; about 30 MB, the music already Ogg Vorbis as the game plays it, so
 nothing is converted and nothing needs installing but Python 3). Later builds take them from
 `~/.cache/openciv2`, offline. `make OWN_ASSETS=` builds without them.

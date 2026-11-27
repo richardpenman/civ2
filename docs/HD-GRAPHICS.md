@@ -264,7 +264,7 @@ With HD graphics, a herald of OpenCiv2's own plays in its place where
 `data/native/heralds/heralds.txt` has one for the tribe (or the local staging folder's
 `data/native/hd-extra/heralds.txt`, which wins where it has the tribe: `hd_herald_find`).
 `data/native/heralds` is not in the repository: the builds fetch it, as it is, from OpenCiv2's
-own repository [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets)
+own repository [openciv2/openciv2-media](https://github.com/openciv2/openciv2-media)
 (`heralds/`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's)
 at the commit pinned in `data/own-assets.json`, with the music (`make own-assets`,
 `tools/build_own_assets.py`: once, into `~/.cache/openciv2`, each file checked against its
@@ -770,7 +770,7 @@ The art: openciv2-assets by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PA
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
-OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-assets, and
+OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-media, and
 `data/native/hd-extra`, the local staging folder) are under its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
 (the Russians' herald's under *Your own heralds*).
 

@@ -255,7 +255,7 @@ plays them as CD tracks 2 to 12, through MCI's `cdaudio`, `src/platform/sound.c`
 
 Replaced: OpenCiv2's own music, eleven tracks of the same order and about the same length,
 `data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's own repository
-[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`game/music/track02.ogg`
+[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`game/music/track02.ogg`
 to `track12.ogg`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD
 art's).  The repository holds them as the game plays them: Ogg Vorbis (which stb_vorbis, the
 game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.4 MB for the eleven, 25
