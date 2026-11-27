@@ -16,7 +16,9 @@
 // ticked in Settings, Find the original files...: the set-up page
 // over the game, the .zip chosen there again, the files the game lacked
 // added, the restart offered, and after it Classic graphics (no art
-// loaded, Graphics=Classic in CIV.INI).  Screenshots in
+// loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music: all its
+// tracks fetched with HD graphics, with Classic graphics only those the game
+// lacks.  Screenshots in
 // run/web-hd (look at them).  Without the game it says so and passes.
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
@@ -236,15 +238,16 @@ async function main() {
         for (const n of extra)
             if (!await evaluate(`!!window.civ2Fs.get(${JSON.stringify('/data/' + n)})`))
                 throw new Error(`${n} (data/native/heralds, hd-extra) not in the game's files`);
-        // OpenCiv2's own music (the site's data/music: make own-assets): none
-        // fetched where the game has its own (Music/TrackNN)
+        // OpenCiv2's own music (the site's data/music: make own-assets): with
+        // HD graphics all its tracks fetched, the game's own Music/TrackNN or
+        // not (sound.c plays ours first)
         const siteMusic = JSON.parse(readFileSync(join(WEB, 'data', 'music', 'index.json'), 'utf8'));
         const gameMusic = existsSync(join(GAME, 'Music')) || existsSync(join(GAME, 'MUSIC'));
-        await waitFor('window.civ2OwnMusic', 60000, 'the music looked at');
+        await waitFor('window.civ2OwnMusic', 120000, 'the music looked at');
         const own = await evaluate('window.civ2OwnMusic');
-        log(`OpenCiv2's own music: ${siteMusic.length} tracks on the site, ${own.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
-        if (gameMusic && own.length)
-            throw new Error('OpenCiv2\'s own music fetched where the game has its own');
+        log(`OpenCiv2's own music with HD graphics: ${siteMusic.length} tracks on the site, ${own.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
+        if (own.length !== siteMusic.length)
+            throw new Error('OpenCiv2\'s own music not all fetched with HD graphics');
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -374,6 +377,13 @@ async function main() {
         await shot('09-classic');
         if (await evaluate('window.civ2Hd'))
             throw new Error('the art loaded with Classic graphics');
+        // (Classic graphics: OpenCiv2's music only for the tracks the game
+        // lacks, none where it has its Music)
+        await waitFor('window.civ2OwnMusic', 120000, 'the music looked at (Classic graphics)');
+        const ownClassic = await evaluate('window.civ2OwnMusic');
+        log(`OpenCiv2's own music with Classic graphics: ${ownClassic.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
+        if (gameMusic ? ownClassic.length : ownClassic.length !== siteMusic.length)
+            throw new Error(`OpenCiv2's own music with Classic graphics: ${ownClassic.length} fetched`);
         if (!/Graphics=Classic/.test(await evaluate('new TextDecoder("latin1").decode(window.civ2Fs.get(' +
                                                      '[...window.civ2Fs.files.keys()].find((k) => /^\\/civ2\\/civ\\.ini$/i.test(k))))')))
             throw new Error('CIV.INI does not have Graphics=Classic');

@@ -93,7 +93,7 @@ and ticking Classic graphics there opening the dialog that offers to find the or
 and copy them in, as the set-up does).  The sound effects are
 OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0, still being chosen and not yet in the
 repository; decoded
-into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own where the game lacks
+into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
 it (`data/native/music`: openciv2/openciv2-assets, fetched by `make own-assets`; MIT).
 Still from the game: its videos, scenarios.  The editors'
 backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's

@@ -753,27 +753,29 @@ async function play(store) {
     // (tests, src/web/test/smoke.mjs: files and settings of a replay)
     if (window.civ2Test)
         await window.civ2Test(fs, env);
-    // OpenCiv2's own music for the CD tracks the player's game lacks
-    // (data/music, some 26 MB: sound.c plays data/music/trackNN.ogg as track
-    // NN where the game has no Music/TrackNN.ogg nor .wav), fetched while the
-    // game starts and plays, not waited for; put in all at once when all
-    // have come, so that the game, which counts the tracks when it opens the
-    // CD drive, finds all of them or none (until then it plays as without
-    // music); window.civ2OwnMusic: the tracks put in (tests)
+    // OpenCiv2's own music (data/music, some 26 MB): with HD graphics all
+    // its tracks (sound.c plays data/music/trackNN.ogg as track NN first,
+    // the game's Music/TrackNN only for a track it lacks), with Classic
+    // graphics those the player's game lacks (it plays the game's
+    // Music/TrackNN.ogg, else .wav, else ours); fetched while the game starts
+    // and plays, not waited for; put in all at once when all have come, so
+    // that the game, which counts the tracks when it opens the CD drive,
+    // finds all of them or none (until then it plays the game's own, or as
+    // without music); window.civ2OwnMusic: the tracks put in (tests)
     (async () => {
         const have = new Set([...fs.files.keys()].map((k) => k.toUpperCase()));
         const names = await fetch('data/music/index.json').then((r) => (r.ok ? r.json() : []));
-        const missing = names.filter((n) => {
+        const wanted = hd ? names : names.filter((n) => {
             const track = (GAME + '/MUSIC/' + n.slice(0, -4)).toUpperCase();
             return !have.has(track + '.OGG') && !have.has(track + '.WAV');
         });
-        const files = await Promise.all(missing.map((n) => fetch('data/music/' + n).then((r) => {
+        const files = await Promise.all(wanted.map((n) => fetch('data/music/' + n).then((r) => {
             if (!r.ok)
                 throw new Error(n + ': ' + r.status);
             return r.arrayBuffer();
         })));
-        missing.forEach((n, i) => fs.put(DATA + '/music/' + n, new Uint8Array(files[i])));
-        window.civ2OwnMusic = missing;
+        wanted.forEach((n, i) => fs.put(DATA + '/music/' + n, new Uint8Array(files[i])));
+        window.civ2OwnMusic = wanted;
     })().catch((e) => console.warn('OpenCiv2 music:', e));
     let code;
     try {

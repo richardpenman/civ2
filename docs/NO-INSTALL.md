@@ -265,20 +265,30 @@ with the heralds), and copy it as it is: nothing is converted, so nothing is nee
 3; later builds take it from there, offline.  `make OWN_ASSETS=` builds without it (nor the
 heralds).
 
-Where the game folder has neither `Music\TrackNN.ogg` nor `.wav` for a track, the drive plays
-`data/native/music/trackNN.ogg` (`cd_open_track`), as it plays an install's `.ogg`: read whole
+Which track the drive plays (`cd_open_track`) follows the graphics in use.  With HD graphics
+(*Classic graphics* unticked in Settings, or a game folder without the original's pictures) it
+plays OpenCiv2's own `data/native/music/trackNN.ogg` first, and the game folder's
+`Music\TrackNN.ogg`, else `.wav`, only for a track OpenCiv2 lacks.  With Classic graphics (and
+with `CIV2_CLASSIC=1`) the game folder's music comes first, as the original's, and OpenCiv2's
+only where the folder has neither `Music\TrackNN.ogg` nor `.wav` for a track.  A change of the
+graphics in Settings takes effect, as the graphics do, at the restart.  OpenCiv2's track is
+played as an install's `.ogg`: read whole
 (2 to 5 MB) and decoded as it plays, on the music's own thread (no WAV is made: a track as a
 44.1 kHz 16-bit WAV would be 6 to 36 MB).  The tracks are counted from 2 to the first that
 none of these has, so a game without music has a drive of 12 tracks, as the CD's.  Only with
 sound: a replay without it finds no drive, as before, so the recorded scenarios take the same
-steps.  The install's own music is always played where it is.  It is packaged with the
-programs (`data/music`; the Windows program's resources) and on the browser version's site
-(`data/music`: the page fetches the tracks the player's game lacks while the game starts, without
-waiting for them, and gives them to the game together once all have come).  `make test-music`
+steps; and replays have Classic graphics unless asked for HD (`CIV2_TEST_HD`, or the game
+folder without the original's pictures), so they play the install's music, as before.  It is
+packaged with the programs (`data/music`; the Windows program's resources) and on the browser
+version's site (`data/music`: the page fetches all the tracks with HD graphics, with Classic
+graphics those the player's game lacks, while the game starts, without waiting for them, and
+gives them to the game together once all have come).  `make test-music`
 (`tests/music_fallback_test.sh`): each track decodes whole with stb_vorbis (stereo, 48 kHz, its
-length); without the `Music` folder and with audio (`CIV2_TEST_AUDIO=1`, SDL's dummy driver)
-CD track 2 is played from `data/native/music/track02.ogg` and still plays 5 seconds later (the
-player fed); with the folder, from the game's `Music\Track02`.
+length); with audio (`CIV2_TEST_AUDIO=1`, SDL's dummy driver), without the `Music` folder, CD
+track 2 is played from `data/native/music/track02.ogg` with Classic graphics and with HD
+graphics (`CIV2_TEST_HD=1`), and still plays 5 seconds later (the player fed); with the folder,
+from the game's `Music\Track02` with Classic graphics and from `data/native/music/track02.ogg`
+with HD graphics.
 
 ## What remains
 

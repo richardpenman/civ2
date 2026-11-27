@@ -33,10 +33,11 @@ they are, listed in data/sound/index.json: the page fetches those the
 player's game lacks.
 OpenCiv2's own music (data/native/music/trackNN.ogg: made by make
 own-assets, tools/build_own_assets.py, which make web runs first; not in the repository;
-played as the CD's track NN where the game has no Music/TrackNN.ogg nor
-.wav: src/platform/sound.c) into data/music/, as they are, listed in
-data/music/index.json: the page fetches those the player's game lacks
-while the game starts, without waiting for them.  Without it (make web
+played as the CD's track NN, with HD graphics first, with Classic graphics
+where the game has no Music/TrackNN.ogg nor .wav: src/platform/sound.c)
+into data/music/, as they are, listed in data/music/index.json: the page
+fetches them all with HD graphics, with Classic graphics those the player's
+game lacks, while the game starts, without waiting for them.  Without it (make web
 OWN_ASSETS=: left out even where data/native/music is made) none.
 
 The HD graphics' art (data/native/hd: made by make hd-art,

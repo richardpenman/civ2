@@ -9,6 +9,7 @@
 #include "plat.h"
 #include "../host/host.h"
 #include "plat_files.h"
+#include "hd.h"
 #define STB_VORBIS_HEADER_ONLY
 #include "../third_party/stb_vorbis/stb_vorbis.c"
 
@@ -577,7 +578,9 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * (the set-up encodes them from a disc image, src/host/setup_disc.c),
  * decoded as it plays (stb_vorbis), else Music\TrackNN.wav
  * (tools/extract_disc.py writes them from a disc image), else OpenCiv2's
- * own music (docs/NO-INSTALL.md): data/native/music/trackNN.ogg (made by
+ * own music (docs/NO-INSTALL.md): data/native/music/trackNN.ogg (with HD
+ * graphics OpenCiv2's first, the game folder's only for a track it lacks:
+ * cd_open_track; made by
  * tools/build_own_assets.py from openciv2/openciv2-assets; read and played
  * as an install's .ogg, so only its 2 to 5 MB are in memory, never a WAV),
  * only with sound, as the sound effects' (sound_fallback); without any of
@@ -634,18 +637,10 @@ static FILE *cd_track_file(int n, const char *ext)
     return fopen(host, "rb");
 }
 
-/* Track n's file: the game folder's Music\TrackNN.ogg, else .wav, else
-   OpenCiv2's own (data/native/music/trackNN.ogg; only with sound); *ext
-   its kind, from (if given) where it is. */
-static FILE *cd_open_track(int n, const char **ext, char *from, size_t size)
+/* OpenCiv2's own track n (data/native/music/trackNN.ogg; only with sound). */
+static FILE *cd_open_own(int n, const char **ext, char *from, size_t size)
 {
     char own[1100];
-    FILE *f = cd_track_file(n, *ext = "ogg");
-    if (f || (f = cd_track_file(n, *ext = "wav"))) {
-        if (from)
-            snprintf(from, size, "Music\\Track%02d.%s", n, *ext);
-        return f;
-    }
     *ext = "ogg";
     if (!audio_ok)
         return NULL;
@@ -653,6 +648,26 @@ static FILE *cd_open_track(int n, const char **ext, char *from, size_t size)
     if (from)
         snprintf(from, size, "%s", own);
     return fopen(own, "rb");
+}
+
+/* Track n's file; *ext its kind, from (if given) where it is.  With HD
+   graphics (hd_art: Settings' Classic graphics unticked, or the game
+   folder without the original's pictures; never with CIV2_CLASSIC=1, nor
+   in a replay but with CIV2_TEST_HD or without the pictures) OpenCiv2's own
+   first (data/native/music/trackNN.ogg; only with sound), else the game
+   folder's Music\TrackNN.ogg, else .wav; with Classic graphics the game
+   folder's first, OpenCiv2's only for a track it lacks. */
+static FILE *cd_open_track(int n, const char **ext, char *from, size_t size)
+{
+    FILE *f = hd_art ? cd_open_own(n, ext, from, size) : NULL;
+    if (f)
+        return f;
+    if ((f = cd_track_file(n, *ext = "ogg")) || (f = cd_track_file(n, *ext = "wav"))) {
+        if (from)
+            snprintf(from, size, "Music\\Track%02d.%s", n, *ext);
+        return f;
+    }
+    return hd_art ? NULL : cd_open_own(n, ext, from, size);
 }
 
 static int cd_count_tracks(void)

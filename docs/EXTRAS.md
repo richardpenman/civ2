@@ -101,7 +101,9 @@ what can be chosen, each opening a dialog of its own (OK writes the choices, Can
   unticked: [HD graphics](#hd-graphics), `Graphics=HD`, at the screen's own density, the art
   that comes with OpenCiv2: see [HD-GRAPHICS.md](HD-GRAPHICS.md); where `Graphics=` is unset
   the default is `HD_BY_DEFAULT`'s); [sharp text and interface](#sharp-text-and-interface)
-  (`SharpText=`, on by default); full screen (`FullScreen=`).  Where the game folder lacks the
+  (`SharpText=`, on by default); full screen (`FullScreen=`).  The graphics choose the music
+  too: with HD graphics OpenCiv2's own first, with Classic graphics the game folder's
+  `Music\TrackNN` first ([NO-INSTALL.md](NO-INSTALL.md#music)).  Where the game folder lacks the
   original's pictures, Classic graphics are unticked with the note "Classic graphics need the
   original Civilization II files"; ticking them then opens a dialog that offers to find those
   files ([below](#classic-graphics-without-the-original-files)).
