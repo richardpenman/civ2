@@ -65,7 +65,7 @@ export function iniSet(text, section, key, value) {
 
 // HD graphics where CIV.INI's Graphics= says nothing: the mirror of
 // src/platform/options.c's HD_BY_DEFAULT (the one place natively)
-export const HD_BY_DEFAULT = false;
+export const HD_BY_DEFAULT = true;
 
 // The original's pictures the game folder must have for their look
 // (src/platform/synth.c: synth_missing); without any of them the game makes

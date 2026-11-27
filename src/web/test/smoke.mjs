@@ -60,7 +60,9 @@ async function replay(send, evaluate, waitFor) {
                                 REPLAY_HD ? `, CIV2_TEST_HD: '${REPLAY_HD}'` : ''}});
         };`});
     const t = performance.now();
-    await send('Page.navigate', {url: (await evaluate('location.origin')) + '/' + (REPLAY_HD ? '?hd=' + REPLAY_HD : '')});
+    // (without --hd ?hd=0: the replay has the original's look, CIV2_TEST_HD
+    // unset, so the page need not fetch the art HD graphics by default would)
+    await send('Page.navigate', {url: (await evaluate('location.origin')) + '/?hd=' + (REPLAY_HD || '0')});
     await waitFor('/ended|stopped/.test(window.civ2Status || "") && window.civ2Status', 3600000, 'the replay');
     const wall = performance.now() - t;
     const st = await evaluate('window.civ2Status');

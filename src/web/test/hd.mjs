@@ -1,7 +1,8 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
-// headless shell (as smoke.mjs), the game's files given as a .zip, then in
-// the game's Settings Classic graphics unticked (HD graphics) and
-// the game restarted:
+// headless shell (as smoke.mjs), the game's files given as a .zip, a first
+// start in HD (the default: the art loaded), then in the game's Settings
+// Classic graphics ticked and the game restarted (no art, Graphics=Classic
+// in CIV.INI), then unticked again and the game restarted:
 // the page loaded again, the art (the site's hd/art.bin: data/native/hd and,
 // where present, the local data/native/hd-extra) put into the game's files,
 // HD graphics on in CIV.INI; then the game at a
@@ -191,25 +192,36 @@ async function main() {
             await key('Enter', 13);
             await settle(1000, 10000);
         };
-        // a first start (the heralds' question answered), its Graphics and
-        // screen page (look at the shot), then the page loaded again
+        // a first start: HD graphics by default (no Graphics= in CIV.INI:
+        // HD_BY_DEFAULT), the art from the site; its Graphics and screen
+        // page (Classic graphics unticked: look at the shot)
         await evaluate('document.getElementById("play").click()');
-        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start');
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 600000, 'the start');
+        if (!((await evaluate('window.civ2Hd') || {}).files > 100))
+            throw new Error('the art not loaded at a first start (HD graphics by default)');
         await toMenu();
         await toGraphics();
         await shot('00-graphics-first');
-        await key('Escape', 27);
+        // Classic graphics ticked there (the first check box: Space), OK,
+        // Restart now: the page loaded again, the original's look, no art
+        await key('Space', 32, ' ');
+        await settle(500, 5000);
+        await shot('00-graphics-classic');
+        await key('Enter', 13);
         await settle(1000, 10000);
-        await key('Escape', 27);
-        await settle(1000, 10000);
-        // Classic graphics unticked there (the first check box: Space), OK,
-        // Restart now: the page loaded again, the art from the site, the game
-        // in HD
-        await send('Page.navigate', {url: url + '?setup'});
-        await waitFor('window.civ2Setup', 10000, 'the page again');
-        await evaluate('document.getElementById("play").click()');
-        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start again');
+        await evaluate('window.civ2Before = 1');
+        await key('Enter', 13);             // Restart now
+        await waitFor('!window.civ2Before && window.civ2Status', 60000, 'the page loaded again (Classic graphics)');
+        await waitFor('window.civ2Status && /Starting/.test(window.civ2Status)', 60000, 'the start with Classic graphics');
         await toMenu();
+        await shot('00-classic');
+        if (await evaluate('window.civ2Hd'))
+            throw new Error('the art loaded with Classic graphics chosen');
+        if (!/Graphics=Classic/.test(await evaluate('new TextDecoder("latin1").decode(window.civ2Fs.get(' +
+                                                     '[...window.civ2Fs.files.keys()].find((k) => /^\\/civ2\\/civ\\.ini$/i.test(k))))')))
+            throw new Error('CIV.INI does not have Graphics=Classic');
+        // Classic graphics unticked again, OK, Restart now: the page loaded
+        // again, the art from the site, the game in HD
         await toGraphics();
         await key('Space', 32, ' ');
         await settle(500, 5000);

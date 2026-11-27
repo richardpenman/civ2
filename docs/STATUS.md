@@ -90,7 +90,10 @@ original look: by design only the original's look with its install, or HD with o
 the bug fixes, additions and rule changes are chosen apart from the graphics, so the original's
 rules play without the install too; `x-no-install-options.txt` shows Settings saying so,
 and ticking Classic graphics there opening the dialog that offers to find the original's files
-and copy them in, as the set-up does).  The sound effects are
+and copy them in, as the set-up does).  HD graphics are OpenCiv2's default (where `CIV.INI` has
+no `Graphics=`: `HD_BY_DEFAULT`, natively and in the browser), the original's look an option
+(Classic graphics in Settings; always in replays unless `CIV2_TEST_HD`, with `CIV2_CLASSIC=1`
+and in a build without the art).  The sound effects are
 OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0, still being chosen and not yet in the
 repository; decoded
 into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
@@ -757,8 +760,8 @@ message by message and clock event by clock event.
   game's own dialogs; it replaced the opening window shown before the game
   started, which had replaced Game > Settings, November 2026), switches
   them, the bug fixes, the rule changes and the limits (at once: extras_load,
-  fixes_load again), Classic graphics (unticked: HD graphics, the art made
-  at build time, data/native/hd; without the original's pictures, ticked, the
+  fixes_load again), Classic graphics (unticked, the default since
+  November 2026: HD graphics, the art made at build time, data/native/hd; without the original's pictures, ticked, the
   set-up's import offered: an installed game, its CD, a .zip of it, a disc
   image, the files the game folder lacks copied in; the browser's set-up page),
   sharp text and full screen, those offering a restart (host_restart: the program executed again, the page loaded again in

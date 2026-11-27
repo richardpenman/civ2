@@ -190,7 +190,9 @@ assert.equal(iniSet('[A]\nb=1\n', 'OpenCiv2', 'k', 'v'), '[A]\nb=1\n\n[OpenCiv2]
 const ini1 = iniSet(ini0, 'OpenCiv2', 'Graphics', 'HD');
 assert.equal(hdWanted(ini1, null), 0);         // (the density: Auto, unless CIV.INI has GraphicsDensity=)
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'GraphicsDensity', '2'), null), 2);
-assert.equal(hdWanted(ini0, null), -1);
+assert.equal(hdWanted(ini0, null), 0);         // (HD graphics by default: HD_BY_DEFAULT)
+assert.equal(hdWanted('', null), 0);
+assert.equal(hdWanted(ini0, '0'), -1);
 assert.equal(hdWanted(ini0, '1'), 0);
 assert.equal(hdWanted(ini0, ''), 0);
 assert.equal(hdWanted(ini0, '3'), 3);

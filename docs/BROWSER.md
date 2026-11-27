@@ -129,8 +129,8 @@ so that a language changed in the game is the one the page is loaded again in.
 ## How to play: Settings
 
 How to play is chosen in the game, as natively: *Settings*, the main menu's last choice
-([EXTRAS.md](EXTRAS.md#settings)): the bug fixes, Classic graphics (unticked: HD
-graphics), sharp text and interface, the rule changes and limits, and the interface additions
+([EXTRAS.md](EXTRAS.md#settings)): the bug fixes, Classic graphics (unticked, the
+default: HD graphics, the art fetched from the site; ticked: the original's pictures), sharp text and interface, the rule changes and limits, and the interface additions
 with the colour correction and the messages shown on the map.  They are kept in the game's
 `CIV.INI` (`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take
 effect when the game starts again (the graphics, the language) offer *Restart now*: the page is loaded again,
@@ -157,8 +157,8 @@ The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.
 version does: `make web` makes the art first (`make hd-art`: `data/native/hd`, not in the
 repository) and puts it (and, where present, the local staging folder `data/native/hd-extra`) on the site as one
 file, `hd/art.bin` (about 50 MB, its files listed in
-`hd/index.json`; the art's licence beside it). Untick *Classic graphics* in Settings (Graphics and
-screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
+`hd/index.json`; the art's licence beside it). HD graphics are the default: unless *Classic
+graphics* is ticked in Settings (Graphics and screen), as the game starts the page fetches that file (the browser's cache keeps
 it) and puts the pictures into the game's files, where the game reads them. Art an earlier
 version downloaded and kept in the browser's storage (IndexedDB, 250 MB) is removed at a start.
 

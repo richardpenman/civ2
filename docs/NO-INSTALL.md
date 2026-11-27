@@ -73,10 +73,11 @@ They are not meant to be looked at: where the HD art is drawn whole over a pictu
 art gives no marker places (the units' shields, the cities' flags and size boxes: a default),
 that is out of scope, as there is no original look without the original's files.
 
-Whether HD graphics are on where nothing chooses is decided in one place, `HD_BY_DEFAULT`
-in `src/platform/options.c` (its mirror for the browser in `src/web/options.js`): making HD
-the default later is that line; Classic graphics, unticked by default then, would be the step
-that needs the original's files (the dialog above).
+HD graphics are the default (where nothing chooses: `HD_BY_DEFAULT` in
+`src/platform/options.c`, its mirror for the browser in `src/web/options.js`), so a game folder
+without the original's pictures plays as a fresh one with them does at first; Classic graphics,
+an option, unticked by default, are the step that needs the original's files (the dialog
+above).
 
 ## Summary
 

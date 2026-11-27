@@ -10,13 +10,15 @@
 
 /* ---- the graphics: the one place that decides (docs/EXTRAS.md "HD graphics") ----
 
-   HD graphics where CIV.INI's [OpenCiv2] Graphics= says nothing: off (the
-   original's look: Settings' "Classic graphics" ticked).  Making HD
-   the default is this line (and its mirror in the browser's page,
-   src/web/options.js: HD_BY_DEFAULT): "Classic graphics" is then unticked
-   by default.  Graphics=Classic (or Standard, as earlier versions wrote it)
-   keeps the original's look where the game folder has its pictures. */
-#define HD_BY_DEFAULT 0
+   HD graphics where CIV.INI's [OpenCiv2] Graphics= says nothing: on
+   (Settings' "Classic graphics" unticked).  Making the original's look the
+   default again is this line (and its mirror in the browser's page,
+   src/web/options.js: HD_BY_DEFAULT).  Graphics=Classic (or Standard, as
+   earlier versions wrote it) keeps the original's look where the game
+   folder has its pictures; without the HD art (a build with HD_ART=) the
+   game has the original's look whatever is chosen (hd_init).  Neither
+   CIV2_CLASSIC=1 nor a replay (unless CIV2_TEST_HD) asks here. */
+#define HD_BY_DEFAULT 1
 
 /* The game folder lacks the original's pictures: HD graphics whatever is
    chosen (set at the start, src/platform/main.c). */

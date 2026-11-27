@@ -1,7 +1,8 @@
 # The Settings dialog (src/game/options.cpp), the main menu's last
 # choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI or restarted; the
 # choices hold for the run): its pages; the bug fixes unticked (at once, no
-# restart) and the page again; Classic graphics unticked (HD graphics) and
+# restart) and the page again; Classic graphics ticked (HD graphics being the
+# default: HD_BY_DEFAULT) and
 # sharp text off (the restart offered); Go To past foreign units, the
 # retirement year, the turn in the status panel off and gamma 150 chosen,
 # which hold at once: a saved game loaded without the turn after the year,
@@ -36,7 +37,7 @@ key Down                    # Graphics and screen
 key Return
 wait 1000
 shot xo-f-graphics
-click 100 299               # Classic graphics: off (HD graphics)
+click 100 299               # Classic graphics: on (unticked by default: HD graphics)
 click 100 321               # Sharp text and interface: off
 wait 500
 shot xo-g-graphics-chosen

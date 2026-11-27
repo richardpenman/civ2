@@ -369,8 +369,10 @@ builds do not use it.
   (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
   only the player's files), the saved game removed and imported from that `.zip` (on the set-up
   page, then again while the game runs), and loaded again from the menu;
-  screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: Classic graphics unticked in the game's
-  Settings and `Graphics=HD` written to `CIV.INI`, the page loaded again with the site's art, the game
+  screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: a first start in HD (the default, the site's
+  art loaded), Classic graphics ticked in the game's Settings and the restart without the art
+  (`Graphics=Classic`), unticked again and `Graphics=HD` written to `CIV.INI`, the page loaded
+  again with the site's art, the game
   at a device pixel ratio of 2: the canvas twice the desktop, a saved game's map in HD (41% of its
   2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
   graphics; then the game's files without TERRAIN1.GIF and Tiles.dll (HD forced), Classic

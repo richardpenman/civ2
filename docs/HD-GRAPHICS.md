@@ -4,8 +4,8 @@ OpenCiv2 can draw the game with the replacement art of
 [openciv2-assets](https://github.com/PeterJohnson/openciv2-assets) by Peter Johnson (MIT
 licence): painted terrain, units, cities and resources at 4 to 8 times the original's
 resolution, shown at the screen's full resolution, with text drawn sharp at that resolution
-too.  It is optional and off by default: the original graphics stay the game's look.  This is
-a prototype: the map is done, and many of the other windows' pictures (below).
+too.  It is OpenCiv2's default look; the original graphics are an option (*Classic graphics* in
+Settings).  This is a prototype: the map is done, and many of the other windows' pictures (below).
 
 ## Playing with it
 
@@ -13,14 +13,16 @@ The art comes with OpenCiv2's builds: it is not in the repository, but made when
 built (`make hd-art`, which `make`, `make port`, `make native`, `make windows` and `make web` run
 first: `data/native/hd`, below) and packed with every release (beside the program's `data` on
 Linux and macOS, in the Windows program's resources, unpacked into its `data`, and on the
-browser version's site), so the game itself downloads nothing.  In the game's
-main menu choose *Settings*, then *Graphics and screen*, untick *Classic graphics* and
-OK (docs/EXTRAS.md, "Settings"): the game offers to restart, which turns them on.
-Otherwise:
+browser version's site), so the game itself downloads nothing.  HD graphics are on by
+default: a fresh game shows them from its first start.  For the original's look, in the game's
+main menu choose *Settings*, then *Graphics and screen*, tick *Classic graphics* and OK
+(docs/EXTRAS.md, "Settings"): the game offers to restart, which turns them off (unticked again,
+back on).  Otherwise:
 
 1. The art is read from the program's data folder's `hd` (`data/native/hd`): its `pictures.txt`
    and the pictures it lists.
-2. Switch it on, any of these ways (the first that says anything wins):
+2. It is on unless something says otherwise; switch it on or off any of these ways (the first
+   that says anything wins):
 
    * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
      `build/OpenCiv2 ~/Civ2 --hd`;
@@ -56,7 +58,8 @@ original's pictures or the art the game stops at once with a message saying wher
 
 Whether HD graphics are on where nothing chooses is one line: `HD_BY_DEFAULT` in
 `src/platform/options.c` (`plat_graphics_hd`, read by `hd_init` and Settings; its
-mirror for the browser's page is `HD_BY_DEFAULT` in `src/web/options.js`).  It is off today.
+mirror for the browser's page is `HD_BY_DEFAULT` in `src/web/options.js`).  It is on: a fresh
+`CIV.INI` (no `Graphics=` in `[OpenCiv2]`) gets HD graphics, `Graphics=Classic` the original's.
 
 Without the art (and with the original's pictures) the game says so in its log and plays with the original graphics (sharp text and
 interface still, where they are on: below).  HD graphics are never on with `CIV2_CLASSIC=1`, in
@@ -77,8 +80,8 @@ map's key for it), and the game option's offer every 50 turns (`COUNCILTIME`) is
 `rand()` calls still made.  The council is made of the CD's videos (`Video\COUNCILn.AVI`), which
 OpenCiv2 does not replace; with Classic graphics it is the original's as ever.
 
-In the browser version: *HD graphics* in the game's Settings (the page loads the art from
-its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
+In the browser version: HD graphics by default too, *Classic graphics* unticked in the game's
+Settings (the page loads the art from its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
 ## What the art is
 
@@ -773,12 +776,13 @@ OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openci
 
 ## Tests
 
-* The browser version: `make web-test` (`src/web/test/hd.mjs`: Classic graphics unticked in the game's
-  Settings and the game restarted, the art loaded from the site as the page is loaded
-  again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD; then
+* The browser version: `make web-test` (`src/web/test/hd.mjs`: a first start in HD, the
+  default, the art loaded from the site; Classic graphics ticked in the game's Settings and the
+  game restarted without the art; unticked again and restarted, the art loaded as the page is
+  loaded again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD; then
   without the original's pictures, Classic graphics ticked: the set-up page over the game, the
   original's files added, the restart, Classic graphics; screenshots in `run/web-hd`).
-* HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
+* HD off (replays and unit tests): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
   `make test-extras` (Settings in the main menu: `x-options`).
 * Sharp text and interface: `make test-extras` runs `harness/extras/x-sharp.txt` (the main menu,
   the real file dialog, the map, the Trade Advisor's scroll bar, the city window, the Game menu)
