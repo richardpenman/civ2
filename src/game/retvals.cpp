@@ -782,6 +782,13 @@ static LRESULT wnd_base_on_paint(HWND hwnd)
       wnd_data = (int)((WndBase *)wnd2)->get_window();
       ((NativeWindow *)wnd_data)->bg_surface->blit_to_wnd((WndBase *)tmp_wnd,src_rect,dst_rect);
     }
+    /* OpenCiv2: with HD graphics the new game's backdrop (the pack's
+       landscape, tiles.dll 90) fills the whole client as the original's
+       relief fills its 640 x 480 screen, rather than a box in the middle
+       on the window's colour; only the plane (the game's pixels as ever) */
+    wnd_data = (int)((WndBase *)wnd2)->get_window();
+    plat_hd_cover((void *)(uptr)ps.hdc,(void *)((NativeWindow *)wnd_data)->bg_surface->bits,0,0,
+                  ((WndBase *)wnd2)->client_width(),((WndBase *)wnd2)->client_height());
   }
   EndPaint(hwnd,&ps);
   return 0;

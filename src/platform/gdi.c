@@ -1299,6 +1299,12 @@ static WINBOOL blit(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, 
     return TRUE;
 }
 
+int plat_hd_cover(void *hdc, void *bits, int l, int t, int r, int b)
+{
+    DC *dc = get_dc((HDC)(uintptr_t)hdc);
+    return dc ? hd_dc_cover(dc, bits, l, t, r, b) : 0;
+}
+
 WINBOOL WINAPI BitBlt(HDC hd, int x, int y, int w, int h, HDC hs, int sx, int sy, DWORD rop)
 {
     API_TRACE();

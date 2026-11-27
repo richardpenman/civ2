@@ -206,6 +206,14 @@ void hd_dc_polygon(struct DC *dc, const double *xy, int n, unsigned int c);
 /* A scroll bar arrow's chevron at (cx, cy), up, down, left, right (0..3),
    on its face colour. */
 void hd_dc_chevron(struct DC *dc, double cx, double cy, int dir, unsigned int c, unsigned int face);
+/* The window's background picture (the surface bits: the new game's
+   backdrop, tiles.dll 90) with HD graphics: the pack's covering the
+   rectangle l, t, r, b of the DC (its client, cropped evenly, its
+   proportions kept), within the DC's clip; 1 if drawn (nothing without HD
+   graphics or another picture).  plat_hd_cover: the same for a window's
+   DC by its handle (src/platform/gdi.c). */
+int hd_dc_cover(struct DC *dc, void *bits, int l, int t, int r, int b);
+int plat_hd_cover(void *hdc, void *bits, int l, int t, int r, int b);
 /* blit: before (pixels of src about to be read) and after (copied to dst). */
 void hd_blit_begin(struct Bitmap *src, int sx, int sy, int sw, int sh);
 void hd_blit_end(struct Bitmap *dst, struct Bitmap *src, int x, int y, int w, int h, int sx, int sy, int sw,

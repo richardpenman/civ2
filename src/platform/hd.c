@@ -1150,6 +1150,88 @@ static void paint_whole(Bitmap *b, int pid, int whole, int part)
     commit_rect(b, 0, 0, part ? (int)a->w : b->w, h);
 }
 
+/* The new game's set-up pictures (intro.dll 901 to 913): the pack's are
+   vignettes on nothing, which over the 8-bit picture under them (the
+   original's photograph, or without it the picture made from the pack,
+   its edges dithered against a dark ground) showed a dark ragged fringe
+   on grey; each is laid on a warm panel instead, a soft brown lighter in
+   the middle (as a lit wooden board), and the plane made opaque. */
+static void warm_panel(Bitmap *b)
+{
+    int d = hd_density, w = b->w * d, h = b->h * d, x, y;
+    for (y = 0; y < h; y++)
+        for (x = 0; x < w; x++) {
+            uint32_t *p = b->hd + (size_t)y * w + x, c = *p, ia = 255 - (c >> 24);
+            double u = (x + .5) / w * 2 - 1, v = (y + .5) / h * 2 - 1, k = sqrt(u * u + v * v) / sqrt(2.0);
+            /* (from 150, 118, 80 in the middle to 72, 52, 34 in the corners) */
+            unsigned r = (unsigned)(150 - 78 * k), g = (unsigned)(118 - 66 * k), bl = (unsigned)(80 - 46 * k);
+            *p = 0xff000000u | (((c >> 16) & 255) + r * ia / 255) << 16 | (((c >> 8) & 255) + g * ia / 255) << 8 |
+                 ((c & 255) + bl * ia / 255);
+        }
+    b->hd_alpha = 0;
+    commit_rect(b, 0, 0, b->w, b->h);
+}
+
+/* The window's background picture (the new game's backdrop, tiles.dll 90,
+   which the game draws at its size in the middle of the main window, the
+   window's colour round it): with HD graphics, the pack's picture covering
+   the whole rectangle l, t, r, bot of the DC (the window's client, its
+   proportions kept, cropped evenly), within the DC's clip.  1: drawn. */
+int hd_dc_cover(DC *dc, void *bits, int l, int t, int r, int bot)
+{
+    Bitmap *src = bmp_of_bits(bits), *b;
+    Region rg = {0, 0, NULL};
+    const uint32_t *px;
+    int d = hd_density, ox, oy, pid, k, pw, ph, W, H, cx, cy;
+    Entry *a;
+    if (!hd_on || !hd_art || !dc || !src || !src->hd_sheet[0] || strncmp(src->hd_sheet, "resource/tiles.dll/gifs/90", 27) ||
+        !(pid = find(src->hd_sheet)) || !(b = dc_target(dc)) || !hd_bitmap_want_plane(b) || !plane(b))
+        return 0;
+    a = entries + pid - 1;
+    ox = dc->is_memory ? 0 : dc->origin.x;
+    oy = dc->is_memory ? 0 : dc->origin.y;
+    l += ox; r += ox; t += oy; bot += oy;
+    W = (r - l) * d;
+    H = (bot - t) * d;
+    if (W <= 0 || H <= 0)
+        return 0;
+    /* covering: the larger of the two scales */
+    if ((int64_t)W * a->h >= (int64_t)H * a->w) {
+        pw = W;
+        ph = (int)((int64_t)W * a->h / a->w);
+    } else {
+        ph = H;
+        pw = (int)((int64_t)H * a->w / a->h);
+    }
+    if (!(px = picture(pid, pw, ph, 0)))
+        return 0;
+    cx = (pw - W) / 2;
+    cy = (ph - H) / 2;
+    if (dc->is_memory) {
+        RECT all = {0, 0, 0, 0};
+        all.right = b->w;
+        all.bottom = b->h;
+        rgn_set(&rg, &all);
+    } else
+        rgn_copy(&rg, &dc->clip);
+    for (k = 0; k < rg.n; k++) {
+        int L = rg.r[k].left > l ? rg.r[k].left : l, T = rg.r[k].top > t ? rg.r[k].top : t;
+        int R = rg.r[k].right < r ? rg.r[k].right : r, B = rg.r[k].bottom < bot ? rg.r[k].bottom : bot, y;
+        if (!clip_rect(b, &L, &T, &R, &B))
+            continue;
+        for (y = T * d; y < B * d; y++) {
+            const uint32_t *in = px + (size_t)(y - t * d + cy) * pw + cx - l * d;
+            uint32_t *out = b->hd + (size_t)y * b->w * d;
+            int x;
+            for (x = L * d; x < R * d; x++)
+                out[x] = in[x] | 0xff000000u;
+        }
+        commit_rect(b, L, T, R, B);
+    }
+    rgn_free(&rg);
+    return 1;
+}
+
 void hd_resource_loaded(void *bits, int id)
 {
     Bitmap *b;
@@ -1173,8 +1255,11 @@ void hd_resource_loaded(void *bits, int id)
         paint_whole(b, pid, 0, 0);
         return;
     }
-    if (whole >= 0 && (pid = find(b->hd_sheet)))
+    if (whole >= 0 && (pid = find(b->hd_sheet))) {
         paint_whole(b, pid, whole, 0);
+        if (!strcmp(plat_res_module, "intro.dll") && b->hd_alpha && valid(b))
+            warm_panel(b);
+    }
 }
 
 typedef struct Spr {

@@ -610,9 +610,18 @@ The rest is in the platform layer (`src/platform/hd.c`):
   stone-paved roads) and `.../modern` (eras 2 and 3, Superhighways: divided highways) (hd.c's
   `landscape_key`; without them, era 1 the pack's grass and the others the original's,
   enlarged).  Its improvements and wonders are one picture each in every era, the original's as
-  the pack's.  A picture with transparent parts (the new game's pictures) is drawn, where the
-  game copies it, over what the destination's plane showed; a sprite taken from such a picture
-  keeps its transparency.  A surface's plane is drawn anew from its pixels whenever another
+  the pack's.  A picture with transparent parts is drawn, where the game copies it, over what
+  the destination's plane showed; a sprite taken from such a picture keeps its transparency.
+  The new game's pictures (`intro.dll` 901 to 913, vignettes on nothing), which over the 8-bit
+  picture under them (the original's photograph, or without the install the picture made from
+  the pack, its edges dithered on a dark ground) showed a dark ragged fringe, are laid on a
+  warm panel when loaded (a soft brown, lighter in the middle: hd.c's `warm_panel`), the plane
+  opaque.  The new game's backdrop (`tiles.dll` 90, the pack's landscape, 530 x 480, which
+  the game draws in the middle of the main window, its colour round it) covers the main
+  window's whole client, its proportions kept and cropped evenly, as the original's relief
+  fills its 640 x 480 screen (`hd_dc_cover`, from the main window's paint in
+  `src/game/retvals.cpp`; the plane only: the game's pixels are as ever; in a game, the two
+  pixels between the World and Status windows show it too).  A surface's plane is drawn anew from its pixels whenever another
   picture is loaded into it; a whole picture of the pack painted there (a landscape, a room) is
   scaled once and kept with the other pictures drawn, not again each time it is loaded (the city
   view's landscape, 3840x1440 at density 3, took over 2 seconds each time the view was opened).
@@ -894,7 +903,7 @@ pictures; the whole pack holds 2,166, 309 MB):
   in the pack (its pictures under those keys are placeholders).  `harness/hd/hd-spaceship.txt`
   (`hd_test_spaceship`: none built; 12/4/4/1/1/1, with parts not yet supported; 20/4/3/2/1/1;
   the complete ship; the complete ship launched).
-* The new game's pictures are vignettes over black (the frame the game draws around them
+* The new game's pictures are vignettes on a warm panel (the frame the game draws around them
   holds nothing else); the city view's landscape is the pack's, whose coast need not be where
   the game puts its harbour.
 * The city size box is the original's, enlarged; in places the larger unit art covers the
