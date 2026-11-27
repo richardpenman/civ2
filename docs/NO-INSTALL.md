@@ -113,7 +113,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `CITYPREF.TXT`, `EVENTS.TXT`, `*.SAV`, `*.HOT`, `CITY.TMP`, `RULES.BAK`, `EVENTS.BAK` | the player's own files (asked for, made by the game) | the player's: none needed |
 | `TERRAIN1.GIF`, `TERRAIN2.GIF`, `UNITS.GIF`, `CITIES.GIF`, `ICONS.GIF`, `PEOPLE.GIF` | the map's and the interface's sprites (`gfx_load_*_sprites`; the `.BMP` of each is looked for first, never there) | replaced: made from the pack's sprites (below) |
 | `EDITORPT.GIF` | the sprite editor's tools and backdrops | replaced: made from the pack's sprites |
-| `CITY.GIF` | the city window's background | replaced: the pack's picture |
+| `CITY.GIF` | the city window's background | replaced: the pack's picture (the 8-bit one dithered; HD paints the pack's in its own colours over it, `hd_sheet_loaded`, so its fades stay smooth) |
 | `SCREDITS.GIF` | the credits' picture | replaced: the pack's picture |
 | `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: plain dark grey (the pack has no backdrops yet; OpenCiv2's dark slate reliefs are offered to it, [openciv2-assets pull request 7](https://github.com/openciv2/openciv2-assets/pull/7), and once it has them they are made from them, dithered into the shared palette's colours without changing it) |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
@@ -155,7 +155,12 @@ whole, the crops not drawn, civ2.exe's) are in `data/native/hd` at the original'
   entries it takes (the diplomacy room: the portrait's 32 to 95, the room's 96 to 134; the
   destroyed civilizations' backgrounds 96 to 235; mk.dll 299 and cv.dll 399, loaded into the
   game's greys, in those greys).  The windows' textures (the dialogs' ground, the frames' tile)
-  are greys, as the original's, so that they keep their look in the diplomacy room's palette.
+  are greys, as the original's, so that they keep their look in the diplomacy room's palette:
+  the pack's pictures of them are flat colours (a tan, a beige), so both are made from its grey
+  veined marble (`wonder.dll`'s border tile) at the original's brightness, the frames and
+  captions light (mean 200) and the dialogs' ground darker (150), as the original's, which keeps
+  the captions' text and the lists' selection boxes readable.  Entry 148 (the game's 158) is the
+  original's brown: the main window's ground around the new game's backdrop.
 * **Indices the game gives a meaning**: 253 transparent, 254 a cell's border, 255 the
   background (the game's 7, 8, 9); `UNITS`: the shield's place marked on each cell's top and
   left border (250, the game's 4), the shield in the colour the game recolours per owner (252);

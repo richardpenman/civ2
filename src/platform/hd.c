@@ -957,7 +957,7 @@ void hd_sheet_clear(void *bits)
         reloaded(b);
 }
 
-static void paint_whole(Bitmap *b, int pid, int whole);
+static void paint_whole(Bitmap *b, int pid, int whole, int part);
 
 void hd_sheet_loaded(void *bits, const char *filename)
 {
@@ -987,7 +987,19 @@ void hd_sheet_loaded(void *bits, const char *filename)
        painted on the plane, as a resource picture's (paint_whole) */
     else if (entries[id - 1].own || !strcmp(b->hd_sheet, "file/editoras") ||
              !strcmp(b->hd_sheet, "file/editorsa") || !strcmp(b->hd_sheet, "file/editorsq"))
-        paint_whole(b, id, 0);
+        paint_whole(b, id, 0, 0);
+    /* the city window's backdrop where the game folder has no CITY.GIF:
+       the 8-bit picture made from the pack's (src/platform/synth.c, at its
+       own size, 636 x 421, at the top left) is dithered, its fades in
+       scattered dots, enlarged; the pack's picture painted instead, its
+       colours whole, and the sheet's name forgotten, so that the sprite
+       the game takes from it (636 x 421 at 0,0) is the plane's pixels, as
+       a resource picture's (hd_sprite_captured).  (With the original's
+       CITY.GIF, the original's.) */
+    else if (!strcmp(b->hd_sheet, "file/city") && !plat_game_file_exists("CITY.GIF")) {
+        paint_whole(b, id, 0, 1);
+        b->hd_sheet[0] = 0;
+    }
 }
 
 /* ---- the pictures of the game's resource libraries ----
@@ -1107,32 +1119,35 @@ static uint32_t *scaled_inside(Entry *a, int inset, int w, int h)
 }
 
 /* The picture pid painted whole on the surface's plane (inset: its border
-   left out, in 1/1000ths), where it is the surface's size. */
-static void paint_whole(Bitmap *b, int pid, int whole)
+   left out, in 1/1000ths), where it is the surface's size; part: or
+   smaller, painted at its own size at the top left (the rest of the plane
+   the surface's own pixels). */
+static void paint_whole(Bitmap *b, int pid, int whole, int part)
 {
     Entry *a = entries + pid - 1;
     const uint32_t *px;
     uint32_t *own = NULL;
-    int d = hd_density, y;
+    int d = hd_density, y, h = (int)a->h;
     size_t i, n;
     /* (the surface's rows are whole dwords: up to 3 pixels wider) */
-    if ((int)a->h != b->h || (int)a->w > b->w || b->w - (int)a->w > 3 || b->bpp != 8 || !plane(b))
+    if ((part ? h > b->h : h != b->h) || (int)a->w > b->w || (!part && b->w - (int)a->w > 3) || b->bpp != 8 ||
+        !plane(b))
         return;
     /* (scaled once and kept, as the pictures drawn are: the city view
        loads its landscape each time it is opened, 3840 x 1440 at density 3) */
     if (whole)
-        px = decode(pid) ? own = scaled_inside(a, whole, (int)a->w * d, b->h * d) : NULL;
+        px = decode(pid) ? own = scaled_inside(a, whole, (int)a->w * d, h * d) : NULL;
     else
-        px = picture(pid, (int)a->w * d, b->h * d, 0);
+        px = picture(pid, (int)a->w * d, h * d, 0);
     if (!px)
         return;
     n = (size_t)a->w * d;
-    for (y = 0; y < b->h * d; y++)
+    for (y = 0; y < h * d; y++)
         memcpy(b->hd + (size_t)y * b->w * d, px + y * n, n * 4);
-    for (i = 0; i < n * b->h * d && !b->hd_alpha; i++)
+    for (i = 0; i < n * h * d && !b->hd_alpha; i++)
         b->hd_alpha = px[i] >> 24 != 255;
     free(own);
-    commit_rect(b, 0, 0, b->w, b->h);
+    commit_rect(b, 0, 0, part ? (int)a->w : b->w, h);
 }
 
 void hd_resource_loaded(void *bits, int id)
@@ -1155,11 +1170,11 @@ void hd_resource_loaded(void *bits, int id)
     if ((pid = find(b->hd_sheet)) && entries[pid - 1].own)
         whole = 0;
     else if (landscape_key(id, key, sizeof key) && (pid = find(key))) {
-        paint_whole(b, pid, 0);
+        paint_whole(b, pid, 0, 0);
         return;
     }
     if (whole >= 0 && (pid = find(b->hd_sheet)))
-        paint_whole(b, pid, whole);
+        paint_whole(b, pid, whole, 0);
 }
 
 typedef struct Spr {

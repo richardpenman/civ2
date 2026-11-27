@@ -464,8 +464,60 @@ static void border(unsigned char *idx, int w, int h, int x, int y, int cw, int c
 
 /* The windows' textures (ICONS: the dialogs' ground, the frames' border
    tile) in the greys alone, as the original's: windows with palettes of
-   their own making (the diplomacy room's) keep the game's greys only. */
-static const char *const GREY_CROPS[] = {"crop/file/icons/298,190,32,32", "crop/file/icons/199,322,64,32"};
+   their own making (the diplomacy room's) keep the game's greys only.
+   The pack's pictures of the two are flat colours (a tan, a beige), which
+   in the greys gave the frames and captions a flat mid grey, darker than
+   the dialogs' flat light ground: the original's the other way round (the
+   frame and caption a light marble, mean 200, the ground a darker one,
+   150), the captions' grey text on its grey hard to read and the lists'
+   light selection box (the city style's) lost on the light ground.  Both
+   are made from the pack's grey veined marble instead (the wonders' movie
+   window's border tile, 64 x 32, seamless), at the original's brightness
+   (its greys' mean, measured in ICONS.GIF: 200 for the frame's tile, 150
+   for the ground) and a spread of 8 (the original's 9 and 18 are fine
+   noise; the marble's are veins, which at that strength, repeated every
+   32 pixels, made the lists' text hard to read); the ground's square the
+   whole tile squeezed to 32 x 32, so that it tiles too.  Where
+   the art lacks that tile, the pack's own pictures, as before. */
+static const struct {
+    const char *key;
+    double mean, spread;
+} GREY_CROPS[] = {
+    {"crop/file/icons/298,190,32,32", 150, 8},
+    {"crop/file/icons/199,322,64,32", 200, 8},
+};
+#define MARBLE "crop/resource/wonder.dll/gifs/20000/1,1,64,32"
+
+/* The marble shrunk into w x h greys (*out, w * h of them), its brightness
+   and contrast mean and spread; 0: the art has no marble. */
+static int marble(unsigned char *out, int w, int h, double mean, double spread)
+{
+    Canvas m;
+    int pw, ph;
+    size_t i, n = (size_t)w * h;
+    double sum = 0, sum2 = 0, mu, sd;
+    unsigned char *px = hd_art_copy(MARBLE, &pw, &ph, NULL, NULL);
+    if (!px)
+        return 0;
+    canvas_init(&m, w, h);
+    put_scaled(&m, px, pw, ph, 0, 0, w, h);
+    free(px);
+    for (i = 0; i < n; i++) {
+        const unsigned char *p = m.px + i * 4;
+        double l = 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2];
+        sum += l;
+        sum2 += l * l;
+    }
+    mu = sum / n;
+    sd = sqrt(fmax(sum2 / n - mu * mu, 1e-6));
+    for (i = 0; i < n; i++) {
+        const unsigned char *p = m.px + i * 4;
+        double v = mean + (0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2] - mu) * spread / sd;
+        out[i] = (unsigned char)(v < 0 ? 0 : v > 255 ? 255 : v + 0.5);
+    }
+    free(m.px);
+    return 1;
+}
 
 /* The crops' rectangles in indices: art where opaque, else clear; a border
    round each. */
@@ -483,14 +535,26 @@ static void index_crops(unsigned char *idx, const Canvas *c, const Crops *cs, Sy
         border(idx, c->w, c->h, cs->c[i].x, cs->c[i].y, cs->c[i].w, cs->c[i].h, BORDER);
     for (i = 0; i < cs->n; i++) {
         SynthPalette *use = pal;
+        unsigned char *m = NULL;
+        int mw = cs->c[i].w, mh = cs->c[i].h;
         for (k = 0; k < sizeof GREY_CROPS / sizeof *GREY_CROPS; k++)
-            if (!strcmp(cs->c[i].key, GREY_CROPS[k]))
+            if (!strcmp(cs->c[i].key, GREY_CROPS[k].key)) {
                 use = &greys;
+                if ((m = malloc((size_t)mw * mh)) && !marble(m, mw, mh, GREY_CROPS[k].mean, GREY_CROPS[k].spread)) {
+                    free(m);
+                    m = NULL;
+                }
+            }
         for (y = cs->c[i].y; y < cs->c[i].y + cs->c[i].h && y < c->h; y++)
             for (x = cs->c[i].x; x < cs->c[i].x + cs->c[i].w && x < c->w; x++) {
                 const unsigned char *p = c->px + ((size_t)y * c->w + x) * 4;
-                idx[y * c->w + x] = (unsigned char)(p[3] >= 128 ? nearest(use, p) : clear);
+                if (m) {
+                    unsigned char g = m[(y - cs->c[i].y) * mw + x - cs->c[i].x], rgb[3] = {g, g, g};
+                    idx[y * c->w + x] = (unsigned char)nearest(use, rgb);
+                } else
+                    idx[y * c->w + x] = (unsigned char)(p[3] >= 128 ? nearest(use, p) : clear);
             }
+        free(m);
     }
 }
 
@@ -525,7 +589,10 @@ static const struct Sheet {
    ramp (0 to 31) and the others below, near the original's; among them the
    civilizations' colours, which the game reads from CITIES (CIV_INDEX: the
    flag, its darker shade, the text's), in red, white, green, blue, yellow,
-   cyan, orange and purple.  The art takes the other entries. */
+   cyan, orange and purple; and 148 (the game's 158, 0x9e), the main
+   window's ground around the new game's backdrop (set_bg_color), the
+   original's brown (an art colour there, a dark green, before).  The art
+   takes the other entries. */
 static const struct { unsigned char i, rgb[3]; } FIXED[] = {
     {32, {88, 168, 40}}, {33, {80, 160, 40}}, {34, {72, 152, 32}}, {35, {72, 144, 32}}, {36, {64, 136, 32}},
     {38, {56, 120, 24}}, {43, {24, 80, 8}}, {45, {8, 64, 8}}, {47, {0, 48, 0}}, {71, {80, 104, 192}},
@@ -533,8 +600,8 @@ static const struct { unsigned char i, rgb[3]; } FIXED[] = {
     {83, {0, 0, 96}}, {84, {64, 184, 200}}, {85, {56, 176, 192}}, {89, {32, 136, 152}}, {90, {32, 120, 144}},
     {96, {240, 0, 0}}, {101, {168, 0, 0}}, {104, {255, 255, 0}}, {107, {240, 184, 8}}, {108, {240, 160, 8}},
     {109, {232, 128, 8}}, {111, {224, 80, 16}}, {112, {255, 224, 80}}, {114, {224, 184, 64}}, {119, {136, 96, 24}},
-    {125, {152, 88, 88}}, {129, {248, 200, 176}}, {146, {56, 32, 8}}, {162, {48, 88, 184}}, {165, {112, 216, 48}},
-    {166, {0, 112, 255}}, {167, {184, 144, 255}}, {173, {128, 104, 176}}, {175, {112, 64, 136}},
+    {125, {152, 88, 88}}, {129, {248, 200, 176}}, {146, {56, 32, 8}}, {148, {143, 123, 99}}, {162, {48, 88, 184}},
+    {165, {112, 216, 48}}, {166, {0, 112, 255}}, {167, {184, 144, 255}}, {173, {128, 104, 176}}, {175, {112, 64, 136}},
     {176, {255, 240, 208}}, {180, {224, 216, 176}}, {188, {168, 152, 120}},
 };
 static const unsigned char CIV_INDEX[8][3] = {
