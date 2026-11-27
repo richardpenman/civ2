@@ -1,7 +1,9 @@
 # The browser version
 
-OpenCiv2 also runs in a web browser: the same game, compiled to WebAssembly, with the original
-graphics and your own copy of Civilization II. How it is built and how it works inside:
+OpenCiv2 also runs in a web browser: the same game, compiled to WebAssembly. As the desktop game
+does without the original's files ([NO-INSTALL.md](NO-INSTALL.md)), it starts at once with HD
+graphics and OpenCiv2's own texts, rules, music, sounds, heralds and wonder movie; your own copy of
+Civilization II, added when you like, gives the original's look (Classic graphics). How it is built and how it works inside:
 [DEVELOPMENT.md](DEVELOPMENT.md) (the browser section).
 
 ## Building and serving it
@@ -19,10 +21,33 @@ make serve        # builds build/web (first time: downloads Binaryen into tools/
 It is tested in Chrome, and should run in any browser from 2023 on (Edge 103, Firefox 113,
 Safari 16.4).
 
+## The start: no copy of the game needed
+
+A visit goes straight into the game, as the desktop game starts. The first time (nothing in the
+browser's storage) the game starts from an empty game folder, which OpenCiv2's own files fill in
+exactly as they do natively for a folder that lacks them: HD graphics (always, without the
+original's pictures), OpenCiv2's English of the game's texts, the built-in rules, its own sound
+effects, music, heralds and wonder movie. The page shows *Starting the game ...* with the
+install's progress bar while it fetches the HD art (`hd/art.bin`, 40 MB: by its bytes) and
+OpenCiv2's texts, sound effects and fonts (by their files), then the game's regular main menu
+(some 5 s here from a local server). The game's folder is noted as one without the original's
+files (the store's `meta` `game` with no names: `src/web/main.js`, `play`); what the game writes
+(`CIV.INI`, `CIV2.DAT`, saved games) is kept in the browser's storage, the pictures and sounds it
+makes from the art again at each start (`OpenCiv2Pictures/`, `OpenCiv2Sounds/`) are not. Later
+visits start at once from what was kept, the art from the browser's cache, without the bar.
+
+Everything else is on the set-up page, `?setup` (`http://localhost:8000/?setup`), which the small
+*Saves* button at the top right of the game leads to (its dialog: *Export saves*, *Import saves*,
+and *the set-up page*): choosing your copy of the original, *Play*, *Export saves* and *Import
+saves*, removing the files from this browser (*Remove the saved games and settings* without a
+copy, *Remove them* with one), and the page's *Language*. The game's Settings lead to the same
+choice when Classic graphics are ticked (*Find the original files...*, below).
+
 ## Your copy of the game
 
-The first time, the page asks for your copy of Civilization II Multiplayer Gold Edition: *Choose
-your game...* offers *A folder* (the installed game, or the CD) or *A file* (a `.zip` of the folder,
+For Classic graphics, the original's look, the game needs your copy of Civilization II
+Multiplayer Gold Edition. On the set-up page (`?setup`, or Settings > Classic graphics: below),
+*Choose your game...* offers *A folder* (the installed game, or the CD) or *A file* (a `.zip` of the folder,
 or a disc image's `.cue` and `.bin`); any of them can be dropped on the page too. The page then says
 what was chosen (e.g. *Folder: Civ2 (412 files)*, *Disc image: CIV2.cue + CIV2.bin*) and how the
 copy is going. Any of these works:
@@ -39,13 +64,17 @@ progress line and a Stop button. A mounted CD gives no music: browsers cannot re
 tracks, but a disc image has them.
 
 The game is copied into the browser's storage (IndexedDB), and never leaves your computer; your
-saved games are kept there too. Later visits start the game at
+saved games are kept there too. Chosen after the game has been played with OpenCiv2's own files,
+the copy is added to the game's files (those it lacks, any case), the saved games and `CIV.INI`
+kept, as Settings' *Find the original files...* does; chosen in place of an earlier copy, it
+replaces it. Later visits start the game at
 once: the stored files, the fonts and the game's module (compiled as it downloads) are read side by
 side, with a line over the screen saying what it is doing until the game's first frame (about 2.5 s
 here with the HD art, 2 s without; `src/web/test/hd.mjs` fails a later visit's start over 15 s, and
 the page's `window.civ2Timing` has each step's time). The page asks the browser to keep that storage for good, so that it is not cleared when
 disk space runs low. `?setup` (`http://localhost:8000/?setup`) shows the set-up page again: to
-replace the game files or remove them.
+replace the game files or remove them; with *Remove them* the next visit starts again without a
+copy.
 
 Music: with HD graphics OpenCiv2's own (`data/music/trackNN.ogg` on the site, 26 MB, fetched
 by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)), the game folder's
@@ -147,9 +176,9 @@ effect when the game starts again (the graphics, the language) offer *Restart no
 into the game (without `?setup`, `?hd` or `?sharp`, which would win over them; `?lang=` as the
 game's language now).  Full screen is
 not there: the browser has its own (F11).  The set-up page itself only has the game files: choose
-them, *Remove them*, *Play*, and the saved games' *Export* and *Import*.
+them, *Remove them*, *Play*, the saved games' *Export* and *Import*, and the page's language.
 
-Where the game's files lack the original's pictures (a game set up from files without them),
+Where the game's files lack the original's pictures (the start without a copy, or a game set up from files without them),
 *Classic graphics* ticked opens the dialog that offers to find the original's files
 ([EXTRAS.md](EXTRAS.md#classic-graphics-without-the-original-files)); its *Find the original
 files...* (the game's `host_add_original`, `src/web/main.js`: `addOriginal`) shows the set-up
@@ -194,7 +223,7 @@ game. A save is stored as soon as the game has written it, so closing the tab ri
 keeps it.
 
 - **Export saves** (on the `?setup` page, or under the small *Saves* button at the top right while
-  playing) downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
+  playing, whose dialog also leads to the set-up page) downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
   `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT`. The game's own files are left out.
 - **Import saves** puts `.SAV` files, or such a `.zip`, back. During a game they go straight into
   it too, so *Load a Game* finds them at once.

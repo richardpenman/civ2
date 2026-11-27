@@ -350,7 +350,7 @@ Choose
 @@openciv2.web.loading
 Loading ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes and the interface additions) is chosen in the game: Settings, in its main menu.
+Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays at once, with HD graphics and OpenCiv2's own texts, rules, music and sounds: no copy of the original game is needed. Classic graphics, the original's look, need <em>your own</em> copy of the game, chosen here: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes and the interface additions) is chosen in the game: Settings, in its main menu.
 @@openciv2.web.add_original
 Classic graphics need the original Civilization II files, which the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the files the game has already are kept.
 @@openciv2.web.add_back
@@ -377,6 +377,10 @@ Stop
 The game files are in this browser.
 @@openciv2.web.forget
 Remove them
+@@openciv2.web.have_own
+Without a copy of the original game, the game plays with HD graphics and OpenCiv2's own files.
+@@openciv2.web.forget_saves
+Remove the saved games and settings
 @@openciv2.web.play
 Play
 @@openciv2.web.export
@@ -395,6 +399,10 @@ Saved games
 Your saved games, scenarios you made, <code>CIV.INI</code>, <code>CIV2.DAT</code> and <code>HALLFAME.DAT</code> as a .zip; or saved games (.SAV, or such a .zip) put into the game.
 @@openciv2.web.close
 Close
+@@openciv2.web.setup_note
+Your copy of Civilization II (for Classic graphics), the page's language, removing the files from this browser:
+@@openciv2.web.setup_open
+the set-up page
 @@openciv2.web.relay_title
 Network games
 @@openciv2.web.relay_label
@@ -465,6 +473,12 @@ Keeping the game in this browser, %s of %s files
 The first visit only: the game is then kept in this browser.
 @@openciv2.web.loading_hd
 Loading the HD graphics' art ...
+@@openciv2.web.starting_title
+Starting the game ...
+@@openciv2.web.start_download
+Downloading the HD graphics and OpenCiv2's own texts and sounds: %s MB
+@@openciv2.web.start_note
+The first visit only: later visits start at once.
 @@openciv2.web.starting
 Starting (files loaded in %s ms) ...
 @@openciv2.web.ended

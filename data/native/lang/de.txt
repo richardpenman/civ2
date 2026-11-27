@@ -349,7 +349,7 @@ Wählen
 @@openciv2.web.loading
 Wird geladen ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser. Gespielt wird mit <em>Ihrer eigenen</em> Kopie des Spiels: dem Ordner, in dem Civilization II installiert ist (der mit <code>Civ2Art.dll</code> und <code>RULES.TXT</code>), der CD des Spiels oder einem Abbild der CD. Wie gespielt wird (klassische oder HD-Grafik, die Fehlerbehebungen, die Regeländerungen und die Erweiterungen der Oberfläche), wählen Sie im Spiel: Einstellungen, in seinem Hauptmenü.
+Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser. Es startet sofort, mit HD-Grafik und den eigenen Texten, Regeln, Musikstücken und Klängen von OpenCiv2: Eine Kopie des Originalspiels ist nicht nötig. Die klassische Grafik, das Aussehen des Originals, braucht <em>Ihre eigene</em> Kopie des Spiels, hier gewählt: den Ordner, in dem Civilization II installiert ist (den mit <code>Civ2Art.dll</code> und <code>RULES.TXT</code>), die CD des Spiels oder ein Abbild der CD. Wie gespielt wird (klassische oder HD-Grafik, die Fehlerbehebungen, die Regeländerungen und die Erweiterungen der Oberfläche), wählen Sie im Spiel: Einstellungen, in seinem Hauptmenü.
 @@openciv2.web.add_original
 Klassische Grafik braucht die Originaldateien von Civilization II, die das Spiel in diesem Browser nicht hat. Wählen Sie Ihre Kopie von Civilization II Multiplayer Gold Edition: Die Dateien, die das Spiel schon hat, bleiben erhalten.
 @@openciv2.web.add_back
@@ -376,6 +376,10 @@ Stopp
 Die Spieldateien sind in diesem Browser.
 @@openciv2.web.forget
 Entfernen
+@@openciv2.web.have_own
+Ohne eine Kopie des Originalspiels spielt das Spiel mit HD-Grafik und den eigenen Dateien von OpenCiv2.
+@@openciv2.web.forget_saves
+Spielstände und Einstellungen entfernen
 @@openciv2.web.play
 Spielen
 @@openciv2.web.export
@@ -394,6 +398,10 @@ Spielstände
 Ihre Spielstände, Ihre selbst erstellten Szenarien, <code>CIV.INI</code>, <code>CIV2.DAT</code> und <code>HALLFAME.DAT</code> als .zip; oder Spielstände (.SAV oder eine solche .zip-Datei) ins Spiel übernehmen.
 @@openciv2.web.close
 Schließen
+@@openciv2.web.setup_note
+Ihre Kopie von Civilization II (für die klassische Grafik), die Sprache der Seite, die Dateien aus diesem Browser entfernen:
+@@openciv2.web.setup_open
+die Einrichtungsseite
 @@openciv2.web.relay_title
 Netzwerkspiele
 @@openciv2.web.relay_label
@@ -464,6 +472,12 @@ Das Spiel wird in diesem Browser gespeichert, %s von %s Dateien
 Nur beim ersten Besuch: danach bleibt das Spiel in diesem Browser.
 @@openciv2.web.loading_hd
 Die HD-Grafiken werden geladen ...
+@@openciv2.web.starting_title
+Das Spiel wird gestartet ...
+@@openciv2.web.start_download
+Die HD-Grafik und die eigenen Texte und Klänge von OpenCiv2 werden heruntergeladen: %s MB
+@@openciv2.web.start_note
+Nur beim ersten Besuch: spätere Besuche starten sofort.
 @@openciv2.web.starting
 Wird gestartet (Dateien in %s ms geladen) ...
 @@openciv2.web.ended

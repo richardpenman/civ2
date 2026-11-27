@@ -300,8 +300,13 @@ builds do not use it.
   src/web/store.js keeps the game's folder in IndexedDB: copied in once from the folder or `.zip`
   the player chooses (src/web/main.js; src/web/zip.js reads the archive with the browser's
   `DecompressionStream`), written back as soon as the game closes, renames or removes a file (saved games,
-  `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write), the storage asked to
-  be persistent (`navigator.storage.persist`).
+  `CIV.INI`, `CIV2.DAT`; a file still open a second after its last write; not the pictures and
+  sounds the game makes again at each start, `OpenCiv2Pictures/`, `OpenCiv2Sounds/`), the storage asked to
+  be persistent (`navigator.storage.persist`).  With nothing stored the page starts the game at
+  once from the empty folder (`play`: OpenCiv2's own files fill it in, HD graphics; the store's
+  `meta` `game` set to `{names: []}`, a game without the original's files; the downloads on the
+  install's bar, `firstStartBar`); a copy chosen later on the set-up page is merged into it as
+  Settings' *Find the original files...* merges one (`mergeFiles`), the player's files kept.
 * **HD graphics** (src/web/main.js, host.js's `host_present_hd`): `tools/build_web.py` puts the
   art (data/native/hd, which make web makes first: make hd-art) and, where present, the local staging folder data/native/hd-extra on the site as one
   file, `hd/art.bin`, listed in `hd/index.json`.  At start, where HD graphics are wanted (`?hd=N`,
@@ -362,6 +367,14 @@ builds do not use it.
   `src/web/test/net.mjs` (net.js under node with the relay: joining a TCP server, partial
   reads, the peer closing, refused ports, addresses and connections; hosting with two TCP
   clients, the listener closed while they stay), then
+  `src/web/test/start.mjs` (a fresh profile, no copy of the game: the page goes straight into
+  the game, its progress bar following the HD art's and OpenCiv2's own files' downloads, the
+  main menu in HD, OpenCiv2's music, sound effects, wonder movies and texts all fetched, nothing
+  of the original's in the game's folder, the store's `meta` noting a game without the
+  original's files; the *Saves* dialog's way to the set-up page, which has *Play*, the choice of
+  a copy, the saves and the language without one; a later visit at once, without the bar; then,
+  where `~/Civ2` is, a few of its files chosen on the set-up page: added, `CIV.INI` kept;
+  screenshots in `run/web-start`), then
   `src/web/test/smoke.mjs` (node and Chrome's headless shell, pinned,
   from `tools/fetch-toolchain.sh browser`; Linux x86-64) first sets the game up from the made-up
   disc image through the page (its file input, the worker, IndexedDB; the music decoded by the

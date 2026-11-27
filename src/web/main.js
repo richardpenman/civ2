@@ -51,13 +51,29 @@ function findGame(files) {
 }
 
 async function importFiles(store, files, progress = null) {
-    const found = findGame(files);
+    let found = findGame(files);
+    // (a game of OpenCiv2's own files only, played already: the copy added
+    // to it, the player's saved games and settings kept, as Settings'
+    // Classic graphics adds it: ownGame)
+    const own = await ownGame(store) && await store.count() > 0;
     if (typeof found === 'string') {
         const disc = findDisc(files);
-        if (disc)
+        if (disc && own) {
+            const made = [];
+            if (!await setupFromDisc(store, files, disc, made))
+                return false;
+            found = {files: made};
+        } else if (disc) {
             return setupFromDisc(store, files, disc);
-        status(found);
-        return false;
+        } else {
+            status(found);
+            return false;
+        }
+    }
+    if (own) {
+        const n = await mergeFiles(store, null, found.files);
+        status(t('web.added', n));
+        return true;
     }
     await store.clear();
     let batch = [], size = 0, n = 0;
@@ -162,19 +178,28 @@ function setupFromDisc(store, files, disc, into = null) {
 // {store, fs, resolve}; the files chosen go to addChosen then
 let adding = null;
 
+// A game of OpenCiv2's own files, without a copy of the original (the
+// store's meta 'game' {names: []}: play, a start without one), or an
+// empty store
+async function ownGame(store) {
+    const meta = await store.getMeta('game');
+    return meta ? !(meta.names || []).length : await store.count() === 0;
+}
+
 // The files of the player's copy ([{name, data|file}], under the game's
-// folder) the running game lacks (any case), put into its files and kept in
-// the store, -> how many
+// folder) the game lacks (any case), put into the running game's files (fs;
+// null: not running) and kept in the store, -> how many
 async function mergeFiles(store, fs, files) {
-    const have = new Set([...fs.files.keys()].filter((k) => k.startsWith(GAME + '/'))
-        .map((k) => k.slice(GAME.length + 1).toUpperCase()));
+    const have = new Set(fs ? [...fs.files.keys()].filter((k) => k.startsWith(GAME + '/'))
+        .map((k) => k.slice(GAME.length + 1).toUpperCase()) : (await store.keys()).map((k) => k.toUpperCase()));
     const added = [];
     let batch = [], size = 0;
     for (const f of files) {
         if (have.has(f.name.toUpperCase()) || /\.log$/i.test(f.name))
             continue;
         const data = f.data || new Uint8Array(await f.file.arrayBuffer());
-        fs.put(GAME + '/' + f.name, data);
+        if (fs)
+            fs.put(GAME + '/' + f.name, data);
         batch.push([f.name, data, Date.now()]);
         added.push(f.name);
         size += data.length;
@@ -187,8 +212,8 @@ async function mergeFiles(store, fs, files) {
     }
     await store.putMany(batch);
     const meta = await store.getMeta('game');
-    if (meta && meta.names)
-        await store.setMeta('game', {...meta, names: [...meta.names, ...added]});
+    await store.setMeta('game', meta && meta.names ? {...meta, names: [...meta.names, ...added]}
+        : {names: added, at: Date.now()});
     return added.length;
 }
 
@@ -441,6 +466,17 @@ function savesControls(store) {
         d.showModal();
     };
     $('saves-close').onclick = () => d.close();
+    // (the set-up page: the original's files, Remove, the page's language;
+    // what the game wrote kept first)
+    $('setup-open').onclick = async () => {
+        if (running)
+            await window.civ2Flush();
+        const u = new URL(location.href);
+        for (const k of ['hd', 'sharp'])
+            u.searchParams.delete(k);
+        u.searchParams.set('setup', '');
+        location.assign(u.href.replace(/([?&]setup)=(?=&|$)/, '$1'));
+    };
     d.addEventListener('keydown', (e) => e.stopPropagation());
     d.addEventListener('keyup', (e) => e.stopPropagation());
     d.addEventListener('close', () => $('screen').focus());
@@ -454,7 +490,8 @@ function savesControls(store) {
 // its files one after another as hd/index.json lists them ([path, size]
 // each) -> [[path, bytes]], put where hd.c looks for them (CIV2_DATA/hd,
 // CIV2_DATA/heralds, CIV2_DATA/hd-extra)
-async function fetchArt() {
+// (onProgress(done, total): its bytes as they come)
+async function fetchArt(onProgress = null) {
     const index = await fetch('hd/index.json').then((r) => {
         if (!r.ok)
             throw new Error('hd/index.json: ' + r.status);
@@ -463,7 +500,22 @@ async function fetchArt() {
     const r = await fetch('hd/art.bin');
     if (!r.ok)
         throw new Error('hd/art.bin: ' + r.status);
-    const bytes = new Uint8Array(await r.arrayBuffer());
+    let bytes;
+    if (onProgress && r.body) {
+        const total = index.reduce((n, [, size]) => n + size, 0), parts = [];
+        let got = 0;
+        for (const reader = r.body.getReader();;) {
+            const {done, value} = await reader.read();
+            if (done)
+                break;
+            parts.push(value);
+            got += value.length;
+            onProgress(got, total);
+        }
+        bytes = new Uint8Array(await new Blob(parts).arrayBuffer());
+    } else {
+        bytes = new Uint8Array(await r.arrayBuffer());
+    }
     let at = 0;
     const files = index.map(([path, size]) => [path, bytes.subarray(at, (at += size))]);
     if (at !== bytes.length)
@@ -598,6 +650,47 @@ async function installFromSite(store, g, first) {
     keep(files.length, files.length);
 }
 
+// A first start without a copy of the original (nothing in the store: the
+// game from OpenCiv2's own files, HD graphics): its downloads on the
+// install's progress bar, the art by its bytes (most of it), OpenCiv2's
+// texts, sounds and fonts by their files -> {art(done, total), file(),
+// files(n), end()}; window.civ2FirstStart (tests): the bar's last words and
+// how many times it moved
+function firstStartBar() {
+    $('loading').hidden = true;
+    $('install').hidden = false;
+    $('install-title').textContent = t('web.starting_title');
+    $('install').querySelector('[data-t="web.install_note"]').textContent = t('web.start_note');
+    let artDone = 0, artTotal = 0, filesDone = 0, filesTotal = 0, bytes = 0, moves = 0, frac = 0;
+    const shown = () => {
+        // (never back: more files to come as each kind's list is read)
+        frac = Math.max(frac, 0.9 * (artTotal ? artDone / artTotal : 0) + 0.1 * (filesTotal ? filesDone / filesTotal : 0));
+        installProgress(t('web.start_download', MB1(bytes)), frac);
+        window.civ2FirstStart = {step: $('install-step').textContent, pct: $('install-pct').textContent, moves: ++moves};
+    };
+    shown();
+    return {
+        art(done, total) {
+            bytes += done - artDone;
+            artDone = done;
+            artTotal = total;
+            shown();
+        },
+        files(n) {
+            filesTotal += n;
+            shown();
+        },
+        file(size = 0) {
+            filesDone++;
+            bytes += size;
+            shown();
+        },
+        end() {
+            $('install').hidden = true;
+        },
+    };
+}
+
 async function play(store) {
     // (the game files and saved games kept for good: without this the browser
     // may clear them when disk space runs low, Safari after a week unused)
@@ -605,9 +698,6 @@ async function play(store) {
         navigator.storage.persist().catch(() => {});
     $('setup').hidden = true;
     $('install').hidden = true;
-    $('game').hidden = false;
-    $('loading').hidden = false;
-    status(t('web.loading_files'));
     const t0 = performance.now();
     const site = fromSite();
     const fs = new MemFS();
@@ -615,12 +705,30 @@ async function play(store) {
     // alongside the other files
     const query = new URLSearchParams(location.search), args = ['civ2', GAME];
     const keys = await store.keys();
+    // nothing kept (a first visit; the files removed): the game from an
+    // empty folder, OpenCiv2's own files filling it in (the desktop game's
+    // start without the original's: docs/NO-INSTALL.md), noted as such
+    // (meta 'game': no names), its progress on the bar
+    const bar = keys.length ? null : firstStartBar();
+    if (!keys.length && !await store.getMeta('game'))
+        await store.setMeta('game', {names: [], at: Date.now()});
+    if (!bar) {
+        $('game').hidden = false;
+        $('loading').hidden = false;
+    }
+    status(t('web.loading_files'));
+    // (a file of OpenCiv2's own fetched: on the bar)
+    const got = (n, b) => {
+        if (bar)
+            bar.file(b ? b.byteLength : 0);
+        return b;
+    };
     const iniName = keys.find((k) => /^civ\.ini$/i.test(k));
     const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
     // (always where the game's files lack the original's pictures: the game
     // makes them from the art, docs/NO-INSTALL.md)
     const hd = hdWanted(ini, query.get('hd'), hasOriginalPictures(keys)) >= 0;
-    const artP = hd ? mark('hd', fetchArt()).catch((e) => {
+    const artP = hd ? mark('hd', fetchArt(bar && ((done, total) => bar.art(done, total)))).catch((e) => {
         console.error(e);
         return null;
     }) : null;
@@ -648,7 +756,9 @@ async function play(store) {
         const have = new Set(entries.map(([k]) => k.toUpperCase()));
         const names = await fetch('data/text/index.json').then((r) => (r.ok ? r.json() : []));
         const missing = names.filter((n) => !have.has(n));
-        const files = await Promise.all(missing.map((n) => fetchGz('data/text/' + n + '.gz')));
+        if (bar)
+            bar.files(missing.length);
+        const files = await Promise.all(missing.map((n) => fetchGz('data/text/' + n + '.gz').then((b) => got(n, b))));
         missing.forEach((n, i) => fs.put(DATA + '/text/' + n, files[i]));
     } catch (e) {
         console.warn('OpenCiv2 texts:', e);
@@ -662,11 +772,13 @@ async function play(store) {
         const have = new Set(entries.map(([k]) => k.toUpperCase()));
         const names = await fetch('data/sound/index.json').then((r) => (r.ok ? r.json() : []));
         const wanted = hd ? names : names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV'));
+        if (bar)
+            bar.files(wanted.length);
         const files = await Promise.all(wanted.map((n) => fetch('data/sound/' + n).then((r) => {
             if (!r.ok)
                 throw new Error(n + ': ' + r.status);
             return r.arrayBuffer();
-        })));
+        }).then((b) => got(n, b))));
         wanted.forEach((n, i) => fs.put(DATA + '/sound/' + n, new Uint8Array(files[i])));
         window.civ2OwnSounds = wanted;
     } catch (e) {
@@ -684,7 +796,9 @@ async function play(store) {
         fs.put(DATA + '/lang/' + code + '.txt', bytes);
     try {
         const names = await fetch('data/fonts/index.json').then((r) => (r.ok ? r.json() : []));
-        const files = await Promise.all(names.map((n) => fetchGz('data/fonts/' + n + '.gz')));
+        if (bar)
+            bar.files(names.length);
+        const files = await Promise.all(names.map((n) => fetchGz('data/fonts/' + n + '.gz').then((b) => got(n, b))));
         names.forEach((n, i) => fs.put(DATA + '/fonts/' + n, files[i]));
     } catch (e) {
         console.warn('no font files', e);
@@ -731,8 +845,12 @@ async function play(store) {
         if (put.length)
             await store.putMany(put);
     };
+    // (not the pictures and sound effects the game makes from the HD art and
+    // OpenCiv2's own sounds where its files lack the original's,
+    // OpenCiv2Pictures/ and OpenCiv2Sounds/: made again at each start,
+    // synth.c, sound.c)
     fs.onchange = (path, removed, partial) => {
-        if (!path.startsWith(GAME + '/') || /\.log$/i.test(path))
+        if (!path.startsWith(GAME + '/') || /\.log$/i.test(path) || /^\/civ2\/OpenCiv2(Pictures|Sounds)\//i.test(path))
             return;
         dirty.set(path, removed);
         if (!partial) {
@@ -746,6 +864,11 @@ async function play(store) {
     running = fs;
     window.civ2Flush = () => (timer ? (clearTimeout(timer), flush()) : Promise.resolve());
     window.addEventListener('pagehide', () => window.civ2Flush());
+    if (bar) {
+        bar.end();
+        $('game').hidden = false;
+        $('loading').hidden = false;
+    }
     status(t('web.starting', Math.round(performance.now() - t0)));
     const canvas = $('screen');
     canvas.focus();
@@ -882,16 +1005,21 @@ async function languageChoice() {
 async function showSetup(store, ended = false) {
     $('loading').hidden = true;
     $('setup').hidden = false;
-    const have = await store.count() > 0;
-    $('have').hidden = !have;
+    // (Play: the copy of the original kept here, else OpenCiv2's own files)
+    const kept = await store.count() > 0, own = await ownGame(store);
+    $('have').hidden = false;
+    $('have-game').hidden = own;
+    $('have-own').hidden = !own;
+    $('forget-saves').hidden = !kept;
     $('play').onclick = () => play(store);
-    $('forget').onclick = async () => {
-        if (confirm(t('web.forget_confirm'))) {
-            await store.clear();
-            await store.hdClear();
-            showSetup(store);
-        }
-    };
+    for (const b of document.querySelectorAll('.forget'))
+        b.onclick = async () => {
+            if (confirm(t('web.forget_confirm'))) {
+                await store.clear();
+                await store.hdClear();
+                showSetup(store);
+            }
+        };
     if (!ended)
         status('');
     window.civ2Setup = true;
@@ -993,29 +1121,31 @@ async function main() {
         showChosen(files);
         chosen(files);
     };
-    // later visits: straight into the game (?setup: this page first)
-    if (!setup && await store.count() > 0) {
-        // (the site's music and animated advisors this browser does not
-        // have yet: kept now, not read from the site while the game plays)
-        const g = await siteGame();
-        if (g)
-            await installFromSite(store, g, false).catch((e) => console.error(e));
-        return play(store);
-    }
-    // a first visit to a site with the game (make web GAME=1): its copy
-    // kept, then the game
-    const g = setup ? null : await siteGame();
-    if (g) {
+    // straight into the game, as the desktop game starts (?setup: this
+    // page first)
+    if (setup)
+        return showSetup(store);
+    const kept = await store.count() > 0, g = await siteGame();
+    // a later visit to a site with the game (make web GAME=1): the site's
+    // music and animated advisors this browser does not have yet kept now,
+    // not read from the site while the game plays
+    if (g && kept)
+        await installFromSite(store, g, false).catch((e) => console.error(e));
+    // a first visit to it: its copy kept, then the game
+    if (g && !kept) {
         try {
             await installFromSite(store, g, true);
-            return play(store);
         } catch (e) {
             console.error(e);
             $('install').hidden = true;
             status(t('web.copy_failed', e.message));
+            return showSetup(store);
         }
     }
-    showSetup(store);
+    // (else, a first visit: the game from OpenCiv2's own files, HD graphics,
+    // the original's files added later for Classic graphics; a later visit:
+    // what was kept)
+    return play(store);
 }
 
 main();

@@ -195,7 +195,7 @@ async function main() {
                 chosen: document.getElementById('language').value,
                 lang: document.documentElement.lang})`);
             log('page in Esperanto: ' + JSON.stringify(eo).slice(0, 300));
-            if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/<em>via propra<\/em>/.test(eo.intro) ||
+            if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/<em>vian propran<\/em>/.test(eo.intro) || !/ludas tuj/.test(eo.intro) ||
                 !/^Dosierujo/.test(eo.folder) || !eo.language.includes('Esperanto') ||
                 eo.language[0] !== 'English' || eo.chosen !== 'eo')
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));

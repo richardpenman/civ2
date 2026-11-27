@@ -355,7 +355,7 @@ Elekti
 @@openciv2.web.loading
 Þargante ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (klasika aý HD-grafiko, la korektoj de eraroj, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj, en øia æefa menuo.
+Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas tuj, per HD-grafiko kaj la propraj tekstoj, reguloj, muziko kaj sonoj de OpenCiv2: kopio de la originala ludo ne necesas. La klasika grafiko, la aspekto de la originalo, bezonas <em>vian propran</em> kopion de la ludo, elektatan æi tie: la dosierujon, en kiu Civilization II estas instalita (tiun kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildon de la KD. Kiel ludi (klasika aý HD-grafiko, la korektoj de eraroj, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj, en øia æefa menuo.
 @@openciv2.web.add_original
 Klasika grafiko bezonas la originalajn dosierojn de Civilization II, kiujn la ludo en æi tiu retumilo ne havas. Elektu vian kopion de Civilization II Multiplayer Gold Edition: la dosieroj, kiujn la ludo jam havas, restas.
 @@openciv2.web.add_back
@@ -382,6 +382,10 @@ Haltigi
 La dosieroj de la ludo estas en æi tiu retumilo.
 @@openciv2.web.forget
 Forigi ilin
+@@openciv2.web.have_own
+Sen kopio de la originala ludo, la ludo ludas per HD-grafiko kaj la propraj dosieroj de OpenCiv2.
+@@openciv2.web.forget_saves
+Forigi la konservitajn ludojn kaj agordojn
 @@openciv2.web.play
 Ludi
 @@openciv2.web.export
@@ -400,6 +404,10 @@ Konservitaj ludoj
 Viaj konservitaj ludoj, scenaroj, kiujn vi faris, <code>CIV.INI</code>, <code>CIV2.DAT</code> kaj <code>HALLFAME.DAT</code> kiel .zip; aý konservitaj ludoj (.SAV, aý tia .zip) metitaj en la ludon.
 @@openciv2.web.close
 Fermi
+@@openciv2.web.setup_note
+Via kopio de Civilization II (por la klasika grafiko), la lingvo de la paøo, forigo de la dosieroj el æi tiu retumilo:
+@@openciv2.web.setup_open
+la agorda paøo
 @@openciv2.web.relay_title
 Retaj ludoj
 @@openciv2.web.relay_label
@@ -470,6 +478,12 @@ Konservante la ludon en æi tiu retumilo, %s el %s dosieroj
 Nur æe la unua vizito: poste la ludo restas en æi tiu retumilo.
 @@openciv2.web.loading_hd
 Þargante la arton de la HD-grafiko ...
+@@openciv2.web.starting_title
+Lanæante la ludon ...
+@@openciv2.web.start_download
+Elþutante la HD-grafikon kaj la proprajn tekstojn kaj sonojn de OpenCiv2: %s MB
+@@openciv2.web.start_note
+Nur æe la unua vizito: postaj vizitoj komenciøas tuj.
 @@openciv2.web.starting
 Lanæante (dosieroj þargitaj en %s ms) ...
 @@openciv2.web.ended

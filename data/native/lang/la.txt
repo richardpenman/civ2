@@ -350,7 +350,7 @@ Elige
 @@openciv2.web.loading
 Oneratur ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Ludit cum <em>tuo ipsius</em> exemplari ludi: capsa in qua Civilization II institutum est (ea cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imago disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Configuratio, in indice eius principali.
+Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Statim ludit, cum graphicis HD et textibus, regulis, musica sonisque OpenCiv2 propriis: exemplar ludi originalis non requiritur. Graphica classica, species originalis, <em>tuum ipsius</em> exemplar ludi requirunt, hic electum: capsam in qua Civilization II institutum est (eam cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imaginem disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Configuratio, in indice eius principali.
 @@openciv2.web.add_original
 Graphica classica fasciculis archetypis Civilization II egent, quos ludus in hoc navigatro non habet. Elige exemplar tuum Civilization II Multiplayer Gold Edition: fasciculi quos ludus iam habet servantur.
 @@openciv2.web.add_back
@@ -377,6 +377,10 @@ Siste
 Fasciculi ludi in hoc navigatro sunt.
 @@openciv2.web.forget
 Dele eos
+@@openciv2.web.have_own
+Sine exemplari ludi originalis, ludus cum graphicis HD et fasciculis OpenCiv2 propriis ludit.
+@@openciv2.web.forget_saves
+Dele ludos servatos et configurationem
 @@openciv2.web.play
 Lude
 @@openciv2.web.export
@@ -395,6 +399,10 @@ Ludi servati
 Ludi tui servati, scaenaria a te facta, <code>CIV.INI</code>, <code>CIV2.DAT</code> et <code>HALLFAME.DAT</code> ut .zip; aut ludi servati (.SAV, aut talis .zip) in ludum inditi.
 @@openciv2.web.close
 Claude
+@@openciv2.web.setup_note
+Exemplar tuum Civilization II (pro graphicis classicis), lingua paginae, fasciculi ex hoc navigatro removendi:
+@@openciv2.web.setup_open
+pagina institutionis
 @@openciv2.web.relay_title
 Ludi reticulares
 @@openciv2.web.relay_label
@@ -465,6 +473,12 @@ Ludus in hoc navigatro servatur, %s ex %s fasciculis
 Primo tantum aditu: deinde ludus in hoc navigatro servatur.
 @@openciv2.web.loading_hd
 Picturae Graphicorum HD onerantur ...
+@@openciv2.web.starting_title
+Ludus incipit ...
+@@openciv2.web.start_download
+Graphica HD et textus sonique OpenCiv2 proprii deprimuntur: %s MB
+@@openciv2.web.start_note
+Primo tantum aditu: aditus posteriores statim incipiunt.
 @@openciv2.web.starting
 Incipit (fasciculi %s ms onerati) ...
 @@openciv2.web.ended

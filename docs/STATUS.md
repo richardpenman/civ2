@@ -118,6 +118,12 @@ game draws or synth.c reads, as WebP, made at build time by `tools/build_hd_pack
 hd-art`, which the builds run first; the files it is built from and the result cached in `~/.cache/openciv2`;
 [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every release and on the browser version's site; the
 native and browser downloads of the release at run time are gone.
+The browser version starts as the desktop game does without the original's files: a first
+visit plays at once from an empty game folder, HD graphics and OpenCiv2's own files, to the main
+menu (the downloads on the page's progress bar); the player's copy, for Classic graphics, the
+saves' export and import, removing the files and the page's language are on its set-up page
+(`?setup`, reached from the game's *Saves* button, and from Settings > Classic graphics:
+[BROWSER.md](BROWSER.md#the-start-no-copy-of-the-game-needed)).
 
 Reads of locals the 1997 code never initialises are the main source of
 differences between builds: valgrind finds them, `CIV2_STACKPROBE` reads
