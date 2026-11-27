@@ -23,8 +23,9 @@ HD_ART ?= 1
 HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@echo "(no HD art: HD_ART=$(HD_ART))")
 
 # OpenCiv2's own assets, data/native/music (docs/NO-INSTALL.md, Music),
-# data/native/sound (docs/NO-INSTALL.md, Sound effects) and
-# data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds): not in the
+# data/native/sound (docs/NO-INSTALL.md, Sound effects),
+# data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds) and
+# data/native/wonders (docs/NO-INSTALL.md, Wonder movies): not in the
 # repository, made from OpenCiv2's own openciv2/openciv2-media (not Peter
 # Johnson's, the HD art's) at the commit pinned in data/own-assets.json
 # (tools/build_own_assets.py: the files, the music and sound effects already
@@ -38,7 +39,7 @@ HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@ech
 OWN_ASSETS ?= 1
 OWN_ASSETS_MAKE = $(if $(filter-out 0,$(OWN_ASSETS)),python3 tools/build_own_assets.py,@echo "(no assets of OpenCiv2's own: OWN_ASSETS=$(OWN_ASSETS))")
 
-.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-extras extras-bless test-media media-bless unit-record clean clean-run
+.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-wonder test-extras extras-bless test-media media-bless unit-record clean clean-run
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -52,7 +53,7 @@ endif
 
 all: build
 
-build:                        ## build/OpenCiv2, the HD art and OpenCiv2's own music, sound effects and heralds (first time: downloads its toolchain into tools/toolchain and the art's and OpenCiv2's own assets' sources into ~/.cache/openciv2)
+build:                        ## build/OpenCiv2, the HD art and OpenCiv2's own music, sound effects, heralds and wonder movies (first time: downloads its toolchain into tools/toolchain and the art's and OpenCiv2's own assets' sources into ~/.cache/openciv2)
 	$(HD_ART_MAKE)
 	$(OWN_ASSETS_MAKE)
 	python3 tools/build_port.py
@@ -104,12 +105,13 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 hd-art:                       ## the HD graphics' art in data/native/hd from the pinned commit of openciv2-assets (tools/build_hd_pack.py; at once when up to date)
 	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
-# OpenCiv2's own music, sound effects and heralds: data/native/music,
-# data/native/sound and data/native/heralds from the commit of
+# OpenCiv2's own music, sound effects, heralds and wonder movies:
+# data/native/music, data/native/sound, data/native/heralds and
+# data/native/wonders from the commit of
 # openciv2/openciv2-media pinned in data/own-assets.json (OWN_ASSETS above;
-# fetched once, about 32 MB, and copied; FORCE=1: made again, whatever is
+# fetched once, about 35 MB, and copied; FORCE=1: made again, whatever is
 # there or in the cache).
-own-assets:                   ## OpenCiv2's own music, sound effects and heralds in data/native/music, sound, heralds, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
+own-assets:                   ## OpenCiv2's own music, sound effects, heralds and wonder movies in data/native/music, sound, heralds, wonders, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
 	python3 tools/build_own_assets.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)
@@ -155,6 +157,9 @@ test-sound: native           ## OpenCiv2's own sound effects: with Classic graph
 
 test-music: native            ## OpenCiv2's own music: without the game's Music folder and with audio the game plays track NN from data/native/music, decoded; with the folder the game's own (tests/music_fallback_test.sh; skipped without data/native/music)
 	$(DK) sh tests/music_fallback_test.sh
+
+test-wonder: native           ## OpenCiv2's own wonder movies: the Pyramids' (data/native/wonders) played, picture and sound, with HD graphics (over the game's Video too) and with Classic graphics where the game has no Video; the game's own WONDER00.AVI with Classic graphics where it has; none in other replays (tests/wonder_movie_test.sh; skipped without data/native/wonders)
+	$(DK) sh tests/wonder_movie_test.sh
 
 test-extras: native          ## replay harness/extras on build/civ2-linux32 and compare with harness/extras/expected
 	$(DK) python3 harness/extras_suite.py $(NAMES)

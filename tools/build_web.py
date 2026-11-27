@@ -43,6 +43,16 @@ into data/music/, as they are, listed in data/music/index.json: the page
 fetches them all with HD graphics, with Classic graphics those the player's
 game lacks, while the game starts, without waiting for them.  Without it (make web
 OWN_ASSETS=: left out even where data/native/music is made) none.
+OpenCiv2's own wonder movies (data/native/wonders/wonderNN.webp, the
+picture, and wonderNN.ogg, its sound: made by make own-assets, which make
+web runs first; not in the repository; played in the place of the game's
+Video/WONDERNN.AVI, with HD graphics first, with Classic graphics where
+the game has none: src/platform/hd.c, hd_wonder_find) into data/wonders/,
+as they are, listed in data/wonders/index.json (the movies' numbers): the
+page fetches them all with HD graphics, with Classic graphics those the
+player's game lacks (the site's own copy of the game never has the CD's
+videos: all), while the game starts, without waiting for them.  Without
+them (make web OWN_ASSETS=) none.
 
 The HD graphics' art (data/native/hd: made by make hd-art,
 tools/build_hd_pack.py, which make web runs first; not in the repository) and
@@ -65,7 +75,8 @@ encoded to Ogg Vorbis, tools/wav2ogg.c), listed in game/index.json ({core:
 {size, files}, files: [[path, size]]}); not the logs, nor the CD's videos
 (Video/: the opening, the wonders', the High Council's, 285 MB; the game
 then plays as from a folder without them: it starts at its main menu, a
-wonder's movie is skipped, the High Council does not open).  The page
+wonder's movie is OpenCiv2's own where it has one, else skipped, the High
+Council does not open).  The page
 downloads and keeps all of it on a first visit, without asking, on one
 progress bar, so that the game never waits for the site.  Without GAME=1,
 build/web/game is removed.
@@ -214,7 +225,7 @@ def write_sounds():
 
 
 def own_assets():
-    """OpenCiv2's own music, sound effects and heralds wanted (not make web OWN_ASSETS= or 0)."""
+    """OpenCiv2's own music, sound effects, heralds and wonder movies wanted (not make web OWN_ASSETS= or 0)."""
     return os.environ.get('OWN_ASSETS', '1') not in ('', '0')
 
 
@@ -242,6 +253,35 @@ def write_music():
             os.remove(os.path.join(out, f))
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump(names, f)
+
+
+def write_wonders():
+    """data/wonders/wonderNN.webp and .ogg, LICENSE, and data/wonders/index.json (the movies'
+    numbers, NN; none with OWN_ASSETS= or 0)."""
+    src = os.path.join(ROOT, 'data', 'native', 'wonders')
+    out = os.path.join(OUT, 'data', 'wonders')
+    os.makedirs(out, exist_ok=True)
+    movies = sorted(os.path.basename(f)[6:8] for f in glob.glob(os.path.join(src, 'wonder[0-9][0-9].webp')))
+    if not own_assets():
+        movies = []             # (make web OWN_ASSETS=: without them, even where data/native/wonders is made)
+        print('(no wonder movies of OpenCiv2\'s own: OWN_ASSETS=%s)' % os.environ.get('OWN_ASSETS'), flush=True)
+    elif not movies:
+        print('warning: no wonder movies in data/native/wonders (make own-assets): the site is without them', flush=True)
+    names = [n for nn in movies for n in ('wonder%s.webp' % nn, 'wonder%s.ogg' % nn)
+             if os.path.exists(os.path.join(src, n))]
+    for name in names:
+        s, d = os.path.join(src, name), os.path.join(out, name)
+        if newer(s, d):
+            shutil.copy(s, d)
+    notices = ('LICENSE',) if names and os.path.exists(os.path.join(src, 'LICENSE')) else ()
+    for name in notices:
+        shutil.copy(os.path.join(src, name), os.path.join(out, name))
+    keep = set(names) | set(notices) | {'index.json'}
+    for f in os.listdir(out):
+        if f not in keep:
+            os.remove(os.path.join(out, f))
+    with open(os.path.join(out, 'index.json'), 'w') as f:
+        json.dump(movies, f)
 
 
 def write_art():
@@ -296,8 +336,8 @@ def newer(src, dst):
 BESIDE_DIRS = ('music', 'kings')
 # Not on the site at all: the CD's videos (285 MB, each read whole before its
 # first frame); the game then plays as from a folder without the CD's Video
-# (src/auto/game.cpp: intro_play_opening_video; no wonder movie,
-# WonderMovieWindow::play; no High Council, CouncilWindow::init)
+# (src/auto/game.cpp: intro_play_opening_video; a wonder's movie OpenCiv2's
+# own or none, WonderMovieWindow::play; no High Council, CouncilWindow::init)
 LEFT_OUT_DIRS = ('video',)
 
 
@@ -463,6 +503,7 @@ def main():
     write_texts()
     write_sounds()
     write_music()
+    write_wonders()
     for f in glob.glob(os.path.join(OUT, 'data', 'fonts_*.bin.gz')):
         if os.path.basename(f)[:-3] not in FONTS:
             os.remove(f)        # (the code pages' glyphs of before: text.c makes them)

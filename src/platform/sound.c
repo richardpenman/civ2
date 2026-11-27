@@ -347,6 +347,88 @@ static int write_wav8(const char *path, const short *pcm, int frames, int chans,
     return ok;
 }
 
+/* OpenCiv2's own wonder movies' sound (video.c: open_own_wonder): the Ogg
+   decoded (stb_vorbis), resampled to 22050 Hz with a windowed sinc (its
+   cut-off below the new rate's half, so nothing above it folds back), one
+   channel made two, then 8 bits with a triangular dither (from a generator
+   of its own: the game's rand() untouched): the format of the original's
+   WONDERnn.AVI, which the game's mixer plays as it is (snd_wave_add_avi_stream). */
+unsigned char *sound_ogg_pcm8(const char *path, long *bytes)
+{
+    enum { PHASES = 256 };                              /* the kernel's offsets: tabulated */
+    const double pi = 3.14159265358979323846;
+    FILE *f = fopen(path, "rb");
+    unsigned char *file = NULL, *out = NULL;
+    short *pcm = NULL;
+    float *tab = NULL;
+    long len = 0, n = 0, i;
+    int chans = 0, rate = 0, frames, half, taps, c, p, j;
+    double step, cut;
+    unsigned seed = 1;
+    if (f && fseek(f, 0, SEEK_END) == 0 && (len = ftell(f)) > 0 && fseek(f, 0, SEEK_SET) == 0 &&
+        (file = malloc((size_t)len)) && fread(file, 1, (size_t)len, f) != (size_t)len) {
+        free(file);
+        file = NULL;
+    }
+    if (f)
+        fclose(f);
+    if (!file)
+        return NULL;
+    frames = stb_vorbis_decode_memory(file, (int)len, &chans, &rate, &pcm);
+    free(file);
+    step = rate > 0 ? (double)rate / FALLBACK_RATE : 0;  /* source samples an output sample */
+    cut = step > 1 ? 0.95 / step : 1.0;                 /* the cut-off, of the source's half rate */
+    half = step > 1 ? (int)ceil(8 * step) : 8;          /* the kernel's half-width, source samples */
+    taps = 2 * half;
+    n = frames > 0 && chans > 0 && rate > 0 ? (long)((long long)frames * FALLBACK_RATE / rate) : 0;
+    if (n <= 0 || !(out = malloc((size_t)n * 2)) || !(tab = malloc(sizeof *tab * (size_t)(PHASES + 1) * taps))) {
+        free(pcm);
+        free(out);
+        return NULL;
+    }
+    /* the windowed sinc (Blackman) at each offset p / PHASES past a source
+       sample, for the taps from half - 1 before it to half after, summing to 1 */
+    for (p = 0; p <= PHASES; p++) {
+        double sum = 0;
+        for (j = 0; j < taps; j++) {
+            double x = (j - half + 1) - (double)p / PHASES, t = x / half, w = 0;
+            if (t > -1 && t < 1)
+                w = (0.42 + 0.5 * cos(pi * t) + 0.08 * cos(2 * pi * t)) *
+                    (x == 0 ? 1 : sin(pi * cut * x) / (pi * cut * x));
+            tab[p * taps + j] = (float)w;
+            sum += w;
+        }
+        for (j = 0; j < taps; j++)
+            tab[p * taps + j] = (float)(tab[p * taps + j] / sum);
+    }
+    for (i = 0; i < n; i++) {
+        double pos = i * step;
+        long at = (long)floor(pos), k0;
+        const float *w;
+        p = (int)((pos - at) * PHASES + .5);
+        w = tab + (size_t)p * taps;
+        k0 = at - half + 1;
+        for (c = 0; c < 2; c++) {
+            const int ch = c < chans ? c : chans - 1;
+            double v = 0;
+            int q;
+            for (j = 0; j < taps; j++)
+                if (k0 + j >= 0 && k0 + j < frames)
+                    v += w[j] * pcm[(size_t)(k0 + j) * chans + ch];
+            seed = seed * 1103515245u + 12345u;     /* (the dither: two uniform draws' difference, +-1 step) */
+            v += (double)(seed >> 16 & 0x7fff) * (256.0 / 32768);
+            seed = seed * 1103515245u + 12345u;
+            v -= (double)(seed >> 16 & 0x7fff) * (256.0 / 32768);
+            q = (int)floor(v / 256.0 + 128.5);
+            out[i * 2 + c] = (unsigned char)(q < 0 ? 0 : q > 255 ? 255 : q);
+        }
+    }
+    free(tab);
+    free(pcm);
+    *bytes = n * 2;
+    return out;
+}
+
 int sound_fallback(const char *name, char *host, size_t n)
 {
     static char made[128][16];

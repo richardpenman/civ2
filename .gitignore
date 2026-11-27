@@ -15,13 +15,15 @@ hook/XDaemon.dll
 __pycache__/
 *.pyc
 
-# OpenCiv2's own music, sound effects and heralds (src/platform/sound.c:
-# cd_open_track, sound_fallback; hd.c: hd_herald_find), made by make
+# OpenCiv2's own music, sound effects, heralds and wonder movies
+# (src/platform/sound.c: cd_open_track, sound_fallback; hd.c:
+# hd_herald_find, hd_wonder_find), made by make
 # own-assets (tools/build_own_assets.py: OpenCiv2's openciv2/openciv2-media
 # at the commit pinned in data/own-assets.json)
 /data/native/music/
 /data/native/sound/
 /data/native/heralds/
+/data/native/wonders/
 
 # Ghidra project and logs (re/ keeps the exported tables and decomp.c)
 /re/gproj/

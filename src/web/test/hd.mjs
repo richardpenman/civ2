@@ -17,9 +17,9 @@
 // ticked in Settings, Find the original files...: the set-up page
 // over the game, the .zip chosen there again, the files the game lacked
 // added, the restart offered, and after it Classic graphics (no art
-// loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music and sound
-// effects: all of them fetched with HD graphics, with Classic graphics only
-// those the game lacks.  Screenshots in
+// loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music, sound
+// effects and wonder movies: all of them fetched with HD graphics, with
+// Classic graphics only those the game lacks.  Screenshots in
 // run/web-hd (look at them).  Without the game it says so and passes.
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
@@ -271,6 +271,17 @@ async function main() {
         log(`OpenCiv2's own sound effects with HD graphics: ${siteSounds.length} on the site, ${(ownSounds || []).length} fetched (the game lacks ${soundsLacking.length})`);
         if (!siteSounds.length || !ownSounds || ownSounds.length !== siteSounds.length)
             throw new Error('OpenCiv2\'s own sound effects not all fetched with HD graphics');
+        // OpenCiv2's own wonder movies (the site's data/wonders: make
+        // own-assets): with HD graphics all of them, the game's Video or not
+        const siteWonders = JSON.parse(readFileSync(join(WEB, 'data', 'wonders', 'index.json'), 'utf8'));
+        const videoDir = ['Video', 'VIDEO', 'video'].map((d) => join(GAME, d)).find((d) => existsSync(d));
+        const gameVideos = new Set(videoDir ? readdirSync(videoDir).map((n) => n.toLowerCase()) : []);
+        const wondersLacking = siteWonders.filter((nn) => !gameVideos.has('wonder' + nn + '.avi'));
+        await waitFor('window.civ2OwnWonders', 120000, 'the wonder movies looked at');
+        const ownWonders = await evaluate('window.civ2OwnWonders');
+        log(`OpenCiv2's own wonder movies with HD graphics: ${siteWonders.length} on the site, ${ownWonders.length} fetched (the game lacks ${wondersLacking.length})`);
+        if (!siteWonders.length || ownWonders.length !== siteWonders.length)
+            throw new Error('OpenCiv2\'s own wonder movies not all fetched with HD graphics');
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -412,6 +423,12 @@ async function main() {
         log(`OpenCiv2's own sound effects with Classic graphics: ${(ownSoundsClassic || []).length} fetched (the game lacks ${soundsLacking.length})`);
         if (!ownSoundsClassic || ownSoundsClassic.length !== soundsLacking.length)
             throw new Error(`OpenCiv2's own sound effects with Classic graphics: ${(ownSoundsClassic || []).length} fetched, not ${soundsLacking.length}`);
+        // (and its wonder movies only for those the game lacks)
+        await waitFor('window.civ2OwnWonders', 120000, 'the wonder movies looked at (Classic graphics)');
+        const ownWondersClassic = await evaluate('window.civ2OwnWonders');
+        log(`OpenCiv2's own wonder movies with Classic graphics: ${ownWondersClassic.length} fetched (the game lacks ${wondersLacking.length})`);
+        if (ownWondersClassic.length !== wondersLacking.length)
+            throw new Error(`OpenCiv2's own wonder movies with Classic graphics: ${ownWondersClassic.length} fetched, not ${wondersLacking.length}`);
         if (!/Graphics=Classic/.test(await evaluate('new TextDecoder("latin1").decode(window.civ2Fs.get(' +
                                                      '[...window.civ2Fs.files.keys()].find((k) => /^\\/civ2\\/civ\\.ini$/i.test(k))))')))
             throw new Error('CIV.INI does not have Graphics=Classic');

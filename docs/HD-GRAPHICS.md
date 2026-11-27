@@ -613,7 +613,10 @@ The rest is in the platform layer (`src/platform/hd.c`):
   picture is loaded into it; a whole picture of the pack painted there (a landscape, a room) is
   scaled once and kept with the other pictures drawn, not again each time it is loaded (the city
   view's landscape, 3840x1440 at density 3, took over 2 seconds each time the view was opened).
-* **Videos** (the heralds, the High Council, the wonders', the opening): wherever the planes are
+* **Videos** (the heralds, the High Council, the wonders', the opening; OpenCiv2's own heralds
+  and wonder movies, animated WebP, drawn from the WebP at the plane's resolution: `draw_own`,
+  the wonder movie's window sized for its 16:9, [NO-INSTALL.md](NO-INSTALL.md#wonder-movies)):
+  wherever the planes are
   on (HD graphics or sharp text), each frame is enlarged on the plane smoothly, not as its
   8-bit pixels repeated: the decoder's own colours (before the game's palette and its dithering)
   sampled bilinearly at the plane's resolution (`frame_plane_row` in `src/platform/video.c`),

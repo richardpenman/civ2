@@ -1919,6 +1919,31 @@ void hd_debug_dump(const char *path, const unsigned int *px, int w, int h)
     fclose(f);
 }
 
+/* OpenCiv2's own wonder movies (hd.h) */
+int hd_wonder_find(int n, int installed, int *w, int *h, char *path, size_t len)
+{
+    unsigned char head[30];
+    int cw, ch;
+    FILE *f;
+    if (n < 0 || n > 99 || (installed && !hd_art) || (plat_replay && !getenv("CIV2_TEST_WONDER")))
+        return 0;
+    snprintf(path, len, "%s/wonders/wonder%02d.webp", plat_data_dir, n);
+    if (!(f = fopen(path, "rb")))
+        return 0;
+    /* (the canvas's size: the VP8X header of an animated WebP) */
+    cw = fread(head, 1, sizeof head, f) == sizeof head && !memcmp(head, "RIFF", 4) && !memcmp(head + 8, "WEBPVP8X", 8);
+    fclose(f);
+    if (!cw)
+        return 0;
+    cw = 1 + (head[24] | head[25] << 8 | head[26] << 16);
+    ch = 1 + (head[27] | head[28] << 8 | head[29] << 16);
+    *h = 240;
+    *w = (int)((double)cw * 240 / ch + .5);
+    if (*w < 64 || *w > 640)
+        return 0;
+    return 1;
+}
+
 /* OpenCiv2's own heralds (hd.h): data/native/hd-extra/heralds.txt's (the
    local staging folder, where it has the tribe), else data/native/heralds/
    heralds.txt's (made by make own-assets: tools/build_own_assets.py, from

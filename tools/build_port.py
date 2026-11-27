@@ -121,14 +121,15 @@ def windows_resources(cc, obj):
             print('compressing %s' % os.path.relpath(src, ROOT), flush=True)
             data = open(src, 'rb').read()
             open(out, 'wb').write(len(data).to_bytes(8, 'little') + zlib.compress(data, 9))
-    # the other files (the font files, the translations, the texts, the HD art and pictures, the sounds, the music and heralds), numbered
+    # the other files (the font files, the translations, the texts, the HD art and pictures, the sounds, the music, heralds and wonder movies), numbered
     # from 100, listed in resource 99 (setup.h SETUP_RES_FILES)
     native = os.path.join(ROOT, 'data', 'native')
     others = sorted(glob.glob(os.path.join(native, 'fonts', '*'))) + \
         sorted(glob.glob(os.path.join(native, 'lang', '*.txt'))) + sorted(glob.glob(os.path.join(native, 'text', '*.TXT'))) + \
         sorted(glob.glob(os.path.join(native, 'hd', '*'))) + \
         sorted(glob.glob(os.path.join(native, 'hd-extra', '*'))) + sorted(glob.glob(os.path.join(native, 'sound', '*'))) + \
-        sorted(glob.glob(os.path.join(native, 'music', '*'))) + sorted(glob.glob(os.path.join(native, 'heralds', '*')))
+        sorted(glob.glob(os.path.join(native, 'music', '*'))) + sorted(glob.glob(os.path.join(native, 'heralds', '*'))) + \
+        sorted(glob.glob(os.path.join(native, 'wonders', '*')))
     index, lines = [], []
     for i, src in enumerate(others):
         rel = os.path.relpath(src, native).replace(os.sep, '/')

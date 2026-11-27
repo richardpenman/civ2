@@ -97,8 +97,11 @@ and in a build without the art).  The sound effects are
 OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks them (`data/native/sound`: 78, public domain, CC0:
 openciv2/openciv2-media, fetched by `make own-assets`; decoded
 into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
-it (`data/native/music`: openciv2/openciv2-media, fetched by `make own-assets`; MIT).
-Still from the game: its videos, scenarios.  The editors'
+it (`data/native/music`: openciv2/openciv2-media, fetched by `make own-assets`; MIT).  So is
+a wonder's movie where OpenCiv2 has one, the Pyramids' so far (`data/native/wonders`: an
+animated WebP and its Ogg Vorbis sound, played by the game's own AVI player as the CD's movie,
+its window sized for 16:9: [NO-INSTALL.md](NO-INSTALL.md#wonder-movies)).
+Still from the game: its other videos, scenarios.  The editors'
 backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's
 own offered to it, openciv2-assets pull request 7).  The
 leaders' portraits in HD are the art pack's, each tribe given the one that fits it (its 42 are

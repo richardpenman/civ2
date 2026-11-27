@@ -339,6 +339,10 @@ void sound_init(void);
 /* A sound effect the game folder lacks (NAME.WAV): OpenCiv2's own made
    (data/native/sound), 1 and its host path; 0 if none or no sound. */
 int sound_fallback(const char *name, char *host, size_t n);
+/* An Ogg Vorbis file's sound (OpenCiv2's own wonder movies: video.c) as the
+   game's AVIs carry theirs, 22050 Hz, 8 bits, stereo (malloc'd, *bytes its
+   size); NULL if it cannot be decoded. */
+unsigned char *sound_ogg_pcm8(const char *path, long *bytes);
 HMODULE plat_exe_module(void);
 
 #endif

@@ -35,11 +35,12 @@ folder lacks them), made from sounds in the public domain:
  16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt,
                               Kenney, VSCO-2 Community Edition
 
-The programs also carry OpenCiv2's own music and heralds (data/native/music,
-data/native/heralds, made by tools/build_own_assets.py from OpenCiv2's own
-repository openciv2/openciv2-media at its pinned commit), played in place of
-the CD's music (with HD graphics first, with Classic graphics where the game
-folder lacks it) and heralds: not third-party, but under
+The programs also carry OpenCiv2's own music, heralds and wonder movies
+(data/native/music, data/native/heralds, data/native/wonders, made by
+tools/build_own_assets.py from OpenCiv2's own repository
+openciv2/openciv2-media at its pinned commit), played in place of the CD's
+music and wonder movies (with HD graphics first, with Classic graphics where
+the game folder lacks them) and heralds: not third-party, but under
 OpenCiv2's own licence (MIT, Copyright (c) 2026 Richard Penman: LICENSE),
 credited at the end.
 
@@ -547,14 +548,14 @@ made from them.
 
 
 
-OpenCiv2's own music and heralds  https://github.com/openciv2/openciv2-media
------------------------------------------------------------------------------
+OpenCiv2's own music, heralds and wonder movies  https://github.com/openciv2/openciv2-media
+-------------------------------------------------------------------------------------------
 
 Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-media
 (not Peter Johnson's PeterJohnson/openciv2-assets above), at the commit
 pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
 2026 Richard Penman; the repository's LICENSE, beside the files in
-data/native/music and data/native/heralds).  The music: eleven tracks
+data/native/music, data/native/heralds and data/native/wonders).  The music: eleven tracks
 (game/music/track02.ogg, Funeral March, to track12.ogg, World of Jules Verne,
 Ogg Vorbis), played as the CD's audio tracks 2 to 12, with HD graphics
 first, with Classic graphics where the game folder has no Music\TrackNN
@@ -562,4 +563,13 @@ first, with Classic graphics where the game folder has no Music\TrackNN
 tools/build_own_assets.py.  The heralds: the Russians' animated herald
 (heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
 heralds), AI-generated (Google's Gemini models; the prompts are in
-docs/HD-GRAPHICS.md), copied as it is.
+docs/HD-GRAPHICS.md), copied as it is.  The wonder movies: the Pyramids'
+(wonders/wonder00.webp, the picture, and wonder00.ogg, its sound;
+docs/NO-INSTALL.md, Wonder movies), AI-generated (Google's Gemini 3 Pro
+Image and Gemini Omni; the sources and prompts are in the repository's
+wonders/00), copied as they are; its caption is set in the font Uncial
+Antiqua (Copyright (c) 2011 Brian J. Bonislawsky DBA Astigmatic (AOETI),
+with Reserved Font Names "Uncial Antiqua"), licensed under the SIL Open Font
+License 1.1 (https://openfontlicense.org; its text beside the movie's
+sources, wonders/00/OFL.txt).  The font itself is not in the programs: only
+the movie's picture, drawn with it, which the licence leaves free.

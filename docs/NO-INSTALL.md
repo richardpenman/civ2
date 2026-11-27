@@ -89,7 +89,8 @@ above).
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
 | replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; made by `make own-assets`, not in the repository) | 78 (`Sound\*.WAV`) | |
 | replaced: OpenCiv2's own music (`data/native/music`, MIT; made by `make own-assets`, not in the repository) | 11 music tracks (`Music\Track02`-`12`) | |
-| out of scope: videos | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`) | 21 (mk.dll `CTAB`, the heralds' video palettes) |
+| replaced: OpenCiv2's own wonder movies (`data/native/wonders`, MIT; made by `make own-assets`, not in the repository) | 1 of the 28 (`Video\WONDER00.AVI`, the Pyramids) | |
+| out of scope: videos | 58 videos (`Video` 36, `KINGS` 21, `LOSER.AVI`) | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
 
 So a game can be set up and played with none of the install's files but its videos, given the HD art (which comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`, not in the repository), in HD
@@ -115,7 +116,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
 | `Music\Track02`-`12.wav` (11) | the CD's music | replaced: OpenCiv2's own (`data/native/music`, below) |
-| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them; with HD graphics a tribe's herald of OpenCiv2's own plays without `KINGS` (the Russians': `data/native/heralds`, made by `make own-assets`; [HD-GRAPHICS.md](HD-GRAPHICS.md), *Your own heralds*) |
+| `Video\*.AVI` (37), `KINGS\*.AVI` (21), `LOSER.AVI` | the opening, the High Council, the wonders, the launch, the heralds, the defeat | out of scope: the game runs without them; with HD graphics a tribe's herald of OpenCiv2's own plays without `KINGS` (the Russians': `data/native/heralds`, made by `make own-assets`; [HD-GRAPHICS.md](HD-GRAPHICS.md), *Your own heralds*); a wonder's movie of OpenCiv2's own plays without `Video` (the Pyramids': `data/native/wonders`; *Wonder movies* below) |
 | `SCENARIO\`, `*.SCN`, `*.MP`, `ROME.TXT`, `WWII.TXT`, `ALEXANDR.TXT` | scenarios and premade maps | out of scope |
 | `CIV2FANW.TXT`, `CIV2FAQ.TXT`, `PATCH.TXT`, `README.TXT`, `Readmev13.txt`, `LEADERS.TXT`, `MISC.TXT`, `SC.TXT`, `TUTORIAL.SAV`, `Civ2Map.exe`, `Uninst.isu`, `Vfwfix.reg`, `smeds.log`, `XDaemon.log`, `EReg\` (8 files) | read by no part of the game (documents, the installer, the map editor's program, logs, registration) | droppable |
 
@@ -197,7 +198,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | | 20000-20007 | the spaceship's launch and arrival frames | replaced |
 | `civ2art.dll` | 999 | the windows' frame texture | replaced |
 | | 1000, 2000, 4000, 30000 | the end of the game: the arrival, the defeat, Alpha Centauri beaten | replaced |
-| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: plain grey (the pack's pictures are each wonder's painting, whose corner would be no border: not used; once the pack has a border tile, `crop/.../1,1,64,32`, offered in openciv2-assets pull request 7, made from it); seen only in a wonder's movie, which needs the CD's `Video` |
+| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: plain grey (the pack's pictures are each wonder's painting, whose corner would be no border: not used; once the pack has a border tile, `crop/.../1,1,64,32`, offered in openciv2-assets pull request 7, made from it); seen only in a wonder's movie (the CD's `Video`, or OpenCiv2's own: *Wonder movies*) |
 
 (Not every one was reached by the scripts: those of other governments, eras, leaders and levels
 are made the same way.)
@@ -274,9 +275,9 @@ game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.4 MB for the el
 minutes, about 140 kbit/s.  Not in this repository: the builds fetch it first (`make
 own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
 file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 32 MB
-with the heralds and the sound effects), and copy it as it is: nothing is converted, so nothing
+with the heralds, the sound effects and the wonder movies), and copy it as it is: nothing is converted, so nothing
 is needed but Python 3; later builds take it from there, offline.  `make OWN_ASSETS=` builds
-without it (nor the heralds and sound effects).
+without it (nor the heralds, sound effects and wonder movies).
 
 Which track the drive plays (`cd_open_track`) follows the graphics in use.  With HD graphics
 (*Classic graphics* unticked in Settings, or a game folder without the original's pictures) it
@@ -302,6 +303,47 @@ track 2 is played from `data/native/music/track02.ogg` with Classic graphics and
 graphics (`CIV2_TEST_HD=1`), and still plays 5 seconds later (the player fed); with the folder,
 from the game's `Music\Track02` with Classic graphics and from `data/native/music/track02.ogg`
 with HD graphics.
+
+## Wonder movies
+
+`Video\WONDER00.AVI` to `WONDER27.AVI`: the movie the game plays in the wonder's window when the
+player's city completes a wonder (with the game option *Wonder Movies*; not in scenarios), and
+from the World menu's list of wonders; 320 x 240, 31 to 48 s, Intel Indeo 4.1 with 22050 Hz
+8-bit stereo sound.  Without the `Video` folder the game plays none.
+
+Replaced, for now one of the 28: OpenCiv2's own movie of the Pyramids (wonder 0), 11 s, its
+caption (the wonder's name, then its effect) in the picture, made for OpenCiv2 (a painted still
+from Gemini 3 Pro Image, an 8-second shot with sound from it by the Gemini Omni video model,
+the caption set with ffmpeg in the free font Uncial Antiqua; the sources and prompts are in the
+asset repository's `wonders/00`).  Each movie is two files, `data/native/wonders/wonderNN.webp`,
+the picture (an animated WebP, 854 x 480 at 15 frames a second, 2.9 MB), and `wonderNN.ogg`, its
+sound (Ogg Vorbis, 48 kHz stereo), from OpenCiv2's own repository
+[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`wonders/`; MIT, as
+OpenCiv2), fetched by `make own-assets` with the music and copied as they are; `make
+OWN_ASSETS=` builds without them.
+
+Which movie plays follows the graphics in use, as the music and sound effects do.  With HD
+graphics OpenCiv2's comes first, in the place of the game folder's `Video\WONDERNN.AVI`; with
+Classic graphics (and with `CIV2_CLASSIC=1`) the game folder's comes first, as the original's,
+and OpenCiv2's only where the folder lacks it (`src/platform/hd.c`: `hd_wonder_find`).  Where
+OpenCiv2's plays, the game's `WONDERNN.AVI` opens it (`src/platform/video.c`:
+`open_own_wonder`) as an AVI of two streams like the original's: the picture's frames at its
+rate, drawn by the codec from the animated WebP at the HD planes' resolution (in the game's
+8-bit pixels with the CD videos' ordered dither), and its sound decoded with stb_vorbis and
+resampled to the original's format, 22050 Hz, 8 bits, stereo (`sound.c`: `sound_ogg_pcm8`), so
+that the game's own player plays them together, keeps the picture in time with the sound, and
+ends at the movie's end or at a click or key, as it does the CD's.  The movie is 16:9: its
+window (`WonderMovieWindow::play`) is sized for it, 427 x 240 of the game's pixels (854 x 480
+on the screen at density 2) in the place of 320 x 240, with its frame and title, centred.
+Never in a replay (the recorded scenarios were made without it), but with
+`CIV2_TEST_WONDER=1`.  They are packaged with the programs (`data/wonders`; the Windows
+program's resources) and on the browser version's site (`data/wonders`: the page fetches them
+all with HD graphics, with Classic graphics those the player's game lacks, while the game
+starts, without waiting for them).  `make test-wonder` (`tests/wonder_movie_test.sh`): with HD
+graphics and audio on the real clock (`CIV2_TEST_AUDIO=1`, `CIV2_REALTIME=1`) the Pyramids'
+movie is OpenCiv2's, its frames drawn to the last and its sound read to the end, without the `Video` folder
+and with it; with Classic graphics and the folder the game's own `WONDER00.AVI`, without it
+OpenCiv2's; and a replay without `CIV2_TEST_WONDER` opens none.
 
 ## What remains
 

@@ -7,8 +7,9 @@
 # is made once from Peter Johnson's art at the commit of his repository
 # pinned in data/hd-pack.json (tools/build_hd_pack.py, the job hd-art, its
 # download and its result cached) and packed with each; so are OpenCiv2's
-# own music, sound effects and heralds (data/native/music, data/native/sound,
-# data/native/heralds: not in the repository either), made from OpenCiv2's own openciv2/openciv2-media at
+# own music, sound effects, heralds and wonder movies (data/native/music,
+# data/native/sound, data/native/heralds, data/native/wonders: not in the
+# repository either), made from OpenCiv2's own openciv2/openciv2-media at
 # the commit pinned in data/own-assets.json (tools/build_own_assets.py, the
 # job own-assets, its download and result cached).
 name: Build and release
@@ -69,10 +70,12 @@ jobs:
           path: data/native/hd
           retention-days: 1
 
-  # OpenCiv2's own music, sound effects and heralds: data/native/music,
-  # data/native/sound and data/native/heralds, made by
+  # OpenCiv2's own music, sound effects, heralds and wonder movies:
+  # data/native/music, data/native/sound, data/native/heralds and
+  # data/native/wonders, made by
   # tools/build_own_assets.py (the pinned commit's files fetched, checked and
   # copied as they are: the music and sound effects are already Ogg Vorbis,
+  # the wonder movies animated WebP and Ogg Vorbis,
   # nothing converted, no Docker); ~/.cache/openciv2 kept
   # between runs (the files fetched and what was made from them).
   own-assets:
@@ -84,7 +87,7 @@ jobs:
           path: ~/.cache/openciv2
           key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
           restore-keys: own-assets-
-      - name: The music, sound effects and heralds
+      - name: The music, sound effects, heralds and wonder movies
         run: python3 tools/build_own_assets.py
       - uses: actions/upload-artifact@v7
         with:
@@ -93,6 +96,7 @@ jobs:
             data/native/music
             data/native/sound
             data/native/heralds
+            data/native/wonders
           retention-days: 1
 
   # The unit tests (tests/unit: recorded calls of the game's functions, run
@@ -230,7 +234,7 @@ jobs:
           mkdir -p pkg/OpenCiv2/data
           cp build/OpenCiv2 pkg/OpenCiv2/OpenCiv2
           cp data/native/fonts_*.bin pkg/OpenCiv2/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/sound data/native/heralds pkg/OpenCiv2/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/sound data/native/heralds data/native/wonders pkg/OpenCiv2/data/
           if [ -d data/native/hd-extra ]; then cp -r data/native/hd-extra pkg/OpenCiv2/data/; fi
           cp LICENSE pkg/OpenCiv2/LICENSE.txt
           cp THIRD-PARTY.txt src/third_party/indeo4/COPYING.LGPLv2.1 src/third_party/wasm2c/LICENSE-Apache-2.0.txt pkg/OpenCiv2/
@@ -313,7 +317,7 @@ jobs:
           mkdir -p $app/MacOS $app/Resources/data
           cp build/OpenCiv2 $app/MacOS/OpenCiv2
           cp data/native/fonts_*.bin $app/Resources/data/
-          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/sound data/native/heralds $app/Resources/data/
+          cp -r data/native/fonts data/native/lang data/native/text data/native/hd data/native/music data/native/sound data/native/heralds data/native/wonders $app/Resources/data/
           if [ -d data/native/hd-extra ]; then cp -r data/native/hd-extra $app/Resources/data/; fi
           cat > $app/Info.plist <<'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>

@@ -984,6 +984,10 @@ void WonderMovieWindow::create(int wonder)
   return;
 }
 
+/* (port) The movie's size in the game's pixels (WonderMovieWindow::resize):
+   the original's, 320 x 240, else OpenCiv2's own movie's (play). */
+static int wonder_movie_w = 0x140, wonder_movie_h = 0xf0;
+
 /* 004bbdfb auto */
 void WonderMovieWindow::play()
 
@@ -992,6 +996,8 @@ void WonderMovieWindow::play()
   i8 path[128];
   int open_result;
   
+  wonder_movie_w = 0x140;
+  wonder_movie_h = 0xf0;
   resize();
   if (((game.game_flags & GAME_SAVED_AS_SCENARIO) == 0) && ((game.game_flags & GAME_SCENARIO) == 0)) {
     str_clear((char *)path);
@@ -1002,6 +1008,23 @@ void WonderMovieWindow::play()
     str_append_int(path,wonder_index);
     str_concat(path,str_avi_2);
     found = file_resolve_path((const char *)path);
+    /* (port) OpenCiv2's own movie of the wonder (data/native/wonders;
+       src/platform/hd.c: hd_wonder_find): with HD graphics in place of the
+       game folder's, with Classic graphics where it has none; played as the
+       CD's (src/platform/video.c opens it for this path), the window sized
+       for it, 16:9, and centred */
+    {
+      char own[1400];
+      int own_w, own_h;
+      if (hd_wonder_find(wonder_index, found, &own_w, &own_h, own, sizeof own)) {
+        found = 1;
+        wonder_movie_w = own_w;
+        wonder_movie_h = own_h;
+        resize();
+        draw_caption();       /* (the frame and title, drawn by create at the original's size) */
+        repaint();
+      }
+    }
     if (found != 0) {
       window.wnd_handlers.set_lbuttonup_handler((WndMouseFn)wonder_movie_on_lbuttonup);
       window.wnd_handlers.set_keydown_handler(wonder_movie_on_key);
@@ -1058,8 +1081,8 @@ void WonderMovieWindow::resize()
   iptr rect;
   i32 color;
   
-  resize_clamped(border_width * 2 + 0x140,
-             caption_height + border_width + 0xf0);
+  resize_clamped(border_width * 2 + wonder_movie_w,
+             caption_height + border_width + wonder_movie_h);
   layout();
   color = 0;
   rect = (iptr)get_rect();

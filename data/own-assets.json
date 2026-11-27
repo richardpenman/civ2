@@ -1,7 +1,7 @@
 {
-  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound and data/native/heralds (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-media (repo; MIT, as OpenCiv2: its LICENSE; the sound effects' sources CC0: sound/SOURCES.md; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); notices: beside music and heralds. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
+  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds and data/native/wonders (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-media (repo; MIT, as OpenCiv2: its LICENSE; the sound effects' sources CC0: sound/SOURCES.md; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); notices: beside music, heralds and wonders. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
   "repo": "https://github.com/openciv2/openciv2-media",
-  "sha": "f6ba1272485b45846587ef40095abc74ae014165",
+  "sha": "0fadc5f56437cc4965d4cbbc1a67e2a1efd1406a",
   "music": {
     "02": {
       "path": "game/music/track02.ogg",
@@ -477,6 +477,20 @@
       "path": "sound/torpedos.ogg",
       "sha256": "d6556f358ee4e9e2fef4d6c06e89b8537d38cc26fb3d4ad0271e697add001b76",
       "size": 30484
+    }
+  },
+  "wonders": {
+    "wonder00.webp": {
+      "path": "wonders/wonder00.webp",
+      "title": "The Pyramids: the picture",
+      "sha256": "6292cfef08717f83dab77b1447473b22af4ebb463e4287f771071dd497d74362",
+      "size": 2898990
+    },
+    "wonder00.ogg": {
+      "path": "wonders/wonder00.ogg",
+      "title": "The Pyramids: the sound",
+      "sha256": "896153b5c6e35c25aa3f2383f774584833288e0e6651ba1547ea52a5d8dbe71a",
+      "size": 120937
     }
   },
   "notices": {

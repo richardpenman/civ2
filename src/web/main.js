@@ -781,6 +781,33 @@ async function play(store) {
         wanted.forEach((n, i) => fs.put(DATA + '/music/' + n, new Uint8Array(files[i])));
         window.civ2OwnMusic = wanted;
     })().catch((e) => console.warn('OpenCiv2 music:', e));
+    // OpenCiv2's own wonder movies (data/wonders, some 3 MB each: the
+    // picture wonderNN.webp and its sound wonderNN.ogg): with HD graphics
+    // all of them (hd.c plays ours first, in the place of the game's
+    // Video/WONDERNN.AVI), with Classic graphics those the player's game
+    // lacks (the game's own, else ours); fetched while the game starts and
+    // plays, not waited for; each movie put in when both its files have
+    // come, the sound first (the game looks for the picture: until it is
+    // there it plays the game's own, or none); window.civ2OwnWonders: the
+    // movies put in, when all have come (tests)
+    (async () => {
+        const have = new Set([...fs.files.keys()].map((k) => k.toUpperCase()));
+        const movies = await fetch('data/wonders/index.json').then((r) => (r.ok ? r.json() : []));
+        const wanted = hd ? movies : movies.filter((nn) => !have.has((GAME + '/VIDEO/WONDER' + nn + '.AVI').toUpperCase()));
+        const get = (n) => fetch('data/wonders/' + n).then((r) => {
+            if (!r.ok)
+                throw new Error(n + ': ' + r.status);
+            return r.arrayBuffer();
+        });
+        const put = [];
+        await Promise.all(wanted.map(async (nn) => {
+            const [webp, ogg] = await Promise.all([get('wonder' + nn + '.webp'), get('wonder' + nn + '.ogg')]);
+            fs.put(DATA + '/wonders/wonder' + nn + '.ogg', new Uint8Array(ogg));
+            fs.put(DATA + '/wonders/wonder' + nn + '.webp', new Uint8Array(webp));
+            put.push(nn);
+        }));
+        window.civ2OwnWonders = put.sort();
+    })().catch((e) => console.warn('OpenCiv2 wonder movies:', e));
     let code;
     try {
         window.civ2Stats = {};

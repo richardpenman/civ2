@@ -58,7 +58,12 @@ with HD graphics OpenCiv2's own (`data/sound/name.ogg` on the site, 2 MB, fetche
 own-assets`: [NO-INSTALL.md](NO-INSTALL.md#sounds)), the game folder's (`Sound/NAME.WAV`) only
 for one OpenCiv2 lacks; with Classic graphics the game folder's, else OpenCiv2's; the page
 fetches them (all with HD graphics, with Classic graphics those the game lacks) before the game
-starts.  OpenCiv2's own heralds
+starts.  Wonder movies likewise: with HD graphics OpenCiv2's own (the Pyramids' so far,
+`data/wonders/wonderNN.webp` and `.ogg` on the site, 3 MB a movie, fetched by `make own-assets`:
+[NO-INSTALL.md](NO-INSTALL.md#wonder-movies)) in the place of the game's; with Classic graphics
+the game folder's (`Video/WONDERNN.AVI`), else OpenCiv2's (the site's own copy of the game, `make
+web GAME=1`, has no `Video`); the page fetches them (all with HD graphics, with Classic graphics
+those the game lacks) while the game starts, without waiting for them.  OpenCiv2's own heralds
 (`data/native/heralds`) are in `hd/art.bin` with the HD art. Browsers let a page make no sound
 until it is first clicked or typed at: until then the sound effects are silent but still take their
 time (`host.js`, `host_audio_queue`), so a looping one, the main menu's theme, does not hold the

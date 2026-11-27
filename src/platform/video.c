@@ -138,7 +138,7 @@ static void parse_list(AviFile *a, long p, long end, int in_movi, long *movi)
    it as it plays the CD's (src/auto/diplomacy.cpp: its segments in the
    game's table, hd_herald in src/game/hd_graphics.cpp). */
 #define OWN_FCC FCC('O', 'H', 'R', 'L')
-typedef struct { DWORD magic, frame; HdAnim *anim; } OwnSample;
+typedef struct { DWORD magic, frame, movie; HdAnim *anim; } OwnSample;     /* (movie: a wonder's, open_own_wonder) */
 
 /* The herald's code (xxx) of a path ending in HRLDxxx.AVI, else 0. */
 static int herald_code(const char *name, char *code)
@@ -201,12 +201,132 @@ static HRESULT open_own_herald(PAVIFILE *pf, const char *name, const HdHerald *h
     bi->biCompression = OWN_FCC;
     bi->biSizeImage = sizeof(OwnSample);
     for (i = 0; i < n; i++) {
-        OwnSample r = {OWN_FCC, (DWORD)i, anim};
+        OwnSample r = {OWN_FCC, (DWORD)i, 0, anim};
         memcpy(a->data + (size_t)i * sizeof r, &r, sizeof r);
         add_sample(s, (DWORD)(i * sizeof r), sizeof r);
         s->samples[i].key = 1;
     }
     plat_log("AVIFileOpen(%s): OpenCiv2's own herald %s, %d frames at %d fps\n", name, path, n, h->fps);
+    *pf = (PAVIFILE)obj_new(OBJ_AVIFILE, a);
+    return AVIERR_OK;
+}
+
+/* ---- OpenCiv2's own wonder movies (docs/NO-INSTALL.md, "Wonder movies") ----
+   Where hd_wonder_find says so (with HD graphics in place of the game
+   folder's Video\WONDERnn.AVI, with Classic graphics where it has none),
+   the game's WONDERnn.AVI opens data/native/wonders/wonderNN.webp and
+   wonderNN.ogg as an AVI of two streams, as the original's: the picture's
+   frames at its rate (their records 'OHRL', drawn by the codec below from
+   the animated WebP at the plane's resolution, the game's pixels with an
+   ordered dither), and the sound decoded as the original's carry theirs,
+   22050 Hz, 8 bits, stereo (sound.c: sound_ogg_pcm8), which the game's
+   player plays with the picture and keeps it in time with, as it does the
+   CD's.  Its size in the game's pixels is 240 high and as wide as the
+   picture's proportions make it (the game's window sized for it:
+   WonderMovieWindow::play, hd_wonder_movie). */
+
+/* The wonder's number of a path ending in WONDERnn.AVI, else -1. */
+static int wonder_number(const char *name)
+{
+    const char *b = name, *p;
+    for (p = name; *p; p++)
+        if (*p == '\\' || *p == '/')
+            b = p + 1;
+    if (strlen(b) != 12 || strncasecmp(b, "wonder", 6) || b[6] < '0' || b[6] > '9' || b[7] < '0' || b[7] > '9' ||
+        strcasecmp(b + 8, ".avi"))
+        return -1;
+    return (b[6] - '0') * 10 + (b[7] - '0');
+}
+
+static unsigned char *read_whole(const char *path, long *size)
+{
+    FILE *f = fopen(path, "rb");
+    unsigned char *data = NULL;
+    *size = 0;
+    if (f && !fseek(f, 0, SEEK_END) && (*size = ftell(f)) > 0 && !fseek(f, 0, SEEK_SET) &&
+        (data = malloc((size_t)*size)) && fread(data, 1, (size_t)*size, f) != (size_t)*size) {
+        free(data);
+        data = NULL;
+    }
+    if (f)
+        fclose(f);
+    return data;
+}
+
+static HRESULT open_own_wonder(PAVIFILE *pf, const char *name, int w, int h, const char *path)
+{
+    char ogg[1400];
+    long size, pcm_bytes = 0, ms;
+    unsigned char *data = read_whole(path, &size), *pcm;
+    HdAnim *anim;
+    AviFile *a;
+    Stream *s;
+    BITMAPINFOHEADER *bi;
+    int i, n;
+    size_t frames_bytes;
+    if (!(anim = hd_anim_open(data, (size_t)size))) {
+        plat_log("AVIFileOpen(%s): %s is not an animated WebP\n", name, path);
+        return AVIERR_FILEOPEN;
+    }
+    n = hd_anim_frames(anim);
+    ms = hd_anim_ms(anim);
+    if (ms <= 0)
+        ms = (long)n * 1000 / 15;
+    snprintf(ogg, sizeof ogg, "%.*s.ogg", (int)(strlen(path) - 5), path);
+    pcm = sound_ogg_pcm8(ogg, &pcm_bytes);         /* (none: the picture alone) */
+    frames_bytes = (size_t)n * sizeof(OwnSample);
+    a = calloc(1, sizeof *a);
+    a->own = anim;
+    a->nstreams = pcm ? 2 : 1;
+    a->size = (long)(frames_bytes + (size_t)pcm_bytes);
+    a->data = calloc(1, (size_t)a->size);
+    /* the picture: its frames at its rate (n frames in ms) */
+    s = &a->streams[0];
+    put32(s->strh, FCC('v', 'i', 'd', 's'));
+    put32(s->strh + 4, OWN_FCC);
+    put32(s->strh + 20, (DWORD)ms);                 /* scale */
+    put32(s->strh + 24, (DWORD)n * 1000);           /* rate */
+    put32(s->strh + 36, sizeof(OwnSample));         /* suggested buffer */
+    s->fmt_size = sizeof *bi;
+    s->fmt = calloc(1, sizeof *bi);
+    bi = (BITMAPINFOHEADER *)s->fmt;
+    bi->biSize = sizeof *bi;
+    bi->biWidth = w;
+    bi->biHeight = h;
+    bi->biPlanes = 1;
+    bi->biBitCount = 32;
+    bi->biCompression = OWN_FCC;
+    bi->biSizeImage = sizeof(OwnSample);
+    for (i = 0; i < n; i++) {
+        OwnSample r = {OWN_FCC, (DWORD)i, 1, anim};
+        memcpy(a->data + (size_t)i * sizeof r, &r, sizeof r);
+        add_sample(s, (DWORD)(i * sizeof r), sizeof r);
+        s->samples[i].key = 1;
+    }
+    /* the sound: PCM as the original's (WAVEFORMAT: PCM, 2 channels, 22050
+       Hz, 44100 bytes a second, blocks of 2, 8 bits), its samples blocks */
+    if (pcm) {
+        static const unsigned char wf[16] = {1, 0, 2, 0, 0x22, 0x56, 0, 0, 0x44, 0xac, 0, 0, 2, 0, 8, 0};
+        long at;
+        s = &a->streams[1];
+        put32(s->strh, FCC('a', 'u', 'd', 's'));
+        put32(s->strh + 20, 2);                     /* scale */
+        put32(s->strh + 24, 44100);                 /* rate */
+        put32(s->strh + 36, 2948);                  /* suggested buffer (the original's) */
+        put32(s->strh + 40, 10000);                 /* quality */
+        put32(s->strh + 44, 2);                     /* sample size */
+        s->fmt_size = sizeof wf;
+        s->fmt = malloc(sizeof wf);
+        memcpy(s->fmt, wf, sizeof wf);
+        memcpy(a->data + frames_bytes, pcm, (size_t)pcm_bytes);
+        for (at = 0; at < pcm_bytes; at += 2940)    /* (chunks of a 15th of a second, as the original's) */
+            add_sample(s, (DWORD)(frames_bytes + (size_t)at), (DWORD)(pcm_bytes - at < 2940 ? pcm_bytes - at : 2940));
+        put32(s->strh + 32, (DWORD)(pcm_bytes / 2));  /* length */
+        free(pcm);
+    }
+    put32(a->streams[0].strh + 32, (DWORD)n);       /* length */
+    plat_log("AVIFileOpen(%s): OpenCiv2's own wonder movie %s, %d frames in %ld ms, %dx%d; its sound %s, %ld samples\n",
+             name, path, n, ms, w, h, ogg, pcm_bytes / 2);
     *pf = (PAVIFILE)obj_new(OBJ_AVIFILE, a);
     return AVIERR_OK;
 }
@@ -222,8 +342,18 @@ HRESULT WINAPI AVIFileOpenA(PAVIFILE *pf, LPCSTR name, UINT mode, LPCLSID handle
     long movi = 0;
     char code[4], own[1400];
     HdHerald herald;
+    int wonder, ww, wh;
     (void)mode; (void)handler;
     *pf = 0;
+    if ((wonder = wonder_number(name)) >= 0) {
+        int installed;
+        plat_host_path(name, host, sizeof host, 0);
+        installed = (f = fopen(host, "rb")) != NULL;
+        if (f)
+            fclose(f);
+        if (hd_wonder_find(wonder, installed, &ww, &wh, own, sizeof own))
+            return open_own_wonder(pf, name, ww, wh, own);
+    }
     if (herald_code(name, code) && hd_herald_find(code, &herald, own, sizeof own))
         return open_own_herald(pf, name, &herald, own);
     plat_host_path(name, host, sizeof host, 0);
@@ -899,14 +1029,17 @@ static void own_sample(const unsigned char *px, int cw, int ch, double x0, doubl
    it shows at the plane's resolution, with its alpha (bilinear, from the
    frame premultiplied, where the plane has as many pixels as the frame or
    more; else each plane pixel the frame's it covers averaged), only round
-   the figure, and the game pixels it touched are taken as shown. */
-static void draw_own(Codec *c, HdAnim *anim, int frame, const ICDECOMPRESSEX *d)
+   the figure, and the game pixels it touched are taken as shown.  A wonder
+   movie's (movie) game pixels take their colours with draw_frame's ordered
+   dither, as the CD's movies do (its picture has no transparency). */
+static void draw_own(Codec *c, HdAnim *anim, int frame, int movie, const ICDECOMPRESSEX *d)
 {
+    static const int bayer[4][4] = {{-24, 8, -16, 16}, {20, -8, 28, 0}, {-12, 20, -20, 12}, {24, 0, 16, -4}};
     BITMAPINFOHEADER *bi = d->lpbiDst;
     Bitmap *bm = bmp_of_bits(d->lpDst);
     clock_t t0 = clock(), t1, t2;
     const unsigned char *px = hd_anim_frame(anim, frame);
-    int cw, ch, W, H, x, y, i, j, dd = hd_density, up;
+    int cw, ch, W, H, x, y, i, j, dd = hd_density, up, opaque;
     unsigned int *plane;
     unsigned char *near = NULL, *pm = NULL;
     int *cols = NULL, *rows = NULL, *rx, *ry;
@@ -929,8 +1062,16 @@ static void draw_own(Codec *c, HdAnim *anim, int frame, const ICDECOMPRESSEX *d)
         free(near); free(pm); free(rx); free(ry);
         return;
     }
-    /* the frame premultiplied */
-    for (i = 0; i < cw * ch; i++) {
+    /* the frame premultiplied (a wonder movie's, where opaque, as it is: all of it near) */
+    opaque = movie;
+    for (i = 0; opaque && i < cw * ch; i++)
+        if (px[(size_t)i * 4 + 3] != 255)
+            opaque = 0;
+    if (opaque) {
+        memcpy(pm, px, (size_t)cw * ch * 4);
+        memset(near, 1, (size_t)W * H);
+    }
+    for (i = 0; !opaque && i < cw * ch; i++) {
         const unsigned char *q = px + (size_t)i * 4;
         unsigned char *o = pm + (size_t)i * 4;
         o[0] = (unsigned char)((q[0] * q[3] + 127) / 255);
@@ -965,12 +1106,18 @@ static void draw_own(Codec *c, HdAnim *anim, int frame, const ICDECOMPRESSEX *d)
             }
             if (!sa)
                 continue;
-            for (j = y > 0 ? y - 1 : 0; j <= y + 1 && j < H; j++)
+            for (j = y > 0 ? y - 1 : 0; !opaque && j <= y + 1 && j < H; j++)
                 for (i = x > 0 ? x - 1 : 0; i <= x + 1 && i < W; i++)
                     near[(size_t)j * W + i] = 1;
             n = (x1 - x0) * (y1 - y0);
-            if (row && tx >= 0 && tx < bm->w && sa >= 128u * n)
-                row[tx] = c->lut[(sr * 255 / sa) >> 3 << 10 | (sg * 255 / sa) >> 3 << 5 | (sb * 255 / sa) >> 3];
+            if (row && tx >= 0 && tx < bm->w && sa >= 128u * n) {
+                int cr = (int)(sr * 255 / sa), cg = (int)(sg * 255 / sa), cb = (int)(sb * 255 / sa);
+                if (movie) {
+                    int e = bayer[ty & 3][tx & 3];
+                    cr = clamp8(cr + e); cg = clamp8(cg + e); cb = clamp8(cb + e);
+                }
+                row[tx] = c->lut[cr >> 3 << 10 | cg >> 3 << 5 | cb >> 3];
+            }
         }
     }
     t1 = clock();
@@ -1037,8 +1184,8 @@ static void draw_own(Codec *c, HdAnim *anim, int frame, const ICDECOMPRESSEX *d)
     }
     t2 = clock();
     if (getenv("CIV2_LOG_VIDEO"))
-        plat_log("video: own herald frame %d: decoded, the game's pixels %.1f ms, the plane (density %d) %.1f ms\n",
-                 frame, (t1 - t0) * 1000.0 / CLOCKS_PER_SEC, hd_density,
+        plat_log("video: own %s frame %d: decoded, the game's pixels %.1f ms, the plane (density %d) %.1f ms\n",
+                 movie ? "wonder movie" : "herald", frame, (t1 - t0) * 1000.0 / CLOCKS_PER_SEC, hd_density,
                  (t2 - t1) * 1000.0 / CLOCKS_PER_SEC);
     free(near);
     free(pm);
@@ -1136,7 +1283,7 @@ LRESULT WINAPI ICSendMessage(HIC h, UINT msg, DWORD_PTR a, DWORD_PTR b)
             if (r.magic != OWN_FCC)
                 return ICERR_ERROR;
             if (!(d->dwFlags & ICDECOMPRESS_PREROLL) && d->lpDst) {
-                draw_own(c, r.anim, (int)r.frame, d);
+                draw_own(c, r.anim, (int)r.frame, (int)r.movie, d);
                 if (c->view) {
                     c->view[0] = d->xDst;
                     c->view[1] = d->yDst;

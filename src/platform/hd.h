@@ -32,12 +32,14 @@ unsigned char *hd_decode_image(const unsigned char *data, size_t len, int *w, in
    it; NULL: not one), its frames and canvas size, frame i (0 on) as the
    canvas shows it, RGBA not premultiplied, w x h (NULL: bad; valid until
    the next call), from any frame in any order (decoded from the last key
-   frame before it, or on from the one asked last). */
+   frame before it, or on from the one asked last); hd_anim_ms: how long it
+   plays (its frames' durations, ms). */
 typedef struct HdAnim HdAnim;
 HdAnim *hd_anim_open(unsigned char *data, size_t len);
 void hd_anim_close(HdAnim *a);
 int hd_anim_frames(const HdAnim *a);
 void hd_anim_size(const HdAnim *a, int *w, int *h);
+long hd_anim_ms(const HdAnim *a);
 const unsigned char *hd_anim_frame(HdAnim *a, int i);
 
 /* OpenCiv2's own heralds (data/native/heralds/heralds.txt and hd-extra's, docs/HD-GRAPHICS.md
@@ -57,6 +59,20 @@ typedef struct {
 } HdHerald;
 int hd_herald_parse(const char *line, HdHerald *h);
 int hd_herald_find(const char *code, HdHerald *h, char *path, size_t n);
+
+/* OpenCiv2's own wonder movies (data/native/wonders, made by make
+   own-assets; docs/NO-INSTALL.md, "Wonder movies"): wonderNN.webp, the
+   picture (an animated WebP), and wonderNN.ogg, its sound, played in the
+   place of the game's Video\WONDERNN.AVI (src/platform/video.c:
+   open_own_wonder; the game's WonderMovieWindow::play).  hd_wonder_find:
+   whether wonder n's plays, as the music and the sound effects choose:
+   with HD graphics (hd_art) in place of the game folder's, with Classic
+   graphics only where the game folder has none (installed: 0); never in a
+   replay but with CIV2_TEST_WONDER=1 (the recordings were made without
+   it).  1: it plays, the picture's path in path (the sound's: .ogg for
+   .webp), its size in the game's pixels in *w x *h (240 high, as wide as
+   the picture's proportions make it). */
+int hd_wonder_find(int n, int installed, int *w, int *h, char *path, size_t len);
 
 /* The game's side (src/auto/graphics*.cpp).  Surfaces are named by their
    pixels (DibSurface::bits); rectangles are in surface pixels. */

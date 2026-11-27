@@ -47,6 +47,7 @@ struct HdAnim {
     size_t len;
     WebPDemuxer *dmx;
     int w, h, n;
+    long ms;                    /* all its frames' durations */
     unsigned char *canvas;      /* RGBA, not premultiplied: frame cur */
     unsigned char *key;         /* per frame: a key frame */
     int cur;                    /* -1: none yet */
@@ -92,6 +93,7 @@ HdAnim *hd_anim_open(unsigned char *data, size_t len)
             a->key[i] = prev.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND &&
                         ((prev.width == a->w && prev.height == a->h) || prev_key);
         prev_key = a->key[i];
+        a->ms += it.duration;
         WebPDemuxReleaseIterator(&prev);
         prev = it;
     }
@@ -113,6 +115,7 @@ void hd_anim_close(HdAnim *a)
 
 int hd_anim_frames(const HdAnim *a) { return a ? a->n : 0; }
 void hd_anim_size(const HdAnim *a, int *w, int *h) { *w = a ? a->w : 0; *h = a ? a->h : 0; }
+long hd_anim_ms(const HdAnim *a) { return a ? a->ms : 0; }
 
 static int draw_anim_frame(HdAnim *a, int i)
 {
