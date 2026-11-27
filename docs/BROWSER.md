@@ -21,6 +21,13 @@ make serve        # builds build/web (first time: downloads Binaryen into tools/
 It is tested in Chrome, and should run in any browser from 2023 on (Edge 103, Firefox 113,
 Safari 16.4).
 
+Every push to main publishes it at <https://openciv2.github.io/openciv2/>
+(`.github/workflows/pages.yml`): built as `make web` builds it, with the pinned HD art and
+OpenCiv2's own music, sound effects, heralds and wonder movie made as the release makes them, never
+with the game (no `GAME=1`), and checked before it is published to hold none of the original's
+files. Its URLs are all relative, so it plays under that sub-path as at a site's root. There is no
+relay there: network games need `?relay=` pointing at one of your own (Network games, below).
+
 ## The start: no copy of the game needed
 
 A visit goes straight into the game, as the desktop game starts. The first time (nothing in the

@@ -1,0 +1,182 @@
+# Publishes the browser version (docs/BROWSER.md) to GitHub Pages,
+# https://openciv2.github.io/openciv2/, on every push to main: build/web as
+# make web makes it, but never with the original game (no GAME=1: the site
+# starts straight into the game with the HD graphics and OpenCiv2's own
+# texts, rules, music, sound effects, heralds and wonder movie;
+# src/web/main.js).  The HD art (data/native/hd) and OpenCiv2's own files
+# (data/native/music, sound, heralds, wonders) are made as the release
+# makes them (.github/workflows/release.yml: the jobs hd-art and own-assets,
+# with the same caches), then tools/build_web.py runs with them (the game
+# as a wasm module with wasi-sdk, wasm-opt from Binaryen: tools/
+# fetch-toolchain.sh and fetch-toolchain.sh web).  Before it is published, a
+# check fails the run if the site has anything of the original game.
+name: Browser version on GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# (one deployment at a time; a newer push's waits, the one being made ends)
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # The HD graphics' art: as release.yml's hd-art (its cache shared)
+  hd-art:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: hd-art-git-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
+          restore-keys: hd-art-git-
+      - name: The art
+        run: python3 tools/build_hd_pack.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hd-art
+          path: data/native/hd
+          retention-days: 1
+
+  # OpenCiv2's own music, sound effects, heralds and wonder movies: as
+  # release.yml's own-assets (its cache shared)
+  own-assets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
+          restore-keys: own-assets-
+      - name: The music, sound effects, heralds and wonder movies
+        run: python3 tools/build_own_assets.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: own-assets
+          path: |
+            data/native/music
+            data/native/sound
+            data/native/heralds
+            data/native/wonders
+          retention-days: 1
+
+  site:
+    needs: [hd-art, own-assets]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
+      - name: Toolchain (wasi-sdk, wabt, the set-up's sources; Binaryen)
+        run: |
+          sh tools/fetch-toolchain.sh
+          sh tools/fetch-toolchain.sh web
+      - name: The site (make web without GAME)
+        env:
+          HD_ART: 1
+          OWN_ASSETS: 1
+          GAME: ''
+        # (make web is these with tools/build_hd_pack.py and
+        # build_own_assets.py first: their results are the artifacts above)
+        run: |
+          set -o pipefail
+          python3 tools/build_web.py 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
+      # Nothing of the original game on the site: no game/ (GAME=1's copy),
+      # none of its kinds of files (programs, DLLs, videos, WAVs, GIFs,
+      # saves, scenarios, archives, disc images), the game's text files only
+      # as OpenCiv2's own (data/text/NAME.TXT.gz: data/native/text's, in the
+      # repository, byte for byte), every other .txt a translation
+      # (data/native/lang's, byte for byte) or a licence's notice; the
+      # site's sounds only OpenCiv2's (data/music, sound, wonders) and its
+      # pictures only those hd/index.json lists from the art pack and
+      # OpenCiv2's heralds (and its wonder movies'); the art and the own
+      # assets there.
+      - name: No original game files on the site
+        run: |
+          python3 - <<'PY'
+          import gzip, json, os, sys
+          web, native = 'build/web', 'data/native'
+          bad = []
+          if os.path.exists(os.path.join(web, 'game')):
+              bad.append('game/ (the original game: GAME=1)')
+          forbidden = ('.exe', '.dll', '.avi', '.wav', '.gif', '.bmp', '.ico', '.cur', '.fon', '.flc', '.fli',
+                       '.mid', '.sav', '.net', '.scn', '.mp', '.map', '.hlp', '.cnt', '.zip', '.cab', '.hdr',
+                       '.cue', '.iso', '.bin', '.img', '.ini', '.dat', '.lnk', '.log')
+          notices = {'data/fonts/OFL.txt', 'data/music/README.txt', 'hd/THIRD-PARTY.txt'}
+          sounds = ('data/music/', 'data/sound/', 'data/wonders/')
+          count = 0
+          for d, _, files in os.walk(web):
+              for f in files:
+                  count += 1
+                  rel = os.path.relpath(os.path.join(d, f), web).replace(os.sep, '/')
+                  low = rel.lower()
+                  plain = low[:-3] if low.endswith('.gz') else low
+                  if rel == 'hd/art.bin':
+                      continue                    # (the art pack: hd/index.json, checked below)
+                  if rel in ('data/fonts_win.bin.gz', 'data/fonts_win_aa.bin.gz'):
+                      if gzip.open(os.path.join(d, f)).read() != open(os.path.join(native, f[:-3]), 'rb').read():
+                          bad.append(rel + ' (not OpenCiv2\'s own data/native)')
+                      continue                    # (OpenCiv2's fonts, in the repository)
+                  if plain.endswith(forbidden):
+                      bad.append(rel)
+                  elif plain.endswith('.txt'):
+                      if rel.startswith('data/text/') and rel.endswith('.TXT.gz'):
+                          own = os.path.join(native, 'text', f[:-3])
+                          if not os.path.exists(own) or gzip.open(os.path.join(d, f)).read() != open(own, 'rb').read():
+                              bad.append(rel + ' (not OpenCiv2\'s own data/native/text)')
+                      elif rel.startswith('lang/'):
+                          own = os.path.join(native, 'lang', f)
+                          if not os.path.exists(own) or open(os.path.join(d, f), 'rb').read() != open(own, 'rb').read():
+                              bad.append(rel + ' (not OpenCiv2\'s own data/native/lang)')
+                      elif rel not in notices:
+                          bad.append(rel)
+                  elif plain.endswith(('.ogg', '.mp3', '.flac', '.opus')) and not rel.startswith(sounds):
+                      bad.append(rel)
+                  elif plain.endswith(('.webp', '.png', '.jpg', '.jpeg')) and not rel.startswith('data/wonders/'):
+                      bad.append(rel + ' (pictures belong in hd/art.bin)')
+          art = json.load(open(os.path.join(web, 'hd', 'index.json')))
+          for path, _ in art:
+              top, name = path.split('/', 1)
+              if top not in ('hd', 'heralds') or not (name in ('pictures.txt', 'heralds.txt') or
+                                                      name.endswith(('.webp', '.png'))):
+                  bad.append('hd/art.bin: ' + path)
+          if not any(p == 'hd/pictures.txt' for p, _ in art):
+              bad.append('hd/art.bin: no HD art (data/native/hd)')
+          for d in ('music', 'sound', 'wonders'):
+              if not json.load(open(os.path.join(web, 'data', d, 'index.json'))):
+                  bad.append('data/%s: none of OpenCiv2\'s own' % d)
+          for b in bad:
+              print('::error::%s' % b)
+          if bad:
+              sys.exit('%d files not OpenCiv2\'s own on the site' % len(bad))
+          print('%d files checked: none of the original game; %d in hd/art.bin' % (count, len(art)))
+          PY
+          du -sh build/web
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: build/web
+
+  deploy:
+    needs: site
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
