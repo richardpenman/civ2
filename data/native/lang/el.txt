@@ -21,7 +21,7 @@ utf-8
 @@openciv2.menu.arrange_l
 Τακτοποίηση Παραθύρων L
 @@openciv2.mainmenu.options
-Επιλογές OpenCiv2
+Ρυθμίσεις
 @@openciv2.diplo.emissary
 %s Αντιπροσωπεία
 @@openciv2.diplo.cancel_peace
@@ -31,7 +31,7 @@ utf-8
 @@openciv2.diplo.you_reply
 Απαντάτε:
 @@openciv2.options.title
-Επιλογές OpenCiv2
+Ρυθμίσεις
 @@openciv2.options.kept
 Αποθηκεύονται στο CIV.INI, στην ενότητα [OpenCiv2].
 @@openciv2.options.fixes
@@ -243,7 +243,7 @@ OK
 @@openciv2.box.no
 Όχι
 @@openciv2.quit.text
-Έξοδος από το Civilization II;
+Έξοδος από το OpenCiv2;
 
 Το τρέχον παιχνίδι τελειώνει εδώ· ό,τι δεν αποθηκεύτηκε χάνεται.
 @@openciv2.quit.quit
@@ -352,7 +352,7 @@ OpenCiv2: εγκατάσταση του παιχνιδιού
 @@openciv2.web.loading
 Φόρτωση ...
 @@openciv2.web.intro
-Το Civilization II Multiplayer Gold Edition, ξαναχτισμένο για να τρέχει στον περιηγητή σας. Παίζεται με το <em>δικό σας</em> αντίτυπο του παιχνιδιού: τον φάκελο όπου είναι εγκατεστημένο το Civilization II (αυτόν με τα <code>Civ2Art.dll</code> και <code>RULES.TXT</code>), το CD του παιχνιδιού ή μια εικόνα δίσκου του CD. Ο τρόπος παιχνιδιού (κλασικά γραφικά ή γραφικά HD, διορθώσεις σφαλμάτων, αλλαγές κανόνων και προσθήκες περιβάλλοντος) επιλέγεται μέσα στο παιχνίδι: Επιλογές OpenCiv2, στο κύριο μενού του.
+Το Civilization II Multiplayer Gold Edition, ξαναχτισμένο για να τρέχει στον περιηγητή σας. Παίζεται με το <em>δικό σας</em> αντίτυπο του παιχνιδιού: τον φάκελο όπου είναι εγκατεστημένο το Civilization II (αυτόν με τα <code>Civ2Art.dll</code> και <code>RULES.TXT</code>), το CD του παιχνιδιού ή μια εικόνα δίσκου του CD. Ο τρόπος παιχνιδιού (κλασικά γραφικά ή γραφικά HD, διορθώσεις σφαλμάτων, αλλαγές κανόνων και προσθήκες περιβάλλοντος) επιλέγεται μέσα στο παιχνίδι: Ρυθμίσεις, στο κύριο μενού του.
 @@openciv2.web.add_original
 Τα κλασικά γραφικά χρειάζονται τα αρχικά αρχεία του Civilization II, τα οποία δεν έχει το παιχνίδι σε αυτόν τον περιηγητή. Επιλέξτε το αντίτυπό σας του Civilization II Multiplayer Gold Edition: τα αρχεία που έχει ήδη το παιχνίδι διατηρούνται.
 @@openciv2.web.add_back

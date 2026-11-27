@@ -1,5 +1,5 @@
-// The game's OpenCiv2 Options (src/game/options.cpp; docs/EXTRAS.md
-// "OpenCiv2 Options") as the page reads them: CIV.INI's [OpenCiv2] section,
+// The game's Settings (src/game/options.cpp; docs/EXTRAS.md
+// "Settings") as the page reads them: CIV.INI's [OpenCiv2] section,
 // which the game writes and the browser keeps with the game's files.  What
 // the page needs to know before the game starts: whether it wants HD
 // graphics (their art, which the page gets: main.js).

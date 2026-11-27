@@ -1,4 +1,4 @@
-# The OpenCiv2 Options dialog (src/game/options.cpp), the main menu's last
+# The Settings dialog (src/game/options.cpp), the main menu's last
 # choice (CIV2_TEST_OPTIONS: nothing written to CIV.INI or restarted; the
 # choices hold for the run): its pages; the bug fixes unticked (at once, no
 # restart) and the page again; Classic graphics unticked (HD graphics) and

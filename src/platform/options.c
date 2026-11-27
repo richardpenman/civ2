@@ -1,6 +1,6 @@
 /*
- * The platform's part of the OpenCiv2 Options dialog (src/game/options.cpp,
- * docs/EXTRAS.md "OpenCiv2 Options"): the graphics' default and the
+ * The platform's part of the Settings dialog (src/game/options.cpp,
+ * docs/EXTRAS.md "Settings"): the graphics' default and the
  * restart, for the choices that need one (not in a test run, a replay: the
  * program goes on).
  */
@@ -11,7 +11,7 @@
 /* ---- the graphics: the one place that decides (docs/EXTRAS.md "HD graphics") ----
 
    HD graphics where CIV.INI's [OpenCiv2] Graphics= says nothing: off (the
-   original's look: OpenCiv2 Options' "Classic graphics" ticked).  Making HD
+   original's look: Settings' "Classic graphics" ticked).  Making HD
    the default is this line (and its mirror in the browser's page,
    src/web/options.js: HD_BY_DEFAULT): "Classic graphics" is then unticked
    by default.  Graphics=Classic (or Standard, as earlier versions wrote it)
@@ -33,7 +33,7 @@ int plat_graphics_forced(void)
     return plat_hd_forced;
 }
 
-/* The original's files from the player's copy (OpenCiv2 Options' Classic
+/* The original's files from the player's copy (Settings' Classic
    graphics ticked without them): the host's set-up (host_add_original),
    then the game folder looked at again. */
 int plat_add_original(void)

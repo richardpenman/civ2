@@ -95,9 +95,9 @@ int host_open_window(int w, int h, int scale)
     screen_h = h;
     if (scale < 1 && SDL_GetDisplayUsableBounds(0, &r) == 0)
         /* The desktop's main window has its own caption and borders. */
-        window = SDL_CreateWindow("Civilization II", r.x, r.y, r.w, r.h, SDL_WINDOW_BORDERLESS);
+        window = SDL_CreateWindow("OpenCiv2", r.x, r.y, r.w, r.h, SDL_WINDOW_BORDERLESS);
     else
-        window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        window = SDL_CreateWindow("OpenCiv2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   w * (scale < 1 ? 1 : scale), h * (scale < 1 ? 1 : scale),
                                   SDL_WINDOW_RESIZABLE | (full ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
     return window && create_renderer() && make_texture(w, h);
@@ -151,7 +151,7 @@ void host_resize_desktop(int w, int h)
 int host_open_maximized_window(int32_t *w, int32_t *h, int scale)
 {
     int i, cw = 0, ch = 0, lw = -1, lh = -1, same = 0;
-    window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
+    window = SDL_CreateWindow("OpenCiv2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
                               SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!window)
         return 0;
@@ -185,15 +185,15 @@ int host_open_native_window(int32_t *w, int32_t *h, int mode, int scale)
        the green button does: the menu bar shows only at the top edge). */
     SDL_Rect r;
     if (mode == 0 && SDL_GetDisplayUsableBounds(0, &r) == 0)
-        window = SDL_CreateWindow("Civilization II", r.x, r.y, r.w, r.h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALLOW_HIGHDPI);
+        window = SDL_CreateWindow("OpenCiv2", r.x, r.y, r.w, r.h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALLOW_HIGHDPI);
     else
-        window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, flags);
+        window = SDL_CreateWindow("OpenCiv2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, flags);
 #else
     /* Full screen (also the default): the window without its title bar
        and frame over the whole display, its menu bar at the top
        (host_win_full_screen; SDL's full screen and frameless windows have
        none); mode 2 (CIV2_WINDOW=1): a window, maximized. */
-    window = SDL_CreateWindow("Civilization II", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
+    window = SDL_CreateWindow("OpenCiv2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768,
                               flags | (mode == 2 ? SDL_WINDOW_MAXIMIZED : 0));
     mode = mode == 2 ? 2 : 0;           /* (the size: steady, as a window's) */
 #endif
@@ -866,7 +866,7 @@ int host_music_playing(void)
 /* ---- the system's language ---- */
 
 /* The user's preferred language ("de-DE", "eo"), as the system says (none:
-   0); for Auto in the OpenCiv2 Options (CIV2_SYSTEM_LANG). */
+   0); for Auto in the Settings (CIV2_SYSTEM_LANG). */
 int host_system_language(char *out, int size)
 {
 #if SDL_VERSION_ATLEAST(2, 0, 14)

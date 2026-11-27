@@ -1,7 +1,7 @@
 // The browser version's smoke test: build/web served on a local port, opened
 // in Chrome's headless shell (driven over the DevTools protocol, no other
 // dependency), given the player's game files as a .zip through the page's
-// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its OpenCiv2 Options), a new game with the default
+// own file input (after a set-up from a made-up disc image: disc.mjs), then the game: the main menu (its Settings), a new game with the default
 // choices, its first turn, a save; the saves exported and imported again
 // (from the set-up page, and while playing), the saved game loaded; first the set-up page in
 // Esperanto (?lang=eo) and Chinese (?lang=zh-TW), and in English without ?lang (whatever the
@@ -316,8 +316,8 @@ async function main() {
         }
         await skipOpening();
         await shot('01-menu');
-        // its last choice, OpenCiv2 Options (its hotkey): the game's dialog, closed again
-        await key('KeyO', 79, 'o');
+        // its last choice, Settings (its hotkey): the game's dialog, closed again
+        await key('KeyE', 69, 'e');     // (X24 gives Settings its first free letter: Start a New Game has the s)
         await key('Enter', 13);
         await settle(1500, 20000);
         await shot('01-options');

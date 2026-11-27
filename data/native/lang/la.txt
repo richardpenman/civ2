@@ -19,7 +19,7 @@ Fenestras disponere S
 @@openciv2.menu.arrange_l
 Fenestras disponere L
 @@openciv2.mainmenu.options
-Optiones OpenCiv2
+Configuratio
 @@openciv2.diplo.emissary
 Nuntius (%s)
 @@openciv2.diplo.cancel_peace
@@ -29,7 +29,7 @@ Nuntius (%s)
 @@openciv2.diplo.you_reply
 Respondes:
 @@openciv2.options.title
-Optiones OpenCiv2
+Configuratio
 @@openciv2.options.kept
 Servantur in CIV.INI, sub [OpenCiv2].
 @@openciv2.options.fixes
@@ -241,7 +241,7 @@ Ita
 @@openciv2.box.no
 Minime
 @@openciv2.quit.text
-Civilization II relinquere?
+OpenCiv2 relinquere?
 
 Ludus qui geritur hic finitur; quidquid servatum non est perit.
 @@openciv2.quit.quit
@@ -350,7 +350,7 @@ Elige
 @@openciv2.web.loading
 Oneratur ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Ludit cum <em>tuo ipsius</em> exemplari ludi: capsa in qua Civilization II institutum est (ea cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imago disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Optiones OpenCiv2, in indice eius principali.
+Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat. Ludit cum <em>tuo ipsius</em> exemplari ludi: capsa in qua Civilization II institutum est (ea cum <code>Civ2Art.dll</code> et <code>RULES.TXT</code>), CD ludi, aut imago disci eius CD. Quomodo ludas (graphica classica aut HD, menda correcta, regulae mutatae et interfaciei additamenta) in ludo eligitur: Configuratio, in indice eius principali.
 @@openciv2.web.add_original
 Graphica classica fasciculis archetypis Civilization II egent, quos ludus in hoc navigatro non habet. Elige exemplar tuum Civilization II Multiplayer Gold Edition: fasciculi quos ludus iam habet servantur.
 @@openciv2.web.add_back

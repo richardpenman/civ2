@@ -86,6 +86,7 @@ static FILE *text_file_handle;
 static std::vector<std::string> lines;
 static size_t line_pos;
 static int lang_section_line(char *) { return 0; }
+static void lang_own_name_line(char *, size_t) {}     // (normal play: OpenCiv2's name; none here)
 #define CRT_FEOF(f) (line_pos >= lines.size())
 static char *_fgets(char *buf, int, FILE *) {
     if (line_pos >= lines.size())

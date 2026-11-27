@@ -140,7 +140,7 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
   it, named `NAME-LABEL`.  `CIV2_TEST_EXTRAS` turns additions on by number (`1`: all the interface
   additions; `17,42`: those rule changes), `CIV2_TEST_SETTINGS` sets `CIV.INI` values
   (`RetirementYear=1902,Gamma=150`), `CIV2_TEST_SUPPRESS` the popups shown on the map,
-  `CIV2_TEST_OPTIONS=1` puts OpenCiv2 Options in the main menu (its choices hold for the run,
+  `CIV2_TEST_OPTIONS=1` puts Settings in the main menu (its choices hold for the run,
   nothing is written to `CIV.INI` or restarted: `x-options.txt`), and
   `CIV2_TEST_FULL=WxH` shows the whole game window on a WxH desktop (the interface scripts: 640x480)
   instead of the reference desktop of the replays (the rule changes' scripts).
@@ -309,7 +309,7 @@ builds do not use it.
   demand as natively, its decoded pictures within its 160 MB budget in the module's memory (no
   maximum set at link time: wasm32's 4 GB).  The frame goes on the canvas at density times the
   desktop's size by `putImageData` (about 10 ms for 2560x1600, so not WebGL), not smoothed where
-  the canvas is shown at whole device pixels.  The game's OpenCiv2 Options (src/game/options.cpp)
+  the canvas is shown at whole device pixels.  The game's Settings (src/game/options.cpp)
   are the same in the browser: its restart loads the page again (`host_restart`, an import
   asyncify waits on, as the message box), the page then getting the art from the site where
   `CIV.INI` asks for HD graphics (src/web/main.js, options.js: `hdWanted`).
@@ -370,7 +370,7 @@ builds do not use it.
   only the player's files), the saved game removed and imported from that `.zip` (on the set-up
   page, then again while the game runs), and loaded again from the menu;
   screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: Classic graphics unticked in the game's
-  OpenCiv2 Options and `Graphics=HD` written to `CIV.INI`, the page loaded again with the site's art, the game
+  Settings and `Graphics=HD` written to `CIV.INI`, the page loaded again with the site's art, the game
   at a device pixel ratio of 2: the canvas twice the desktop, a saved game's map in HD (41% of its
   2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
   graphics; then the game's files without TERRAIN1.GIF and Tiles.dll (HD forced), Classic

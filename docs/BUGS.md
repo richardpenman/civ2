@@ -5,7 +5,7 @@ that OpenCiv2 reproduces: what goes wrong, where the code does it, and how to fi
 covers the bugs found in the code during the reconstruction and the ones the community has
 documented and that can be traced to our code.
 
-OpenCiv2 fixes them by default. The player can switch the fixes off in OpenCiv2 Options (the
+OpenCiv2 fixes them by default. The player can switch the fixes off in Settings (the
 main menu's last choice: *Bug fixes*, "Fix the original game's bugs", `FixBugs=` in `CIV.INI`'s
 `[OpenCiv2]` section), or one by one ([below](#switching-the-fixes)); the choice is apart from the
 graphics, so the original's rules can be played with HD graphics too, and without the original's
@@ -15,8 +15,8 @@ the original. A fix that changes the game's state (**state** below) is also off 
 where every player, the original game included, must compute the same game, whatever is chosen. A
 fix that changes only what one player sees (**UI only** below) stays on there.
 
-In the code: `plat_fixes` (a bit per fix, by its number) is set at start and again when OpenCiv2
-Options changes the choice (`fixes_load`, `src/game/extras.cpp`, where `plat_fixes_allowed`:
+In the code: `plat_fixes` (a bit per fix, by its number) is set at start and again when
+Settings changes the choice (`fixes_load`, `src/game/extras.cpp`, where `plat_fixes_allowed`:
 not with `CIV2_CLASSIC=1`, in replays or unit tests; `src/platform/main.c`), and two helpers in
 `src/include/auto_common.h` test it: `bugfix_state(n)` (off in network games too:
 `game.multiplayer` > 2) and `bugfix_ui(n)`. Each fix reads `if (bugfix_state(n)) <fixed> else
@@ -28,11 +28,11 @@ them there as `CIV.INI` would.
 ## Switching the fixes
 
 `FixBugs=1` (the default) or `=0` in `CIV.INI`'s `[OpenCiv2]` section switches all the fixes
-below at once; it is the tick of OpenCiv2 Options' *Bug fixes* page. `Fix.B<n>=1` or `=0` (the
+below at once; it is the tick of Settings' *Bug fixes* page. `Fix.B<n>=1` or `=0` (the
 number of a fix in this file) switches one of them, and wins over `FixBugs=` for it: with
 `FixBugs=0` and `Fix.B16=1` the game has the original's bugs but a city stops at size 127; with
 `Fix.B35=0` the advisors call a democracy a republic again, the other fixes on. The keys are
-read when the game starts and when OpenCiv2 Options changes the choice; a change takes effect
+read when the game starts and when Settings changes the choice; a change takes effect
 from the game started or loaded next. The fixes not in this table (B1, B8, B21, B22 in part,
 B26, B27, B29 to B31, B39, and the memory errors below) are in every mode and cannot be switched:
 the original's behaviour there is a read of stale stack or memory that our build could not
@@ -71,7 +71,7 @@ match anyway, or a crash. A **state** fix stays off in network games whatever it
 | `Fix.B38` | UI only | [A Civilopedia description does not take the keyboard](#b38-a-civilopedia-description-does-not-take-the-keyboard) |
 | `Fix.B40` | state | [A popup closes by itself after 20 seconds, also in a single-player game](#b40-a-popup-closes-by-itself-after-20-seconds-also-in-a-single-player-game) |
 
-An earlier version's `Mode=Classic` (OpenCiv2 Options' Mode page, now gone) becomes `FixBugs=0`
+An earlier version's `Mode=Classic` (Settings' Mode page, now gone) becomes `FixBugs=0`
 at the next start, with Classic graphics and the additions off ([EXTRAS.md](EXTRAS.md#what-classic-mode-was)).
 
 Several bugs read a local the original never set (B1, B3, B13, B19). What such a local holds

@@ -18,7 +18,7 @@ Fenster anordnen S
 @@openciv2.menu.arrange_l
 Fenster anordnen L
 @@openciv2.mainmenu.options
-OpenCiv2-Optionen
+Einstellungen
 @@openciv2.diplo.emissary
 Gesandtschaft (%s)
 @@openciv2.diplo.cancel_peace
@@ -28,7 +28,7 @@ Gesandtschaft (%s)
 @@openciv2.diplo.you_reply
 Ihre Antwort:
 @@openciv2.options.title
-OpenCiv2-Optionen
+Einstellungen
 @@openciv2.options.kept
 Gespeichert in CIV.INI, unter [OpenCiv2].
 @@openciv2.options.fixes
@@ -240,7 +240,7 @@ Ja
 @@openciv2.box.no
 Nein
 @@openciv2.quit.text
-Civilization II beenden?
+OpenCiv2 beenden?
 
 Das laufende Spiel endet hier; alles nicht Gespeicherte geht verloren.
 @@openciv2.quit.quit
@@ -349,7 +349,7 @@ Wählen
 @@openciv2.web.loading
 Wird geladen ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser. Gespielt wird mit <em>Ihrer eigenen</em> Kopie des Spiels: dem Ordner, in dem Civilization II installiert ist (der mit <code>Civ2Art.dll</code> und <code>RULES.TXT</code>), der CD des Spiels oder einem Abbild der CD. Wie gespielt wird (klassische oder HD-Grafik, die Fehlerbehebungen, die Regeländerungen und die Erweiterungen der Oberfläche), wählen Sie im Spiel: OpenCiv2-Optionen, in seinem Hauptmenü.
+Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser. Gespielt wird mit <em>Ihrer eigenen</em> Kopie des Spiels: dem Ordner, in dem Civilization II installiert ist (der mit <code>Civ2Art.dll</code> und <code>RULES.TXT</code>), der CD des Spiels oder einem Abbild der CD. Wie gespielt wird (klassische oder HD-Grafik, die Fehlerbehebungen, die Regeländerungen und die Erweiterungen der Oberfläche), wählen Sie im Spiel: Einstellungen, in seinem Hauptmenü.
 @@openciv2.web.add_original
 Klassische Grafik braucht die Originaldateien von Civilization II, die das Spiel in diesem Browser nicht hat. Wählen Sie Ihre Kopie von Civilization II Multiplayer Gold Edition: Die Dateien, die das Spiel schon hat, bleiben erhalten.
 @@openciv2.web.add_back

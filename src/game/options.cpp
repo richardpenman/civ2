@@ -1,5 +1,5 @@
 /*
- * (port) The OpenCiv2 Options dialog (docs/EXTRAS.md, "OpenCiv2 Options"):
+ * (port) The Settings dialog (docs/EXTRAS.md, "Settings"):
  * the main menu's last choice, after View Credits, where the player chooses
  * how to play.  The game's own dialogs, built as it builds those of
  * GAME.TXT: a list of what can be chosen, each opening a dialog of its own

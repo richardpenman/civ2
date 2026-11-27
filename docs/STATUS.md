@@ -88,7 +88,7 @@ and `x-no-install2.txt` play without the install's pictures, `.DAT` files, text,
 graphics, which are always on without the original's pictures (no Classic graphics, no
 original look: by design only the original's look with its install, or HD with or without it;
 the bug fixes, additions and rule changes are chosen apart from the graphics, so the original's
-rules play without the install too; `x-no-install-options.txt` shows OpenCiv2 Options saying so,
+rules play without the install too; `x-no-install-options.txt` shows Settings saying so,
 and ticking Classic graphics there opening the dialog that offers to find the original's files
 and copy them in, as the set-up does).  The sound effects are
 OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0, still being chosen and not yet in the
@@ -732,7 +732,7 @@ message by message and clock event by clock event.
   the long-move warning's counter, city names in a second game, citizens'
   click areas, the focus of a city opened from an advisor, Hall of Fame scores
   over 32767, cities past size 127, a hot-seat read past the knowledge maps,
-  and smaller ones.  Switched off together in OpenCiv2 Options (Bug fixes:
+  and smaller ones.  Switched off together in Settings (Bug fixes:
   `FixBugs=0`) or one by one (`Fix.B<n>=0|1`, docs/BUGS.md "Switching the
   fixes"; `plat_fixes`, a bit per fix, `bugfix_state(n)`/`bugfix_ui(n)`);
   `CIV2_CLASSIC=1` keeps them all (the original game, as it keeps its look);
@@ -753,9 +753,9 @@ message by message and clock event by clock event.
   correction, coins in the Foreign Minister, Arrange Windows S/L, path lines with
   Shift, sentries in halftones, new games at zoom 1:1.  Off with `CIV2_CLASSIC=1`
   and in replays and unit tests (`CIV2_TEST_EXTRAS` turns them on in a replay).
-  OpenCiv2 Options, the main menu's last choice (src/game/options.cpp, the
+  Settings, the main menu's last choice (src/game/options.cpp, the
   game's own dialogs; it replaced the opening window shown before the game
-  started, which had replaced Game > OpenCiv2 Options, November 2026), switches
+  started, which had replaced Game > Settings, November 2026), switches
   them, the bug fixes, the rule changes and the limits (at once: extras_load,
   fixes_load again), Classic graphics (unticked: HD graphics, the art made
   at build time, data/native/hd; without the original's pictures, ticked, the
@@ -772,12 +772,12 @@ message by message and clock event by clock event.
   step costs 1, ties to the square nearer the goal), its state saved and put
   back, so the game's next search is unchanged; it uses the real map, so on
   unexplored land it shows the way the game would take there.  All of OpenCiv2's
-  own texts (the additions, OpenCiv2 Options, the platform's file dialog and
+  own texts (the additions, Settings, the platform's file dialog and
   message boxes, the set-up, the browser's page) are
   keyed `openciv2.<key>` (src/host/texts.h, read by the game's extras_text,
   the host's host_text and the page's i18n.js; exported alone by
   CIV2_EXPORT_TEXT with CIV2_EXPORT_OWN=1: data/native/lang/en.txt), chosen
-  in OpenCiv2 Options > Language (src/include/lang.h); a translation in
+  in Settings > Language (src/include/lang.h); a translation in
   another code page (Esperanto: ISO-8859-3) has its letters put together at
   run time from the captured glyphs (base letter and mark: src/platform/text.c
   marks[]) and typed through the

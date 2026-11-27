@@ -24,15 +24,15 @@ improvements of FoxAhead's [CIV2UIA](https://github.com/FoxAhead/Civ2-UI-Additio
 wheel, scrolling lists, more figures in the advisors, quick information with Ctrl ...:
 [EXTRAS.md](docs/EXTRAS.md)), and, off unless switched on, its rule changes (Go To past enemy
 units, moving a stack's units of a type together, higher limits for gold, population and the
-map ...). OpenCiv2 Options, the last choice of the game's main menu, lets you choose: the bug
+map ...). Settings, the last choice of the game's main menu, lets you choose: the bug
 fixes (on by default; each one can be switched in `CIV.INI` too), Classic graphics (the
 original's pictures) or HD graphics, sharp text and interface on high-resolution screens (on
 by default), full screen, the rule changes and the interface additions, kept in `CIV.INI`
-([EXTRAS.md](docs/EXTRAS.md#openciv2-options)).
+([EXTRAS.md](docs/EXTRAS.md#settings)).
 
 OpenCiv2's own texts (its options, dialogs and set-up) can be translated: English, German,
 Latin, Greek (Ελληνικά), Esperanto and Traditional Chinese (繁體中文) come with it (first drafts), chosen in
-OpenCiv2 Options > Language. The game's own
+Settings > Language. The game's own
 texts come in the language of your Civilization II, or in that of a translation that has them:
 all of these translate the whole game ([TRANSLATING.md](docs/TRANSLATING.md)). Where your
 copy lacks one of the game's text files, OpenCiv2 uses its own English of it, written for it.
@@ -42,7 +42,7 @@ The game opens in a window filling the screen. To play full screen, see [EXTRAS.
 Optionally, the map can be drawn with new high-resolution art
 ([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2's
 releases):
-untick Classic graphics in OpenCiv2 Options (Graphics and screen), or start it with `--hd`
+untick Classic graphics in Settings (Graphics and screen), or start it with `--hd`
 ([HD-GRAPHICS.md](docs/HD-GRAPHICS.md); a prototype).
 
 ### Multiplayer

@@ -1,7 +1,7 @@
 # A translation (docs/TRANSLATING.md): Greek (data/native/lang/el.txt, in
 # UTF-8: its letters drawn from data/native/fonts' Noto Sans and Noto Serif,
 # their capitals as high as the captured H, text.c).
-# The main menu's OpenCiv2 Options, the Options dialog and its Language
+# The main menu's Settings, its dialog and its Language
 # page, the file dialog (the real one), a city renamed in Greek
 # typed (input_char: as the host's text input gives them), the
 # city window with that name; then the game's own texts in Greek (the

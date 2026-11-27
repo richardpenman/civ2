@@ -1125,6 +1125,7 @@ i8 * __cdecl text_read_line(int trim)
     if (trim == 1) {
       str_trim((char *)&textbuf.buf);
     }
+    lang_own_name_line((char *)&textbuf.buf,0x100);  /* (port) OpenCiv2's name (lang.h) */
     (*(i8 * *)&text_parse.line_cursor) = textbuf.buf;
     return textbuf.buf;
   }
@@ -1134,6 +1135,7 @@ i8 * __cdecl text_read_line(int trim)
     if (trim == 1) {
       str_trim((char *)&textbuf.buf);
     }
+    lang_own_name_line((char *)&textbuf.buf,0x100);  /* (port) OpenCiv2's name (lang.h) */
     (*(i8 * *)&text_parse.line_cursor) = textbuf.buf;
     result = textbuf.buf;
   }

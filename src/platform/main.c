@@ -95,7 +95,7 @@ static int confirm_quit(void)
     static const int ids[2] = {1, 0};
     labels[0] = extras_text("quit.quit");
     labels[1] = extras_text("box.cancel");
-    return host_message_box(1, "Civilization II", extras_text("quit.text"), 2, labels, ids, 1, 1);
+    return host_message_box(1, "OpenCiv2", extras_text("quit.text"), 2, labels, ids, 1, 1);
 }
 
 /* Now, whatever the frame rate: before waiting for input (menus). */
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
     clock_init();
     /* CIV2_CLASSIC=1: the original game (its look, its bugs, none of the
        additions; tests).  A CIV.INI of an earlier version with Mode=Classic
-       (OpenCiv2 Options' Mode page, now gone) becomes its choices of now:
+       (Settings' Mode page, now gone) becomes its choices of now:
        Classic graphics, the original's bugs, none of the additions
        (extras_migrate_classic). */
     if (!unit_test && !plat_replay)
@@ -300,8 +300,8 @@ int main(int argc, char **argv)
             plat_log("graphics: the game folder has no %s: HD graphics\n", missing);
         }
     }
-    /* The original's bugs are fixed (docs/BUGS.md) as chosen in OpenCiv2
-       Options (FixBugs=, Fix.B<n>=: fixes_load), but not with CIV2_CLASSIC=1
+    /* The original's bugs are fixed (docs/BUGS.md) as chosen in
+       Settings (FixBugs=, Fix.B<n>=: fixes_load), but not with CIV2_CLASSIC=1
        (the original game) and in replays and unit tests, which are compared
        with the original; CIV2_TEST_FIXES=1 fixes them in a replay (tests). */
     plat_fixes_allowed = !classic && !unit_test &&
@@ -310,6 +310,9 @@ int main(int argc, char **argv)
        turns them on in a replay (tests). */
     plat_extras = !classic && !unit_test &&
         (!plat_replay || (getenv("CIV2_TEST_EXTRAS") && *getenv("CIV2_TEST_EXTRAS")));
+    /* And the game is OpenCiv2 in its texts ("Civilization II" in the
+       original's: lang.cpp's own_name) */
+    plat_own_name = plat_extras;
     if (!plat_replay && !unit_test) {
         /* A window with its frame, maximized; CIV2_FULLSCREEN=1 or CIV.INI's
          * [OpenCiv2] FullScreen=1: full screen, as the original on Windows.

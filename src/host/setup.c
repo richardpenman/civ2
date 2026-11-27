@@ -11,7 +11,7 @@
  * its drive (read from the drive: setup_win.c, setup_unix.c): encoded as
  * Ogg Vorbis.  A .zip of an installed game's folder is unpacked.  Into
  * GameData: beside the program on Windows, in the user's data folder on
- * macOS and Linux.  And later, for OpenCiv2 Options' Classic graphics in a
+ * macOS and Linux.  And later, for Settings' Classic graphics in a
  * game folder without the original's files, those it lacks, the same ways
  * (setup_add_original).
  */
@@ -700,7 +700,7 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size)
     return ok;
 }
 
-/* ---- the original's files, later (OpenCiv2 Options' Classic graphics) ---- */
+/* ---- the original's files, later (Settings' Classic graphics) ---- */
 
 int setup_add_original(const char *game)
 {

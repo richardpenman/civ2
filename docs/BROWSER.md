@@ -116,18 +116,18 @@ translation files, in their code page: Esperanto's letters as Unicode, Greek and
 fonts that have its characters, else in the game's own Noto Serif files from the site, loaded
 before the texts are put in); the set-up from a CD or disc image shows its progress in it too.
 
-The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts (OpenCiv2
-Options > Language shows it), for that visit only: what this browser keeps of `CIV.INI` keeps the
+The game: with `?lang=`, its `CIV.INI` gets `[OpenCiv2] Language=CODE` before it starts
+(Settings > Language shows it), for that visit only: what this browser keeps of `CIV.INI` keeps the
 language the player had chosen before, unless the game itself changes it.  Without `?lang=`,
-`CIV.INI` is as the game left it: a language chosen in the game's OpenCiv2 Options applies, and
+`CIV.INI` is as the game left it: a language chosen in the game's Settings applies, and
 *Automatic* is English (`CIV2_SYSTEM_LANG=en`; [TRANSLATING.md](TRANSLATING.md)).  The Options'
 *Restart now* puts the game's language in the address (`lang=`, none for Automatic or English),
 so that a language changed in the game is the one the page is loaded again in.
 
-## How to play: OpenCiv2 Options
+## How to play: Settings
 
-How to play is chosen in the game, as natively: *OpenCiv2 Options*, the main menu's last choice
-([EXTRAS.md](EXTRAS.md#openciv2-options)): the bug fixes, Classic graphics (unticked: HD
+How to play is chosen in the game, as natively: *Settings*, the main menu's last choice
+([EXTRAS.md](EXTRAS.md#settings)): the bug fixes, Classic graphics (unticked: HD
 graphics), sharp text and interface, the rule changes and limits, and the interface additions
 with the colour correction and the messages shown on the map.  They are kept in the game's
 `CIV.INI` (`[OpenCiv2]`, the same keys as natively) in the browser's storage.  Those that take
@@ -155,7 +155,7 @@ The browser version draws the map with the HD art ([HD-GRAPHICS.md](HD-GRAPHICS.
 version does: `make web` makes the art first (`make hd-art`: `data/native/hd`, not in the
 repository) and puts it (and, where present, the local staging folder `data/native/hd-extra`) on the site as one
 file, `hd/art.bin` (about 50 MB, its files listed in
-`hd/index.json`; the art's licence beside it). Untick *Classic graphics* in OpenCiv2 Options (Graphics and
+`hd/index.json`; the art's licence beside it). Untick *Classic graphics* in Settings (Graphics and
 screen) and restart: as the page is loaded again it fetches that file (the browser's cache keeps
 it) and puts the pictures into the game's files, where the game reads them. Art an earlier
 version downloaded and kept in the browser's storage (IndexedDB, 250 MB) is removed at a start.

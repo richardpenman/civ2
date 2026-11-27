@@ -178,7 +178,7 @@ const savesZip = await makeZip([{name: 'Civ2/ONE.SAV', data: Buffer.from('1')}, 
 const toPut = await savesToImport([{name: 'saves.zip', data: savesZip}, {name: 'TWO.SAV', data: Buffer.from('2')},
                                    {name: 'notes.txt', data: Buffer.from('no')}], have);
 assert.deepEqual(toPut.map(([k, d]) => k + '=' + Buffer.from(d)), ['ONE.SAV=1', 'civ.ini=i', 'TWO.SAV=2']);
-// ---- the game's OpenCiv2 Options in CIV.INI, as the page reads them (options.js) ----
+// ---- the game's Settings in CIV.INI, as the page reads them (options.js) ----
 
 const ini0 = '[Civ2]\r\nFoo=1\r\n\r\n[OpenCiv2]\r\nMode=Standard\r\n\r\n[Other]\r\nx=y\r\n';
 assert.equal(iniGet(ini0, 'openciv2', 'MODE'), 'Standard');
@@ -197,7 +197,7 @@ assert.equal(hdWanted(ini0, '3'), 3);
 assert.equal(hdWanted(ini1, '0'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), '2'), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Mode', 'Classic'), null), -1);   // (an earlier version's)
-// Classic graphics (OpenCiv2 Options: Graphics=Classic; Standard, as earlier versions wrote it)
+// Classic graphics (Settings: Graphics=Classic; Standard, as earlier versions wrote it)
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Classic'), null), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Standard'), null), -1);
 assert.equal(hdWanted(iniSet(ini1, 'OpenCiv2', 'Graphics', 'Classic'), '2'), 2);

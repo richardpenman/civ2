@@ -1,6 +1,6 @@
 # A translation (docs/TRANSLATING.md): German (data/native/lang/de.txt, in
 # Windows-1252, the game's own code page).
-# The main menu's OpenCiv2 Options, the Options dialog and its Language
+# The main menu's Settings, its dialog and its Language
 # page, the file dialog (the real one), a city renamed with German's
 # letters typed (input_char: as the host's text input gives them), the
 # city window with that name; then the game's own texts in German (the

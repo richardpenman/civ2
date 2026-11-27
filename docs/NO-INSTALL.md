@@ -35,7 +35,7 @@ without the `.DAT` files too, `harness/extras/x-no-install.txt` and `x-no-instal
 graphics not asked for, so on at density 1, and an HD run at density 2 each) are the regression tests: a fresh install's first start, a new game set up (its
 pictures), the world made, a city founded, its window; the autosave's advisors, tax rates,
 Civilopedia, an announcement's picture, a city's view, the spaceship, the Hall of Fame, the map
-at its largest zoom and the throne room; `x-no-install-options.txt` shows OpenCiv2 Options
+at its largest zoom and the throne room; `x-no-install-options.txt` shows Settings
 without the pictures (below): Classic graphics unticked with the note, ticked the dialog that
 offers to find the original's files, *Keep HD graphics* and its note, HD graphics kept.
 
@@ -53,7 +53,7 @@ a picture library or `civ2.exe`: `synth_missing` in `src/platform/synth.c`, at t
 * HD graphics are on whatever `Graphics=`, `--hd` / `CIV2_HD` or `GraphicsDensity=` say (the
   density as asked, else the screen's; in a replay `CIV2_TEST_HD`'s, else 1); `CIV2_CLASSIC=1`
   keeps everything else original (its bugs, none of the additions, its caption and frame);
-* OpenCiv2 Options shows *Classic graphics* (Graphics and screen) unticked, with the note
+* Settings shows *Classic graphics* (Graphics and screen) unticked, with the note
   "Classic graphics need the original Civilization II files: without them HD graphics are always
   on." (`graphics.need_original`, in every shipped language); ticked, a dialog offers to find
   the original's files and copy those the game folder lacks into it, as the set-up does (an

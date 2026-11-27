@@ -59,8 +59,8 @@ typedef struct mmtime_tag mmtime_tag;
 /* Scope-bound release: files, DCs, locks, local objects (step 6, RAII). */
 #include "scoped.h"
 /* The original's bugs (docs/BUGS.md) are fixed unless the original game is
- * wanted: CIV2_CLASSIC=1, replays and unit tests, or switched off in OpenCiv2
- * Options ([OpenCiv2] FixBugs=0) or one by one (Fix.B<n>=0|1, which wins over
+ * wanted: CIV2_CLASSIC=1, replays and unit tests, or switched off in
+ * Settings ([OpenCiv2] FixBugs=0) or one by one (Fix.B<n>=0|1, which wins over
  * FixBugs=): plat_fixes, a bit per fix by its number (src/game/extras.cpp:
  * fixes_load).  Each fix: if (bugfix_state(n)) <fixed> else <original>, marked
  * B<n>.  bugfix_state: a fix that changes the game's state, also off in

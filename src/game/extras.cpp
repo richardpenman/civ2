@@ -23,7 +23,7 @@ struct KeyItem {
 };
 
 /* The items and their keys in CIV.INI's [OpenCiv2] section (the order of
-   the OpenCiv2 Options dialog's Interface additions, src/game/options.cpp,
+   the Settings dialog's Interface additions, src/game/options.cpp,
    which lists them again with their labels). */
 static const KeyItem extra_keys[] = {
     {X_WHEEL, "MouseWheel"}, {X_UNIT_LIST, "UnitListScroll"}, {X_UNIT_LIST_KEYS, "UnitListKeys"},
@@ -40,7 +40,7 @@ static const KeyItem extra_keys[] = {
 };
 
 /* The rule changes (extra_rule): off unless their key is set (=1; the
-   limits: their value, 0 the original's; the OpenCiv2 Options dialog,
+   limits: their value, 0 the original's; the Settings dialog,
    src/game/options.cpp, lists them again and shows the original's values
    while off). */
 static const KeyItem rule_keys[] = {
@@ -63,7 +63,7 @@ static int clamp_setting(int v, int lo, int hi)
 int extras_setting(const char *key, int def)
 {
     char chosen[64];
-    /* chosen in the OpenCiv2 Options dialog in a test run (options.cpp) */
+    /* chosen in the Settings dialog in a test run (options.cpp) */
     if (options_test_setting(key, chosen, sizeof chosen))
         return atoi(chosen);
     if (plat_replay) {
@@ -162,7 +162,7 @@ void extras_load(void)
     if (plat_replay) {  /* "1": the additions; "all": and the rule changes */
         char chosen[16];
         extras_rules = test && !strcmp(test, "all") ? rule_bits : 0;
-        /* (and those chosen in the OpenCiv2 Options dialog in a test run) */
+        /* (and those chosen in the Settings dialog in a test run) */
         for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)
             if (options_test_setting(rule_keys[i].key, chosen, sizeof chosen)) {
                 if (atoi(chosen))
@@ -185,10 +185,10 @@ void extras_load(void)
 const unsigned char fixes_switchable[] = {2, 3, 4, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23,
                                           24, 25, 28, 32, 33, 34, 35, 36, 37, 38, 40, 0};
 
-/* plat_fixes: FixBugs= (OpenCiv2 Options' "Fix the original game's bugs",
+/* plat_fixes: FixBugs= (Settings' "Fix the original game's bugs",
    on by default) for each, unless its own Fix.B<n>= says otherwise.  In a
    replay with CIV2_TEST_FIXES: all, but those CIV2_TEST_SETTINGS or the
-   Options dialog switch (extras_setting). */
+   Settings dialog switch (extras_setting). */
 void fixes_load(void)
 {
     char key[16];
@@ -207,7 +207,7 @@ void fixes_load(void)
     }
 }
 
-/* CIV.INI's Mode=Classic of an earlier version (OpenCiv2 Options' Mode page,
+/* CIV.INI's Mode=Classic of an earlier version (Settings' Mode page,
    the original game: its look, its bugs, none of the additions) as the
    choices of now: Classic graphics, the bug fixes off, the interface
    additions, the rule changes and the limits off, sharp text off where it
@@ -1560,7 +1560,7 @@ static void suppress_list_get(char *list, int n)
 {
     const char *t = getenv("CIV2_TEST_SUPPRESS");
     if (options_test_setting("SuppressList", list, n))
-        ;                       /* (chosen in the OpenCiv2 Options dialog in a test run) */
+        ;                       /* (chosen in the Settings dialog in a test run) */
     else if (plat_replay)
         snprintf(list, n, "%s", t ? t : "");
     else

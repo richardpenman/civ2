@@ -27,8 +27,8 @@ int setup_choose_game(int argc, char **argv, char *game, size_t size);
 
 /* The original's files game (the game's folder) lacks, from the player's
    copy (found where it usually is, else asked: an installed game, its CD, a
-   .zip of the installed game, a disc image), its own files kept: OpenCiv2
-   Options' Classic graphics (host_add_original).  1 done, 0 cancelled or
+   .zip of the installed game, a disc image), its own files kept:
+   Settings' Classic graphics (host_add_original).  1 done, 0 cancelled or
    failed (said). */
 int setup_add_original(const char *game);
 

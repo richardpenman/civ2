@@ -57,7 +57,7 @@ int WINAPI MessageBoxA(HWND owner, LPCSTR text, LPCSTR caption, UINT type)
     if (plat_replay)
         return ids[0];
     hit = host_message_box((type & MB_ICONMASK) == MB_ICONERROR ? 2 : (type & MB_ICONMASK) == MB_ICONWARNING ? 1 : 0,
-                           caption ? caption : "Civilization II", text ? text : "", n, labels, ids, enter, escape);
+                           caption ? caption : "OpenCiv2", text ? text : "", n, labels, ids, enter, escape);
     return hit < 0 ? ids[n - 1] : hit;
 }
 

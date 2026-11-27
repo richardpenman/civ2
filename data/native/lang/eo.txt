@@ -24,7 +24,7 @@ Aranøi fenestrojn S
 @@openciv2.menu.arrange_l
 Aranøi fenestrojn L
 @@openciv2.mainmenu.options
-Agordoj de OpenCiv2
+Agordoj
 @@openciv2.diplo.emissary
 %s sendito
 @@openciv2.diplo.cancel_peace
@@ -34,7 +34,7 @@ Agordoj de OpenCiv2
 @@openciv2.diplo.you_reply
 Vi respondas:
 @@openciv2.options.title
-Agordoj de OpenCiv2
+Agordoj
 @@openciv2.options.kept
 Konservitaj en CIV.INI, sub [OpenCiv2].
 @@openciv2.options.fixes
@@ -246,7 +246,7 @@ Jes
 @@openciv2.box.no
 Ne
 @@openciv2.quit.text
-Æu forlasi Civilization II?
+Æu forlasi OpenCiv2?
 
 La nuna ludo finiøas æi tie; æio ne konservita perdiøas.
 @@openciv2.quit.quit
@@ -355,7 +355,7 @@ Elekti
 @@openciv2.web.loading
 Þargante ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (klasika aý HD-grafiko, la korektoj de eraroj, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj de OpenCiv2, en øia æefa menuo.
+Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo. Øi ludas per <em>via propra</em> kopio de la ludo: la dosierujo, en kiu Civilization II estas instalita (tiu kun <code>Civ2Art.dll</code> kaj <code>RULES.TXT</code>), la KD de la ludo aý diskobildo de la KD. Kiel ludi (klasika aý HD-grafiko, la korektoj de eraroj, la regulþanøoj kaj la interfacaj aldonoj) estas elektata en la ludo: Agordoj, en øia æefa menuo.
 @@openciv2.web.add_original
 Klasika grafiko bezonas la originalajn dosierojn de Civilization II, kiujn la ludo en æi tiu retumilo ne havas. Elektu vian kopion de Civilization II Multiplayer Gold Edition: la dosieroj, kiujn la ludo jam havas, restas.
 @@openciv2.web.add_back

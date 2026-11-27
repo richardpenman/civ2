@@ -905,6 +905,7 @@ int plat_lbutton_held;
 int plat_fixes_allowed;
 uint64_t plat_fixes;
 int plat_extras;
+int plat_own_name;
 int plat_unit_test;
 int plat_scale = 1;
 int plat_fullscreen;

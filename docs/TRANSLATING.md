@@ -8,7 +8,7 @@ OpenCiv2 has two kinds of text:
   its language as it is. A translation may carry them too (keyed: below): the German,
   Latin, Greek and Esperanto ones that come with OpenCiv2 translate the whole game. Where your copy of the game has no
   such file, OpenCiv2 uses its own English of it (below).
-- **OpenCiv2's own texts**: what it adds — OpenCiv2 Options, the interface additions' few words,
+- **OpenCiv2's own texts**: what it adds — Settings, the interface additions' few words,
   the file dialog, its message boxes, the set-up's messages and progress, the HD graphics'
   download, the browser version's page. These are translated here. English is built in;
   `data/native/lang/` has the translations that come with OpenCiv2 (first drafts:
@@ -17,6 +17,15 @@ OpenCiv2 has two kinds of text:
   Windows-1252, Greek (`el.txt`, Ελληνικά, monotonic) and Traditional Chinese (`zh-Hant.txt`,
   繁體中文, Taiwan usage), in UTF-8, and Esperanto (`eo.txt`); all of them translate the game's
   texts too.
+
+The game names itself OpenCiv2: where the game's texts (your copy's, OpenCiv2's own English or a
+translation's) name the game being played as "Civilization II", "Civilization II Multiplayer
+Gold", "Civ II", "Civ2" (or a translation's "文明帝國II"), the game shows "OpenCiv2" instead, as
+it reads the line (`own_name`, `src/game/lang.cpp`). A translation keeps the original's name, as
+the original's text has it. The original product keeps its name: a line naming a CD, the
+original game or credits, GAME.TXT's sections about its CD, its installation and whose credits,
+and the credits themselves. Not in the original game (`CIV2_CLASSIC=1`), nor in replays and the
+unit tests, which compare with the original (as the interface additions: `plat_own_name`).
 
 ## OpenCiv2's own English of the game's texts
 
@@ -42,7 +51,7 @@ without its text files.
 
 ## Choosing a language
 
-- In the game: *OpenCiv2 Options > Language* (main menu): *Automatic* (the system's language),
+- In the game: *Settings > Language* (main menu): *Automatic* (the system's language),
   *English*, or one of the translations in `lang/`. It is kept in `CIV.INI` (`[OpenCiv2]
   Language=eo`; `Auto` or none: automatic) and takes effect when the game starts again.
 - `CIV2_LANG=<code>` in the environment wins over that choice (and is the only one test runs
@@ -273,7 +282,7 @@ bytes (serif) a character: 1.3 MB for the 2,289 characters of `zh-Hant.txt`, the
   caret), `tests/dialog_wrap_utf8_test.cpp` the game's dialogs' wrapping beside a picture (an
   advisor's: a line of Chinese kept inside the window).
 - `CIV2_LANG=<code>` runs the game in it; `harness/extras/x-lang-eo.txt` (`make test-extras`)
-  shows OpenCiv2 Options, its Language page, the file dialog and a city renamed with Esperanto's
+  shows Settings, its Language page, the file dialog and a city renamed with Esperanto's
   letters typed, in Esperanto (and with sharp text), and the game's texts in it: the menus, the
   city window, an advisor, the Civilopedia; `x-lang-de.txt` and `x-lang-la.txt` the same in German and Latin.
 - `harness/extras/x-lang-el.txt` does the same in Greek (its letters from the font files).

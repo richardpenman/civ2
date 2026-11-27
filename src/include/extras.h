@@ -70,6 +70,10 @@ enum {
 };
 
 EXTRAS_C int plat_extras;                       /* src/platform/main.c */
+/* the game named OpenCiv2 in its texts, not Civilization II (src/game/lang.cpp:
+   own_name): as plat_extras, not in the original game (CIV2_CLASSIC=1),
+   replays (but with CIV2_TEST_EXTRAS) and unit tests */
+EXTRAS_C int plat_own_name;
 EXTRAS_C int plat_unit_test;                    /* src/platform/main.c: the unit tests' runner */
 EXTRAS_C int plat_scale;                        /* src/platform/main.c: pixels per desktop pixel */
 EXTRAS_C int plat_fullscreen;                   /* src/platform/main.c: full screen, not a window */
@@ -90,11 +94,11 @@ EXTRAS_C void plat_text_codepage(const char *name);
 EXTRAS_C const char *plat_text_codepage_name(void);
 
 /* src/game/extras.cpp */
-EXTRAS_C void extras_load(void);                /* the settings: at start, and as the OpenCiv2 Options change them */
+EXTRAS_C void extras_load(void);                /* the settings: at start, and as the Settings change them */
 /* the bug fixes (docs/BUGS.md): plat_fixes from [OpenCiv2] FixBugs= and
    Fix.B<n>=, where plat_fixes_allowed (src/platform/main.c: not with
    CIV2_CLASSIC=1, in replays but with CIV2_TEST_FIXES, in the unit tests);
-   at start, and as the OpenCiv2 Options change them */
+   at start, and as the Settings change them */
 EXTRAS_C void fixes_load(void);
 EXTRAS_C int plat_fixes_allowed;
 EXTRAS_C uint64_t plat_fixes;
@@ -111,7 +115,7 @@ EXTRAS_C int extras_text_translated(const char *key);  /* whether a translation 
 /* each of the additions' texts: add("openciv2.<key>", English) (lang.cpp's export) */
 EXTRAS_C void extras_texts_each(void (*add)(const char *key, const char *english));
 
-/* src/game/options.cpp: the OpenCiv2 Options dialog (docs/EXTRAS.md), from
+/* src/game/options.cpp: the Settings dialog (docs/EXTRAS.md), from
    the main menu */
 EXTRAS_C int options_in_main_menu(void);        /* whether the main menu has it */
 enum { MAIN_MENU_OPTIONS = 8 };                 /* its choice there, after View Credits (7) */

@@ -14,8 +14,8 @@ built (`make hd-art`, which `make`, `make port`, `make native`, `make windows` a
 first: `data/native/hd`, below) and packed with every release (beside the program's `data` on
 Linux and macOS, in the Windows program's resources, unpacked into its `data`, and on the
 browser version's site), so the game itself downloads nothing.  In the game's
-main menu choose *OpenCiv2 Options*, then *Graphics and screen*, untick *Classic graphics* and
-OK (docs/EXTRAS.md, "OpenCiv2 Options"): the game offers to restart, which turns them on.
+main menu choose *Settings*, then *Graphics and screen*, untick *Classic graphics* and
+OK (docs/EXTRAS.md, "Settings"): the game offers to restart, which turns them on.
 Otherwise:
 
 1. The art is read from the program's data folder's `hd` (`data/native/hd`): its `pictures.txt`
@@ -25,7 +25,7 @@ Otherwise:
    * on the command line: `OpenCiv2 --hd` (or `--hd=N`), e.g.
      `build/OpenCiv2 ~/Civ2 --hd`;
    * in the environment: `CIV2_HD=1` (or `=N`);
-   * in `CIV.INI` (the game's settings, in its Windows directory; OpenCiv2 Options writes
+   * in `CIV.INI` (the game's settings, in its Windows directory; Settings writes
      them):
 
      ```ini
@@ -35,8 +35,8 @@ Otherwise:
 
    `1` (and the bare `--hd`, and `Graphics=HD`) is on at the screen's own density; `N` from 2 to
    4 is on at that density; `0` is off (`--hd=0` turns it off whatever the environment or
-   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density (not a choice in OpenCiv2
-   Options: always the screen's) is how many screen pixels
+   `CIV.INI` say, `CIV2_HD=0` whatever `CIV.INI` says).  The density (not a choice in
+   Settings: always the screen's) is how many screen pixels
    each of the game's pixels gets each way: by default the game's own scale (docs/EXTRAS.md,
    Screen scale), so on a 4K screen 3, on a 1920x1080 one 1 (the new art at the original's
    size); `GraphicsDensity=N` (1 to 4) in `CIV.INI`, for tests, sets it for the bare `--hd`, `CIV2_HD=1`
@@ -55,7 +55,7 @@ original's pictures or the art the game stops at once with a message saying wher
 (`hd.err.no_graphics`, translated).
 
 Whether HD graphics are on where nothing chooses is one line: `HD_BY_DEFAULT` in
-`src/platform/options.c` (`plat_graphics_hd`, read by `hd_init` and OpenCiv2 Options; its
+`src/platform/options.c` (`plat_graphics_hd`, read by `hd_init` and Settings; its
 mirror for the browser's page is `HD_BY_DEFAULT` in `src/web/options.js`).  It is off today.
 
 Without the art (and with the original's pictures) the game says so in its log and plays with the original graphics (sharp text and
@@ -77,7 +77,7 @@ map's key for it), and the game option's offer every 50 turns (`COUNCILTIME`) is
 `rand()` calls still made.  The council is made of the CD's videos (`Video\COUNCILn.AVI`), which
 OpenCiv2 does not replace; with Classic graphics it is the original's as ever.
 
-In the browser version: *HD graphics* in the game's OpenCiv2 Options (the page loads the art from
+In the browser version: *HD graphics* in the game's Settings (the page loads the art from
 its site), or `?hd=N` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
 ## What the art is
@@ -774,15 +774,15 @@ OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openci
 ## Tests
 
 * The browser version: `make web-test` (`src/web/test/hd.mjs`: Classic graphics unticked in the game's
-  OpenCiv2 Options and the game restarted, the art loaded from the site as the page is loaded
+  Settings and the game restarted, the art loaded from the site as the page is loaded
   again, then a saved game's map at a device pixel ratio of 2, checked to be drawn in HD; then
   without the original's pictures, Classic graphics ticked: the set-up page over the game, the
   original's files added, the restart, Classic graphics; screenshots in `run/web-hd`).
 * HD off (the default): `make test` (11,119 cases), `make native-suite EXE=OpenCiv2` (44 PASS),
-  `make test-extras` (OpenCiv2 Options in the main menu: `x-options`).
+  `make test-extras` (Settings in the main menu: `x-options`).
 * Sharp text and interface: `make test-extras` runs `harness/extras/x-sharp.txt` (the main menu,
   the real file dialog, the map, the Trade Advisor's scroll bar, the city window, the Game menu)
-  and OpenCiv2 Options' `x-options-sharp` with `CIV2_TEST_SHARP=2`: their game pixels and
+  and Settings' `x-options-sharp` with `CIV2_TEST_SHARP=2`: their game pixels and
   `rand()` traces are those of the same runs without it, their `-hd` frames looked at by eye and
   blessed.  `src/web/test/hd.mjs` checks that the first screen's text is sharp, with HD graphics
   and with sharp text alone (`?hd=0`), and `?hd=0&sharp=0` the original's.

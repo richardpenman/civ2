@@ -1,6 +1,6 @@
 # Without the original's pictures (docs/NO-INSTALL.md): the game runs with HD
 # graphics, though none is asked for (no CIV2_TEST_HD: the forced HD at the
-# replay's density, 1), and OpenCiv2 Options says why: the Graphics and
+# replay's density, 1), and Settings says why: the Graphics and
 # screen page with Classic graphics unticked and the note "Classic graphics
 # need the original Civilization II files"; Classic graphics ticked and OK:
 # the dialog that offers to find the original's files (docs/EXTRAS.md

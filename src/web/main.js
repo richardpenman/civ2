@@ -156,7 +156,7 @@ function setupFromDisc(store, files, disc, into = null) {
     });
 }
 
-// ---- the original's files, later: OpenCiv2 Options' Classic graphics ----
+// ---- the original's files, later: Settings' Classic graphics ----
 
 // While the set-up page is shown for them (host_add_original: addOriginal):
 // {store, fs, resolve}; the files chosen go to addChosen then
@@ -225,7 +225,7 @@ async function addChosen(files) {
     }
 }
 
-// host_add_original (the game's OpenCiv2 Options, Classic graphics ticked
+// host_add_original (the game's Settings, Classic graphics ticked
 // without the original's files): the set-up page's choice shown over the
 // game, -> 1 the game's files have the original's pictures now, 0 not
 // (Back to the game)
@@ -631,7 +631,7 @@ async function play(store) {
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
-    // ?lang=CODE: the game's language too, as its OpenCiv2 Options have it
+    // ?lang=CODE: the game's language too, as its Settings have it
     // (CIV.INI [OpenCiv2] Language=, in the game's files; kept in this
     // browser only when the game changes it: the language the player had
     // before stays theirs, for a visit without ?lang)
@@ -786,7 +786,7 @@ async function play(store) {
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               addOriginal: () => addOriginal(store, fs),
-                              // (the game's OpenCiv2 Options' restart: the page loaded again, into the
+                              // (the game's Settings' restart: the page loaded again, into the
                               // game, without what would override them; ?lang= the game's language now,
                               // where the game changed it)
                               restart: async () => {

@@ -1,7 +1,7 @@
 /*
  * OpenCiv2's own texts, keyed (docs/TRANSLATING.md): the English of every
- * text OpenCiv2 adds to the game (its interface additions, the OpenCiv2
- * Options dialog, the platform's file dialog and message boxes, the HD
+ * text OpenCiv2 adds to the game (its interface additions, the
+ * Settings dialog, the platform's file dialog and message boxes, the HD
  * graphics' message, the set-up, the browser's set-up page).  A
  * translation (lang/<code>.txt, src/include/lang.h) gives them as
  * "@@openciv2.<key>"; data/native/lang/en.txt is this table as such a file,
@@ -25,7 +25,7 @@ T("name", "Name")
 T("production", "Production")
 T("menu.arrange_s", "Arrange Windows S")            /* X38 (default: the game's Arrange Windows, S) */
 T("menu.arrange_l", "Arrange Windows L")
-T("mainmenu.options", "OpenCiv2 Options")           /* the main menu's last choice */
+T("mainmenu.options", "Settings")           /* the main menu's last choice */
 
 /* B37 (docs/BUGS.md): an AI's emissary ends its treaty with the player
    (src/game/extras.cpp, diplo_treaty_break_notice); %s: the AI's attitude
@@ -36,8 +36,8 @@ T("diplo.cancel_peace", "\"Hear now the words of the %s: we no longer consider o
 T("diplo.cancel_ceasefire", "\"Hear now the words of the %s: we no longer consider ourselves bound by our cease fire with you.\"")
 T("diplo.you_reply", "You reply:")
 
-/* The OpenCiv2 Options dialog (src/game/options.cpp) */
-T("options.title", "OpenCiv2 Options")
+/* The Settings dialog (src/game/options.cpp) */
+T("options.title", "Settings")
 T("options.kept", "Kept in CIV.INI, under [OpenCiv2].")
 T("options.fixes", "Bug fixes")
 T("options.graphics", "Graphics and screen")
@@ -146,7 +146,7 @@ T("box.ok", "OK")
 T("box.cancel", "Cancel")
 T("box.yes", "Yes")
 T("box.no", "No")
-T("quit.text", "Quit Civilization II?\n\nThe game in progress ends here; whatever was not saved is lost.")
+T("quit.text", "Quit OpenCiv2?\n\nThe game in progress ends here; whatever was not saved is lost.")
 T("quit.quit", "Quit")
 T("menu.full_screen", "Full Screen")                /* macOS: the View menu's last item */
 
@@ -192,7 +192,7 @@ T("setup.choose", "Choose")
 
 /* The browser's set-up page (src/web) */
 T("web.loading", "Loading ...")
-T("web.intro", "Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes and the interface additions) is chosen in the game: OpenCiv2 Options, in its main menu.")
+T("web.intro", "Civilization II Multiplayer Gold Edition, rebuilt to run in your browser. It plays with <em>your own</em> copy of the game: the folder Civilization II is installed in (the one with <code>Civ2Art.dll</code> and <code>RULES.TXT</code>), the game's CD, or a disc image of the CD. How to play (Classic or HD graphics, the bug fixes, the rule changes and the interface additions) is chosen in the game: Settings, in its main menu.")
 T("web.add_original", "Classic graphics need the original Civilization II files, which the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the files the game has already are kept.")
 T("web.add_back", "Back to the game")
 T("web.added", "%s files of the original game added.")

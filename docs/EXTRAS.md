@@ -25,10 +25,10 @@ computes, so they stay on in network games (a production changed from the City S
 advisor, or specialists changed with the wheel, are the same orders as through the city
 window).
 
-Each one can be switched off in [OpenCiv2 Options](#openciv2-options) (Interface additions), in
+Each one can be switched off in [Settings](#settings) (Interface additions), in
 the game's main menu, or in the `[OpenCiv2]` section of `CIV.INI` (the file the game keeps its
-own settings in, in its Windows directory, where OpenCiv2 Options writes them too): its key `=0`.
-A change made in OpenCiv2 Options takes effect at once; one made in `CIV.INI` the next time the
+own settings in, in its Windows directory, where Settings writes them too): its key `=0`.
+A change made in Settings takes effect at once; one made in `CIV.INI` the next time the
 game starts.
 
 | Key | What |
@@ -51,7 +51,7 @@ game starts.
 | `CityStatus` | The City Status advisor shows how many cities you have and each city's production as a picture. Click a column heading (size, name, food, shields, trade, production) to sort by it; click it again for the game's usual order. Click a city's production to change it. |
 | `MassSpecialists` | In the city window, Shift+wheel over a specialist changes all specialists at once, and Shift+click on one makes all the others the same type. |
 | `SuppressPopups` | Simple messages that only have an OK button can be shown for a few seconds across the top of the map instead of waiting for a click. List which ones by their GAME.TXT section names in `SuppressList=`, separated by commas, for example `SuppressList=HIDDENTERRAIN,CITYSIZE`. The message that another civilization has discovered an advance isn't in GAME.TXT; list it as `ADVANCENEWS`. The list is empty by default. |
-| `ColorCorrection` | Adjusts the colours of the whole screen: `Gamma=` (a percentage, 100 means no change), `Brightness=` and `Contrast=` (-100 to 100, 0 means no change). These and `SuppressList=` are also in OpenCiv2 Options (Colours and messages). |
+| `ColorCorrection` | Adjusts the colours of the whole screen: `Gamma=` (a percentage, 100 means no change), `Brightness=` and `Contrast=` (-100 to 100, 0 means no change). These and `SuppressList=` are also in Settings (Colours and messages). |
 | `ForeignGold` | The Foreign Minister shows each civilization's gold with a coin icon. |
 | `ArrangeWindowsSL` | The View menu gets Arrange Windows S and Arrange Windows L, which arrange the windows with a narrower or wider side panel than Arrange Windows. |
 | `PathLines` | Hold Shift with the pointer over the map to see the path the active unit would take there, based on the map as you know it (units and cities you can't see aren't counted). With a city selected (View Pieces, the cursor on it), hold Shift over the same city to see lines to the cities it has trade routes with, or over another city to see the way a road or railroad must take to give their trade routes the road bonus (the game looks for it along this way only, up to the other city or one of your cities on the way): yellow if the road is already there and gives the bonus, white if not. |
@@ -68,7 +68,7 @@ As in the original game, where Windows' own dialog does it, the proposed file na
 ## Screen scale
 
 The game opens in a window, maximized to fill the screen. To play full screen instead, tick Full
-screen in OpenCiv2 Options (Graphics and screen), or set `FullScreen=1` in `CIV.INI`; it takes
+screen in Settings (Graphics and screen), or set `FullScreen=1` in `CIV.INI`; it takes
 effect the next time the game starts.
 
 On a high-resolution screen the game is drawn larger, in whole steps, so it stays sharp: each
@@ -84,9 +84,9 @@ Text is drawn with fonts that have the widths of Windows' Times New Roman, Arial
 New (the Liberation fonts, `data/fonts_win.bin`), so it is laid out as the original's on
 Windows.
 
-## OpenCiv2 Options
+## Settings
 
-The game's main menu has one more choice after View Credits, *OpenCiv2 Options*, where the
+The game's main menu has one more choice after View Credits, *Settings*, where the
 player chooses how to play; the choices are kept in `CIV.INI`'s `[OpenCiv2]` section (only
 those changed are written).  It is the game's own dialogs, as the Game menu's options: a list of
 what can be chosen, each opening a dialog of its own (OK writes the choices, Cancel leaves them):
@@ -126,7 +126,7 @@ choices made there, for the run they are set in (the dialog says so).
 
 It is in the main menu whatever is chosen (with `CIV2_CLASSIC=1` too: the only thing that shows
 which the original does not), and in the browser version (where full screen is the browser's,
-[BROWSER.md](BROWSER.md#how-to-play-openciv2-options)).
+[BROWSER.md](BROWSER.md#how-to-play-settings)).
 It is not in replays and unit tests, which compare the main menu with the original's
 (`CIV2_TEST_OPTIONS=1` shows it in a replay, where nothing is written to `CIV.INI`, downloaded
 or restarted: `harness/extras/x-options.txt`).  Its texts are keyed (`src/host/texts.h`) and
@@ -134,7 +134,7 @@ translated with the rest ([TRANSLATING.md](TRANSLATING.md); `harness/extras/x-la
 shows it in Esperanto, `x-lang-de.txt` in German, `x-lang-la.txt` in Latin, `x-lang-el.txt` in Greek, `x-lang-zh.txt` in Chinese).
 
 These choices were made before in an opening window shown before the game started (and, before
-that, in Game > OpenCiv2 Options); OpenCiv2 Options in the main menu replaces both.
+that, in Game > Settings); Settings in the main menu replaces both.
 
 ### Classic graphics without the original files
 
@@ -152,7 +152,7 @@ original's pictures, `Graphics=Classic` is written and the restart is offered (*
 cancelled or failed copy, or a copy without the pictures leave HD graphics on, with the note
 "Without the original files Classic graphics stay off: the game goes on with HD graphics."
 In the browser version *Find the original files...* shows the set-up page's *Choose your
-game...* step over the game, with *Back to the game* ([BROWSER.md](BROWSER.md#how-to-play-openciv2-options)).
+game...* step over the game, with *Back to the game* ([BROWSER.md](BROWSER.md#how-to-play-settings)).
 In a test run (`CIV2_TEST_OPTIONS=1`) nothing is copied (the note says it cannot be done there:
 `harness/extras/x-no-install-options.txt`), and the native test build (`civ2-linux32`) has no
 set-up to run.
@@ -181,7 +181,7 @@ buttons, check marks, the scroll bars' arrows, the combo box's arrow, the close 
 its straight lines and edges as many screen pixels wide as the game's pixel is.  The game's own
 pictures (terrain, units, cities, portraits, backgrounds, the icons of its dialogs) stay the
 original bitmaps, enlarged as before.  It is on by default (off with `CIV2_CLASSIC=1`), and
-can be switched in OpenCiv2 Options (Graphics and screen) or with `SharpText=1` / `=0` in
+can be switched in Settings (Graphics and screen) or with `SharpText=1` / `=0` in
 `[OpenCiv2]`; `--sharp` (or `--sharp=0`) on the command line, or `CIV2_SHARP=1` / `=0`, wins for
 that run (`--sharp=N`, N from 2 to 4, sets the density, for tests).  Where the screen scale is 1
 (a 1920x1080 screen, or Windows' display scale at 100%) it has nothing to do and changes nothing.  It is drawn by the HD graphics'
@@ -189,13 +189,13 @@ renderer without their art ([HD-GRAPHICS.md](HD-GRAPHICS.md#the-planes-sharp-tex
 with HD graphics on as well, the two combine.  It changes only what is shown: the game's own pixels,
 which its code reads back, and its random numbers are the same with it or without.  Off in replays
 and unit tests (`CIV2_TEST_SHARP=N` turns it on at density N in a replay:
-`harness/extras/x-sharp.txt`, and OpenCiv2 Options' `x-options-sharp`).  In the browser version:
-in OpenCiv2 Options as natively, or `?sharp=0` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
+`harness/extras/x-sharp.txt`, and Settings' `x-options-sharp`).  In the browser version:
+in Settings as natively, or `?sharp=0` in the address ([BROWSER.md](BROWSER.md#hd-graphics)).
 
 ## HD graphics
 
-`Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in OpenCiv2 Options; or `--hd` on
-the command line, or `CIV2_HD=1`; *Classic graphics* unticked in OpenCiv2 Options) draws the
+`Graphics=HD` in the same `[OpenCiv2]` section (HD graphics in Settings; or `--hd` on
+the command line, or `CIV2_HD=1`; *Classic graphics* unticked in Settings) draws the
 map (and wherever the same pictures appear) with the replacement art (openciv2-assets, which
 comes with OpenCiv2's builds: `data/native/hd`, made by `make hd-art`), at the screen's full resolution (`GraphicsDensity=`).
 `Graphics=Classic` (or `Standard`, as earlier versions wrote it): the original's pictures.  Off
@@ -209,7 +209,7 @@ one-line change: Classic graphics are then unticked by default.  See [HD-GRAPHIC
 ## Rule changes
 
 CIV2UIA's items that change the game's rules, and the limits it took from civ2patch, are off
-by default: each is switched on in OpenCiv2 Options (Rule changes, Limits) or in the
+by default: each is switched on in Settings (Rule changes, Limits) or in the
 same `[OpenCiv2]` section of `CIV.INI`, the item by its key `=1`, a limit by its value (`=0` or
 no key: the original's). They are off with
 `CIV2_CLASSIC=1`, in replays and unit tests, and in network games (as the state fixes of

@@ -7,7 +7,7 @@
  * (src/game/lang.cpp knows their layouts and versions); a translation is a
  * file of the same keys (lang/<code>.txt, in the game's folder or else in
  * the data directory) whose texts replace the English ones.  The language:
- * CIV2_LANG=<code>, else the OpenCiv2 Options' (CIV.INI [OpenCiv2]
+ * CIV2_LANG=<code>, else the Settings' (CIV.INI [OpenCiv2]
  * Language=<code>), else (Auto) the system's (CIV2_SYSTEM_LANG, which the
  * host and the browser page set); "de_DE" finds de_DE.txt, else de.txt.
  * Test runs (replays, unit tests) read CIV2_LANG only.  CIV2_EXPORT_TEXT=
@@ -31,7 +31,7 @@
  * place of the file's lines by text_read_line, whatever reads it.
  *
  * OpenCiv2's own texts (its interface additions, docs/EXTRAS.md, its
- * Options dialog ...) are keyed "openciv2.<key>": their English is the
+ * Settings dialog ...) are keyed "openciv2.<key>": their English is the
  * table src/host/texts.h (src/game/extras.cpp: extras_text), which the
  * export writes with the rest.  "openciv2.menu.arrange_s" and "_l", when
  * not translated, are the translated Arrange Windows with " S"
@@ -101,6 +101,14 @@ int lang_section_line(char *buf);
 
 /* text_close_file: no section open. */
 void lang_section_closed(void);
+
+/* OpenCiv2's name for the game in a line of text (in place, size: the
+   buffer's): "Civilization II", "Civ II", ... become "OpenCiv2", except in a
+   line that names a CD or the original game.  lang_own_name_line: in the
+   line text_read_line read, where plat_own_name is set and the line is not
+   the original's credits. */
+void own_name(char *line, size_t size);
+void lang_own_name_line(char *buf, size_t size);
 
 /* OpenCiv2's own English of one of the game's text files (GAME.TXT,
    DESCRIBE.TXT, ...: data/text/<NAME>, in the game's format): name (a path:

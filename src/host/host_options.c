@@ -1,5 +1,5 @@
 /*
- * The host's part of the OpenCiv2 Options dialog (src/game/options.cpp,
+ * The host's part of the Settings dialog (src/game/options.cpp,
  * host.h): the program started again (its choices that need a restart).
  */
 #include "host.h"

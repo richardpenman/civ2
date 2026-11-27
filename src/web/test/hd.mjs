@@ -1,6 +1,6 @@
 // The browser version's HD graphics (docs/BROWSER.md): build/web in Chrome's
 // headless shell (as smoke.mjs), the game's files given as a .zip, then in
-// the game's OpenCiv2 Options Classic graphics unticked (HD graphics) and
+// the game's Settings Classic graphics unticked (HD graphics) and
 // the game restarted:
 // the page loaded again, the art (the site's hd/art.bin: data/native/hd and,
 // where present, the local data/native/hd-extra) put into the game's files,
@@ -13,7 +13,7 @@
 // ?hd=0: sharp text and interface (on by default) without the art; then
 // ?hd=0&sharp=0: the original graphics; then the game without the
 // original's pictures (dropped from its files as it starts): Classic graphics
-// ticked in OpenCiv2 Options, Find the original files...: the set-up page
+// ticked in Settings, Find the original files...: the set-up page
 // over the game, the .zip chosen there again, the files the game lacked
 // added, the restart offered, and after it Classic graphics (no art
 // loaded, Graphics=Classic in CIV.INI).  Screenshots in
@@ -171,7 +171,7 @@ async function main() {
         await waitFor('/kept in this browser/.test(window.civ2Status) || /not|Could/.test(window.civ2Status) && window.civ2Status',
                       300000, 'the copy');
         log('game: ' + await evaluate('window.civ2Status'));
-        // the game's OpenCiv2 Options (the main menu's last choice)
+        // the game's Settings (the main menu's last choice)
         const toMenu = async () => {
             await settle(3000, 60000);
             if (!await evaluate('(() => { const c = document.getElementById("screen");' +
@@ -182,7 +182,7 @@ async function main() {
             await evaluate('document.getElementById("screen").focus()');
         };
         const toGraphics = async () => {
-            await key('KeyO', 79, 'o');     // OpenCiv2 Options (its hotkey)
+            await key('KeyE', 69, 'e');     // Settings (its hotkey: X24 gives it its first free letter)
             await key('Enter', 13);
             await settle(1000, 10000);
             await key('ArrowDown', 40);     // Graphics and screen

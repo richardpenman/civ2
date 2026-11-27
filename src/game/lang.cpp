@@ -137,8 +137,8 @@ static int language_path(const char *code, char *path, size_t n)
     return language_file(c, path, n);
 }
 
-/* The language chosen: CIV2_LANG, else (not in a test run) the OpenCiv2
-   Options' (CIV.INI [OpenCiv2] Language=), else, where that is Auto or
+/* The language chosen: CIV2_LANG, else (not in a test run) Settings'
+   choice (CIV.INI [OpenCiv2] Language=), else, where that is Auto or
    unset, the system's (CIV2_SYSTEM_LANG: the host's, the browser page's). */
 static void chosen_language(char *code, int n)
 {
@@ -759,6 +759,69 @@ int lang_has(const char *key)
     return translated.count(key) || english.count(key);
 }
 
+/* (port) OpenCiv2's name for the game (plat_own_name: not in the original
+   game, CIV2_CLASSIC=1, nor in replays and unit tests, as the interface
+   additions): in a line of the game's text, the original's name
+   ("Civilization II", "Civilization II Multiplayer Gold", "Civ II", "Civ2",
+   a translation's "文明帝國II", ...) becomes "OpenCiv2".  A line that
+   names a CD, the original game or credits ("the Civilization II CD", "the
+   original Civ II game manual", "View Civ II Credits") keeps it: that is
+   the original product.  In place; size: the buffer's (a longer name that
+   would not fit is left). */
+void own_name(char *line, size_t size)
+{
+    static const char *const keep[] = {
+        "CD", "KD" /* (Esperanto's) */, "disc" /* (Latin's "discis") */, "\xe5\x85\x89\xe7\xa2\x9f" /* 光碟 */,
+        "original", "Original", "urspr\xfc" "ngl" /* ursprüngl */, "archetyp",
+        "\xce\xb1\xcf\x81\xcf\x87\xce\xb9\xce\xba" /* αρχικ */, "\xe5\x8e\x9f\xe7\x89\x88" /* 原版 */,
+        "Credits" /* (a scenario's "View Civ II Credits") */,
+    };
+    static const struct {
+        const char *from, *to;
+        int word;       /* (not part of a longer word or number: "Civ III", "Civ2Art.dll") */
+    } names[] = {
+        {"Civilization II Multiplayer Gold Edition", "OpenCiv2", 1},
+        {"Civilization II Multiplayer Gold", "OpenCiv2", 1},
+        {"CIVILIZATION II MULTIPLAYER GOLD", "OPENCIV2", 1},
+        {"Civilization II Gold", "OpenCiv2", 1},
+        {"Civilization II", "OpenCiv2", 1},
+        {"CIVILIZATION II", "OPENCIV2", 1},
+        {"Civilization 2", "OpenCiv2", 1},
+        {"Civ II", "OpenCiv2", 1},
+        {"CIV II", "OpenCiv2", 1},
+        {"Civ 2", "OpenCiv2", 1},
+        {"Civ2", "OpenCiv2", 1},
+        /* 文明帝國II 多人遊戲黃金版, 文明帝國II (Traditional Chinese, UTF-8) */
+        {"\xe6\x96\x87\xe6\x98\x8e\xe5\xb8\x9d\xe5\x9c\x8bII \xe5\xa4\x9a\xe4\xba\xba\xe9\x81\x8a\xe6\x88\xb2"
+         "\xe9\xbb\x83\xe9\x87\x91\xe7\x89\x88", "OpenCiv2", 0},
+        {"\xe6\x96\x87\xe6\x98\x8e\xe5\xb8\x9d\xe5\x9c\x8bII", "OpenCiv2", 0},
+    };
+    size_t k, i, from_len, to_len, len;
+    char *at;
+    for (k = 0; k < sizeof keep / sizeof keep[0]; k++)
+        if (strstr(line, keep[k]))
+            return;
+    for (k = 0; k < sizeof names / sizeof names[0]; k++) {
+        from_len = strlen(names[k].from);
+        to_len = strlen(names[k].to);
+        for (at = line; (at = strstr(at, names[k].from)) != 0;) {
+            unsigned char before = at > line ? (unsigned char)at[-1] : ' ';
+            unsigned char after = (unsigned char)at[from_len];
+            len = strlen(line);
+            if ((names[k].word && (isalnum(before) || before == '_' || isalnum(after) || after == '_' ||
+                                   (after == '.' && isalnum((unsigned char)at[from_len + 1])))) ||
+                len - from_len + to_len >= size) {
+                at += from_len;
+                continue;
+            }
+            memmove(at + to_len, at + from_len, len - (size_t)(at - line) - from_len + 1);
+            for (i = 0; i < to_len; i++)
+                at[i] = names[k].to[i];
+            at += to_len;
+        }
+    }
+}
+
 /* MENU.TXT: per menu a section (@GAME ...), its title, then one line per
    item in the menu's order (menu_rows; separators have none).  Its
    versions: the 5.4.0f patch's @GAME has 13 items (with Game Profile,
@@ -805,6 +868,17 @@ void lang_load_menus(void)
                 set_english(menu_rows[row].key, text_read_line(1));
     }
     text_close_file();
+    /* (and the translation's items: OpenCiv2's name, lang_own_name_line) */
+    if (plat_own_name)
+        for (row = 0; row < menu_row_count; row++) {
+            std::unordered_map<std::string, std::string>::iterator it;
+            char item[0x100];
+            if (!menu_rows[row].key || (it = translated.find(menu_rows[row].key)) == translated.end())
+                continue;
+            snprintf(item, sizeof item, "%s", it->second.c_str());
+            own_name(item, sizeof item);
+            it->second = item;
+        }
     export_english();
 }
 
@@ -828,8 +902,13 @@ void lang_add_labels(int count)
     for (i = 0; i < count; i++) {
         snprintf(key, sizeof key, "label.%d", i);
         std::unordered_map<std::string, std::string>::const_iterator it = translated.find(key);
-        if (it != translated.end())     /* (no longer than a LABELS.TXT line) */
-            pool_translated[label_table.string_ids[i]] = it->second.substr(0, 0xfe);
+        if (it != translated.end()) {   /* (no longer than a LABELS.TXT line) */
+            char line[0x100];
+            snprintf(line, sizeof line, "%s", it->second.substr(0, 0xfe).c_str());
+            if (plat_own_name)
+                own_name(line, sizeof line);
+            pool_translated[label_table.string_ids[i]] = line;
+        }
     }
     export_english();
 }
@@ -849,6 +928,7 @@ static std::vector<std::string> section_lines;
 static size_t section_next;
 static FILE *section_file;
 static std::string section_last_file;
+static std::string section_current;     /* (its name, in capitals, without "@") */
 
 /* The translation's blocks ("advice.@@Coastal Fortress", add_file_sections)
    by each of their names, in capitals ("advice.@@SAM MISSILE BATTERY"), as
@@ -906,6 +986,10 @@ void lang_section_opened(const char *filename, const char *section, int in_scena
     int block, names = 1;
 
     lang_section_closed();
+    section_current.clear();
+    if (section)
+        for (i = section[0] == '@'; section[i]; i++)
+            section_current += (char)toupper((unsigned char)section[i]);
     if (filename) {
         base = filename;
         for (i = 0; filename[i]; i++)
@@ -993,6 +1077,27 @@ void lang_section_closed(void)
     section_file = 0;
     section_lines.clear();
     section_next = 0;
+}
+
+/* text_read_line's line (in buf, of size bytes): OpenCiv2's name in it
+   (own_name), unless the original's is wanted: plat_own_name off, the
+   credits (CREDITS.TXT and the others: the original's teams), GAME.TXT's
+   sections about the original product: whose credits (@CREDITS,
+   @NEWCREDITS: its products by name), its CD (@CDROMNOTFOUND,
+   @NOPICKMUSIC ...), its installation (@VFWNOTREGISTERED). */
+void lang_own_name_line(char *buf, size_t size)
+{
+    static const char *const original[] = {"CREDITS", "NEWCREDITS", "CDROMNOTFOUND", "NOPICKMUSIC", "VFWNOTREGISTERED"};
+    size_t n = section_last_file.size(), k;
+    if (!plat_own_name)
+        return;
+    if (n >= 7 && section_last_file.compare(n - 7, 7, "credits") == 0)
+        return;
+    if (section_last_file == "game")
+        for (k = 0; k < sizeof original / sizeof original[0]; k++)
+            if (section_current.compare(0, strlen(original[k]), original[k]) == 0)
+                return;
+    own_name(buf, size);
 }
 
 /* (make test: civ2-unittest --text DIR PATH, tests/text_keys_test.py) The

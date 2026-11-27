@@ -20,7 +20,7 @@ utf-8
 @@openciv2.menu.arrange_l
 排列視窗 L
 @@openciv2.mainmenu.options
-OpenCiv2 選項
+設定
 @@openciv2.diplo.emissary
 %s使節
 @@openciv2.diplo.cancel_peace
@@ -30,7 +30,7 @@ OpenCiv2 選項
 @@openciv2.diplo.you_reply
 您回答：
 @@openciv2.options.title
-OpenCiv2 選項
+設定
 @@openciv2.options.kept
 儲存在 CIV.INI 的 [OpenCiv2] 區段中。
 @@openciv2.options.fixes
@@ -242,7 +242,7 @@ OpenCiv2 在遊戲資料夾 %s 中找不到原版 Civilization II 的圖像（TE
 @@openciv2.box.no
 否
 @@openciv2.quit.text
-要結束文明帝國II 嗎？
+要結束 OpenCiv2 嗎？
 
 進行中的遊戲將在此結束；未儲存的內容都會遺失。
 @@openciv2.quit.quit
@@ -351,7 +351,7 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 @@openciv2.web.loading
 載入中 ...
 @@openciv2.web.intro
-Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它使用<em>您自己</em>的遊戲：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（經典或 HD 圖形、錯誤修正、規則變更與介面新增功能）在遊戲中選擇：主選單中的「OpenCiv2 選項」。
+Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行。它使用<em>您自己</em>的遊戲：文明帝國II 的安裝資料夾（含有 <code>Civ2Art.dll</code> 與 <code>RULES.TXT</code> 的那個）、遊戲光碟，或光碟的映像檔。遊戲方式（經典或 HD 圖形、錯誤修正、規則變更與介面新增功能）在遊戲中選擇：主選單中的「設定」。
 @@openciv2.web.add_original
 經典圖形需要原版 Civilization II 的檔案，而此瀏覽器中的遊戲沒有這些檔案。請選擇您的 Civilization II Multiplayer Gold Edition：遊戲已有的檔案會保留。
 @@openciv2.web.add_back

@@ -107,7 +107,7 @@ void HOST_API(host_present_hd)(const void *pixels, int stride, int density);
 void HOST_API(host_resize_desktop)(int w, int h);
 /* Minimize the window (the desktop's main window was minimized). */
 void HOST_API(host_minimize)(void);
-/* The program started again, for the choices of the OpenCiv2 Options
+/* The program started again, for the choices of the Settings
  * dialog (src/game/options.cpp) that need it.  now 0: how it can be, 1
  * started again (the arguments it was given but those the dialog's
  * choices replace: --hd, --sharp, --setup); 2 the page loaded again (the
@@ -118,7 +118,7 @@ int HOST_API(host_restart)(int now);
  * the game (an installed game, its CD, a .zip of the installed folder, a
  * disc image), as the set-up takes them (src/host/setup.c:
  * setup_add_original; in the browser the set-up page's choice): for the
- * OpenCiv2 Options dialog's Classic graphics.  The game folder's own files
+ * Settings dialog's Classic graphics.  The game folder's own files
  * are kept.  1 done, 0 cancelled or failed (the player told), -1 it cannot
  * be done here (the native test build). */
 int HOST_API(host_add_original)(void);

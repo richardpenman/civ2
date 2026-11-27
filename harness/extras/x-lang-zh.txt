@@ -1,8 +1,8 @@
 # A translation in UTF-8 (docs/TRANSLATING.md): Traditional Chinese
 # (data/native/lang/zh-Hant.txt, "@@codepage utf-8": its characters drawn
 # from data/native/fonts' files, lines broken next to them, the edit
-# control's caret and backspace by character).  The main menu, OpenCiv2
-# Options and its Language page, the file dialog with Chinese typed
+# control's caret and backspace by character).  The main menu,
+# Settings and its Language page, the file dialog with Chinese typed
 # (input_char: as the host's text input gives it) and taken back by
 # BackSpace, a city renamed in Chinese and the city window with that name,
 # the menu bar, the map's status panel, an advisor, the Civilopedia (an

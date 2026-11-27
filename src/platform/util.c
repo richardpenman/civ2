@@ -276,7 +276,7 @@ void plat_fatal(const char *fmt, ...)
     if (!getenv("CIV2_SCRIPT")) {
         static const char *const ok[1] = {"OK"};
         static const int id[1] = {1};
-        host_message_box(2, "Civilization II", buf, 1, ok, id, 0, 0);
+        host_message_box(2, "OpenCiv2", buf, 1, ok, id, 0, 0);
     }
     exit(1);
 }

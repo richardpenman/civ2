@@ -18,7 +18,7 @@
  * (ASCII: '%', '@', '^', '|', '\\' ...) are never inside a character. *
  * One escape, in any code page: U8_ESC (0x1a, the byte that ended a DOS
  * text file, so no text of the game has it) followed by one character in
- * UTF-8 is that character.  Only the Language list of the OpenCiv2 Options
+ * UTF-8 is that character.  Only the Language list of the Settings
  * uses it (src/game/lang.cpp), so that each language's own name (Ελληνικά,
  * 繁體中文) shows in a Windows-1252 or Latin-3 interface; src/platform/
  * text.c draws and measures it, these helpers count it as one character.

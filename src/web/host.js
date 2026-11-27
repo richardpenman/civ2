@@ -593,7 +593,7 @@ export async function runGame(opts) {
             }).then(() => () => (queue.length ? take(out) : 0));
         },
         host_delay_ms: (ms) => sleepMs(ms).then(() => () => 0),
-        // The restart the OpenCiv2 Options dialog offers (its choices that
+        // The restart the Settings dialog offers (its choices that
         // need one): the page loaded again (opts.restart, main.js); 2 says
         // so, and the game waits for it
         host_restart: (now) => (now ? opts.restart().then(() => new Promise(() => {})) : 2),
