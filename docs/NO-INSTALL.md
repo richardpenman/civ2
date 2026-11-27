@@ -87,7 +87,7 @@ above).
 | replaced: made by the game when missing (`CIV2.DAT`, `HALLFAME.DAT`) | 2 | |
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
-| replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; still being chosen, not yet in the repository) | 78 (`Sound\*.WAV`) | |
+| replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; made by `make own-assets`, not in the repository) | 78 (`Sound\*.WAV`) | |
 | replaced: OpenCiv2's own music (`data/native/music`, MIT; made by `make own-assets`, not in the repository) | 11 music tracks (`Music\Track02`-`12`) | |
 | out of scope: videos | 59 videos (`Video` 37, `KINGS` 21, `LOSER.AVI`) | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
@@ -228,24 +228,36 @@ STKMARKT SWORDFGT SWRDHORS TORPEDOS`.  (The game's table names 25 more, `AIRPLAN
 `CUSTOM1` ...: no file has them, and the game plays nothing for them, with or without the install;
 `FEEDBKXX` and `POMPCIRC` are not in it: only a scenario's events, which play any file, may.)
 
-Replaced: OpenCiv2's own (still being chosen: not yet in the repository, so a fresh clone,
-its builds and packages have none, and the game plays nothing for a sound the game folder lacks,
-as before; `make test-sound` is then skipped), `data/native/sound/name.ogg` for each (78 files, 1.98 MB, Ogg Vorbis,
-22050 Hz mono), made from sounds in the public domain (CC0: Freesound, OpenGameArt and Kenney;
-`data/native/sound/SOURCES.md` has each one's sources, authors and how it was made from them:
-mixed where several, trimmed to about the original's length, its level matched to the
-original's).  Where the game asks for `Sound\NAME.WAV` in the game folder and there is none
-(`src/platform/sound.c`: `sound_fallback`, from `plat_host_path`), the Ogg is decoded
-(stb_vorbis) into a WAV as the game reads its own (22050 Hz, 8 bits, mono; `snd_wave_load_file`
-plays nothing else), written once a run into the folder `OpenCiv2Sounds` of the Windows
-directory, and the game is given that file: the game's code plays it unchanged.  Only with
-sound: a replay without it (the recorded scenarios) finds no file, as before, so the game takes
-the same steps.  The install's own sounds are always played where they are; a scenario's
-`SOUND` folder first, as ever.  They are packaged with the programs (`data/sound`; the Windows
-program's resources) and on the browser version's site (`data/sound`: the page fetches those the
-player's game lacks).  `make test-sound` (`tests/sound_fallback_test.sh`): without the `Sound`
-folder (`CIV2_NO_SOUND=1`) and with audio (`CIV2_TEST_AUDIO=1`, SDL's dummy driver) the start
-menu's `MENULOOP.WAV` is made and the game opens it; with the folder nothing is made.
+Replaced: OpenCiv2's own, `data/native/sound/name.ogg` for each (78 files, 2.0 MB, Ogg Vorbis,
+22050 Hz mono), made from sounds in the public domain (CC0: Freesound, OpenGameArt, Kenney and
+the VSCO-2 orchestral samples; `data/native/sound/SOURCES.md` has each one's sources, authors and
+how it was made from them: mixed where several, trimmed to about the original's length, its
+level matched to the original's).  They come, as the music, from OpenCiv2's own repository
+[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`sound/`): not in this
+repository, the builds fetch them first (`make own-assets`, `tools/build_own_assets.py`, which
+`make` runs) at the commit pinned in `data/own-assets.json` and copy them as they are;
+`make OWN_ASSETS=` builds without them.
+
+Which the game plays follows the graphics in use, as the music's.  With HD graphics
+(*Classic graphics* unticked in Settings, or a game folder without the original's pictures)
+OpenCiv2's own comes first, and the game folder's `Sound\NAME.WAV` only for a sound OpenCiv2
+lacks.  With Classic graphics (and with `CIV2_CLASSIC=1`) the game folder's comes first, as the
+original's, and OpenCiv2's only where the folder lacks `Sound\NAME.WAV`.  A change of the
+graphics in Settings takes effect at the restart.  Where OpenCiv2's is played
+(`src/platform/sound.c`: `sound_fallback`, from `plat_host_path`: `files.c`, `synth_path`), the
+Ogg is decoded (stb_vorbis) into a WAV as the game reads its own (22050 Hz, 8 bits, mono;
+`snd_wave_load_file` plays nothing else), written once a run into the folder `OpenCiv2Sounds`
+of the Windows directory, and the game is given that file: the game's code plays it unchanged.
+Only with sound: a replay without it (the recorded scenarios) finds no file, as before, so the
+game takes the same steps; and replays have Classic graphics unless asked for HD
+(`CIV2_TEST_HD`).  A scenario's `SOUND` folder is looked in first, as ever.  They are packaged
+with the programs (`data/sound`; the Windows program's resources) and on the browser version's
+site (`data/sound`: the page fetches them all with HD graphics, with Classic graphics those the
+player's game lacks).  `make test-sound` (`tests/sound_fallback_test.sh`): with audio
+(`CIV2_TEST_AUDIO=1`, SDL's dummy driver) and Classic graphics, without the `Sound` folder
+(`CIV2_NO_SOUND=1`), the start menu's `MENULOOP.WAV` is made from OpenCiv2's and the game opens
+it, and with the folder nothing is made; with HD graphics (`CIV2_TEST_HD=1`) it is made from
+OpenCiv2's with the folder and without it.
 
 ## Music
 
@@ -261,10 +273,10 @@ art's).  The repository holds them as the game plays them: Ogg Vorbis (which stb
 game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.4 MB for the eleven, 25
 minutes, about 140 kbit/s.  Not in this repository: the builds fetch it first (`make
 own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
-file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 30 MB
-with the heralds), and copy it as it is: nothing is converted, so nothing is needed but Python
-3; later builds take it from there, offline.  `make OWN_ASSETS=` builds without it (nor the
-heralds).
+file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 32 MB
+with the heralds and the sound effects), and copy it as it is: nothing is converted, so nothing
+is needed but Python 3; later builds take it from there, offline.  `make OWN_ASSETS=` builds
+without it (nor the heralds and sound effects).
 
 Which track the drive plays (`cd_open_track`) follows the graphics in use.  With HD graphics
 (*Classic graphics* unticked in Settings, or a game folder without the original's pictures) it

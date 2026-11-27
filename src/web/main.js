@@ -653,18 +653,22 @@ async function play(store) {
     } catch (e) {
         console.warn('OpenCiv2 texts:', e);
     }
-    // OpenCiv2's own sound effects for those the player's game lacks
-    // (data/sound: sound.c plays one where the game has no Sound/NAME.WAV)
+    // OpenCiv2's own sound effects (data/sound, some 2 MB): with HD graphics
+    // all of them (sound.c plays data/sound/name.ogg first, the game's
+    // Sound/NAME.WAV only for one it lacks), with Classic graphics those the
+    // player's game lacks (it plays the game's Sound/NAME.WAV, else ours);
+    // window.civ2OwnSounds: those put in (tests)
     try {
         const have = new Set(entries.map(([k]) => k.toUpperCase()));
         const names = await fetch('data/sound/index.json').then((r) => (r.ok ? r.json() : []));
-        const missing = names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV'));
-        const files = await Promise.all(missing.map((n) => fetch('data/sound/' + n).then((r) => {
+        const wanted = hd ? names : names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV'));
+        const files = await Promise.all(wanted.map((n) => fetch('data/sound/' + n).then((r) => {
             if (!r.ok)
                 throw new Error(n + ': ' + r.status);
             return r.arrayBuffer();
         })));
-        missing.forEach((n, i) => fs.put(DATA + '/sound/' + n, new Uint8Array(files[i])));
+        wanted.forEach((n, i) => fs.put(DATA + '/sound/' + n, new Uint8Array(files[i])));
+        window.civ2OwnSounds = wanted;
     } catch (e) {
         console.warn('OpenCiv2 sounds:', e);
     }

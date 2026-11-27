@@ -94,8 +94,8 @@ and copy them in, as the set-up does).  HD graphics are OpenCiv2's default (wher
 no `Graphics=`: `HD_BY_DEFAULT`, natively and in the browser), the original's look an option
 (Classic graphics in Settings; always in replays unless `CIV2_TEST_HD`, with `CIV2_CLASSIC=1`
 and in a build without the art).  The sound effects are
-OpenCiv2's own where the game lacks them (`data/native/sound`: 78, public domain, CC0, still being chosen and not yet in the
-repository; decoded
+OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks them (`data/native/sound`: 78, public domain, CC0:
+openciv2/openciv2-media, fetched by `make own-assets`; decoded
 into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
 it (`data/native/music`: openciv2/openciv2-media, fetched by `make own-assets`; MIT).
 Still from the game: its videos, scenarios.  The editors'

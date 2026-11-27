@@ -17,14 +17,14 @@
 // ticked in Settings, Find the original files...: the set-up page
 // over the game, the .zip chosen there again, the files the game lacked
 // added, the restart offered, and after it Classic graphics (no art
-// loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music: all its
-// tracks fetched with HD graphics, with Classic graphics only those the game
-// lacks.  Screenshots in
+// loaded, Graphics=Classic in CIV.INI).  OpenCiv2's own music and sound
+// effects: all of them fetched with HD graphics, with Classic graphics only
+// those the game lacks.  Screenshots in
 // run/web-hd (look at them).  Without the game it says so and passes.
 //
 //   tools/toolchain/node/bin/node src/web/test/hd.mjs [GAME_DIR]
 
-import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync} from 'node:fs';
+import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync, readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {homedir} from 'node:os';
 import {ROOT, WEB, zipFolder, serve, browser, tmpDir} from './cdp.mjs';
@@ -260,6 +260,17 @@ async function main() {
         log(`OpenCiv2's own music with HD graphics: ${siteMusic.length} tracks on the site, ${own.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
         if (own.length !== siteMusic.length)
             throw new Error('OpenCiv2\'s own music not all fetched with HD graphics');
+        // OpenCiv2's own sound effects (the site's data/sound: make
+        // own-assets): with HD graphics all of them, the game's own
+        // Sound/NAME.WAV or not (sound.c plays ours first)
+        const siteSounds = JSON.parse(readFileSync(join(WEB, 'data', 'sound', 'index.json'), 'utf8'));
+        const soundDir = ['Sound', 'SOUND', 'sound'].map((d) => join(GAME, d)).find((d) => existsSync(d));
+        const gameSounds = new Set(soundDir ? readdirSync(soundDir).map((n) => n.toLowerCase()) : []);
+        const soundsLacking = siteSounds.filter((n) => !gameSounds.has(n.slice(0, -4) + '.wav'));
+        const ownSounds = await evaluate('window.civ2OwnSounds');
+        log(`OpenCiv2's own sound effects with HD graphics: ${siteSounds.length} on the site, ${(ownSounds || []).length} fetched (the game lacks ${soundsLacking.length})`);
+        if (!siteSounds.length || !ownSounds || ownSounds.length !== siteSounds.length)
+            throw new Error('OpenCiv2\'s own sound effects not all fetched with HD graphics');
         const ini = await evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const s = r.result.transaction("files").objectStore("files"), k = s.getAllKeys();
             k.onsuccess = () => { const name = k.result.find((n) => /^civ\\.ini$/i.test(n));
@@ -396,6 +407,11 @@ async function main() {
         log(`OpenCiv2's own music with Classic graphics: ${ownClassic.length} fetched (the game ${gameMusic ? 'has' : 'has no'} Music)`);
         if (gameMusic ? ownClassic.length : ownClassic.length !== siteMusic.length)
             throw new Error(`OpenCiv2's own music with Classic graphics: ${ownClassic.length} fetched`);
+        // (and its sound effects only for those the game lacks)
+        const ownSoundsClassic = await evaluate('window.civ2OwnSounds');
+        log(`OpenCiv2's own sound effects with Classic graphics: ${(ownSoundsClassic || []).length} fetched (the game lacks ${soundsLacking.length})`);
+        if (!ownSoundsClassic || ownSoundsClassic.length !== soundsLacking.length)
+            throw new Error(`OpenCiv2's own sound effects with Classic graphics: ${(ownSoundsClassic || []).length} fetched, not ${soundsLacking.length}`);
         if (!/Graphics=Classic/.test(await evaluate('new TextDecoder("latin1").decode(window.civ2Fs.get(' +
                                                      '[...window.civ2Fs.files.keys()].find((k) => /^\\/civ2\\/civ\\.ini$/i.test(k))))')))
             throw new Error('CIV.INI does not have Graphics=Classic');

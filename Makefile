@@ -22,16 +22,19 @@ PORT ?= 8000
 HD_ART ?= 1
 HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@echo "(no HD art: HD_ART=$(HD_ART))")
 
-# OpenCiv2's own assets, data/native/music (docs/NO-INSTALL.md, Music) and
+# OpenCiv2's own assets, data/native/music (docs/NO-INSTALL.md, Music),
+# data/native/sound (docs/NO-INSTALL.md, Sound effects) and
 # data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds): not in the
 # repository, made from OpenCiv2's own openciv2/openciv2-media (not Peter
 # Johnson's, the HD art's) at the commit pinned in data/own-assets.json
-# (tools/build_own_assets.py: the files, the music already Ogg Vorbis as the
-# game plays it, fetched once into ~/.cache/openciv2 and copied as they are,
-# nothing converted: Python 3 only) before each build that packs or runs
-# with them; at once when they are up to date.  OWN_ASSETS= (or 0): builds
-# without them (the game then has music only from its own folder, and no
-# heralds of OpenCiv2's but data/native/hd-extra's).
+# (tools/build_own_assets.py: the files, the music and sound effects already
+# Ogg Vorbis as the game plays them, fetched once into ~/.cache/openciv2 and
+# copied as they are, nothing converted: Python 3 only) before each build
+# that packs or runs with them (make, make run's first build, make port,
+# native, windows, web); at once when they are up to date.  OWN_ASSETS= (or
+# 0): builds without them (the game then has music and sound effects only
+# from its own folder, and no heralds of OpenCiv2's but
+# data/native/hd-extra's).
 OWN_ASSETS ?= 1
 OWN_ASSETS_MAKE = $(if $(filter-out 0,$(OWN_ASSETS)),python3 tools/build_own_assets.py,@echo "(no assets of OpenCiv2's own: OWN_ASSETS=$(OWN_ASSETS))")
 
@@ -49,7 +52,7 @@ endif
 
 all: build
 
-build:                        ## build/OpenCiv2, the HD art and OpenCiv2's own music and heralds (first time: downloads its toolchain into tools/toolchain and the art's, music's and heralds' sources into ~/.cache/openciv2)
+build:                        ## build/OpenCiv2, the HD art and OpenCiv2's own music, sound effects and heralds (first time: downloads its toolchain into tools/toolchain and the art's and OpenCiv2's own assets' sources into ~/.cache/openciv2)
 	$(HD_ART_MAKE)
 	$(OWN_ASSETS_MAKE)
 	python3 tools/build_port.py
@@ -101,11 +104,12 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 hd-art:                       ## the HD graphics' art in data/native/hd from the pinned commit of openciv2-assets (tools/build_hd_pack.py; at once when up to date)
 	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
-# OpenCiv2's own music and heralds: data/native/music and data/native/heralds
-# from the commit of openciv2/openciv2-media pinned in data/own-assets.json
-# (OWN_ASSETS above; fetched once, about 30 MB, and copied; FORCE=1: made
-# again, whatever is there or in the cache).
-own-assets:                   ## OpenCiv2's own music and heralds in data/native/music, heralds, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
+# OpenCiv2's own music, sound effects and heralds: data/native/music,
+# data/native/sound and data/native/heralds from the commit of
+# openciv2/openciv2-media pinned in data/own-assets.json (OWN_ASSETS above;
+# fetched once, about 32 MB, and copied; FORCE=1: made again, whatever is
+# there or in the cache).
+own-assets:                   ## OpenCiv2's own music, sound effects and heralds in data/native/music, sound, heralds, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
 	python3 tools/build_own_assets.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)
@@ -146,7 +150,7 @@ test:                         ## the unit tests: the recorded cases in tests/uni
 # The additions' regression tests (harness/extras_suite.py): our own output,
 # checked by eye and recorded (extras-bless), replayed and compared.  Needs
 # the game files; NAMES limits them to some scripts.
-test-sound: native           ## OpenCiv2's own sound effects: without the game's Sound folder the start menu's is made from data/native/sound and played (tests/sound_fallback_test.sh; skipped without that folder)
+test-sound: native           ## OpenCiv2's own sound effects: with Classic graphics the start menu's made from data/native/sound and played without the game's Sound folder, none made with it; with HD graphics OpenCiv2's first, with the folder or without (tests/sound_fallback_test.sh; skipped without data/native/sound: make own-assets)
 	$(DK) sh tests/sound_fallback_test.sh
 
 test-music: native            ## OpenCiv2's own music: without the game's Music folder and with audio the game plays track NN from data/native/music, decoded; with the folder the game's own (tests/music_fallback_test.sh; skipped without data/native/music)

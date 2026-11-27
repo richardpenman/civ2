@@ -27,10 +27,14 @@ texts.js, the page's English (src/host/texts.h): docs/TRANSLATING.md.
 OpenCiv2's English of the game's text files (data/native/text/*.TXT, used
 where the game has none of its own) into data/text/, gzipped, listed in
 data/text/index.json: the page fetches those the player's game lacks.
-OpenCiv2's own sound effects (data/native/sound/*.ogg, CC0, played where
-the game has none of its own: src/platform/sound.c) into data/sound/, as
-they are, listed in data/sound/index.json: the page fetches those the
-player's game lacks.
+OpenCiv2's own sound effects (data/native/sound/*.ogg: made by make
+own-assets, tools/build_own_assets.py, which make web runs first; not in
+the repository; CC0, credited in SOURCES.md, copied beside them; played
+as the game's Sound/NAME.WAV, with HD graphics first, with Classic
+graphics where the game has none of its own: src/platform/sound.c) into
+data/sound/, as they are, listed in data/sound/index.json: the page
+fetches them all with HD graphics, with Classic graphics those the
+player's game lacks.  Without them (make web OWN_ASSETS=) none.
 OpenCiv2's own music (data/native/music/trackNN.ogg: made by make
 own-assets, tools/build_own_assets.py, which make web runs first; not in the repository;
 played as the CD's track NN, with HD graphics first, with Classic graphics
@@ -185,24 +189,32 @@ def write_texts():
 
 
 def write_sounds():
-    """data/sound/<name>.ogg and data/sound/index.json (their names)."""
+    """data/sound/<name>.ogg, SOURCES.md and data/sound/index.json (their names; none with OWN_ASSETS= or 0)."""
     src = os.path.join(ROOT, 'data', 'native', 'sound')
     out = os.path.join(OUT, 'data', 'sound')
     os.makedirs(out, exist_ok=True)
     names = sorted(os.path.basename(f) for f in glob.glob(os.path.join(src, '*.ogg')))
+    if not own_assets():
+        names = []              # (make web OWN_ASSETS=: without them, even where data/native/sound is made)
+        print('(no sound effects of OpenCiv2\'s own: OWN_ASSETS=%s)' % os.environ.get('OWN_ASSETS'), flush=True)
+    elif not names:
+        print('warning: no sound effects in data/native/sound (make own-assets): the site is without them', flush=True)
     for name in names:
         s, d = os.path.join(src, name), os.path.join(out, name)
         if newer(s, d):
             shutil.copy(s, d)
+    notices = ('SOURCES.md',) if names and os.path.exists(os.path.join(src, 'SOURCES.md')) else ()
+    for name in notices:
+        shutil.copy(os.path.join(src, name), os.path.join(out, name))
     for f in os.listdir(out):
-        if f != 'index.json' and f not in names:
+        if f != 'index.json' and f not in names and f not in notices:
             os.remove(os.path.join(out, f))
     with open(os.path.join(out, 'index.json'), 'w') as f:
         json.dump(names, f)
 
 
 def own_assets():
-    """OpenCiv2's own music and heralds wanted (not make web OWN_ASSETS= or 0)."""
+    """OpenCiv2's own music, sound effects and heralds wanted (not make web OWN_ASSETS= or 0)."""
     return os.environ.get('OWN_ASSETS', '1') not in ('', '0')
 
 

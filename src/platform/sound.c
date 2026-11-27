@@ -292,11 +292,16 @@ WINBOOL WINAPI sndPlaySoundA(LPCSTR name, UINT flags)
     return TRUE;
 }
 
-/* ---- the sound effects without the install (docs/NO-INSTALL.md) ----
+/* ---- OpenCiv2's own sound effects (docs/NO-INSTALL.md) ----
  *
- * Where the game folder lacks one of the game's sound effects
- * (Sound\NAME.WAV), OpenCiv2's own stands in for it: data/native/sound/
- * name.ogg (CC0: data/native/sound/SOURCES.md), decoded (stb_vorbis) into a
+ * With HD graphics (hd_art: Settings' Classic graphics unticked, or the
+ * game folder without the original's pictures; never with CIV2_CLASSIC=1,
+ * nor in a replay but with CIV2_TEST_HD or without the pictures) OpenCiv2's
+ * own sound effects are played first, the game folder's Sound\NAME.WAV
+ * only where OpenCiv2 has none; with Classic graphics OpenCiv2's only where
+ * the game folder lacks one (files.c: synth_path).  OpenCiv2's own,
+ * data/native/sound/name.ogg (made by tools/build_own_assets.py from
+ * openciv2/openciv2-media; CC0: data/native/sound/SOURCES.md), decoded (stb_vorbis) into a
  * WAV as the game reads them (snd_wave_load_file: 22050 Hz, 8 bits; mono),
  * written once a run into the folder "OpenCiv2Sounds" of the Windows
  * directory, where plat_host_path finds it (files.c: synth_path).  Only

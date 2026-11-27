@@ -26,16 +26,20 @@ tools/build_hd_pack.py from its pinned commit; docs/HD-GRAPHICS.md):
 
  15. openciv2-assets          MIT licence: the HD graphics' art
 
-and, with the programs once chosen (not yet in the repository), OpenCiv2's own
-sound effects (data/native/sound), played where the game folder lacks the
-original's:
+and, with the programs, OpenCiv2's own sound effects (data/native/sound,
+made by tools/build_own_assets.py from OpenCiv2's own repository
+openciv2/openciv2-media at its pinned commit), played in place of the
+original's (with HD graphics first, with Classic graphics where the game
+folder lacks them), made from sounds in the public domain:
 
- 16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt, Kenney
+ 16. sound effects            public domain (CC0 1.0): Freesound, OpenGameArt,
+                              Kenney, VSCO-2 Community Edition
 
 The programs also carry OpenCiv2's own music and heralds (data/native/music,
 data/native/heralds, made by tools/build_own_assets.py from OpenCiv2's own
-repository openciv2/openciv2-media at its pinned commit), played where the
-game folder lacks the CD's music and heralds: not third-party, but under
+repository openciv2/openciv2-media at its pinned commit), played in place of
+the CD's music (with HD graphics first, with Classic graphics where the game
+folder lacks it) and heralds: not third-party, but under
 OpenCiv2's own licence (MIT, Copyright (c) 2026 Richard Penman: LICENSE),
 credited at the end.
 
@@ -528,13 +532,16 @@ SOFTWARE.
 16. OpenCiv2's sound effects  (data/native/sound)
 -------------------------------------------------
 
-78 sound effects (still being chosen: not yet in the repository, nor in the
-programs built from it), played where the game folder lacks the original's
-Sound\NAME.WAV (src/platform/sound.c, docs/NO-INSTALL.md), made from sounds
+78 sound effects (sound/*.ogg of OpenCiv2's own repository
+openciv2/openciv2-media at the commit pinned in data/own-assets.json, copied
+as they are by tools/build_own_assets.py), played in place of the original's
+Sound\NAME.WAV, with HD graphics first, with Classic graphics where the game
+folder lacks it (src/platform/sound.c, docs/NO-INSTALL.md), made from sounds
 in the public domain: the Creative Commons CC0 1.0 Universal Public Domain
 Dedication (https://creativecommons.org/publicdomain/zero/1.0/), from
-Freesound (https://freesound.org), OpenGameArt (https://opengameart.org) and
-Kenney (https://kenney.nl).  No notice is required; data/native/sound/SOURCES.md
+Freesound (https://freesound.org), OpenGameArt (https://opengameart.org),
+Kenney (https://kenney.nl) and the VSCO-2 Community Edition orchestral
+samples (https://github.com/sgossner/VSCO-2-CE).  No notice is required; data/native/sound/SOURCES.md
 credits each source and its author all the same, and says how each file was
 made from them.
 
@@ -549,8 +556,9 @@ pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
 2026 Richard Penman; the repository's LICENSE, beside the files in
 data/native/music and data/native/heralds).  The music: eleven tracks
 (game/music/track02.ogg, Funeral March, to track12.ogg, World of Jules Verne,
-Ogg Vorbis), played as the CD's audio tracks 2 to 12 where the game folder
-has no Music\TrackNN (docs/NO-INSTALL.md, Music), copied as they are by
+Ogg Vorbis), played as the CD's audio tracks 2 to 12, with HD graphics
+first, with Classic graphics where the game folder has no Music\TrackNN
+(docs/NO-INSTALL.md, Music), copied as they are by
 tools/build_own_assets.py.  The heralds: the Russians' animated herald
 (heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
 heralds), AI-generated (Google's Gemini models; the prompts are in

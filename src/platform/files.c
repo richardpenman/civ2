@@ -8,6 +8,7 @@
  * drives are the game directory.  Name lookup ignores case.
  */
 #include "plat.h"
+#include "hd.h"
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -78,8 +79,10 @@ static void audit_path(const char *win, const char *host, int for_create)
 }
 
 /* A picture the game folder lacks (TERRAIN1.GIF ...): made from the art
-   (synth.c, docs/NO-INSTALL.md), host the file made; a sound effect it
-   lacks (Sound\NAME.WAV): OpenCiv2's own (sound.c: sound_fallback). */
+   (synth.c, docs/NO-INSTALL.md), host the file made; a sound effect
+   (Sound\NAME.WAV): OpenCiv2's own (sound.c: sound_fallback), with HD
+   graphics (hd_art) first, the game folder's only where OpenCiv2 has none,
+   with Classic graphics only where the game folder lacks it. */
 static void synth_path(char *host, size_t n)
 {
     struct stat st;
@@ -87,7 +90,7 @@ static void synth_path(char *host, size_t n)
     size_t g = strlen(plat_game_dir);
     char made[1200];
     if (slash && (size_t)(slash - host) == g + 6 && !strncmp(host, plat_game_dir, g) &&
-        !strncasecmp(host + g, "/sound", 6) && stat(host, &st) != 0) {
+        !strncasecmp(host + g, "/sound", 6) && (hd_art || stat(host, &st) != 0)) {
         if (sound_fallback(slash + 1, made, sizeof made)) {
             if (plat_audit_on())
                 plat_log("audit synth Sound\\%s\n", slash + 1);

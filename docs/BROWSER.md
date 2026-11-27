@@ -53,7 +53,12 @@ by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)), the game folder's
 else OpenCiv2's.  The page fetches OpenCiv2's tracks (with HD graphics all of them, with Classic
 graphics those the game lacks) while the game starts, without waiting for them, and gives them to
 the game together once all have come (the browser keeps them in its cache for later visits);
-until then, on a first visit, the game plays its own music, or none.  OpenCiv2's own heralds
+until then, on a first visit, the game plays its own music, or none.  Sound effects likewise:
+with HD graphics OpenCiv2's own (`data/sound/name.ogg` on the site, 2 MB, fetched by `make
+own-assets`: [NO-INSTALL.md](NO-INSTALL.md#sounds)), the game folder's (`Sound/NAME.WAV`) only
+for one OpenCiv2 lacks; with Classic graphics the game folder's, else OpenCiv2's; the page
+fetches them (all with HD graphics, with Classic graphics those the game lacks) before the game
+starts.  OpenCiv2's own heralds
 (`data/native/heralds`) are in `hd/art.bin` with the HD art. Browsers let a page make no sound
 until it is first clicked or typed at: until then the sound effects are silent but still take their
 time (`host.js`, `host_audio_queue`), so a looping one, the main menu's theme, does not hold the
