@@ -1947,7 +1947,7 @@ int hd_wonder_find(int n, int installed, int *w, int *h, char *path, size_t len)
 /* OpenCiv2's own heralds (hd.h): data/native/hd-extra/heralds.txt's (the
    local staging folder, where it has the tribe), else data/native/heralds/
    heralds.txt's (made by make own-assets: tools/build_own_assets.py, from
-   OpenCiv2's openciv2/openciv2-media); with HD graphics only (Classic
+   OpenCiv2's openciv2/openciv2-assets); with HD graphics only (Classic
    graphics keep the CD's videos). */
 int hd_herald_find(const char *code, HdHerald *h, char *path, size_t n)
 {

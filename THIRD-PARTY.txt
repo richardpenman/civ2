@@ -27,8 +27,8 @@ tools/build_hd_pack.py from its pinned commit; docs/HD-GRAPHICS.md):
  15. openciv2-assets          MIT licence: the HD graphics' art
 
 and, with the programs, OpenCiv2's own sound effects (data/native/sound,
-made by tools/build_own_assets.py from OpenCiv2's own repository
-openciv2/openciv2-media at its pinned commit), played in place of the
+made by tools/build_own_assets.py from OpenCiv2's repository of assets
+openciv2/openciv2-assets at its pinned commit), played in place of the
 original's (with HD graphics first, with Classic graphics where the game
 folder lacks them), made from sounds in the public domain:
 
@@ -37,8 +37,8 @@ folder lacks them), made from sounds in the public domain:
 
 The programs also carry OpenCiv2's own music, heralds and wonder movies
 (data/native/music, data/native/heralds, data/native/wonders, made by
-tools/build_own_assets.py from OpenCiv2's own repository
-openciv2/openciv2-media at its pinned commit), played in place of the CD's
+tools/build_own_assets.py from OpenCiv2's repository of assets
+openciv2/openciv2-assets at its pinned commit), played in place of the CD's
 music and wonder movies (with HD graphics first, with Classic graphics where
 the game folder lacks them) and heralds: not third-party, but under
 OpenCiv2's own licence (MIT, Copyright (c) 2026 Richard Penman: LICENSE),
@@ -496,11 +496,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-15. openciv2-assets  https://github.com/PeterJohnson/openciv2-assets
----------------------------------------------------------------------
+15. openciv2-assets  https://github.com/openciv2/openciv2-assets
+-----------------------------------------------------------------
 
-The replacement art of the optional HD graphics, by Peter Johnson: of the
-repository at the commit pinned in data/hd-pack.json, the pictures the
+The replacement art of the optional HD graphics, by Peter Johnson: its
+assets/atlas-hd, at the commit pinned in data/hd-pack.json, the pictures the
 game uses of the pack it builds, re-encoded as WebP (tools/build_hd_pack.py,
 at build time), in data/native/hd with the commit's LICENSE, THIRD-PARTY.txt (the notices of what its art was
 made with) and ATLAS-PROVENANCE.md (how it was made); part of OpenCiv2's
@@ -533,8 +533,8 @@ SOFTWARE.
 16. OpenCiv2's sound effects  (data/native/sound)
 -------------------------------------------------
 
-78 sound effects (sound/*.ogg of OpenCiv2's own repository
-openciv2/openciv2-media at the commit pinned in data/own-assets.json, copied
+78 sound effects (assets/sound/*.ogg of OpenCiv2's repository of assets
+openciv2/openciv2-assets at the commit pinned in data/own-assets.json, copied
 as they are by tools/build_own_assets.py), played in place of the original's
 Sound\NAME.WAV, with HD graphics first, with Classic graphics where the game
 folder lacks it (src/platform/sound.c, docs/NO-INSTALL.md), made from sounds
@@ -548,28 +548,29 @@ made from them.
 
 
 
-OpenCiv2's own music, heralds and wonder movies  https://github.com/openciv2/openciv2-media
--------------------------------------------------------------------------------------------
+OpenCiv2's own music, heralds and wonder movies  https://github.com/openciv2/openciv2-assets
+---------------------------------------------------------------------------------------------
 
-Not third-party: OpenCiv2's own, in its own repository openciv2/openciv2-media
-(not Peter Johnson's PeterJohnson/openciv2-assets above), at the commit
+Not third-party: OpenCiv2's own, in its repository of assets
+openciv2/openciv2-assets (its assets/music, assets/heralds and
+assets/wonders; the HD art above is its assets/atlas-hd), at the commit
 pinned in data/own-assets.json, under OpenCiv2's licence (MIT, Copyright (c)
-2026 Richard Penman; the repository's LICENSE, beside the files in
+2026 Richard Penman; the repository's LICENSE-media, as LICENSE beside the files in
 data/native/music, data/native/heralds and data/native/wonders).  The music: eleven tracks
-(game/music/track02.ogg, Funeral March, to track12.ogg, World of Jules Verne,
+(assets/music/track02.ogg, Funeral March, to track12.ogg, World of Jules Verne,
 Ogg Vorbis), played as the CD's audio tracks 2 to 12, with HD graphics
 first, with Classic graphics where the game folder has no Music\TrackNN
 (docs/NO-INSTALL.md, Music), copied as they are by
 tools/build_own_assets.py.  The heralds: the Russians' animated herald
-(heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
+(assets/heralds/herald-RUS.webp, heralds.txt; docs/HD-GRAPHICS.md, Your own
 heralds), AI-generated (Google's Gemini models; the prompts are in
 docs/HD-GRAPHICS.md), copied as it is.  The wonder movies: the Pyramids'
-(wonders/wonder00.webp, the picture, and wonder00.ogg, its sound;
+(assets/wonders/wonder00.webp, the picture, and wonder00.ogg, its sound;
 docs/NO-INSTALL.md, Wonder movies), AI-generated (Google's Gemini 3 Pro
 Image and Gemini Omni; the sources and prompts are in the repository's
-wonders/00), copied as they are; its caption is set in the font Uncial
+assets/wonders/00), copied as they are; its caption is set in the font Uncial
 Antiqua (Copyright (c) 2011 Brian J. Bonislawsky DBA Astigmatic (AOETI),
 with Reserved Font Names "Uncial Antiqua"), licensed under the SIL Open Font
 License 1.1 (https://openfontlicense.org; its text beside the movie's
-sources, wonders/00/OFL.txt).  The font itself is not in the programs: only
+sources, assets/wonders/00/OFL.txt).  The font itself is not in the programs: only
 the movie's picture, drawn with it, which the licence leaves free.

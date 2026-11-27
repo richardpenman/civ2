@@ -40,7 +40,7 @@ copy lacks one of the game's text files, OpenCiv2 uses its own English of it, wr
 The game opens in a window filling the screen. To play full screen, see [EXTRAS.md](docs/EXTRAS.md#screen-scale).
 
 By default the map is drawn with new high-resolution art
-([openciv2-assets](https://github.com/PeterJohnson/openciv2-assets), which comes with OpenCiv2's
+(Peter Johnson's art pack in [openciv2-assets](https://github.com/openciv2/openciv2-assets), which comes with OpenCiv2's
 releases; [HD-GRAPHICS.md](docs/HD-GRAPHICS.md), a prototype). For the original's pictures,
 tick Classic graphics in Settings (Graphics and screen), or start it with `--hd=0`.
 
@@ -71,7 +71,7 @@ working Docker and the development images built with `make images`. See
 
 The HD graphics' art is not in the repository: the builds make it first (`make hd-art`,
 [HD-GRAPHICS.md](docs/HD-GRAPHICS.md#what-the-art-is)), fetching the files of openciv2-assets
-at its pinned commit once (git; 316 MB), building its pack and encoding its pictures as WebP in
+(`assets/atlas-hd`) at its pinned commit once (git; 316 MB), building its pack and encoding its pictures as WebP in
 Docker, or, without Docker, with Python's Pillow and numpy and `cwebp` (the `webp` package;
 `brew install webp`). Later builds
 take it from `~/.cache/openciv2`, offline. `make HD_ART=` builds without it (Classic graphics
@@ -81,7 +81,7 @@ OpenCiv2's own music, sound effects, heralds and wonder movies (the music, sound
 wonder movies played first with HD graphics, with Classic graphics where the game folder lacks
 the CD's music or videos or the game's sounds; the heralds where it lacks the CD's) are not in
 the repository either: the builds (`make` too) fetch them from
-[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) at its pinned commit
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music`, `sound`, `heralds`, `wonders`) at its pinned commit
 once (`make own-assets`; about 35 MB, the music and sounds already Ogg Vorbis and the movies animated WebP as the game plays them, so
 nothing is converted and nothing needs installing but Python 3). Later builds take them from
 `~/.cache/openciv2`, offline. `make OWN_ASSETS=` builds without them.

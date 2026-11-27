@@ -1,7 +1,7 @@
 # HD graphics
 
 OpenCiv2 can draw the game with the replacement art of
-[openciv2-assets](https://github.com/PeterJohnson/openciv2-assets) by Peter Johnson (MIT
+[openciv2-assets](https://github.com/openciv2/openciv2-assets) by Peter Johnson (MIT
 licence): painted terrain, units, cities and resources at 4 to 8 times the original's
 resolution, shown at the screen's full resolution, with text drawn sharp at that resolution
 too.  It is OpenCiv2's default look; the original graphics are an option (*Classic graphics* in
@@ -85,8 +85,11 @@ Settings (the page loads the art from its site), or `?hd=N` in the address ([BRO
 
 ## What the art is
 
-The art is Peter Johnson's runtime art pack, [openciv2-assets](https://github.com/PeterJohnson/openciv2-assets)
-(MIT licence), as built from his repository at the commit pinned in `data/hd-pack.json` (`repo`,
+The art is Peter Johnson's runtime art pack (`assets/atlas-hd` of
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets), MIT licence; the
+repository also holds OpenCiv2's own music, sound effects, heralds and wonder movies,
+`assets/music`, `sound`, `heralds` and `wonders`, which `make own-assets` fetches), as built
+from it at the commit pinned in `data/hd-pack.json` (`repo`,
 `sha`; not a release, so that what is merged there can be used without waiting for one): the
 part of it the game uses, in `data/native/hd`, made by `tools/build_hd_pack.py` (`make hd-art`)
 and not in the repository (`.gitignore`: OpenCiv2's builds and releases carry it, git does not).
@@ -164,7 +167,7 @@ FORCE=1`):
 between runs) and packs it with each system's program.
 
 Upgrading the art (what is merged into openciv2-assets' `main`): put the commit's id (`git
-ls-remote https://github.com/PeterJohnson/openciv2-assets main`) as `sha` in
+ls-remote https://github.com/openciv2/openciv2-assets main`) as `sha` in
 `data/hd-pack.json`, run `make hd-art` (`python3 tools/build_hd_pack.py`), look at the HD
 scripts' screenshots (*Tests*, below), and commit `data/hd-pack.json` (never `data/native/hd`).
 A picture of a kind not yet
@@ -215,7 +218,7 @@ cities editor; the original's are grey embossed reliefs, an astronaut, a warrior
 monster) and the wonders' movie window's border tile (`crop/resource/wonder.dll/gifs/20000/1,1,64,32`
 to `20027`: the original's is the same grey marble in each; the pack's pictures are each wonder's
 painting, whose corner would be no border) are the pack's since its commit d770b0b
-([openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7):
+([openciv2-assets pull request 7](https://github.com/openciv2/openciv2-assets/pull/7):
 OpenCiv2's own, once here, faint bas-reliefs in dark slate and a seamless grey marble, made with
 Gemini 3 Pro Image): the backdrops are painted whole on the sheet when it is loaded
 (`hd_sheet_loaded`) and the tile is drawn as any crop, and without the install the sheets and
@@ -227,7 +230,7 @@ which a wonder's movie shows only where the CD's `Video` is in the game folder.
 The advisors' backgrounds, by `tiles.dll` id (`PictureWindow::open`'s first argument + 49, at
 600x400 of the 640x480 picture; the original's are dark grey photographs and engravings on a map,
 the pack's the same pale parchment until its commit ad6791d, since dark paintings, each fitting its
-report, that OpenCiv2 made and gave it: [pull request 6](https://github.com/PeterJohnson/openciv2-assets/pull/6),
+report, that OpenCiv2 made and gave it: [pull request 6](https://github.com/openciv2/openciv2-assets/pull/6),
 made with Gemini 3 Pro Image from two of the pack's backgrounds as references, `tools/gen_hd_backgrounds.py`;
 once OpenCiv2's own in `data/native/hd-extra`).  They are painted whole (hd.c's `WHOLE`), 1280x960
 (density 2, as the pack's other backgrounds).  The advisors' windows show the top left 600x400 of
@@ -264,8 +267,8 @@ With HD graphics, a herald of OpenCiv2's own plays in its place where
 `data/native/heralds/heralds.txt` has one for the tribe (or the local staging folder's
 `data/native/hd-extra/heralds.txt`, which wins where it has the tribe: `hd_herald_find`).
 `data/native/heralds` is not in the repository: the builds fetch it, as it is, from OpenCiv2's
-own repository [openciv2/openciv2-media](https://github.com/openciv2/openciv2-media)
-(`heralds/`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's)
+repository of assets [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets)
+(`assets/heralds/`; MIT, as OpenCiv2: its `LICENSE-media`; the HD art is its `assets/atlas-hd`)
 at the commit pinned in `data/own-assets.json`, with the music (`make own-assets`,
 `tools/build_own_assets.py`: once, into `~/.cache/openciv2`, each file checked against its
 SHA-256; `make OWN_ASSETS=` builds without them), and package it as the art (beside the
@@ -767,13 +770,13 @@ window by window.
 
 ## Licence and credits
 
-The art: openciv2-assets by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PARTY.txt` and
+The art: openciv2-assets' art pack (`assets/atlas-hd`) by Peter Johnson, MIT licence (its `LICENSE`, `THIRD-PARTY.txt` and
 `ATLAS-PROVENANCE.md` beside its pictures in `data/native/hd`, and on the browser version's site in
 `hd/`); `THIRD-PARTY.txt` lists it.
 The PNG decoder: stb_image 2.30 by Sean Barrett, public domain or MIT
 (`src/third_party/stb_image`); the WebP decoder: libwebp 1.5.0's, Google's, BSD licence
 (`src/third_party/libwebp`).  The renderer is OpenCiv2's, after Peter Johnson's design.
-OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-media, and
+OpenCiv2's own pictures and heralds (`data/native/heralds`, from openciv2/openciv2-assets' `assets/heralds`, and
 `data/native/hd-extra`, the local staging folder) are under its licence (MIT); the AI-generated ones' model, prompt and references are recorded with them
 (the Russians' herald's under *Your own heralds*).
 

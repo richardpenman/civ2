@@ -115,7 +115,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `EDITORPT.GIF` | the sprite editor's tools and backdrops | replaced: made from the pack's sprites |
 | `CITY.GIF` | the city window's background | replaced: the pack's picture |
 | `SCREDITS.GIF` | the credits' picture | replaced: the pack's picture |
-| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: plain dark grey (the pack has no backdrops yet; OpenCiv2's dark slate reliefs are offered to it, [openciv2-assets pull request 7](https://github.com/PeterJohnson/openciv2-assets/pull/7), and once it has them they are made from them, dithered into the shared palette's colours without changing it) |
+| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: plain dark grey (the pack has no backdrops yet; OpenCiv2's dark slate reliefs are offered to it, [openciv2-assets pull request 7](https://github.com/openciv2/openciv2-assets/pull/7), and once it has them they are made from them, dithered into the shared palette's colours without changing it) |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
@@ -237,8 +237,8 @@ Replaced: OpenCiv2's own, `data/native/sound/name.ogg` for each (78 files, 2.0 M
 22050 Hz mono), made from sounds in the public domain (CC0: Freesound, OpenGameArt, Kenney and
 the VSCO-2 orchestral samples; `data/native/sound/SOURCES.md` has each one's sources, authors and
 how it was made from them: mixed where several, trimmed to about the original's length, its
-level matched to the original's).  They come, as the music, from OpenCiv2's own repository
-[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`sound/`): not in this
+level matched to the original's).  They come, as the music, from OpenCiv2's repository of assets
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/sound/`): not in this
 repository, the builds fetch them first (`make own-assets`, `tools/build_own_assets.py`, which
 `make` runs) at the commit pinned in `data/own-assets.json` and copy them as they are;
 `make OWN_ASSETS=` builds without them.
@@ -271,11 +271,12 @@ plays them as CD tracks 2 to 12, through MCI's `cdaudio`, `src/platform/sound.c`
 `Music\TrackNN.ogg` (as the set-up encodes them from a disc image).
 
 Replaced: OpenCiv2's own music, eleven tracks of the same order and about the same length,
-`data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's own repository
-[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`game/music/track02.ogg`
-to `track12.ogg`; MIT, as OpenCiv2; not Peter Johnson's PeterJohnson/openciv2-assets, the HD
-art's).  The repository holds them as the game plays them: Ogg Vorbis (which stb_vorbis, the
-game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.4 MB for the eleven, 25
+`data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's repository of assets
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music/track02.ogg`
+to `track12.ogg`; MIT, as OpenCiv2: its `LICENSE-media`; the HD art is its `assets/atlas-hd`),
+each as loud as the CD track it replaces (its integrated loudness, EBU R128, matched to the
+original's).  The repository holds them as the game plays them: Ogg Vorbis (which stb_vorbis, the
+game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.2 MB for the eleven, 25
 minutes, about 140 kbit/s.  Not in this repository: the builds fetch it first (`make
 own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
 file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 32 MB
@@ -319,10 +320,10 @@ Replaced, for now one of the 28: OpenCiv2's own movie of the Pyramids (wonder 0)
 caption (the wonder's name, then its effect) in the picture, made for OpenCiv2 (a painted still
 from Gemini 3 Pro Image, an 8-second shot with sound from it by the Gemini Omni video model,
 the caption set with ffmpeg in the free font Uncial Antiqua; the sources and prompts are in the
-asset repository's `wonders/00`).  Each movie is two files, `data/native/wonders/wonderNN.webp`,
+asset repository's `assets/wonders/00`).  Each movie is two files, `data/native/wonders/wonderNN.webp`,
 the picture (an animated WebP, 854 x 480 at 15 frames a second, 2.9 MB), and `wonderNN.ogg`, its
-sound (Ogg Vorbis, 48 kHz stereo), from OpenCiv2's own repository
-[openciv2/openciv2-media](https://github.com/openciv2/openciv2-media) (`wonders/`; MIT, as
+sound (Ogg Vorbis, 48 kHz stereo), from OpenCiv2's repository of assets
+[openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/wonders/`; MIT, as
 OpenCiv2), fetched by `make own-assets` with the music and copied as they are; `make
 OWN_ASSETS=` builds without them.
 

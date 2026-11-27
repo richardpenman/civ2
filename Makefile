@@ -12,7 +12,7 @@ NAME   := $(basename $(notdir $(SCRIPT)))
 PORT ?= 8000
 
 # The HD graphics' art (docs/HD-GRAPHICS.md), data/native/hd: not in the
-# repository, made from Peter Johnson's art at the commit of his repository
+# repository, made from Peter Johnson's art at the commit of openciv2-assets
 # pinned in data/hd-pack.json (tools/build_hd_pack.py: the files it is built
 # from fetched once into ~/.cache/openciv2, the pack built and the pictures
 # encoded in Docker or by this machine's Python and cwebp, the result kept
@@ -26,8 +26,9 @@ HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@ech
 # data/native/sound (docs/NO-INSTALL.md, Sound effects),
 # data/native/heralds (docs/HD-GRAPHICS.md, Your own heralds) and
 # data/native/wonders (docs/NO-INSTALL.md, Wonder movies): not in the
-# repository, made from OpenCiv2's own openciv2/openciv2-media (not Peter
-# Johnson's, the HD art's) at the commit pinned in data/own-assets.json
+# repository, made from OpenCiv2's repository of assets
+# openciv2/openciv2-assets (its assets/music, sound, heralds, wonders; the HD
+# art is its assets/atlas-hd) at the commit pinned in data/own-assets.json
 # (tools/build_own_assets.py: the files, the music and sound effects already
 # Ogg Vorbis as the game plays them, fetched once into ~/.cache/openciv2 and
 # copied as they are, nothing converted: Python 3 only) before each build
@@ -103,16 +104,16 @@ web-replay: web               ## SCRIPT replayed in the browser version, compare
 # HD graphics (docs/HD-GRAPHICS.md): data/native/hd from Peter Johnson's
 # art at the commit pinned in data/hd-pack.json (HD_ART above; FORCE=1:
 # made again, whatever is there or in the cache).
-hd-art:                       ## the HD graphics' art in data/native/hd from the pinned commit of openciv2-assets (tools/build_hd_pack.py; at once when up to date)
+hd-art:                       ## the HD graphics' art in data/native/hd from the pinned commit of openciv2/openciv2-assets (tools/build_hd_pack.py; at once when up to date)
 	python3 tools/build_hd_pack.py $(if $(FORCE),--force)
 
 # OpenCiv2's own music, sound effects, heralds and wonder movies:
 # data/native/music, data/native/sound, data/native/heralds and
 # data/native/wonders from the commit of
-# openciv2/openciv2-media pinned in data/own-assets.json (OWN_ASSETS above;
+# openciv2/openciv2-assets pinned in data/own-assets.json (OWN_ASSETS above;
 # fetched once, about 35 MB, and copied; FORCE=1: made again, whatever is
 # there or in the cache).
-own-assets:                   ## OpenCiv2's own music, sound effects, heralds and wonder movies in data/native/music, sound, heralds, wonders, fetched from the pinned commit of openciv2/openciv2-media and copied (tools/build_own_assets.py; at once when up to date)
+own-assets:                   ## OpenCiv2's own music, sound effects, heralds and wonder movies in data/native/music, sound, heralds, wonders, fetched from the pinned commit of openciv2/openciv2-assets and copied (tools/build_own_assets.py; at once when up to date)
 	python3 tools/build_own_assets.py $(if $(FORCE),--force)
 
 images:                       ## build the Docker images (wine/mingw/python/SDL2/wasi-sdk; Ghidra)

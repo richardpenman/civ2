@@ -12,9 +12,10 @@ data/native/wonders (docs/NO-INSTALL.md, Wonder movies: wonderNN.webp, the
 picture, and wonderNN.ogg, the sound, played together as the game's
 Video\\WONDERNN.AVI, with HD graphics first, with Classic graphics where its
 folder lacks it: src/platform/video.c: open_own_wonder) from OpenCiv2's
-own repository openciv2/openciv2-media (MIT, as OpenCiv2; not Peter
-Johnson's PeterJohnson/openciv2-assets, the HD art's: tools/build_hd_pack.py)
-at the commit pinned in data/own-assets.json (repo, sha, and each file's
+repository of assets openciv2/openciv2-assets, its assets/music,
+assets/sound, assets/heralds and assets/wonders (MIT, as OpenCiv2: its
+LICENSE-media; the same repository's assets/atlas-hd is the HD art, Peter
+Johnson's: tools/build_hd_pack.py) at the commit pinned in data/own-assets.json (repo, sha, and each file's
 path, SHA-256 and size).  They are not part of this repository
 (.gitignore): make own-assets runs this, and the builds that pack or run
 with them (make, make port, make native, make windows, make web; the
@@ -38,7 +39,7 @@ release's jobs) run it first.
    tracks 02 to 12 (the CD's audio tracks 2 to 12), the heralds' heralds.txt
    and the WebPs it names (not the clips they were made from), the 78 sound
    effects and their SOURCES.md, the wonder movies' WebPs and Oggs (not
-   their sources), the LICENSE.
+   their sources), the LICENSE-media (copied as LICENSE).
 2. They are copied as they are, nothing converted: the repository holds the
    music as the game plays it (Ogg Vorbis, 48 kHz stereo, which stb_vorbis,
    the game's decoder, reads; each track's header checked; the sound
@@ -66,8 +67,8 @@ README = """OpenCiv2's own music (docs/NO-INSTALL.md, Music)
 The game plays trackNN.ogg as the CD's audio track NN where its folder has
 no Music\\TrackNN.ogg or Music\\TrackNN.wav (src/platform/sound.c).
 
-From OpenCiv2's own repository openciv2/openciv2-media
-({repo}) at commit {sha}:
+From OpenCiv2's repository of assets openciv2/openciv2-assets
+({repo}), its assets/music, at commit {sha}:
 {tracks}
 copied as they are by tools/build_own_assets.py.
 

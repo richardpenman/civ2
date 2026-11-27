@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """HD graphics (docs/HD-GRAPHICS.md): make the game's art, data/native/hd,
-from Peter Johnson's runtime art pack (openciv2-assets, MIT) as built from
-his repository at the commit pinned in data/hd-pack.json (repo, sha), so
+from Peter Johnson's runtime art pack (assets/atlas-hd, MIT) as built from
+OpenCiv2's repository of assets, openciv2/openciv2-assets (whose
+assets/music, sound, heralds and wonders tools/build_own_assets.py
+fetches), at the commit pinned in data/hd-pack.json (repo, sha), so
 what is merged there can be used without waiting for a release.  The art
 is not part of this repository (.gitignore): make hd-art runs this, and the
 builds that need the art (make, make port, make native, make windows, make
@@ -392,7 +394,7 @@ def build(args, local=False):
             shutil.copy(os.path.join(work, '%d.webp' % p['id']), os.path.join(dest, p['file']))
             lines += ['%s %d %d %s\n' % (k, w, h, p['file']) for k, w, h in p['keys']]
         with open(os.path.join(dest, 'pictures.txt'), 'w', newline='\n') as f:
-            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2-assets by Peter Johnson (MIT: LICENSE)\n'
+            f.write('# The HD graphics\' art (docs/HD-GRAPHICS.md): openciv2/openciv2-assets\' art pack by Peter Johnson (MIT: LICENSE)\n'
                     '# at commit %s, its pictures the game draws, made by tools/build_hd_pack.py (WebP).\n'
                     '# A line per key: KEY W H FILE (the picture\'s size in the game\'s pixels).\n' % pin['sha'])
             f.writelines(sorted(lines))

@@ -1,493 +1,493 @@
 {
-  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds and data/native/wonders (made by make own-assets, not in the repository), OpenCiv2's own repository openciv2/openciv2-media (repo; MIT, as OpenCiv2: its LICENSE; the sound effects' sources CC0: sound/SOURCES.md; not Peter Johnson's PeterJohnson/openciv2-assets, the HD art's, data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); notices: beside music, heralds and wonders. Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
-  "repo": "https://github.com/openciv2/openciv2-media",
-  "sha": "0fadc5f56437cc4965d4cbbc1a67e2a1efd1406a",
+  "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds and data/native/wonders (made by make own-assets, not in the repository), OpenCiv2's repository of assets openciv2/openciv2-assets (repo), its assets/music, assets/sound, assets/heralds and assets/wonders (MIT, as OpenCiv2: its LICENSE-media, copied as LICENSE; the sound effects' sources CC0: assets/sound/SOURCES.md; the same repository's assets/atlas-hd is the HD art, Peter Johnson's, pinned in data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); notices: the repository's LICENSE-media, copied as LICENSE beside music, heralds and wonders (its LICENSE is the HD art's). Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
+  "repo": "https://github.com/openciv2/openciv2-assets",
+  "sha": "16e9ac18094bdaceb0027cdbcf23e8c204b4db84",
   "music": {
     "02": {
-      "path": "game/music/track02.ogg",
+      "path": "assets/music/track02.ogg",
       "title": "Funeral March",
-      "sha256": "c07607bb2c658cb646fa8674b39efdd982b5a454c610f16846b094e11ea32afb",
-      "size": 560561
+      "sha256": "aed40f1caea8f66d53ae477cc5a0bce2231ababe7ebc77c029f8e6f219c6a664",
+      "size": 540494
     },
     "03": {
-      "path": "game/music/track03.ogg",
+      "path": "assets/music/track03.ogg",
       "title": "Ode to Joy",
-      "sha256": "ce9acf4d2a25dae019583cc696010e896aba763a915a631cfcf66b6d35eb2a50",
-      "size": 801313
+      "sha256": "ed6069b085d286d8d3417862e8acea13c5c4d3a457f36611ba0e9c785980bb29",
+      "size": 797716
     },
     "04": {
-      "path": "game/music/track04.ogg",
+      "path": "assets/music/track04.ogg",
       "title": "The Crusades",
-      "sha256": "67da11129760a043e9e1d7ec274a0d4d27ba330bf7d842242f66b088e854e7b2",
-      "size": 1647722
+      "sha256": "1cb463118aa8b23911e665d45e372d09feffa4673c9e8a8fdb833cec45752fa2",
+      "size": 1621035
     },
     "05": {
-      "path": "game/music/track05.ogg",
+      "path": "assets/music/track05.ogg",
       "title": "Alien Invasion",
-      "sha256": "5ee1d7d0ce7d89d80a6e00e9b3d2f8be4c3c764c5d8f56e034b374889ed28014",
-      "size": 1883968
+      "sha256": "c52e966b52507e6f80656572b65a11d58af687920bf392d280957d1644516d20",
+      "size": 1853379
     },
     "06": {
-      "path": "game/music/track06.ogg",
+      "path": "assets/music/track06.ogg",
       "title": "Mongol Horde",
-      "sha256": "9df4e82773e7a84f20cee790d9c5ad1ffb97bc4c43a586d127049198f30f6dde",
-      "size": 2991850
+      "sha256": "d70cbebf99e6fc374e150c9ec0ad78372424be778154651427f15fe3932028d9",
+      "size": 2956619
     },
     "07": {
-      "path": "game/music/track07.ogg",
+      "path": "assets/music/track07.ogg",
       "title": "Apocalypse",
-      "sha256": "66f3ebb8cfb643df29b979a0d2b9ceaefc7ff2205d9d11f1cc03b3cc01d345c3",
-      "size": 3941302
+      "sha256": "a0068c40658009d727b1c44c2c7daf1df71b8463ceadaf0ee044144bd5cbf14b",
+      "size": 3862153
     },
     "08": {
-      "path": "game/music/track08.ogg",
+      "path": "assets/music/track08.ogg",
       "title": "Primeval World",
-      "sha256": "279a98a1781b8362be8df180925a8cf9300c0d25830ae4ee42664cdcc104c74a",
-      "size": 3071396
+      "sha256": "8975887bd8d61de75f87e99089fbfb4e5e7b9ba297fa129e88db87e9757c92cc",
+      "size": 3054130
     },
     "09": {
-      "path": "game/music/track09.ogg",
+      "path": "assets/music/track09.ogg",
       "title": "New World",
-      "sha256": "1c1ce3f8ab339367989052a14f256fb10e9f05b7fdaececcd3afa5debf85adee",
-      "size": 2779112
+      "sha256": "3d2b040f58e997977ad01cdcd8c1ec323e1fb1a2d08437fae8b9648c2d48da5b",
+      "size": 2757427
     },
     "10": {
-      "path": "game/music/track10.ogg",
+      "path": "assets/music/track10.ogg",
       "title": "Fantasy",
-      "sha256": "fd3f1cafb72585833df239c66d961aa57d3bf08c9ea9f33bfe1583496f50b901",
-      "size": 3234580
+      "sha256": "af6d620d38879250dca2154bc678fc911fcc85450df9a86c4d2b84dadb27b31a",
+      "size": 3182285
     },
     "11": {
-      "path": "game/music/track11.ogg",
+      "path": "assets/music/track11.ogg",
       "title": "Mars",
-      "sha256": "f518a61e49b18967f29a173b87f7807c6334e19dce76073b6ab97080803177ae",
-      "size": 2695119
+      "sha256": "106f6f67313adc016f14b00a3b8dc93856a5a213a37bbc58800d008ae303b3a3",
+      "size": 2680324
     },
     "12": {
-      "path": "game/music/track12.ogg",
+      "path": "assets/music/track12.ogg",
       "title": "World of Jules Verne",
-      "sha256": "1d7e7572551d753f9977eee795604f396670aa5be74c7df638e4d8e01e73d2c5",
-      "size": 2832769
+      "sha256": "54ae5a06cb05d3adcb7f923a77b38d549ffde5715e10cda884d6f08f75f8ebb8",
+      "size": 2852433
     }
   },
   "heralds": {
     "heralds.txt": {
-      "path": "heralds/heralds.txt",
+      "path": "assets/heralds/heralds.txt",
       "sha256": "47d4f583523c739ef71c078849a8ff5275dd4ddb4605b4aabec399e6a75e4c3a",
       "size": 495
     },
     "herald-RUS.webp": {
-      "path": "heralds/herald-RUS.webp",
+      "path": "assets/heralds/herald-RUS.webp",
       "sha256": "0df0735eba83b69b1ccd0bb6956fb7dd59b086da9eaea7a6f1e58e578f58734f",
       "size": 3846636
     }
   },
   "sound": {
     "SOURCES.md": {
-      "path": "sound/SOURCES.md",
-      "sha256": "5ff9b9ae56949e51798cc8bbc5bd36721c3399b4e0de13f91f55eed0f21a231c",
-      "size": 40060
+      "path": "assets/sound/SOURCES.md",
+      "sha256": "1f873ce6efa0f60c9d04b80ddad68b94405f21116337e5686f35621c8665d580",
+      "size": 40183
     },
     "aircombt.ogg": {
-      "path": "sound/aircombt.ogg",
+      "path": "assets/sound/aircombt.ogg",
       "sha256": "418ff7ae5edeb1dd8161677f4363137117b2aa285541a137cc5b9cb68726354b",
       "size": 65911
     },
     "aqueduct.ogg": {
-      "path": "sound/aqueduct.ogg",
+      "path": "assets/sound/aqueduct.ogg",
       "sha256": "9b6dc6a5d739760f89ac0125e213a1290cad6fd62c0a149ba8c81aff9366aa95",
       "size": 33599
     },
     "barracks.ogg": {
-      "path": "sound/barracks.ogg",
+      "path": "assets/sound/barracks.ogg",
       "sha256": "0545c13588eae455516780042324abf0ff617f831532604341e9b1966be16b03",
       "size": 30034
     },
     "biggun.ogg": {
-      "path": "sound/biggun.ogg",
+      "path": "assets/sound/biggun.ogg",
       "sha256": "18a293deff26c55c2cfe10071e327fd090ae3b2e194f6206eedd96e1a825f14c",
       "size": 12032
     },
     "bldcity.ogg": {
-      "path": "sound/bldcity.ogg",
+      "path": "assets/sound/bldcity.ogg",
       "sha256": "0dbb304c584f080e40902920d98b2f6215b92c1dc70cffd3771033c7ab9429b8",
       "size": 33734
     },
     "bldspcsh.ogg": {
-      "path": "sound/bldspcsh.ogg",
+      "path": "assets/sound/bldspcsh.ogg",
       "sha256": "0f4d259ed15eb05d6b008623e55ecb145b5ba4156cc7b18c17c0a6964f0aeab4",
       "size": 28096
     },
     "boatsink.ogg": {
-      "path": "sound/boatsink.ogg",
+      "path": "assets/sound/boatsink.ogg",
       "sha256": "a84521ccc3b398321dc30f948189e3cdf80de3bc73cea4a575623e429a2e3f18",
       "size": 46777
     },
     "catapult.ogg": {
-      "path": "sound/catapult.ogg",
+      "path": "assets/sound/catapult.ogg",
       "sha256": "5b1e5cf1ed83768189a106c8d4f4ae9ad3a01cf60ae131c0cc4464390c6397d2",
       "size": 16237
     },
     "cathedrl.ogg": {
-      "path": "sound/cathedrl.ogg",
+      "path": "assets/sound/cathedrl.ogg",
       "sha256": "0755e10376984f8b1b4d944e1dc0db8bde8a6176595e5f049c1a0f6bde69a7d6",
       "size": 29582
     },
     "cavalry.ogg": {
-      "path": "sound/cavalry.ogg",
+      "path": "assets/sound/cavalry.ogg",
       "sha256": "3f3498106b6f42d5bee5c117fb41f43385f49b34fddb5bc9749ea9dfbec9998b",
       "size": 34013
     },
     "cheers1.ogg": {
-      "path": "sound/cheers1.ogg",
+      "path": "assets/sound/cheers1.ogg",
       "sha256": "16125969ae245e4c530b6d126c288dcca1e80727ac495e906b531b86f6e9e8f6",
       "size": 25279
     },
     "cheers2.ogg": {
-      "path": "sound/cheers2.ogg",
+      "path": "assets/sound/cheers2.ogg",
       "sha256": "ec5277848b58cc94a12c35dcf9585f9fbd4ae30f1155cf3257d6830db453ef27",
       "size": 26559
     },
     "cheers3.ogg": {
-      "path": "sound/cheers3.ogg",
+      "path": "assets/sound/cheers3.ogg",
       "sha256": "0abfb2f06b06ec3ff6c069db0a68a7bc389c109be75c9b7d289eb035e3fdef21",
       "size": 28033
     },
     "civdisor.ogg": {
-      "path": "sound/civdisor.ogg",
+      "path": "assets/sound/civdisor.ogg",
       "sha256": "5d9e09d82f183d268c07a7044bb8b0c154fc1785ce741391a83552227781b935",
       "size": 22829
     },
     "crwdbugl.ogg": {
-      "path": "sound/crwdbugl.ogg",
+      "path": "assets/sound/crwdbugl.ogg",
       "sha256": "17751468e2deb73bcf23a2c941377866149c76cf0379954a89a40fd1b45be153",
       "size": 34276
     },
     "diesel.ogg": {
-      "path": "sound/diesel.ogg",
+      "path": "assets/sound/diesel.ogg",
       "sha256": "f20da250a036de30b009f0f619e24d3304592024577af3e4c60d9a2e2c7ab05f",
       "size": 36819
     },
     "divcrash.ogg": {
-      "path": "sound/divcrash.ogg",
+      "path": "assets/sound/divcrash.ogg",
       "sha256": "cba10658dced8f3a73d987b632429fc624ee146fdf885c46d71d564d9bc16e8f",
       "size": 40053
     },
     "divebomb.ogg": {
-      "path": "sound/divebomb.ogg",
+      "path": "assets/sound/divebomb.ogg",
       "sha256": "941a2a64494b9a0f0fcea2e805d52a5cae0c3cc4bd1c7c938ca9eee9f1a2fc37",
       "size": 48710
     },
     "druma0.ogg": {
-      "path": "sound/druma0.ogg",
+      "path": "assets/sound/druma0.ogg",
       "sha256": "27fc512ce966290f2bb3f45ff4a8ff98c81016b8c9c97e055c5d3691ec360b69",
       "size": 13712
     },
     "drumal.ogg": {
-      "path": "sound/drumal.ogg",
+      "path": "assets/sound/drumal.ogg",
       "sha256": "faa94576bc3e8ebfd5b323b3c59ede1d8236be33d212be6fd324958a18a71ac1",
       "size": 24075
     },
     "druman.ogg": {
-      "path": "sound/druman.ogg",
+      "path": "assets/sound/druman.ogg",
       "sha256": "2092569357b039b5a2b55326bcdbcae56deba0ede144819e8bd398f169e21bac",
       "size": 9030
     },
     "drumay.ogg": {
-      "path": "sound/drumay.ogg",
+      "path": "assets/sound/drumay.ogg",
       "sha256": "0b2d2fb6775507913cc61649a5b6161115f1bbc6bd63498b0a325b418dff5ea1",
       "size": 8418
     },
     "drumb0.ogg": {
-      "path": "sound/drumb0.ogg",
+      "path": "assets/sound/drumb0.ogg",
       "sha256": "1169e6a1e066c3513b9ab08fb7534a48286711675155cca9d780e403b9b356f8",
       "size": 12671
     },
     "drumbl.ogg": {
-      "path": "sound/drumbl.ogg",
+      "path": "assets/sound/drumbl.ogg",
       "sha256": "21fb47422ef89253c8d8a35aeef73c56740c690176a94d7f2bd86e9a74bf6c74",
       "size": 86811
     },
     "drumbn.ogg": {
-      "path": "sound/drumbn.ogg",
+      "path": "assets/sound/drumbn.ogg",
       "sha256": "7e7af6d610978c23255ff1bd458813c1b83a3a23f448b49a2f8803747a2b2b4b",
       "size": 11582
     },
     "drumby.ogg": {
-      "path": "sound/drumby.ogg",
+      "path": "assets/sound/drumby.ogg",
       "sha256": "dba3279631a09ba79a4da1ddc9051e0fc9a8f2e72f9f5b44926aa81d7973a7e7",
       "size": 13844
     },
     "drumc0.ogg": {
-      "path": "sound/drumc0.ogg",
+      "path": "assets/sound/drumc0.ogg",
       "sha256": "e55fb199accd20ad33bda3789258e707e88d0575abad0b827eb53fb1db31f932",
       "size": 22558
     },
     "drumcl.ogg": {
-      "path": "sound/drumcl.ogg",
+      "path": "assets/sound/drumcl.ogg",
       "sha256": "64f4fbe1540c112f5d66c2a6456226c050d63089f45ecb987d4c57495aad02dd",
       "size": 63347
     },
     "drumcn.ogg": {
-      "path": "sound/drumcn.ogg",
+      "path": "assets/sound/drumcn.ogg",
       "sha256": "af8130823d860a99d97f6ebf55671d811dfa261563ddae5c8fccad66df978b96",
       "size": 13105
     },
     "drumcy.ogg": {
-      "path": "sound/drumcy.ogg",
+      "path": "assets/sound/drumcy.ogg",
       "sha256": "5ec3d36c90c0fdeddd422822f6898daa99cc754d183e807ccfe05511b9fc888a",
       "size": 14711
     },
     "elephant.ogg": {
-      "path": "sound/elephant.ogg",
+      "path": "assets/sound/elephant.ogg",
       "sha256": "1aa4f0a025eca7f91fab51b435e7e6bb5f3707a3124c6264d847c02e0bebc61b",
       "size": 12271
     },
     "endoturn.ogg": {
-      "path": "sound/endoturn.ogg",
+      "path": "assets/sound/endoturn.ogg",
       "sha256": "8ac359af5546e9c0c01f120c4a191115da26cc521c4000351bfe30c29fa6b2fa",
       "size": 3714
     },
     "engnsput.ogg": {
-      "path": "sound/engnsput.ogg",
+      "path": "assets/sound/engnsput.ogg",
       "sha256": "e3b1a5116dbb68631ab9270feca8ceff54df1214d4c6acc2b68179d30a0af338",
       "size": 64942
     },
     "fanfare1.ogg": {
-      "path": "sound/fanfare1.ogg",
+      "path": "assets/sound/fanfare1.ogg",
       "sha256": "51155cdc3544793037bd1a0bfa0ddca50eadc398c108b81804f3edfbaf35b60c",
       "size": 31493
     },
     "fanfare2.ogg": {
-      "path": "sound/fanfare2.ogg",
+      "path": "assets/sound/fanfare2.ogg",
       "sha256": "52a773c92b691b7fa3d4aaeda14059a27f37e482615a29873656897c6ab46fd8",
       "size": 28574
     },
     "fanfare3.ogg": {
-      "path": "sound/fanfare3.ogg",
+      "path": "assets/sound/fanfare3.ogg",
       "sha256": "cf49b4a65d75b5da48020742c04a2d089ab4cb35ff8c27e1260161e59f0eb223",
       "size": 26905
     },
     "fanfare4.ogg": {
-      "path": "sound/fanfare4.ogg",
+      "path": "assets/sound/fanfare4.ogg",
       "sha256": "4ab1206dd5b7a6b024f49defacf9e956ade2039b51113e4020b8b02f53a690af",
       "size": 14023
     },
     "fanfare5.ogg": {
-      "path": "sound/fanfare5.ogg",
+      "path": "assets/sound/fanfare5.ogg",
       "sha256": "3ff3fdd1ca871c0b32d063a8e4d5c09b2d99533be9b0826942592e94420e7821",
       "size": 39545
     },
     "fanfare6.ogg": {
-      "path": "sound/fanfare6.ogg",
+      "path": "assets/sound/fanfare6.ogg",
       "sha256": "eaa6f0c1de3122d01a61a68f37ce18c9148d8b3ad0dc2c875f67b439bc195228",
       "size": 18441
     },
     "fanfare7.ogg": {
-      "path": "sound/fanfare7.ogg",
+      "path": "assets/sound/fanfare7.ogg",
       "sha256": "d3fda90c0f82df9cf7954ba3366e9432219a1ccc6aa834bddfd6b653fcc31552",
       "size": 20483
     },
     "fanfare8.ogg": {
-      "path": "sound/fanfare8.ogg",
+      "path": "assets/sound/fanfare8.ogg",
       "sha256": "5c921fd79b44a7f7ed2b51d97f9028a24faf4bf3b6d64313ff489a760097a61f",
       "size": 32546
     },
     "feedbk03.ogg": {
-      "path": "sound/feedbk03.ogg",
+      "path": "assets/sound/feedbk03.ogg",
       "sha256": "e35c02b90b85082c4b72e80f7e97a1d3a8ef31a4cf649397371486e8cd3fc563",
       "size": 5979
     },
     "feedbk04.ogg": {
-      "path": "sound/feedbk04.ogg",
+      "path": "assets/sound/feedbk04.ogg",
       "sha256": "3c7bc27661105cdc37ecbf66badc27c8dddd39b4371c27baf2119035a41e4e85",
       "size": 5547
     },
     "feedbkxx.ogg": {
-      "path": "sound/feedbkxx.ogg",
+      "path": "assets/sound/feedbkxx.ogg",
       "sha256": "a6024a432ee4bca30f1d8402a75b2f17ef09d86defdf0a5eedbe350880cd69ac",
       "size": 3869
     },
     "fire---.ogg": {
-      "path": "sound/fire---.ogg",
+      "path": "assets/sound/fire---.ogg",
       "sha256": "171b38160fb5731b431b68ddba12a94db7f3b5fc7894be5421f9dbddc5ecc7d8",
       "size": 6296
     },
     "guillotn.ogg": {
-      "path": "sound/guillotn.ogg",
+      "path": "assets/sound/guillotn.ogg",
       "sha256": "e4c433b451b1a2236eff9d5582339b073dec3d3a2b93b40b862a2c6dd8ef275c",
       "size": 9073
     },
     "helishot.ogg": {
-      "path": "sound/helishot.ogg",
+      "path": "assets/sound/helishot.ogg",
       "sha256": "680c671dce976475fa7f1bd1b31ac8070767d654a44aa200ba054b26e4bacde9",
       "size": 34919
     },
     "infantry.ogg": {
-      "path": "sound/infantry.ogg",
+      "path": "assets/sound/infantry.ogg",
       "sha256": "2ae5ae743b824bc775838d1bdb0930cda27cc46b8ad673aa3968eacdb1cabf41",
       "size": 20978
     },
     "jetbomb.ogg": {
-      "path": "sound/jetbomb.ogg",
+      "path": "assets/sound/jetbomb.ogg",
       "sha256": "236079928a177dffabeb3e67c6d658b1abb7a44bf1178372aace87e4be7d9501",
       "size": 34379
     },
     "jetcombt.ogg": {
-      "path": "sound/jetcombt.ogg",
+      "path": "assets/sound/jetcombt.ogg",
       "sha256": "23481e841c4e3b02d3a996c32055d708ea274e9d36b3c487c85674592f6528e4",
       "size": 40602
     },
     "jetcrash.ogg": {
-      "path": "sound/jetcrash.ogg",
+      "path": "assets/sound/jetcrash.ogg",
       "sha256": "41cfd12ff0e47a8aef040134374c9640451b0b83603d98fc13dbfda71b42ebb0",
       "size": 34307
     },
     "jetsputr.ogg": {
-      "path": "sound/jetsputr.ogg",
+      "path": "assets/sound/jetsputr.ogg",
       "sha256": "23f87573bb207c23b9e38bdecacc44ccee13d4ba3bd0825698ea50921b6b01c7",
       "size": 55402
     },
     "largexpl.ogg": {
-      "path": "sound/largexpl.ogg",
+      "path": "assets/sound/largexpl.ogg",
       "sha256": "c836ad2c6b0b41f75010b7788ad3c7b60471425539df6434efd34f8e1b094ec1",
       "size": 24497
     },
     "letter.ogg": {
-      "path": "sound/letter.ogg",
+      "path": "assets/sound/letter.ogg",
       "sha256": "d4df0feb15e8f9348a3f85c6c50b684050771cdecda8ff271f244948486a5b9a",
       "size": 4024
     },
     "mchnguns.ogg": {
-      "path": "sound/mchnguns.ogg",
+      "path": "assets/sound/mchnguns.ogg",
       "sha256": "e2b795502c527b24d08034164a52bdab119d09f2b7fd1b52d1e7bc3000840631",
       "size": 22130
     },
     "medexpl.ogg": {
-      "path": "sound/medexpl.ogg",
+      "path": "assets/sound/medexpl.ogg",
       "sha256": "4235a2025ba80bcd445c5b83e8efd24aaabfcf75cc9e6a42b08f09b2cd48621c",
       "size": 19515
     },
     "medgun.ogg": {
-      "path": "sound/medgun.ogg",
+      "path": "assets/sound/medgun.ogg",
       "sha256": "8095088e11491cd51b16ad3cafe30d57d9090c3c5b6a8ca07cd56421411eec33",
       "size": 9550
     },
     "menuend.ogg": {
-      "path": "sound/menuend.ogg",
-      "sha256": "bea7116570dc0fb7a6e40415d3ff10dda39e3bcb9d9512d7fb19a1775ca92cf2",
-      "size": 85628
+      "path": "assets/sound/menuend.ogg",
+      "sha256": "2b43d54f62ad3a972001b3c3559cb2c88f609a3f643118b6975fd979c14b1f58",
+      "size": 112473
     },
     "menuloop.ogg": {
-      "path": "sound/menuloop.ogg",
+      "path": "assets/sound/menuloop.ogg",
       "sha256": "1d934e3dc49016cc079aab17971aedfdc5995619961e59cdefea64c43faf2a9d",
       "size": 48263
     },
     "menuok.ogg": {
-      "path": "sound/menuok.ogg",
+      "path": "assets/sound/menuok.ogg",
       "sha256": "ed451a51cfda5cddb3dfb5532448444a25c38f16263afc25c4c3c937fb1bbc42",
       "size": 8016
     },
     "missile.ogg": {
-      "path": "sound/missile.ogg",
+      "path": "assets/sound/missile.ogg",
       "sha256": "36ff23758725619ed3f409d0cd68b151f516fe22e67f476213d92d057b7e0a2a",
       "size": 21517
     },
     "movpiece.ogg": {
-      "path": "sound/movpiece.ogg",
+      "path": "assets/sound/movpiece.ogg",
       "sha256": "1cb68557b465c46a5b9bc4ea09046184a032d177b5e76ef1df2e1b39916ef393",
       "size": 4271
     },
     "mrktplce.ogg": {
-      "path": "sound/mrktplce.ogg",
+      "path": "assets/sound/mrktplce.ogg",
       "sha256": "b3862a3cfc702683fd1b9bfca01edae6c4b713317889aa883b617a54df7aa4d6",
       "size": 42320
     },
     "navbttle.ogg": {
-      "path": "sound/navbttle.ogg",
+      "path": "assets/sound/navbttle.ogg",
       "sha256": "63153b0deea02288253cfc278ed886dbac81f0d69a7078a9ca2026f184b33cd1",
       "size": 20537
     },
     "neg1.ogg": {
-      "path": "sound/neg1.ogg",
+      "path": "assets/sound/neg1.ogg",
       "sha256": "9862c8707b2b8baf4865b2faadf59a2ff69730b0a3941beb7a46101c840a4e71",
       "size": 4019
     },
     "newbank.ogg": {
-      "path": "sound/newbank.ogg",
+      "path": "assets/sound/newbank.ogg",
       "sha256": "8f50afd146de9a5a604ecbed0b7d05d8d3db064d7778ad31e4bc36eca1ff6ea5",
       "size": 10948
     },
     "newgovt.ogg": {
-      "path": "sound/newgovt.ogg",
+      "path": "assets/sound/newgovt.ogg",
       "sha256": "da2c177189dbd1469ec8909126357040504072c0e7afb234e61ff2887c2f2f05",
       "size": 16275
     },
     "newonder.ogg": {
-      "path": "sound/newonder.ogg",
+      "path": "assets/sound/newonder.ogg",
       "sha256": "12cde59ef05bce3dc80c8fb3bb3daa1087624ca809032a7267fb8ca26c8fa7f1",
       "size": 15618
     },
     "nukexplo.ogg": {
-      "path": "sound/nukexplo.ogg",
+      "path": "assets/sound/nukexplo.ogg",
       "sha256": "6131ebbfd9da82e5a65b080d36fc4ba0b5008f513a6b0fc7b5fc100a041319c1",
       "size": 90977
     },
     "pompcirc.ogg": {
-      "path": "sound/pompcirc.ogg",
+      "path": "assets/sound/pompcirc.ogg",
       "sha256": "1f47509e75da7f15e3b4af0d35116cafea4e668cd9cfc8ba5e31f6c1c36abee9",
       "size": 25148
     },
     "pos1.ogg": {
-      "path": "sound/pos1.ogg",
+      "path": "assets/sound/pos1.ogg",
       "sha256": "308ce6e29e1fce3e996bdd2d10f76f78c614a3d8644d63ae35145ca07c4b7218",
       "size": 6042
     },
     "sell.ogg": {
-      "path": "sound/sell.ogg",
+      "path": "assets/sound/sell.ogg",
       "sha256": "8eb9700bcb975d4a0b70a50a08b0bfbff26c4595fa8cc3ee129842dfccbe276a",
       "size": 8454
     },
     "smallexp.ogg": {
-      "path": "sound/smallexp.ogg",
+      "path": "assets/sound/smallexp.ogg",
       "sha256": "3a7d20bdddaed3e38314ed139a86abf0bd1aa6dfac6b6321c93e0a3b9e56619d",
       "size": 11062
     },
     "spysound.ogg": {
-      "path": "sound/spysound.ogg",
+      "path": "assets/sound/spysound.ogg",
       "sha256": "751b1c14c2648686f737c6d95e487034e66e4b97f75a113e0c6422c98fb171e5",
       "size": 12119
     },
     "stkmarkt.ogg": {
-      "path": "sound/stkmarkt.ogg",
+      "path": "assets/sound/stkmarkt.ogg",
       "sha256": "4681fe55f60f870957c533536e54dff818868449f5d769166849edfcdde7c658",
       "size": 18317
     },
     "swordfgt.ogg": {
-      "path": "sound/swordfgt.ogg",
+      "path": "assets/sound/swordfgt.ogg",
       "sha256": "c65347e9e5635076908d13e2f454bf31f28214c79258e0ab9f11ccf00b6fb51c",
       "size": 24567
     },
     "swrdhors.ogg": {
-      "path": "sound/swrdhors.ogg",
+      "path": "assets/sound/swrdhors.ogg",
       "sha256": "7930f2b32c1ecc31743e30523a462f470e37f1f8de640afb2f17e9a46c9e537e",
       "size": 28528
     },
     "torpedos.ogg": {
-      "path": "sound/torpedos.ogg",
+      "path": "assets/sound/torpedos.ogg",
       "sha256": "d6556f358ee4e9e2fef4d6c06e89b8537d38cc26fb3d4ad0271e697add001b76",
       "size": 30484
     }
   },
   "wonders": {
     "wonder00.webp": {
-      "path": "wonders/wonder00.webp",
+      "path": "assets/wonders/wonder00.webp",
       "title": "The Pyramids: the picture",
       "sha256": "6292cfef08717f83dab77b1447473b22af4ebb463e4287f771071dd497d74362",
       "size": 2898990
     },
     "wonder00.ogg": {
-      "path": "wonders/wonder00.ogg",
+      "path": "assets/wonders/wonder00.ogg",
       "title": "The Pyramids: the sound",
       "sha256": "896153b5c6e35c25aa3f2383f774584833288e0e6651ba1547ea52a5d8dbe71a",
       "size": 120937
@@ -495,7 +495,7 @@
   },
   "notices": {
     "LICENSE": {
-      "path": "LICENSE",
+      "path": "LICENSE-media",
       "sha256": "a0c2c6a53ce243adae44630071231011725b4019292e7fb33a900d1ca7a3461d",
       "size": 1071
     }

@@ -301,7 +301,7 @@ WINBOOL WINAPI sndPlaySoundA(LPCSTR name, UINT flags)
  * only where OpenCiv2 has none; with Classic graphics OpenCiv2's only where
  * the game folder lacks one (files.c: synth_path).  OpenCiv2's own,
  * data/native/sound/name.ogg (made by tools/build_own_assets.py from
- * openciv2/openciv2-media; CC0: data/native/sound/SOURCES.md), decoded (stb_vorbis) into a
+ * openciv2/openciv2-assets; CC0: data/native/sound/SOURCES.md), decoded (stb_vorbis) into a
  * WAV as the game reads them (snd_wave_load_file: 22050 Hz, 8 bits; mono),
  * written once a run into the folder "OpenCiv2Sounds" of the Windows
  * directory, where plat_host_path finds it (files.c: synth_path).  Only
@@ -668,7 +668,7 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * own music (docs/NO-INSTALL.md): data/native/music/trackNN.ogg (with HD
  * graphics OpenCiv2's first, the game folder's only for a track it lacks:
  * cd_open_track; made by
- * tools/build_own_assets.py from openciv2/openciv2-media; read and played
+ * tools/build_own_assets.py from openciv2/openciv2-assets; read and played
  * as an install's .ogg, so only its 2 to 5 MB are in memory, never a WAV),
  * only with sound, as the sound effects' (sound_fallback); without any of
  * those there is no drive, as before.  The tracks are counted from 2 to the

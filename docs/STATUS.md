@@ -95,9 +95,9 @@ no `Graphics=`: `HD_BY_DEFAULT`, natively and in the browser), the original's lo
 (Classic graphics in Settings; always in replays unless `CIV2_TEST_HD`, with `CIV2_CLASSIC=1`
 and in a build without the art).  The sound effects are
 OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks them (`data/native/sound`: 78, public domain, CC0:
-openciv2/openciv2-media, fetched by `make own-assets`; decoded
+openciv2/openciv2-assets, fetched by `make own-assets`; decoded
 into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
-it (`data/native/music`: openciv2/openciv2-media, fetched by `make own-assets`; MIT).  So is
+it (`data/native/music`: openciv2/openciv2-assets, fetched by `make own-assets`; MIT).  So is
 a wonder's movie where OpenCiv2 has one, the Pyramids' so far (`data/native/wonders`: an
 animated WebP and its Ogg Vorbis sound, played by the game's own AVI player as the CD's movie,
 its window sized for 16:9: [NO-INSTALL.md](NO-INSTALL.md#wonder-movies)).
@@ -113,7 +113,7 @@ install a plain dark frame).  A tribe's herald of OpenCiv2's own
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
 heralds*): the Russians' so far.
 The HD art comes with OpenCiv2's builds, the game downloads nothing: `data/native/hd` (about
-30 MB, not in the repository), the pictures of openciv2-assets at its pinned commit the
+30 MB, not in the repository), the pictures of openciv2/openciv2-assets (`assets/atlas-hd`) at its pinned commit the
 game draws or synth.c reads, as WebP, made at build time by `tools/build_hd_pack.py` (`make
 hd-art`, which the builds run first; the files it is built from and the result cached in `~/.cache/openciv2`;
 [HD-GRAPHICS.md](HD-GRAPHICS.md)), in every release and on the browser version's site; the

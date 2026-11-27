@@ -4,8 +4,8 @@
 /*.zip
 
 # Build outputs, runs, packages; the HD graphics' art, made by make hd-art
-# (tools/build_hd_pack.py: Peter Johnson's openciv2-assets, not part of this
-# repository)
+# (tools/build_hd_pack.py: Peter Johnson's art pack in
+# openciv2/openciv2-assets, not part of this repository)
 /data/native/hd/
 /build/
 /run/
@@ -18,7 +18,7 @@ __pycache__/
 # OpenCiv2's own music, sound effects, heralds and wonder movies
 # (src/platform/sound.c: cd_open_track, sound_fallback; hd.c:
 # hd_herald_find, hd_wonder_find), made by make
-# own-assets (tools/build_own_assets.py: OpenCiv2's openciv2/openciv2-media
+# own-assets (tools/build_own_assets.py: OpenCiv2's openciv2/openciv2-assets
 # at the commit pinned in data/own-assets.json)
 /data/native/music/
 /data/native/sound/
