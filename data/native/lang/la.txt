@@ -46,6 +46,8 @@ Interfaciei additamenta
 Colores et nuntii
 @@openciv2.options.language
 Lingua
+@@openciv2.options.music
+Sonitus musicae
 @@openciv2.options.next_start
 A proximo ludi initio.
 @@openciv2.options.override_one
@@ -192,6 +194,12 @@ Lingua textuum ipsius OpenCiv2, et textuum ludi ubi conversio eos habet (alioqui
 Automatica (lingua systematis)
 @@openciv2.language.override
 CIV2_LANG positum: hoc cursu hanc electionem vincit.
+@@openciv2.music.title
+Sonitus Musicae
+@@openciv2.music.intro
+Quam magno sono musica canat, OpenCiv2 propria an originalis. Statim mutatur.
+@@openciv2.music.off
+Nullus
 @@openciv2.restart.title
 Denuo incipere
 @@openciv2.restart.next_time

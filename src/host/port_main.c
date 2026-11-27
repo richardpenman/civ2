@@ -158,6 +158,7 @@ void HOST(audio_close)(Host *h, u32 dev) { (void)h; host_audio_close((int)dev); 
 u32 HOST(music_play)(Host *h, u32 file, u32 len) { (void)h; return (u32)host_music_play(MEM(file), len); }
 void HOST(music_stop)(Host *h) { (void)h; host_music_stop(); }
 u32 HOST(music_playing)(Host *h) { (void)h; return (u32)host_music_playing(); }
+void HOST(music_volume)(Host *h, u32 per_mille) { (void)h; host_music_volume((int)per_mille); }
 
 u32 HOST(message_box)(Host *h, u32 icon, u32 title, u32 text, u32 n, u32 labels, u32 ids, u32 enter, u32 escape)
 {

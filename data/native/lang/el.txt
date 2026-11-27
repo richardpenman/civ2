@@ -48,6 +48,8 @@ utf-8
 Χρώματα και μηνύματα
 @@openciv2.options.language
 Γλώσσα
+@@openciv2.options.music
+Ένταση μουσικής
 @@openciv2.options.next_start
 Από την επόμενη εκκίνηση του παιχνιδιού.
 @@openciv2.options.override_one
@@ -194,6 +196,12 @@ Shift στους ειδικούς
 Αυτόματα (η γλώσσα του συστήματος)
 @@openciv2.language.override
 Έχει οριστεί το CIV2_LANG: σε αυτή την εκτέλεση υπερισχύει αυτής της επιλογής.
+@@openciv2.music.title
+Ένταση Μουσικής
+@@openciv2.music.intro
+Πόσο δυνατά παίζει η μουσική, του OpenCiv2 ή του αρχικού παιχνιδιού. Αλλάζει αμέσως.
+@@openciv2.music.off
+Σίγαση
 @@openciv2.restart.title
 Επανεκκίνηση
 @@openciv2.restart.next_time

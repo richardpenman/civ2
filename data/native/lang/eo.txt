@@ -51,6 +51,8 @@ Interfacaj aldonoj
 Koloroj kaj mesaøoj
 @@openciv2.options.language
 Lingvo
+@@openciv2.options.music
+Laýteco de muziko
 @@openciv2.options.next_start
 Ekde la venonta lanæo de la ludo.
 @@openciv2.options.override_one
@@ -197,6 +199,12 @@ La lingvo de la propraj tekstoj de OpenCiv2, kaj de tiuj de la ludo, kie la trad
 Aýtomata (la lingvo de la sistemo)
 @@openciv2.language.override
 CIV2_LANG estas difinita: por æi tiu lanæo øi superas æi tiun elekton.
+@@openciv2.music.title
+Laýteco de Muziko
+@@openciv2.music.intro
+Kiom laýte la muziko ludas, tiu de OpenCiv2 aý tiu de la originalo. Øi þanøiøas tuj.
+@@openciv2.music.off
+Malþaltita
 @@openciv2.restart.title
 Relanæo
 @@openciv2.restart.next_time

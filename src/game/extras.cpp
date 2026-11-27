@@ -131,6 +131,8 @@ void extras_load(void)
     extras_enabled = 0;
     extras_rules = 0;
     plat_color_lut_on = 0;
+    /* Settings' Music volume (options.cpp; in every mode) */
+    plat_music_volume(extras_setting("MusicVolume", 100));
     if (!plat_extras)
         return;
     for (i = 0; i < sizeof rule_keys / sizeof rule_keys[0]; i++)

@@ -727,6 +727,10 @@ static struct {
     uint32_t pcm_left;
     int playing, ended;         /* playing: until all of it has played */
     int dev, rate, chans;
+    int gain;                   /* host_music_volume's per mille, less 1000 (0: as they are) */
+    int test;                   /* CIV2_TEST_AUDIO (make test-music): the peaks reported */
+    unsigned long frames;       /* test: this track's frames queued, */
+    int peak_in, peak_out;      /* the largest sample decoded and queued */
 } music;
 
 static uint32_t rd32(const unsigned char *p) { return p[0] | p[1] << 8 | p[2] << 16 | (uint32_t)p[3] << 24; }
@@ -743,6 +747,33 @@ static void music_close(void)
     music.playing = 0;
 }
 
+/* n bytes of 16-bit samples at the volume (host_music_volume); with
+   CIV2_TEST_AUDIO their peaks before and after, on stderr each second of
+   the track (tests/music_fallback_test.sh). */
+static void music_scale(short *s, uint32_t n)
+{
+    int gain = 1000 - music.gain;
+    uint32_t i, count = n / 2;
+    for (i = 0; i < count; i++) {
+        int v = s[i];
+        if (music.test && (v < 0 ? -v : v) > music.peak_in)
+            music.peak_in = v < 0 ? -v : v;
+        if (gain != 1000)
+            s[i] = (short)(v * gain / 1000);
+        if (music.test && (s[i] < 0 ? -s[i] : s[i]) > music.peak_out)
+            music.peak_out = s[i] < 0 ? -s[i] : s[i];
+    }
+    if (music.test && music.chans && music.rate) {
+        unsigned long was = music.frames;
+        music.frames += count / (uint32_t)music.chans;
+        if (music.frames / (unsigned long)music.rate != was / (unsigned long)music.rate) {
+            fprintf(stderr, "civ2: music: %lu frames, peak %d decoded, %d played (volume %d/1000)\n", music.frames,
+                    music.peak_in, music.peak_out, gain);
+            fflush(stderr);
+        }
+    }
+}
+
 static int music_thread(void *arg)
 {
     static short buf[22050];
@@ -756,16 +787,16 @@ static int music_thread(void *arg)
                 int got = stb_vorbis_get_samples_short_interleaved(music.ogg, music.chans, buf,
                                                                    (int)(sizeof buf / sizeof buf[0]));
                 n = got > 0 ? (uint32_t)got * (uint32_t)music.chans * 2 : 0;
-                if (n)
-                    SDL_QueueAudio((SDL_AudioDeviceID)music.dev, buf, n);
             } else {
                 n = music.pcm_left < sizeof buf ? music.pcm_left : (uint32_t)sizeof buf;
-                if (n)
-                    SDL_QueueAudio((SDL_AudioDeviceID)music.dev, music.pcm, n);
+                memcpy(buf, music.pcm, n);      /* (little-endian, as the host) */
                 music.pcm += n;
                 music.pcm_left -= n;
             }
-            if (!n)
+            if (n) {
+                music_scale(buf, n);
+                SDL_QueueAudio((SDL_AudioDeviceID)music.dev, buf, n);
+            } else
                 music.ended = 1;
         }
         if (music.playing && music.ended && !SDL_GetQueuedAudioSize((SDL_AudioDeviceID)music.dev))
@@ -806,6 +837,9 @@ static int music_device(int rate, int chans)
 
 static int music_start(const unsigned char *file, uint32_t len)
 {
+    music.test = getenv("CIV2_TEST_AUDIO") && *getenv("CIV2_TEST_AUDIO");
+    music.frames = 0;
+    music.peak_in = music.peak_out = 0;
     if (!(music.file = malloc(len ? len : 1)))
         return 0;
     memcpy(music.file, file, len);
@@ -874,6 +908,15 @@ void host_music_stop(void)
     music_close();
     if (music.dev)
         SDL_ClearQueuedAudio((SDL_AudioDeviceID)music.dev);
+    SDL_UnlockMutex(music.lock);
+}
+
+void host_music_volume(int per_mille)
+{
+    if (!music.lock && !(music.lock = SDL_CreateMutex()))
+        return;
+    SDL_LockMutex(music.lock);
+    music.gain = 1000 - (per_mille < 0 ? 0 : per_mille > 1000 ? 1000 : per_mille);
     SDL_UnlockMutex(music.lock);
 }
 

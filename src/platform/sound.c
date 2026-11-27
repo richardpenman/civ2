@@ -728,7 +728,16 @@ MMRESULT WINAPI mmioAdvance(HMMIO h, LPMMIOINFO info, UINT flags)
  * each as long as its file says (a .wav's data over its byte rate), so that
  * which track the game plays when, and when it ends, is the same in every
  * run; each play, stop and end is logged in calls.log ("music ...").
- * Other MCI devices (avivideo) are not available. */
+ * Other MCI devices (avivideo) are not available.
+ *
+ * Their loudness (host_music_volume): Settings' Music volume (CIV.INI's
+ * [OpenCiv2] MusicVolume=, percent, 100 by default: plat_music_volume, from
+ * extras_load), for every track; OpenCiv2's own besides OWN_MUSIC_GAIN
+ * (louder than the original's, which stay as they are). */
+
+/* OpenCiv2's own tracks (data/native/music) played 5 dB quieter:
+   10^(-5/20). */
+#define OWN_MUSIC_GAIN 0.562
 
 #define CD_ID 0x4344            /* the drive's device id */
 
@@ -738,7 +747,24 @@ static struct {
     int playing;                /* a track was started (the host plays it: host_music_play) */
     HWND notify;                /* MCI_NOTIFY on the play: told when it ends */
     DWORD end_ms;               /* cd_virtual: when the track ends (plat_now) */
+    int own;                    /* the track cd_open_track found last is OpenCiv2's own */
+    int volume;                 /* Settings' Music volume, percent, less 100 (0: 100) */
 } cd;
+
+/* The host's music at the volume (Settings', and OWN_MUSIC_GAIN for
+   OpenCiv2's own tracks): per mille of the file's samples. */
+static int cd_per_mille(void)
+{
+    double v = (100 - cd.volume) * 10.0 * (cd.own ? OWN_MUSIC_GAIN : 1.0);
+    return (int)(v + 0.5);
+}
+
+void plat_music_volume(int percent)
+{
+    cd.volume = 100 - (percent < 0 ? 0 : percent > 100 ? 100 : percent);
+    if (cd.playing && !cd_virtual && audio_ok)
+        host_music_volume(cd_per_mille());
+}
 
 /* cd_virtual: the length of a track's file in ms (a .wav's data over its
    byte rate; an .ogg's is not read: a minute). */
@@ -797,14 +823,18 @@ static FILE *cd_open_own(int n, const char **ext, char *from, size_t size)
 static FILE *cd_open_track(int n, const char **ext, char *from, size_t size)
 {
     FILE *f = hd_art ? cd_open_own(n, ext, from, size) : NULL;
-    if (f)
+    if ((cd.own = f != NULL))
         return f;
     if ((f = cd_track_file(n, *ext = "ogg")) || (f = cd_track_file(n, *ext = "wav"))) {
         if (from)
             snprintf(from, size, "Music\\Track%02d.%s", n, *ext);
         return f;
     }
-    return hd_art ? NULL : cd_open_own(n, ext, from, size);
+    if (hd_art)
+        return NULL;
+    f = cd_open_own(n, ext, from, size);
+    cd.own = f != NULL;
+    return f;
 }
 
 static int cd_count_tracks(void)
@@ -867,6 +897,8 @@ static long cd_play(int n, const char **ext, char *from, size_t size)
         replay_log_music("play", n);
         return len;
     }
+    host_music_volume(cd_per_mille());
+    plat_log("cdaudio: volume %d/1000\n", cd_per_mille());
     if (fseek(f, 0, SEEK_END) == 0 && (len = ftell(f)) > 0 && fseek(f, 0, SEEK_SET) == 0 &&
         (data = malloc((size_t)len)) && fread(data, 1, (size_t)len, f) == (size_t)len)
         ok = host_music_play(data, (uint32_t)len);

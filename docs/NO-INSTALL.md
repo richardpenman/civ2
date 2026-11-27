@@ -314,6 +314,16 @@ graphics (`CIV2_TEST_HD=1`), and still plays 5 seconds later (the player fed); w
 from the game's `Music\Track02` with Classic graphics and from `data/native/music/track02.ogg`
 with HD graphics.
 
+OpenCiv2's own tracks are played 5 dB quieter than their files (`OWN_MUSIC_GAIN`, 0.562, in
+`src/platform/sound.c`; the files are left as they are): matched to the original's loudness they
+were found too loud.  The original's tracks play at their own level.  Settings' *Music volume*
+(`MusicVolume=`, [EXTRAS.md](EXTRAS.md#settings)) scales all of the music besides, OpenCiv2's
+and the original's, natively on the music's thread (its samples scaled as they are decoded, from
+about a second later: what is queued plays out) and in the browser through a gain node (at
+once).  `make test-music` checks it: the music's thread reports, with `CIV2_TEST_AUDIO`, the
+largest sample decoded and the largest played, whose ratio is 0.562 for OpenCiv2's track 2, 1
+for the original's, and half that with `MusicVolume=50`.
+
 ## Wonder movies
 
 `Video\WONDER00.AVI` to `WONDER27.AVI`: the movie the game plays in the wonder's window when the

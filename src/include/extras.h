@@ -126,6 +126,9 @@ EXTRAS_C int options_test_setting(const char *key, char *out, int n);
 /* src/platform/options.c: the restart (now 0: how it can be, 1 restarted;
    host_restart's) */
 EXTRAS_C int plat_restart(int now);
+/* src/platform/sound.c: the music's volume, Settings' Music volume
+   (MusicVolume=, percent: 100 as it is, 0 none), also of the track playing */
+EXTRAS_C void plat_music_volume(int percent);
 /* the graphics (src/platform/options.c, the one place that decides): whether
    CIV.INI's Graphics=value asks for HD ("": the default), whether HD
    graphics are forced on (the game folder lacks the original's pictures:

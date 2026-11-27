@@ -157,6 +157,9 @@ void HOST_API(host_audio_close)(int dev);
 int HOST_API(host_music_play)(const void *file, uint32_t len);
 void HOST_API(host_music_stop)(void);
 int HOST_API(host_music_playing)(void);
+/* The music's loudness from now on, also of the track playing: per_mille
+ * of the file's samples (1000: as they are, 0: silent). */
+void HOST_API(host_music_volume)(int per_mille);
 
 /* A modal message box; returns the chosen button's id, -1 if it failed.
  * icon: 0 information, 1 warning, 2 error; enter/escape: the indices of

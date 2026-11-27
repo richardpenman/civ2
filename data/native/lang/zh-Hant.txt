@@ -47,6 +47,8 @@ utf-8
 色彩與訊息
 @@openciv2.options.language
 語言
+@@openciv2.options.music
+音樂音量
 @@openciv2.options.next_start
 自下次啟動遊戲起生效。
 @@openciv2.options.override_one
@@ -193,6 +195,12 @@ OpenCiv2 自身文字的語言，以及翻譯所涵蓋的遊戲文字的語言�
 自動（系統的語言）
 @@openciv2.language.override
 已設定 CIV2_LANG：本次執行時以它為準，不採用此選擇。
+@@openciv2.music.title
+音樂音量
+@@openciv2.music.intro
+音樂播放的音量，OpenCiv2 自己的或原版遊戲的。立即生效。
+@@openciv2.music.off
+關閉
 @@openciv2.restart.title
 重新啟動
 @@openciv2.restart.next_time

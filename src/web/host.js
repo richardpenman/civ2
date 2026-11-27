@@ -337,7 +337,8 @@ export async function runGame(opts) {
         }
     }
     const audioOk = () => audio && (audio.state === 'running' || (resuming && audio.state === 'suspended'));
-    const music = {source: null, playing: false, token: 0};
+    // (volume: host_music_volume's, through a gain node made with the first track)
+    const music = {source: null, playing: false, token: 0, volume: 1, gain: null};
 
     // -- network play: through the relay (opts.relay: 'ws://host:port')
     const net = makeNet(opts.relay, globalThis.WebSocket, opts.onRelayUnreachable);
@@ -524,7 +525,12 @@ export async function runGame(opts) {
                     return;
                 const src = audio.createBufferSource();
                 src.buffer = buf;
-                src.connect(audio.destination);
+                if (!music.gain) {
+                    music.gain = audio.createGain();
+                    music.gain.gain.value = music.volume;
+                    music.gain.connect(audio.destination);
+                }
+                src.connect(music.gain);
                 src.onended = () => {
                     if (token === music.token)
                         music.playing = false;
@@ -545,6 +551,11 @@ export async function runGame(opts) {
             music.source = null;
         },
         host_music_playing: () => (music.playing ? 1 : 0),
+        host_music_volume: (perMille) => {
+            music.volume = Math.min(Math.max(perMille, 0), 1000) / 1000;
+            if (music.gain)
+                music.gain.gain.value = music.volume;
+        },
         // network play: through a relay (net.js); without one, none
         host_net_local_addr: (buf, size) => {
             if (size <= 0)
