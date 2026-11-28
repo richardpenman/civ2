@@ -1,0 +1,42 @@
+# Looping sounds (tests/sound_loops_test.sh, src/web/test/sound.mjs; with
+# audio: CIV2_TEST_AUDIO): the diplomacy room, its leader's greeting
+# (FANFAREn) then, once it has ended (diplo_greeting_sound_done_cb), the
+# tribe's drums looping (DRUMxL) until the room closes
+# (diplo_leader_wnd_close).  The autosave loaded; `sounds drums`: the drums
+# looping, `sounds noloop`: no looping sound left (waitsound first: the
+# greeting played to its end, in real time).
+# Here: the Japanese's emissary (the foreign minister's Send Emissary),
+# the talks ended with Escape.
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+sounds noloop
+call diplo_ai_meet_player 460129 1 2 -1 -1 1
+wait 300
+waitsound
+wait 500
+sounds drums
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+key Escape
+wait 1500
+waitsound
+sounds noloop
+quit

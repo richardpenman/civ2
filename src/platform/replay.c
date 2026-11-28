@@ -22,6 +22,7 @@
 
 static char **script;
 static int script_len, script_pos;
+static uint64_t sound_wait_until_us;    /* waitsound: until then at most */
 static unsigned long long next_action_us;
 static char shot_dir[1024] = ".";
 static char next_file[1024];
@@ -292,6 +293,16 @@ void replay_run_script(void)
     if (!plat_replay || running || replay_hold)
         return;
     running = 1;
+    if (sound_wait_until_us) {
+        /* (waitsound: until the sounds that end have ended, in real time) */
+        extern int snd_playing_once(void);
+        if (snd_playing_once() && host_time_us() < sound_wait_until_us) {
+            running = 0;
+            return;
+        }
+        plat_log("replay: waitsound done%s\n", snd_playing_once() ? " (timed out)" : "");
+        sound_wait_until_us = 0;
+    }
     while (script_pos < script_len && vclock_us >= next_action_us) {
         char buf[512], *cmd, *arg, *save = NULL;
         snprintf(buf, sizeof buf, "%s", script[script_pos++]);
@@ -410,6 +421,21 @@ void replay_run_script(void)
         } else if (!strcmp(cmd, "file")) {
             plat_getcwd(next_file, sizeof next_file);
             snprintf(next_file + strlen(next_file), sizeof next_file - strlen(next_file), "\\%s", arg);
+        } else if (!strcmp(cmd, "sounds")) {
+            /* sounds: the sounds playing, those that loop, what the
+               output has queued, in the log (src/auto/sound.cpp:
+               snd_log_state; tests/sound_loops_test.sh) */
+            extern void snd_log_state(void);
+            snd_log_state();
+        } else if (!strcmp(cmd, "waitsound")) {
+            /* waitsound [S]: the script waits until the sounds that end
+               (not those that loop) have ended, in real time (they play on
+               the host's clock, not the replay's), at most S seconds
+               (default 30): with audio (CIV2_TEST_AUDIO), a diplomat's
+               greeting played to its end, its drums started
+               (tests/sound_loops_test.sh) */
+            sound_wait_until_us = host_time_us() + (uint64_t)(arg ? atoi(arg) : 30) * 1000000 + 1;
+            break;
         } else if (!strcmp(cmd, "quit")) {
             finish();
         } else {

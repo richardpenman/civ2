@@ -1171,6 +1171,51 @@ static void snd_log_mixing(void)
   }
 }
 
+/* (port) A replay's `sounds` (src/platform/replay.c; tests/sound_loops_test.sh,
+   src/web/test/sound.mjs): in hook.log, the sounds the mixer has, each as
+   ID(NAME) with ",loop" where it loops (streamed: snd_wave_open_stream,
+   read again from its start when it ends: the only sounds played for ever)
+   and ",ended" where it has ended and waits to be freed, an AVI's sound as
+   "video"; how many loop; and what the output has queued (the host's: in
+   the browser host.js's WebAudio sources) and how many of the game's
+   buffers it holds.  Only reads. */
+EXTERN_C void snd_log_state(void)
+{
+  char ids[600];
+  int n = 0, loops = 0, pending = 0;
+  unsigned queued_ms = 0;
+  WaveSource *source;
+  const char *name;
+
+  ids[0] = 0;
+  for (source = snd_wave.sources; (source != 0) && (n < (int)sizeof ids - 48); source = source->next) {
+    if (source->kind == 4) {
+      n += snprintf(ids + n, sizeof ids - n, " video");
+      continue;
+    }
+    name = ((source->sound_id >= 0) && (source->sound_id < 0x85)) ?
+           ((char *)&str_aircombt) + source->sound_id * 9 : "?";
+    if ((source->flags & 4) != 0) loops++;
+    n += snprintf(ids + n, sizeof ids - n, " %d(%s%s%s)", (int)source->sound_id, name,
+                  ((source->flags & 4) != 0) ? ",loop" : "", ((source->flags & 1) != 0) ? ",ended" : "");
+  }
+  if (snd_wave.out_handle != 0)
+    queued_ms = plat_wave_queued_ms((*(HWAVEOUT *)&snd_wave.out_handle), &pending);
+  plat_log("sound: state:%s; loops %d; queued %u ms in %d buffers\n", n ? ids : " none", loops, queued_ms, pending);
+}
+
+/* (port) A replay's `waitsound`: is a sound that ends (not one that loops)
+   still in the mixer (playing, or ended and not yet freed: its done
+   callback, a diplomat's drums after the greeting, not yet called)? */
+EXTERN_C int snd_playing_once(void)
+{
+  WaveSource *source;
+  for (source = snd_wave.sources; source != 0; source = source->next) {
+    if ((source->kind != 4) && ((source->flags & 4) == 0)) return 1;
+  }
+  return 0;
+}
+
 /* (port) A sound started while the output's buffers are all queued was mixed
    only into each buffer as the device gave it back, so heard after all that
    was queued before it: in the start menu, behind its looping theme, four

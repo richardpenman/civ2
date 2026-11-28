@@ -1,0 +1,17 @@
+# Looping sounds (tests/sound_loops_test.sh, src/web/test/sound.mjs): the
+# autosave loaded from the main menu: once its map is shown, none of the
+# menus' theme (MENULOOP) or any other looping sound playing (the menus'
+# sounds that end waited for first, in real time: waitsound).
+wait 8000
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+waitsound
+sounds noloop
+wait 5000
+sounds noloop
+quit

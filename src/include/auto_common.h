@@ -92,6 +92,7 @@ EXTERN_C void replay_log_video(const char *path);
  * output, and queued again (src/platform/sound.c; snd_wave_mix_queued). */
 EXTERN_C int plat_wave_unplayed(HWAVEOUT h, LPWAVEHDR *hdrs, DWORD *offsets, int max);
 EXTERN_C void plat_wave_requeue(HWAVEOUT h);
+EXTERN_C unsigned plat_wave_queued_ms(HWAVEOUT h, int *pending);
 /* rand() calls name their caller for the rand trace (src/native/crt.cpp). */
 int crt_rand_at(const char *caller);
 #define _rand() crt_rand_at(__func__)

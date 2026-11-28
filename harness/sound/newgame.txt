@@ -1,0 +1,35 @@
+# Looping sounds (tests/sound_loops_test.sh, src/web/test/sound.mjs): a new
+# game set up with the default choices (harness/scripts/newgame.txt) to its
+# first turn: once its map is shown, none of the menus' theme (MENULOOP) or
+# any other looping sound playing (the sounds that end waited for first, in
+# real time: waitsound).
+wait 8000
+key Return              # Start a New Game
+wait 3000
+key Return              # Normal world
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 3000
+key Return
+wait 5000
+key Return
+wait 600000             # world generation (paced by idle message-loop iterations)
+key Return
+wait 5000
+key Return
+wait 5000
+waitsound
+sounds noloop
+wait 5000
+sounds noloop
+quit

@@ -234,6 +234,21 @@ MMRESULT WINAPI waveOutGetPosition(HWAVEOUT h, LPMMTIME t, UINT n)
     return MMSYSERR_NOERROR;
 }
 
+/* (port) How much the output has queued, in ms, as the host has it (the
+   browser's: host.js's WebAudio sources scheduled ahead), and how many of
+   the game's buffers are written and not yet given back: replays only
+   (snd_log_state, src/auto/sound.cpp; tests/sound_loops_test.sh) */
+unsigned plat_wave_queued_ms(HWAVEOUT h, int *pending)
+{
+    WaveOut *w = wave_get(h);
+    *pending = 0;
+    if (!w)
+        return 0;
+    *pending = w->npending;
+    return (unsigned)((uint64_t)host_audio_queued(w->dev) * 1000 /
+                      (w->fmt.nAvgBytesPerSec ? w->fmt.nAvgBytesPerSec : 1));
+}
+
 /* (port) What of the written buffers is not yet heard, taken back from the
    output (the game's mixer then mixes a sound just started into it:
    snd_wave_mix_queued, src/auto/sound.cpp): the output's queue cleared from

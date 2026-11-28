@@ -147,6 +147,7 @@ step web-net    --needs web,fetch-browser -- $NODE src/web/test/net.mjs
 step web-start  --needs web,fetch-browser -- $NODE src/web/test/start.mjs
 step web-smoke  --needs web,fetch-browser -- $NODE src/web/test/smoke.mjs
 step web-hd     --needs web,fetch-browser -- $NODE src/web/test/hd.mjs
+step web-sound  --needs web,fetch-browser -- $NODE src/web/test/sound.mjs
 step web-mobile --needs web,fetch-browser -- $NODE src/web/test/mobile.mjs
 step web-perf   --advisory --needs web,fetch-browser -- $NODE src/web/test/perf.mjs
 # The long ones last: the browser against the desktop, every scenario

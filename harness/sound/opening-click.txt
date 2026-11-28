@@ -1,0 +1,23 @@
+# Looping sounds (tests/sound_loops_test.sh, src/web/test/sound.mjs; with
+# audio: CIV2_TEST_AUDIO and the CD's Video folder, CIV2_KEEP_MEDIA=1): the
+# opening video (Video\OPENING.AVI, its own sound), then the main menu and
+# its theme (MENULOOP, looping: `sounds theme`), then the autosave loaded:
+# once its map is shown no looping sound left (`sounds noloop`; waitsound
+# first: the menus' sounds that end played to their end, in real time).
+# Here: the video ended with a click.
+wait 3000
+click 20 400
+wait 5000
+sounds theme
+key Down Down Down Down     # "Load a Game"
+wait 500
+file Ca_Auto.SAV
+key Return
+wait 20000
+key Return
+wait 5000
+waitsound
+sounds noloop
+wait 5000
+sounds noloop
+quit
