@@ -923,9 +923,8 @@ pictures; the whole pack holds 2,166, 309 MB):
   shows it grey at every moment looked at.  A possible cause, since removed: a copy between
   surfaces whose colour tables differ (the slide's and the blink's background surfaces) could
   give art the destination's colour for its pixel's index (`hd_big`, above).
-* The Zulus' leaders have no portrait in the pack that fits (above): where their historical
-  portrait's file is missing, the original's, enlarged, or without the install the dark frame.  The heralds' videos are the original's, enlarged smoothly (the pack has none), but where OpenCiv2
-  has one of its own (*Your own heralds*: the Russians').
+* The heralds' videos are the original's, enlarged smoothly (the pack has none), but where
+  OpenCiv2 has one of its own (*Your own heralds*: the Russians').
 * The city view's empty lots (woods) are the original's, enlarged, awaiting art.
 * The pack's pictures not drawn (made for PR #11's own renderers, laid out otherwise): the
   throne room's other pictures (`palace-resource/`, `pv.dll` 105 to 184, `palace/decor-`);
