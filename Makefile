@@ -40,7 +40,7 @@ HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@ech
 OWN_ASSETS ?= 1
 OWN_ASSETS_MAKE = $(if $(filter-out 0,$(OWN_ASSETS)),python3 tools/build_own_assets.py,@echo "(no assets of OpenCiv2's own: OWN_ASSETS=$(OWN_ASSETS))")
 
-.PHONY: all build run windows web serve deploy-review web-test web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-wonder test-extras extras-bless test-media media-bless unit-record clean clean-run
+.PHONY: all build run windows web serve deploy-review web-test web-parity web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-wonder test-extras extras-bless test-media media-bless unit-record clean clean-run
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -96,6 +96,10 @@ web-test: web                 ## the browser version's tests: its host's logic, 
 	tools/toolchain/node/bin/node src/web/test/perf.mjs
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs
 	tools/toolchain/node/bin/node src/web/test/hd.mjs
+
+web-parity: web               ## the desktop's replays in the browser version: a representative set of harness/extras (with and without the original's files, Classic and HD graphics) and three native-suite games, each screenshot and the rand() trace compared with the desktop's expected results (the cases without the original's pictures: with build/OpenCiv2's replay, in Docker; NAMES=...: those cases; --list: all of them); mismatches in run/web-parity/CASE (src/web/test/web-parity.mjs)
+	sh tools/fetch-toolchain.sh browser
+	tools/toolchain/node/bin/node src/web/test/web-parity.mjs $(NAMES)
 
 web-replay: web               ## SCRIPT replayed in the browser version, compared with the original's recording
 	sh tools/fetch-toolchain.sh browser

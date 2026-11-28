@@ -402,6 +402,26 @@ builds do not use it.
   chosen again, the missing files added, *Restart now*, Classic graphics; screenshots in `run/web-hd`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
+* **Parity with the desktop** (`make web-parity`, `src/web/test/web-parity.mjs`; some 8 minutes with the build, Docker for
+  part of it: `sg docker -c "make web-parity"`): the desktop's replays run in the browser version and
+  compared with the desktop's results, to catch what goes wrong only in the browser (a dialog drawn
+  grey on grey, the city view's shading pixelated).  A representative set: harness/extras scripts with
+  the original's files and without (no install), Classic and HD graphics, sharp text, translations,
+  the real file dialog, Settings, the city view in HD, compared with `harness/extras/expected` (each
+  screenshot's hash and the `rand()` trace, as `make test-extras`), and native-suite games (newgame,
+  citywindow, talks) compared with the original's recordings `run/ref-NAME` (skipped where there are
+  none).  The game's files are given to the page's store as `tools/native-run.sh` gives them to the
+  desktop's replay (the harness's `CIV2.DAT` and `CIV.INI`, no KINGS, Video or Music, the `CIV2_NO_*`
+  variables honoured), the game run from `/tmp/g` as there (the file dialog shows the folder).  The
+  cases without the original's pictures (`CIV2_NO_GRAPHICS=1`) are compared with `build/OpenCiv2`'s
+  replay instead, made in Docker at the time (`make port` first when it is out of date): the expected
+  results come from the 32-bit test build, whose x87 arithmetic dithers and scales the pictures made
+  from the HD art otherwise than SSE (the desktop game and the browser agree pixel for pixel; the
+  32-bit build differs in some 20,000 to 200,000 pixels of those screenshots).  PASS or FAIL per case;
+  on a mismatch `run/web-parity/CASE` holds `SHOT-web.png`, `SHOT-desktop.png` (where this machine has
+  the desktop's picture: `run/extras-blessed`, `run/ref-NAME`), `SHOT-diff.png`, `trace.txt` (the first
+  differing `rand()` call) and the browser's output.  `make web-parity NAMES="x-sharp suite:turns"` runs
+  others (`NAMES=--list`: every extras case).
 * **Network games, browser and native** (`tools/xdnet/webnet.py native-web|web-native [--turns N]
   [--exe OpenCiv2]`; on the docker host, after `make web` and `make port`): tools/xdnet/nettest.py's
   steps and checks, one player being the browser version (src/web/test/player.mjs: Chrome's

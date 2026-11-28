@@ -63,9 +63,17 @@ export function zipFolder(dir, out) {
 // ---- the site ----
 
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm', '.gz': 'application/gzip'};
-export function serve() {
+// (files: path -> a file's path on disk or null, further files a test
+// serves, e.g. web-parity.mjs's copy of the game at /__game/)
+export function serve(files = null) {
     const server = createServer((req, res) => {
         const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+        const extra = files && files(path);
+        if (extra) {
+            res.writeHead(200, {'Content-Type': 'application/octet-stream'});
+            res.end(readFileSync(extra));
+            return;
+        }
         // (a replay's files: /__test/NAME.txt, CIV2.DAT, CIV.INI from harness/)
         const base = path.startsWith('/__test/') ? join(ROOT, 'harness') : WEB;
         // (NAME.txt: harness/scripts/NAME.txt; DIR/NAME.txt: harness/DIR/NAME.txt)

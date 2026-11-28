@@ -1043,9 +1043,10 @@ async function play(store) {
     const env = {CIV2_DATA: DATA, CIV2_SYSTEM_LANG: 'en'};
     if (!new URLSearchParams(location.search).has('log'))
         env.CIV2_HOOK_LOG = '/dev/null';
-    // (tests, src/web/test/smoke.mjs: files and settings of a replay)
+    // (tests, src/web/test/smoke.mjs, web-parity.mjs: files and settings of
+    // a replay; args: the game's command line, its folder args[1])
     if (window.civ2Test)
-        await window.civ2Test(fs, env);
+        await window.civ2Test(fs, env, args);
     // OpenCiv2's own music (data/music, some 26 MB): with HD graphics all
     // its tracks (sound.c plays data/music/trackNN.ogg as track NN first,
     // the game's Music/TrackNN only for a track it lacks), with Classic
