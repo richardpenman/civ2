@@ -1259,6 +1259,18 @@ static void snd_wave_mix_queued(WaveSource *source)
   plat_wave_requeue((*(HWAVEOUT *)&snd_wave.out_handle));
 }
 
+/* (port) Is the sound looping in the mixer (streamed: snd_wave_open_stream;
+   not ended)?  snd_wave_play starts no second copy of it. */
+static int snd_wave_looping(i32 sound_id)
+{
+  WaveSource *source;
+  for (source = snd_wave.sources; source != 0; source = source->next) {
+    if ((source->kind != 4) && (source->sound_id == (short)sound_id) &&
+        ((source->flags & 4) != 0) && ((source->flags & 1) == 0)) return 1;
+  }
+  return 0;
+}
+
 /* 005d6038 auto */
 short __cdecl snd_wave_play(const char *filename,uint flags,i32 sound_id,SoundDoneFn done_callback)
 
@@ -1273,6 +1285,17 @@ short __cdecl snd_wave_play(const char *filename,uint flags,i32 sound_id,SoundDo
   }
   else if ((snd_wave.device_open == 0) &&
           (status = snd_wave_open(snd_wave.notify_hwnd,snd_wave.open_buffer_bytes,(*(i32 *)&snd_wave.max_buffers)), status != 0)) {
+    result = 0;
+  }
+  else if (((flags & 8) != 0) && snd_wave_looping(sound_id)) {
+    /* (port) A looping sound already looping not started again: the
+       original's mixer added a second copy of it, mixed over the first,
+       twice as loud and out of step, both played until the sound is
+       stopped.  The diplomacy room's drums: a greeting still playing when
+       its room is closed and the next room opened ends in that room and
+       starts its drums (diplo_greeting_sound_done_cb), then that room's
+       own greeting starts them again.  Only one copy is ever heard.
+       (tests/sound_loops_test.sh, harness/sound/talk-early.txt) */
     result = 0;
   }
   else if ((*(ushort *)&snd_wave.source_count) < 5) {

@@ -5,6 +5,7 @@
 # once its map is shown no looping sound left (`sounds noloop`; waitsound
 # first: the menus' sounds that end played to their end, in real time).
 # Here: the video ended with a click.
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 3000
 click 20 400
 wait 5000

@@ -8,6 +8,7 @@
 # Here: the AIs come to the player (as at the turn's start: not asked
 # for), each talk with its own questions and popups, answered with OK
 # (Return), then Escape.
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

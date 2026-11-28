@@ -7,6 +7,7 @@
 # greeting played to its end, in real time).
 # Here: the Japanese's emissary (the foreign minister's Send Emissary),
 # the talks ended with Escape.
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

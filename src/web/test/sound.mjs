@@ -11,6 +11,9 @@
 //   drums     the diplomacy room's drums looping;
 //   theme     the menus' theme looping;
 //   greeting  the drums not started yet.
+// Whatever the label, no looping sound twice in the mixer at once (two
+// copies of one loop: in a `sounds` line, or in the mixer's log of what it
+// mixes, "sound: mixing ID ...", of an ID seen looping).
 // The cases: a new game set up to its first turn without the original's
 // files (HD graphics, OpenCiv2's own sounds: runs without the game, as in
 // CI); with the game ($CIV2_GAME or ~/Civ2) also a new game with Classic
@@ -112,6 +115,7 @@ function gameHas() {
 export function checkSounds(text, report = () => {}) {
     const lines = text.split(/\r?\n/), probs = [];
     let label = null, seen = 0;
+    probs.push(...loopsTwice(lines));
     for (const l of lines) {
         const m = /^t=(\d+): sounds ?(\S*)/.exec(l);
         if (m) {
@@ -126,6 +130,10 @@ export function checkSounds(text, report = () => {}) {
             seen++;
             const loops = +/loops (\d+)/.exec(l)[1], queued = +(/queued (\d+) ms/.exec(l) || [0, 0])[1];
             report(`  t=${t} ${what || '-'}: ${l.slice('sound: state:'.length).trim()}`);
+            const ids = [...l.matchAll(/ (\d+\([^,)]*),loop/g)].map((x) => x[1]);
+            const dup = [...new Set(ids.filter((i) => ids.indexOf(i) !== ids.lastIndexOf(i)))];
+            if (dup.length)
+                probs.push(`${what || '-'} at t=${t} ms: a loop twice at once (${dup.map((d) => d + ')').join(', ')}): ${l}`);
             if ((what === 'noloop' || what === 'greeting') && loops)
                 probs.push(`${what} at t=${t} ms: a sound loops: ${l}`);
             else if (what === 'noloop' && queued > QUEUED_MAX_MS)
@@ -140,6 +148,29 @@ export function checkSounds(text, report = () => {}) {
         probs.push('the script did not finish');
     if (!seen)
         probs.push('no sound state logged (no audio?)');
+    return probs;
+}
+
+// A looping sound mixed twice at once: in the mixer's log ("sound: mixing
+// ID ..."), an ID seen looping (in a `sounds` line, or `also`: the menus'
+// theme, 107) twice in one line -> the problems
+export function loopsTwice(lines, also = []) {
+    const loopIds = new Set(also);
+    for (const l of lines)
+        if (l.startsWith('sound: state:'))
+            for (const m of l.matchAll(/ (\d+)\([^,)]*,loop/g))
+                loopIds.add(m[1]);
+    const probs = [], twice = new Set();
+    for (const l of lines) {
+        if (!l.startsWith('sound: mixing'))
+            continue;
+        const ids = l.split(/\s+/).slice(2);
+        for (const i of new Set(ids))
+            if (ids.indexOf(i) !== ids.lastIndexOf(i) && loopIds.has(i) && !twice.has(i)) {
+                twice.add(i);
+                probs.push(`looping sound ${i} mixed twice at once: ${l}`);
+            }
+    }
     return probs;
 }
 
@@ -416,6 +447,7 @@ async function main() {
             probs.push('the menus\' theme (107) not stopped when the menus close');
         else if (mixing.slice(stopAt).some(theme))
             probs.push('the menus\' theme (107) mixed again after it stopped: ' + mixing.slice(stopAt).find(theme));
+        probs.push(...loopsTwice(mixing, ['107']));
         if (ahead * 1000 > QUEUED_MAX_MS)
             probs.push(`${Math.round(ahead * 1000)} ms scheduled ahead on the page at the map (at most ${QUEUED_MAX_MS})`);
         return probs;

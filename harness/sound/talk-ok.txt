@@ -8,6 +8,7 @@
 # Here: the Sioux's emissary (harness/scripts/talks.txt), the talks
 # gone through with OK (Return) and the last response offered, then their
 # popups with OK.
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

@@ -10,7 +10,12 @@
 # the greeting still plays, before the drums start: none must start when
 # it ends; then the Greeks' sent away so, and the Sioux's room opened at
 # once, the Greeks' greeting perhaps still playing (its end must not start
-# drums that outlive the room), the talks ended with Escape.
+# drums that outlive the room), the talks ended with Escape.  The Greeks'
+# greeting ending in the Sioux's room starts that room's drums, its own
+# greeting's end starts them again: one copy only (`sounds drums`: no loop
+# twice at once; the original's mixer had two, src/auto/sound.cpp:
+# snd_wave_play).
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 8000
 key Down Down Down Down     # "Load a Game"
 wait 500

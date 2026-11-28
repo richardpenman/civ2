@@ -13,6 +13,9 @@
 #   theme     the menus' theme looping;
 #   greeting  the drums not started yet (the greeting still playing);
 #   (none)    only logged.
+# Whatever the label, no looping sound twice in the mixer at once (two
+# copies of one loop: in a `sounds` line, or in the mixer's log of what it
+# mixes, "sound: mixing ID ...", of an ID seen looping).
 # waitsound (src/platform/replay.c) waits, in real time, for the sounds
 # that end (a greeting, the menus' clicks) to end first.  The cases:
 #  - a new game set up to its first turn's map, and a game loaded from the
@@ -60,7 +63,16 @@ check() {
 import re, sys
 lines = open(sys.argv[1], encoding='latin-1').read().splitlines()
 probs, seen, label = [], 0, None
+# the sounds seen looping; (a loop twice in the mixer at once)
+loop_ids = set(re.findall(r' (\d+)\([^,)]*,loop', '\n'.join(l for l in lines if l.startswith('sound: state:'))))
+twice = set()
 for l in lines:
+    if l.startswith('sound: mixing'):
+        ids = l.split()[2:]
+        for i in sorted(set(ids)):
+            if ids.count(i) > 1 and i in loop_ids and i not in twice:
+                twice.add(i)
+                probs.append(f'looping sound {i} mixed twice at once: {l}')
     m = re.match(r't=(\d+): sounds ?(\S*)', l)
     if m:
         label = (m.group(2), m.group(1))
@@ -73,6 +85,10 @@ for l in lines:
         seen += 1
         loops = int(re.search(r'loops (\d+)', l).group(1))
         queued = int(re.search(r'queued (\d+) ms', l).group(1))
+        ids = re.findall(r' (\d+\([^,)]*),loop', l)
+        dup = sorted(set(i for i in ids if ids.count(i) > 1))
+        if dup:
+            probs.append(f'{what or "-"} at t={t} ms: a loop twice at once ({", ".join(d + ")" for d in dup)}): {l}')
         if what in ('noloop', 'greeting') and loops:
             probs.append(f'{what} at t={t} ms: a sound loops: {l}')
         elif what == 'noloop' and queued > 3000:

@@ -67,7 +67,7 @@ make test            # the unit tests: recorded cases of the game's functions, i
                      # then the source probes (tests/*_test.cpp: memory-error fixes, g++ -m32)
 make test-extras     # the additions' tests: harness/extras replayed and compared with our recorded output
 make test-media      # opt-in: the CD's videos and music (harness/media), where the game folder has them
-make test-sound      # OpenCiv2's own sound effects: with Classic graphics without the game's Sound folder, with HD graphics first (skipped without data/native/sound); then no looping sound (the menus' theme, the diplomacy room's drums) left after the menus, a game loaded, the room closed (tests/sound_loops_test.sh, harness/sound)
+make test-sound      # OpenCiv2's own sound effects: with Classic graphics without the game's Sound folder, with HD graphics first (skipped without data/native/sound); then no looping sound (the menus' theme, the diplomacy room's drums) left after the menus, a game loaded, the room closed, and never one loop twice at once (tests/sound_loops_test.sh, harness/sound)
 make test-music      # OpenCiv2's own music without the game's Music folder, and the game's own with it
 make test-wonder     # OpenCiv2's own wonder movie (the Pyramids'), picture and sound: with HD graphics first, with Classic graphics without the game's Video folder (skipped without data/native/wonders)
 make unit-record     # record those cases again from the replays (needs the game and run/ref-*)
@@ -471,7 +471,7 @@ builds do not use it.
   the diplomacy room's talks ended with Escape (Classic, HD, without the install) and the AIs
   coming to the player; then a new game played with the keys on the real clock (without the
   install, and Classic): the menus' theme (MENULOOP) stopped when the menus close and never
-  mixed again, and at the first turn's map no more of the game's sound scheduled ahead on the
+  mixed again, no loop ever mixed twice at once, and at the first turn's map no more of the game's sound scheduled ahead on the
   page than its buffers hold (3 s); logs in `run/web-sound`.  Then
   `src/web/test/mobile.mjs`: a phone emulated (844x390 and 390x844 CSS px, a device pixel ratio
   of 3, touch), what the game made of the fingers read from its log (`CIV2_TRACE_MSG`): on a

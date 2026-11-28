@@ -5,6 +5,7 @@
 # once its map is shown no looping sound left (`sounds noloop`; waitsound
 # first: the menus' sounds that end played to their end, in real time).
 # Here: the video ended with a key (Escape: intro_video_on_keydown).
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 3000
 key Escape
 wait 5000

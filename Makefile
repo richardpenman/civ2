@@ -161,7 +161,7 @@ test:                         ## the unit tests: the recorded cases in tests/uni
 # The additions' regression tests (harness/extras_suite.py): our own output,
 # checked by eye and recorded (extras-bless), replayed and compared.  Needs
 # the game files; NAMES limits them to some scripts.
-test-sound: native           ## OpenCiv2's own sound effects: with Classic graphics the start menu's made from data/native/sound and played without the game's Sound folder, none made with it; with HD graphics OpenCiv2's first, with the folder or without (tests/sound_fallback_test.sh; skipped without data/native/sound: make own-assets); then no looping sound left (the menus' theme, the diplomacy room's drums) after the menus, a game loaded, the diplomacy room closed every way, the opening video (tests/sound_loops_test.sh, harness/sound)
+test-sound: native           ## OpenCiv2's own sound effects: with Classic graphics the start menu's made from data/native/sound and played without the game's Sound folder, none made with it; with HD graphics OpenCiv2's first, with the folder or without (tests/sound_fallback_test.sh; skipped without data/native/sound: make own-assets); then no looping sound left (the menus' theme, the diplomacy room's drums) after the menus, a game loaded, the diplomacy room closed every way, the opening video, and never one loop twice at once (tests/sound_loops_test.sh, harness/sound)
 	$(DK) sh -c "sh tests/sound_fallback_test.sh; r=\$$?; sh tests/sound_loops_test.sh || r=1; exit \$$r"
 
 test-music: native            ## OpenCiv2's own music: without the game's Music folder and with audio the game plays track NN from data/native/music, decoded; with the folder the game's own (tests/music_fallback_test.sh; skipped without data/native/music)

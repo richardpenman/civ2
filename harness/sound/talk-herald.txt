@@ -9,6 +9,7 @@
 # opening video, the CD's Video, ended with a click first, as
 # harness/media/m-herald.txt), the Japanese's emissary, the talks ended
 # with Escape.
+# Every `sounds`, and the mixer's log: no looping sound twice at once.
 wait 3000
 click 20 400                # ends the opening video
 wait 5000
