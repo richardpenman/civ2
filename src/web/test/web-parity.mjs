@@ -335,8 +335,10 @@ function desktopRun(c) {
     if (!existsSync(join(ROOT, 'build', 'OpenCiv2')))
         return {skip: 'no build/OpenCiv2 (make port) to compare with'};
     const env = {...process.env, EXE: 'OpenCiv2', TIMEOUT: '600'};
+    // (CIV2_GAME and CIV2_IMAGE kept: the same game folder as the
+    // browser's, and tools/dk's image: CI's civ2-ci)
     for (const k of Object.keys(env))
-        if (/^CIV2_/.test(k))
+        if (/^CIV2_/.test(k) && k !== 'CIV2_GAME' && k !== 'CIV2_IMAGE')
             delete env[k];
     // (the case's variables set inside the container: tools/dk passes on
     // only some of them)

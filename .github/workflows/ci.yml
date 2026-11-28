@@ -1,0 +1,219 @@
+# The tests on every push and pull request, without the original game:
+# GitHub has no copy of it, and none of its files may be in the repository,
+# a cache or an artifact.  So only what runs without the install: the game
+# folder is an empty one (CIV2_GAME, below), GAME unset; the tests that need
+# the install say SKIP (each its own check: text_test.py, text_keys_test.py,
+# civ2-unittest --rules, the sound and music tests' cases with Classic
+# graphics or the game's folders, hd.mjs, smoke.mjs) or are not run here
+# (the rest of make test-extras, test-media, test-wonder, native-suite,
+# web-parity's other cases, setup and net need none but are run).
+# The browser version is published (pages.yml) and the release made
+# (release.yml) only after this has passed for the commit on main.
+#
+# The jobs, in parallel where they can be:
+#  - hd-art, own-assets: data/native/hd and OpenCiv2's own music, sound
+#    effects, heralds, wonder movies and portraits, as pages.yml and
+#    release.yml make them (the same caches: keyed on data/hd-pack.json and
+#    data/own-assets.json with their tools)
+#  - unit: make test (the unit tests' cases, the HD decoder, the source
+#    probes, the translations and texts)
+#  - native: make native, then the extras that run without the install
+#    (make test-extras NAMES='x-no-install x-no-install-hd'), make test-sound
+#    and test-music
+#  - web: make port (build/OpenCiv2, which web-parity compares with), the
+#    browser version as make web makes it without GAME, its tests that run
+#    without the game (unit, setup, net, start; smoke and hd skip), and
+#    make web-parity's cases without the install (x-no-install,
+#    x-no-install-hd); perf.mjs only advisory (its timings vary with the
+#    machine: never fails the run)
+# The native builds and their tests run as locally, by tools/dk, in the CI's
+# image (tools/docker-ci: civ2-dev's Debian 12 and gcc 12, without Wine).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# (a newer push to the same branch or pull request ends the older run)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CIV2_IMAGE: civ2-ci
+  # (an empty folder: the original game is never here)
+  CIV2_GAME: ${{ github.workspace }}/run/no-game
+  GAME: ''
+
+jobs:
+  # The HD graphics' art: as pages.yml's and release.yml's hd-art (the cache
+  # shared; its stamp, .built, kept in the artifact: make finds it up to date)
+  hd-art:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: hd-art-git-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
+          restore-keys: hd-art-git-
+      - name: The art
+        run: python3 tools/build_hd_pack.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: hd-art
+          path: data/native/hd
+          include-hidden-files: true
+          retention-days: 1
+
+  # OpenCiv2's own assets: as pages.yml's and release.yml's own-assets
+  own-assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/openciv2
+          key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
+          restore-keys: own-assets-
+      - name: The music, sound effects, heralds, wonder movies and portraits
+        run: python3 tools/build_own_assets.py
+      - uses: actions/upload-artifact@v7
+        with:
+          name: own-assets
+          path: |
+            data/native/music
+            data/native/sound
+            data/native/heralds
+            data/native/wonders
+            data/native/portraits
+          include-hidden-files: true
+          retention-days: 1
+
+  # make test (no assets needed)
+  unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: The CI's image (tools/docker-ci)
+        run: docker build -q --build-arg UID="$(id -u)" -t civ2-ci tools/docker-ci
+      - name: make test
+        run: |
+          mkdir -p "$CIV2_GAME"
+          make test
+
+  # make native, the extras without the install, the sound and music tests
+  native:
+    needs: [hd-art, own-assets]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
+      - name: The CI's image (tools/docker-ci)
+        run: docker build -q --build-arg UID="$(id -u)" -t civ2-ci tools/docker-ci
+      - name: make native
+        run: |
+          mkdir -p "$CIV2_GAME"
+          make native
+      - name: make test-extras (without the install)
+        run: make test-extras NAMES='x-no-install x-no-install-hd'
+      - name: make test-sound
+        run: make test-sound
+      - name: make test-music
+        run: make test-music
+      # (the runs' screenshots and logs: made without the original game's
+      # files, OpenCiv2's own and the HD art only)
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-runs
+          path: |
+            run/extras-*
+            run/report-extras-*
+            run/sound-*
+            run/music-*
+          retention-days: 7
+
+  # make port, make web (without GAME) and the browser's tests
+  web:
+    needs: [hd-art, own-assets]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: hd-art
+          path: data/native/hd
+      - uses: actions/download-artifact@v8
+        with:
+          name: own-assets
+          path: data/native
+      - name: Toolchain (wasi-sdk, wabt, the set-up's sources; Binaryen; Node.js, Chrome's headless shell)
+        run: |
+          sh tools/fetch-toolchain.sh
+          sh tools/fetch-toolchain.sh web
+          sh tools/fetch-toolchain.sh browser
+      - name: The CI's image (tools/docker-ci)
+        run: docker build -q --build-arg UID="$(id -u)" -t civ2-ci tools/docker-ci
+      - name: make port (build/OpenCiv2, in the image)
+        run: |
+          mkdir -p "$CIV2_GAME"
+          set -o pipefail
+          make port 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
+      - name: The browser version (make web without GAME)
+        env:
+          HD_ART: 1
+          OWN_ASSETS: 1
+        # (make web is this with tools/build_hd_pack.py and
+        # build_own_assets.py first: their results are the artifacts above)
+        run: |
+          set -o pipefail
+          python3 tools/build_web.py 2>&1 | tee build.log || { grep -E "error|Error" build.log | head -20 | sed 's/^/::error::/'; exit 1; }
+      - name: The browser's host (unit.mjs), set-up (setup.mjs) and network play (net.mjs)
+        run: |
+          tools/toolchain/node/bin/node src/web/test/unit.mjs
+          tools/toolchain/node/bin/node src/web/test/setup.mjs
+          tools/toolchain/node/bin/node src/web/test/net.mjs
+      - name: The start without the game (start.mjs)
+        run: tools/toolchain/node/bin/node src/web/test/start.mjs
+      - name: The smoke test and HD graphics (smoke.mjs, hd.mjs; they skip without the game)
+        run: |
+          tools/toolchain/node/bin/node src/web/test/smoke.mjs
+          tools/toolchain/node/bin/node src/web/test/hd.mjs
+      - name: make web-parity's cases without the install
+        # (every case named must run: a SKIP, e.g. build/OpenCiv2's replay
+        # not made, fails here)
+        run: |
+          set -o pipefail
+          tools/toolchain/node/bin/node src/web/test/web-parity.mjs x-no-install x-no-install-hd 2>&1 | tee parity.log
+          if grep -q '^SKIP' parity.log; then echo "::error::web-parity skipped a case"; exit 1; fi
+      # (timings: they vary with the machine, so only reported, never a failure)
+      - name: A unit's moves timed (perf.mjs, advisory)
+        continue-on-error: true
+        timeout-minutes: 10
+        run: tools/toolchain/node/bin/node src/web/test/perf.mjs
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-runs
+          path: |
+            run/web-start
+            run/web-parity
+            run/web-parity-desktop
+          retention-days: 7

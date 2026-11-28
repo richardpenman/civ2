@@ -87,6 +87,11 @@ async function replay(send, evaluate, waitFor) {
 async function main() {
     if (!existsSync(join(WEB, 'civ2.wasm')))
         throw new Error('no build/web: make web first');
+    // (it needs the player's game: none here, as in CI, it is skipped)
+    if (!existsSync(GAME) || !readdirSync(GAME).some((n) => n.toLowerCase() === 'civ2.exe')) {
+        console.log('smoke.mjs: skipped (no original game in ' + GAME + ')');
+        return;
+    }
     mkdirSync(OUT, {recursive: true});
     mkdirSync(join(ROOT, 'run'), {recursive: true});
     const work = tmpDir(), tmp = work.path;   // (run/web-tmp-*: cdp.mjs)

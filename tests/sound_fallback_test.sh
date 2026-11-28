@@ -17,6 +17,10 @@
 #    them), and not mixed again by the time the map is shown.
 # Inside the container (make test-sound): sh tests/sound_fallback_test.sh
 # (EXE: the build to run, default civ2-linux32)
+# Without the original game's files in the game folder ($CIV2_GAME, /civ2;
+# CI, .github/workflows/ci.yml, has none): the cases with Classic graphics
+# (its pictures: civ2.exe, the sheets) and those with its Sound folder are
+# skipped, each saying so; those with HD graphics without the folder run.
 cd "$(dirname "$0")/.." || exit 1
 # (without them, OWN_ASSETS=, there is nothing to make, and the game plays
 # its own or nothing, as before)
@@ -50,22 +54,40 @@ PY
         echo "FAIL: $2, the MENULOOP.WAV made is not 22050 Hz, 8 bits, mono"; fail=1
     fi
 }
-# Classic graphics (a replay's), without the Sound folder: OpenCiv2's
-run sound-fallback CIV2_TEST_HD= CIV2_NO_SOUND=1
-own sound-fallback "Classic graphics without the Sound folder"
-# Classic graphics with it: the game's own, nothing made
-run sound-fallback-install CIV2_TEST_HD=
-if grep -q "sound: .* made from" run/sound-fallback-install/hook.log || [ -d /tmp/g/OpenCiv2Sounds ]; then
-    echo "FAIL: Classic graphics with the Sound folder, a sound was made (run/sound-fallback-install/hook.log)"; fail=1
+# The game folder's pictures (Classic graphics) and Sound folder (none in CI)
+game=${CIV2_GAME:-/civ2}
+has() { [ -n "$(find "$game" -maxdepth 1 -iname "$1" 2>/dev/null | head -1)" ]; }
+classic=; has civ2.exe && classic=1
+folder=; has sound && folder=1
+[ -n "$classic" ] || echo "SKIP sound effects with Classic graphics: no original game in $game (its pictures)"
+[ -n "$folder" ] || echo "SKIP sound effects with the game's Sound folder: no Sound folder in $game"
+done=
+if [ -n "$classic" ]; then
+    # Classic graphics (a replay's), without the Sound folder: OpenCiv2's
+    run sound-fallback CIV2_TEST_HD= CIV2_NO_SOUND=1
+    own sound-fallback "Classic graphics without the Sound folder"
+    done="with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder"
+fi
+if [ -n "$classic" ] && [ -n "$folder" ]; then
+    # Classic graphics with it: the game's own, nothing made
+    run sound-fallback-install CIV2_TEST_HD=
+    if grep -q "sound: .* made from" run/sound-fallback-install/hook.log || [ -d /tmp/g/OpenCiv2Sounds ]; then
+        echo "FAIL: Classic graphics with the Sound folder, a sound was made (run/sound-fallback-install/hook.log)"; fail=1
+    fi
+    done="$done, none with it"
 fi
 # HD graphics (CIV2_TEST_HD=1; the art, data/native/hd, must be there):
 # OpenCiv2's first, with the Sound folder and without it
 if [ -f data/native/hd/pictures.txt ]; then
     run sound-fallback-hd CIV2_TEST_HD=1 CIV2_NO_SOUND=1
     own sound-fallback-hd "HD graphics without the Sound folder"
-    run sound-fallback-hd-install CIV2_TEST_HD=1
-    own sound-fallback-hd-install "HD graphics with the Sound folder"
-    hd="; with HD graphics OpenCiv2's first, with the folder or without"
+    hd="with HD graphics OpenCiv2's first, without the folder"
+    if [ -n "$folder" ]; then
+        run sound-fallback-hd-install CIV2_TEST_HD=1
+        own sound-fallback-hd-install "HD graphics with the Sound folder"
+        hd="$hd or with it"
+    fi
+    done="${done:+$done; }$hd"
 else
     echo "SKIP sound effects with HD graphics: no data/native/hd (make hd-art)"
     hd=
@@ -85,7 +107,7 @@ click() {
     fi
 }
 ahead=
-click sound-click CIV2_TEST_HD= "Classic graphics"
+[ -n "$classic" ] && [ -n "$folder" ] && click sound-click CIV2_TEST_HD= "Classic graphics"
 [ -n "$hd" ] && click sound-click-hd CIV2_TEST_HD=1 "HD graphics"
 # The start menus' theme stopped when they close (src/auto/sound.cpp:
 # snd_menu_end, snd_wave_strip_queued): a new game set up (the main menu's
@@ -103,8 +125,10 @@ theme() {
               END { exit !(s && e && m && !bad) }' "run/$1/hook.log"; then
         echo "FAIL: $3, the menus' theme not stopped when they close, or mixed again before the map (run/$1/hook.log)"; fail=1
     fi
+    themes="${themes:+$themes, }$3"
 }
-theme sound-theme CIV2_TEST_HD= "Classic graphics"
+themes=
+[ -n "$classic" ] && [ -n "$folder" ] && theme sound-theme CIV2_TEST_HD= "Classic graphics"
 [ -n "$hd" ] && theme sound-theme-hd CIV2_TEST_HD=1 "HD graphics"
-[ $fail = 0 ] && echo "PASS sound fallback (with Classic graphics $(grep -c 'sound: .* made from' run/sound-fallback/hook.log) made without the Sound folder, none with it$hd; the menu's click mixed in ahead of the queued theme$ahead; the theme stopped when the menus close, taken out of the queued buffers, not mixed again before the map)"
+[ $fail = 0 ] && echo "PASS sound fallback (${done:-nothing made: no case ran}; the menu's click mixed in ahead of the queued theme${ahead:-: no case ran}; the theme stopped when the menus close, taken out of the queued buffers, not mixed again before the map: ${themes:-no case ran})"
 exit $fail

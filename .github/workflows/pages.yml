@@ -1,5 +1,8 @@
 # Publishes the browser version (docs/BROWSER.md) to GitHub Pages,
-# https://openciv2.github.io/openciv2/, on every push to main: build/web as
+# https://openciv2.github.io/openciv2/, on every push to main once CI
+# (ci.yml) has passed for it (workflow_run: the commit CI tested, never one
+# whose tests failed or were cancelled; by hand, workflow_dispatch: main as
+# it is): build/web as
 # make web makes it, but never with the original game (no GAME=1: the site
 # starts straight into the game with the HD graphics and OpenCiv2's own
 # texts, rules, music, sound effects, heralds and wonder movie;
@@ -13,7 +16,9 @@
 name: Browser version on GitHub Pages
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -27,12 +32,28 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# (the commit CI passed: workflow_run's head_sha; by hand, the one run on)
+env:
+  SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
 jobs:
+  # Only after CI passed for a push to main (or by hand)
+  tested:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "CI passed for $SHA"
+
   # The HD graphics' art: as release.yml's hd-art (its cache shared)
   hd-art:
+    needs: tested
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/openciv2
@@ -49,9 +70,12 @@ jobs:
   # OpenCiv2's own music, sound effects, heralds and wonder movies: as
   # release.yml's own-assets (its cache shared)
   own-assets:
+    needs: tested
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/openciv2
@@ -75,6 +99,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           name: hd-art

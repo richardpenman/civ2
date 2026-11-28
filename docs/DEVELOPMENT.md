@@ -73,6 +73,27 @@ make test-wonder     # OpenCiv2's own wonder movie (the Pyramids'), picture and 
 make unit-record     # record those cases again from the replays (needs the game and run/ref-*)
 ```
 
+### CI
+
+`.github/workflows/ci.yml` runs on every push and pull request, without the original game (GitHub
+has none: never in the repository, a cache or an artifact): the game folder an empty one
+(`CIV2_GAME`), the Docker targets in the CI's image (`tools/docker-ci`, civ2-dev's Debian 12 and
+gcc 12 without Wine: `CIV2_IMAGE=civ2-ci` for `tools/dk`). It runs `make test`; `make native`,
+`make test-extras NAMES='x-no-install x-no-install-hd'`, `make test-sound` and `test-music` (their
+cases with Classic graphics or the game's Sound and Music folders say SKIP without the game); `make
+port`, the browser version as `make web` makes it without `GAME`, its tests unit, setup, net and
+start (smoke and hd skip without the game), `web-parity.mjs x-no-install x-no-install-hd`, and
+perf.mjs only as advice (timings vary with the machine). The same locally:
+
+```sh
+docker build --build-arg UID=$(id -u) -t civ2-ci tools/docker-ci
+mkdir -p run/no-game && export CIV2_IMAGE=civ2-ci CIV2_GAME=$PWD/run/no-game && unset GAME
+make test   # ... as ci.yml
+```
+
+The browser version's site (`pages.yml`) and the "latest" release (`release.yml`) are made only
+after CI has passed for the commit pushed to main (`workflow_run`).
+
 The replay checker requires a nonempty, matching set of PNG screenshots (including
 dimensions and pixels) and nonempty `rand.log` traces on both sides. A seed-only
 trace is valid; missing or empty logs are not evidence of matching random calls.

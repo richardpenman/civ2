@@ -1,4 +1,7 @@
-# Builds the game for Windows, Linux and macOS on every push to main and
+# Builds the game for Windows, Linux and macOS on every push to main once CI
+# (ci.yml: the build and the tests without the original game, make test
+# among them) has passed for it (workflow_run: the commit CI tested; by
+# hand, workflow_dispatch: main as it is) and
 # publishes them as the "latest" release: one program each that sets the
 # game up from the user's installed copy, CD or disc image of the CD
 # (src/host/setup.c).  The
@@ -15,7 +18,9 @@
 name: Build and release
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -28,12 +33,26 @@ concurrency:
 
 env:
   SDL2_VERSION: 2.30.9
+  # (the commit CI passed: workflow_run's head_sha; by hand, the one run on)
+  SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
 
 jobs:
+  # Only after CI passed for a push to main (or by hand)
+  tested:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "CI passed for $SHA"
+
   game:
+    needs: tested
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - name: Toolchain (wasi-sdk, wabt)
         run: sh tools/fetch-toolchain.sh
       - name: The game as C
@@ -54,9 +73,12 @@ jobs:
   # from them: the same pin and tool, no download nor build; a new pin
   # fetches only the files its commit changed).
   hd-art:
+    needs: tested
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/openciv2
@@ -79,9 +101,12 @@ jobs:
   # nothing converted, no Docker); ~/.cache/openciv2 kept
   # between runs (the files fetched and what was made from them).
   own-assets:
+    needs: tested
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/cache@v4
         with:
           path: ~/.cache/openciv2
@@ -100,31 +125,13 @@ jobs:
             data/native/portraits
           retention-days: 1
 
-  # The unit tests (tests/unit: recorded calls of the game's functions, run
-  # again and compared; no game files needed).  The runner is the 32-bit
-  # Linux build (gcc -m32).  Not needed by the release.
-  # Debian 12 as the dev container (tools/docker): the same gcc (12) as the
-  # one the cases were recorded with.
-  unit-tests:
-    runs-on: ubuntu-24.04
-    container: debian:12
-    steps:
-      - uses: actions/checkout@v7
-      - name: 32-bit toolchain, SDL2 and zlib
-        run: |
-          dpkg --add-architecture i386
-          apt-get update
-          apt-get install -y --no-install-recommends python3 gcc-multilib g++-multilib libsdl2-dev:i386 zlib1g-dev:i386
-      - name: Build the runner
-        run: python3 tools/build_native.py --target linux32test
-      - name: Run the unit tests
-        run: cd build && CIV2_DATA=../data/native ./civ2-unittest --mask ../tests/unit/textmask.tsv ../tests/unit/*.gz
-
   windows:
     needs: [game, hd-art, own-assets]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           name: game-c
@@ -179,7 +186,7 @@ jobs:
           OpenCiv2.exe FOLDER             play the game in FOLDER where it is
           CIV2_WINDOW=1                   a window, not full screen
 
-          Build ${{ github.sha }}
+          Build ${{ env.SHA }}
           TXT
           sed -i 's/^          //' pkg/OpenCiv2/README.txt
           (cd pkg && zip -qr ../OpenCiv2-windows.zip OpenCiv2)
@@ -195,6 +202,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           name: game-c
@@ -264,7 +273,7 @@ jobs:
           ./OpenCiv2 FOLDER             play the game in FOLDER where it is
           CIV2_WINDOW=1                 a window, not full screen
 
-          Build ${{ github.sha }}
+          Build ${{ env.SHA }}
           TXT
           sed -i 's/^          //' pkg/OpenCiv2/README.txt
           tar czf OpenCiv2-linux-x86_64.tar.gz -C pkg OpenCiv2
@@ -281,6 +290,8 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           name: game-c
@@ -369,7 +380,7 @@ jobs:
                                .cue: with only the music missing, adds it)
             FOLDER             play the game in FOLDER where it is
 
-          Build ${{ github.sha }}
+          Build ${{ env.SHA }}
           TXT
           sed -i '' 's/^          //' pkg/README.txt
           ditto -c -k --keepParent pkg OpenCiv2-macos.zip
@@ -384,6 +395,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           path: out
@@ -394,7 +407,7 @@ jobs:
         run: |
           git tag -f latest
           git push -f origin latest
-          notes="Build of ${GITHUB_SHA::7} for Windows, Linux (x86-64) and macOS (Apple silicon and Intel): one program that sets the game up from your copy of Civilization II Multiplayer Gold Edition, with the music from a disc image of its CD, else OpenCiv2's own (see README.txt in each)."
+          notes="Build of ${SHA::7} for Windows, Linux (x86-64) and macOS (Apple silicon and Intel): one program that sets the game up from your copy of Civilization II Multiplayer Gold Edition, with the music from a disc image of its CD, else OpenCiv2's own (see README.txt in each)."
           if gh release view latest >/dev/null 2>&1; then
             gh release edit latest --title "Latest build" --notes "$notes" --prerelease=false --latest
           else

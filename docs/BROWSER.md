@@ -24,8 +24,8 @@ the desktop's test scripts in it and compares every screenshot and the game's ra
 the desktop's, so that what goes wrong only in the browser shows ([DEVELOPMENT.md](DEVELOPMENT.md),
 the browser section).
 
-Every push to main publishes it at <https://openciv2.github.io/openciv2/>
-(`.github/workflows/pages.yml`): built as `make web` builds it, with the pinned HD art and
+Every push to main publishes it at <https://openciv2.github.io/openciv2/> once CI has passed for
+it (`.github/workflows/pages.yml`, after `ci.yml`): built as `make web` builds it, with the pinned HD art and
 OpenCiv2's own music, sound effects, heralds and wonder movie made as the release makes them, never
 with the game (no `GAME=1`), and checked before it is published to hold none of the original's
 files. Its URLs are all relative, so it plays under that sub-path as at a site's root. There is no
