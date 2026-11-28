@@ -11,9 +11,19 @@
 //    lines' variables), compared with harness/extras/expected/NAME.txt
 //    (each screenshot's hash, the rand() trace's hash) and NAME.rand.gz (the
 //    trace itself), as harness/extras_suite.py compares the desktop's;
+//  - harness/media scripts as make test-media runs them (the CD's KINGS,
+//    Video and Music in the game's folder: CIV2_KEEP_MEDIA=1, the music on
+//    the virtual clock: CIV2_TEST_MUSIC=1), compared with
+//    harness/media/expected/NAME.txt and NAME.rand.gz as those, and
+//    NAME.calls (the sounds, videos and music the game asked for: calls.log,
+//    line by line) as extras_suite.py --media compares the desktop's
+//    (skipped where the game's folder lacks KINGS, Video or Music);
 //  - games of the native suite (harness/scripts), compared with the
 //    original's recording run/ref-NAME as make native-suite compares the
 //    desktop's (skipped where this machine has no recording).
+// A case that needs the original's files (all but CIV2_NO_GRAPHICS=1 ones)
+// is skipped where $CIV2_GAME has no civ2.exe (CI's empty folder): CI runs
+// only the cases without the install (.github/workflows/ci.yml).
 //
 // The game's files: those of $CIV2_GAME (default ~/Civ2) as
 // tools/native-run.sh gives them to the desktop's replay (the harness's
@@ -46,7 +56,14 @@
 //  - the browser draws into a page 1280x800 (the replay's own desktop size
 //    is set by the game: CIV2_TEST_FULL, or the replay's default);
 //  - the screenshots are the game's logical frames (replay.c's `shot`),
-//    not the page's canvas, as on the desktop.
+//    not the page's canvas, as on the desktop;
+//  - OpenCiv2's own wonder movies (CIV2_TEST_WONDER=1 cases): the page
+//    fetches them from the site (data/wonders, the same files as
+//    data/native/wonders) while the game runs and puts them in when they
+//    have come, which a replay cannot wait for (until then the game plays
+//    the CD's, or none); the desktop has them from its start.  So the
+//    runner puts the site's files where the page would put them
+//    (CIV2_DATA/wonders) before the game starts.
 
 import {readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync, statSync, copyFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
@@ -56,32 +73,43 @@ import {createHash} from 'node:crypto';
 import {gunzipSync, inflateSync, deflateSync} from 'node:zlib';
 import {ROOT, WEB, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 
-// The representative set (some 7 minutes): with the original's files and
+// The representative set (some 10 minutes): with the original's files and
 // without (no install), Classic and HD graphics, sharp text, translations
 // (Latin-1, Greek, Chinese), the real file dialog, Settings, the city view
-// in HD, two games of the native suite.
+// in HD, three games of the native suite, and the media (HD graphics with
+// the install: harness/extras has no HD case but the no-install ones).
 const CASES = [
     'x-basic', 'x-b20-buttons', 'x-b20-buttons-classic', 'x-options', 'x-options-sharp',
     'x-sharp', 'x-own-text', 'x-lang-de', 'x-lang-el-sharp', 'x-lang-zh',
     'x-no-install', 'x-no-install-hd', 'x-no-install2-hd', 'x-no-install-options',
     'suite:newgame', 'suite:citywindow', 'suite:talks',
+    // the media (the CD's videos and music; HD graphics with the install):
+    // a herald in the diplomacy room, Classic and HD (the Japanese emissary
+    // over the historical portrait); the wonder movies, the CD's with HD
+    // graphics, and OpenCiv2's own Pyramids'
+    'm-herald', 'm-herald-hd', 'm-wonder-hd', 'm-wonder-own',
 ];
 
 const OUT = join(ROOT, 'run', 'web-parity');
 const GAME = process.env.CIV2_GAME || join(homedir(), 'Civ2');
 const EXTRAS = join(ROOT, 'harness', 'extras');
+const MEDIA = join(ROOT, 'harness', 'media');
+const MEDIA_DIRS = ['kings', 'video', 'music'];   // (as extras_suite.py's)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (s) => console.log(s);
 
 // ---- the cases ----
 
-// {name, script (relative to harness/), env, expected: 'extras' | 'suite'}
-// for every test run of harness/extras (as extras_suite.py's variants)
+// {name, script (relative to harness/), env, expected: 'extras' | 'media' |
+// 'suite'} for every test run of harness/extras, then of harness/media (as
+// extras_suite.py's variants; the media's with its CIV2_KEEP_MEDIA=1
+// CIV2_TEST_MUSIC=1)
 function extrasCases() {
     const out = [];
-    for (const f of readdirSync(EXTRAS).filter((n) => n.endsWith('.txt')).sort()) {
+    for (const [dir, kind] of [[EXTRAS, 'extras'], [MEDIA, 'media']])
+    for (const f of readdirSync(dir).filter((n) => n.endsWith('.txt')).sort()) {
         const base = f.slice(0, -4);
-        for (const line of readFileSync(join(EXTRAS, f), 'latin1').split('\n')) {
+        for (const line of readFileSync(join(dir, f), 'latin1').split('\n')) {
             if (!line.startsWith('#'))
                 break;
             const s = line.slice(1).trim(), i = s.indexOf(':');
@@ -92,7 +120,9 @@ function extrasCases() {
                 continue;
             const env = Object.fromEntries(s.slice(i + 1).trim().split(/\s+/).filter(Boolean)
                 .map((w) => [w.slice(0, w.indexOf('=')), w.slice(w.indexOf('=') + 1)]));
-            out.push({name: base + (words[1] ? '-' + words[1] : ''), script: 'extras/' + f, env, expected: 'extras'});
+            if (kind === 'media')
+                Object.assign(env, {CIV2_KEEP_MEDIA: '1', CIV2_TEST_MUSIC: '1'});
+            out.push({name: base + (words[1] ? '-' + words[1] : ''), script: kind + '/' + f, env, expected: kind});
         }
     }
     return out;
@@ -107,7 +137,7 @@ function findCase(name, extras) {
     }
     const c = extras.find((x) => x.name === name);
     if (!c)
-        throw new Error('no such case: ' + name + ' (harness/extras NAME or NAME-LABEL, or suite:NAME)');
+        throw new Error('no such case: ' + name + ' (harness/extras or harness/media NAME or NAME-LABEL, or suite:NAME)');
     return c;
 }
 
@@ -310,10 +340,18 @@ const traceHash = (t) => createHash('sha256').update(t.join('\n')).digest('hex')
 // ---- what is expected: the desktop's ----
 
 function expected(c) {
-    if (c.expected === 'extras') {
-        const p = join(EXTRAS, 'expected', c.name + '.txt');
+    const have = new Set(readdirSync(GAME).map((n) => n.toLowerCase()));
+    if (!c.env.CIV2_NO_GRAPHICS && !have.has('civ2.exe'))
+        return {skip: 'needs the original game (' + GAME + ' has no civ2.exe: CIV2_GAME)'};
+    if (c.expected === 'media' && MEDIA_DIRS.some((d) => !have.has(d)))
+        return {skip: 'needs the CD\'s KINGS, Video and Music in ' + GAME + ' (docs/DEVELOPMENT.md, "Media tests")'};
+    if (c.env.CIV2_TEST_WONDER && !existsSync(join(WEB, 'data', 'wonders', 'index.json')))
+        return {skip: 'needs OpenCiv2\'s own wonder movies on the site (build/web/data/wonders: make own-assets, make web)'};
+    if (c.expected === 'extras' || c.expected === 'media') {
+        const base = c.expected === 'extras' ? EXTRAS : MEDIA, rel = 'harness/' + c.expected + '/expected/';
+        const p = join(base, 'expected', c.name + '.txt');
         if (!existsSync(p))
-            return {skip: 'nothing expected (harness/extras/expected/' + c.name + '.txt)'};
+            return {skip: 'nothing expected (' + rel + c.name + '.txt)'};
         const shots = {};
         let rand = null;
         for (const line of readFileSync(p, 'latin1').split('\n')) {
@@ -325,11 +363,14 @@ function expected(c) {
             else
                 shots[w[0]] = w.slice(1).join(' ');
         }
-        const tp = join(EXTRAS, 'expected', c.name + '.rand.gz');
+        const tp = join(base, 'expected', c.name + '.rand.gz');
         const trace = existsSync(tp) ? gunzipSync(readFileSync(tp)).toString('latin1').split('\n').filter((l) => l !== '') : null;
-        const blessed = join(ROOT, 'run', 'extras-blessed', c.name);
-        return {shots, rand, trace, images: existsSync(blessed) ? blessed : null,
-                against: 'harness/extras/expected'};
+        const blessed = join(ROOT, 'run', c.expected + '-blessed', c.name);
+        // (the media: calls.log's lines, as extras_suite.py's load_calls)
+        const cp = join(base, 'expected', c.name + '.calls');
+        const calls = c.expected === 'media' ? (existsSync(cp) ? lines(readFileSync(cp, 'latin1')) : 'none') : null;
+        return {shots, rand, trace, calls, images: existsSync(blessed) ? blessed : null,
+                against: rel.slice(0, -1)};
     }
     const ref = join(ROOT, 'run', 'ref-' + c.name);
     if (!existsSync(join(ref, 'rand.log')))
@@ -482,6 +523,10 @@ async function main() {
                       CIV2_CALL_LOG: '/replay/out/calls.log', CIV2_WINDIR: '/tmp/g'};
         if (!env.CIV2_PLAY_TEXT)
             vars.CIV2_WINE_TEXT = '1';
+        // (OpenCiv2's own wonder movies, there from the start: above)
+        const wonders = env.CIV2_TEST_WONDER ?
+            JSON.parse(readFileSync(join(WEB, 'data', 'wonders', 'index.json'), 'utf8')).flatMap((nn) =>
+                ['webp', 'ogg'].map((x) => 'data/wonders/wonder' + nn + '.' + x)) : [];
         for (const [k, v] of Object.entries(env))
             if (!/^CIV2_(NO_\w+|KEEP_MEDIA)$/.test(k))
                 vars[k] = v;
@@ -502,6 +547,12 @@ async function main() {
                 args[1] = '/tmp/g';
                 fs.mkdirs('/replay/out');
                 Object.assign(env, ${JSON.stringify(vars)});
+                for (const w of ${JSON.stringify(wonders)}) {
+                    const r = await fetch('/' + w);
+                    if (!r.ok)
+                        throw new Error('not on the site: ' + w);
+                    fs.put(env.CIV2_DATA + '/' + w.slice(5), new Uint8Array(await r.arrayBuffer()));
+                }
             };`}));
         const hd = env.CIV2_TEST_HD || '0';
         await send('Page.navigate', {url: url + '?hd=' + hd});
@@ -523,6 +574,9 @@ async function main() {
 }
 
 // ---- the comparison (as extras_suite.py's differences) ----
+
+// a text's lines, as Python's splitlines (no last empty one)
+const lines = (t) => t.split(/\r\n|\n|\r/).filter((l, i, a) => i < a.length - 1 || l !== '');
 
 function compare(c, exp, out, status) {
     const probs = [];
@@ -572,6 +626,23 @@ function compare(c, exp, out, status) {
             } else
                 note = ' (no picture of the desktop\'s on this machine: only its hash)';
             probs.push(`${s}: DIFFERS` + (a !== e ? ` (size ${a}, expected ${e})` : '') + note);
+        }
+    }
+    if (exp.calls) {
+        // (the media: what the game asked to be played, line by line, as
+        // extras_suite.py's calls_differences)
+        const cp = join(out, 'calls.log');
+        const got = existsSync(cp) ? lines(readFileSync(cp, 'latin1')) : [];
+        let i = 0;
+        if (exp.calls === 'none')
+            probs.push(`calls.log: nothing expected (${exp.against}/${c.name}.calls)`);
+        else
+        while (i < got.length && i < exp.calls.length && got[i] === exp.calls[i])
+            i++;
+        if (exp.calls !== 'none' && (i < got.length || i < exp.calls.length)) {
+            const line = `calls.log: DIFFERS at line ${i + 1}: ${got[i] ?? '<end>'}, expected ${exp.calls[i] ?? '<end>'}`;
+            probs.push(line);
+            writeFileSync(join(dir, 'calls.txt'), line + '\n');
         }
     }
     const tp = join(out, 'rand.log');

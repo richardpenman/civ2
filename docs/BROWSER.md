@@ -20,9 +20,10 @@ make serve        # builds build/web (first time: downloads Binaryen into tools/
 
 It is tested in Chrome, and should run in any browser from 2023 on (Edge 103, Firefox 113,
 Safari 16.4). `make web-test` tests the page and a game in it; `make web-parity` replays a set of
-the desktop's test scripts in it and compares every screenshot and the game's random numbers with
-the desktop's, so that what goes wrong only in the browser shows ([DEVELOPMENT.md](DEVELOPMENT.md),
-the browser section).
+the desktop's test scripts in it (with the CD's videos and music too) and compares every
+screenshot, the game's random numbers and the sounds, videos and music it asked for with the
+desktop's, so that what goes wrong only in the browser shows ([DEVELOPMENT.md](DEVELOPMENT.md), the
+browser section).
 
 Every push to main publishes it at <https://openciv2.github.io/openciv2/> once CI has passed for
 it (`.github/workflows/pages.yml`, after `ci.yml`): built as `make web` builds it, with the pinned HD art and

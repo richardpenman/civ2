@@ -1,0 +1,18 @@
+video civ2\video\opening.avi
+sound 107 0 1
+sound 106 0 0
+sound -107 0 0
+sound -108 0 0
+sound 106 0 0
+music play 7 t=10242
+sound 106 0 0
+sound -107 0 0
+sound -108 0 0
+music stop 7 t=29312
+music play 5 t=29312
+music stop 5 t=34218
+video civ2\video\wonder05.avi
+music play 10 t=76695
+music stop 10 t=87326
+video civ2\video\wonder00.avi
+music play 7 t=92450

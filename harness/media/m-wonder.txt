@@ -2,9 +2,13 @@
 # Oracle's, 42 s) played to its end, and the map after its window closes;
 # then the next one (the Pyramids') closed early with Escape.  (The opening
 # video ended with a click; with HD graphics none is played, and the click
-# falls on the main menu's backdrop.)
+# falls on the main menu's backdrop.)  m-wonder-own: with HD graphics and
+# OpenCiv2's own wonder movies (CIV2_TEST_WONDER=1; data/native/wonders, make
+# own-assets): the Oracle's still the CD's, the Pyramids' OpenCiv2's own
+# (wonder00.webp, w4), played over the game's Video.
 # test:
 # test hd: CIV2_TEST_HD=2
+# test own: CIV2_TEST_HD=2 CIV2_TEST_WONDER=1
 wait 3000
 click 20 400                # ends the opening video (HD: none, a click on the menu's backdrop)
 wait 5000

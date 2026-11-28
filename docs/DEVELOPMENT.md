@@ -133,7 +133,7 @@ builds they need), its logs in `run/check-all/only-DATE-TIME`: for re-running a 
 under load (the browser tests' and test-wonder's timings).
 
 It takes about 75 minutes on a 2-CPU machine (the browser version's build about 10, web-parity
-about 14, native-suite about 11, test-extras about 6) when the builds are mostly up to date; longer
+about 17, native-suite about 11, test-extras about 6) when the builds are mostly up to date; longer
 under load.
 
 The replay checker requires a nonempty, matching set of PNG screenshots (including
@@ -248,7 +248,10 @@ it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the 
   Pyramids' closed with Escape.  `m-music`: the tracks played at random and at each one's end,
   Pick Music, the Game Options' Music unticked (stop) and ticked again.  The opening, council and
   herald and the wonder's movie also with HD graphics (`-hd`): their game pixels, `rand()` traces and `calls.log` are
-  those of HD off.
+  those of HD off.  `m-wonder-own`: the same with OpenCiv2's own wonder movies
+  (`CIV2_TEST_WONDER=1`, `data/native/wonders`, made by `make own-assets`), the Oracle's still the
+  CD's, the Pyramids' OpenCiv2's own played over the game's Video (its `calls.log` as `m-wonder-hd`'s:
+  the game looks for `wonder00.avi` all the same).
 * The scripts first skip the opening video (Escape) but `m-opening`.
 
 `tools/native-run.sh` stops a run that hangs after `TIMEOUT` seconds (default 600; the suites:
@@ -483,7 +486,7 @@ builds do not use it.
   tapped, the city tapped on the map; screenshots in `run/web-mobile`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
-* **Parity with the desktop** (`make web-parity`, `src/web/test/web-parity.mjs`; some 8 minutes
+* **Parity with the desktop** (`make web-parity`, `src/web/test/web-parity.mjs`; some 11 minutes
   with the build): the desktop's replays run in the browser version and compared with the desktop's
   results, to catch what goes wrong only in the browser (a dialog drawn grey on grey, the city
   view's shading pixelated).  A representative set: harness/extras scripts with the original's
@@ -491,17 +494,26 @@ builds do not use it.
   dialog, Settings, the city view in HD, compared with `harness/extras/expected` (each
   screenshot's hash and the `rand()` trace, as `make test-extras`), and native-suite games (newgame,
   citywindow, talks) compared with the original's recordings `run/ref-NAME` (skipped where there are
-  none).  The game's files are given to the page's store as `tools/native-run.sh` gives them to the
-  desktop's replay (the harness's `CIV2.DAT` and `CIV.INI`, no KINGS, Video or Music, the `CIV2_NO_*`
-  variables honoured), the game run from `/tmp/g` as there (the file dialog shows the folder).  The
-  cases without the original's pictures (`CIV2_NO_GRAPHICS=1`) too: the 32-bit test build uses SSE2
-  arithmetic (`-msse2 -mfpmath=sse`, `tools/build_native.py`), so the pictures it makes from the HD
-  art (`synth.c`'s dithering, `hd.c`'s scaling) are the desktop game's and the browser's pixel for
-  pixel (with x87 they differed in some 20,000 to 200,000 pixels).  PASS or FAIL per case;
-  on a mismatch `run/web-parity/CASE` holds `SHOT-web.png`, `SHOT-desktop.png` (where this machine has
-  the desktop's picture: `run/extras-blessed`, `run/ref-NAME`), `SHOT-diff.png`, `trace.txt` (the first
-  differing `rand()` call) and the browser's output.  `make web-parity NAMES="x-sharp suite:turns"` runs
-  others (`NAMES=--list`: every extras case).
+  none).  The media (`harness/media`, with the CD's `KINGS`, `Video` and `Music`: `m-herald`,
+  `m-herald-hd`, `m-wonder-hd`, `m-wonder-own`) as `make test-media` runs them (`CIV2_KEEP_MEDIA=1`,
+  `CIV2_TEST_MUSIC=1`), compared with `harness/media/expected`, `calls.log` too (the sounds, videos
+  and music the game asked for, line by line), skipped where the game folder lacks those folders;
+  for `m-wonder-own` the runner puts the site's own wonder movies (`build/web/data/wonders`) in the
+  game's data before it starts, where the page itself fetches them while the game runs (a replay
+  cannot wait for that).  The cases that need the original's files (all but `CIV2_NO_GRAPHICS=1`
+  ones) say SKIP where `$CIV2_GAME` has no `civ2.exe` (CI).  The game's files are given to the
+  page's store as `tools/native-run.sh` gives them to the desktop's replay (the harness's `CIV2.DAT`
+  and `CIV.INI`, no KINGS, Video or Music but for the media, the `CIV2_NO_*` variables honoured),
+  the game run from `/tmp/g` as there (the file dialog shows the folder).  The cases without the
+  original's pictures (`CIV2_NO_GRAPHICS=1`) too: the 32-bit test build uses SSE2 arithmetic
+  (`-msse2 -mfpmath=sse`, `tools/build_native.py`), so the pictures it makes from the HD art
+  (`synth.c`'s dithering, `hd.c`'s scaling) are the desktop game's and the browser's pixel for pixel
+  (with x87 they differed in some 20,000 to 200,000 pixels).  PASS or FAIL per case; on a mismatch
+  `run/web-parity/CASE` holds `SHOT-web.png`, `SHOT-desktop.png` (where this machine has the
+  desktop's picture: `run/extras-blessed`, `run/media-blessed`, `run/ref-NAME`), `SHOT-diff.png`,
+  `trace.txt` (the first differing `rand()` call), `calls.txt` (the media: the first differing line of
+  `calls.log`) and the browser's output.  `make web-parity NAMES="x-sharp suite:turns"` runs
+  others (`NAMES=--list`: every extras and media case).
 * **Network games, browser and native** (`tools/xdnet/webnet.py native-web|web-native [--turns N]
   [--exe OpenCiv2]`; on the docker host, after `make web` and `make port`): tools/xdnet/nettest.py's
   steps and checks, one player being the browser version (src/web/test/player.mjs: Chrome's
