@@ -354,8 +354,6 @@ Forlasi
 Elekti
 @@openciv2.web.loading
 Þargante ...
-@@openciv2.web.tagline
-Civilization II Multiplayer Gold Edition, rekonstruita por funkcii en via retumilo: kopio de la originala ludo ne necesas.
 @@openciv2.web.click_play
 Alklaku por ludi
 @@openciv2.web.remove

@@ -349,8 +349,6 @@ Exi
 Elige
 @@openciv2.web.loading
 Oneratur ...
-@@openciv2.web.tagline
-Civilization II Multiplayer Gold Edition, refectum ut in navigatro tuo currat: exemplar ludi originalis non requiritur.
 @@openciv2.web.click_play
 Preme ut ludas
 @@openciv2.web.remove

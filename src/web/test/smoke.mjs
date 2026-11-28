@@ -195,12 +195,11 @@ async function main() {
             await waitFor('window.civ2Start', 10000, 'the page in Esperanto');
             const eo = await evaluate(`({choose: document.getElementById('choose').textContent,
                 play: document.getElementById('play').textContent,
-                tagline: document.querySelector('[data-t="web.tagline"]').textContent,
                 folder: document.getElementById('choose-folder').textContent,
                 lang: document.documentElement.lang})`);
             log('page in Esperanto: ' + JSON.stringify(eo).slice(0, 300));
             if (eo.lang !== 'eo' || !/Elektu vian ludon/.test(eo.choose) || !/Alklaku por ludi/.test(eo.play) ||
-                !/ne necesas/.test(eo.tagline) || !/^Dosierujo/.test(eo.folder))
+                !/^Dosierujo/.test(eo.folder))
                 throw new Error('the page is not in Esperanto: ' + JSON.stringify(eo));
             await shot('00-start-screen-eo');
             // in Chinese (traditional characters: ?lang=zh-TW finds zh-Hant.txt, in UTF-8;

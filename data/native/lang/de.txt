@@ -348,8 +348,6 @@ Beenden
 Wählen
 @@openciv2.web.loading
 Wird geladen ...
-@@openciv2.web.tagline
-Civilization II Multiplayer Gold Edition, nachgebaut für Ihren Browser: Eine Kopie des Originalspiels ist nicht nötig.
 @@openciv2.web.click_play
 Zum Spielen klicken
 @@openciv2.web.remove

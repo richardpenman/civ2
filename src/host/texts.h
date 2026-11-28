@@ -192,7 +192,6 @@ T("setup.choose", "Choose")
 
 /* The browser's start screen (src/web) */
 T("web.loading", "Loading ...")
-T("web.tagline", "Civilization II Multiplayer Gold Edition, rebuilt to run in your browser: no copy of the original game is needed.")
 T("web.click_play", "Click to play")
 T("web.remove", "Remove from this browser")
 T("web.add_original", "Classic graphics need the original Civilization II files, which the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the files the game has already are kept.")

@@ -351,8 +351,6 @@ OpenCiv2: εγκατάσταση του παιχνιδιού
 Επιλογή
 @@openciv2.web.loading
 Φόρτωση ...
-@@openciv2.web.tagline
-Το Civilization II Multiplayer Gold Edition, ξαναχτισμένο για να τρέχει στον περιηγητή σας: δεν χρειάζεται αντίτυπο του αρχικού παιχνιδιού.
 @@openciv2.web.click_play
 Κάντε κλικ για να παίξετε
 @@openciv2.web.remove

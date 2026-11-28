@@ -350,8 +350,6 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 選擇
 @@openciv2.web.loading
 載入中 ...
-@@openciv2.web.tagline
-Civilization II Multiplayer Gold Edition，重建後可在您的瀏覽器中執行：不需要原版遊戲。
 @@openciv2.web.click_play
 按一下開始遊戲
 @@openciv2.web.remove

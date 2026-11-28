@@ -349,8 +349,6 @@ Quit
 Choose
 @@openciv2.web.loading
 Loading ...
-@@openciv2.web.tagline
-Civilization II Multiplayer Gold Edition, rebuilt to run in your browser: no copy of the original game is needed.
 @@openciv2.web.click_play
 Click to play
 @@openciv2.web.remove
