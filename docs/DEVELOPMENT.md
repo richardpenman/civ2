@@ -102,6 +102,40 @@ screenshots kept as the artifacts `smoke-*`.  Only if all three pass is the rele
 The same locally, on the Linux package (the release's Package step's folder):
 `xvfb-run -a tools/smoke-test.sh pkg/OpenCiv2/OpenCiv2 run/smoke`.
 
+### Before pushing: make check-all
+
+CI has no original game, so most of the tests never run there. Before every push, run
+`make check-all` (`tools/check_all.sh`): the whole local suite with the install
+(`$CIV2_GAME`, default `~/Civ2`) and Docker. It refuses to start without either: no
+installed game (no `civ2.exe`, `RULES.TXT` or `CIV2.DAT`) is a failure, not a pass, and where
+`docker info` fails (the shell not yet in the docker group) it says to run
+`sg docker -c "make check-all"`. The steps run one at a time, the quick ones first:
+
+1. `make hd-art`, `make own-assets` (at once when up to date); the replay checker's and
+   `build_port.py`'s own tests (`tests/test_replay_harness.py`, `tests/test_build_port.py`);
+   `make test`.
+2. The builds: `make port`, `make native`, `make web` (without `GAME`, as CI and the release).
+3. `make test-sound`, `test-music`, `test-wonder`, `test-extras`, `test-media`, then
+   `harness/hd/hd-portraits.sh` (the HD script with expected results).
+4. The browser version's tests (`make web-test`'s, each its own step): unit, setup, net, start,
+   smoke, hd, mobile, and perf (advisory only: WARN, never a failure).
+5. The long ones: `web-parity.mjs` (all its cases), `make native-suite EXE=OpenCiv2` (the 44
+   games against the original's recordings), `harness/diff_suite.sh` (the two native builds
+   against each other).
+
+A failed step does not stop the rest; a step whose build failed is SKIP. At the end it prints a
+table (step, PASS/FAIL/SKIP/WARN, time, log) and the total, writes it to
+`run/check-all/summary.txt`, and exits non-zero if anything failed. Each step's output is in
+`run/check-all/NN-STEP.log`, the steps' temporary files in `run/check-all/tmp` (`TMPDIR`; `/tmp`
+may be small). A step's own `SKIP` lines are counted in the table's last column: with the install
+there should be none. `ONLY="web-start web-hd" make check-all` runs only those steps (not the
+builds they need), its logs in `run/check-all/only-DATE-TIME`: for re-running a step that failed
+under load (the browser tests' and test-wonder's timings).
+
+It takes about 75 minutes on a 2-CPU machine (the browser version's build about 10, web-parity
+about 14, native-suite about 11, test-extras about 6) when the builds are mostly up to date; longer
+under load.
+
 The replay checker requires a nonempty, matching set of PNG screenshots (including
 dimensions and pixels) and nonempty `rand.log` traces on both sides. A seed-only
 trace is valid; missing or empty logs are not evidence of matching random calls.

@@ -210,3 +210,11 @@ clean-run:                    ## remove run/ outputs unchanged for DAYS days (de
 
 clean:
 	rm -rf build run
+
+# The whole local test suite with the original game installed, before every
+# push (docs/DEVELOPMENT.md, Before pushing): what CI cannot run without the
+# install too.  Serial, keeps going after a failure; logs and a summary in
+# run/check-all (tools/check_all.sh; ONLY="step ...": only those steps).
+.PHONY: check-all
+check-all:                    ## before every push: everything, with the install (make test, the builds, test-sound/music/wonder/extras/media, hd-portraits.sh, the browser's tests, web-parity, native-suite EXE=OpenCiv2, diff_suite.sh), serially, a summary at the end (about 75 minutes; needs the install and Docker: sg docker -c "make check-all")
+	tools/check_all.sh
