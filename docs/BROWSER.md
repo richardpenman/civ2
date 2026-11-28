@@ -178,22 +178,7 @@ and never publish it.**
   `KINGS/` on, without their first-start question.
 - Without `GAME=1` nothing of the game is on the site (`build/web/game` is removed).
 
-`make deploy-review` (`tools/deploy_review.sh`) builds such a site (`GAME=1`), with the HD art (made
-by `make hd-art`, from its cache once made), and serves it
-on this machine with Caddy in Docker (container `civ2-review`, restarted with the machine; down:
-`docker rm -f civ2-review`) at `/civ2/`, behind a user name and password (HTTP Basic Auth; the
-root and anything else is a plain 404, with `X-Robots-Tag: noindex` and a `robots.txt` that
-disallows all). By default over HTTPS at the machine's `sslip.io` name with a Let's Encrypt
-certificate (ports 80 and 443 reachable from outside); `REVIEW_HTTP=1`: plain HTTP on port 80
-(the password in clear text). Its files are outside the repository, in `~/civ2-review`: the site's
-copy, the `Caddyfile` and `config` (the user name and password; `REVIEW_USER=` and
-`REVIEW_PASSWORD=` set them). The site also has the local staging folder `data/native/hd-extra`
-(OpenCiv2's own pictures and heralds being tried, not in the repository:
-[HD-GRAPHICS.md](HD-GRAPHICS.md#openciv2s-own-pictures-and-heralds-datanativehd-extra)) where the
-checkout built has it: the deploy after each commit on `main` (a local hook, not in the repository,
-running `~/civ2-review/autodeploy.sh`, which builds in the worktree `~/civ2-review/src`) copies
-the main checkout's folder into the worktree first. Other projects' routes on the same server go in
-`~/web-routes/*.caddy`. The page works over plain HTTP too: where the browser has no
+The page works over plain HTTP too: where the browser has no
 `crypto.subtle` (an `http://` page but localhost), the HD art's check computes SHA-256 itself.
 
 ## Language
