@@ -18,6 +18,7 @@
 #endif
 #include "plat.h"
 #include "hd.h"
+#include "../host/host.h"
 
 static char **script;
 static int script_len, script_pos;
@@ -418,6 +419,46 @@ void replay_run_script(void)
     if (script_pos >= script_len && vclock_us >= next_action_us)
         finish();
     running = 0;
+}
+
+/* ---- CIV2_TEST_QUIT_AT_MENU: the release's smoke test ----
+ * In play (not a replay), the program started as a user starts it
+ * (.github/workflows/release.yml, tools/smoke-test.sh): once the main menu
+ * has waited for a choice for a second (shown, the game idle), the screen
+ * is saved in CIV2_SHOT_DIR (main-menu.bmp; main-menu-hd.bmp with HD
+ * graphics), "smoke: main menu shown" logged (CIV2_HOOK_LOG) and printed,
+ * and the program ends with 0.  Unset, nothing here runs. */
+static uint64_t main_menu_us;
+
+void test_main_menu_shown(void)
+{
+    const char *e = getenv("CIV2_TEST_QUIT_AT_MENU");
+    if (!main_menu_us && !plat_replay && e && *e && *e != '0')
+        main_menu_us = host_time_us() + 1;
+}
+
+void test_quit_at_menu(void)
+{
+    const char *d = getenv("CIV2_SHOT_DIR");
+    char path[1300];
+    if (!main_menu_us || host_time_us() < main_menu_us + 1000000)
+        return;
+    main_menu_us = 0;
+    plat_present_now();
+    if (d && *d) {
+        snprintf(path, sizeof path, "%s/main-menu.bmp", d);
+        plat_screenshot(path);
+        if (hd_on) {
+            snprintf(path, sizeof path, "%s/main-menu-hd.bmp", d);
+            hd_screenshot(path);
+        }
+    }
+    plat_log("smoke: main menu shown (%dx%d, HD graphics %s, density %d)\n", screen_w, screen_h,
+             hd_art ? "on" : "off", hd_density);
+    printf("smoke: main menu shown (%dx%d, HD graphics %s, density %d)\n", screen_w, screen_h,
+           hd_art ? "on" : "off", hd_density);
+    fflush(stdout);
+    crt_exit_process(0);
 }
 
 void replay_init(void)

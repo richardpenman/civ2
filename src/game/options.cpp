@@ -46,6 +46,7 @@
 #include "lang.h"
 
 EXTERN_C int plat_replay;
+EXTERN_C void test_main_menu_shown(void);       /* src/platform/replay.c */
 
 /* ---- the settings ---- */
 
@@ -239,6 +240,8 @@ int options_in_main_menu(void)
     const char *t = getenv("CIV2_TEST_OPTIONS");
     if (plat_replay)
         return t && *t && *t != '0';
+    if (!plat_unit_test)
+        test_main_menu_shown();     /* (CIV2_TEST_QUIT_AT_MENU: the release's smoke test) */
     return !plat_unit_test;
 }
 

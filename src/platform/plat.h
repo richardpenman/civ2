@@ -334,6 +334,8 @@ extern unsigned long long vclock_us;
 extern char plat_game_dir[], plat_win_dir[], plat_data_dir[];
 void replay_run_script(void);
 extern int replay_hold;         /* > 0: the replay's script waits */
+void test_main_menu_shown(void);  /* CIV2_TEST_QUIT_AT_MENU: the main menu about to wait (replay.c) */
+void test_quit_at_menu(void);     /* and quit once it is shown, when idle (message.c) */
 int replay_file_dialog(OPENFILENAMEA *ofn, const char *kind);
 void sound_init(void);
 /* A sound effect the game folder lacks (NAME.WAV): OpenCiv2's own made

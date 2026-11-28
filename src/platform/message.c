@@ -379,6 +379,7 @@ static WINBOOL peek_message(LPMSG msg, HWND h, UINT lo, UINT hi, UINT remove)
     /* Idle: time passes, timers fire, the script may act. */
     plat_idle();
     plat_present();
+    test_quit_at_menu();        /* (CIV2_TEST_QUIT_AT_MENU only) */
     if (take(msg, h, lo, hi, remove) || paint_message(msg, h, lo, hi)) {
         GetCursorPos(&msg->pt);
         return peek_got(msg, remove, lo, hi);

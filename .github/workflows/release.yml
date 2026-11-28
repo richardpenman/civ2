@@ -14,7 +14,10 @@
 # data/native/sound, data/native/heralds, data/native/wonders: not in the
 # repository either), made from OpenCiv2's repository of assets
 # openciv2/openciv2-assets (the HD art's too) at the commit pinned in data/own-assets.json (tools/build_own_assets.py, the
-# job own-assets, its download and result cached).
+# job own-assets, its download and result cached).  Before publishing, each
+# package is started on a runner of its system as a user would, without the
+# original game, to the main menu (the job smoke: tools/smoke-test.sh); only
+# if all three get there are they published.
 name: Build and release
 
 on:
@@ -79,7 +82,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ env.SHA }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/openciv2
           key: hd-art-git-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
@@ -107,7 +110,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ env.SHA }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/openciv2
           key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
@@ -216,6 +219,12 @@ jobs:
         with:
           name: own-assets
           path: data/native
+      # (SDL2's source kept between runs: a download cut short, as on
+      # 2026-11-28 (curl exit 56), fails no build once it is cached)
+      - uses: actions/cache@v6
+        with:
+          path: SDL2-${{ env.SDL2_VERSION }}.tar.gz
+          key: sdl2-source-${{ env.SDL2_VERSION }}
       - name: Toolchain (SDL2 linked in, unshield, zlib, libogg, libvorbis)
         run: |
           sudo apt-get update
@@ -224,7 +233,10 @@ jobs:
             libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxkbcommon-dev \
             libwayland-dev wayland-protocols libdecor-0-dev libegl1-mesa-dev libgl1-mesa-dev \
             libgles2-mesa-dev libasound2-dev libpulse-dev libdbus-1-dev libudev-dev libdrm-dev libgbm-dev
-          curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
+          # (to a file: curl retries a download cut short only so, not into a pipe)
+          t=SDL2-$SDL2_VERSION.tar.gz
+          [ -s "$t" ] || curl -fL# --retry 5 --retry-all-errors --retry-delay 5 -o "$t" "https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/$t"
+          tar xzf "$t"
           cmake -S SDL2-$SDL2_VERSION -B sdl-build -G Ninja -DCMAKE_BUILD_TYPE=Release \
             -DSDL_SHARED=OFF -DSDL_STATIC=ON -DSDL_TEST=OFF -DCMAKE_INSTALL_PREFIX=$PWD/sdl
           cmake --build sdl-build
@@ -304,9 +316,18 @@ jobs:
         with:
           name: own-assets
           path: data/native
+      # (SDL2's source kept between runs: a download cut short, as on
+      # 2026-11-28 (curl exit 56), fails no build once it is cached)
+      - uses: actions/cache@v6
+        with:
+          path: SDL2-${{ env.SDL2_VERSION }}.tar.gz
+          key: sdl2-source-${{ env.SDL2_VERSION }}
       - name: Toolchain (SDL2 linked in, for Apple silicon and Intel; unshield, zlib, libogg, libvorbis)
         run: |
-          curl -fL# --retry 5 --retry-all-errors --retry-delay 5 https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz | tar xz
+          # (to a file: curl retries a download cut short only so, not into a pipe)
+          t=SDL2-$SDL2_VERSION.tar.gz
+          [ -s "$t" ] || curl -fL# --retry 5 --retry-all-errors --retry-delay 5 -o "$t" "https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/$t"
+          tar xzf "$t"
           cmake -S SDL2-$SDL2_VERSION -B sdl-build -DCMAKE_BUILD_TYPE=Release -DSDL_SHARED=OFF -DSDL_STATIC=ON \
             -DSDL_TEST=OFF -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64' -DCMAKE_INSTALL_PREFIX=$PWD/sdl
           cmake --build sdl-build -j 3
@@ -390,8 +411,83 @@ jobs:
           path: OpenCiv2-macos.zip
           retention-days: 1
 
-  publish:
+  # Each package started as a user starts it, on a fresh runner of its
+  # system without the original game (tools/smoke-test.sh: an empty game
+  # folder, OpenCiv2's own files and HD graphics) until the main menu is
+  # shown, then quit (CIV2_TEST_QUIT_AT_MENU); at most 2 minutes.  Published
+  # only if all three pass.  Their logs and screenshots kept as the
+  # artifacts smoke-windows, smoke-linux and smoke-macos.
+  smoke:
     needs: [windows, linux, macos]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: windows
+            os: windows-latest
+          - package: linux
+            os: ubuntu-latest
+          - package: macos
+            os: macos-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
+          sparse-checkout: tools/smoke-test.sh
+          sparse-checkout-cone-mode: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: ${{ matrix.package }}
+          path: dl
+      - name: Unpack, as a user does
+        run: |
+          mkdir -p user
+          case ${{ matrix.package }} in
+          windows)
+            powershell -NoProfile -Command "Expand-Archive -Path dl/OpenCiv2-windows.zip -DestinationPath user"
+            echo "PROGRAM=user/OpenCiv2/OpenCiv2.exe" >> "$GITHUB_ENV" ;;
+          linux)
+            tar xzf dl/OpenCiv2-linux-x86_64.tar.gz -C user
+            echo "PROGRAM=user/OpenCiv2/OpenCiv2" >> "$GITHUB_ENV" ;;
+          macos)
+            # (Archive Utility's way; the quarantine removed as README.txt
+            # says, where a download in a browser set it; the ad hoc
+            # signature checked, which Apple silicon needs to run it)
+            ditto -x -k dl/OpenCiv2-macos.zip user
+            xattr -dr com.apple.quarantine user/pkg/OpenCiv2.app 2>/dev/null || true
+            codesign --verify --deep --strict --verbose=2 user/pkg/OpenCiv2.app
+            echo "PROGRAM=user/pkg/OpenCiv2.app/Contents/MacOS/OpenCiv2" >> "$GITHUB_ENV" ;;
+          esac
+          ls -la user/*
+      - name: Started to the main menu, then quit
+        run: |
+          if [ "${{ matrix.package }}" = linux ]; then
+            # (a display: Xvfb; Mesa for SDL's OpenGL renderer, else its software one)
+            command -v xvfb-run >/dev/null || { sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb; }
+            xvfb-run -a -s "-screen 0 1920x1080x24" bash tools/smoke-test.sh "$PROGRAM" run/smoke
+          else
+            bash tools/smoke-test.sh "$PROGRAM" run/smoke
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: smoke-${{ matrix.package }}
+          # (the logs and screenshots: not the game folder's pictures)
+          path: |
+            run/smoke/*.log
+            run/smoke/*.bmp
+            run/smoke/*.png
+            run/smoke/*.xwd
+          if-no-files-found: ignore
+          retention-days: 7
+
+  publish:
+    needs: [windows, linux, macos, smoke]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7

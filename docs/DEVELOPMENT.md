@@ -92,7 +92,15 @@ make test   # ... as ci.yml
 ```
 
 The browser version's site (`pages.yml`) and the "latest" release (`release.yml`) are made only
-after CI has passed for the commit pushed to main (`workflow_run`).
+after CI has passed for the commit pushed to main (`workflow_run`).  Before the release is
+published, each package is started on a runner of its system (Windows, Ubuntu under Xvfb, macOS)
+as a user starts it, without the original game: `tools/smoke-test.sh PROGRAM OUTDIR` plays an
+empty game folder (OpenCiv2's own files, HD graphics) with `CIV2_TEST_QUIT_AT_MENU=1`, which saves
+the screen (`main-menu.bmp`), logs `smoke: main menu shown` and quits once the main menu is up
+(`src/platform/replay.c`; unset, nothing of it runs); two minutes at most, its logs and
+screenshots kept as the artifacts `smoke-*`.  Only if all three pass is the release published.
+The same locally, on the Linux package (the release's Package step's folder):
+`xvfb-run -a tools/smoke-test.sh pkg/OpenCiv2/OpenCiv2 run/smoke`.
 
 The replay checker requires a nonempty, matching set of PNG screenshots (including
 dimensions and pixels) and nonempty `rand.log` traces on both sides. A seed-only

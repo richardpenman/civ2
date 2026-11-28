@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/openciv2
           key: hd-art-git-${{ hashFiles('data/hd-pack.json', 'tools/build_hd_pack.py') }}
@@ -77,7 +77,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/openciv2
           key: own-assets-${{ hashFiles('data/own-assets.json', 'tools/build_own_assets.py') }}
