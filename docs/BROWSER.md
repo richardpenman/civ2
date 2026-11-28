@@ -89,6 +89,9 @@ browser can (not Safari on an iPhone), and then turns a phone sideways where the
 A tap is the left button's click (pressed as the finger lifts, or once it moves: a drag); a press
 held half a second without moving is the right button's click (with a short buzz where the phone
 can). The page around the game neither zooms, scrolls nor pulls to reload under a finger.
+Turned while a dialog is shown, the dialog is moved onto the new desktop where it no longer fits
+(`src/platform/window.c`: `wnd_resize_desktop`). `src/web/test/mobile.mjs` (`make web-test`)
+checks all this on an emulated phone.
 Limits: the game's interface is still that of a 640x480 game on a 6-inch screen: its text and
 buttons are small (some 0.6-0.8 of a CSS pixel each); there is no on-screen keyboard for the
 game's keyboard shortcuts or for naming cities (the names offered are kept with OK), and no pinch

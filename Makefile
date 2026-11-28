@@ -87,7 +87,7 @@ serve: web                    ## build/web served at http://localhost:$(PORT) (P
 deploy-review:                ## the browser version with the game (GAME=1: for private use only) and the HD art, served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
 	tools/deploy_review.sh
 
-web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the start without the original game (fresh storage: the start screen, then HD graphics and OpenCiv2's own files to the main menu; run/web-start), a unit's moves timed in a new game (run/web-perf), then the smoke test (menu, new game, save, saves exported and imported from the start screen, load; run/web-smoke), then HD graphics (run/web-hd)
+web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the start without the original game (fresh storage: the start screen, then HD graphics and OpenCiv2's own files to the main menu; run/web-start), a unit's moves timed in a new game (run/web-perf), then the smoke test (menu, new game, save, saves exported and imported from the start screen, load; run/web-smoke), then HD graphics (run/web-hd), then a phone's touch screen (layout sideways and upright, taps, long presses, drags, the page's gestures blocked, full screen; run/web-mobile)
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/unit.mjs
 	tools/toolchain/node/bin/node src/web/test/setup.mjs
@@ -96,6 +96,7 @@ web-test: web                 ## the browser version's tests: its host's logic, 
 	tools/toolchain/node/bin/node src/web/test/perf.mjs
 	tools/toolchain/node/bin/node src/web/test/smoke.mjs
 	tools/toolchain/node/bin/node src/web/test/hd.mjs
+	tools/toolchain/node/bin/node src/web/test/mobile.mjs
 
 web-parity: web               ## the desktop's replays in the browser version: a representative set of harness/extras (with and without the original's files, Classic and HD graphics) and three native-suite games, each screenshot and the rand() trace compared with the desktop's expected results (the cases without the original's pictures: with build/OpenCiv2's replay, in Docker; NAMES=...: those cases; --list: all of them); mismatches in run/web-parity/CASE (src/web/test/web-parity.mjs)
 	sh tools/fetch-toolchain.sh browser

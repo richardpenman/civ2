@@ -1215,6 +1215,24 @@ void wnd_resize_desktop(int w, int h)
             SetWindowPos(list[i]->hwnd, 0, mmi.ptMaxPosition.x, mmi.ptMaxPosition.y, mmi.ptMaxSize.x,
                          mmi.ptMaxSize.y, SWP_NOZORDER | SWP_NOACTIVATE);
         }
+    /* the other windows shown, where the desktop is now too small for them
+       (a phone turned upright under a dialog: its buttons off the screen):
+       moved back onto it as far as they fit, their size kept */
+    n = 0;
+    for (c = desktop->children; c && n < 256; c = c->next)
+        if ((c->style & WS_VISIBLE) && !c->maximized && !c->minimized && (c->rect.right > w || c->rect.bottom > h))
+            list[n++] = c;
+    for (i = 0; i < n; i++)
+        if (wnd_get(list[i]->hwnd)) {
+            RECT r = list[i]->rect;
+            int x = r.left, y = r.top;
+            if (r.right > w)
+                x = r.left - (r.right - w) > 0 ? r.left - (r.right - w) : 0;
+            if (r.bottom > h)
+                y = r.top - (r.bottom - h) > 0 ? r.top - (r.bottom - h) : 0;
+            if (x != r.left || y != r.top)
+                SetWindowPos(list[i]->hwnd, 0, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+        }
     InvalidateRect(0, NULL, TRUE);
 }
 

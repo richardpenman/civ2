@@ -428,7 +428,15 @@ builds do not use it.
   2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
   graphics; then the game's files without TERRAIN1.GIF and Tiles.dll (HD forced), Classic
   graphics ticked, *Find the original files...*: the set-up page over the game, the `.zip`
-  chosen again, the missing files added, *Restart now*, Classic graphics; screenshots in `run/web-hd`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
+  chosen again, the missing files added, *Restart now*, Classic graphics; screenshots in `run/web-hd`.  Then
+  `src/web/test/mobile.mjs`: a phone emulated (844x390 and 390x844 CSS px, a device pixel ratio
+  of 3, touch), what the game made of the fingers read from its log (`CIV2_TRACE_MSG`): on a
+  desktop the desktop as before and no long press; *Click to play*'s full screen and sideways lock
+  (stubbed, refused: the game starts); the start screen zooms, the game's page does not (pinch,
+  double tap, swipes); 999x480 sideways and 640x1385 upright, the canvas filling the page, nothing
+  off it, a dialog moved onto the narrower desktop; taps, a long press (the right button), a drag,
+  a second finger ignored, on the main menu and the map; a city's window inside 999x480, its Exit
+  tapped, the city tapped on the map; screenshots in `run/web-mobile`.  `make web-replay SCRIPT=harness/scripts/NAME.txt` replays a
   scenario in the browser as the native suite does and compares it with the original's recording
   (newgame and long50: every screenshot, the `rand()` trace and the sounds identical).
 * **Parity with the desktop** (`make web-parity`, `src/web/test/web-parity.mjs`; some 8 minutes with the build, Docker for
