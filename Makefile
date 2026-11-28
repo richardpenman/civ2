@@ -40,7 +40,7 @@ HD_ART_MAKE = $(if $(filter-out 0,$(HD_ART)),python3 tools/build_hd_pack.py,@ech
 OWN_ASSETS ?= 1
 OWN_ASSETS_MAKE = $(if $(filter-out 0,$(OWN_ASSETS)),python3 tools/build_own_assets.py,@echo "(no assets of OpenCiv2's own: OWN_ASSETS=$(OWN_ASSETS))")
 
-.PHONY: all build run windows web serve deploy-review web-test web-parity web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-wonder test-extras extras-bless test-media media-bless unit-record clean clean-run
+.PHONY: all build run windows web serve web-test web-parity web-replay hd-art own-assets images hook ref native port native-suite test test-sound test-music test-wonder test-extras extras-bless test-media media-bless unit-record clean clean-run
 
 # Build and play on this machine (no Docker): needs a C compiler, SDL2 and
 # Python 3 (README "Build and run").  On Windows: in an MSYS2 UCRT64 shell,
@@ -83,9 +83,6 @@ web:                          ## build/web: the browser version (first time: dow
 serve: web                    ## build/web served at http://localhost:$(PORT) (PORT=8000); Ctrl+C stops it
 	@echo "OpenCiv2: http://localhost:$(PORT)"
 	python3 -m http.server -d build/web $(PORT)
-
-deploy-review:                ## the browser version with the game (GAME=1: for private use only) and the HD art, served on this machine by Caddy in Docker at /civ2/, behind a password (tools/deploy_review.sh; ~/civ2-review/config)
-	tools/deploy_review.sh
 
 web-test: web                 ## the browser version's tests: its host's logic, the set-up from a made-up disc image, then the start without the original game (fresh storage: the start screen, then HD graphics and OpenCiv2's own files to the main menu; run/web-start), a unit's moves timed in a new game (run/web-perf), then the smoke test (menu, new game, save, saves exported and imported from the start screen, load; run/web-smoke), then HD graphics (run/web-hd), then no looping sound left after the menus or the diplomacy room (run/web-sound), then a phone's touch screen (layout sideways and upright, taps, long presses, drags, the page's gestures blocked, full screen; run/web-mobile)
 	sh tools/fetch-toolchain.sh browser
