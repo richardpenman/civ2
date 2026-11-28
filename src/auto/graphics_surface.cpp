@@ -3998,6 +3998,7 @@ gdi_blit_transparent(HDC dst_dc,HGDIOBJ bitmap,int dst_x,int dst_y,int width,int
   BitBlt(hdc_01,0,0,width,height,hdc_00,0,0,0x8800c6);
   BitBlt(hdc_01,0,0,width,height,hdc,src_x,src_y,0x660046);
   BitBlt(dst_dc,dst_x,dst_y,width,height,hdc_01,0,0,0xcc0020);
+  if (hd_on) ctl_art_hd(dst_dc,bitmap,dst_x - src_x,dst_y - src_y);   /* (port) sharp on the plane */
   SelectObject(hdc_00,h_03);
   DeleteObject(h_02);
   SelectObject(hdc_01,h_01);

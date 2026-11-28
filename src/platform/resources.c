@@ -5,6 +5,7 @@
  * built in.
  */
 #include "plat.h"
+#include "hd.h"
 #include "../host/host.h"
 
 typedef struct {
@@ -356,25 +357,145 @@ static int exe_missing(HINSTANCE inst)
     return m && module_of(0) == m && !m->rsrc_off;
 }
 
-/* The radio buttons' and check boxes' pictures (301 to 306, 32 x 32): the
-   art's in the original's place (16 x 16 in the middle), on its
-   transparent colour (the game draws them with teal, 0x808000, as
-   transparent: gdi_blit_transparent). */
-static HBITMAP synth_bitmap(int id)
+/* ---- the game's radio buttons and check boxes (civ2.exe's bitmaps 301 to 306) ----
+
+   The game draws its radio buttons and check boxes from civ2.exe's 32 x 32
+   bitmaps (rows 7 to 26 of them, on teal, 0x808000, as transparent:
+   gdi_blit_transparent): 301 a radio button disabled, 302 selected, 303
+   not; 304 a check box ticked, 305 not, 306 disabled.  Their design, drawn
+   here in shapes of OpenCiv2's own: a grey button with a white edge lit
+   from the top left and a shadow below right; a radio button's black dot
+   when selected, a raised inner button when not; a check box's tick.
+   These are the pictures where the game folder has no civ2.exe, and with
+   the planes (hd_on) the original's too, which ctl_art_hd draws again,
+   sharp, on the plane (the pictures here no larger than those shapes, so
+   that nothing of them shows round their smooth edges). */
+
+typedef struct {
+    char kind;                  /* 'd' disc: cx cy r; 'r' rectangle: l t r b; 'o' the same, its corners cut;
+                                   'l' a line through three points, width w */
+    unsigned char grey;         /* its colour: 0, 128, 192 or 255 each of red, green, blue */
+    float a[6], w;
+} CtlShape;
+
+#define CTL_RADIO_OUTER(dx, dy, r, edge, shadow, fill) \
+    {'d', shadow, {dx + 1, dy + 1, r, 0, 0, 0}, 0}, {'d', 255, {dx, dy, r, 0, 0, 0}, 0}, \
+    {'d', edge, {dx, dy, r - 1, 0, 0, 0}, 0}, {'d', fill, {dx + .5f, dy + .5f, r - 1.5f, 0, 0, 0}, 0}
+#define CTL_BOX(e, shadow, edge, fill) \
+    {'o', shadow, {9, 9, e + 1, e + 1, 0, 0}, 0}, {'o', 255, {8, 8, e, e, 0, 0}, 0}, \
+    {'r', edge, {9, 9, e - 1, e - 1, 0, 0}, 0}, {'r', fill, {10, 10, e - 1, e - 1, 0, 0}, 0}
+
+static const CtlShape CTL_301[] = {CTL_RADIO_OUTER(16, 16, 8, 128, 128, 192)};
+static const CtlShape CTL_302[] = {CTL_RADIO_OUTER(16.5f, 16.5f, 8.5f, 0, 0, 128),
+                                   {'d', 192, {17, 17, 5, 0, 0, 0}, 0}, {'d', 0, {17, 17, 3, 0, 0, 0}, 0}};
+static const CtlShape CTL_303[] = {CTL_RADIO_OUTER(16.5f, 16.5f, 8.5f, 0, 0, 128),
+                                   {'d', 0, {17.5f, 17.5f, 4.5f, 0, 0, 0}, 0},
+                                   {'d', 255, {16.5f, 16.5f, 4.5f, 0, 0, 0}, 0},
+                                   {'d', 192, {17, 17, 4, 0, 0, 0}, 0}};
+static const CtlShape CTL_304[] = {CTL_BOX(25, 0, 0, 128),
+                                   {'l', 0, {11.5f, 15.5f, 17, 21, 30, 9}, 2.2f},
+                                   {'l', 192, {10.5f, 14.5f, 16, 20, 29, 8}, 2.2f}};
+static const CtlShape CTL_305[] = {CTL_BOX(25, 0, 0, 128)};
+static const CtlShape CTL_306[] = {CTL_BOX(24, 128, 128, 192)};
+
+static const CtlShape *ctl_shapes(int id, int *n)
 {
-    unsigned char *px = synth_exe_rgba(2, id, 32, 32, 8, 8, 16, 16);
+    static const struct { const CtlShape *s; int n; } all[] = {
+        {CTL_301, sizeof CTL_301 / sizeof *CTL_301}, {CTL_302, sizeof CTL_302 / sizeof *CTL_302},
+        {CTL_303, sizeof CTL_303 / sizeof *CTL_303}, {CTL_304, sizeof CTL_304 / sizeof *CTL_304},
+        {CTL_305, sizeof CTL_305 / sizeof *CTL_305}, {CTL_306, sizeof CTL_306 / sizeof *CTL_306}};
+    if (id < 301 || id > 306)
+        return NULL;
+    *n = all[id - 301].n;
+    return all[id - 301].s;
+}
+
+static double ctl_seg2(double px, double py, const float *p, const float *q)
+{
+    double dx = q[0] - p[0], dy = q[1] - p[1], l = dx * dx + dy * dy, t = ((px - p[0]) * dx + (py - p[1]) * dy) / l;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    dx = p[0] + t * dx - px;
+    dy = p[1] + t * dy - py;
+    return dx * dx + dy * dy;
+}
+
+static int ctl_inside(const CtlShape *s, double x, double y)
+{
+    switch (s->kind) {
+    case 'd':
+        return (x - s->a[0]) * (x - s->a[0]) + (y - s->a[1]) * (y - s->a[1]) <= s->a[2] * s->a[2];
+    case 'o':
+        if (x < s->a[0] || x >= s->a[2] || y < s->a[1] || y >= s->a[3])
+            return 0;
+        return (x - s->a[0]) + (y - s->a[1]) >= 1 && (s->a[2] - x) + (y - s->a[1]) >= 1 &&
+               (x - s->a[0]) + (s->a[3] - y) >= 1 && (s->a[2] - x) + (s->a[3] - y) >= 1;
+    case 'r':
+        return x >= s->a[0] && x < s->a[2] && y >= s->a[1] && y < s->a[3];
+    default:
+        return ctl_seg2(x, y, s->a, s->a + 2) <= s->w * s->w / 4 || ctl_seg2(x, y, s->a + 2, s->a + 4) <= s->w * s->w / 4;
+    }
+}
+
+/* The picture id (301 to 306), 32 x 32: each pixel the colour of the
+   topmost shape at its centre where all of it is inside the shapes, else
+   the transparent teal. */
+static HBITMAP ctl_bitmap(int id)
+{
+    int n, x, y, i, j, k;
+    const CtlShape *s = ctl_shapes(id, &n);
     Bitmap *b;
-    int x, y;
-    if (!px)
+    if (!s)
         return 0;
     b = bmp_create(32, 32, 32, 0);
     for (y = 0; y < 32; y++)
         for (x = 0; x < 32; x++) {
-            const unsigned char *p = px + (y * 32 + x) * 4;
-            surf_put(b, x, y, p[3] >= 128 ? RGB(p[0], p[1], p[2]) : RGB(0, 128, 128));
+            int all = 1, top = -1;
+            for (j = 0; j < 4 && all; j++)
+                for (i = 0; i < 4 && all; i++) {
+                    for (k = 0; k < n && !ctl_inside(&s[k], x + (i + .5) / 4, y + (j + .5) / 4); k++)
+                        ;
+                    all = k < n;
+                }
+            for (k = 0; all && k < n; k++)
+                if (ctl_inside(&s[k], x + .5, y + .5))
+                    top = k;
+            surf_put(b, x, y, top >= 0 ? RGB(s[top].grey, s[top].grey, s[top].grey) : RGB(0, 128, 128));
         }
-    free(px);
+    b->ctl_id = id;
     return obj_new(OBJ_BITMAP, b);
+}
+
+void ctl_art_hd(unsigned int hdc, unsigned int bitmap, int x, int y)
+{
+    DC *dc = obj_get((HDC)hdc, OBJ_DC);
+    Bitmap *bm = obj_get((HBITMAP)bitmap, OBJ_BITMAP);
+    int n, k, i;
+    const CtlShape *s;
+    if (!hd_on || !dc || !bm || !(s = ctl_shapes(bm->ctl_id, &n)))
+        return;
+    for (k = 0; k < n; k++) {
+        COLORREF c = RGB(s[k].grey, s[k].grey, s[k].grey);
+        const float *a = s[k].a;
+        double xy[16];
+        switch (s[k].kind) {
+        case 'd':
+            hd_dc_disc(dc, x + a[0], y + a[1], a[2], c);
+            break;
+        case 'r':
+            hd_dc_rect(dc, x + a[0], y + a[1], x + a[2], y + a[3], c);
+            break;
+        case 'o': {
+            double l = x + a[0], t = y + a[1], r = x + a[2], b = y + a[3];
+            double o[16] = {l + 1, t, r - 1, t, r, t + 1, r, b - 1, r - 1, b, l + 1, b, l, b - 1, l, t + 1};
+            hd_dc_polygon(dc, o, 8, c);
+            break;
+        }
+        default:
+            for (i = 0; i < 6; i++)
+                xy[i] = (i & 1 ? y : x) + a[i];
+            hd_dc_line(dc, xy, 3, s[k].w, c);
+        }
+    }
 }
 
 typedef struct { Bitmap *image, *mask; int hx, hy; int host; } Cursor;
@@ -406,9 +527,16 @@ static Cursor *synth_cursor(int id, int cursor)
 HBITMAP WINAPI LoadBitmapA(HINSTANCE inst, LPCSTR name)
 { API_TRACE();
     unsigned size;
-    const unsigned char *p = find_res(module_of(inst), name, (LPCSTR)RT_BITMAP, &size);
+    int shapes;
+    const unsigned char *p;
+    /* the radio buttons' and check boxes': OpenCiv2's drawing where there is
+       no civ2.exe, and with the planes (drawn sharp there: ctl_art_hd) */
+    if (IS_INTRESOURCE(name) && module_of(inst) == module_of(0) && (hd_on || exe_missing(inst)) &&
+        ctl_shapes((int)(uintptr_t)name, &shapes))
+        return ctl_bitmap((int)(uintptr_t)name);
+    p = find_res(module_of(inst), name, (LPCSTR)RT_BITMAP, &size);
     if (!p)
-        return exe_missing(inst) && IS_INTRESOURCE(name) ? synth_bitmap((int)(uintptr_t)name) : 0;
+        return 0;
     return obj_new(OBJ_BITMAP, dib_to_bitmap(p, 0, NULL));
 }
 

@@ -217,6 +217,11 @@ void hd_dc_chevron(struct DC *dc, double cx, double cy, int dir, unsigned int c,
    DC by its handle (src/platform/gdi.c). */
 int hd_dc_cover(struct DC *dc, void *bits, int l, int t, int r, int b);
 int plat_hd_cover(void *hdc, void *bits, int l, int t, int r, int b);
+/* A radio button's or check box's picture (civ2.exe's bitmap 301 to 306,
+   as LoadBitmapA gives it with the planes) the game has just drawn on the
+   DC with its top left at x, y: drawn again there, sharp, on the plane
+   (src/platform/resources.c); nothing for another bitmap. */
+void ctl_art_hd(unsigned int hdc, unsigned int bitmap, int x, int y);
 /* blit: before (pixels of src about to be read) and after (copied to dst). */
 void hd_blit_begin(struct Bitmap *src, int sx, int sy, int sw, int sh);
 void hd_blit_end(struct Bitmap *dst, struct Bitmap *src, int x, int y, int w, int h, int sx, int sy, int sw,

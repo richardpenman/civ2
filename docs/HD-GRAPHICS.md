@@ -530,7 +530,10 @@ The rest is in the platform layer (`src/platform/hd.c`):
   is at most 4.9 even on black).  Single crops not drawn either (`NOT_CROPPED_KEYS` in hd.c):
   in `tiles.dll` 86, the information seal of the popups (the quit confirmation's), the tutorial's
   owl and the podium in a civilization's colour, which the pack has as a thin pale "i", a "?"
-  and a flat shield on nothing.  The diplomacy room (`mk.dll` 200 to 206, by the leader's
+  and a flat shield on nothing (the original's are drawn, enlarged; without the install, where
+  there is no original's, the seal is OpenCiv2's own drawing of the original's design, a sepia
+  coin with a seated figure in relief, a staff and an oval shield, made in `src/platform/hd.c`,
+  `add_seal`, and drawn sharp).  The diplomacy room (`mk.dll` 200 to 206, by the leader's
   government: anarchy to democracy) is the pack's, an empty hall with the panels where the game
   draws the military icons, the portrait and the advances.  The leader's portrait drawn in it
   (`mk.dll` 220 + the tribe's slot, + 21 for a woman: the 225x275 sprite at 1,1) is the tribe's
@@ -964,7 +967,11 @@ pictures; the whole pack holds 2,166, 309 MB):
   some 33 MB per frame); a texture per window (PR #11's GPU compositor) would be faster.
 * The game's own dialogs' frames and buttons are its own pixels enlarged (straight lines, so
   as crisp as a Windows desktop at that scale draws them; their text is sharp); its radio
-  buttons and check boxes are its own pictures, enlarged.
+  buttons and check boxes (civ2.exe's bitmaps 301 to 306) are drawn again on the plane, sharp,
+  in the original's design (a grey button lit from the top left, a black dot when selected, a
+  tick), as shapes of OpenCiv2's own (`src/platform/resources.c`: `ctl_bitmap`, `ctl_art_hd`,
+  called by `gdi_blit_transparent`); with the planes the pictures in the surface's pixels are
+  those shapes too, no larger, so that nothing of the original's shows round their smooth edges.
 * The art has only the pictures hd.c draws and synth.c reads
   (`data/hd-pack.json`: `keep`, `drop`, `synth`, the keys' first parts); a picture of another
   kind drawn or read is to be added there and the art made again (`make hd-art`).

@@ -184,6 +184,185 @@ static unsigned load_portraits(const char *dir)
     return n;
 }
 
+/* ---- OpenCiv2's own seal (the popups' icon where the game folder lacks the original's pictures) ----
+
+   The game's popups (the quit confirmation's, the network's waits) show
+   the information icon, tiles.dll 86's sprite at 398,134: in the original
+   a sepia seal, a coin with a raised rim and a seated figure in relief, a
+   staff at her side, an oval shield before her.  The art pack's is a thin
+   pale "i" on nothing (hd_sprite_captured leaves it out: NOT_CROPPED_KEYS),
+   so where the game folder lacks the original's pictures (plat_hd_forced:
+   synth.c makes them from the art) that crop is this drawing of OpenCiv2's
+   own, of the seal's design in shapes of its own: synth.c's tiles.dll 86
+   takes it, shrunk, and HD graphics draw it sharp (own).  With the
+   original's pictures the original's seal is drawn (enlarged with HD
+   graphics). */
+
+#define SEAL_KEY "crop/resource/tiles.dll/gifs/86/398,134,64,64"
+#define SEAL_PX 256             /* the picture's size: 4 times the game's 64 */
+
+typedef struct {
+    char kind;                  /* 'd' disc cx cy r; 'e' ellipse cx cy rx ry; 'q' quadrilateral x0 y0 .. x3 y3;
+                                   'l' a line x0 y0 x1 y1, width w */
+    float a[8], w;
+    unsigned char rgb[3];
+    float lit;                  /* a disc's light from the top left: the colour times 1 + lit * cos */
+} SealShape;
+
+/* in the game's pixels (64 x 64, the centre 32,32), drawn in order */
+static const SealShape SEAL[] = {
+    /* the coin: its rim lit from the top left, a groove, a hatched ring, the field */
+    {'d', {32, 32, 29.5f}, 0, {150, 128, 94}, .32f},
+    {'d', {32, 32, 26.2f}, 0, {98, 82, 58}, 0},
+    {'d', {32, 32, 25.4f}, 0, {146, 126, 94}, -.12f},
+    {'d', {32, 32, 23}, 0, {112, 95, 70}, 0},
+    {'d', {32, 32, 22.4f}, 0, {160, 140, 106}, -.08f},
+};
+
+/* the figures in relief, each drawn three times: its shadow below right,
+   its light above left, itself */
+static const SealShape SEAL_RELIEF[] = {
+    /* the throne's arched back and the seated figure: body, robe over her knees, head, hair */
+    {'e', {32, 31, 9.5f, 14}, 0, {132, 113, 84}, 0},
+    {'q', {28.5f, 22.5f, 35.5f, 22.5f, 36.5f, 33, 27.5f, 33}, 0, {214, 198, 162}, 0},
+    {'q', {26.5f, 32, 37.5f, 32, 41, 46, 23, 46}, 0, {196, 178, 140}, 0},
+    {'d', {32, 18, 3.4f}, 0, {120, 100, 72}, 0},
+    {'d', {32, 18.6f, 2.6f}, 0, {220, 204, 168}, 0},
+    /* the staff in her right hand, its finial, her arm */
+    {'l', {23.5f, 13, 23.5f, 45}, 1.5f, {204, 186, 148}, 0},
+    {'d', {23.5f, 12.5f, 2}, 0, {214, 198, 162}, 0},
+    {'l', {24, 27, 29, 24}, 1.7f, {214, 198, 162}, 0},
+    /* the attendant on the right */
+    {'d', {43, 27, 2.3f}, 0, {204, 186, 148}, 0},
+    {'e', {43, 36, 3.2f, 6.8f}, 0, {180, 162, 126}, 0},
+    /* the oval shield before her, dark in a light rim */
+    {'e', {30.5f, 41, 5.6f, 8.2f}, 0, {204, 186, 148}, 0},
+    {'e', {30.5f, 41, 4.2f, 6.8f}, 0, {84, 68, 48}, 0},
+    {'e', {30, 40, 1.4f, 3.5f}, 0, {130, 110, 80}, 0},
+    /* the ground line, the scroll below */
+    {'q', {19, 47, 45, 47, 45, 49.5f, 19, 49.5f}, 0, {188, 170, 132}, 0},
+    {'q', {24, 51.5f, 40, 51.5f, 40, 53, 24, 53}, 0, {150, 130, 98}, 0},
+};
+
+static double seal_seg2(double px, double py, const float *p, const float *q)
+{
+    double dx = q[0] - p[0], dy = q[1] - p[1], l = dx * dx + dy * dy, t = ((px - p[0]) * dx + (py - p[1]) * dy) / l;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    dx = p[0] + t * dx - px;
+    dy = p[1] + t * dy - py;
+    return dx * dx + dy * dy;
+}
+
+static int seal_inside(const SealShape *s, double x, double y)
+{
+    const float *a = s->a;
+    int i, pos = 0, neg = 0;
+    switch (s->kind) {
+    case 'd':
+        return (x - a[0]) * (x - a[0]) + (y - a[1]) * (y - a[1]) <= a[2] * a[2];
+    case 'e':
+        return (x - a[0]) * (x - a[0]) / (a[2] * a[2]) + (y - a[1]) * (y - a[1]) / (a[3] * a[3]) <= 1;
+    case 'q':
+        for (i = 0; i < 4; i++) {
+            const float *p = a + 2 * i, *q = a + 2 * ((i + 1) % 4);
+            double c = (q[0] - p[0]) * (y - p[1]) - (q[1] - p[1]) * (x - p[0]);
+            pos |= c > 0;
+            neg |= c < 0;
+        }
+        return !(pos && neg);
+    default:
+        return seal_seg2(x, y, a, a + 2) <= s->w * s->w / 4;
+    }
+}
+
+/* The sample's colour by the shapes (dx, dy: the relief's pass offset);
+   0: outside the coin. */
+static int seal_sample(double x, double y, double *rgb)
+{
+    static const struct { float dx, dy, k; } pass[3] = {{-.7f, -.7f, .45f}, {.45f, .45f, 1.3f}, {0, 0, 1}};
+    int k, p, hit = 0;
+    for (k = 0; k < (int)(sizeof SEAL / sizeof *SEAL); k++)
+        if (seal_inside(&SEAL[k], x, y)) {
+            const SealShape *s = &SEAL[k];
+            double r = hypot(x - s->a[0], y - s->a[1]), f = 1 + s->lit * (r > 0 ? -(x - s->a[0] + y - s->a[1]) / (r * 1.41421356) : 0);
+            int i;
+            for (i = 0; i < 3; i++)
+                rgb[i] = s->rgb[i] * f;
+            hit = 1;
+        }
+    if (!hit)
+        return 0;
+    if ((x - 32) * (x - 32) + (y - 32) * (y - 32) > 22.4 * 22.4)
+        return 1;
+    for (p = 0; p < 3; p++)
+        for (k = 0; k < (int)(sizeof SEAL_RELIEF / sizeof *SEAL_RELIEF); k++)
+            if (seal_inside(&SEAL_RELIEF[k], x + pass[p].dx, y + pass[p].dy)) {
+                int i;
+                for (i = 0; i < 3; i++)
+                    rgb[i] = p == 2 ? SEAL_RELIEF[k].rgb[i] : pass[p].k * (p ? 172 : 150);
+            }
+    return 1;
+}
+
+/* The seal, SEAL_PX square, RGBA (not premultiplied): 4 x 4 samples a pixel. */
+static unsigned char *seal_rgba(int *pw, int *ph)
+{
+    unsigned char *px = malloc((size_t)SEAL_PX * SEAL_PX * 4);
+    double scale = 64.0 / SEAL_PX;
+    int x, y, i, j, c;
+    if (!px)
+        return NULL;
+    for (y = 0; y < SEAL_PX; y++)
+        for (x = 0; x < SEAL_PX; x++) {
+            double sum[3] = {0, 0, 0}, rgb[3];
+            int n = 0;
+            unsigned char *d = px + ((size_t)y * SEAL_PX + x) * 4;
+            for (j = 0; j < 4; j++)
+                for (i = 0; i < 4; i++)
+                    if (seal_sample((x + (i + .5) / 4) * scale, (y + (j + .5) / 4) * scale, rgb)) {
+                        for (c = 0; c < 3; c++)
+                            sum[c] += rgb[c];
+                        n++;
+                    }
+            for (c = 0; c < 3; c++) {
+                double v = n ? sum[c] / n : 0;
+                d[c] = (unsigned char)(v < 0 ? 0 : v > 255 ? 255 : v + .5);
+            }
+            d[3] = (unsigned char)(n * 255 / 16);
+        }
+    *pw = *ph = SEAL_PX;
+    return px;
+}
+
+/* The seal as OpenCiv2's own picture of its key (the art's replaced). */
+static void add_seal(void)
+{
+    int id = find(SEAL_KEY);
+    Entry *a;
+    if (id && entries[id - 1].own)
+        return;                 /* (a picture of that key in data/native/hd-extra) */
+    if (id)
+        a = entries + id - 1;
+    else {
+        Entry *more = realloc(entries, (nentries + 1) * sizeof *entries);
+        if (!more)
+            return;
+        entries = more;
+        a = entries + nentries++;
+        memset(a, 0, sizeof *a);
+        snprintf(a->key, sizeof a->key, "%s", SEAL_KEY);
+    }
+    free(a->file);
+    if (a->rgba)
+        decoded_bytes -= (uint64_t)a->pw * a->ph * 4;
+    free(a->rgba);
+    a->file = NULL;             /* (made: decode) */
+    a->rgba = NULL;
+    a->own = 1;
+    a->w = a->h = 64;
+    qsort(entries, nentries, sizeof *entries, by_key);
+}
+
 static Entry *decode(int id)
 {
     Entry *a = entries + id - 1;
@@ -203,6 +382,12 @@ static Entry *decode(int id)
         decoded_bytes -= (uint64_t)old->pw * old->ph * 4;
         free(old->rgba);
         old->rgba = NULL;
+    }
+    if (!a->file) {             /* OpenCiv2's own seal (above) */
+        if (!(a->rgba = seal_rgba(&a->pw, &a->ph)))
+            return NULL;
+        decoded_bytes += (uint64_t)a->pw * a->ph * 4;
+        return a;
     }
     if (!(file = read_file(a->file, &len))) {
         plat_log("HD graphics: cannot read %s\n", a->file);
@@ -1161,7 +1346,9 @@ static const struct {
    at 166,223) is a thin "!" on nothing, which the game's recolouring for
    the owner (hd_recolour_begin) made a faint stroke, the marker all but
    invisible: the original's are kept, enlarged (the disorder marker's box
-   in the owner's colour, as the game recolours it, with its black fist). */
+   in the owner's colour, as the game recolours it, with its black fist).
+   Where the game folder lacks the original's pictures the seal is
+   OpenCiv2's own (own: drawn; add_seal, above). */
 static const char *const NOT_CROPPED_KEYS[] = {
     "crop/file/icons/166,223,30,30",
     "crop/resource/tiles.dll/gifs/86/398,134,64,64",
@@ -2044,6 +2231,8 @@ void hd_init(int classic, int unit_test, int scale)
             load_portraits(dir);
             snprintf(dir, sizeof dir, "%s/hd-extra", plat_data_dir);
             load_pictures(dir, 1);
+            if (plat_hd_forced)
+                add_seal();     /* (with the original's pictures, its own seal) */
         } else {
             close_art();
             plat_log("hd: no art (%s/pictures.txt; from the source: make hd-art)\n", dir);

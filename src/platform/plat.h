@@ -102,6 +102,8 @@ typedef struct Bitmap {
     int hd_alpha;               /* the plane has transparent pixels (a picture's) */
     int hd_own;                 /* the plane is a picture composed whole (hd_picture_done):
                                    a change of the colour table leaves it */
+    int ctl_id;                 /* OpenCiv2's drawing of civ2.exe's bitmap of a radio button or a check
+                                   box (301 to 306; resources.c: ctl_bitmap), else 0 */
 } Bitmap;
 
 unsigned char *bmp_row(const Bitmap *b, int y);     /* row y, top = 0 */

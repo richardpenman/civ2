@@ -189,7 +189,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | --- | --- | --- | --- |
 | `tiles.dll` | 50-59, 65, 66 | the advisors' backgrounds, the tax rates | replaced: the pack's paintings (OpenCiv2's, given to it: openciv2-assets pull request 6) |
 | | 70-77 | the announcements' pictures (city captured, disorder, celebration, founded) | replaced: the pack's |
-| | 85, 86 | the diplomacy's and the icons' sheets (crops) | replaced |
+| | 85, 86 | the diplomacy's and the icons' sheets (crops) | replaced; 86's information seal (the popups' icon, the quit confirmation's: the pack's is a thin "i") OpenCiv2's own drawing of the original's design, a sepia coin with a seated figure in relief (`src/platform/hd.c`, `add_seal`) |
 | | 90 | the new game's and main menu's backdrop | replaced |
 | | 95 | the credits | replaced |
 | `intro.dll` | 901-913 | the new game's set-up pictures | replaced |
@@ -216,7 +216,7 @@ are made the same way.)
 
 | Type | Ids | Use | Status |
 | --- | --- | --- | --- |
-| bitmaps | 301-306 | the radio buttons' and check boxes' marks | replaced: the pack's, in the original's 16 x 16 place, on the transparent teal |
+| bitmaps | 301-306 | the radio buttons' and check boxes' marks | replaced: OpenCiv2's own drawing of the original's design (grey buttons, a black dot when selected, a tick; `src/platform/resources.c`, `ctl_bitmap`), drawn again sharp with HD graphics; the pack's (dark buttons with a gold rim) are not used |
 | cursors | 500-517, 530 (groups; images 1-24) | the map's and the Civilopedia's cursors | replaced: the pack's (hot spot: the arrow's tip) |
 | icons | 1-5 (groups) | the window's icon | replaced: the pack's |
 | GIFS | (none: every id is looked for there first) | | |
