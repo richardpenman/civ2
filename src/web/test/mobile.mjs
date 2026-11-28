@@ -32,7 +32,10 @@
 //   - a new game (a small world, the rest as offered), a city founded: its window inside the 999x480 desktop,
 //     its Exit button tapped (the window closed), the city tapped on the
 //     map (its window opened again); a long press on the map the right
-//     button's.
+//     button's;
+//   - the menu bar: the Game menu open, the Kingdom menu opened instead by
+//     the mouse moved onto its title (no button), by Right, by a tap on
+//     its title (its Tax Rate then chosen: its dialog).
 // Screenshots in run/web-mobile (look at them).  Needs no copy of the game.
 //
 //   tools/toolchain/node/bin/node src/web/test/mobile.mjs
@@ -572,6 +575,42 @@ async function main() {
                   'a long press on the map: the right button\'s click, no left');
         }
         await shot('08-long-press-map');
+
+        // ---- the menu bar: from one menu to the next (menu.c: track) ----
+        // the Game menu opened, then the next title's (Kingdom) by `how`: its
+        // first item (Tax Rate) then chosen by keys, its dialog shown
+        const GAME_TITLE = [15, 8], KINGDOM_TITLE = [75, 8];
+        const mouse = async (type, x, y) => send('Input.dispatchMouseEvent',
+            {type, x, y, button: type === 'mouseMoved' ? 'none' : 'left', clickCount: type === 'mouseMoved' ? 0 : 1});
+        const nextMenu = async (what, open, how) => {
+            from = await mark();
+            await open();
+            await settle(800, 10000);
+            await how();
+            await settle(800, 10000);
+            await shot('09-menu-' + what.split(' ')[0]);
+            await key('ArrowDown', 40);
+            await key('Enter', 13);
+            await settle(1500, 20000);
+            await shot('09-menu-' + what.split(' ')[0] + '-chosen');
+            // (the Tax Rate dialog: its three scroll bars, the rates')
+            const made = windows(await since(from)).map((w) => w.cls);
+            log(`${what}: windows made ${JSON.stringify(made)}`);
+            check(made.filter((c) => c === 'MSScrollBarClass').length === 3,
+                  `${what}: the Kingdom menu opened from the Game menu (Tax Rate chosen in it: its dialog)`);
+            await key('Enter', 13);     // (its OK)
+            await settle(1500, 20000);
+        };
+        const clickDesk = async (x, y) => {
+            const p = await at(x, y);
+            await mouse('mouseMoved', ...p);
+            await mouse('mousePressed', ...p);
+            await mouse('mouseReleased', ...p);
+        };
+        await nextMenu('mouse moved onto the next title (no button)', () => clickDesk(...GAME_TITLE),
+                       async () => mouse('mouseMoved', ...await at(...KINGDOM_TITLE)));
+        await nextMenu('Right arrow', () => clickDesk(...GAME_TITLE), () => key('ArrowRight', 39));
+        await nextMenu('next title tapped', () => tapDesk(...GAME_TITLE), () => tapDesk(...KINGDOM_TITLE));
         check(await running() && !errors.length, 'the game still running, nothing thrown');
         log('ok: ' + OUT);
     } finally {

@@ -452,11 +452,31 @@ static void restore_under(Popup *p)
     plat_present_now();
 }
 
-/* Modal loop: returns the chosen command id (0: none). *move: -1/+1 to
- * switch to the neighbouring bar menu.  Input comes from the message queue
- * with the owner capturing the mouse, as Windows' menu loop takes it, so a
- * replay script drives menus as it drives everything else. */
-static UINT track(HWND owner, HMENU h, int x, int y, int *move)
+/* A bar menu's tracking: the bar's titles (screen coordinates), the one
+ * open, and (out) the one to open next (-1: none). */
+typedef struct {
+    Menu *m;
+    RECT r[64];
+    int n, cur, next, hovered;
+} Bar;
+
+/* The bar's title at (x, y) with a menu of its own, or -1. */
+static int bar_hit(const Bar *b, int x, int y)
+{
+    int i;
+    for (i = 0; b && i < b->n; i++)
+        if (x >= b->r[i].left && x < b->r[i].right && y >= b->r[i].top && y < b->r[i].bottom)
+            return (b->m->items[i].flags & MF_POPUP) ? i : -1;
+    return -1;
+}
+
+/* Modal loop: returns the chosen command id (0: none). bar: a bar menu's,
+ * whose bar->next is set to switch to another of its menus: the
+ * neighbouring one with Left/Right, the one under the mouse (as Windows:
+ * moved onto its title, or a click on it).  Input comes from the message
+ * queue with the owner capturing the mouse, as Windows' menu loop takes it,
+ * so a replay script drives menus as it drives everything else. */
+static UINT track(HWND owner, HMENU h, int x, int y, Bar *bar)
 {
     Menu *m = menu_get(h);
     Popup p;
@@ -469,8 +489,8 @@ static UINT track(HWND owner, HMENU h, int x, int y, int *move)
     popup_layout(h, x, y, &p);
     save_under(&p);
     popup_draw(h, &p, sel);
-    if (move)
-        *move = 0;
+    if (bar)
+        bar->next = -1;
     SetCapture(owner);
     while (!done) {
         int i, nsel = sel, mx, my;
@@ -482,6 +502,12 @@ static UINT track(HWND owner, HMENU h, int x, int y, int *move)
         my = msg.pt.y;
         switch (msg.message) {
         case WM_MOUSEMOVE: case WM_NCMOUSEMOVE:
+            if ((i = bar_hit(bar, mx, my)) >= 0 && i != bar->cur) {
+                bar->next = i;
+                bar->hovered = 1;
+                done = 1;
+                break;
+            }
             nsel = -1;
             for (i = 0; i < p.n; i++)
                 if (mx >= p.x + p.item[i].left && mx < p.x + p.item[i].right &&
@@ -492,7 +518,22 @@ static UINT track(HWND owner, HMENU h, int x, int y, int *move)
         case WM_LBUTTONDOWN: case WM_RBUTTONDOWN: case WM_MBUTTONDOWN:
         case WM_LBUTTONDBLCLK: case WM_RBUTTONDBLCLK: case WM_MBUTTONDBLCLK:
         case WM_NCLBUTTONDOWN: case WM_NCRBUTTONDOWN: case WM_NCMBUTTONDOWN:
-            /* (as Windows) a click outside the menu closes it */
+            /* (as Windows) a click outside the menu closes it; on another
+               bar title, opens that one's.  A click on the title of a menu
+               that the mouse opened by moving onto it leaves it open (a
+               tap on a touch screen: the move to the tap, then its click) */
+            if ((i = bar_hit(bar, mx, my)) >= 0) {
+                if (i != bar->cur) {
+                    bar->next = i;
+                    bar->hovered = 0;
+                    done = 1;
+                    break;
+                }
+                if (bar->hovered && !pressed) {
+                    bar->hovered = 0;
+                    break;
+                }
+            }
             pressed = 1;
             if (mx < p.x || mx >= p.x + p.w || my < p.y || my >= p.y + p.h)
                 done = 1;
@@ -511,8 +552,13 @@ static UINT track(HWND owner, HMENU h, int x, int y, int *move)
         case WM_KEYDOWN: case WM_SYSKEYDOWN:
             switch (msg.wParam) {
             case VK_ESCAPE: done = 1; break;
-            case VK_LEFT: if (move) { *move = -1; done = 1; } break;
-            case VK_RIGHT: if (move) { *move = 1; done = 1; } break;
+            case VK_LEFT: case VK_RIGHT:
+                if (bar) {
+                    bar->next = (bar->cur + (msg.wParam == VK_LEFT ? -1 : 1) + bar->n) % bar->n;
+                    bar->hovered = 0;
+                    done = 1;
+                }
+                break;
             case VK_UP:
                 for (i = 0; i < p.n; i++) {
                     nsel = (nsel <= 0 ? p.n : nsel) - 1;
@@ -566,25 +612,29 @@ static UINT track(HWND owner, HMENU h, int x, int y, int *move)
 static void bar_track(Window *w, int index)
 {
     Menu *m = menu_get(w->menu);
-    RECT rects[64];
-    int n, move;
+    Bar bar;
+    int i;
     UINT cmd = 0;
     RECT wr;
     if (!m)
         return;
     SendMessageA(w->hwnd, WM_INITMENU, (WPARAM)w->menu, 0);
-    n = bar_items(w, rects, 64);
+    bar.m = m;
+    bar.n = bar_items(w, bar.r, 64);
+    bar.hovered = 0;
     wnd_screen_rect(w, &wr);
-    while (index >= 0 && index < n) {
+    for (i = 0; i < bar.n; i++)
+        OffsetRect(&bar.r[i], wr.left + w->client.left, wr.top);
+    while (index >= 0 && index < bar.n) {
         if (!(m->items[index].flags & MF_POPUP)) {
             cmd = (UINT)m->items[index].id;
             break;
         }
-        cmd = track(w->hwnd, (HMENU)m->items[index].id, wr.left + w->client.left + rects[index].left,
-                    wr.top + rects[index].bottom, &move);
-        if (!move)
+        bar.cur = index;
+        cmd = track(w->hwnd, (HMENU)m->items[index].id, bar.r[index].left, bar.r[index].bottom, &bar);
+        if (bar.next < 0)
             break;
-        index = (index + move + n) % n;
+        index = bar.next;
     }
     SendMessageA(w->hwnd, WM_MENUSELECT, MAKEWPARAM(0, 0xffff), 0);
     if (cmd)
