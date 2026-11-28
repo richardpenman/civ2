@@ -85,7 +85,7 @@ the CD's music or videos or the game's sounds; the heralds where it lacks the CD
 portraits, each tribe's own leader, with HD graphics) are not in
 the repository either: the builds (`make` too) fetch them from
 [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music`, `sound`, `heralds`, `wonders`, `portraits-historical`) at its pinned commit
-once (`make own-assets`; about 51 MB, the music and sounds already Ogg Vorbis and the movies animated WebP as the game plays them, so
+once (`make own-assets`; about 55 MB, the music and sounds already Ogg Vorbis and the movies animated WebP as the game plays them, so
 nothing is converted and nothing needs installing but Python 3). Later builds take them from
 `~/.cache/openciv2`, offline. `make OWN_ASSETS=` builds without them.
 
@@ -106,7 +106,7 @@ release): the one file the release has, SDL2 and the fonts built in.
 ## Browser version
 
 `make web` builds the game for web browsers into `build/web`: a static site (a page, its
-scripts, the game as a 2.9 MB WebAssembly module, the fonts) with no server-side code. Serve
+scripts, the game as a 3.4 MB WebAssembly module, the fonts) with no server-side code. Serve
 that folder from any web server, e.g.
 
 ```sh
@@ -140,7 +140,7 @@ constants for units, cities, treaties, tiles) and its state grouped by subject (
 `prefs.difficulty` or `net.session_phase` where the original's variables lie together, a header
 per subject, the read-only texts and tables `const`), and releases bound to scope (a local
 dialog, surface or file released by a guard on every path out of the function instead of on each
-return). Its logic has recorded unit tests (`make test`: 11,119 calls of 880 of the game's
+return). Its logic has recorded unit tests (`make test`: 11,103 calls of 879 of the game's
 functions recorded from the replays, run again and compared in seconds, no game files needed).
 That completes step 6 of the clean-up.
 

@@ -81,7 +81,7 @@ MacBook Air's window 3 (the game at 980×594), a 4K screen 3 (1280×720), 2560×
 effect the next time the game starts. The game is never made smaller than 640×480.
 
 Text is drawn with fonts that have the widths of Windows' Times New Roman, Arial and Courier
-New (the Liberation fonts, `data/fonts_win.bin`), so it is laid out as the original's on
+New (the Liberation fonts, `data/native/fonts_win.bin`), so it is laid out as the original's on
 Windows.
 
 ## Settings

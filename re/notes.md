@@ -5,7 +5,7 @@ Facts found while naming functions that are not yet expressed as types.
 ## Window objects: event handler slots
 
 The game's window wrapper keeps message handlers in a table at window+0x10
-(dispatcher: the window procedure in src/auto/blk_005e.c).  Offsets from the
+(dispatcher: the window procedure, `ddwin_native_wndproc` in src/auto/window.cpp).  Offsets from the
 table start:
 
 | offset | called on |

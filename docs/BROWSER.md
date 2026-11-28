@@ -8,7 +8,7 @@ Civilization II, added when you like, gives the original's look (Classic graphic
 
 ## Building and serving it
 
-`make web` builds a static site into `build/web`: a page, its scripts, the game as a 3.0 MB
+`make web` builds a static site into `build/web`: a page, its scripts, the game as a 3.4 MB
 WebAssembly module, the set-up as a second 0.8 MB module, the fonts and the HD graphics' art
 (below; `make web GAME=1`: the game itself, for a private site only, below). There is no server-side
 code: any web server can serve the folder.
@@ -47,10 +47,10 @@ After the click, the first time (nothing in the
 browser's storage) the game starts from an empty game folder, which OpenCiv2's own files fill in
 exactly as they do natively for a folder that lacks them: HD graphics (always, without the
 original's pictures), OpenCiv2's English of the game's texts, the built-in rules, its own sound
-effects, music, heralds and wonder movie. The page shows *Starting the game ...* with the
-install's progress bar while it fetches the HD art (`hd/art.bin`, 40 MB: by its bytes) and
-OpenCiv2's texts, sound effects and fonts (by their files), then the game's regular main menu
-(some 5 s here from a local server). The game's folder is noted as one without the original's
+effects, music, heralds and wonder movie. Where the click comes before the start screen has
+fetched them (below), the page shows *Starting the game ...* with the install's progress bar
+while the HD art (`hd/art.bin`, about 50 MB: by its bytes) and OpenCiv2's texts, sound effects and
+fonts (by their files) come, then the game's regular main menu. The game's folder is noted as one without the original's
 files (the store's `meta` `game` with no names: `src/web/main.js`, `play`); what the game writes
 (`CIV.INI`, `CIV2.DAT`, saved games) is kept in the browser's storage, the pictures and sounds it
 makes from the art again at each start (`OpenCiv2Pictures/`, `OpenCiv2Sounds/`) are not. Later
@@ -129,7 +129,7 @@ the page's `window.civ2Timing` has each step's time). The page asks the browser 
 disk space runs low. Clearing the site's data in the browser's settings removes it all (the saved
 games among it); the next visit then starts again without a copy.
 
-Music: with HD graphics OpenCiv2's own (`data/music/trackNN.ogg` on the site, 26 MB, fetched
+Music: with HD graphics OpenCiv2's own (`data/music/trackNN.ogg` on the site, 29 MB, fetched
 by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)), the game folder's
 (`Music/TrackNN.ogg`) only for a track OpenCiv2 lacks; with Classic graphics the game folder's,
 else OpenCiv2's.  The page fetches OpenCiv2's tracks (with HD graphics all of them, with Classic
@@ -266,7 +266,7 @@ device pixel ratio of 2 or more the canvas is the device's pixels, its text, men
 drawn at that resolution, the pictures enlarged.  `?sharp=0` (or `?sharp=1`) in the address
 switches it for that visit, as `--sharp=0` natively.
 
-What it takes: 25 MB from the site (the pictures the game uses, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
+What it takes: about 50 MB from the site (`hd/art.bin`: the pictures, heralds and leaders' portraits, WebP); the module's memory was 175 MB on a saved game's map at density 2 (87 MB
 without, 179 MB with sharp text alone); showing a whole 2560x1600 frame takes about 10 ms (Chrome, this
 machine), so only the frame's rows that changed since the last one are put on the canvas (`hd_frame_changed`,
 `host_present_hd`'s `top` and `bottom`): a unit's slide, 17 frames 15 ms apart in the original, changes a band of

@@ -97,13 +97,14 @@ and in a build without the art).  The sound effects are
 OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks them (`data/native/sound`: 78, public domain, CC0:
 openciv2/openciv2-assets, fetched by `make own-assets`; decoded
 into the WAV the game reads, `src/platform/sound.c`).  The music is OpenCiv2's own with HD graphics, and with Classic graphics where the game lacks
-it (`data/native/music`: openciv2/openciv2-assets, fetched by `make own-assets`; MIT).  So is
+it (`data/native/music`: openciv2/openciv2-assets, fetched by `make own-assets`; public-domain
+and CC0 recordings).  So is
 a wonder's movie where OpenCiv2 has one, the Pyramids' so far (`data/native/wonders`: an
 animated WebP and its Ogg Vorbis sound, played by the game's own AVI player as the CD's movie,
 its window sized for 16:9: [NO-INSTALL.md](NO-INSTALL.md#wonder-movies)).
 Still from the game: its other videos, scenarios.  The editors'
-backdrops and the wonders' movie border are plain grey until the art pack has them (OpenCiv2's
-own offered to it, openciv2-assets pull request 7).  The
+backdrops and the wonders' movie border are the art pack's (OpenCiv2's own, given to it in
+openciv2-assets pull request 7).  The
 leaders' portraits in HD are each tribe's own leader, man or woman, historical portraits of
 OpenCiv2's (`data/native/portraits`: openciv2/openciv2-assets' `assets/portraits-historical`,
 fetched by `make own-assets`; 36 from works in the public domain or under CC0, 6 AI-generated:
@@ -111,7 +112,8 @@ fetched by `make own-assets`; 36 from works in the public domain or under CC0, 6
 diplomacy room, the destroyed civilizations' report and the custom tribe's portrait chooser;
 where a file is missing, the art pack's that fits the tribe.  A tribe's herald of OpenCiv2's own
 (an animated WebP with alpha,
-`data/native/hd-extra/heralds.txt`, a local staging folder not in the repository; `tools/build_herald.py`) plays in HD in place of the CD's
+`data/native/heralds/heralds.txt`: openciv2/openciv2-assets' `assets/heralds`, fetched by `make
+own-assets`; `tools/build_herald.py`) plays in HD in place of the CD's
 video, with `KINGS` or without it, driven by the game's own segment table and timing (*Your own
 heralds*): the Russians' so far.
 The HD art comes with OpenCiv2's builds, the game downloads nothing: `data/native/hd` (about
@@ -122,8 +124,8 @@ hd-art`, which the builds run first; the files it is built from and the result c
 native and browser downloads of the release at run time are gone.
 The browser version starts as the desktop game does without the original's files: a first
 visit plays at once from an empty game folder, HD graphics and OpenCiv2's own files, to the main
-menu (the downloads on the page's progress bar), after its start screen (*Click to play*, which
-starts the sound, the saves' export and import, removing the files); the player's copy, for
+menu, after its start screen (*Click to play*, which starts the sound, and the saves' export and
+import), which fetches what the game needs while it waits; the player's copy, for
 Classic graphics, is chosen in Settings > Classic graphics
 ([BROWSER.md](BROWSER.md#the-start-no-copy-of-the-game-needed)).
 
@@ -705,7 +707,8 @@ message by message and clock event by clock event.
   file column of tests/unit/cases.tsv and re/methods.tsv, and the source
   probes' SOURCE lines, follow the functions).
 * **Unit tests** (step 6, the last part).  `make test` runs 11,119 recorded
-  calls of 880 of the game's functions in 2.7 seconds, without the game's
+  calls of 880 of the game's functions in 2.7 seconds (11,103 of 879 since
+  `rules_from_scenario` was removed when the rules were built in), without the game's
   files (docs/DEVELOPMENT.md "Unit tests"): each call recorded from the
   replays of 43 scenarios (all but `menu`, which runs none that qualify) by
   the recording build (tests/unit_record.c: -finstrument-functions, the

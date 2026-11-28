@@ -8,17 +8,18 @@ progress: [STATUS.md](STATUS.md).
 | Path | What |
 | --- | --- |
 | `src/auto/` | The game: decompiled once, now C++ edited directly, a file per subject (`city.cpp`, `unit.cpp`, `ai.cpp`, `diplomacy.cpp`, `map.cpp`, `window.cpp` …), the largest in parts named after it: `game_setup.cpp`, `game_save.cpp`, `game_events.cpp` and `game_events_editor.cpp`, `game_diffeng.cpp`, `game_cheat.cpp`, `game_status.cpp`; `network_messages.cpp`, `network_join.cpp`, `network_parley.cpp` and `network_parley_panes.cpp`; `city_window.cpp`, `city_production.cpp`, `city_advisors.cpp`, `city_view.cpp`, `city_editors.cpp`; `unit_move.cpp`, `unit_combat.cpp`, `unit_spy.cpp`, `unit_editors.cpp`; `window_dialog.cpp`, `window_menu.cpp`; `graphics_surface.cpp`, `graphics_sprite_editor.cpp`. |
-| `src/game/` | Functions the decompiler could not translate, reconstructed by hand. |
+| `src/game/` | Functions the decompiler could not translate, reconstructed by hand, and OpenCiv2's own parts of the game: Settings (`options.cpp`), the interface additions (`extras.cpp`), translations (`lang.cpp`), the built-in rules (`rules_default.cpp`), HD graphics (`hd_graphics.cpp`). |
 | `src/data/` | The game's static data, laid out exactly as in the original: defined in `gamedata.cpp` (address order), declared by subject in `state/` (`game.h`, `city.h`, `network.h` ..., the texts in `strings.h`); records listed in `re/state_records.txt`. |
 | `src/include/` | Types recovered from the binary: units, cities, civilizations, map, the game's classes. |
 | `src/platform/` | The Windows API the game uses (windows, GDI, controls, files, sound, video) implemented in portable C. |
-| `src/host/` | What the platform layer needs from the machine: window, input and audio over SDL2; the portable build's runtime. |
+| `src/host/` | What the platform layer needs from the machine: window, input and audio over SDL2; the portable build's runtime; the set-up from the CD or a disc image (`setup.c`). |
+| `src/web/` | The browser version's page and its scripts (below, Browser version). |
 | `src/native/` | The C runtime pieces the native builds need. |
-| `src/third_party/` | Bundled third-party decoders (Indeo 4 video, Ogg Vorbis). |
-| `data/` | Fonts as the original renders them, and the original executable's data sections. |
+| `src/third_party/` | Bundled third-party code: decoders (Indeo 4 video, Ogg Vorbis, WebP, PNG and other images), stb_truetype. |
+| `data/` | The original executable's data sections (`image/`); in `native/`, fonts as the original renders them, OpenCiv2's English of the game's texts (`text/`) and its translations (`lang/`); the pins of the HD art and OpenCiv2's own media (`hd-pack.json`, `own-assets.json`). |
 | `re/` | Analysis results: function list, calling conventions, data layout, Ghidra's decompilation. |
 | `harness/` | The replay scripts and the comparison with the original (`run.py`, `compare.py`, `native_suite.sh`). |
-| `tests/` | The unit tests (`make test`: recorded calls of the game's functions, `tests/unit`) and small standalone tests (data layout, network records, CD music reading). |
+| `tests/` | The unit tests (`make test`: recorded calls of the game's functions, `tests/unit`) and small standalone tests (data layout, network records, CD music reading; the source probes `*_test.cpp`; OpenCiv2's own sounds, music and wonder movies, `*_test.sh`; the translations and texts, `*_test.py`). |
 | `hook/` | An `XDaemon.dll` proxy that makes the original deterministic under Wine. |
 | `tools/` | Build, analysis and refactoring scripts. |
 | `docs/` | Notes on the reconstruction and its verification; progress in `STATUS.md`. |
@@ -197,7 +198,7 @@ additions and the rule changes), which the original game has no recording of.  T
 `harness/extras` replay them on the native build (`harness/extras_suite.py`) and are compared with
 our own output, recorded once after checking its screenshots by eye: `harness/extras/expected/NAME.txt`
 holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.gz` the trace itself
-(about 200 KB in all; no image or text of the game's).
+(about 430 KB in all; no image or text of the game's).
 
 * A script says how it is run in its first comment lines: `# test: CIV2_TEST_EXTRAS=1
   CIV2_TEST_FULL=640x480` (the variables of the run), and `# test LABEL: ...` for a further run of
@@ -220,9 +221,9 @@ holds a hash of each screenshot's pixels and of the `rand()` trace, `NAME.rand.g
   check of the message queue, and the map's drawing checks once per square, so redrawing a large
   map takes seconds of the script's time (docs/STATUS.md): wait long enough (about 12 s) after
   anything that redraws the map before a screenshot or a click.
-* The tests need the game's files, like the replays, so they do not run in the release workflow
-  (which has no game files and must not get them); run them locally before pushing changes to the
-  additions.
+* The tests need the game's files, like the replays, so CI (which has no game files and must not
+  get them) runs only those without: `x-no-install` and `x-no-install-hd`; `make check-all` runs
+  them all before pushing.
 
 ## Media tests
 
@@ -246,9 +247,11 @@ it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the 
   speaking, then under Anarchy.  `m-herald`: an animated herald (`KINGS`) in the diplomacy room,
   a few frames.  `m-wonder`: the Oracle's movie to its end and the map after it closes, the
   Pyramids' closed with Escape.  `m-music`: the tracks played at random and at each one's end,
-  Pick Music, the Game Options' Music unticked (stop) and ticked again.  The opening, council and
-  herald and the wonder's movie also with HD graphics (`-hd`): their game pixels, `rand()` traces and `calls.log` are
-  those of HD off.  `m-wonder-own`: the same with OpenCiv2's own wonder movies
+  Pick Music, the Game Options' Music unticked (stop) and ticked again.  The opening, the herald
+  and the wonder's movie also with HD graphics (`-hd`; not the council: with HD graphics there is
+  no High Council): their `rand()` traces are those of HD off, and their `calls.log` too but for
+  the music's times, a few milliseconds apart (with HD graphics no opening video is played, but
+  the game looks for it all the same).  `m-wonder-own`: the same with OpenCiv2's own wonder movies
   (`CIV2_TEST_WONDER=1`, `data/native/wonders`, made by `make own-assets`), the Oracle's still the
   CD's, the Pyramids' OpenCiv2's own played over the game's Video (its `calls.log` as `m-wonder-hd`'s:
   the game looks for `wonder00.avi` all the same).
@@ -260,7 +263,7 @@ it says so and skips them; the HD runs (`# test hd:`, `CIV2_TEST_HD=2` with the 
 ## Unit tests
 
 `make test` checks the game's logic in seconds (2.5 s for the cases, a few more to build):
-11,119 calls of 880 of the game's functions (combat odds and strengths, movement and paths,
+11,103 calls of 879 of the game's functions (combat odds and strengths, movement and paths,
 city food, shields, trade, happiness and
 production choice, the AI's assessments and unit orders, research, diplomacy, map generation steps
 ...), each recorded from a replay of the reference scenarios, called again with the same arguments
@@ -296,9 +299,10 @@ naming the function, the call and the first byte that differs (`cities+0x1a2`).
   `char` array and text buffer, `tools/unit_textmask.py` -> `tests/unit/textmask.tsv`) the cases have
   what the game's initializers leave there, and on the stack what looks like text is zeroed; the
   runner compares the same way.  So the tests need no game files and run anywhere the 32-bit Linux
-  build does (the release workflow runs them).  `tools/unit_coverage.py` lists the functions with
+  build does (CI runs them).  `tools/unit_coverage.py` lists the functions with
   cases by file (`tests/unit/cases.tsv`).
-* **When the code changes**.  Renamed functions are skipped (named in the report); a change of the
+* **When the code changes**.  Renamed or removed functions are skipped (named in the report: the
+  16 cases of `rules_from_scenario`, removed when the rules were built in, of the 11,119 recorded); a change of the
   game data's size or layout needs a new recording (`make unit-record`, about an hour), as does a
   function whose arguments change (a free function whose parameter types change but whose argument
   words mean the same, `int` -> `RECT *`, is still found by its name).  A failing case after an intended change of behaviour: check it
@@ -313,7 +317,7 @@ builds do not use it.
 * **The module**: the portable build's `build/wasm/civ2.wasm` (the same game and platform layer,
   `tools/build_port.py module`), passed through Binaryen's `wasm-opt` (`tools/fetch-toolchain.sh
   web`, version 130) with `--fpcast-emu` and `--asyncify`, then `-O2` without the debugging
-  information: 2.9 MB (1 MB gzipped).  `--fpcast-emu`: the decompiled code calls through function
+  information: 3.4 MB (1.2 MB gzipped).  `--fpcast-emu`: the decompiled code calls through function
   pointers of other types than their targets, which wasm traps on; the native port patches wasm2c's
   check out (tools/build_port.py), the browser cannot, so every function in the table gets a thunk
   of one common type (indirect calls are a little slower).
@@ -371,17 +375,20 @@ builds do not use it.
   sounds the game makes again at each start, `OpenCiv2Pictures/`, `OpenCiv2Sounds/`), the storage asked to
   be persistent (`navigator.storage.persist`).  With nothing stored the page starts the game at
   once from the empty folder (`play`: OpenCiv2's own files fill it in, HD graphics; the store's
-  `meta` `game` set to `{names: []}`, a game without the original's files; the downloads on the
-  install's bar, `firstStartBar`); a copy chosen later in Settings' *Find the original files...*
-  is merged into it (`mergeFiles`), the player's files kept.  Before it, the start screen
-  (`showStart`: *Click to play*, whose click makes and resumes the page's `AudioContext`,
-  handed to `host.js` as `opts.audio`; *Export saves*, *Import saves*, *Remove from this
-  browser*); Settings' *Restart now* skips it (`sessionStorage` `civ2.restart`).
+  `meta` `game` set to `{names: []}`, a game without the original's files); a copy chosen later
+  in Settings' *Find the original files...* is merged into it (`mergeFiles`), the player's files
+  kept.  Before it, the start screen (`showStart`: *Click to play*, whose click makes and resumes
+  the page's `AudioContext`, handed to `host.js` as `opts.audio`; *Export saves*, *Import
+  saves*); while it is shown the page fetches and reads what a start waits for (`preload`); a click
+  before that has finished shows how far, on the install's bar at a first visit
+  (`firstStartBar`), else on the line over the backdrop.  Settings' *Restart now* skips the start
+  screen (`sessionStorage` `civ2.restart`).
 * **HD graphics** (src/web/main.js, host.js's `host_present_hd`): `tools/build_web.py` puts the
-  art (data/native/hd, which make web makes first: make hd-art) and, where present, the local staging folder data/native/hd-extra on the site as one
+  art (data/native/hd, which make web makes first: make hd-art), OpenCiv2's own heralds and
+  leaders' portraits (data/native/heralds, portraits: make own-assets) and, where present, the local staging folder data/native/hd-extra on the site as one
   file, `hd/art.bin`, listed in `hd/index.json`.  At start, where HD graphics are wanted (`?hd=N`,
-  passed as `--hd=N`, else `CIV.INI`), the page fetches it and puts its files at `/data/hd` and
-  `/data/hd-extra`, where hd.c finds them as the program's data; hd.c reads each picture on
+  passed as `--hd=N`, else `CIV.INI`), the page fetches it and puts its files at `/data/hd`,
+  `/data/heralds`, `/data/portraits` and `/data/hd-extra`, where hd.c finds them as the program's data; hd.c reads each picture on
   demand as natively, its decoded pictures within its 160 MB budget in the module's memory (no
   maximum set at link time: wasm32's 4 GB).  The frame goes on the canvas at density times the
   desktop's size by `putImageData` (about 10 ms for 2560x1600, so not WebGL), not smoothed where
@@ -405,21 +412,21 @@ builds do not use it.
   (`findDisc`), where they are not an installed game; it shows the set-up's progress, has a Stop
   button (the worker is ended, the store emptied), and checks that the result is a game
   (`Civ2Art.dll`, `RULES.TXT`).  A CD's music tracks cannot be read by a browser: from a mounted
-  CD the game comes without music. (src/web/saves.js): the player's files are the `.SAV` files,
+  CD the game comes without music.
+* **Saves** (src/web/saves.js): the player's files are the `.SAV` files,
   `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT` in the game's folder, and the `.SCN` and `.MP` files
   the copy of the game did not have or that changed since (the store's `meta` notes the copy's
   paths and time; a copy made before that was noted: written ten minutes or more after
   `Civ2Art.dll` was copied).  Exported as a `.zip` (src/web/zip.js writes it: each file deflated
-  with `CompressionStream` where that makes it smaller), imported from `.SAV` files or `.zip`
-  archives (only those kinds of files; folders in front of a path that the game's folder does not
-  have dropped, the case of a file already there kept) into IndexedDB and, while the game runs,
-  into its files in memory.  While playing, the *Saves* button over the screen's top right corner
-  opens a dialog that keeps the keys from the game.
+  with `CompressionStream` where that makes it smaller; only those files read from the store, not
+  the whole game), imported from `.SAV` files or `.zip` archives (only those kinds of files;
+  folders in front of a path that the game's folder does not have dropped, the case of a file
+  already there kept) into IndexedDB and, while the game runs, into its files in memory.  Both
+  are on the start screen; *Import saves* then starts the game.
 * **By hand**: sound and music (the headless browser has no audio device), the cursors, resizing the
   window and other browsers than Chrome are checked by playing (music, the videos and loading saved
   games: played and fine, 2026-11-14; exporting saves and the set-up from the real CD: fine,
-  2026-11-14): `make web`, `python3 -m http.server
-  -d build/web`, open `http://localhost:8000/?setup`.
+  2026-11-14): `make serve`, open `http://localhost:8000`.
 * **Limits**: network games only through the relay, Internet games only.  Videos play as natively (the Indeo decoder is part of the
   module).  The set-up is tested automatically on a made-up CD (below) and was tried by hand on
   the real CD (2026-11-14); the cabinet code is libunshield's, as natively, and the made-up cabinet is also read by
@@ -439,11 +446,15 @@ builds do not use it.
   clients, the listener closed while they stay), then
   `src/web/test/start.mjs` (a fresh profile, no copy of the game, the browser's own autoplay
   policy: the start screen, at a desktop's and a phone's width, its button clicked with the
-  mouse, the sound running at the main menu; the game's progress bar following the HD art's and OpenCiv2's own files' downloads, the
-  main menu in HD, OpenCiv2's music, sound effects, wonder movies and texts all fetched, nothing
-  of the original's in the game's folder, the store's `meta` noting a game without the
-  original's files; a later visit (`?setup`: the start screen) started with Enter, at once,
-  without the bar; screenshots in `run/web-start`), then
+  mouse, the sound running at the main menu; the HD art and OpenCiv2's own files fetched from
+  the start screen on (the site slowed down), nothing of it shown there, the click's bar showing
+  how far; every frame of the page from the click the backdrop or the game's picture, never a
+  blank one; the main menu in HD, OpenCiv2's music, sound effects, wonder movies and texts all
+  fetched, nothing of the original's in the game's folder, the store's `meta` noting a game
+  without the original's files; a later visit started with Enter once its preload is done, its
+  first frame within 6 s, without the bar; a menu's click heard at once; a later visit started
+  before its downloads have come: the line on the backdrop showing how far; screenshots in
+  `run/web-start`), then
   `src/web/test/perf.mjs` (a fresh profile, no copy of the game, a device pixel ratio of 2: a
   new game on a small world, its first units moved with the keypad until four moves slid, each
   timed from its key: the slide's frames at most 25 ms apart and the move's last frame within
@@ -454,9 +465,10 @@ builds do not use it.
   disc image through the page (its file input, the worker, IndexedDB; the music decoded by the
   browser: 3 s and 2 s), then zips the game folder, gives it to the page
   through its file input, then plays: the menu, a new game with the default choices, a save
-  (Ctrl+S) kept in IndexedDB, the saves exported from the set-up page (a download, checked to hold
-  only the player's files), the saved game removed and imported from that `.zip` (on the set-up
-  page, then again while the game runs), and loaded again from the menu;
+  (Ctrl+S) kept in IndexedDB, the saves exported from the start screen (a download, checked to
+  hold only the player's files), the saved game removed and imported there again from that
+  `.zip`, which goes straight into the game, and loaded from the menu; the start screen in Esperanto and Chinese
+  (`?lang=`);
   screenshots in `run/web-smoke`; then `src/web/test/hd.mjs`: a first start in HD (the default, the site's
   art loaded), Classic graphics ticked in the game's Settings and the restart without the art
   (`Graphics=Classic`), unticked again and `Graphics=HD` written to `CIV.INI`, the page loaded
@@ -464,7 +476,7 @@ builds do not use it.
   at a device pixel ratio of 2: the canvas twice the desktop, a saved game's map in HD (41% of its
   2x2 blocks not one colour, against none for enlarged pixels), then `?hd=0`: the original
   graphics; then the game's files without TERRAIN1.GIF and Tiles.dll (HD forced), Classic
-  graphics ticked, *Find the original files...*: the set-up page over the game, the `.zip`
+  graphics ticked, *Find the original files...*: the page's panel over the game, the `.zip`
   chosen again, the missing files added, *Restart now*, Classic graphics; screenshots in `run/web-hd`.  Then
   `src/web/test/sound.mjs`: no looping sound left playing, the game's sounds through the page's
   WebAudio (`CIV2_TEST_AUDIO`): `harness/sound`'s replays (as `make test-sound`'s

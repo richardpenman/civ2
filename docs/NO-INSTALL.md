@@ -115,7 +115,7 @@ graphics (above).  Without the art too the game does not start: it says what is 
 | `EDITORPT.GIF` | the sprite editor's tools and backdrops | replaced: made from the pack's sprites |
 | `CITY.GIF` | the city window's background | replaced: the pack's picture (the 8-bit one dithered; HD paints the pack's in its own colours over it, `hd_sheet_loaded`, so its fades stay smooth) |
 | `SCREDITS.GIF` | the credits' picture | replaced: the pack's picture |
-| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: plain dark grey (the pack has no backdrops yet; OpenCiv2's dark slate reliefs are offered to it, [openciv2-assets pull request 7](https://github.com/openciv2/openciv2-assets/pull/7), and once it has them they are made from them, dithered into the shared palette's colours without changing it) |
+| `EDITORAS.GIF`, `EDITORSA.GIF`, `EDITORSQ.GIF` | the editors' backdrops (improvements, units, cities) | replaced: the pack's, OpenCiv2's dark slate reliefs given to it ([openciv2-assets pull request 7](https://github.com/openciv2/openciv2-assets/pull/7)), dithered into the shared palette's colours without changing it; HD paints them whole |
 | `Civ2Art.dll`, `Intro.dll`, `cv.dll`, `mk.dll`, `pv.dll`, `ss.dll`, `Tiles.dll`, `Wonder.dll` | the pictures of the windows (below) | replaced: made from the pack's pictures |
 | `civ2.exe` | its resources (below); the game looks for it (`file_require_cdrom`) | replaced: made from the pack's pictures; an empty stand-in for the look-up |
 | `Sound\*.WAV` (78) | the sound effects (below) | replaced: OpenCiv2's own (`data/native/sound`) |
@@ -138,8 +138,9 @@ whole, the crops not drawn, civ2.exe's) are in `data/native/hd` at the original'
   folder lacks (only there: a scenario's own art is its own), which is written, once a run, in
   `OpenCiv2Pictures` in the Windows directory; a library the folder lacks is loaded as a
   stand-in whose `FindResource` makes its GIF resources (`synth_resource`; the ids and sizes of
-  the original's, `src/platform/synth_resources.h`); with no `civ2.exe` its bitmaps, cursors and
-  icon are the pack's (`resources.c`: `synth_bitmap`, `synth_cursor`).  The libraries and
+  the original's, `src/platform/synth_resources.h`); with no `civ2.exe` its cursors and icon are the
+  pack's (`resources.c`: `synth_cursor`), its bitmaps (the radio buttons' and check boxes'
+  marks) OpenCiv2's own drawing (`ctl_bitmap`).  The libraries and
   `civ2.exe` are found as empty files there too (the game looks for them first).  With the
   install's files present none of this runs.
 * **Layout**: each sprite the pack has (`crop/file/SHEET/x,y,w,h`,
@@ -207,7 +208,7 @@ Made in about 0.7 seconds (this machine, native build) at the first sheet loaded
 | | 20000-20007 | the spaceship's launch and arrival frames | replaced |
 | `civ2art.dll` | 999 | the windows' frame texture | replaced |
 | | 1000, 2000, 4000, 30000 | the end of the game: the arrival, the defeat, Alpha Centauri beaten | replaced |
-| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: plain grey (the pack's pictures are each wonder's painting, whose corner would be no border: not used; once the pack has a border tile, `crop/.../1,1,64,32`, offered in openciv2-assets pull request 7, made from it); seen only in a wonder's movie (the CD's `Video`, or OpenCiv2's own: *Wonder movies*) |
+| `wonder.dll` | 20000-20027 | the wonders' movie window's border tile (a grey marble in the original, the same in all) | replaced: the pack's veined grey marble tile (`crop/.../1,1,64,32`, given to it in openciv2-assets pull request 7; the pack's pictures themselves are each wonder's painting, whose corner would be no border: not used); seen only in a wonder's movie (the CD's `Video`, or OpenCiv2's own: *Wonder movies*) |
 
 (Not every one was reached by the scripts: those of other governments, eras, leaders and levels
 are made the same way.)
@@ -285,10 +286,10 @@ their sources and licences in its `assets/music/README.md`), each as loud as the
 game plays them: Ogg Vorbis (which stb_vorbis, the game's decoder, reads), 48 kHz stereo,
 libvorbis's quality 5, 29.2 MB for the eleven, 27 minutes, about 144 kbit/s.  Not in this repository: the builds fetch it first (`make
 own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
-file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 32 MB
-with the heralds, the sound effects and the wonder movies), and copy it as it is: nothing is converted, so nothing
+file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 55 MB
+with the heralds, the sound effects, the wonder movies and the leaders' portraits), and copy it as it is: nothing is converted, so nothing
 is needed but Python 3; later builds take it from there, offline.  `make OWN_ASSETS=` builds
-without it (nor the heralds, sound effects and wonder movies).
+without it (nor the heralds, sound effects, wonder movies and portraits).
 
 Which track the drive plays (`cd_open_track`) follows the graphics in use.  With HD graphics
 (*Classic graphics* unticked in Settings, or a game folder without the original's pictures) it
