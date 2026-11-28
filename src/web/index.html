@@ -24,21 +24,16 @@
   html, body { margin: 0; min-height: 100%; background: var(--desk); color: var(--ink);
                font: 18px/1.45 var(--serif); }
   /* the start screen: the main window's backdrop (the HD art's; the desk's colour without it), a
-     dialog over it */
-  #front { position: fixed; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center;
+     dialog over it; at a start the backdrop alone, over the game until its first picture (main.js:
+     front('backdrop')), the clicks and taps going through to it */
+  #front { position: fixed; z-index: 1; inset: 0; overflow: auto; display: flex; align-items: center; justify-content: center;
            padding: 1rem; box-sizing: border-box; background: #3b3224 url("hd/title.webp") center / cover no-repeat; }
+  #front.backdrop { pointer-events: none; }
   #front > .panel { width: 100%; max-width: 30rem; margin: auto; }
   #front > #add, #front > #install { max-width: 40rem; }
   #start .body { text-align: center; }
   #play { font-size: 1.35rem; padding: 0.55rem 2.2rem; margin: 0 0 0.6rem; }
   #play:active { padding: 0.6rem 2.15rem 0.5rem 2.25rem; }
-  /* what a start waits for, fetched while the start screen is shown (main.js: preload): a thin
-     bar under the button, gone once all has come (its room kept: the button does not move) */
-  #preload { width: 11rem; margin: -0.25rem auto 0.3rem; }
-  #preload[hidden] { display: block !important; visibility: hidden; }
-  #preload-track { height: 4px; background: #e8e8e8; border: 1px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
-  #preload-fill { height: 100%; width: 0; background: #00007a; }
-  #preload-pct { display: block; font-size: 0.8rem; line-height: 1.5; color: var(--dim); }
   #saves-row { margin: 0.4rem 0 0.2rem; padding-top: 0.7rem; border-top: 2px groove #eee; }
   #saves-row .dim { font-size: 0.85rem; }
   /* the site's copy of the game being installed (make web GAME=1): a progress bar as the
@@ -94,7 +89,8 @@
   #choose-menu button:hover span, #choose-menu button:focus span { color: #ddd; }
   #choose-menu span { display: block; color: var(--dim); font-size: 0.85rem; }
   #loading { position: fixed; z-index: 3; left: 0; right: 0; top: 45%; margin: 0; padding: 0 1rem; text-align: center;
-             font: 1.2rem var(--serif); color: #f4f0e6; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+             font: 1.2rem var(--serif); color: #f4f0e6; pointer-events: none;
+             text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 0 6px #000; }
   #game { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #000; }
   [hidden] { display: none !important; }
   #screen { image-rendering: pixelated; image-rendering: crisp-edges; outline: none; touch-action: none;
@@ -127,14 +123,13 @@
 <!-- the start screen, over the game's own backdrop (hd/title.webp, the HD art's tiles.dll 90): its
      click starts the sound (the browser lets a page play only after a click or a key) and then the
      game; the saved games exported and imported.  Its panel #add: the original's files chosen over the
-     game (its Settings, Classic graphics: host_add_original) -->
-<div id="front" hidden>
- <section class="panel" id="start" aria-labelledby="title-main">
+     game (its Settings, Classic graphics: host_add_original).  The backdrop alone from the page's
+     first paint until main.js shows a panel -->
+<div id="front" class="backdrop">
+ <section class="panel" id="start" hidden aria-labelledby="title-main">
   <h1 class="title" id="title-main">OpenCiv2</h1>
   <div class="body">
   <button id="play" data-t="web.click_play">Click to play</button>
-  <div id="preload" role="progressbar" aria-labelledby="preload-pct" aria-valuemin="0" aria-valuemax="100"
-       aria-valuenow="0" hidden><div id="preload-track"><div id="preload-fill"></div></div><span id="preload-pct"></span></div>
   <p id="status" role="status"></p>
   <div id="saves-row">
     <span class="dim" data-t="web.saves_heading">Saved games</span><br>

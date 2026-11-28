@@ -393,7 +393,8 @@ async function main() {
             exported = readdirSync(downloads).find((f) => /^OpenCiv2-saves-.*\.zip$/.test(f));
         }
         if (!exported)
-            throw new Error('no saves exported: ' + await evaluate('window.civ2Status'));
+            throw new Error('no saves exported: ' + await evaluate('window.civ2Status') + ' (downloads: ' +
+                readdirSync(downloads).join(' ') + '; preload: ' + JSON.stringify(await evaluate('window.civ2Preload')) + ')');
         const zipped = join(downloads, exported);
         const zb = readFileSync(zipped);
         const inZip = (await unzip(zb.buffer.slice(zb.byteOffset, zb.byteOffset + zb.length))).map((f) => f.name);

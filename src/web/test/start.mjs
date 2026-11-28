@@ -8,15 +8,21 @@
 // with the mouse: the sound started by that click (the page's audio context
 // running at the main menu, its theme queued, before any other click), the
 // HD graphics' art and OpenCiv2's own texts and sounds fetched (from the
-// start screen on, its line under the button showing how far, the site
-// slowed down) on the page's progress bar, then the regular main menu in HD; OpenCiv2's own music, sound
+// start screen on, the site slowed down, nothing of it shown there; the
+// click's progress bar shows how far), then the regular main menu in HD,
+// the start screen's backdrop shown until its first picture (every frame of
+// the page the backdrop or the game's picture, never a blank or black page;
+// screenshots meanwhile); OpenCiv2's own music, sound
 // effects and wonder movies all fetched; the game's folder noted as one
 // without the original's files (store.js's meta 'game': no names), none of
 // the original's files in it; a later visit (an old link's ?setup: the start
 // screen) started with Enter once its preload is done, its first frame
-// within LATER_MS, at once from what was kept and fetched (no bar); a
+// within LATER_MS, at once from what was kept and fetched (no bar), the
+// backdrop until its first picture as at the first; a
 // menu's click heard at once (its sound mixed in ahead of the menu's queued
-// theme).  (The original's files added over the game, its Settings' Classic
+// theme); a later visit started before its downloads have come (the
+// browser's cache off, the site slowed down): the line on the backdrop
+// showing how far.  (The original's files added over the game, its Settings' Classic
 // graphics: hd.mjs; the saves exported and imported: smoke.mjs.)
 // Needs no copy of the game.  Screenshots in run/web-start (look at them).
 //
@@ -24,6 +30,7 @@
 
 import {writeFileSync, readFileSync, mkdirSync, rmSync, existsSync} from 'node:fs';
 import {join} from 'node:path';
+import {inflateSync} from 'node:zlib';
 import {ROOT, WEB, serve, browser, tmpDir} from './cdp.mjs';
 
 const OUT = join(ROOT, 'run', 'web-start');
@@ -33,6 +40,84 @@ const OUT = join(ROOT, 'run', 'web-start');
 // server, 18-21 s at 50 Mbit/s)
 const LATER_MS = 6000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// A screenshot's share of black pixels (a PNG of 8-bit RGB or RGBA, as
+// Chrome makes them: every 13th pixel)
+function darkness(buf) {
+    let p = 8, w = 0, h = 0, bpp = 4;
+    const idat = [];
+    while (p < buf.length) {
+        const len = buf.readUInt32BE(p), type = buf.toString('latin1', p + 4, p + 8), d = buf.subarray(p + 8, p + 8 + len);
+        if (type === 'IHDR') {
+            w = d.readUInt32BE(0);
+            h = d.readUInt32BE(4);
+            bpp = d[9] === 6 ? 4 : 3;
+        } else if (type === 'IDAT')
+            idat.push(d);
+        p += 12 + len;
+    }
+    const raw = inflateSync(Buffer.concat(idat)), stride = w * bpp, px = Buffer.alloc(h * stride);
+    for (let y = 0; y < h; y++) {
+        const f = raw[y * (stride + 1)], row = y * (stride + 1) + 1;
+        for (let x = 0; x < stride; x++) {
+            const a = x >= bpp ? px[y * stride + x - bpp] : 0, b = y ? px[(y - 1) * stride + x] : 0,
+                  c = x >= bpp && y ? px[(y - 1) * stride + x - bpp] : 0;
+            let v = raw[row + x];
+            if (f === 1)
+                v += a;
+            else if (f === 2)
+                v += b;
+            else if (f === 3)
+                v += (a + b) >> 1;
+            else if (f === 4) {
+                const q = a + b - c, pa = Math.abs(q - a), pb = Math.abs(q - b), pc = Math.abs(q - c);
+                v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+            }
+            px[y * stride + x] = v & 255;
+        }
+    }
+    let dark = 0, n = 0;
+    for (let i = 0; i < px.length; i += bpp * 13, n++)
+        if (px[i] + px[i + 1] + px[i + 2] < 30)
+            dark++;
+    return dark / n;
+}
+// The page from a start's click until a moment after the game's first
+// picture, each of its frames (requestAnimationFrame): the start screen's
+// backdrop (the front shown, hd/title.webp) or the game's picture (the
+// canvas, at a sixteenth of its size, mostly not black), never neither:
+// window.civ2Watch {frames, blank: [the frames that were neither], done}
+const WATCH = `(() => {
+    const W = window.civ2Watch = {frames: 0, blank: [], lifted: 0, done: false};
+    const front = document.getElementById('front'), game = document.getElementById('game'), c = document.getElementById('screen');
+    const tiny = document.createElement('canvas');
+    tiny.width = 16;
+    tiny.height = 12;
+    const g = tiny.getContext('2d', {willReadFrequently: true});
+    const step = () => {
+        W.frames++;
+        const shown = !front.hidden;
+        let ok = shown && /title\.webp/.test(getComputedStyle(front).backgroundImage);
+        if (!shown) {
+            W.lifted = W.lifted || performance.now();
+            if (!game.hidden && c.width) {
+                g.clearRect(0, 0, 16, 12);
+                g.drawImage(c, 0, 0, 16, 12);
+                const d = g.getImageData(0, 0, 16, 12).data;
+                let lit = 0;
+                for (let i = 0; i < d.length; i += 4)
+                    lit += d[i] + d[i + 1] + d[i + 2] > 30;
+                ok = lit > 16 * 12 / 2;
+            }
+        }
+        if (!ok && W.blank.length < 20)
+            W.blank.push({t: Math.round(performance.now()), front: shown, game: !game.hidden});
+        if (W.lifted && performance.now() - W.lifted > 1500)
+            W.done = true;
+        else
+            requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+})()`;
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
 async function main() {
@@ -107,6 +192,48 @@ async function main() {
         !st.wide && st.text === 'Click to play' && /title\.webp/.test(st.backdrop);
     const menuShown = () => evaluate('(() => { const c = document.getElementById("screen");' +
         ' const d = c.getContext("2d").getImageData(c.width - 4, c.height >> 1, 1, 1).data; return d[0] + d[1] + d[2] > 0; })()');
+    // (the start screen: nothing of the preload shown, no progress bar nor percentage)
+    const preloadHidden = () => evaluate(`(() => { const s = document.getElementById('start');
+        return ![...s.querySelectorAll('[role=progressbar]')].some((e) => e.getClientRects().length) && !/%/.test(s.innerText); })()`);
+    // the backdrop or the game from a click on (WATCH), screenshots meanwhile
+    // (every EVERY ms or as often as they come, from when AFTER is true:
+    // run/web-start/NAME-NNN.png), none mostly black
+    const watchStart = async (name, every = 50, after = null) => {
+        await evaluate('new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = "hd/title.webp"; })');
+        await evaluate(WATCH);
+        let stop = false;
+        const taken = [];
+        const shooting = (async () => {
+            while (after && !stop && !await evaluate(after))
+                await sleep(100);
+            for (let i = 0; !stop; i++) {
+                const t = performance.now();
+                const r = await send('Page.captureScreenshot', {format: 'png'});
+                const buf = Buffer.from(r.data, 'base64'), f = `${name}-${String(i).padStart(3, '0')}.png`;
+                writeFileSync(join(OUT, f), buf);
+                taken.push({f, buf, state: await evaluate('JSON.stringify({front: !document.getElementById("front").hidden,' +
+                    ' bar: !document.getElementById("install").hidden, line: !document.getElementById("loading").hidden})')});
+                await sleep(Math.max(0, every - (performance.now() - t)));
+            }
+        })();
+        return async () => {
+            await waitFor('window.civ2Watch.done', 120000, 'the game\'s picture shown (' + name + ')');
+            stop = true;
+            await shooting;
+            const w = await evaluate('window.civ2Watch');
+            // (looked at once all are taken: the test's own server not held up meanwhile)
+            for (const s of taken)
+                s.dark = darkness(s.buf);
+            for (const s of taken)
+                log(`  ${s.f}: ${(s.dark * 100).toFixed(0)}% black ${s.state}`);
+            log(`${name}: ${w.frames} frames, ${w.blank.length} blank, ${taken.length} screenshots`);
+            if (w.blank.length || w.frames < 2)
+                throw new Error(`a blank page between the click and the game's picture (${name}): ${JSON.stringify(w.blank)}`);
+            const dark = taken.find((s) => s.dark > 0.5);
+            if (dark)
+                throw new Error(`a black screen between the click and the game's picture (${name}): ${dark.f}`);
+        };
+    };
     const storeKeys = () => evaluate(`new Promise((resolve) => { const r = indexedDB.open("OpenCiv2"); r.onsuccess = () => {
             const tx = r.result.transaction(["files", "meta"]), k = tx.objectStore("files").getAllKeys(),
                   m = tx.objectStore("meta").get("game");
@@ -127,11 +254,16 @@ async function main() {
         await send('Network.emulateNetworkConditions', {offline: false, latency: 20, downloadThroughput: 4e6, uploadThroughput: 4e6});
         await send('Page.navigate', {url});
         await waitFor('window.civ2Start', 10000, 'the start screen');
-        const pre = await waitFor('(() => { const p = document.getElementById("preload"); return window.civ2Preload &&' +
-                                  ' !window.civ2Preload.ready && getComputedStyle(p).visibility === "visible" &&' +
-                                  ' /%$/.test(document.getElementById("preload-pct").textContent) &&' +
-                                  ' document.getElementById("preload-pct").textContent; })()', 10000, 'the preload\'s progress');
-        log('the start screen\'s preload: ' + pre);
+        // (the preload under way, nothing of it shown)
+        await waitFor('window.civ2Preload && !window.civ2Preload.ready && window.civ2Preload', 10000, 'the preload');
+        for (let i = 0; i < 5; i++) {
+            if (!await preloadHidden())
+                throw new Error('the preload\'s progress shown on the start screen before the click');
+            await sleep(200);
+        }
+        if (await evaluate('window.civ2Preload.ready'))
+            throw new Error('the preload done before the click (the site not slowed down)');
+        log('the start screen\'s preload: under way, not shown');
         await evaluate('document.fonts.ready.then(() => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = "hd/title.webp"; }))');
         let st = await startScreen();
         log('the start screen: ' + JSON.stringify(st));
@@ -158,10 +290,13 @@ async function main() {
         // Click to play, with the mouse: the bar at once
         const at = await evaluate('(() => { const r = document.getElementById("play").getBoundingClientRect();' +
                                   ' return [r.x + r.width / 2, r.y + r.height / 2]; })()');
+        const watched = await watchStart('03-first');
         const t0 = performance.now();
         for (const type of ['mousePressed', 'mouseReleased'])
             await send('Input.dispatchMouseEvent', {type, x: at[0], y: at[1], button: 'left', clickCount: 1});
-        await waitFor('window.civ2FirstStart && !document.getElementById("install").hidden', 10000, 'the progress bar');
+        // (an early click: how far, shown now)
+        await waitFor('window.civ2FirstStart && !document.getElementById("install").hidden &&' +
+                      ' document.getElementById("install").getClientRects().length > 0 && !window.civ2Preload.ready', 10000, 'the progress bar');
         log('the bar: ' + JSON.stringify(await evaluate('window.civ2FirstStart')) + ', title: ' +
             await evaluate('document.getElementById("install-title").textContent'));
         await waitFor('window.civ2FirstStart && parseInt(window.civ2FirstStart.pct) >= 20 || /Starting/.test(window.civ2Status || "")',
@@ -185,6 +320,7 @@ async function main() {
             throw new Error('original files in the game\'s folder: ' + files.join(' '));
         await waitFor('(window.civ2Stats || {}).hdFrames > 0', 60000, 'an HD frame');
         await waitFor('window.civ2Timing && window.civ2Timing.frame', 60000, 'the first frame');
+        await watched();
         await settle(3000, 60000);
         if (!await menuShown())
             throw new Error('no main menu');
@@ -225,9 +361,11 @@ async function main() {
         // (what it waits for fetched meanwhile: its line gone, then the
         // first frame within LATER_MS of the key, the art not waited for)
         await waitFor('window.civ2Preload && window.civ2Preload.ready', 60000, 'the later visit\'s preload');
-        if (await evaluate('getComputedStyle(document.getElementById("preload")).visibility') !== 'hidden')
-            throw new Error('the preload\'s line still shown once all has come');
+        if (!await preloadHidden())
+            throw new Error('the preload\'s progress shown on the start screen');
         await evaluate('window.addEventListener("keydown", () => window.civ2KeyAt = Math.round(performance.now()), true)');
+        // (its screenshots from its first frame on: the start to it timed)
+        const watchedLater = await watchStart('06-later', 300, 'window.civ2Timing.frame');
         await key('Enter', 13);
         await waitFor('/Starting/.test(window.civ2Status || "")', 60000, 'the later start');
         await waitFor('window.civ2Timing && window.civ2Timing.frame', 60000, 'the later start\'s first frame');
@@ -241,6 +379,7 @@ async function main() {
             throw new Error('the bar shown at a later visit');
         if (!((await evaluate('window.civ2Hd') || {}).files > 100))
             throw new Error('the art not loaded at a later start');
+        await watchedLater();
         await settle(3000, 60000);
         if (!await menuShown())
             throw new Error('no main menu at the later start');
@@ -296,6 +435,31 @@ async function main() {
             if (ms < 0 || heard.ahead > 50 || ms > 500)
                 throw new Error('a menu click\'s sound not heard at once');
         }
+        // a later visit started before what it waits for has come (the
+        // browser's cache off, the site slowed down: the art fetched again):
+        // the line on the backdrop showing how far
+        await evaluate('window.civ2Flush()');
+        await send('Network.setCacheDisabled', {cacheDisabled: true});
+        await send('Network.emulateNetworkConditions', {offline: false, latency: 20, downloadThroughput: 8e6, uploadThroughput: 8e6});
+        await send('Page.navigate', {url: url + '?setup'});
+        await waitFor('window.civ2Start', 10000, 'the start screen (an early start)');
+        if (!await preloadHidden())
+            throw new Error('the preload\'s progress shown on the start screen');
+        const watchedEarly = await watchStart('07-early');
+        await key('Enter', 13);
+        const line = await waitFor('(() => { const l = document.getElementById("loading"), f = document.getElementById("front");' +
+            ' return !window.civ2Preload.ready && !l.hidden && !f.hidden && f.classList.contains("backdrop") &&' +
+            ' /\\d+%$/.test(l.textContent) && l.textContent; })()', 20000, 'the line with how far on the backdrop');
+        log('an early start\'s line: ' + line);
+        await shot('07-early-line');
+        await send('Network.emulateNetworkConditions', {offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1});
+        await send('Network.setCacheDisabled', {cacheDisabled: false});
+        await waitFor('window.civ2Timing && window.civ2Timing.frame', 120000, 'the early start\'s first frame');
+        await watchedEarly();
+        await settle(3000, 60000);
+        if (!await menuShown())
+            throw new Error('no main menu at the early start');
+        await shot('07-early-menu');
         if (errors.length)
             throw new Error('the page threw');
         log('ok: ' + OUT);

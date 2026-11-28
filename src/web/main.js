@@ -16,12 +16,18 @@ const GAME = '/civ2', DATA = '/data';
 let pageLang = 'en';        // the page's language (i18n.js: ?lang=CODE, else English)
 const $ = (id) => document.getElementById(id);
 // (on the start screen, its panel choosing the original's files, and over
-// the screen until the game's first frame)
+// the backdrop until the game's first picture; there, after a click before
+// what a start waits for has all come, how far: lineProgress)
+let lineProgress = false;
+const loadingLine = () => {
+    const on = lineProgress && (loads.art || loads.files.size > 0);
+    $('loading').textContent = window.civ2Status + (on ? ' ' + Math.floor(loadsFrac() * 100) + '%' : '');
+};
 const status = (s) => {
     $('status').textContent = s;
     $('add-status').textContent = s;
-    $('loading').textContent = s;
     window.civ2Status = s;
+    loadingLine();
 };
 // a start's steps, in ms since the page was opened (the tests read it)
 const timing = window.civ2Timing = {};
@@ -257,12 +263,15 @@ async function addChosen(files) {
 
 // The front (the backdrop) with one of its panels: 'start' (the start
 // screen), 'add' (the original's files chosen), 'install' (a progress bar);
-// null: none, the front hidden
+// 'backdrop': none, the backdrop alone (a start's: over the game until its
+// first picture, the loading line on it, the clicks and taps the game's);
+// null: the front hidden
 function front(panel) {
     $('front').hidden = !panel;
+    $('front').classList.toggle('backdrop', panel === 'backdrop');
     for (const id of ['start', 'add', 'install'])
         $(id).hidden = id !== panel;
-    if (panel)
+    if (panel && panel !== 'backdrop')
         $('loading').hidden = true;
 }
 
@@ -725,26 +734,13 @@ function siteExtras(names, hd) {
 
 // What a start would do first, done while the start screen is shown: the
 // kept files read, what the game needs from the site fetched (siteFiles,
-// the translations), then its music and wonder movies; its progress on the
-// start screen, under Click to play, until all a start waits for has come
-// (window.civ2Preload: {ready, readyMs}, the tests).  Nothing played, nothing
-// written: a start then reads and fetches only what changed since (saves
-// imported, files removed).
-let preloading = null;
+// the translations), then its music and wonder movies (window.civ2Preload:
+// {ready, readyMs}, the tests).  Not shown: the start screen as it is
+// without it; a click before all has come shows how far then (play).
+// Nothing played, nothing written: a start then reads and fetches only what
+// changed since (saves imported, files removed).
 function preload(store) {
-    const run = preloading = {};
-    const shown = () => {
-        if (run !== preloading)
-            return;
-        const pct = Math.floor(loadsFrac() * 100);
-        $('preload-fill').style.width = pct + '%';
-        $('preload-pct').textContent = t('web.loading') + ' ' + pct + '%';
-        $('preload').setAttribute('aria-valuenow', pct);
-    };
-    loads.on.add(shown);
     window.civ2Preload = {ready: false};
-    $('preload').hidden = false;
-    shown();
     (async () => {
         const site = fromSite();
         const keys = await store.keys();
@@ -752,16 +748,11 @@ function preload(store) {
         const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
         const hd = hdWanted(ini, new URLSearchParams(location.search).get('hd'), hasOriginalPictures(keys)) >= 0;
         const files = siteFiles(keys, hd);
-        shown();
         await Promise.all([site.wasm, site.fonts, keptFiles(store), files.art, files.texts, files.sounds, files.fonts,
                            gameLanguage(ini)]);
         window.civ2Preload = {ready: true, readyMs: Math.round(performance.now())};
         siteExtras(keys.map((k) => GAME + '/' + k), hd);
-    })().catch((e) => console.warn('preload:', e)).finally(() => {
-        loads.on.delete(shown);
-        if (run === preloading)
-            $('preload').hidden = true;
-    });
+    })().catch((e) => console.warn('preload:', e));
 }
 
 // ---- the game from the site itself (make web GAME=1: game/index.json) ----
@@ -870,24 +861,28 @@ function firstStartBar() {
     return {
         end() {
             loads.on.delete(shown);
-            front(null);
+            front('backdrop');
         },
     };
 }
+
+// (the backdrop over a game that draws only black: at most this long)
+const PICTURE_MS = 15000;
 
 async function play(store) {
     // (the game files and saved games kept for good: without this the browser
     // may clear them when disk space runs low, Safari after a week unused)
     if (navigator.storage && navigator.storage.persist)
         navigator.storage.persist().catch(() => {});
-    front(null);
+    // (the start screen's backdrop kept until the game's first picture,
+    // which in HD is the same picture: no blank page between them)
+    front('backdrop');
     window.civ2Start = false;
     const t0 = performance.now();
     const site = fromSite();
     const fs = new MemFS();
     // (the start screen's preload: what it fetched and read is used, what
-    // it has not yet is waited for here; its line no longer shown)
-    preloading = null;
+    // it has not yet is waited for here)
     const ready = window.civ2Preload && window.civ2Preload.ready;
     // CIV.INI first (a moment): the HD graphics' art, when wanted, read
     // alongside the other files
@@ -901,9 +896,13 @@ async function play(store) {
     const bar = keys.length || ready ? null : firstStartBar();
     if (!keys.length && !await store.getMeta('game'))
         await store.setMeta('game', {names: [], at: Date.now()});
+    $('game').hidden = false;
+    // (else the line on the backdrop; how far, where downloads are waited for)
+    const moved = () => loadingLine();
     if (!bar) {
-        $('game').hidden = false;
         $('loading').hidden = false;
+        lineProgress = !ready;
+        loads.on.add(moved);
     }
     status(t('web.loading_files'));
     const iniName = keys.find((k) => /^civ\.ini$/i.test(k));
@@ -1032,9 +1031,10 @@ async function play(store) {
     window.addEventListener('pagehide', () => window.civ2Flush());
     if (bar) {
         bar.end();
-        $('game').hidden = false;
         $('loading').hidden = false;
     }
+    loads.on.delete(moved);
+    lineProgress = false;
     status(t('web.starting', Math.round(performance.now() - t0)));
     const canvas = $('screen');
     canvas.focus();
@@ -1083,11 +1083,23 @@ async function play(store) {
     let code;
     try {
         window.civ2Stats = {};
+        // the backdrop and its line until the game's first picture (its
+        // first frames black: the desktop before the main menu's), else
+        // at most PICTURE_MS after its first frame
+        const shown = () => {
+            if (running !== fs)
+                return;
+            if (!timing.picture)
+                timing.picture = Math.round(performance.now());
+            $('loading').hidden = true;
+            if ($('front').classList.contains('backdrop'))
+                front(null);
+        };
         code = await runGame({wasm: site.wasm, fs,
                               onFrame: () => {
                                   timing.frame = Math.round(performance.now());
-                                  $('loading').hidden = true;
-                              }, canvas, args, env, messageBox, codepage: gameLang.codepage,
+                                  setTimeout(shown, PICTURE_MS);
+                              }, onPicture: shown, canvas, args, env, messageBox, codepage: gameLang.codepage,
                               stats: window.civ2Stats, relay: relayAddress,
                               onRelayUnreachable: relayUnreachable,
                               addOriginal: () => addOriginal(store, fs),

@@ -58,13 +58,16 @@ visits start at once from what was kept, the art from the browser's cache, witho
 While the start screen is shown, the page already fetches and reads what a start waits for
 (`main.js`: `preload`): the game's module and fonts, the files kept in the browser, the HD art
 (where the game will draw it), OpenCiv2's texts, sound effects, font files and translations, then
-its music and wonder movies. A thin bar under *Click to play* says how far (*Loading ... 45%*), and
-goes once all has come; the click then starts the game at once, its first frame some 1.6-2.7 s
-later here (the game's own start), where before it waited for the downloads too (some 20 s for a
-first visit at 50 Mbit/s). A click before then shows the progress bar or line, carrying on from
-what has come. Nothing is played or written before the click; saves imported meanwhile are read
-again at the start (`src/web/test/start.mjs` checks the line, and a later visit's first frame
-within 6 s of the key, the art fetched before it).
+its music and wonder movies, showing nothing of it there; the click then starts the game at once,
+its first frame some 1.6-2.7 s later here (the game's own start), where before it waited for the
+downloads too (some 20 s for a first visit at 50 Mbit/s). A click before then shows how far: the
+progress bar at a first visit, else the line on the backdrop (*Loading the game files ... 45%*),
+carrying on from what has come. From the click the start screen's backdrop stays, its dialog gone,
+until the game's first picture (its first frames are black), which with HD graphics is the same
+picture: no blank page between them. Nothing is played or written before the click; saves imported
+meanwhile are read again at the start (`src/web/test/start.mjs` checks that nothing of it is shown
+before the click, the bar or line after an early one, every frame of the page from the click to the
+game's picture, and a later visit's first frame within 6 s of the key, the art fetched before it).
 
 Your copy of the original is chosen in the game: Settings, Classic graphics ticked, *Find the
 original files...* (below).
@@ -278,7 +281,8 @@ Both are on the start screen (reload the page to reach it from a game: what the 
 kept first).
 
 - **Export saves** downloads your files as a `.zip`: the saved games, the scenarios and maps you made,
-  `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT`. The game's own files are left out.
+  `CIV.INI`, `CIV2.DAT` and `HALLFAME.DAT`. The game's own files are left out, and not read: the
+  download comes in a second or so, while the start screen's preload reads the game's files too.
 - **Import saves** puts `.SAV` files, or such a `.zip`, back, and starts the game, whose *Load a
   Game* finds them.
 

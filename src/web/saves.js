@@ -40,10 +40,15 @@ export function playerFiles(entries, game) {
     }).map(([k]) => k);
 }
 
-// The player's files as a .zip: {data: Uint8Array, names}
+// The player's files as a .zip: {data: Uint8Array, names}.  Only those
+// files (and Civ2Art.dll's date where the copy's names were not noted) read
+// from the store, not all of the game's hundreds of MB: those can take
+// half a minute while the start screen's preload reads them too.
 export async function exportSaves(store) {
-    const entries = await store.all();
-    const keys = new Set(playerFiles(entries, await store.getMeta('game')));
+    const game = await store.getMeta('game');
+    const wanted = (await store.keys()).filter((k) => savesKind(k) || (!game && k.toLowerCase() === 'civ2art.dll'));
+    const entries = (await Promise.all(wanted.map(async (k) => [k, await store.get(k)]))).filter(([, v]) => v);
+    const keys = new Set(playerFiles(entries, game));
     const files = entries.filter(([k]) => keys.has(k)).map(([k, v]) => ({name: k, data: v.data, mtime: v.mtime}));
     return {data: await zip(files), names: files.map((f) => f.name)};
 }

@@ -120,7 +120,7 @@ export function argbToRgba(src, dst, n) {
 
 // ---- the run ----
 
-// opts: {wasm: ArrayBuffer|Response|WebAssembly.Module (or a promise of one), onFrame: called at the first frame, fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
+// opts: {wasm: ArrayBuffer|Response|WebAssembly.Module (or a promise of one), onFrame: called at the first frame, onPicture: at the first not all black, fs: MemFS, canvas, args, env, messageBox(icon, title, text, labels, ids,
 // enter, escape) -> Promise<id>, stats: {} (filled in as it runs: busyMs, resumes),
 // relay: the network relay's address, or a function giving it (net.js; none: no network play),
 // onRelayUnreachable(relay): a network game's connection could not reach it}
@@ -368,6 +368,16 @@ export async function runGame(opts) {
             const f = opts.onFrame;
             opts.onFrame = null;
             f();
+        }
+        // (the first frame not all black: some of its pixels, the main menu's)
+        if (opts.onPicture) {
+            for (let i = top * w; i < bottom * w; i += 101)
+                if (dst[i] & 0xffffff) {
+                    const f = opts.onPicture;
+                    opts.onPicture = null;
+                    f();
+                    break;
+                }
         }
     }
 
