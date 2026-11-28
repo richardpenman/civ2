@@ -1,73 +1,73 @@
 {
   "comment": "OpenCiv2's own assets (docs/NO-INSTALL.md, Music and Sound effects; docs/HD-GRAPHICS.md, Your own heralds): the source of data/native/music, data/native/sound, data/native/heralds, data/native/wonders and data/native/portraits (made by make own-assets, not in the repository), OpenCiv2's repository of assets openciv2/openciv2-assets (repo), its assets/music, assets/sound, assets/heralds, assets/wonders and assets/portraits-historical (MIT, as OpenCiv2: its LICENSE-media, copied as LICENSE; the sound effects' sources CC0: assets/sound/SOURCES.md; the historical portraits' sources public domain or CC0, six AI-generated (MIT): assets/portraits-historical/README.md; the same repository's assets/atlas-hd is the HD art, Peter Johnson's, pinned in data/hd-pack.json) at this commit (sha), each file checked against its SHA-256 and size here. tools/build_own_assets.py fetches them (the files at the commit, from raw.githubusercontent.com) into ~/.cache/openciv2 and copies them as they are, nothing converted; music: CD track number -> the track, Ogg Vorbis as the game plays it (stb_vorbis), copied as data/native/music/trackNN.ogg, which the game plays as CD track NN (with HD graphics first, with Classic graphics where its folder has no Music\\TrackNN: src/platform/sound.c: cd_open_track); heralds: the diplomacy room's animated heralds, copied into data/native/heralds (heralds.txt and the WebPs it names; src/platform/hd.c: hd_herald_find; the local data/native/hd-extra's heralds.txt, where it has the tribe, wins); sound: the sound effects, name.ogg (Ogg Vorbis, 22,050 Hz mono) for the original's Sound\\NAME.WAV, and their credits SOURCES.md, copied into data/native/sound, which the game plays as Sound\\NAME.WAV (with HD graphics first, with Classic graphics where its folder has none: src/platform/sound.c: sound_fallback; files.c: synth_path); wonders: the wonder movies, wonderNN.webp (the picture, an animated WebP) and wonderNN.ogg (the sound, Ogg Vorbis) for the original's Video\\WONDERNN.AVI (NN the wonder's number), copied into data/native/wonders, which the game plays together as that AVI (with HD graphics first, with Classic graphics where its folder has none: src/platform/video.c: open_own_wonder); portraits: the historical leaders' portraits, leader-ID.webp (900x1100) for the original's mk.dll ID (220 + the tribe's slot, a man; 241 + the slot, a woman), and their credits README.md, copied into data/native/portraits, which with HD graphics the diplomacy room, the destroyed civilizations' report and the custom tribe's portrait chooser draw for the tribe's leader (src/platform/hd.c: load_portraits; src/game/hd_graphics.cpp: hd_diplomacy_portrait, hd_portrait_faces); notices: the repository's LICENSE-media, copied as LICENSE beside music, heralds, wonders and portraits (its LICENSE is the HD art's). Upgrading: sha and the files' sha256 and size here (git ls-remote REPO main), then the tool.",
   "repo": "https://github.com/openciv2/openciv2-assets",
-  "sha": "c6ed7a0cc00fea08ea174d0848c2d3e508916596",
+  "sha": "f0f5d262fdaa5e3f5daa773da4442a84cdd6430e",
   "music": {
     "02": {
       "path": "assets/music/track02.ogg",
       "title": "Funeral March",
-      "sha256": "aed40f1caea8f66d53ae477cc5a0bce2231ababe7ebc77c029f8e6f219c6a664",
-      "size": 540494
+      "sha256": "04fa0f444b29f5d915b860fc9cfaacc3e86fac80a04c52a153d530bb5d2247aa",
+      "size": 542587
     },
     "03": {
       "path": "assets/music/track03.ogg",
       "title": "Ode to Joy",
-      "sha256": "ed6069b085d286d8d3417862e8acea13c5c4d3a457f36611ba0e9c785980bb29",
-      "size": 797716
+      "sha256": "387f41b6a1a729416ecb2bdb6b2889d8a036313f66e24c4f1ac286d4d61a03cd",
+      "size": 1042076
     },
     "04": {
       "path": "assets/music/track04.ogg",
       "title": "The Crusades",
-      "sha256": "1cb463118aa8b23911e665d45e372d09feffa4673c9e8a8fdb833cec45752fa2",
-      "size": 1621035
+      "sha256": "2cf85cdd840362591b8891ebf5d633031d56de2bbbe3d24a303103a364403c26",
+      "size": 1715788
     },
     "05": {
       "path": "assets/music/track05.ogg",
       "title": "Alien Invasion",
-      "sha256": "c52e966b52507e6f80656572b65a11d58af687920bf392d280957d1644516d20",
-      "size": 1853379
+      "sha256": "b78ab976ac6dfa10a31b9242d29a1e6d171b2b142483d81ee76ccc7eb93fe3a1",
+      "size": 2834355
     },
     "06": {
       "path": "assets/music/track06.ogg",
       "title": "Mongol Horde",
-      "sha256": "d70cbebf99e6fc374e150c9ec0ad78372424be778154651427f15fe3932028d9",
-      "size": 2956619
+      "sha256": "be6be81ca722d16d96dfeedd401bc8947ffcf338b37d904eed8955ac56b1e3ef",
+      "size": 3254708
     },
     "07": {
       "path": "assets/music/track07.ogg",
       "title": "Apocalypse",
-      "sha256": "a0068c40658009d727b1c44c2c7daf1df71b8463ceadaf0ee044144bd5cbf14b",
-      "size": 3862153
+      "sha256": "a86f005c19029b8fc7675a3daeeab74ae0e4cd56475e9d4a3b1c08e83aacf741",
+      "size": 4976574
     },
     "08": {
       "path": "assets/music/track08.ogg",
       "title": "Primeval World",
-      "sha256": "8975887bd8d61de75f87e99089fbfb4e5e7b9ba297fa129e88db87e9757c92cc",
-      "size": 3054130
+      "sha256": "a36df930b0cab98bcb781d3f0dd2cf3d86030d8b77e2d2f87644a57bd093c258",
+      "size": 2907392
     },
     "09": {
       "path": "assets/music/track09.ogg",
       "title": "New World",
-      "sha256": "3d2b040f58e997977ad01cdcd8c1ec323e1fb1a2d08437fae8b9648c2d48da5b",
-      "size": 2757427
+      "sha256": "d791eacc28d987f973380e03b4cd7e3b5f09e9f09c89a8e2c127b801f45ec2d5",
+      "size": 3477446
     },
     "10": {
       "path": "assets/music/track10.ogg",
       "title": "Fantasy",
-      "sha256": "af6d620d38879250dca2154bc678fc911fcc85450df9a86c4d2b84dadb27b31a",
-      "size": 3182285
+      "sha256": "e6579de1777ff8f3dd5abacb213ff7db717d12f5259ed3d1a192ff8995dc5090",
+      "size": 3564258
     },
     "11": {
       "path": "assets/music/track11.ogg",
       "title": "Mars",
-      "sha256": "106f6f67313adc016f14b00a3b8dc93856a5a213a37bbc58800d008ae303b3a3",
-      "size": 2680324
+      "sha256": "2d3455e9a98a07ee8f1f9762a7671fe29075219765bb17e20ad7f00993bc1f70",
+      "size": 2463029
     },
     "12": {
       "path": "assets/music/track12.ogg",
       "title": "World of Jules Verne",
-      "sha256": "54ae5a06cb05d3adcb7f923a77b38d549ffde5715e10cda884d6f08f75f8ebb8",
-      "size": 2852433
+      "sha256": "13b35d2c763fdf34001ab893e5d51418ac86d0a4e4e6fd9414a3bfc887ed0279",
+      "size": 2420783
     }
   },
   "heralds": {

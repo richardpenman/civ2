@@ -38,8 +38,8 @@ if ! build/music_decode data/native/music/track*.ogg > run/music-decode.txt; the
     echo "FAIL: a track of data/native/music does not decode (run/music-decode.txt)"; fail=1
 elif ! python3 - run/music-decode.txt <<'PY'
 import sys
-want = {'02': 35, '03': 42, '04': 89, '05': 110, '06': 161, '07': 205, '08': 165, '09': 150, '10': 165,
-        '11': 145, '12': 150}
+want = {'02': 46, '03': 57, '04': 90, '05': 146, '06': 172, '07': 272, '08': 155, '09': 187, '10': 216,
+        '11': 145, '12': 137}
 got = {}
 for line in open(sys.argv[1]):
     path, chans, rate, secs = line.split()

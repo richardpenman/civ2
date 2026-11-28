@@ -92,7 +92,7 @@ above).
 | replaced: made from the HD art (sheets, libraries, civ2.exe; OpenCiv2's own pictures where the pack has none) | 21 | 243 GIF + 30 of civ2.exe's |
 | of those, the 8-bit picture's layout differs (HD mode, always on then, draws it whole): out of scope by design | | 93 (pv.dll 55, ss.dll 400-499 38) |
 | replaced: OpenCiv2's own sound effects (`data/native/sound`, public domain; made by `make own-assets`, not in the repository) | 78 (`Sound\*.WAV`) | |
-| replaced: OpenCiv2's own music (`data/native/music`, MIT; made by `make own-assets`, not in the repository) | 11 music tracks (`Music\Track02`-`12`) | |
+| replaced: OpenCiv2's own music (`data/native/music`: public-domain and CC0 recordings; made by `make own-assets`, not in the repository) | 11 music tracks (`Music\Track02`-`12`) | |
 | replaced: OpenCiv2's own wonder movies (`data/native/wonders`, MIT; made by `make own-assets`, not in the repository) | 1 of the 28 (`Video\WONDER00.AVI`, the Pyramids) | |
 | out of scope: videos | 58 videos (`Video` 36, `KINGS` 21, `LOSER.AVI`) | 21 (mk.dll `CTAB`, the heralds' video palettes) |
 | droppable: never read by the game | 22 | |
@@ -275,14 +275,15 @@ OpenCiv2's with the folder and without it.
 plays them as CD tracks 2 to 12, through MCI's `cdaudio`, `src/platform/sound.c`), or
 `Music\TrackNN.ogg` (as the set-up encodes them from a disc image).
 
-Replaced: OpenCiv2's own music, eleven tracks of the same order and about the same length,
+Replaced: OpenCiv2's own music, eleven tracks of the same order and of similar lengths,
 `data/native/music/track02.ogg` to `track12.ogg`, from OpenCiv2's repository of assets
 [openciv2/openciv2-assets](https://github.com/openciv2/openciv2-assets) (`assets/music/track02.ogg`
-to `track12.ogg`; MIT, as OpenCiv2: its `LICENSE-media`; the HD art is its `assets/atlas-hd`),
-each as loud as the CD track it replaces (its integrated loudness, EBU R128, matched to the
-original's).  The repository holds them as the game plays them: Ogg Vorbis (which stb_vorbis, the
-game's decoder, reads), 48 kHz stereo, libvorbis's quality 5, 26.2 MB for the eleven, 25
-minutes, about 140 kbit/s.  Not in this repository: the builds fetch it first (`make
+to `track12.ogg`; the HD art is its `assets/atlas-hd`): excerpts of recordings in the public
+domain or under CC0 (US military bands', the Musopen Symphony's and CC0 pieces from OpenGameArt;
+their sources and licences in its `assets/music/README.md`), each as loud as the CD track it replaces
+(its integrated loudness, EBU R128, matched to the original's).  The repository holds them as the
+game plays them: Ogg Vorbis (which stb_vorbis, the game's decoder, reads), 48 kHz stereo,
+libvorbis's quality 5, 29.2 MB for the eleven, 27 minutes, about 144 kbit/s.  Not in this repository: the builds fetch it first (`make
 own-assets`, `tools/build_own_assets.py`) at the commit pinned in `data/own-assets.json` (each
 file checked against its SHA-256 and size there), once, into `~/.cache/openciv2` (about 32 MB
 with the heralds, the sound effects and the wonder movies), and copy it as it is: nothing is converted, so nothing

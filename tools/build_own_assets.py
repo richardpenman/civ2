@@ -80,8 +80,9 @@ From OpenCiv2's repository of assets openciv2/openciv2-assets
 {tracks}
 copied as they are by tools/build_own_assets.py.
 
-Copyright (c) 2026 Richard Penman (the OpenCiv2 project); MIT licence:
-LICENSE.
+All are excerpts of recordings in the public domain or under CC0, their
+pieces, composers, performers, sources and licences listed in the
+repository's assets/music/README.md (and in each file's Vorbis comments).
 """
 
 
