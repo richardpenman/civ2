@@ -98,7 +98,7 @@ web-test: web                 ## the browser version's tests: its host's logic, 
 	tools/toolchain/node/bin/node src/web/test/hd.mjs
 	tools/toolchain/node/bin/node src/web/test/mobile.mjs
 
-web-parity: web               ## the desktop's replays in the browser version: a representative set of harness/extras (with and without the original's files, Classic and HD graphics) and three native-suite games, each screenshot and the rand() trace compared with the desktop's expected results (the cases without the original's pictures: with build/OpenCiv2's replay, in Docker; NAMES=...: those cases; --list: all of them); mismatches in run/web-parity/CASE (src/web/test/web-parity.mjs)
+web-parity: web               ## the desktop's replays in the browser version: a representative set of harness/extras (with and without the original's files, Classic and HD graphics) and three native-suite games, each screenshot and the rand() trace compared with the desktop's expected results (NAMES=...: those cases; --list: all of them); mismatches in run/web-parity/CASE (src/web/test/web-parity.mjs)
 	sh tools/fetch-toolchain.sh browser
 	tools/toolchain/node/bin/node src/web/test/web-parity.mjs $(NAMES)
 

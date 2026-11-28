@@ -151,7 +151,7 @@ step web-mobile --needs web,fetch-browser -- $NODE src/web/test/mobile.mjs
 step web-perf   --advisory --needs web,fetch-browser -- $NODE src/web/test/perf.mjs
 # The long ones last: the browser against the desktop, every scenario
 # against the original's recordings, the two native builds against each other
-step web-parity   --needs web,port,fetch-browser -- $NODE src/web/test/web-parity.mjs
+step web-parity   --needs web,fetch-browser -- $NODE src/web/test/web-parity.mjs
 step native-suite --needs port -- $MAKE native-suite EXE=OpenCiv2
 step diff-suite   --needs port,native -- tools/dk sh harness/diff_suite.sh
 

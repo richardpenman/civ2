@@ -14,11 +14,6 @@
 //  - games of the native suite (harness/scripts), compared with the
 //    original's recording run/ref-NAME as make native-suite compares the
 //    desktop's (skipped where this machine has no recording).
-// The cases without the original's pictures (CIV2_NO_GRAPHICS=1) are
-// compared instead with the desktop game's replay, build/OpenCiv2's, made
-// here in Docker (tools/dk; below, x87: the expected results come from the
-// 32-bit test build, whose x87 arithmetic makes the pictures drawn from the
-// HD art otherwise than SSE's, the desktop game's and the browser's).
 //
 // The game's files: those of $CIV2_GAME (default ~/Civ2) as
 // tools/native-run.sh gives them to the desktop's replay (the harness's
@@ -34,12 +29,11 @@
 // Each case: PASS or FAIL with what differs; on a mismatch
 // run/web-parity/NAME/ has, for each screenshot that differs, SHOT-web.png
 // (the browser's), SHOT-desktop.png (the desktop's, where this machine has
-// it: run/extras-blessed/NAME, kept by make extras-bless, run/ref-NAME or
-// build/OpenCiv2's run in run/web-parity-desktop/NAME) and SHOT-diff.png
-// (the pixels that differ, white), and trace.txt with the first differing
-// rand() call; the browser's whole output (BMP screenshots, rand.log,
-// hook.log) is in run/web-parity/NAME/out.  Exit status 1 when a case
-// fails.
+// it: run/extras-blessed/NAME, kept by make extras-bless, or run/ref-NAME)
+// and SHOT-diff.png (the pixels that differ, white), and trace.txt with the
+// first differing rand() call; the browser's whole output (BMP screenshots,
+// rand.log, hook.log) is in run/web-parity/NAME/out.  Exit status 1 when a
+// case fails.
 //
 // What the runner does differently from the desktop's harness, and why
 // (nothing compared more loosely):
@@ -59,15 +53,13 @@ import {join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {homedir} from 'node:os';
 import {createHash} from 'node:crypto';
-import {spawnSync} from 'node:child_process';
 import {gunzipSync, inflateSync, deflateSync} from 'node:zlib';
 import {ROOT, WEB, serve, browser, tmpDir, clickPlay} from './cdp.mjs';
 
 // The representative set (some 7 minutes): with the original's files and
-// without (no install: the 64-bit desktop's replay made too, below),
-// Classic and HD graphics, sharp text, translations (Latin-1, Greek,
-// Chinese), the real file dialog, Settings, the city view in HD, two
-// games of the native suite.
+// without (no install), Classic and HD graphics, sharp text, translations
+// (Latin-1, Greek, Chinese), the real file dialog, Settings, the city view
+// in HD, two games of the native suite.
 const CASES = [
     'x-basic', 'x-b20-buttons', 'x-b20-buttons-classic', 'x-options', 'x-options-sharp',
     'x-sharp', 'x-own-text', 'x-lang-de', 'x-lang-el-sharp', 'x-lang-zh',
@@ -317,47 +309,7 @@ const traceHash = (t) => createHash('sha256').update(t.join('\n')).digest('hex')
 
 // ---- what is expected: the desktop's ----
 
-// The cases without the original's pictures (CIV2_NO_GRAPHICS=1), whose
-// expected results the 32-bit test build's x87 arithmetic makes
-// (harness/extras/expected comes from build/civ2-linux32): the pictures
-// made from the HD art (synth.c's dithering in float, hd.c's scaling in
-// double) come out otherwise in a build with SSE arithmetic, as the
-// browser's module and the desktop game (build/OpenCiv2, x86-64) are.
-// These are compared with build/OpenCiv2's replay of the same script
-// instead, made here (tools/native-run.sh in the civ2-dev container:
-// tools/dk, Docker; skipped without it).
-const x87 = (c) => c.expected === 'extras' && c.env.CIV2_NO_GRAPHICS;
-
-function desktopRun(c) {
-    const out = join(ROOT, 'run', 'web-parity-desktop', c.name);
-    rmSync(out, {recursive: true, force: true});
-    mkdirSync(out, {recursive: true});
-    if (!existsSync(join(ROOT, 'build', 'OpenCiv2')))
-        return {skip: 'no build/OpenCiv2 (make port) to compare with'};
-    const env = {...process.env, EXE: 'OpenCiv2', TIMEOUT: '600'};
-    // (CIV2_GAME and CIV2_IMAGE kept: the same game folder as the
-    // browser's, and tools/dk's image: CI's civ2-ci)
-    for (const k of Object.keys(env))
-        if (/^CIV2_/.test(k) && k !== 'CIV2_GAME' && k !== 'CIV2_IMAGE')
-            delete env[k];
-    // (the case's variables set inside the container: tools/dk passes on
-    // only some of them)
-    const r = spawnSync('sh', [join(ROOT, 'tools', 'dk'), 'env', ...Object.entries(c.env).map(([k, v]) => k + '=' + v),
-                               'sh', 'tools/native-run.sh', '/work/harness/' + c.script,
-                               '/work/run/web-parity-desktop/' + c.name], {env, encoding: 'latin1'});
-    writeFileSync(out + '.log', (r.stdout || '') + (r.stderr || ''));
-    if (r.status !== 0 || !existsSync(join(out, 'rand.log')))
-        return {skip: `build/OpenCiv2's replay not made (Docker: tools/dk; see run/web-parity-desktop/${c.name}.log)`};
-    return out;
-}
-
 function expected(c) {
-    if (x87(c)) {
-        const ref = desktopRun(c);
-        if (ref.skip)
-            return ref;
-        return {...runResult(ref), images: ref, against: 'build/OpenCiv2'};
-    }
     if (c.expected === 'extras') {
         const p = join(EXTRAS, 'expected', c.name + '.txt');
         if (!existsSync(p))

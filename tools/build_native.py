@@ -29,32 +29,40 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'build', 'native')
 GEN = os.path.join(OUT, 'gen')
 
+# SSE2 arithmetic for the 32-bit builds whose replays are compared with
+# harness/extras/expected and harness/media/expected: the pictures made
+# without the original's (src/platform/synth.c's dithering, hd.c's scaling)
+# then round as in the 64-bit desktop build and the browser; with x87's
+# extended precision they differ from what players see.  (The original's
+# own arithmetic is x87 at double precision, which SSE2's double matches.)
+SSE2 = ['-msse2', '-mfpmath=sse']
+
 TARGETS = {
     'linux32': {
         'cc': 'gcc',
         'exe': 'civ2-linux32',
-        'cflags': ['-m32'],
+        'cflags': ['-m32', *SSE2],
         'ldflags': ['-m32', '-rdynamic', '-no-pie'],
         'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32cov': {         # coverage of the test runs: gcov data in build/native/linux32cov
         'cc': 'gcc',
         'exe': 'civ2-linux32cov',
-        'cflags': ['-m32', '--coverage'],
+        'cflags': ['-m32', *SSE2, '--coverage'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie', '--coverage'],
         'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32gc': {          # which functions nothing refers to: build/native/linux32gc/unreferenced.txt
         'cc': 'gcc',
         'exe': 'civ2-linux32gc',
-        'cflags': ['-m32', '-ffunction-sections'],
+        'cflags': ['-m32', *SSE2, '-ffunction-sections'],
         'ldflags': ['-m32', '-no-pie', '-Wl,--gc-sections', '-Wl,--print-gc-sections'],
         'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
     'linux32asan': {        # AddressSanitizer: code that relies on locals or globals being adjacent
         'cc': 'gcc',
         'exe': 'civ2-linux32asan',
-        'cflags': ['-m32', '-fsanitize=address', '-fsanitize-recover=address', '-fno-omit-frame-pointer'],
+        'cflags': ['-m32', *SSE2, '-fsanitize=address', '-fsanitize-recover=address', '-fno-omit-frame-pointer'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie', '-fsanitize=address'],
         'libs': ['-lSDL2', '-lm', '-ldl', '-lz'],
     },
@@ -85,7 +93,7 @@ TARGETS = {
     'linux32clang': {       # cross-check: the linux32 build compiled by clang (needs clang installed)
         'cc': 'clang',
         'exe': 'civ2-linux32clang',
-        'cflags': ['-m32', '-Wno-error=int-conversion', '-Wno-error=incompatible-pointer-types',
+        'cflags': ['-m32', *SSE2, '-Wno-error=int-conversion', '-Wno-error=incompatible-pointer-types',
                    '-Wno-error=implicit-function-declaration', '-Wno-error=implicit-int', '-Wno-error=return-type',
                    '-Wno-error=incompatible-function-pointer-types'],
         'ldflags': ['-m32', '-rdynamic', '-no-pie'],

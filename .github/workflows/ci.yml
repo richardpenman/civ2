@@ -20,12 +20,12 @@
 #  - native: make native, then the extras that run without the install
 #    (make test-extras NAMES='x-no-install x-no-install-hd'), make test-sound
 #    and test-music
-#  - web: make port (build/OpenCiv2, which web-parity compares with), the
+#  - web: make port (build/OpenCiv2: that the desktop game builds), the
 #    browser version as make web makes it without GAME, its tests that run
 #    without the game (unit, setup, net, start; smoke and hd skip), and
 #    make web-parity's cases without the install (x-no-install,
-#    x-no-install-hd); perf.mjs only advisory (its timings vary with the
-#    machine: never fails the run)
+#    x-no-install-hd, against harness/extras/expected); perf.mjs only
+#    advisory (its timings vary with the machine: never fails the run)
 # The native builds and their tests run as locally, by tools/dk, in the CI's
 # image (tools/docker-ci: civ2-dev's Debian 12 and gcc 12, without Wine).
 name: CI
@@ -197,8 +197,8 @@ jobs:
           tools/toolchain/node/bin/node src/web/test/smoke.mjs
           tools/toolchain/node/bin/node src/web/test/hd.mjs
       - name: make web-parity's cases without the install
-        # (every case named must run: a SKIP, e.g. build/OpenCiv2's replay
-        # not made, fails here)
+        # (every case named must run: a SKIP, e.g. nothing expected, fails
+        # here)
         run: |
           set -o pipefail
           tools/toolchain/node/bin/node src/web/test/web-parity.mjs x-no-install x-no-install-hd 2>&1 | tee parity.log
@@ -215,5 +215,4 @@ jobs:
           path: |
             run/web-start
             run/web-parity
-            run/web-parity-desktop
           retention-days: 7
