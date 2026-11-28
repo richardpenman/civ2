@@ -41,8 +41,6 @@
   #preload-pct { display: block; font-size: 0.8rem; line-height: 1.5; color: var(--dim); }
   #saves-row { margin: 0.4rem 0 0.2rem; padding-top: 0.7rem; border-top: 2px groove #eee; }
   #saves-row .dim { font-size: 0.85rem; }
-  #more-row { margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 2px groove #eee; font-size: 0.85rem; line-height: 1.9; }
-  #more-row button.plain { font-size: inherit; }
   /* the site's copy of the game being installed (make web GAME=1): a progress bar as the
      game's own set-up draws one, blue blocks in a sunken box, the percentage over it */
   #install .body { text-align: center; }
@@ -143,7 +141,6 @@
     <button class="export-saves" id="export-saves" title="Your saved games, the scenarios you made, CIV.INI, CIV2.DAT and HALLFAME.DAT, as a .zip" data-t="web.export" data-t-title="web.export_title">Export saves</button>
     <label class="button" for="import-saves" id="import-label" tabindex="0" data-t="web.import">Import saves</label>
   </div>
-  <p class="dim" id="more-row"><button id="forget" class="plain" data-t="web.remove">Remove from this browser</button></p>
   </div>
  </section>
  <section class="panel" id="add" hidden aria-labelledby="add-title">

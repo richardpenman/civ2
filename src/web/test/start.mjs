@@ -220,8 +220,8 @@ async function main() {
         await waitFor('window.civ2Start', 10000, 'the start screen (?setup)');
         st = await startScreen();
         await shot('04-start-later');
-        if (!startOk(st) || !await evaluate('document.getElementById("forget").getClientRects().length > 0'))
-            throw new Error('?setup does not open the start screen (with Remove from this browser): ' + JSON.stringify(st));
+        if (!startOk(st))
+            throw new Error('?setup does not open the start screen: ' + JSON.stringify(st));
         // (what it waits for fetched meanwhile: its line gone, then the
         // first frame within LATER_MS of the key, the art not waited for)
         await waitFor('window.civ2Preload && window.civ2Preload.ready', 60000, 'the later visit\'s preload');

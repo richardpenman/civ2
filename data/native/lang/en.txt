@@ -351,8 +351,6 @@ Choose
 Loading ...
 @@openciv2.web.click_play
 Click to play
-@@openciv2.web.remove
-Remove from this browser
 @@openciv2.web.add_original
 Classic graphics need the original Civilization II files, which the game in this browser does not have. Choose your copy of Civilization II Multiplayer Gold Edition: the files the game has already are kept.
 @@openciv2.web.add_back
@@ -467,8 +465,6 @@ The game has ended.
 The game has ended (%s).
 @@openciv2.web.stopped
 The game stopped: %s
-@@openciv2.web.forget_confirm
-Remove the game files, saved games included, from this browser (and the HD graphics' art)?
 @@openciv2.web.copy_failed
 Could not copy the files: %s
 @@openciv2.web.read_failed

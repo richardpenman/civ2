@@ -356,8 +356,6 @@ Elekti
 Þargante ...
 @@openciv2.web.click_play
 Alklaku por ludi
-@@openciv2.web.remove
-Forigi el æi tiu retumilo
 @@openciv2.web.add_original
 Klasika grafiko bezonas la originalajn dosierojn de Civilization II, kiujn la ludo en æi tiu retumilo ne havas. Elektu vian kopion de Civilization II Multiplayer Gold Edition: la dosieroj, kiujn la ludo jam havas, restas.
 @@openciv2.web.add_back
@@ -472,8 +470,6 @@ La ludo finiøis.
 La ludo finiøis (%s).
 @@openciv2.web.stopped
 La ludo haltis: %s
-@@openciv2.web.forget_confirm
-Æu forigi la dosierojn de la ludo, inkluzive de konservitaj ludoj, el æi tiu retumilo (kaj la arton de la HD-grafiko)?
 @@openciv2.web.copy_failed
 Ne eblis kopii la dosierojn: %s
 @@openciv2.web.read_failed

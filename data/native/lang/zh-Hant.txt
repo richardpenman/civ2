@@ -352,8 +352,6 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 載入中 ...
 @@openciv2.web.click_play
 按一下開始遊戲
-@@openciv2.web.remove
-從此瀏覽器移除
 @@openciv2.web.add_original
 經典圖形需要原版 Civilization II 的檔案，而此瀏覽器中的遊戲沒有這些檔案。請選擇您的 Civilization II Multiplayer Gold Edition：遊戲已有的檔案會保留。
 @@openciv2.web.add_back
@@ -468,8 +466,6 @@ Civilization II Multiplayer Gold Edition 在哪裡？（它的安裝資料夾、
 遊戲已結束（%s）。
 @@openciv2.web.stopped
 遊戲已停止：%s
-@@openciv2.web.forget_confirm
-要從此瀏覽器移除遊戲檔案（包括存檔）以及 HD 圖形的美術圖像嗎？
 @@openciv2.web.copy_failed
 無法複製檔案：%s
 @@openciv2.web.read_failed

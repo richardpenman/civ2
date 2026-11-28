@@ -350,8 +350,6 @@ Wählen
 Wird geladen ...
 @@openciv2.web.click_play
 Zum Spielen klicken
-@@openciv2.web.remove
-Aus diesem Browser entfernen
 @@openciv2.web.add_original
 Klassische Grafik braucht die Originaldateien von Civilization II, die das Spiel in diesem Browser nicht hat. Wählen Sie Ihre Kopie von Civilization II Multiplayer Gold Edition: Die Dateien, die das Spiel schon hat, bleiben erhalten.
 @@openciv2.web.add_back
@@ -466,8 +464,6 @@ Das Spiel ist beendet.
 Das Spiel ist beendet (%s).
 @@openciv2.web.stopped
 Das Spiel wurde abgebrochen: %s
-@@openciv2.web.forget_confirm
-Die Spieldateien samt Spielständen (und die HD-Grafiken) aus diesem Browser entfernen?
 @@openciv2.web.copy_failed
 Die Dateien konnten nicht kopiert werden: %s
 @@openciv2.web.read_failed

@@ -35,9 +35,7 @@ relay there: network games need `?relay=` pointing at one of your own (Network g
 
 A visit opens on the start screen: the game's main window backdrop (`hd/title.webp`, the HD art's
 picture the main menu shows) with a small dialog over it: *Click to play* (Enter or Space too),
-*Export saves* and *Import saves* (below: [Saved games](#saved-games)), and, once the browser keeps
-anything, *Remove from this browser* (the game files, a copy of the original among them, the saved
-games and settings: the next visit starts again without a copy). Browsers let a page make no
+*Export saves* and *Import saves* (below: [Saved games](#saved-games)). Browsers let a page make no
 sound until it is clicked or typed at; the start screen's click starts the page's audio
 (`main.js`: `startAudio`, its context handed to `host.js`), so the opening menu's music is heard
 from the start. *Import saves* goes straight into the game too (its click starts the sound). The
@@ -124,8 +122,8 @@ once from the start screen's click: the stored files, the fonts and the game's m
 side, with a line over the screen saying what it is doing until the game's first frame (about 2.5 s
 here with the HD art, 2 s without; `src/web/test/hd.mjs` fails a later visit's start over 15 s, and
 the page's `window.civ2Timing` has each step's time). The page asks the browser to keep that storage for good, so that it is not cleared when
-disk space runs low. The start screen's *Remove from this browser* removes the game files; the
-next visit starts again without a copy.
+disk space runs low. Clearing the site's data in the browser's settings removes it all (the saved
+games among it); the next visit then starts again without a copy.
 
 Music: with HD graphics OpenCiv2's own (`data/music/trackNN.ogg` on the site, 26 MB, fetched
 by `make own-assets`: [NO-INSTALL.md](NO-INSTALL.md#music)), the game folder's

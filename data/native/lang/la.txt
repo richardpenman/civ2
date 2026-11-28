@@ -351,8 +351,6 @@ Elige
 Oneratur ...
 @@openciv2.web.click_play
 Preme ut ludas
-@@openciv2.web.remove
-Dele ex hoc navigatro
 @@openciv2.web.add_original
 Graphica classica fasciculis archetypis Civilization II egent, quos ludus in hoc navigatro non habet. Elige exemplar tuum Civilization II Multiplayer Gold Edition: fasciculi quos ludus iam habet servantur.
 @@openciv2.web.add_back
@@ -467,8 +465,6 @@ Ludus finitus est.
 Ludus finitus est (%s).
 @@openciv2.web.stopped
 Ludus constitit: %s
-@@openciv2.web.forget_confirm
-Removere fasciculos ludi, ludis servatis inclusis, ex hoc navigatro (et picturas Graphicorum HD)?
 @@openciv2.web.copy_failed
 Fasciculi exscribi non potuerunt: %s
 @@openciv2.web.read_failed

@@ -1134,11 +1134,9 @@ async function gameLanguage(ini) {
 }
 
 // The start screen: Click to play (Enter or Space too), the saves exported
-// and imported, and what this browser keeps removed (the game's own files,
-// a copy of the original, the saves and settings)
+// and imported
 async function showStart(store, ended = false) {
     front('start');
-    $('more-row').hidden = !(await store.count() > 0);
     const go = () => {
         if ($('front').hidden || $('start').hidden || $('play').disabled)
             return;
@@ -1157,13 +1155,6 @@ async function showStart(store, ended = false) {
         }
     };
     $('play').disabled = false;
-    $('forget').onclick = async () => {
-        if (confirm(t('web.forget_confirm'))) {
-            await store.clear();
-            await store.hdClear();
-            showStart(store);
-        }
-    };
     if (!ended)
         status('');
     $('play').focus();
@@ -1179,7 +1170,6 @@ async function main() {
         front('start');
         $('play').disabled = true;
         $('saves-row').hidden = true;
-        $('more-row').hidden = true;
         status(t('web.no_browser'));
         return;
     }
