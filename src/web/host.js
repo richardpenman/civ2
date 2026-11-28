@@ -62,6 +62,10 @@ export class Wheel {
     }
 }
 
+// a touch held this long without moving: the right button's click; a
+// finger moved this far (CSS px) before: a drag
+const LONG_PRESS = 500, TOUCH_SLOP = 10;
+
 // host.h's host_desktop_scale
 export function desktopScale(w, h, scale) {
     const most = Math.min(Math.floor(w / 640), Math.floor(h / 480));
@@ -81,6 +85,29 @@ export function desktopScale(w, h, scale) {
     if (scale > most)
         scale = most;
     return scale < 1 ? 1 : scale;
+}
+
+// A phone's or small tablet's page (a touch screen, under 800x600 CSS
+// pixels): the desktop sized by the page's CSS pixels rather than the
+// device's, so that the game's interface is drawn as large as it can be
+// (one desktop pixel a CSS pixel, or less where the page is smaller than
+// 640x480: then 640 wide or 480 high, the page's shape kept)
+export const smallScreen = (w = window.innerWidth, h = window.innerHeight,
+                            coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches) =>
+    !!coarse && w > 0 && h > 0 && (w < 800 || h < 600);
+// css: the page's size in CSS pixels, dpr: device pixels each -> [w, h, k]:
+// the desktop, and its density (the HD frame's device pixels each, 1 or 2).
+// A phone held sideways: at most 999 wide (the page's sides then left
+// black): from 1000 the game's city window is half as large again
+// (city_window_init_size, as the original's), too tall for 480 rows, its
+// buttons below the screen
+export function smallDesktop(cssW, cssH, dpr) {
+    const f = Math.max(1, 640 / cssW, 480 / cssH);
+    let w = Math.max(640, Math.round(cssW * f));
+    const h = Math.max(480, Math.round(cssH * f));
+    if (w >= 1000 && h < 720)
+        w = 999;
+    return [w, h, Math.max(1, Math.min(2, Math.round(Math.min(cssW / w, cssH / h) * dpr)))];
 }
 
 // ARGB (the game's 0xAARRGGBB words) -> the canvas's RGBA bytes, opaque
@@ -135,6 +162,8 @@ export async function runGame(opts) {
     //    number of device pixels each where it fits, else shrunk
     //    HD graphics: the canvas density times larger (host_present_hd)
     let screenW = 640, screenH = 480, follows = false, image = null, density = 1, shown = 1;
+    // (a phone's: the desktop by the page's CSS pixels, smallDesktop; its density)
+    let small = 0;
     // (the canvas holds no HD frame: the next one put there whole, not
     // only its rows that changed)
     let stale = true;
@@ -147,7 +176,8 @@ export async function runGame(opts) {
     const fit = () => {
         const [vw, vh] = viewport();
         let s = Math.min(vw / screenW, vh / screenH);
-        if (s >= 1)
+        // (whole device pixels each where it fits; a phone's desktop fills its page)
+        if (s >= 1 && !small)
             s = Math.floor(s);
         shown = s;
         canvas.style.width = (screenW * s / dpr()) + 'px';
@@ -176,7 +206,11 @@ export async function runGame(opts) {
     };
     window.addEventListener('resize', () => {
         fit();
-        if (follows) {
+        if (follows && small && smallScreen()) {
+            // (the game keeps the density it opened with: the desktop that many times)
+            const [w, h] = smallDesktop(window.innerWidth, window.innerHeight, dpr());
+            push(EV.RESIZE, 0, w * small, h * small);
+        } else if (follows) {
             const [vw, vh] = viewport();
             push(EV.RESIZE, 0, Math.max(vw, 640), Math.max(vh, 480));
         }
@@ -190,22 +224,80 @@ export async function runGame(opts) {
         return [Math.floor((e.clientX - r.left) * screenW / r.width), Math.floor((e.clientY - r.top) * screenH / r.height)];
     };
     const button = (b) => (b === 0 ? 1 : b === 2 ? 2 : 3);
+    // A touch: a tap the left button's click (pressed when the finger
+    // lifts, or moves: a drag), a long press (LONG_PRESS ms without moving)
+    // the right button's; other fingers than the first ignored.
+    // touch: {id, x, y (desktop), cx, cy (CSS px), timer, down: the left
+    // button pressed, right: the right button's click given}
+    let touch = null;
+    const touchDown = () => {
+        clearTimeout(touch.timer);
+        touch.down = true;
+        push(EV.BUTTONDOWN, 0, touch.x, touch.y, 1);
+    };
     canvas.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch' && (!touch || e.pointerId !== touch.id))
+            return;
+        if (touch && !touch.down && !touch.right) {
+            if (Math.hypot(e.clientX - touch.cx, e.clientY - touch.cy) < TOUCH_SLOP)
+                return;
+            touchDown();
+        }
+        if (touch && touch.right)
+            return;
         const [x, y] = desktopXY(e);
         push(EV.MOTION, 0, x, y);
     });
     canvas.addEventListener('pointerdown', (e) => {
         canvas.focus();
-        canvas.setPointerCapture(e.pointerId);
         resumeAudio();
+        e.preventDefault();
+        if (e.pointerType === 'touch') {
+            if (touch || !e.isPrimary)
+                return;
+            canvas.setPointerCapture(e.pointerId);
+            const [x, y] = desktopXY(e);
+            touch = {id: e.pointerId, x, y, cx: e.clientX, cy: e.clientY, down: false, right: false};
+            push(EV.MOTION, 0, x, y);
+            touch.timer = setTimeout(() => {
+                if (!touch || touch.down)
+                    return;
+                touch.right = true;
+                push(EV.BUTTONDOWN, 0, touch.x, touch.y, 2);
+                push(EV.BUTTONUP, 0, touch.x, touch.y, 2);
+                if (navigator.vibrate)
+                    navigator.vibrate(20);
+            }, LONG_PRESS);
+            return;
+        }
+        canvas.setPointerCapture(e.pointerId);
         const [x, y] = desktopXY(e);
         push(EV.BUTTONDOWN, 0, x, y, button(e.button));
-        e.preventDefault();
     });
+    const touchEnd = (e) => {
+        const t = touch;
+        touch = null;
+        clearTimeout(t.timer);
+        if (t.right)
+            return;
+        if (!t.down)
+            push(EV.BUTTONDOWN, 0, t.x, t.y, 1);
+        const [x, y] = t.down ? desktopXY(e) : [t.x, t.y];
+        push(EV.BUTTONUP, 0, x, y, 1);
+    };
     canvas.addEventListener('pointerup', (e) => {
+        e.preventDefault();
+        if (e.pointerType === 'touch') {
+            if (touch && e.pointerId === touch.id)
+                touchEnd(e);
+            return;
+        }
         const [x, y] = desktopXY(e);
         push(EV.BUTTONUP, 0, x, y, button(e.button));
-        e.preventDefault();
+    });
+    canvas.addEventListener('pointercancel', (e) => {
+        if (touch && e.pointerId === touch.id)
+            touchEnd(e);
     });
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     const wheel = new Wheel();
@@ -359,6 +451,15 @@ export async function runGame(opts) {
             return 1;
         },
         host_open_maximized_window: (pw, ph, scale) => {
+            if (scale < 1 && smallScreen()) {
+                const [w, h, k] = smallDesktop(window.innerWidth, window.innerHeight, dpr());
+                small = k;
+                setDesktop(w, h);
+                follows = true;
+                dv().setInt32(pw, screenW, true);
+                dv().setInt32(ph, screenH, true);
+                return k;
+            }
             let [cw, ch] = viewport();
             if (cw < 640 || ch < 480) {
                 cw = 1024;

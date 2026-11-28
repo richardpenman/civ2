@@ -7,12 +7,14 @@
 // desktop's width and a phone's, no sideways scrolling), its button clicked
 // with the mouse: the sound started by that click (the page's audio context
 // running at the main menu, its theme queued, before any other click), the
-// HD graphics' art and OpenCiv2's own texts and sounds fetched on the page's
-// progress bar, then the regular main menu in HD; OpenCiv2's own music, sound
+// HD graphics' art and OpenCiv2's own texts and sounds fetched (from the
+// start screen on, its line under the button showing how far, the site
+// slowed down) on the page's progress bar, then the regular main menu in HD; OpenCiv2's own music, sound
 // effects and wonder movies all fetched; the game's folder noted as one
 // without the original's files (store.js's meta 'game': no names), none of
 // the original's files in it; a later visit (an old link's ?setup: the start
-// screen) started with Enter, at once from what was kept (no bar); a
+// screen) started with Enter once its preload is done, its first frame
+// within LATER_MS, at once from what was kept and fetched (no bar); a
 // menu's click heard at once (its sound mixed in ahead of the menu's queued
 // theme).  (The original's files added over the game, its Settings' Classic
 // graphics: hd.mjs; the saves exported and imported: smoke.mjs.)
@@ -25,6 +27,11 @@ import {join} from 'node:path';
 import {ROOT, WEB, serve, browser, tmpDir} from './cdp.mjs';
 
 const OUT = join(ROOT, 'run', 'web-start');
+// a later visit's start, the start screen having fetched what it waits for:
+// its first frame at most this long after the key (some 1.6-2.7 s here, the
+// game's own start; before the preload some 2.2-3 s from this machine's
+// server, 18-21 s at 50 Mbit/s)
+const LATER_MS = 6000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (s) => console.log(`[${(performance.now() / 1000).toFixed(1)}s] ${s}`);
 
@@ -111,10 +118,20 @@ async function main() {
     try {
         await send('Runtime.enable');
         await send('Page.enable');
+        await send('Network.enable');
         await send('Emulation.setDeviceMetricsOverride', {width: 1280, height: 800, deviceScaleFactor: 1, mobile: false});
-        // the first visit: the start screen, at a desktop's width and a phone's
+        // the first visit: the start screen, at a desktop's width and a
+        // phone's, the site slow (some 4 MB/s) until the click's bar has
+        // moved: what a start waits for fetched while it is shown, its
+        // progress under Click to play
+        await send('Network.emulateNetworkConditions', {offline: false, latency: 20, downloadThroughput: 4e6, uploadThroughput: 4e6});
         await send('Page.navigate', {url});
         await waitFor('window.civ2Start', 10000, 'the start screen');
+        const pre = await waitFor('(() => { const p = document.getElementById("preload"); return window.civ2Preload &&' +
+                                  ' !window.civ2Preload.ready && getComputedStyle(p).visibility === "visible" &&' +
+                                  ' /%$/.test(document.getElementById("preload-pct").textContent) &&' +
+                                  ' document.getElementById("preload-pct").textContent; })()', 10000, 'the preload\'s progress');
+        log('the start screen\'s preload: ' + pre);
         await evaluate('document.fonts.ready.then(() => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = "hd/title.webp"; }))');
         let st = await startScreen();
         log('the start screen: ' + JSON.stringify(st));
@@ -150,6 +167,7 @@ async function main() {
         await waitFor('window.civ2FirstStart && parseInt(window.civ2FirstStart.pct) >= 20 || /Starting/.test(window.civ2Status || "")',
                       120000, 'the art on its way');
         await shot('01-bar');
+        await send('Network.emulateNetworkConditions', {offline: false, latency: 0, downloadThroughput: -1, uploadThroughput: -1});
         await waitFor('/Starting/.test(window.civ2Status || "")', 300000, 'the start');
         const bar = await evaluate('window.civ2FirstStart');
         log(`started in ${Math.round(performance.now() - t0)} ms: ${await evaluate('window.civ2Status')}; the bar's last: ${JSON.stringify(bar)}`);
@@ -204,11 +222,21 @@ async function main() {
         await shot('04-start-later');
         if (!startOk(st) || !await evaluate('document.getElementById("forget").getClientRects().length > 0'))
             throw new Error('?setup does not open the start screen (with Remove from this browser): ' + JSON.stringify(st));
-        const t1 = performance.now();
+        // (what it waits for fetched meanwhile: its line gone, then the
+        // first frame within LATER_MS of the key, the art not waited for)
+        await waitFor('window.civ2Preload && window.civ2Preload.ready', 60000, 'the later visit\'s preload');
+        if (await evaluate('getComputedStyle(document.getElementById("preload")).visibility') !== 'hidden')
+            throw new Error('the preload\'s line still shown once all has come');
+        await evaluate('window.addEventListener("keydown", () => window.civ2KeyAt = Math.round(performance.now()), true)');
         await key('Enter', 13);
         await waitFor('/Starting/.test(window.civ2Status || "")', 60000, 'the later start');
         await waitFor('window.civ2Timing && window.civ2Timing.frame', 60000, 'the later start\'s first frame');
-        log(`a later start: its first frame in ${Math.round(performance.now() - t1)} ms; ${JSON.stringify(await evaluate('window.civ2Timing'))}`);
+        const later = await evaluate('({timing: window.civ2Timing, key: window.civ2KeyAt, preload: window.civ2Preload})');
+        const firstMs = later.timing.frame - later.key;
+        log(`a later start: its first frame ${firstMs} ms after the key; ${JSON.stringify(later)}`);
+        if (!(later.timing.hd < later.key) || firstMs > LATER_MS)
+            throw new Error(`the later start waited: its first frame ${firstMs} ms after the key (at most ${LATER_MS}),` +
+                            ` the art ${later.timing.hd < later.key ? 'there before it' : 'fetched after it'}`);
         if (await evaluate('!!window.civ2FirstStart'))
             throw new Error('the bar shown at a later visit');
         if (!((await evaluate('window.civ2Hd') || {}).files > 100))

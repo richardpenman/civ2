@@ -2,7 +2,7 @@
 // desktop's scale, pixels, the WASI file system, .zip reading and writing, the player's saves.
 //   tools/toolchain/node/bin/node src/web/test/unit.mjs
 import assert from 'node:assert/strict';
-import {vkOf, Wheel, desktopScale, argbToRgba} from '../host.js';
+import {vkOf, Wheel, desktopScale, argbToRgba, smallScreen, smallDesktop} from '../host.js';
 import {MemFS, makeWasi, normalize} from '../wasi.js';
 import {unzip, zip as makeZip, crc32} from '../zip.js';
 import {savesKind, playerFiles, importPath, savesToImport} from '../saves.js';
@@ -37,6 +37,17 @@ assert.equal(desktopScale(2560, 1440, 0), 2);
 assert.equal(desktopScale(3840, 2160, 0), 3);
 assert.equal(desktopScale(2940, 1782, 0), 3);
 assert.equal(desktopScale(800, 600, 2), 1);
+
+// a phone's desktop: by its CSS pixels, at least 640x480, its shape kept
+assert.equal(smallScreen(390, 844, true), true);
+assert.equal(smallScreen(844, 390, true), true);
+assert.equal(smallScreen(1024, 768, true), false);      // a tablet sideways: as a computer's
+assert.equal(smallScreen(390, 844, false), false);      // a small window on a computer: as before
+assert.deepEqual(smallDesktop(390, 844, 3), [640, 1385, 2]);
+assert.deepEqual(smallDesktop(844, 390, 3), [999, 480, 2]);       // (not 1039: the city window's size)
+assert.deepEqual(smallDesktop(667, 375, 2), [854, 480, 2]);
+assert.deepEqual(smallDesktop(768, 1024, 2), [768, 1024, 2]);
+assert.deepEqual(smallDesktop(360, 640, 1), [640, 1138, 1]);
 
 // pixels: ARGB words -> RGBA bytes, opaque
 const dst = new Uint32Array(1);

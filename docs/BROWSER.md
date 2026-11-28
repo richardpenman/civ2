@@ -54,8 +54,42 @@ files (the store's `meta` `game` with no names: `src/web/main.js`, `play`); what
 makes from the art again at each start (`OpenCiv2Pictures/`, `OpenCiv2Sounds/`) are not. Later
 visits start at once from what was kept, the art from the browser's cache, without the bar.
 
+While the start screen is shown, the page already fetches and reads what a start waits for
+(`main.js`: `preload`): the game's module and fonts, the files kept in the browser, the HD art
+(where the game will draw it), OpenCiv2's texts, sound effects, font files and translations, then
+its music and wonder movies. A thin bar under *Click to play* says how far (*Loading ... 45%*), and
+goes once all has come; the click then starts the game at once, its first frame some 1.6-2.7 s
+later here (the game's own start), where before it waited for the downloads too (some 20 s for a
+first visit at 50 Mbit/s). A click before then shows the progress bar or line, carrying on from
+what has come. Nothing is played or written before the click; saves imported meanwhile are read
+again at the start (`src/web/test/start.mjs` checks the line, and a later visit's first frame
+within 6 s of the key, the art fetched before it).
+
 Your copy of the original is chosen in the game: Settings, Classic graphics ticked, *Find the
 original files...* (below).
+
+## Phones and tablets
+
+On a touch screen whose page is under 800x600 CSS pixels (a phone either way up, a tablet held
+upright), the game's desktop is sized by the page's CSS pixels rather than the device's, at least
+640x480, the page's shape kept (`host.js`: `smallDesktop`): a phone of 390x844 gets a 640x1385
+desktop upright, drawn at density 2 and filling the screen, where before it was 1170x2532, the
+interface a little over half the size. Sideways it gets 999x480 (the page's sides black: from
+1000 wide the game's city window is half as large again, as the original's, too tall for 480
+rows), where before it was 1266x585, the city window's lower buttons (*Exit* among them) then
+below the screen. Settings' Scale, when set,
+is kept as before; computers and larger tablets are as before. Sideways is better: the game's
+windows were made for a landscape screen. *Click to play* also asks for full screen, where the
+browser can (not Safari on an iPhone), and then turns a phone sideways where the browser lets it
+(Chrome on Android); the system's Back or the browser's own gesture leaves it.
+
+A tap is the left button's click (pressed as the finger lifts, or once it moves: a drag); a press
+held half a second without moving is the right button's click (with a short buzz where the phone
+can). The page around the game neither zooms, scrolls nor pulls to reload under a finger.
+Limits: the game's interface is still that of a 640x480 game on a 6-inch screen: its text and
+buttons are small (some 0.6-0.8 of a CSS pixel each); there is no on-screen keyboard for the
+game's keyboard shortcuts or for naming cities (the names offered are kept with OK), and no pinch
+to zoom the map (its View menu's zoom works).
 
 ## Your copy of the game
 

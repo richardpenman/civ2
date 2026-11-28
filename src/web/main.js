@@ -4,7 +4,7 @@
 // the game from its Settings, kept in IndexedDB.
 
 import {MemFS} from './wasi.js';
-import {runGame} from './host.js';
+import {runGame, smallScreen} from './host.js';
 import {openStore} from './store.js';
 import {unzip} from './zip.js';
 import {exportSaves, importSaves} from './saves.js';
@@ -475,6 +475,23 @@ function startAudio() {
     }
 }
 
+// A phone or tablet (smallScreen: a touch screen under 800x600 CSS px):
+// the game full screen from the start screen's click, where the browser
+// can (not Safari on an iPhone), a phone's then turned sideways, where the
+// browser lets it (Chrome on Android): the game's interface drawn larger
+// (host.js: smallDesktop); back with the system's Back or Escape
+function fullScreen() {
+    const el = document.documentElement;
+    if (!smallScreen() || !el.requestFullscreen || document.fullscreenElement)
+        return;
+    try {
+        el.requestFullscreen({navigationUI: 'hide'}).then(() => {
+            if (Math.min(screen.width, screen.height) < 600 && screen.orientation && screen.orientation.lock)
+                return screen.orientation.lock('landscape');
+        }).catch(() => {});
+    } catch (e) { /* not here */ }
+}
+
 function savesControls(store) {
     $('export-saves').onclick = () => exportClicked(store);
     // (the click that opens the file chooser starts the sound: the saves
@@ -580,6 +597,173 @@ function fromSite() {
     return siteP;
 }
 
+// ---- what a start waits for, fetched while the start screen is shown ----
+
+// The site's files a start needs, each fetched once (url -> its promise; a
+// failure forgotten, to be tried again), so that the start screen's preload
+// and the start share them: the click starts the game at once when they
+// have all come.  (counted: one of the files the start waits for, in loads)
+const fetched = new Map();
+function once(url, get, counted = false) {
+    let p = fetched.get(url);
+    if (!p) {
+        if (counted) {
+            loads.files.set(url, false);
+            loadsMoved();
+        }
+        p = get(url).then((v) => {
+            if (counted) {
+                loads.files.set(url, true);
+                loads.bytes += v ? v.byteLength || 0 : 0;
+                loadsMoved();
+            }
+            return v;
+        });
+        fetched.set(url, p);
+        p.catch(() => {
+            fetched.delete(url);
+            loads.files.delete(url);
+            loadsMoved();
+        });
+    }
+    return p;
+}
+const siteJson = (url) => once(url, (u) => fetch(u).then((r) => (r.ok ? r.json() : [])));
+const siteGz = (url) => once(url, fetchGz, true);
+const siteBytes = (url, counted = true) => once(url, (u) => fetch(u).then((r) => {
+    if (!r.ok)
+        throw new Error(u.split('/').pop() + ': ' + r.status);
+    return r.arrayBuffer();
+}).then((b) => new Uint8Array(b)), counted);
+// the HD graphics' art (fetchArt), its bytes counted as they come
+const siteArt = () => once('hd/art.bin', () => mark('hd', fetchArt((done, total) => {
+    loads.bytes += done - loads.artDone;
+    loads.artDone = done;
+    loads.artTotal = total;
+    loadsMoved();
+})).catch((e) => {
+    loads.bytes -= loads.artDone;
+    loads.artDone = loads.artTotal = 0;
+    throw e;
+}));
+
+// Those downloads as they come (the start screen's line, a first start's
+// bar): the art's bytes, the other files the start waits for (url -> come)
+const loads = {artDone: 0, artTotal: 0, files: new Map(), bytes: 0, art: false, on: new Set()};
+function loadsMoved() {
+    for (const f of loads.on)
+        f();
+}
+// (how far, 0 to 1: the art most of it where it is wanted)
+function loadsFrac() {
+    const files = loads.files.size ? [...loads.files.values()].filter(Boolean).length / loads.files.size : 0;
+    return loads.art ? 0.9 * (loads.artTotal ? loads.artDone / loads.artTotal : 0) + 0.1 * files : files;
+}
+
+// The game's files kept in this browser (the store's), read once until it
+// changes (preloadStore)
+let keptP = null;
+const keptFiles = (store) => keptP || (keptP = mark('files', store.all()));
+const keptChanged = () => {
+    keptP = null;
+};
+// (the store's writes: what was read of it is read again)
+function preloadStore(store) {
+    for (const k of ['putMany', 'remove', 'clear']) {
+        const f = store[k];
+        store[k] = (...a) => {
+            keptChanged();
+            return f.apply(store, a);
+        };
+    }
+    return store;
+}
+
+// What a start fetches from the site for a game whose kept files are keys
+// (their names): the HD graphics' art where hd, OpenCiv2's texts and sound
+// effects the game lacks (with HD graphics all the sound effects), the
+// font files -> {art, texts, sounds, fonts}: promises of [[name, bytes]]
+// (art: null where it could not be fetched; the others fail), as play puts
+// them in the game's files
+function siteFiles(keys, hd) {
+    const have = new Set(keys.map((k) => k.toUpperCase()));
+    loads.art = loads.art || hd;
+    const all = (names, get) => Promise.all(names.map((n) => get(n).then((b) => [n, b])));
+    const art = hd ? siteArt().catch((e) => {
+        console.error(e);
+        return null;
+    }) : Promise.resolve(null);
+    const texts = siteJson('data/text/index.json')
+        .then((names) => all(names.filter((n) => !have.has(n)), (n) => siteGz('data/text/' + n + '.gz')));
+    const sounds = siteJson('data/sound/index.json').then((names) => all(
+        hd ? names : names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV')),
+        (n) => siteBytes('data/sound/' + n)));
+    const fonts = siteJson('data/fonts/index.json').then((names) => all(names, (n) => siteGz('data/fonts/' + n + '.gz')));
+    for (const p of [texts, sounds, fonts])
+        p.catch(() => {});
+    return {art, texts, sounds, fonts};
+}
+
+// OpenCiv2's own music and wonder movies the game will have (hd: all of
+// them; else those its files lack: play), fetched not waited for ->
+// {music: promise of [[name, bytes]], wonders: of [[NN, webp, ogg]]}
+// (names: the game's files' names, with GAME/)
+function siteExtras(names, hd) {
+    const have = new Set(names.map((k) => k.toUpperCase()));
+    const music = siteJson('data/music/index.json').then((list) => Promise.all(list.filter((n) => {
+        const track = (GAME + '/MUSIC/' + n.slice(0, -4)).toUpperCase();
+        return hd || (!have.has(track + '.OGG') && !have.has(track + '.WAV'));
+    }).map((n) => siteBytes('data/music/' + n, false).then((b) => [n, b]))));
+    const wonders = siteJson('data/wonders/index.json').then((list) => list
+        .filter((nn) => hd || !have.has((GAME + '/VIDEO/WONDER' + nn + '.AVI').toUpperCase()))
+        .map((nn) => Promise.all([siteBytes('data/wonders/wonder' + nn + '.webp', false),
+                                  siteBytes('data/wonders/wonder' + nn + '.ogg', false)]).then(([webp, ogg]) => [nn, webp, ogg])));
+    music.catch(() => {});
+    wonders.catch(() => {});
+    return {music, wonders};
+}
+
+// What a start would do first, done while the start screen is shown: the
+// kept files read, what the game needs from the site fetched (siteFiles,
+// the translations), then its music and wonder movies; its progress on the
+// start screen, under Click to play, until all a start waits for has come
+// (window.civ2Preload: {ready, readyMs}, the tests).  Nothing played, nothing
+// written: a start then reads and fetches only what changed since (saves
+// imported, files removed).
+let preloading = null;
+function preload(store) {
+    const run = preloading = {};
+    const shown = () => {
+        if (run !== preloading)
+            return;
+        const pct = Math.floor(loadsFrac() * 100);
+        $('preload-fill').style.width = pct + '%';
+        $('preload-pct').textContent = t('web.loading') + ' ' + pct + '%';
+        $('preload').setAttribute('aria-valuenow', pct);
+    };
+    loads.on.add(shown);
+    window.civ2Preload = {ready: false};
+    $('preload').hidden = false;
+    shown();
+    (async () => {
+        const site = fromSite();
+        const keys = await store.keys();
+        const iniName = keys.find((k) => /^civ\.ini$/i.test(k));
+        const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
+        const hd = hdWanted(ini, new URLSearchParams(location.search).get('hd'), hasOriginalPictures(keys)) >= 0;
+        const files = siteFiles(keys, hd);
+        shown();
+        await Promise.all([site.wasm, site.fonts, keptFiles(store), files.art, files.texts, files.sounds, files.fonts,
+                           gameLanguage(ini)]);
+        window.civ2Preload = {ready: true, readyMs: Math.round(performance.now())};
+        siteExtras(keys.map((k) => GAME + '/' + k), hd);
+    })().catch((e) => console.warn('preload:', e)).finally(() => {
+        loads.on.delete(shown);
+        if (run === preloading)
+            $('preload').hidden = true;
+    });
+}
+
 // ---- the game from the site itself (make web GAME=1: game/index.json) ----
 
 // The site's copy of the game, or null: {core: {size, files}, files: [[path, size]]}
@@ -665,40 +849,27 @@ async function installFromSite(store, g, first) {
 }
 
 // A first start without a copy of the original (nothing in the store: the
-// game from OpenCiv2's own files, HD graphics): its downloads on the
-// install's progress bar, the art by its bytes (most of it), OpenCiv2's
-// texts, sounds and fonts by their files -> {art(done, total), file(),
-// files(n), end()}; window.civ2FirstStart (tests): the bar's last words and
-// how many times it moved
+// game from OpenCiv2's own files, HD graphics), before what it waits for has
+// all come (preload): those downloads on the install's progress bar (loads:
+// the art by its bytes, most of it, OpenCiv2's texts, sounds and fonts by
+// their files) -> {end()}; window.civ2FirstStart (tests): the bar's last
+// words and how many times it moved
 function firstStartBar() {
     front('install');
     $('install-title').textContent = t('web.starting_title');
     $('install').querySelector('[data-t="web.install_note"]').textContent = t('web.start_note');
-    let artDone = 0, artTotal = 0, filesDone = 0, filesTotal = 0, bytes = 0, moves = 0, frac = 0;
+    let moves = 0, frac = 0;
     const shown = () => {
         // (never back: more files to come as each kind's list is read)
-        frac = Math.max(frac, 0.9 * (artTotal ? artDone / artTotal : 0) + 0.1 * (filesTotal ? filesDone / filesTotal : 0));
-        installProgress(t('web.start_download', MB1(bytes)), frac);
+        frac = Math.max(frac, loadsFrac());
+        installProgress(t('web.start_download', MB1(loads.bytes)), frac);
         window.civ2FirstStart = {step: $('install-step').textContent, pct: $('install-pct').textContent, moves: ++moves};
     };
+    loads.on.add(shown);
     shown();
     return {
-        art(done, total) {
-            bytes += done - artDone;
-            artDone = done;
-            artTotal = total;
-            shown();
-        },
-        files(n) {
-            filesTotal += n;
-            shown();
-        },
-        file(size = 0) {
-            filesDone++;
-            bytes += size;
-            shown();
-        },
         end() {
+            loads.on.delete(shown);
             front(null);
         },
     };
@@ -714,6 +885,10 @@ async function play(store) {
     const t0 = performance.now();
     const site = fromSite();
     const fs = new MemFS();
+    // (the start screen's preload: what it fetched and read is used, what
+    // it has not yet is waited for here; its line no longer shown)
+    preloading = null;
+    const ready = window.civ2Preload && window.civ2Preload.ready;
     // CIV.INI first (a moment): the HD graphics' art, when wanted, read
     // alongside the other files
     const query = new URLSearchParams(location.search), args = ['civ2', GAME];
@@ -721,8 +896,9 @@ async function play(store) {
     // nothing kept (a first visit; the files removed): the game from an
     // empty folder, OpenCiv2's own files filling it in (the desktop game's
     // start without the original's: docs/NO-INSTALL.md), noted as such
-    // (meta 'game': no names), its progress on the bar
-    const bar = keys.length ? null : firstStartBar();
+    // (meta 'game': no names), its progress on the bar (unless all it
+    // waits for has come already)
+    const bar = keys.length || ready ? null : firstStartBar();
     if (!keys.length && !await store.getMeta('game'))
         await store.setMeta('game', {names: [], at: Date.now()});
     if (!bar) {
@@ -730,25 +906,18 @@ async function play(store) {
         $('loading').hidden = false;
     }
     status(t('web.loading_files'));
-    // (a file of OpenCiv2's own fetched: on the bar)
-    const got = (n, b) => {
-        if (bar)
-            bar.file(b ? b.byteLength : 0);
-        return b;
-    };
     const iniName = keys.find((k) => /^civ\.ini$/i.test(k));
     const ini = iniOf(iniName ? [[iniName, await store.get(iniName)]] : []).text;
     // (always where the game's files lack the original's pictures: the game
     // makes them from the art, docs/NO-INSTALL.md)
     const hd = hdWanted(ini, query.get('hd'), hasOriginalPictures(keys)) >= 0;
-    const artP = hd ? mark('hd', fetchArt(bar && ((done, total) => bar.art(done, total)))).catch((e) => {
-        console.error(e);
-        return null;
-    }) : null;
+    const files = siteFiles(keys, hd);
     // (the HD art of former versions, downloaded and kept in this browser:
     // the art is the site's now, its room freed)
     store.hdClear().catch(() => {});
-    const [entries, [fonts, fontsAa]] = await Promise.all([mark('files', store.all()), site.fonts]);
+    const [entries, [fonts, fontsAa]] = await Promise.all([keptFiles(store), site.fonts]);
+    // (read again at a next start: the game writes into these files)
+    keptChanged();
     for (const [k, v] of entries)
         fs.put(GAME + '/' + k, v.data, v.mtime);
     fs.mkdirs(GAME);
@@ -766,13 +935,8 @@ async function play(store) {
     // OpenCiv2's English of the game's text files the player's game lacks
     // (data/text: the game reads them where it has none of its own)
     try {
-        const have = new Set(entries.map(([k]) => k.toUpperCase()));
-        const names = await fetch('data/text/index.json').then((r) => (r.ok ? r.json() : []));
-        const missing = names.filter((n) => !have.has(n));
-        if (bar)
-            bar.files(missing.length);
-        const files = await Promise.all(missing.map((n) => fetchGz('data/text/' + n + '.gz').then((b) => got(n, b))));
-        missing.forEach((n, i) => fs.put(DATA + '/text/' + n, files[i]));
+        for (const [n, b] of await files.texts)
+            fs.put(DATA + '/text/' + n, b);
     } catch (e) {
         console.warn('OpenCiv2 texts:', e);
     }
@@ -782,18 +946,10 @@ async function play(store) {
     // player's game lacks (it plays the game's Sound/NAME.WAV, else ours);
     // window.civ2OwnSounds: those put in (tests)
     try {
-        const have = new Set(entries.map(([k]) => k.toUpperCase()));
-        const names = await fetch('data/sound/index.json').then((r) => (r.ok ? r.json() : []));
-        const wanted = hd ? names : names.filter((n) => !have.has('SOUND/' + n.slice(0, -4).toUpperCase() + '.WAV'));
-        if (bar)
-            bar.files(wanted.length);
-        const files = await Promise.all(wanted.map((n) => fetch('data/sound/' + n).then((r) => {
-            if (!r.ok)
-                throw new Error(n + ': ' + r.status);
-            return r.arrayBuffer();
-        }).then((b) => got(n, b))));
-        wanted.forEach((n, i) => fs.put(DATA + '/sound/' + n, new Uint8Array(files[i])));
-        window.civ2OwnSounds = wanted;
+        const sounds = await files.sounds;
+        for (const [n, b] of sounds)
+            fs.put(DATA + '/sound/' + n, b);
+        window.civ2OwnSounds = sounds.map(([n]) => n);
     } catch (e) {
         console.warn('OpenCiv2 sounds:', e);
     }
@@ -808,11 +964,8 @@ async function play(store) {
     for (const [code, bytes] of gameLang.files)
         fs.put(DATA + '/lang/' + code + '.txt', bytes);
     try {
-        const names = await fetch('data/fonts/index.json').then((r) => (r.ok ? r.json() : []));
-        if (bar)
-            bar.files(names.length);
-        const files = await Promise.all(names.map((n) => fetchGz('data/fonts/' + n + '.gz').then((b) => got(n, b))));
-        names.forEach((n, i) => fs.put(DATA + '/fonts/' + n, files[i]));
+        for (const [n, b] of await files.fonts)
+            fs.put(DATA + '/fonts/' + n, b);
     } catch (e) {
         console.warn('no font files', e);
     }
@@ -827,7 +980,7 @@ async function play(store) {
     if (hd) {
         const since = performance.now();
         status(t('web.loading_hd'));
-        const art = await artP;
+        const art = await files.art;
         for (const [path, bytes] of art || [])
             fs.put(DATA + '/' + path, bytes);
         window.civ2Hd = {files: art ? art.length : 0, bytes: art ? art.reduce((n, [, b]) => n + b.length, 0) : 0,
@@ -898,52 +1051,34 @@ async function play(store) {
     // the game's Music/TrackNN only for a track it lacks), with Classic
     // graphics those the player's game lacks (it plays the game's
     // Music/TrackNN.ogg, else .wav, else ours); fetched while the game starts
-    // and plays, not waited for; put in all at once when all have come, so
+    // and plays (or already at the start screen: preload), not waited for; put in all at once when all have come, so
     // that the game, which counts the tracks when it opens the CD drive,
     // finds all of them or none (until then it plays the game's own, or as
     // without music); window.civ2OwnMusic: the tracks put in (tests)
-    (async () => {
-        const have = new Set([...fs.files.keys()].map((k) => k.toUpperCase()));
-        const names = await fetch('data/music/index.json').then((r) => (r.ok ? r.json() : []));
-        const wanted = hd ? names : names.filter((n) => {
-            const track = (GAME + '/MUSIC/' + n.slice(0, -4)).toUpperCase();
-            return !have.has(track + '.OGG') && !have.has(track + '.WAV');
-        });
-        const files = await Promise.all(wanted.map((n) => fetch('data/music/' + n).then((r) => {
-            if (!r.ok)
-                throw new Error(n + ': ' + r.status);
-            return r.arrayBuffer();
-        })));
-        wanted.forEach((n, i) => fs.put(DATA + '/music/' + n, new Uint8Array(files[i])));
-        window.civ2OwnMusic = wanted;
-    })().catch((e) => console.warn('OpenCiv2 music:', e));
+    const extras = siteExtras([...fs.files.keys()], hd);
+    extras.music.then((music) => {
+        for (const [n, b] of music)
+            fs.put(DATA + '/music/' + n, b);
+        window.civ2OwnMusic = music.map(([n]) => n);
+    }).catch((e) => console.warn('OpenCiv2 music:', e));
     // OpenCiv2's own wonder movies (data/wonders, some 3 MB each: the
     // picture wonderNN.webp and its sound wonderNN.ogg): with HD graphics
     // all of them (hd.c plays ours first, in the place of the game's
     // Video/WONDERNN.AVI), with Classic graphics those the player's game
     // lacks (the game's own, else ours); fetched while the game starts and
-    // plays, not waited for; each movie put in when both its files have
+    // plays (or at the start screen), not waited for; each movie put in when both its files have
     // come, the sound first (the game looks for the picture: until it is
     // there it plays the game's own, or none); window.civ2OwnWonders: the
     // movies put in, when all have come (tests)
-    (async () => {
-        const have = new Set([...fs.files.keys()].map((k) => k.toUpperCase()));
-        const movies = await fetch('data/wonders/index.json').then((r) => (r.ok ? r.json() : []));
-        const wanted = hd ? movies : movies.filter((nn) => !have.has((GAME + '/VIDEO/WONDER' + nn + '.AVI').toUpperCase()));
-        const get = (n) => fetch('data/wonders/' + n).then((r) => {
-            if (!r.ok)
-                throw new Error(n + ': ' + r.status);
-            return r.arrayBuffer();
-        });
+    extras.wonders.then(async (movies) => {
         const put = [];
-        await Promise.all(wanted.map(async (nn) => {
-            const [webp, ogg] = await Promise.all([get('wonder' + nn + '.webp'), get('wonder' + nn + '.ogg')]);
-            fs.put(DATA + '/wonders/wonder' + nn + '.ogg', new Uint8Array(ogg));
-            fs.put(DATA + '/wonders/wonder' + nn + '.webp', new Uint8Array(webp));
+        await Promise.all(movies.map((m) => m.then(([nn, webp, ogg]) => {
+            fs.put(DATA + '/wonders/wonder' + nn + '.ogg', ogg);
+            fs.put(DATA + '/wonders/wonder' + nn + '.webp', webp);
             put.push(nn);
-        }));
+        })));
         window.civ2OwnWonders = put.sort();
-    })().catch((e) => console.warn('OpenCiv2 wonder movies:', e));
+    }).catch((e) => console.warn('OpenCiv2 wonder movies:', e));
     let code;
     try {
         window.civ2Stats = {};
@@ -1008,6 +1143,7 @@ async function showStart(store, ended = false) {
             return;
         $('play').disabled = true;
         startAudio();
+        fullScreen();
         play(store);
     };
     $('play').onclick = go;
@@ -1031,6 +1167,8 @@ async function showStart(store, ended = false) {
         status('');
     $('play').focus();
     window.civ2Start = true;    // (the tests)
+    // (what a start waits for, fetched now: the click then starts the game at once)
+    preload(store);
 }
 
 async function main() {
@@ -1046,8 +1184,8 @@ async function main() {
     }
     // (what the game needs from the site, at once, while the start screen waits)
     fromSite();
-    const store = await mark('store', openStore(() =>
-        status(t('web.other_tab'))));
+    const store = preloadStore(await mark('store', openStore(() =>
+        status(t('web.other_tab')))));
     // (without ?lang=: the page in the game's language, as its Settings
     // chose it, CIV.INI's Language=; the page has no choice of its own)
     if (!urlLanguage()) {
